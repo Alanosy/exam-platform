@@ -50,6 +50,18 @@ export function logout() {
 // 获取验证码
 export function getCodeImg() {
   return request({
+    url: '/code',
+    headers: {
+      isToken: false
+    },
+    method: 'get',
+    timeout: 20000
+  })
+}
+
+// 短信验证码
+export function getCodeSms() {
+  return request({
     url: '/sms/code',
     headers: {
       isToken: false
