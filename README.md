@@ -2,8 +2,8 @@
 
 * 本仓库为前端技术栈 [Vue3](https://v3.cn.vuejs.org) + [Element Plus](https://element-plus.org/zh-CN) + [Vite](https://cn.vitejs.dev) 版本。
 * 配套后端代码仓库地址 
-* [RuoYi-Vue-Plus 5.X(注意版本号)](https://gitee.com/JavaLionLi/RuoYi-Vue-Plus)
-* [RuoYi-Cloud-Plus 2.X(注意版本号)](https://gitee.com/JavaLionLi/RuoYi-Cloud-Plus)
+* [RuoYi-Vue-Plus 5.X(注意版本号)](https://gitee.com/dromara/RuoYi-Vue-Plus)
+* [RuoYi-Cloud-Plus 2.X(注意版本号)](https://gitee.com/dromara/RuoYi-Cloud-Plus)
 
 ## 前端运行
 

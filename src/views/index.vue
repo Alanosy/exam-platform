@@ -44,14 +44,14 @@
             type="primary"
             icon="Cloudy"
             plain
-            @click="goTarget('https://gitee.com/JavaLionLi/RuoYi-Vue-Plus')"
+            @click="goTarget('https://gitee.com/dromara/RuoYi-Vue-Plus')"
             >访问码云</el-button
           >
           <el-button
             type="primary"
             icon="Cloudy"
             plain
-            @click="goTarget('https://github.com/JavaLionLi/RuoYi-Vue-Plus')"
+            @click="goTarget('https://github.com/dromara/RuoYi-Vue-Plus')"
             >访问GitHub</el-button
           >
           <el-button
@@ -107,14 +107,14 @@
               type="primary"
               icon="Cloudy"
               plain
-              @click="goTarget('https://gitee.com/JavaLionLi/RuoYi-Cloud-Plus')"
+              @click="goTarget('https://gitee.com/dromara/RuoYi-Cloud-Plus')"
           >访问码云</el-button
           >
           <el-button
               type="primary"
               icon="Cloudy"
               plain
-              @click="goTarget('https://github.com/JavaLionLi/RuoYi-Cloud-Plus')"
+              @click="goTarget('https://github.com/dromara/RuoYi-Cloud-Plus')"
           >访问GitHub</el-button
           >
           <el-button
