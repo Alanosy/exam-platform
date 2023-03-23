@@ -11,7 +11,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://gitee.com/JavaLionLi/RuoYi-Vue-Plus-UI.git"
+    "url": "https://gitee.com/JavaLionLi/plus-ui.git"
   },
   "dependencies": {
     "@element-plus/icons-vue": "2.0.10",
