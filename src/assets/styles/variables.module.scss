@@ -1,12 +1,12 @@
 // base color
 $blue: #324157;
-$light-blue: #3A71A8;
-$red: #C03639;
-$pink: #E65D6E;
-$green: #30B08F;
-$tiffany: #4AB7BD;
-$yellow: #FEC171;
-$panGreen: #30B08F;
+$light-blue: #3a71a8;
+$red: #c03639;
+$pink: #e65d6e;
+$green: #30b08f;
+$tiffany: #4ab7bd;
+$yellow: #fec171;
+$panGreen: #30b08f;
 
 // 默认菜单主题风格
 $base-menu-color: #bfcbd9;
@@ -36,10 +36,10 @@ $base-sub-menu-background:#000c17;
 $base-sub-menu-hover:#001528;
 */
 
-$--color-primary: #409EFF;
-$--color-success: #67C23A;
-$--color-warning: #E6A23C;
-$--color-danger: #F56C6C;
+$--color-primary: #409eff;
+$--color-success: #67c23a;
+$--color-warning: #e6a23c;
+$--color-danger: #f56c6c;
 $--color-info: #909399;
 
 $base-sidebar-width: 200px;
@@ -47,19 +47,19 @@ $base-sidebar-width: 200px;
 // the :export directive is the magic sauce for webpack
 // https://www.bluematador.com/blog/how-to-share-variables-between-js-and-sass
 :export {
-  menuColor: $base-menu-color;
-  menuLightColor: $base-menu-light-color;
-  menuColorActive: $base-menu-color-active;
-  menuBackground: $base-menu-background;
-  menuLightBackground: $base-menu-light-background;
-  subMenuBackground: $base-sub-menu-background;
-  subMenuHover: $base-sub-menu-hover;
-  sideBarWidth: $base-sidebar-width;
-  logoTitleColor: $base-logo-title-color;
-  logoLightTitleColor: $base-logo-light-title-color;
-  primaryColor: $--color-primary;
-  successColor: $--color-success;
-  dangerColor: $--color-danger;
-  infoColor: $--color-info;
-  warningColor: $--color-warning;
+	menuColor: $base-menu-color;
+	menuLightColor: $base-menu-light-color;
+	menuColorActive: $base-menu-color-active;
+	menuBackground: $base-menu-background;
+	menuLightBackground: $base-menu-light-background;
+	subMenuBackground: $base-sub-menu-background;
+	subMenuHover: $base-sub-menu-hover;
+	sideBarWidth: $base-sidebar-width;
+	logoTitleColor: $base-logo-title-color;
+	logoLightTitleColor: $base-logo-light-title-color;
+	primaryColor: $--color-primary;
+	successColor: $--color-success;
+	dangerColor: $--color-danger;
+	infoColor: $--color-info;
+	warningColor: $--color-warning;
 }

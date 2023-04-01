@@ -1,8 +1,8 @@
 <template>
-  <router-view />
+	<router-view />
 </template>
 
-<script setup>
+<script setup lang="ts">
 import useSettingsStore from '@/store/modules/settings'
 import { handleThemeStyle } from '@/utils/theme'
 

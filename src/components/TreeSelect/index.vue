@@ -1,36 +1,5 @@
-<template>
-  <div class="el-tree-select">
-    <el-select
-      style="width: 100%"
-      v-model="valueId"
-      ref="treeSelect"
-      :filterable="true"
-      :clearable="true"
-      @clear="clearHandle"
-      :filter-method="selectFilterData"
-      :placeholder="placeholder"
-    >
-      <el-option :value="valueId" :label="valueTitle">
-        <el-tree
-          id="tree-option"
-          ref="selectTree"
-          :accordion="accordion"
-          :data="options"
-          :props="objMap"
-          :node-key="objMap.value"
-          :expand-on-click-node="false"
-          :default-expanded-keys="defaultExpandedKey"
-          :filter-node-method="filterNode"
-          @node-click="handleNodeClick"
-        ></el-tree>
-      </el-option>
-    </el-select>
-  </div>
-</template>
-
-<script setup>
-
-const { proxy } = getCurrentInstance();
+<script setup lang="ts">
+import { ElTreeSelect } from 'element-plus'
 
 const props = defineProps({
   /* 配置项 */
@@ -68,6 +37,9 @@ const props = defineProps({
   }
 })
 
+
+const selectTree = ref(ElTreeSelect);
+
 const emit = defineEmits(['update:value']);
 
 const valueId = computed({
@@ -77,16 +49,16 @@ const valueId = computed({
   }
 });
 const valueTitle = ref('');
-const defaultExpandedKey = ref([]);
+const defaultExpandedKey = ref<any[]>([]);
 
 function initHandle() {
   nextTick(() => {
     const selectedValue = valueId.value;
     if(selectedValue !== null && typeof (selectedValue) !== 'undefined') {
-      const node = proxy.$refs.selectTree.getNode(selectedValue)
+      const node = selectTree.value.getNode(selectedValue)
       if (node) {
         valueTitle.value = node.data[props.objMap.label]
-        proxy.$refs.selectTree.setCurrentKey(selectedValue) // 设置默认选中
+        selectTree.value.setCurrentKey(selectedValue) // 设置默认选中
         defaultExpandedKey.value = [selectedValue] // 设置默认展开
       }
     } else {
@@ -94,17 +66,17 @@ function initHandle() {
     }
   })
 }
-function handleNodeClick(node) {
+function handleNodeClick(node: any) {
   valueTitle.value = node[props.objMap.label]
   valueId.value = node[props.objMap.value];
   defaultExpandedKey.value = [];
-  proxy.$refs.treeSelect.blur()
+  selectTree.value.blur()
   selectFilterData('')
 }
-function selectFilterData(val) {
-  proxy.$refs.selectTree.filter(val)
+function selectFilterData(val: any) {
+  selectTree.value.filter(val)
 }
-function filterNode(value, data) {
+function filterNode(value: any, data: any) {
   if (!value) return true
   return data[props.objMap['label']].indexOf(value) !== -1
 }
@@ -128,7 +100,7 @@ watch(valueId, () => {
 })
 </script>
 
-<style lang='scss' scoped>
+<style lang="scss" scoped>
 @import "@/assets/styles/variables.module.scss";
 .el-scrollbar .el-scrollbar__view .el-select-dropdown__item {
   padding: 0;
@@ -154,3 +126,33 @@ ul li .el-tree .el-tree-node__content {
   color: $--color-primary;
 }
 </style>
+
+<template>
+	<div class="el-tree-select">
+		<el-select
+			style="width: 100%"
+			v-model="valueId"
+			ref="treeSelect"
+			:filterable="true"
+			:clearable="true"
+			@clear="clearHandle"
+			:filter-method="selectFilterData"
+			:placeholder="placeholder"
+		>
+			<el-option :value="valueId" :label="valueTitle">
+				<el-tree
+					id="tree-option"
+					ref="selectTree"
+					:accordion="accordion"
+					:data="options"
+					:props="objMap"
+					:node-key="objMap.value"
+					:expand-on-click-node="false"
+					:default-expanded-keys="defaultExpandedKey"
+					:filter-node-method="filterNode"
+					@node-click="handleNodeClick"
+				></el-tree>
+			</el-option>
+		</el-select>
+	</div>
+</template>

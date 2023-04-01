@@ -1,73 +1,104 @@
-<template>
-  <div class="icon-body">
-    <el-input
-      v-model="iconName"
-      style="position: relative;"
-      clearable
-      placeholder="请输入图标名称"
-      @clear="filterIcons"
-      @input="filterIcons"
-    >
-      <template #suffix><i class="el-icon-search el-input__icon" /></template>
-    </el-input>
-    <div class="icon-list">
-      <div v-for="(item, index) in iconList" :key="index" @click="selectedIcon(item)">
-        <svg-icon :icon-class="item" style="height: 30px;width: 16px;" />
-        <span>{{ item }}</span>
-      </div>
-    </div>
-  </div>
-</template>
+<script setup lang="ts">
+import icons from '@/components/IconSelect/requireIcons';
 
-<script setup>
-import icons from './requireIcons'
+const props = defineProps({
+  modelValue: {
+    type: String,
+    require: true
+  },
+  width: {
+    type: String,
+    require: false,
+    default: '400px'
+  }
+});
 
-const iconName = ref('');
-const iconList = ref(icons);
-const emit = defineEmits(['selected']);
+const emit = defineEmits(['update:modelValue']);
+const visible = ref(false);
+const { modelValue, width } = toRefs(props);
+const iconNames = ref<string[]>(icons);
 
-function filterIcons() {
-  iconList.value = icons
-  if (iconName.value) {
-    iconList.value = icons.filter(item => item.indexOf(iconName.value) !== -1)
+const filterValue = ref('');
+
+/**
+ * 筛选图标
+ */
+const filterIcons = () => {
+  if (filterValue.value) {
+    iconNames.value = icons.filter(iconName =>
+      iconName.includes(filterValue.value)
+    );
+  } else {
+    iconNames.value = icons;
   }
 }
 
-function selectedIcon(name) {
-  emit('selected', name)
-  document.body.click()
+/**
+ * 选择图标
+ * @param iconName 选择的图标名称
+ */
+const selectedIcon = (iconName: string) => {
+  emit('update:modelValue', iconName);
+  visible.value = false;
 }
-
-function reset() {
-  iconName.value = ''
-  iconList.value = icons
-}
-
-defineExpose({
-  reset
-})
 </script>
 
-<style lang='scss' scoped>
-.icon-body {
-  width: 100%;
-  padding: 10px;
-  .icon-list {
-    height: 200px;
-    overflow-y: scroll;
-    div {
-      height: 30px;
-      line-height: 30px;
-      margin-bottom: -5px;
-      cursor: pointer;
-      width: 33%;
-      float: left;
-    }
-    span {
-      display: inline-block;
-      vertical-align: -0.15em;
-      fill: currentColor;
-      overflow: hidden;
+<template>
+	<div class="relative" :style="{ width: width }">
+		<el-input v-model="modelValue" readonly @click="visible = !visible" placeholder="点击选择图标">
+			<template #prepend>
+				<svg-icon :icon-class="modelValue as string"></svg-icon>
+			</template>
+		</el-input>
+
+		<el-popover shadow="none" :visible="visible" placement="bottom-end" trigger="click" :width="450">
+			<template #reference>
+				<div @click="visible = !visible" class="cursor-pointer text-[#999] absolute right-[10px] top-0 height-[32px] leading-[32px]">
+					<i-ep-caret-top v-show="visible"></i-ep-caret-top>
+					<i-ep-caret-bottom v-show="!visible"></i-ep-caret-bottom>
+				</div>
+			</template>
+
+			<el-input class="p-2" v-model="filterValue" placeholder="搜索图标" clearable @input="filterIcons" />
+
+			<el-scrollbar height="w-[200px]">
+				<ul class="icon-list">
+					<el-tooltip v-for="(iconName, index) in iconNames" :key="index" :content="iconName" placement="bottom" effect="light">
+						<li class="icon-item" @click="selectedIcon(iconName)">
+							<svg-icon color="var(--el-text-color-regular)" :icon-class="iconName" />
+						</li>
+					</el-tooltip>
+				</ul>
+			</el-scrollbar>
+		</el-popover>
+	</div>
+</template>
+
+<style scoped lang="scss">
+.el-divider--horizontal {
+  margin: 10px auto !important;
+}
+.icon-list {
+  display: flex;
+  flex-wrap: wrap;
+  padding-left: 10px;
+  margin-top: 10px;
+
+  .icon-item {
+    cursor: pointer;
+    width: 10%;
+    margin: 0 10px 10px 0;
+    padding: 5px;
+    display: flex;
+    flex-direction: column;
+    justify-items: center;
+    align-items: center;
+    border: 1px solid #ccc;
+    &:hover {
+      border-color: var(--el-color-primary);
+      color: var(--el-color-primary);
+      transition: all 0.2s;
+      transform: scaleX(1.1);
     }
   }
 }

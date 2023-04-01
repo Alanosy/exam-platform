@@ -1,22 +1,9 @@
-<template>
-  <div class="sidebar-logo-container" :class="{ 'collapse': collapse }" :style="{ backgroundColor: sideTheme === 'theme-dark' ? variables.menuBackground : variables.menuLightBackground }">
-    <transition name="sidebarLogoFade">
-      <router-link v-if="collapse" key="collapse" class="sidebar-logo-link" to="/">
-        <img v-if="logo" :src="logo" class="sidebar-logo" />
-        <h1 v-else class="sidebar-title" :style="{ color: sideTheme === 'theme-dark' ? variables.logoTitleColor : variables.logoLightTitleColor }">{{ title }}</h1>
-      </router-link>
-      <router-link v-else key="expand" class="sidebar-logo-link" to="/">
-        <img v-if="logo" :src="logo" class="sidebar-logo" />
-        <h1 class="sidebar-title" :style="{ color: sideTheme === 'theme-dark' ? variables.logoTitleColor : variables.logoLightTitleColor }">{{ title }}</h1>
-      </router-link>
-    </transition>
-  </div>
-</template>
-
-<script setup>
+<script setup lang="ts">
 import variables from '@/assets/styles/variables.module.scss'
 import logo from '@/assets/logo/logo.png'
 import useSettingsStore from '@/store/modules/settings'
+import { ComponentInternalInstance } from "vue";
+const { proxy } = getCurrentInstance() as ComponentInternalInstance;
 
 defineProps({
   collapse: {
@@ -29,6 +16,29 @@ const title = ref('RuoYi-Vue-Plus');
 const settingsStore = useSettingsStore();
 const sideTheme = computed(() => settingsStore.sideTheme);
 </script>
+
+<template>
+	<div
+		class="sidebar-logo-container"
+		:class="{ 'collapse': collapse }"
+		:style="{ backgroundColor: sideTheme === 'theme-dark' ? variables.menuBackground : variables.menuLightBackground }"
+	>
+		<transition :enter-active-class="proxy?.animate.logoAnimate.enter" mode="out-in">
+			<router-link v-if="collapse" key="collapse" class="sidebar-logo-link" to="/">
+				<img v-if="logo" :src="logo" class="sidebar-logo" />
+				<h1 v-else class="sidebar-title" :style="{ color: sideTheme === 'theme-dark' ? variables.logoTitleColor : variables.logoLightTitleColor }">
+					{{ title }}
+				</h1>
+			</router-link>
+			<router-link v-else key="expand" class="sidebar-logo-link" to="/">
+				<img v-if="logo" :src="logo" class="sidebar-logo" />
+				<h1 class="sidebar-title" :style="{ color: sideTheme === 'theme-dark' ? variables.logoTitleColor : variables.logoLightTitleColor }">
+					{{ title }}
+				</h1>
+			</router-link>
+		</transition>
+	</div>
+</template>
 
 <style lang="scss" scoped>
 .sidebarLogoFade-enter-active {

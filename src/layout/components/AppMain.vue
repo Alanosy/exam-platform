@@ -1,22 +1,42 @@
-<template>
-  <section class="app-main">
-    <router-view v-slot="{ Component, route }">
-      <transition name="fade-transform" mode="out-in">
-        <keep-alive :include="tagsViewStore.cachedViews">
-          <component v-if="!route.meta.link" :is="Component" :key="route.path"/>
-        </keep-alive>
-      </transition>
-    </router-view>
-    <iframe-toggle />
-  </section>
-</template>
-
-<script setup>
-import iframeToggle from "./IframeToggle/index"
-import useTagsViewStore from '@/store/modules/tagsView'
-
-const tagsViewStore = useTagsViewStore()
+<script lang="ts">
+export default {
+  name: 'AppMin'
+}
 </script>
+
+<script setup lang="ts">
+import useTagsViewStore from '@/store/modules/tagsView';
+import useSettingsStore from '@/store/modules/settings';
+import IframeToggle  from './IframeToggle/index.vue'
+import { ComponentInternalInstance } from "vue";
+const { proxy } = getCurrentInstance() as ComponentInternalInstance;
+const tagsViewStore = useTagsViewStore();
+
+// 随机动画集合
+const animante = ref<string>('');
+const animationEnable = ref(useSettingsStore().animationEnable);
+watch(()=> useSettingsStore().animationEnable, (val) => {
+  animationEnable.value = val;
+  if (val) {
+    animante.value = proxy?.animate.animateList[Math.round(Math.random() * proxy?.animate.animateList.length)] as string;
+  } else {
+    animante.value = proxy?.animate.defaultAnimate as string;
+  }
+}, { immediate: true });
+</script>
+
+<template>
+	<section class="app-main">
+		<router-view v-slot="{ Component, route }">
+			<transition :enter-active-class="animante" mode="out-in">
+				<keep-alive :include="tagsViewStore.cachedViews">
+					<component v-if="!route.meta.link" :is="Component" :key="route.path" />
+				</keep-alive>
+			</transition>
+		</router-view>
+		<iframe-toggle />
+	</section>
+</template>
 
 <style lang="scss" scoped>
 .app-main {
@@ -27,7 +47,7 @@ const tagsViewStore = useTagsViewStore()
   overflow: hidden;
 }
 
-.fixed-header + .app-main {
+.fixed-header+.app-main {
   padding-top: 50px;
 }
 
@@ -37,7 +57,7 @@ const tagsViewStore = useTagsViewStore()
     min-height: calc(100vh - 84px);
   }
 
-  .fixed-header + .app-main {
+  .fixed-header+.app-main {
     padding-top: 84px;
   }
 }

@@ -1,36 +1,8 @@
-<template>
-  <div>
-    <el-upload
-        :action="uploadUrl"
-        :before-upload="handleBeforeUpload"
-        :on-success="handleUploadSuccess"
-        :on-error="handleUploadError"
-        class="editor-img-uploader"
-        name="file"
-        :show-file-list="false"
-        :headers="headers"
-        style="display: none"
-        ref="uploadRef"
-        v-if="type == 'url'"
-    >
-    </el-upload>
-    <div class="editor">
-      <quill-editor
-          ref="myQuillEditor"
-          v-model:content="content"
-          contentType="html"
-          @textChange="(e) => $emit('update:modelValue', content)"
-          :options="options"
-          :style="styles"
-      />
-    </div>
-  </div>
-</template>
-
-<script setup>
+<script setup lang="ts">
 import { QuillEditor, Quill } from '@vueup/vue-quill';
 import '@vueup/vue-quill/dist/vue-quill.snow.css';
 import { getToken } from "@/utils/auth";
+import { ComponentInternalInstance } from "vue";
 
 const props = defineProps({
   /* 编辑器的内容 */
@@ -64,10 +36,12 @@ const props = defineProps({
   }
 });
 
-const { proxy } = getCurrentInstance();
-// 上传的图片服务器地址
-const uploadUrl = ref(import.meta.env.VITE_APP_BASE_API + "/system/oss/upload");
-const headers = ref({ Authorization: "Bearer " + getToken() });
+const { proxy } = getCurrentInstance() as ComponentInternalInstance;
+
+const upload = reactive<UploadOption>({
+  headers: { Authorization: "Bearer " + getToken() },
+  url: import.meta.env.VITE_APP_BASE_API + '/system/oss/upload'
+})
 const myQuillEditor = ref();
 
 const options = ref({
@@ -90,10 +64,10 @@ const options = ref({
         ["link", "image", "video"]                       // 链接、图片、视频
       ],
       handlers: {
-        image: function (value) {
+        image: function (value: any) {
           if (value) {
             // 调用element图片上传
-            document.querySelector(".editor-img-uploader>.el-upload").click();
+            (document.querySelector(".editor-img-uploader>.el-upload") as HTMLDivElement)?.click();
           } else {
             Quill.format("image", true);
           }
@@ -106,7 +80,7 @@ const options = ref({
 });
 
 const styles = computed(() => {
-  let style = {};
+  let style: any = {};
   if (props.minHeight) {
     style.minHeight = `${props.minHeight}px`;
   }
@@ -118,50 +92,78 @@ const styles = computed(() => {
 
 const content = ref("");
 watch(() => props.modelValue, (v) => {
-  if (v !== content) {
+  if (v !== content.value) {
     content.value = v === undefined ? "<p></p>" : v;
   }
 }, { immediate: true });
 
 // 图片上传成功返回图片地址
-function handleUploadSuccess(res, file) {
+const handleUploadSuccess = (res: any) => {
   // 获取富文本实例
   let quill = toRaw(myQuillEditor.value).getQuill();
   // 如果上传成功
-  if (res.code == 200) {
+  if (res.code === 200) {
     // 获取光标位置
     let length = quill.selection.savedRange.index;
     // 插入图片，res为服务器返回的图片链接地址
     quill.insertEmbed(length, "image", res.data.url);
     // 调整光标到最后
     quill.setSelection(length + 1);
-    proxy.$modal.closeLoading();
+    proxy?.$modal.closeLoading();
   } else {
-    proxy.$modal.loading(res.msg);
-    proxy.$modal.closeLoading();
+    proxy?.$modal.loading(res.msg);
+    proxy?.$modal.closeLoading();
   }
 }
 
 // 图片上传前拦截
-function handleBeforeUpload(file) {
+const handleBeforeUpload = (file: any) => {
   // 校检文件大小
   if (props.fileSize) {
     const isLt = file.size / 1024 / 1024 < props.fileSize;
     if (!isLt) {
-      proxy.$modal.msgError(`上传文件大小不能超过 ${props.fileSize} MB!`);
+      proxy?.$modal.msgError(`上传文件大小不能超过 ${props.fileSize} MB!`);
       return false;
     }
   }
-  proxy.$modal.loading("正在上传文件，请稍候...");
+  proxy?.$modal.loading('正在上传文件，请稍候...');
   return true;
 }
 
 // 图片失败拦截
-function handleUploadError(err) {
-  proxy.$modal.msgError("上传文件失败");
+const handleUploadError = (err: any) => {
+  console.error(err);
+  proxy?.$modal.msgError('上传文件失败');
 }
-
 </script>
+
+<template>
+	<div>
+		<el-upload
+			:action="upload.url"
+			:before-upload="handleBeforeUpload"
+			:on-success="handleUploadSuccess"
+			:on-error="handleUploadError"
+			class="editor-img-uploader"
+			name="file"
+			:show-file-list="false"
+			:headers="upload.headers"
+			style="display: none"
+			v-if="type === 'url'"
+		>
+		</el-upload>
+		<div class="editor">
+			<quill-editor
+				ref="myQuillEditor"
+				v-model:content="content"
+				contentType="html"
+				@textChange="(e: any) => $emit('update:modelValue', content)"
+				:options="options"
+				:style="styles"
+			/>
+		</div>
+	</div>
+</template>
 
 <style>
 .editor, .ql-toolbar {
@@ -175,9 +177,9 @@ function handleUploadError(err) {
   content: "请输入链接地址:";
 }
 .ql-snow .ql-tooltip.ql-editing a.ql-action::after {
-  border-right: 0px;
+  border-right: 0;
   content: "保存";
-  padding-right: 0px;
+  padding-right: 0;
 }
 
 .ql-snow .ql-tooltip[data-mode="video"]::before {

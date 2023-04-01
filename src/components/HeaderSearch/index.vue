@@ -1,49 +1,36 @@
-<template>
-  <div :class="{ 'show': show }" class="header-search">
-    <svg-icon class-name="search-icon" icon-class="search" @click.stop="click" />
-    <el-select
-      ref="headerSearchSelectRef"
-      v-model="search"
-      :remote-method="querySearch"
-      filterable
-      default-first-option
-      remote
-      placeholder="Search"
-      class="header-search-select"
-      @change="change"
-    >
-      <el-option v-for="option in options" :key="option.item.path" :value="option.item" :label="option.item.title.join(' > ')" />
-    </el-select>
-  </div>
-</template>
-
-<script setup>
+<script setup lang="ts">
 import Fuse from 'fuse.js'
 import { getNormalPath } from '@/utils/ruoyi'
 import { isHttp } from '@/utils/validate'
 import usePermissionStore from '@/store/modules/permission'
+import { RouteOption } from 'vue-router'
+
+type Router = Array<{
+  path: string;
+  title: string[];
+}>
 
 const search = ref('');
-const options = ref([]);
-const searchPool = ref([]);
+const options = ref<any>([]);
+const searchPool = ref<Router>([]);
 const show = ref(false);
-const fuse = ref(undefined);
-const headerSearchSelectRef = ref(null);
+const fuse = ref();
+const headerSearchSelectRef = ref(ElSelect);
 const router = useRouter();
 const routes = computed(() => usePermissionStore().routes);
 
-function click() {
+const click = () => {
   show.value = !show.value
   if (show.value) {
     headerSearchSelectRef.value && headerSearchSelectRef.value.focus()
   }
 };
-function close() {
+const close = () => {
   headerSearchSelectRef.value && headerSearchSelectRef.value.blur()
   options.value = []
   show.value = false
 }
-function change(val) {
+const change = (val: any) => {
   const path = val.path;
   if (isHttp(path)) {
     // http(s):// 路径新窗口打开
@@ -52,14 +39,13 @@ function change(val) {
   } else {
     router.push(path)
   }
-
   search.value = ''
   options.value = []
   nextTick(() => {
     show.value = false
   })
 }
-function initFuse(list) {
+const initFuse = (list: Router) => {
   fuse.value = new Fuse(list, {
     shouldSort: true,
     threshold: 0.4,
@@ -77,39 +63,36 @@ function initFuse(list) {
 }
 // Filter out the routes that can be displayed in the sidebar
 // And generate the internationalized title
-function generateRoutes(routes, basePath = '', prefixTitle = []) {
-  let res = []
-
-  for (const r of routes) {
+const generateRoutes = (routes: RouteOption[], basePath = '', prefixTitle: string[] = []) => {
+  let res: Router = []
+  routes.forEach(r => {
     // skip hidden router
-    if (r.hidden) { continue }
-    const p = r.path.length > 0 && r.path[0] === '/' ? r.path : '/' + r.path;
-    const data = {
-      path: !isHttp(r.path) ? getNormalPath(basePath + p) : r.path,
-      title: [...prefixTitle]
-    }
-
-    if (r.meta && r.meta.title) {
-      data.title = [...data.title, r.meta.title]
-
-      if (r.redirect !== 'noRedirect') {
-        // only push the routes with title
-        // special case: need to exclude parent router without redirect
-        res.push(data)
+    if (!r.hidden) {
+      const p = r.path.length > 0 && r.path[0] === '/' ? r.path : '/' + r.path;
+      const data = {
+        path: !isHttp(r.path) ? getNormalPath(basePath + p) : r.path,
+        title: [...prefixTitle]
+      }
+      if (r.meta && r.meta.title) {
+        data.title = [...data.title, r.meta.title];
+        if (r.redirect !== 'noRedirect') {
+          // only push the routes with title
+          // special case: need to exclude parent router without redirect
+          res.push(data);
+        }
+      }
+      // recursive child routes
+      if (r.children) {
+        const tempRoutes = generateRoutes(r.children, data.path, data.title);
+        if (tempRoutes.length >= 1) {
+          res = [...res, ...tempRoutes];
+        }
       }
     }
-
-    // recursive child routes
-    if (r.children) {
-      const tempRoutes = generateRoutes(r.children, data.path, data.title)
-      if (tempRoutes.length >= 1) {
-        res = [...res, ...tempRoutes]
-      }
-    }
-  }
-  return res
+  })
+  return res;
 }
-function querySearch(query) {
+const querySearch = (query: string) => {
   if (query !== '') {
     options.value = fuse.value.search(query)
   } else {
@@ -138,7 +121,26 @@ watch(searchPool, (list) => {
 })
 </script>
 
-<style lang='scss' scoped>
+<template>
+	<div :class="{ 'show': show }" class="header-search">
+		<svg-icon class-name="search-icon" icon-class="search" @click.stop="click" />
+		<el-select
+			ref="headerSearchSelectRef"
+			v-model="search"
+			:remote-method="querySearch"
+			filterable
+			default-first-option
+			remote
+			placeholder="Search"
+			class="header-search-select"
+			@change="change"
+		>
+			<el-option v-for="option in options" :key="option.item.path" :value="option.item" :label="option.item.title.join(' > ')" />
+		</el-select>
+	</div>
+</template>
+
+<style lang="scss" scoped>
 .header-search {
   font-size: 0 !important;
 

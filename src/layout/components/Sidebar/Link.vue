@@ -1,10 +1,4 @@
-<template>
-  <component :is="type" v-bind="linkProps()">
-    <slot />
-  </component>
-</template>
-
-<script setup>
+<script setup lang="ts">
 import { isExternal } from '@/utils/validate'
 
 const props = defineProps({
@@ -15,7 +9,7 @@ const props = defineProps({
 })
 
 const isExt = computed(() => {
-  return isExternal(props.to)
+  return isExternal(props.to as string)
 })
 
 const type = computed(() => {
@@ -38,3 +32,9 @@ function linkProps() {
   }
 }
 </script>
+
+<template>
+	<component :is="type" v-bind="linkProps()">
+		<slot />
+	</component>
+</template>
