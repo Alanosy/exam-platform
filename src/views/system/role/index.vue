@@ -354,13 +354,13 @@ onMounted(() => {
 			<template #header>
 				<el-row :gutter="10">
 					<el-col :span="1.5">
-						<el-button type="primary" @click="handleAdd()" icon="Plus" v-hasPermi="['system:role:add']">新增</el-button>
+						<el-button type="primary" plain @click="handleAdd()" icon="Plus" v-hasPermi="['system:role:add']">新增</el-button>
 					</el-col>
 					<el-col :span="1.5">
-						<el-button type="success" @click="handleUpdate()" :disabled="single" icon="Edit" v-hasPermi="['system:role:edit']">修改</el-button>
+						<el-button type="success" plain @click="handleUpdate()" :disabled="single" icon="Edit" v-hasPermi="['system:role:edit']">修改</el-button>
 					</el-col>
 					<el-col :span="1.5">
-						<el-button type="danger" :disabled="ids.length === 0" @click="handleDelete()" v-hasPermi="['system:role:delete']">删除</el-button>
+						<el-button type="danger" plain :disabled="ids.length === 0" @click="handleDelete()" v-hasPermi="['system:role:delete']">删除</el-button>
 					</el-col>
 					<el-col :span="1.5">
 						<el-button type="warning" plain icon="Download" @click="handleExport" v-hasPermi="['system:role:export']">导出</el-button>

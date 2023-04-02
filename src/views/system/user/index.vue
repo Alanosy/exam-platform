@@ -390,19 +390,19 @@ onMounted(() => {
 					<template #header>
 						<el-row :gutter="10">
 							<el-col :span="1.5">
-								<el-button type="primary" @click="handleAdd()" v-has-permi="['sys:user:add']" icon="Plus">新增</el-button>
+								<el-button type="primary" plain @click="handleAdd()" v-has-permi="['sys:user:add']" icon="Plus">新增</el-button>
 							</el-col>
 							<el-col :span="1.5">
-								<el-button type="success" @click="handleUpdate()" :disabled="single" v-has-permi="['sys:user:add']" icon="Edit">修改</el-button>
+								<el-button type="success" plain @click="handleUpdate()" :disabled="single" v-has-permi="['sys:user:add']" icon="Edit">修改</el-button>
 							</el-col>
 							<el-col :span="1.5">
-								<el-button type="danger" @click="handleDelete()" :disabled="multiple" v-has-permi="['sys:user:delete']" icon="Delete">
+								<el-button type="danger" plain @click="handleDelete()" :disabled="multiple" v-has-permi="['sys:user:delete']" icon="Delete">
 									删除
 								</el-button>
 							</el-col>
 							<el-col :span="1.5">
 								<el-dropdown class="mt-[1px]">
-									<el-button type="info">
+									<el-button plain type="info">
 										更多
 										<el-icon class="el-icon--right"><arrow-down /></el-icon
 									></el-button>
