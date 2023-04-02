@@ -7,7 +7,7 @@ import createSvgIconsPlugin from './svg-icon';
 import createCompression from './compression';
 import path from 'path';
 
-export default (viteEnv, isBuild = false): [] => {
+export default (viteEnv: any, isBuild = false): [] => {
 	const vitePlusgins: any = [];
 	vitePlusgins.push(vue());
 	vitePlusgins.push(createUnoCss());
