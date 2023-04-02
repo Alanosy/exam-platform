@@ -235,6 +235,7 @@ const handleCommand = (command: string) => {
           width: 40px;
           height: 40px;
           border-radius: 10px;
+          margin-top: 10px;
         }
 
         i {
