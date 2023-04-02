@@ -371,9 +371,9 @@ onMounted(() => {
 
 			<el-table ref="roleTableRef" v-loading="loading" :data="roleList" @selection-change="handleSelectionChange">
 				<el-table-column type="selection" width="55" align="center" />
-				<el-table-column label="角色编号" prop="roleId" width="120" />
+				<el-table-column label="角色编号" prop="roleId" width="120" v-if="false" />
 				<el-table-column label="角色名称" prop="roleName" :show-overflow-tooltip="true" width="150" />
-				<el-table-column label="权限字符" prop="roleKey" :show-overflow-tooltip="true" width="150" />
+				<el-table-column label="权限字符" prop="roleKey" :show-overflow-tooltip="true" width="200" />
 				<el-table-column label="显示顺序" prop="roleSort" width="100" />
 				<el-table-column label="状态" align="center" width="100">
 					<template #default="scope">

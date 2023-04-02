@@ -53,7 +53,7 @@ const upload = reactive<ImportOption>({
 })
 // 列显隐信息
 const columns = ref<FieldOption[]>([
-  { key: 0, label: `用户编号`, visible: true },
+  { key: 0, label: `用户编号`, visible: false },
   { key: 1, label: `用户名称`, visible: true },
   { key: 2, label: `用户昵称`, visible: true },
   { key: 3, label: `部门`, visible: true },
