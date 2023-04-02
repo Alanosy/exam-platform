@@ -97,7 +97,7 @@
 
 <script setup name="Index" lang="ts">
 
-function goTarget(url:string) {
+const goTarget = (url:string) => {
   window.open(url, '__blank')
 }
 </script>
