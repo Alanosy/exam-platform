@@ -1,67 +1,3 @@
-<script setup name="Cache" lang="ts">
-import { getCache } from '@/api/monitor/cache';
-import * as echarts from 'echarts';
-import { ComponentInternalInstance } from "vue";
-
-const cache = ref<any>({});
-const commandstats = ref();
-const usedmemory = ref();
-const { proxy } = getCurrentInstance() as ComponentInternalInstance;
-
-const getList = async () => {
-  proxy?.$modal.loading("正在加载缓存监控数据，请稍候！");
-  const res = await getCache();
-  proxy?.$modal.closeLoading();
-  cache.value = res.data;
-  const commandstatsIntance = echarts.init(commandstats.value, "macarons");
-  commandstatsIntance.setOption({
-    tooltip: {
-      trigger: "item",
-      formatter: "{a} <br/>{b} : {c} ({d}%)"
-    },
-    series: [
-      {
-        name: "命令",
-        type: "pie",
-        roseType: "radius",
-        radius: [15, 95],
-        center: ["50%", "38%"],
-        data: res.data.commandStats,
-        animationEasing: "cubicInOut",
-        animationDuration: 1000
-      }
-    ]
-  });
-
-  const usedmemoryInstance = echarts.init(usedmemory.value, "macarons");
-  usedmemoryInstance.setOption({
-    tooltip: {
-      formatter: "{b} <br/>{a} : " + cache.value.info.used_memory_human
-    },
-    series: [
-      {
-        name: "峰值",
-        type: "gauge",
-        min: 0,
-        max: 1000,
-        detail: {
-          formatter: cache.value.info.used_memory_human
-        },
-        data: [
-          {
-            value: parseFloat(cache.value.info.used_memory_human),
-            name: "内存消耗"
-          }
-        ]
-      }
-    ]
-  })
-}
-
-onMounted(() => {
-  getList();
-})
-</script>
 <template>
   <div class="p-2">
     <el-row>
@@ -186,3 +122,68 @@ onMounted(() => {
     </el-row>
   </div>
 </template>
+
+<script setup name="Cache" lang="ts">
+import { getCache } from '@/api/monitor/cache';
+import * as echarts from 'echarts';
+import { ComponentInternalInstance } from "vue";
+
+const cache = ref<any>({});
+const commandstats = ref();
+const usedmemory = ref();
+const { proxy } = getCurrentInstance() as ComponentInternalInstance;
+
+const getList = async () => {
+    proxy?.$modal.loading("正在加载缓存监控数据，请稍候！");
+    const res = await getCache();
+    proxy?.$modal.closeLoading();
+    cache.value = res.data;
+    const commandstatsIntance = echarts.init(commandstats.value, "macarons");
+    commandstatsIntance.setOption({
+        tooltip: {
+            trigger: "item",
+            formatter: "{a} <br/>{b} : {c} ({d}%)"
+        },
+        series: [
+            {
+                name: "命令",
+                type: "pie",
+                roseType: "radius",
+                radius: [15, 95],
+                center: ["50%", "38%"],
+                data: res.data.commandStats,
+                animationEasing: "cubicInOut",
+                animationDuration: 1000
+            }
+        ]
+    });
+
+    const usedmemoryInstance = echarts.init(usedmemory.value, "macarons");
+    usedmemoryInstance.setOption({
+        tooltip: {
+            formatter: "{b} <br/>{a} : " + cache.value.info.used_memory_human
+        },
+        series: [
+            {
+                name: "峰值",
+                type: "gauge",
+                min: 0,
+                max: 1000,
+                detail: {
+                    formatter: cache.value.info.used_memory_human
+                },
+                data: [
+                    {
+                        value: parseFloat(cache.value.info.used_memory_human),
+                        name: "内存消耗"
+                    }
+                ]
+            }
+        ]
+    })
+}
+
+onMounted(() => {
+    getList();
+})
+</script>

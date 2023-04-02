@@ -1,48 +1,3 @@
-<script setup lang="ts">
-import icons from '@/components/IconSelect/requireIcons';
-
-const props = defineProps({
-  modelValue: {
-    type: String,
-    require: true
-  },
-  width: {
-    type: String,
-    require: false,
-    default: '400px'
-  }
-});
-
-const emit = defineEmits(['update:modelValue']);
-const visible = ref(false);
-const { modelValue, width } = toRefs(props);
-const iconNames = ref<string[]>(icons);
-
-const filterValue = ref('');
-
-/**
- * 筛选图标
- */
-const filterIcons = () => {
-  if (filterValue.value) {
-    iconNames.value = icons.filter(iconName =>
-      iconName.includes(filterValue.value)
-    );
-  } else {
-    iconNames.value = icons;
-  }
-}
-
-/**
- * 选择图标
- * @param iconName 选择的图标名称
- */
-const selectedIcon = (iconName: string) => {
-  emit('update:modelValue', iconName);
-  visible.value = false;
-}
-</script>
-
 <template>
   <div class="relative" :style="{ width: width }">
     <el-input v-model="modelValue" readonly @click="visible = !visible" placeholder="点击选择图标">
@@ -73,6 +28,51 @@ const selectedIcon = (iconName: string) => {
     </el-popover>
   </div>
 </template>
+
+<script setup lang="ts">
+import icons from '@/components/IconSelect/requireIcons';
+
+const props = defineProps({
+    modelValue: {
+        type: String,
+        require: true
+    },
+    width: {
+        type: String,
+        require: false,
+        default: '400px'
+    }
+});
+
+const emit = defineEmits(['update:modelValue']);
+const visible = ref(false);
+const { modelValue, width } = toRefs(props);
+const iconNames = ref<string[]>(icons);
+
+const filterValue = ref('');
+
+/**
+ * 筛选图标
+ */
+const filterIcons = () => {
+    if (filterValue.value) {
+        iconNames.value = icons.filter(iconName =>
+            iconName.includes(filterValue.value)
+        );
+    } else {
+        iconNames.value = icons;
+    }
+}
+
+/**
+ * 选择图标
+ * @param iconName 选择的图标名称
+ */
+const selectedIcon = (iconName: string) => {
+    emit('update:modelValue', iconName);
+    visible.value = false;
+}
+</script>
 
 <style scoped lang="scss">
 .el-divider--horizontal {

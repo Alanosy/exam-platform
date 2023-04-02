@@ -1,56 +1,3 @@
-<script setup lang="ts">
-import SideBar from './components/Sidebar/index.vue'
-import { AppMain, Navbar, Settings, TagsView } from './components'
-import useAppStore from '@/store/modules/app'
-import useSettingsStore from '@/store/modules/settings'
-
-const settingsStore = useSettingsStore()
-const theme = computed(() => settingsStore.theme);
-const sidebar = computed(() => useAppStore().sidebar);
-const device = computed(() => useAppStore().device);
-const needTagsView = computed(() => settingsStore.tagsView);
-const fixedHeader = computed(() => settingsStore.fixedHeader);
-
-const classObj = computed(() => ({
-  hideSidebar: !sidebar.value.opened,
-  openSidebar: sidebar.value.opened,
-  withoutAnimation: sidebar.value.withoutAnimation,
-  mobile: device.value === 'mobile'
-}))
-
-const { width } = useWindowSize();
-const WIDTH = 992; // refer to Bootstrap's responsive design
-
-watchEffect(() => {
-  if (device.value === 'mobile' && sidebar.value.opened) {
-    useAppStore().closeSideBar({ withoutAnimation: false })
-  }
-  if (width.value - 1 < WIDTH) {
-    useAppStore().toggleDevice('mobile')
-    useAppStore().closeSideBar({ withoutAnimation: true })
-  } else {
-    useAppStore().toggleDevice('desktop')
-  }
-})
-
-const navbarRef = ref(Navbar);
-const settingRef = ref(Settings);
-
-onMounted(() => {
-  nextTick(() => {
-    navbarRef.value.initTenantList();
-  })
-})
-
-const handleClickOutside = () => {
-  useAppStore().closeSideBar({ withoutAnimation: false })
-}
-
-const setLayout = () => {
-  settingRef.value.openSetting();
-}
-</script>
-
 <template>
   <div :class="classObj" class="app-wrapper" :style="{ '--current-color': theme }">
     <div v-if="device === 'mobile' && sidebar.opened" class="drawer-bg" @click="handleClickOutside" />
@@ -65,6 +12,59 @@ const setLayout = () => {
     </div>
   </div>
 </template>
+
+<script setup lang="ts">
+import SideBar from './components/Sidebar/index.vue'
+import { AppMain, Navbar, Settings, TagsView } from './components'
+import useAppStore from '@/store/modules/app'
+import useSettingsStore from '@/store/modules/settings'
+
+const settingsStore = useSettingsStore()
+const theme = computed(() => settingsStore.theme);
+const sidebar = computed(() => useAppStore().sidebar);
+const device = computed(() => useAppStore().device);
+const needTagsView = computed(() => settingsStore.tagsView);
+const fixedHeader = computed(() => settingsStore.fixedHeader);
+
+const classObj = computed(() => ({
+    hideSidebar: !sidebar.value.opened,
+    openSidebar: sidebar.value.opened,
+    withoutAnimation: sidebar.value.withoutAnimation,
+    mobile: device.value === 'mobile'
+}))
+
+const { width } = useWindowSize();
+const WIDTH = 992; // refer to Bootstrap's responsive design
+
+watchEffect(() => {
+    if (device.value === 'mobile' && sidebar.value.opened) {
+        useAppStore().closeSideBar({ withoutAnimation: false })
+    }
+    if (width.value - 1 < WIDTH) {
+        useAppStore().toggleDevice('mobile')
+        useAppStore().closeSideBar({ withoutAnimation: true })
+    } else {
+        useAppStore().toggleDevice('desktop')
+    }
+})
+
+const navbarRef = ref(Navbar);
+const settingRef = ref(Settings);
+
+onMounted(() => {
+    nextTick(() => {
+        navbarRef.value.initTenantList();
+    })
+})
+
+const handleClickOutside = () => {
+    useAppStore().closeSideBar({ withoutAnimation: false })
+}
+
+const setLayout = () => {
+    settingRef.value.openSetting();
+}
+</script>
 
 <style lang="scss" scoped>
   @import "@/assets/styles/mixin.scss";

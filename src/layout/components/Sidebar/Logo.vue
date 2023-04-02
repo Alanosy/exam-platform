@@ -1,22 +1,3 @@
-<script setup lang="ts">
-import variables from '@/assets/styles/variables.module.scss'
-import logo from '@/assets/logo/logo.png'
-import useSettingsStore from '@/store/modules/settings'
-import { ComponentInternalInstance } from "vue";
-const { proxy } = getCurrentInstance() as ComponentInternalInstance;
-
-defineProps({
-  collapse: {
-    type: Boolean,
-    required: true
-  }
-})
-
-const title = ref('RuoYi-Vue-Plus');
-const settingsStore = useSettingsStore();
-const sideTheme = computed(() => settingsStore.sideTheme);
-</script>
-
 <template>
   <div
     class="sidebar-logo-container"
@@ -39,6 +20,25 @@ const sideTheme = computed(() => settingsStore.sideTheme);
     </transition>
   </div>
 </template>
+
+<script setup lang="ts">
+import variables from '@/assets/styles/variables.module.scss'
+import logo from '@/assets/logo/logo.png'
+import useSettingsStore from '@/store/modules/settings'
+import { ComponentInternalInstance } from "vue";
+const { proxy } = getCurrentInstance() as ComponentInternalInstance;
+
+defineProps({
+    collapse: {
+        type: Boolean,
+        required: true
+    }
+})
+
+const title = ref('RuoYi-Vue-Plus');
+const settingsStore = useSettingsStore();
+const sideTheme = computed(() => settingsStore.sideTheme);
+</script>
 
 <style lang="scss" scoped>
 .sidebarLogoFade-enter-active {

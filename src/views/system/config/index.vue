@@ -1,143 +1,3 @@
-<script setup name="Config" lang="ts">
-import { listConfig, getConfig, delConfig, addConfig, updateConfig, refreshCache } from "@/api/system/config";
-import { ConfigForm, ConfigQuery, ConfigVO } from "@/api/system/config/types";
-import { ComponentInternalInstance } from "vue";
-import { DateModelType } from 'element-plus';
-
-const { proxy } = getCurrentInstance() as ComponentInternalInstance;
-const { sys_yes_no } = toRefs<any>(proxy?.useDict("sys_yes_no"));
-
-const configList = ref<ConfigVO[]>([]);
-const loading = ref(true);
-const showSearch = ref(true);
-const ids = ref<Array<number | string>>([]);
-const single = ref(true);
-const multiple = ref(true);
-const total = ref(0);
-const dateRange = ref<[DateModelType, DateModelType]>(['', '']);
-
-const queryFormRef = ref(ElForm);
-const configFormRef = ref(ElForm);
-const dialog = reactive<DialogOption>({
-  visible: false,
-  title: ''
-});
-const initFormData: ConfigForm = {
-  configId: undefined,
-  configName: '',
-  configKey: '',
-  configValue: '',
-  configType: "Y",
-  remark: ''
-}
-const data = reactive<PageData<ConfigForm, ConfigQuery>>({
-  form: {...initFormData},
-  queryParams: {
-    pageNum: 1,
-    pageSize: 10,
-    configName: '',
-    configKey: '',
-    configType: '',
-  },
-  rules: {
-    configName: [{ required: true, message: "参数名称不能为空", trigger: "blur" }],
-    configKey: [{ required: true, message: "参数键名不能为空", trigger: "blur" }],
-    configValue: [{ required: true, message: "参数键值不能为空", trigger: "blur" }]
-  }
-});
-
-const { queryParams, form, rules } = toRefs(data);
-
-/** 查询参数列表 */
-const getList = async () => {
-  loading.value = true;
-  const res = await listConfig(proxy?.addDateRange(queryParams.value, dateRange.value));
-  configList.value = res.rows;
-  total.value = res.total;
-  loading.value = false;
-}
-/** 取消按钮 */
-const cancel = () => {
-  reset();
-  dialog.visible = false;
-}
-/** 表单重置 */
-const reset = () => {
-  form.value = {...initFormData};
-  configFormRef.value.resetFields();
-}
-/** 搜索按钮操作 */
-const handleQuery = () => {
-  queryParams.value.pageNum = 1;
-  getList();
-}
-/** 重置按钮操作 */
-const resetQuery = () => {
-  dateRange.value = ['', ''];
-  queryFormRef.value.resetFields();
-  handleQuery();
-}
-/** 多选框选中数据 */
-const handleSelectionChange = (selection: ConfigVO[]) => {
-  ids.value = selection.map(item => item.configId);
-  single.value = selection.length != 1;
-  multiple.value = !selection.length;
-}
-/** 新增按钮操作 */
-const handleAdd = () => {
-  dialog.visible = true;
-  dialog.title = "添加参数";
-  nextTick(() => {
-    reset();
-  })
-}
-/** 修改按钮操作 */
-const handleUpdate = (row?: ConfigVO) => {
-  dialog.visible = true;
-  dialog.title = "修改参数";
-  const configId = row?.configId || ids.value[0];
-  nextTick(async () => {
-    reset();
-    const res = await getConfig(configId);
-    form.value = res.data;
-  })
-}
-/** 提交按钮 */
-const submitForm = () => {
-  configFormRef.value.validate(async (valid: boolean) => {
-    if (valid) {
-      form.value.configId ? await updateConfig(form.value) : await addConfig(form.value);
-      proxy?.$modal.msgSuccess("操作成功");
-      dialog.visible = false;
-      getList();
-    }
-  });
-}
-/** 删除按钮操作 */
-const handleDelete = async (row?: ConfigVO) => {
-  const configIds = row?.configId || ids.value;
-  await proxy?.$modal.confirm('是否确认删除参数编号为"' + configIds + '"的数据项？');
-  await delConfig(configIds);
-  getList();
-  proxy?.$modal.msgSuccess("删除成功");
-}
-/** 导出按钮操作 */
-const handleExport = () => {
-  proxy?.download("system/config/export", {
-    ...queryParams.value
-  }, `config_${new Date().getTime()}.xlsx`);
-}
-/** 刷新缓存按钮操作 */
-const handleRefreshCache = async () => {
-  await refreshCache();
-  proxy?.$modal.msgSuccess("刷新缓存成功");
-}
-
-onMounted(() => {
-  getList();
-})
-</script>
-
 <template>
   <div class="p-2">
     <transition :enter-active-class="proxy?.animate.searchAnimate.enter" :leave-active-class="proxy?.animate.searchAnimate.leave">
@@ -259,3 +119,143 @@ onMounted(() => {
     </el-dialog>
   </div>
 </template>
+
+<script setup name="Config" lang="ts">
+import { listConfig, getConfig, delConfig, addConfig, updateConfig, refreshCache } from "@/api/system/config";
+import { ConfigForm, ConfigQuery, ConfigVO } from "@/api/system/config/types";
+import { ComponentInternalInstance } from "vue";
+import { DateModelType } from 'element-plus';
+
+const { proxy } = getCurrentInstance() as ComponentInternalInstance;
+const { sys_yes_no } = toRefs<any>(proxy?.useDict("sys_yes_no"));
+
+const configList = ref<ConfigVO[]>([]);
+const loading = ref(true);
+const showSearch = ref(true);
+const ids = ref<Array<number | string>>([]);
+const single = ref(true);
+const multiple = ref(true);
+const total = ref(0);
+const dateRange = ref<[DateModelType, DateModelType]>(['', '']);
+
+const queryFormRef = ref(ElForm);
+const configFormRef = ref(ElForm);
+const dialog = reactive<DialogOption>({
+    visible: false,
+    title: ''
+});
+const initFormData: ConfigForm = {
+    configId: undefined,
+    configName: '',
+    configKey: '',
+    configValue: '',
+    configType: "Y",
+    remark: ''
+}
+const data = reactive<PageData<ConfigForm, ConfigQuery>>({
+    form: {...initFormData},
+    queryParams: {
+        pageNum: 1,
+        pageSize: 10,
+        configName: '',
+        configKey: '',
+        configType: '',
+    },
+    rules: {
+        configName: [{ required: true, message: "参数名称不能为空", trigger: "blur" }],
+        configKey: [{ required: true, message: "参数键名不能为空", trigger: "blur" }],
+        configValue: [{ required: true, message: "参数键值不能为空", trigger: "blur" }]
+    }
+});
+
+const { queryParams, form, rules } = toRefs(data);
+
+/** 查询参数列表 */
+const getList = async () => {
+    loading.value = true;
+    const res = await listConfig(proxy?.addDateRange(queryParams.value, dateRange.value));
+    configList.value = res.rows;
+    total.value = res.total;
+    loading.value = false;
+}
+/** 取消按钮 */
+const cancel = () => {
+    reset();
+    dialog.visible = false;
+}
+/** 表单重置 */
+const reset = () => {
+    form.value = {...initFormData};
+    configFormRef.value.resetFields();
+}
+/** 搜索按钮操作 */
+const handleQuery = () => {
+    queryParams.value.pageNum = 1;
+    getList();
+}
+/** 重置按钮操作 */
+const resetQuery = () => {
+    dateRange.value = ['', ''];
+    queryFormRef.value.resetFields();
+    handleQuery();
+}
+/** 多选框选中数据 */
+const handleSelectionChange = (selection: ConfigVO[]) => {
+    ids.value = selection.map(item => item.configId);
+    single.value = selection.length != 1;
+    multiple.value = !selection.length;
+}
+/** 新增按钮操作 */
+const handleAdd = () => {
+    dialog.visible = true;
+    dialog.title = "添加参数";
+    nextTick(() => {
+        reset();
+    })
+}
+/** 修改按钮操作 */
+const handleUpdate = (row?: ConfigVO) => {
+    dialog.visible = true;
+    dialog.title = "修改参数";
+    const configId = row?.configId || ids.value[0];
+    nextTick(async () => {
+        reset();
+        const res = await getConfig(configId);
+        form.value = res.data;
+    })
+}
+/** 提交按钮 */
+const submitForm = () => {
+    configFormRef.value.validate(async (valid: boolean) => {
+        if (valid) {
+            form.value.configId ? await updateConfig(form.value) : await addConfig(form.value);
+            proxy?.$modal.msgSuccess("操作成功");
+            dialog.visible = false;
+            getList();
+        }
+    });
+}
+/** 删除按钮操作 */
+const handleDelete = async (row?: ConfigVO) => {
+    const configIds = row?.configId || ids.value;
+    await proxy?.$modal.confirm('是否确认删除参数编号为"' + configIds + '"的数据项？');
+    await delConfig(configIds);
+    getList();
+    proxy?.$modal.msgSuccess("删除成功");
+}
+/** 导出按钮操作 */
+const handleExport = () => {
+    proxy?.download("system/config/export", {
+        ...queryParams.value
+    }, `config_${new Date().getTime()}.xlsx`);
+}
+/** 刷新缓存按钮操作 */
+const handleRefreshCache = async () => {
+    await refreshCache();
+    proxy?.$modal.msgSuccess("刷新缓存成功");
+}
+
+onMounted(() => {
+    getList();
+})
+</script>

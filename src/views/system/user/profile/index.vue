@@ -1,31 +1,3 @@
-<script setup name="Profile" lang="ts">
-import userAvatar from "./userAvatar.vue";
-import userInfo from "./userInfo.vue";
-import resetPwd from "./resetPwd.vue";
-import { getUserProfile } from "@/api/system/user";
-
-const activeTab = ref("userinfo");
-const state = ref<{ user: any; roleGroup: string;  postGroup: string}>({
-  user: {},
-  roleGroup: '',
-  postGroup: ''
-});
-
-const userForm = ref({});
-
-const getUser = async () => {
-  const res = await getUserProfile();
-  state.value.user = res.data.user;
-  userForm.value = { ...res.data.user }
-  state.value.roleGroup = res.data.roleGroup;
-  state.value.postGroup = res.data.postGroup;
-};
-
-onMounted(() => {
-  getUser();
-})
-</script>
-
 <template>
   <div class="p-2">
     <el-row :gutter="20">
@@ -89,3 +61,31 @@ onMounted(() => {
     </el-row>
   </div>
 </template>
+
+<script setup name="Profile" lang="ts">
+import userAvatar from "./userAvatar.vue";
+import userInfo from "./userInfo.vue";
+import resetPwd from "./resetPwd.vue";
+import { getUserProfile } from "@/api/system/user";
+
+const activeTab = ref("userinfo");
+const state = ref<{ user: any; roleGroup: string;  postGroup: string}>({
+    user: {},
+    roleGroup: '',
+    postGroup: ''
+});
+
+const userForm = ref({});
+
+const getUser = async () => {
+    const res = await getUserProfile();
+    state.value.user = res.data.user;
+    userForm.value = { ...res.data.user }
+    state.value.roleGroup = res.data.roleGroup;
+    state.value.postGroup = res.data.postGroup;
+};
+
+onMounted(() => {
+    getUser();
+})
+</script>

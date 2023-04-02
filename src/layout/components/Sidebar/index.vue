@@ -1,3 +1,25 @@
+<template>
+  <div :class="{ 'has-logo': showLogo }" :style="{ backgroundColor: bgColor }">
+    <logo v-if="showLogo" :collapse="isCollapse" />
+    <el-scrollbar :class="sideTheme" wrap-class="scrollbar-wrapper">
+      <transition :enter-active-class="proxy?.animate.menuSearchAnimate.enter" mode="out-in">
+        <el-menu
+          :default-active="activeMenu as string"
+          :collapse="isCollapse"
+          :background-color="bgColor"
+          :text-color="textColor"
+          :unique-opened="true"
+          :active-text-color="theme"
+          :collapse-transition="false"
+          mode="vertical"
+        >
+          <sidebar-item v-for="(route, index) in sidebarRouters" :key="route.path + index" :item="route" :base-path="route.path" />
+        </el-menu>
+      </transition>
+    </el-scrollbar>
+  </div>
+</template>
+
 <script setup lang="ts">
 import Logo from './Logo.vue'
 import SidebarItem from './SidebarItem.vue'
@@ -20,36 +42,14 @@ const theme = computed(() => settingsStore.theme);
 const isCollapse = computed(() => !appStore.sidebar.opened);
 
 const activeMenu = computed(() => {
-  const { meta, path } = route;
-  // if set path, the sidebar will highlight the path you set
-  if (meta.activeMenu) {
-    return meta.activeMenu;
-  }
-  return path;
+    const { meta, path } = route;
+    // if set path, the sidebar will highlight the path you set
+    if (meta.activeMenu) {
+        return meta.activeMenu;
+    }
+    return path;
 })
 
 const bgColor = computed(() => sideTheme.value === 'theme-dark' ? variables.menuBackground : variables.menuLightBackground);
 const textColor = computed(() => sideTheme.value === 'theme-dark' ? variables.menuColor : variables.menuLightColor);
 </script>
-
-<template>
-  <div :class="{ 'has-logo': showLogo }" :style="{ backgroundColor: bgColor }">
-    <logo v-if="showLogo" :collapse="isCollapse" />
-    <el-scrollbar :class="sideTheme" wrap-class="scrollbar-wrapper">
-      <transition :enter-active-class="proxy?.animate.menuSearchAnimate.enter" mode="out-in">
-        <el-menu
-          :default-active="activeMenu as string"
-          :collapse="isCollapse"
-          :background-color="bgColor"
-          :text-color="textColor"
-          :unique-opened="true"
-          :active-text-color="theme"
-          :collapse-transition="false"
-          mode="vertical"
-        >
-          <sidebar-item v-for="(route, index) in sidebarRouters" :key="route.path + index" :item="route" :base-path="route.path" />
-        </el-menu>
-      </transition>
-    </el-scrollbar>
-  </div>
-</template>

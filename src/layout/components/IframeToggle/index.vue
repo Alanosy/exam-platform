@@ -1,11 +1,3 @@
-<script setup lang="ts">
-import InnerLink from "../InnerLink/index.vue";
-import useTagsViewStore from '@/store/modules/tagsView';
-
-const route = useRoute();
-const tagsViewStore = useTagsViewStore()
-</script>
-
 <template>
   <transition-group name="fade-transform" mode="out-in">
     <inner-link
@@ -17,3 +9,11 @@ const tagsViewStore = useTagsViewStore()
     ></inner-link>
   </transition-group>
 </template>
+
+<script setup lang="ts">
+import InnerLink from "../InnerLink/index.vue";
+import useTagsViewStore from '@/store/modules/tagsView';
+
+const route = useRoute();
+const tagsViewStore = useTagsViewStore()
+</script>
