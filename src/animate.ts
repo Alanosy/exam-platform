@@ -21,22 +21,22 @@ const animateList: string[] = [
 	animatePrefix + 'animate__lightSpeedIn'
 ];
 // 关闭随机动画后的默认效果
-const defaultAnimate = animatePrefix + 'animate__bounceIn';
+const defaultAnimate = animatePrefix + 'animate__fadeIn';
 // 搜索隐藏显示动画
 const searchAnimate = {
-	enter: animatePrefix + 'animate__flipInX',
-	leave: animatePrefix + 'animate__bounceOut'
+	enter: '',
+	leave: ''
 };
 
 // 菜单搜索动画
 const menuSearchAnimate = {
-	enter: animatePrefix + 'animate__fadeInLeft',
-	leave: animatePrefix + 'animate__fadeOutLeft'
+	enter: animatePrefix + 'animate__fadeIn',
+	leave: animatePrefix + 'animate__fadeOut'
 };
 // logo动画
 const logoAnimate = {
-	enter: animatePrefix + 'animate__bounceIn',
-	leave: animatePrefix + 'animate__bounceOut'
+	enter: animatePrefix + 'animate__fadeIn',
+	leave: animatePrefix + 'animate__fadeOut'
 };
 
 export default {

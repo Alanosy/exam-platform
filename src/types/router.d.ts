@@ -11,7 +11,7 @@ declare module 'vue-router' {
 		parentPath?: string;
 		meta?: {
 			title: string;
-			icon?: string;
+			icon: string;
 		};
 	} & RouteRecordRaw;
 
