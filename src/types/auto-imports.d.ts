@@ -2,13 +2,11 @@
 export {}
 declare global {
   const EffectScope: typeof import('vue')['EffectScope']
-  const ElForm: typeof import('element-plus/es')['ElForm']
   const ElLoading: typeof import('element-plus/es')['ElLoading']
   const ElMessage: typeof import('element-plus/es')['ElMessage']
   const ElMessageBox: typeof import('element-plus/es')['ElMessageBox']
   const ElNotification: typeof import('element-plus/es')['ElNotification']
   const ElSelect: typeof import('element-plus/es')['ElSelect']
-  const ElTable: typeof import('element-plus/es')['ElTable']
   const acceptHMRUpdate: typeof import('pinia')['acceptHMRUpdate']
   const asyncComputed: typeof import('@vueuse/core')['asyncComputed']
   const autoResetRef: typeof import('@vueuse/core')['autoResetRef']
@@ -288,13 +286,11 @@ import { UnwrapRef } from 'vue'
 declare module 'vue' {
   interface ComponentCustomProperties {
     readonly EffectScope: UnwrapRef<typeof import('vue')['EffectScope']>
-    readonly ElForm: UnwrapRef<typeof import('element-plus/es')['ElForm']>
     readonly ElLoading: UnwrapRef<typeof import('element-plus/es')['ElLoading']>
     readonly ElMessage: UnwrapRef<typeof import('element-plus/es')['ElMessage']>
     readonly ElMessageBox: UnwrapRef<typeof import('element-plus/es')['ElMessageBox']>
     readonly ElNotification: UnwrapRef<typeof import('element-plus/es')['ElNotification']>
     readonly ElSelect: UnwrapRef<typeof import('element-plus/es')['ElSelect']>
-    readonly ElTable: UnwrapRef<typeof import('element-plus/es')['ElTable']>
     readonly acceptHMRUpdate: UnwrapRef<typeof import('pinia')['acceptHMRUpdate']>
     readonly asyncComputed: UnwrapRef<typeof import('@vueuse/core')['asyncComputed']>
     readonly autoResetRef: UnwrapRef<typeof import('@vueuse/core')['autoResetRef']>

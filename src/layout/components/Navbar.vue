@@ -1,3 +1,68 @@
+<template>
+  <div class="navbar">
+    <hamburger id="hamburger-container" :is-active="appStore.sidebar.opened" class="hamburger-container" @toggleClick="toggleSideBar" />
+    <breadcrumb id="breadcrumb-container" class="breadcrumb-container" v-if="!settingsStore.topNav" />
+    <top-nav id="topmenu-container" class="topmenu-container" v-if="settingsStore.topNav" />
+
+    <div class="right-menu flex align-center">
+      <template v-if="appStore.device !== 'mobile'">
+        <el-select
+          v-model="companyName"
+          clearable
+          filterable
+          reserve-keyword
+          placeholder="请选择租户"
+          v-if="userId === 1 && tenantEnabled"
+          @change="dynamicTenantEvent"
+          @clear="dynamicClearEvent"
+        >
+          <el-option v-for="item in tenantList" :key="item.tenantId" :label="item.companyName" :value="item.tenantId"> </el-option>
+          <template #prefix><svg-icon icon-class="company" class="el-input__icon input-icon" /></template>
+        </el-select>
+
+        <header-search id="header-search" class="right-menu-item" />
+
+        <el-tooltip content="源码地址" effect="dark" placement="bottom">
+          <ruo-yi-git id="ruoyi-git" class="right-menu-item hover-effect" />
+        </el-tooltip>
+
+        <el-tooltip content="文档地址" effect="dark" placement="bottom">
+          <ruo-yi-doc id="ruoyi-doc" class="right-menu-item hover-effect" />
+        </el-tooltip>
+
+        <el-tooltip content="全屏" effect="dark" placement="bottom">
+          <screenfull id="screenfull" class="right-menu-item hover-effect" />
+        </el-tooltip>
+
+        <el-tooltip content="布局大小" effect="dark" placement="bottom">
+          <size-select id="size-select" class="right-menu-item hover-effect" />
+        </el-tooltip>
+      </template>
+      <div class="avatar-container">
+        <el-dropdown @command="handleCommand" class="right-menu-item hover-effect" trigger="click">
+          <div class="avatar-wrapper">
+            <img :src="userStore.avatar" class="user-avatar" />
+            <el-icon><caret-bottom /></el-icon>
+          </div>
+          <template #dropdown>
+            <el-dropdown-menu>
+              <router-link to="/user/profile" v-if="!dynamic">
+                <el-dropdown-item>个人中心</el-dropdown-item>
+              </router-link>
+              <el-dropdown-item command="setLayout">
+                <span>布局设置</span>
+              </el-dropdown-item>
+              <el-dropdown-item divided command="logout">
+                <span>退出登录</span>
+              </el-dropdown-item>
+            </el-dropdown-menu>
+          </template>
+        </el-dropdown>
+      </div>
+    </div>
+  </div>
+</template>
+
 <script setup lang="ts">
 import useAppStore from '@/store/modules/app'
 import useUserStore from '@/store/modules/user'
@@ -23,129 +88,64 @@ const tenantEnabled = ref(true);
 
 // 动态切换
 const dynamicTenantEvent = async (tenantId: string) => {
-  if (companyName.value != null && companyName.value !== '') {
-    await dynamicTenant(tenantId);
-    dynamic.value = true;
-    proxy?.$tab.closeAllPage();
-    proxy?.$router.push('/');
-  }
+    if (companyName.value != null && companyName.value !== '') {
+        await dynamicTenant(tenantId);
+        dynamic.value = true;
+        proxy?.$tab.closeAllPage();
+        proxy?.$router.push('/');
+    }
 }
 
 const dynamicClearEvent = async () => {
-  await dynamicClear();
-  dynamic.value = false;
-  proxy?.$tab.closeAllPage();
-  proxy?.$router.push('/')
+    await dynamicClear();
+    dynamic.value = false;
+    proxy?.$tab.closeAllPage();
+    proxy?.$router.push('/')
 }
 
 /** 租户列表 */
 const initTenantList = async () => {
-  const { data } = await getTenantList();
-  tenantEnabled.value = data.tenantEnabled === undefined ? true : data.tenantEnabled;
-  if (tenantEnabled.value) {
-      tenantList.value = data.voList;
-  }
+    const { data } = await getTenantList();
+    tenantEnabled.value = data.tenantEnabled === undefined ? true : data.tenantEnabled;
+    if (tenantEnabled.value) {
+        tenantList.value = data.voList;
+    }
 }
 
 defineExpose({
-  initTenantList,
+    initTenantList,
 })
 
 const toggleSideBar = () => {
-  appStore.toggleSideBar()
+    appStore.toggleSideBar()
 }
 
 const logout = async () => {
-  await ElMessageBox.confirm('确定注销并退出系统吗？', '提示', {
-    confirmButtonText: '确定',
-    cancelButtonText: '取消',
-    type: 'warning'
-  })
-  await userStore.logout()
-  location.href = import.meta.env.VITE_APP_CONTEXT_PATH + 'index';
+    await ElMessageBox.confirm('确定注销并退出系统吗？', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+    })
+    await userStore.logout()
+    location.href = import.meta.env.VITE_APP_CONTEXT_PATH + 'index';
 }
 
 const emits = defineEmits(['setLayout'])
 const setLayout = () => {
-  emits('setLayout');
+    emits('setLayout');
 }
 // 定义Command方法对象 通过key直接调用方法
 const commandMap: {[key: string]: any} = {
-  setLayout,
-  logout
+    setLayout,
+    logout
 };
 const handleCommand = (command: string) => {
-  // 判断是否存在该方法
-  if (commandMap[command]) {
-    commandMap[command]();
-  }
+    // 判断是否存在该方法
+    if (commandMap[command]) {
+        commandMap[command]();
+    }
 }
 </script>
-
-<template>
-	<div class="navbar">
-		<hamburger id="hamburger-container" :is-active="appStore.sidebar.opened" class="hamburger-container" @toggleClick="toggleSideBar" />
-		<breadcrumb id="breadcrumb-container" class="breadcrumb-container" v-if="!settingsStore.topNav" />
-		<top-nav id="topmenu-container" class="topmenu-container" v-if="settingsStore.topNav" />
-
-		<div class="right-menu flex align-center">
-			<template v-if="appStore.device !== 'mobile'">
-				<el-select
-					v-model="companyName"
-					clearable
-					filterable
-					reserve-keyword
-					placeholder="请选择租户"
-					v-if="userId === 1 && tenantEnabled"
-					@change="dynamicTenantEvent"
-					@clear="dynamicClearEvent"
-				>
-					<el-option v-for="item in tenantList" :key="item.tenantId" :label="item.companyName" :value="item.tenantId"> </el-option>
-					<template #prefix><svg-icon icon-class="company" class="el-input__icon input-icon" /></template>
-				</el-select>
-
-				<header-search id="header-search" class="right-menu-item" />
-
-				<el-tooltip content="源码地址" effect="dark" placement="bottom">
-					<ruo-yi-git id="ruoyi-git" class="right-menu-item hover-effect" />
-				</el-tooltip>
-
-				<el-tooltip content="文档地址" effect="dark" placement="bottom">
-					<ruo-yi-doc id="ruoyi-doc" class="right-menu-item hover-effect" />
-				</el-tooltip>
-
-				<el-tooltip content="全屏" effect="dark" placement="bottom">
-					<screenfull id="screenfull" class="right-menu-item hover-effect" />
-				</el-tooltip>
-
-				<el-tooltip content="布局大小" effect="dark" placement="bottom">
-					<size-select id="size-select" class="right-menu-item hover-effect" />
-				</el-tooltip>
-			</template>
-			<div class="avatar-container">
-				<el-dropdown @command="handleCommand" class="right-menu-item hover-effect" trigger="click">
-					<div class="avatar-wrapper">
-						<img :src="userStore.avatar" class="user-avatar" />
-						<el-icon><caret-bottom /></el-icon>
-					</div>
-					<template #dropdown>
-						<el-dropdown-menu>
-							<router-link to="/user/profile" v-if="!dynamic">
-								<el-dropdown-item>个人中心</el-dropdown-item>
-							</router-link>
-							<el-dropdown-item command="setLayout">
-								<span>布局设置</span>
-							</el-dropdown-item>
-							<el-dropdown-item divided command="logout">
-								<span>退出登录</span>
-							</el-dropdown-item>
-						</el-dropdown-menu>
-					</template>
-				</el-dropdown>
-			</div>
-		</div>
-	</div>
-</template>
 
 <style lang="scss" scoped>
 

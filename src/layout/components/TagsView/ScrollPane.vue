@@ -81,9 +81,9 @@ defineExpose({
 </script>
 
 <template>
-	<el-scrollbar ref="scrollContainerRef" :vertical="false" class="scroll-container" @wheel.prevent="handleScroll">
-		<slot />
-	</el-scrollbar>
+  <el-scrollbar ref="scrollContainerRef" :vertical="false" class="scroll-container" @wheel.prevent="handleScroll">
+    <slot />
+  </el-scrollbar>
 </template>
 
 <style lang="scss" scoped>

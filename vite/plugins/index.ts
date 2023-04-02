@@ -8,13 +8,13 @@ import createCompression from './compression';
 import path from 'path';
 
 export default (viteEnv: any, isBuild = false): [] => {
-	const vitePlusgins: any = [];
-	vitePlusgins.push(vue());
-	vitePlusgins.push(createUnoCss());
-	vitePlusgins.push(createAutoImport(path));
-	vitePlusgins.push(createComponents(path));
-	vitePlusgins.push(createCompression(viteEnv));
-	vitePlusgins.push(createIcons());
-	vitePlusgins.push(createSvgIconsPlugin(path, isBuild));
-	return vitePlusgins;
+  const vitePlusgins: any = [];
+  vitePlusgins.push(vue());
+  vitePlusgins.push(createUnoCss());
+  vitePlusgins.push(createAutoImport(path));
+  vitePlusgins.push(createComponents(path));
+  vitePlusgins.push(createCompression(viteEnv));
+  vitePlusgins.push(createIcons());
+  vitePlusgins.push(createSvgIconsPlugin(path, isBuild));
+  return vitePlusgins;
 };

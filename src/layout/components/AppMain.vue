@@ -1,6 +1,19 @@
+<template>
+  <section class="app-main">
+    <router-view v-slot="{ Component, route }">
+      <transition :enter-active-class="animante" mode="out-in">
+        <keep-alive :include="tagsViewStore.cachedViews">
+          <component v-if="!route.meta.link" :is="Component" :key="route.path" />
+        </keep-alive>
+      </transition>
+    </router-view>
+    <iframe-toggle />
+  </section>
+</template>
+
 <script lang="ts">
 export default {
-  name: 'AppMin'
+    name: 'AppMin'
 }
 </script>
 
@@ -16,27 +29,14 @@ const tagsViewStore = useTagsViewStore();
 const animante = ref<string>('');
 const animationEnable = ref(useSettingsStore().animationEnable);
 watch(()=> useSettingsStore().animationEnable, (val) => {
-  animationEnable.value = val;
-  if (val) {
-    animante.value = proxy?.animate.animateList[Math.round(Math.random() * proxy?.animate.animateList.length)] as string;
-  } else {
-    animante.value = proxy?.animate.defaultAnimate as string;
-  }
+    animationEnable.value = val;
+    if (val) {
+        animante.value = proxy?.animate.animateList[Math.round(Math.random() * proxy?.animate.animateList.length)] as string;
+    } else {
+        animante.value = proxy?.animate.defaultAnimate as string;
+    }
 }, { immediate: true });
 </script>
-
-<template>
-	<section class="app-main">
-		<router-view v-slot="{ Component, route }">
-			<transition :enter-active-class="animante" mode="out-in">
-				<keep-alive :include="tagsViewStore.cachedViews">
-					<component v-if="!route.meta.link" :is="Component" :key="route.path" />
-				</keep-alive>
-			</transition>
-		</router-view>
-		<iframe-toggle />
-	</section>
-</template>
 
 <style lang="scss" scoped>
 .app-main {

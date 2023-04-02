@@ -23,9 +23,9 @@ const svgClass = computed(() => {
 </script>
 
 <template>
-	<svg :class="svgClass" aria-hidden="true">
-		<use :xlink:href="iconName" :fill="color" />
-	</svg>
+  <svg :class="svgClass" aria-hidden="true">
+    <use :xlink:href="iconName" :fill="color" />
+  </svg>
 </template>
 
 <style scope lang="scss">

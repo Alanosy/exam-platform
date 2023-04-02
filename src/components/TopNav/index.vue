@@ -1,3 +1,23 @@
+<template>
+    <el-menu :default-active="activeMenu" mode="horizontal" @select="handleSelect" :ellipsis="false">
+        <template v-for="(item, index) in topMenus">
+            <el-menu-item :style="{'--theme': theme}" :index="item.path" :key="index" v-if="index < visibleNumber"
+            ><svg-icon :icon-class="item.meta ? item.meta.icon : '' " /> {{ item.meta?.title }}</el-menu-item
+            >
+        </template>
+
+        <!-- 顶部菜单超出数量折叠 -->
+        <el-sub-menu :style="{'--theme': theme}" index="more" v-if="topMenus.length > visibleNumber">
+            <template #title>更多菜单</template>
+            <template v-for="(item, index) in topMenus">
+                <el-menu-item :index="item.path" :key="index" v-if="index >= visibleNumber"
+                ><svg-icon :icon-class="item.meta ? item.meta.icon : '' " /> {{ item.meta?.title }}</el-menu-item
+                >
+            </template>
+        </el-sub-menu>
+    </el-menu>
+</template>
+
 <script setup lang="ts">
 import { constantRoutes } from '@/router';
 import { isHttp } from '@/utils/validate';
@@ -129,26 +149,6 @@ onMounted(() => {
   setVisibleNumber()
 })
 </script>
-
-<template>
-	<el-menu :default-active="activeMenu" mode="horizontal" @select="handleSelect" :ellipsis="false">
-		<template v-for="(item, index) in topMenus">
-			<el-menu-item :style="{'--theme': theme}" :index="item.path" :key="index" v-if="index < visibleNumber"
-				><svg-icon :icon-class="item.meta ? item.meta.icon : '' " /> {{ item.meta?.title }}</el-menu-item
-			>
-		</template>
-
-		<!-- 顶部菜单超出数量折叠 -->
-		<el-sub-menu :style="{'--theme': theme}" index="more" v-if="topMenus.length > visibleNumber">
-			<template #title>更多菜单</template>
-			<template v-for="(item, index) in topMenus">
-				<el-menu-item :index="item.path" :key="index" v-if="index >= visibleNumber"
-					><svg-icon :icon-class="item.meta ? item.meta.icon : '' " /> {{ item.meta?.title }}</el-menu-item
-				>
-			</template>
-		</el-sub-menu>
-	</el-menu>
-</template>
 
 <style lang="scss">
 .topmenu-container.el-menu--horizontal > .el-menu-item {

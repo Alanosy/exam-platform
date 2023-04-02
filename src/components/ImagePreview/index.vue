@@ -44,13 +44,13 @@ const realHeight = computed(() =>
 </script>
 
 <template>
-	<el-image :src="`${realSrc}`" fit="cover" :style="`width:${realWidth};height:${realHeight};`" :preview-src-list="realSrcList" preview-teleported>
-		<template #error>
-			<div class="image-slot">
-				<el-icon><picture-filled /></el-icon>
-			</div>
-		</template>
-	</el-image>
+  <el-image :src="`${realSrc}`" fit="cover" :style="`width:${realWidth};height:${realHeight};`" :preview-src-list="realSrcList" preview-teleported>
+    <template #error>
+      <div class="image-slot">
+        <el-icon><picture-filled /></el-icon>
+      </div>
+    </template>
+  </el-image>
 </template>
 
 <style lang="scss" scoped>

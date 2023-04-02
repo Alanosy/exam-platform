@@ -34,7 +34,7 @@ function linkProps() {
 </script>
 
 <template>
-	<component :is="type" v-bind="linkProps()">
-		<slot />
-	</component>
+  <component :is="type" v-bind="linkProps()">
+    <slot />
+  </component>
 </template>

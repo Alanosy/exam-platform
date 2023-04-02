@@ -44,34 +44,34 @@ const selectedIcon = (iconName: string) => {
 </script>
 
 <template>
-	<div class="relative" :style="{ width: width }">
-		<el-input v-model="modelValue" readonly @click="visible = !visible" placeholder="点击选择图标">
-			<template #prepend>
-				<svg-icon :icon-class="modelValue as string"></svg-icon>
-			</template>
-		</el-input>
+  <div class="relative" :style="{ width: width }">
+    <el-input v-model="modelValue" readonly @click="visible = !visible" placeholder="点击选择图标">
+      <template #prepend>
+        <svg-icon :icon-class="modelValue as string"></svg-icon>
+      </template>
+    </el-input>
 
-		<el-popover shadow="none" :visible="visible" placement="bottom-end" trigger="click" :width="450">
-			<template #reference>
-				<div @click="visible = !visible" class="cursor-pointer text-[#999] absolute right-[10px] top-0 height-[32px] leading-[32px]">
-					<i-ep-caret-top v-show="visible"></i-ep-caret-top>
-					<i-ep-caret-bottom v-show="!visible"></i-ep-caret-bottom>
-				</div>
-			</template>
+    <el-popover shadow="none" :visible="visible" placement="bottom-end" trigger="click" :width="450">
+      <template #reference>
+        <div @click="visible = !visible" class="cursor-pointer text-[#999] absolute right-[10px] top-0 height-[32px] leading-[32px]">
+          <i-ep-caret-top v-show="visible"></i-ep-caret-top>
+          <i-ep-caret-bottom v-show="!visible"></i-ep-caret-bottom>
+        </div>
+      </template>
 
-			<el-input class="p-2" v-model="filterValue" placeholder="搜索图标" clearable @input="filterIcons" />
+      <el-input class="p-2" v-model="filterValue" placeholder="搜索图标" clearable @input="filterIcons" />
 
-			<el-scrollbar height="w-[200px]">
-				<ul class="icon-list">
-					<el-tooltip v-for="(iconName, index) in iconNames" :key="index" :content="iconName" placement="bottom" effect="light">
-						<li class="icon-item" @click="selectedIcon(iconName)">
-							<svg-icon color="var(--el-text-color-regular)" :icon-class="iconName" />
-						</li>
-					</el-tooltip>
-				</ul>
-			</el-scrollbar>
-		</el-popover>
-	</div>
+      <el-scrollbar height="w-[200px]">
+        <ul class="icon-list">
+          <el-tooltip v-for="(iconName, index) in iconNames" :key="index" :content="iconName" placement="bottom" effect="light">
+            <li class="icon-item" @click="selectedIcon(iconName)">
+              <svg-icon color="var(--el-text-color-regular)" :icon-class="iconName" />
+            </li>
+          </el-tooltip>
+        </ul>
+      </el-scrollbar>
+    </el-popover>
+  </div>
 </template>
 
 <style scoped lang="scss">

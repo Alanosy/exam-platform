@@ -8,21 +8,21 @@ import download from '@/plugins/download';
 import animate from '@/animate';
 
 declare module 'vue' {
-	export interface ComponentCustomProperties {
-		// 全局方法声明
-		$modal: typeof modal;
-		$tab: typeof tab;
-		$download: typeof download;
-		animate: typeof animate;
+  export interface ComponentCustomProperties {
+    // 全局方法声明
+    $modal: typeof modal;
+    $tab: typeof tab;
+    $download: typeof download;
+    animate: typeof animate;
 
-		useDict: typeof useDict;
-		addDateRange: typeof addDateRange;
-		download: typeof download1;
-		handleTree: typeof handleTree;
-		getConfigKey: typeof getConfigKey;
-		updateConfigByKey: typeof updateConfigByKey;
-		selectDictLabel: typeof selectDictLabel;
-		selectDictLabels: typeof selectDictLabels;
-		parseTime: typeof parseTime;
-	}
+    useDict: typeof useDict;
+    addDateRange: typeof addDateRange;
+    download: typeof download1;
+    handleTree: typeof handleTree;
+    getConfigKey: typeof getConfigKey;
+    updateConfigByKey: typeof updateConfigByKey;
+    selectDictLabel: typeof selectDictLabel;
+    selectDictLabels: typeof selectDictLabels;
+    parseTime: typeof parseTime;
+  }
 }

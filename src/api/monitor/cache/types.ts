@@ -1,7 +1,7 @@
 export interface CacheVO {
-	commandStats: Array<{ name: string; value: string }>;
+  commandStats: Array<{ name: string; value: string }>;
 
-	dbSize: number;
+  dbSize: number;
 
-	info: { [key: string]: string };
+  info: { [key: string]: string };
 }

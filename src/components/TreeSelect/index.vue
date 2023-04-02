@@ -128,31 +128,31 @@ ul li .el-tree .el-tree-node__content {
 </style>
 
 <template>
-	<div class="el-tree-select">
-		<el-select
-			style="width: 100%"
-			v-model="valueId"
-			ref="treeSelect"
-			:filterable="true"
-			:clearable="true"
-			@clear="clearHandle"
-			:filter-method="selectFilterData"
-			:placeholder="placeholder"
-		>
-			<el-option :value="valueId" :label="valueTitle">
-				<el-tree
-					id="tree-option"
-					ref="selectTree"
-					:accordion="accordion"
-					:data="options"
-					:props="objMap"
-					:node-key="objMap.value"
-					:expand-on-click-node="false"
-					:default-expanded-keys="defaultExpandedKey"
-					:filter-node-method="filterNode"
-					@node-click="handleNodeClick"
-				></el-tree>
-			</el-option>
-		</el-select>
-	</div>
+  <div class="el-tree-select">
+    <el-select
+      style="width: 100%"
+      v-model="valueId"
+      ref="treeSelect"
+      :filterable="true"
+      :clearable="true"
+      @clear="clearHandle"
+      :filter-method="selectFilterData"
+      :placeholder="placeholder"
+    >
+      <el-option :value="valueId" :label="valueTitle">
+        <el-tree
+          id="tree-option"
+          ref="selectTree"
+          :accordion="accordion"
+          :data="options"
+          :props="objMap"
+          :node-key="objMap.value"
+          :expand-on-click-node="false"
+          :default-expanded-keys="defaultExpandedKey"
+          :filter-node-method="filterNode"
+          @node-click="handleNodeClick"
+        ></el-tree>
+      </el-option>
+    </el-select>
+  </div>
 </template>
