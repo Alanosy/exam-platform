@@ -1,10 +1,9 @@
 <script setup lang="ts">
 import useAppStore from "@/store/modules/app";
-import { ComponentInternalInstance } from "vue";
 
 const appStore = useAppStore();
 const size = computed(() => appStore.size);
-const { proxy } = getCurrentInstance() as ComponentInternalInstance;
+
 const sizeOptions = ref([
   { label: "较大", value: "large" },
   { label: "默认", value: "default" },
@@ -12,9 +11,7 @@ const sizeOptions = ref([
 ]);
 
 const handleSetSize = (size: string) => {
-  proxy?.$modal.loading("正在设置布局大小，请稍候...");
   appStore.setSize(size);
-  setTimeout("window.location.reload()", 1000);
 }
 </script>
 

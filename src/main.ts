@@ -1,9 +1,4 @@
 import { createApp } from 'vue';
-import Cookies from 'js-cookie';
-// element-plus
-import ElementPlus from 'element-plus';
-import locale from 'element-plus/lib/locale/lang/zh-cn';
-
 // global css
 import 'uno.css';
 import '@/assets/styles/index.scss';
@@ -54,15 +49,5 @@ app.use(store);
 app.use(plugins);
 // 自定义指令
 directive(app);
-
-// 使用element-plus 并且设置全局的大小
-app.use(ElementPlus, {
-	locale: locale,
-	// 支持 large、default、small
-	size: Cookies.get('size') || 'default'
-});
-
-// 修改 el-dialog 默认点击遮照为不关闭
-(app._context.components.ElDialog as any).props.closeOnClickModal.default = false;
 
 app.mount('#app');

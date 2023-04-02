@@ -6,7 +6,8 @@
 @import './btn.scss';
 @import './ruoyi.scss';
 @import 'animate.css';
-//@import 'element-plus/dist/index.css';
+// @import 'element-plus/dist/index.css';
+
 body {
 	height: 100%;
 	margin: 0;
@@ -127,6 +128,7 @@ aside {
 .app-container {
 	padding: 20px;
 }
+
 // search面板样式
 .panel,
 .search {
