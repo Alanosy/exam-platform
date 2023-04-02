@@ -4,6 +4,7 @@ import createAutoImport from './auto-import';
 import createComponents from './components';
 import createIcons from './icons';
 import createSvgIconsPlugin from './svg-icon';
+import createCompression from './compression';
 import path from 'path';
 
 export default (viteEnv, isBuild = false): [] => {
@@ -12,7 +13,8 @@ export default (viteEnv, isBuild = false): [] => {
 	vitePlusgins.push(createUnoCss());
 	vitePlusgins.push(createAutoImport(path));
 	vitePlusgins.push(createComponents(path));
+	vitePlusgins.push(createCompression(viteEnv));
 	vitePlusgins.push(createIcons());
-	vitePlusgins.push(createSvgIconsPlugin(path));
+	vitePlusgins.push(createSvgIconsPlugin(path, isBuild));
 	return vitePlusgins;
 };
