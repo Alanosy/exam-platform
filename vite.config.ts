@@ -105,7 +105,10 @@ export default defineConfig(({ mode, command }: ConfigEnv): UserConfig => {
         'element-plus/es/components/option/style/css',
         'element-plus/es/components/pagination/style/css',
         'element-plus/es/components/tree/style/css',
-        'element-plus/es/components/alert/style/css'
+        'element-plus/es/components/alert/style/css',
+        'element-plus/es/components/checkbox/style/css',
+        'element-plus/es/components/date-picker/style/css',
+        'element-plus/es/components/transfer/style/css'
       ]
     }
   };
