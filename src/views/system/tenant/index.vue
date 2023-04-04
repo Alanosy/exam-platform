@@ -144,8 +144,7 @@ import { listTenantPackage } from '@/api/system/tenantPackage';
 import { TenantForm, TenantQuery, TenantVO } from '@/api/system/tenant/types';
 import { TenantPkgVO } from '@/api/system/tenantPackage/types';
 import { ComponentInternalInstance } from 'vue';
-import to from 'await-to-js';
-
+import { ElForm } from 'element-plus';
 
 const { proxy } = getCurrentInstance() as ComponentInternalInstance;
 
