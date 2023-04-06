@@ -66,7 +66,7 @@ export default defineConfig(({ mode, command }: ConfigEnv): UserConfig => {
         '@wangeditor/editor',
         '@wangeditor/editor-for-vue',
         'vue-i18n',
-
+        '@vueup/vue-quill',
         '@iconify/iconify',
 
         'element-plus/es/components/form/style/css',
@@ -109,7 +109,9 @@ export default defineConfig(({ mode, command }: ConfigEnv): UserConfig => {
         'element-plus/es/components/checkbox/style/css',
         'element-plus/es/components/date-picker/style/css',
         'element-plus/es/components/transfer/style/css',
-        'element-plus/es/components/tabs/style/css'
+        'element-plus/es/components/tabs/style/css',
+        'element-plus/es/components/image/style/css',
+        'element-plus/es/components/tab-pane/style/css'
       ]
     }
   };
