@@ -33,8 +33,12 @@ export default {
   async closePage(obj?: TagView): Promise<{ visitedViews: TagView[]; cachedViews: string[] } | any> {
     if (obj === undefined) {
       // prettier-ignore
-      const { lastPath } = await useTagsViewStore().delView(router.currentRoute.value) as any
-      return router.push(lastPath || '/index');
+      const { visitedViews } = await useTagsViewStore().delView(router.currentRoute.value) as any
+      const latestView = visitedViews.slice(-1)[0]
+      if (latestView) {
+        return router.push(latestView.fullPath)
+      }
+      return router.push('/');
     }
     return useTagsViewStore().delView(obj);
   },
