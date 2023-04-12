@@ -303,7 +303,7 @@ import { treeselect } from "@/api/system/dept";
 import { DeptVO } from "@/api/system/dept/types";
 import { RoleVO } from "@/api/system/role/types";
 import { PostVO } from "@/api/system/post/types";
-import { DateModelType, ElTree, ElUpload, UploadFile, UploadFiles, ElForm } from 'element-plus';
+import { DateModelType, ElTree, ElUpload, UploadFile, ElForm } from 'element-plus';
 import { to } from "await-to-js";
 const router = useRouter();
 const { proxy } = getCurrentInstance() as ComponentInternalInstance
@@ -457,14 +457,13 @@ const handleDelete = async (row?: UserVO) => {
 /** 用户状态修改  */
 const handleStatusChange = async (row: UserVO) => {
     let text = row.status === "0" ? "启用" : "停用"
-    const [err] = await to(proxy?.$modal.confirm('确认要"' + text + '""' + row.userName + '"用户吗?') as any)
-    if(err) {
-        row.status = row.status === "0" ? "1" : "0";
-    } else {
+    try {
+        await proxy?.$modal.confirm('确认要"' + text + '""' + row.userName + '"用户吗?');
         await changeUserStatus(row.userId, row.status);
         proxy?.$modal.msgSuccess(text + "成功");
+    } catch (err) {
+        row.status = row.status === "0" ? "1" : "0";
     }
-
 }
 /** 跳转角色分配 */
 const handleAuthRole = (row: UserVO) => {
@@ -516,7 +515,7 @@ const handleFileUploadProgress = () => {
     upload.isUploading = true;
 }
 /** 文件上传成功处理 */
-const handleFileSuccess = (response: any, file: UploadFile, fileList: UploadFiles) => {
+const handleFileSuccess = (response: any, file: UploadFile) => {
     upload.open = false;
     upload.isUploading = false;
     uploadRef.value.handleRemove(file);
