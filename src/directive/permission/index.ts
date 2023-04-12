@@ -17,7 +17,7 @@ export const hasPermi: Directive = {
         return false;
       }
     } else {
-      throw new Error("check perms! Like v-has-permi=\"['sys:user:add','sys:user:edit']\"");
+      throw new Error("check perms! Like v-has-permi=\"['system:user:add','system:user:edit']\"");
     }
   }
 };
