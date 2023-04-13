@@ -1,4 +1,4 @@
-import axios, { InternalAxiosRequestConfig } from 'axios';
+import axios, { AxiosResponse, InternalAxiosRequestConfig } from 'axios';
 import { useUserStore } from '@/store/modules/user';
 import { getToken } from '@/utils/auth';
 import { tansParams, blobValidate } from '@/utils/ruoyi';
@@ -61,6 +61,10 @@ service.interceptors.request.use(
         }
       }
     }
+    // FormData数据去请求头Content-Type
+    if (config.data instanceof FormData) {
+      delete config.headers['Content-Type'];
+    }
     return config;
   },
   (error: any) => {
@@ -71,7 +75,7 @@ service.interceptors.request.use(
 
 // 响应拦截器
 service.interceptors.response.use(
-  (res) => {
+  (res: AxiosResponse) => {
     // 未设置状态码则默认成功状态
     const code = res.data.code || HttpStatus.SUCCESS;
     // 获取错误信息
@@ -112,7 +116,7 @@ service.interceptors.response.use(
       return Promise.resolve(res.data);
     }
   },
-  (error) => {
+  (error: any) => {
     let { message } = error;
     if (message == 'Network Error') {
       message = '后端接口连接异常';
@@ -131,16 +135,16 @@ export function download(url: string, params: any, fileName: string) {
   // prettier-ignore
   return service.post(url, params, {
       transformRequest: [
-        (params) => {
+        (params: any) => {
           return tansParams(params);
         }
       ],
       headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
       responseType: 'blob'
-    }).then(async (resp) => {
+    }).then(async (resp: any) => {
       const isLogin = blobValidate(resp);
       if (isLogin) {
-        const blob = new Blob([resp as any]);
+        const blob = new Blob([resp]);
         FileSaver.saveAs(blob, fileName);
       } else {
         const resText = await resp.data.text();
@@ -149,7 +153,7 @@ export function download(url: string, params: any, fileName: string) {
         ElMessage.error(errMsg);
       }
       downloadLoadingInstance.close();
-    }).catch((r) => {
+    }).catch((r: any) => {
       console.error(r);
       ElMessage.error('下载文件出现错误，请联系管理员！');
       downloadLoadingInstance.close();
