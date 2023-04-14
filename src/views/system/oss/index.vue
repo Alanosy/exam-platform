@@ -316,16 +316,10 @@ const handleDownload = (row: OssVO) => {
 /** 用户状态修改  */
 const handlePreviewListResource = async (preview: boolean) => {
     let text = preview ? "启用" : "停用";
-    try {
-        await proxy?.$modal.confirm('确认要"' + text + '""预览列表图片"配置吗?');
-        await proxy?.updateConfigByKey("sys.oss.previewListResource", preview);
-        getList()
-        proxy?.$modal.msgSuccess(text + "成功");
-    } catch {
-        previewListResource.value = previewListResource.value !== true;
-    }
-
-
+    await proxy?.$modal.confirm('确认要"' + text + '""预览列表图片"配置吗?');
+    await proxy?.updateConfigByKey("sys.oss.previewListResource", preview);
+    getList()
+    proxy?.$modal.msgSuccess(text + "成功");
 }
 /** 删除按钮操作 */
 const handleDelete = async (row?: OssVO) => {
@@ -336,6 +330,7 @@ const handleDelete = async (row?: OssVO) => {
     getList();
     proxy?.$modal.msgSuccess("删除成功");
 }
+
 onMounted(() => {
     getList();
 })
