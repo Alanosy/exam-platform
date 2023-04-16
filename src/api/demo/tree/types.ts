@@ -23,6 +23,11 @@ export interface TreeVO {
    * 值
    */
   treeName: string;
+
+  /**
+   * 子对象
+   */
+  children: TreeVO[];
 }
 
 export interface TreeForm extends BaseEntity {
