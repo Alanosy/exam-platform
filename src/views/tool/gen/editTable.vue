@@ -176,7 +176,8 @@ const close = () => {
     const tableId = route.params && route.params.tableId as string;
     if (tableId) {
         // 获取表详细信息
-        const res = await getGenTable(tableId);
+      const res = await getGenTable(tableId);
+        res.data.info.parentMenuId = Number(res.data.info.parentMenuId);
         columns.value = res.data.rows;
         info.value = res.data.info;
         tables.value = res.data.tables;
