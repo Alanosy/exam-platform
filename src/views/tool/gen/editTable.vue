@@ -150,7 +150,6 @@ const submitForm = () => {
                 treeParentCode: info.value.treeParentCode,
                 parentMenuId: info.value.parentMenuId
             };
-            console.log(genTable)
             const response = await updateGenTable(genTable);
             proxy?.$modal.msgSuccess(response.msg);
             if (response.code === 200) {
