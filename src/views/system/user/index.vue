@@ -3,7 +3,7 @@
     <el-row :gutter="20">
       <!-- 部门树 -->
       <el-col :lg="4" :xs="24" style="">
-        <el-card shadow="never">
+        <el-card shadow="hover">
           <el-input v-model="deptName" placeholder="请输入部门名称" prefix-icon="Search" clearable />
           <el-tree
             class="mt-2"
