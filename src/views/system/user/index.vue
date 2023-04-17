@@ -52,14 +52,16 @@
           </div>
         </transition>
 
-        <el-card shadow="never">
+        <el-card shadow="hover">
           <template #header>
             <el-row :gutter="10">
               <el-col :span="1.5">
                 <el-button type="primary" plain @click="handleAdd()" v-has-permi="['system:user:add']" icon="Plus">新增</el-button>
               </el-col>
               <el-col :span="1.5">
-                <el-button type="success" plain @click="handleUpdate()" :disabled="single" v-has-permi="['system:user:add']" icon="Edit">修改</el-button>
+                <el-button type="success" plain @click="handleUpdate()" :disabled="single" v-has-permi="['system:user:add']" icon="Edit">
+                  修改
+                </el-button>
               </el-col>
               <el-col :span="1.5">
                 <el-button type="danger" plain @click="handleDelete()" :disabled="multiple" v-has-permi="['system:user:delete']" icon="Delete">
