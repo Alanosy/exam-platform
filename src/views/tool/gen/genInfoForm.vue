@@ -67,11 +67,17 @@
               <el-icon><question-filled /></el-icon>
             </el-tooltip>
           </template>
-          <tree-select
-            v-model:value="infoForm.parentMenuId"
-            :options="menuOptions"
-            :objMap="{ value: 'menuId', label: 'menuName', children: 'children' }"
-            placeholder="请选择系统菜单"
+          <el-tree-select
+            v-model="infoForm.parentMenuId"
+            :data="menuOptions"
+            :props="{ value: 'menuId', label: 'menuName', children: 'children' }"
+            value-key="menuId"
+            node-key="menuId"
+            placeholder="选择上级菜单"
+            check-strictly
+            filterable
+            clearable
+            highlight-current
           />
         </el-form-item>
       </el-col>
@@ -270,11 +276,12 @@ const setSubTableColumns = (value: string) => {
         }
     })
 }
+
 /** 查询菜单下拉树结构 */
 const getMenuTreeselect = async () => {
     const res = await listMenu();
     const data = proxy?.handleTree<MenuOptionsType>(res.data, "menuId");
-    if (data) {
+  if (data) {
         menuOptions.value = data
     }
 }
