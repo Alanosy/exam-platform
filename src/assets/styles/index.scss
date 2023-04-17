@@ -137,9 +137,11 @@ aside {
   border: 1px solid var(--el-border-color-light);
   background-color: var(--el-bg-color-overlay);
   padding: 0.75rem;
-  --tw-shadow: var(--el-box-shadow-light);
-  --tw-shadow-colored: var(--el-box-shadow-light);
-  box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow);
+
+  &:hover {
+    box-shadow: 0 2px 12px #0000001a;
+    transition: all ease 0.3s;
+  }
 }
 
 .components-container {
