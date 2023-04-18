@@ -11,6 +11,14 @@ export function listTenantPackage(query?: TenantPkgQuery): AxiosPromise<TenantPk
   });
 }
 
+// 查询租户套餐下拉选列表
+export function selectTenantPackage(): AxiosPromise<TenantPkgVO[]> {
+  return request({
+    url: '/system/tenant/package/selectList',
+    method: 'get'
+  });
+}
+
 // 查询租户套餐详细
 export function getTenantPackage(packageId: string | number): AxiosPromise<TenantPkgVO> {
   return request({

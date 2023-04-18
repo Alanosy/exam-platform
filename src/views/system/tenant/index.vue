@@ -139,8 +139,8 @@
 </template>
 
 <script setup name="Tenant" lang="ts">
-import { listTenant, getTenant, delTenant, addTenant, updateTenant, changeTenantStatus, syncTenantPackage} from '@/api/system/tenant';
-import { listTenantPackage } from '@/api/system/tenantPackage';
+import { listTenant, getTenant, delTenant, addTenant, updateTenant, changeTenantStatus, syncTenantPackage } from '@/api/system/tenant';
+import { selectTenantPackage } from '@/api/system/tenantPackage';
 import { TenantForm, TenantQuery, TenantVO } from '@/api/system/tenant/types';
 import { TenantPkgVO } from '@/api/system/tenantPackage/types';
 import { ComponentInternalInstance } from 'vue';
@@ -215,8 +215,8 @@ const { queryParams, form, rules } = toRefs(data);
 
 /** 查询所有租户套餐 */
 const getTenantPackage = async () => {
-    const res = await listTenantPackage()
-    packageList.value = res.rows;
+    const res = await selectTenantPackage()
+    packageList.value = res.data;
 }
 
 /** 查询租户列表 */
