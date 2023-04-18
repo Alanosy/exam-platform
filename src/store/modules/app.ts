@@ -14,7 +14,7 @@ export const useAppStore = defineStore('app', () => {
   // 语言
   const language = ref(Cookies.get('language'));
   const locale = computed(() => {
-    if (language?.value == 'en') {
+    if (language.value == 'en') {
       return en;
     } else {
       return zhCn;
@@ -53,6 +53,7 @@ export const useAppStore = defineStore('app', () => {
 
   const changeLanguage = (val: string): void => {
     language.value = val;
+    Cookies.set('language', val);
   };
 
   return {

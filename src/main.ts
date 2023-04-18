@@ -30,6 +30,9 @@ import { useDict } from '@/utils/dict';
 import { getConfigKey, updateConfigByKey } from '@/api/system/config';
 import { parseTime, addDateRange, handleTree, selectDictLabel, selectDictLabels } from '@/utils/ruoyi';
 
+// 国际化
+import i18n from '@/lang/index';
+
 const app = createApp(App);
 // 全局方法挂载
 app.config.globalProperties.useDict = useDict;
@@ -46,6 +49,7 @@ app.config.globalProperties.animate = animate;
 app.use(ElementIcons);
 app.use(router);
 app.use(store);
+app.use(i18n);
 app.use(plugins);
 // 自定义指令
 directive(app);

@@ -6,19 +6,21 @@ export default {
   },
   // 登录页面国际化
   login: {
-    title: 'vue3-element-admin',
     username: '用户名',
     password: '密码',
     login: '登 录',
     code: '请输入验证码',
-    copyright: '',
-    icp: '',
-    thirdPartyLogin: '第三方登录'
+    copyright: ''
   },
   navbar: {
+    full: '全屏',
+    language: '语言',
     dashboard: '首页',
-    logout: '注销',
     document: '项目文档',
-    gitee: '码云'
+    layoutSize: '布局大小',
+    selectTenant: '选择租户',
+    layoutSetting: '布局设置',
+    personalCenter: '个人中心',
+    logout: '退出登录'
   }
 };

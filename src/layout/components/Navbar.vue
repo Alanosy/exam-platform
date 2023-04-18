@@ -11,7 +11,7 @@
           clearable
           filterable
           reserve-keyword
-          placeholder="请选择租户"
+          :placeholder="$t('navbar.selectTenant')"
           v-if="userId === 1 && tenantEnabled"
           @change="dynamicTenantEvent"
           @clear="dynamicClearEvent"
@@ -22,19 +22,23 @@
 
         <header-search id="header-search" class="right-menu-item" />
 
-        <el-tooltip content="源码地址" effect="dark" placement="bottom">
+        <el-tooltip content="Github" effect="dark" placement="bottom">
           <ruo-yi-git id="ruoyi-git" class="right-menu-item hover-effect" />
         </el-tooltip>
 
-        <el-tooltip content="文档地址" effect="dark" placement="bottom">
+        <el-tooltip :content="$t('navbar.document')" effect="dark" placement="bottom">
           <ruo-yi-doc id="ruoyi-doc" class="right-menu-item hover-effect" />
         </el-tooltip>
 
-        <el-tooltip content="全屏" effect="dark" placement="bottom">
+        <el-tooltip :content="$t('navbar.full')" effect="dark" placement="bottom">
           <screenfull id="screenfull" class="right-menu-item hover-effect" />
         </el-tooltip>
 
-        <el-tooltip content="布局大小" effect="dark" placement="bottom">
+        <el-tooltip :content="$t('navbar.language')" effect="dark" placement="bottom">
+          <lang-select id="lang-select" class="right-menu-item hover-effect" />
+        </el-tooltip>
+
+        <el-tooltip :content="$t('navbar.layoutSize')" effect="dark" placement="bottom">
           <size-select id="size-select" class="right-menu-item hover-effect" />
         </el-tooltip>
       </template>
@@ -47,13 +51,13 @@
           <template #dropdown>
             <el-dropdown-menu>
               <router-link to="/user/profile" v-if="!dynamic">
-                <el-dropdown-item>个人中心</el-dropdown-item>
+                <el-dropdown-item>{{ $t('navbar.personalCenter') }}</el-dropdown-item>
               </router-link>
               <el-dropdown-item command="setLayout">
-                <span>布局设置</span>
+                <span>{{ $t('navbar.layoutSetting') }}</span>
               </el-dropdown-item>
               <el-dropdown-item divided command="logout">
-                <span>退出登录</span>
+                <span>{{ $t('navbar.logout') }}</span>
               </el-dropdown-item>
             </el-dropdown-menu>
           </template>

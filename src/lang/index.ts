@@ -4,6 +4,7 @@ import { createI18n } from 'vue-i18n';
 // 本地语言包
 import enLocale from './en';
 import zhCnLocale from './zh-cn';
+import Cookies from 'js-cookie';
 
 const messages = {
   'zh-cn': {
@@ -16,12 +17,11 @@ const messages = {
 
 /**
  * 获取当前系统使用语言字符串
- *
  * @returns zh-cn|en ...
  */
 export const getLanguage = () => {
   // 本地缓存获取
-  let language = localStorage.getItem('language');
+  let language = Cookies.get('language');
   if (language) {
     return language;
   }
@@ -39,7 +39,7 @@ export const getLanguage = () => {
 const i18n = createI18n({
   legacy: false,
   locale: getLanguage(),
-  messages: messages
+  messages
 });
 
 export default i18n;

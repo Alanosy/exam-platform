@@ -6,20 +6,22 @@ export default {
   },
   // 登录页面国际化
   login: {
-    title: 'vue3-element-admin',
     username: 'Username',
     password: 'Password',
     login: 'Login',
     code: 'Verification Code',
-    copyright: '',
-    icp: '',
-    thirdPartyLogin: 'third-party login'
+    copyright: ''
   },
   // 导航栏国际化
   navbar: {
+    full: 'Full Screen',
+    language: 'Language',
     dashboard: 'Dashboard',
-    logout: 'Logout',
     document: 'Document',
-    gitee: 'Gitee'
+    layoutSize: 'Layout Size',
+    selectTenant: 'Select Tenant',
+    layoutSetting: 'Layout Setting',
+    personalCenter: 'Personal Center',
+    logout: 'Logout'
   }
 };
