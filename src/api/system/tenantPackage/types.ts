@@ -9,7 +9,6 @@ export interface TenantPkgVO extends BaseEntity {
 
 export interface TenantPkgQuery extends PageQuery {
   packageName: string;
-  status: string;
 }
 
 export interface TenantPkgForm {
@@ -18,5 +17,4 @@ export interface TenantPkgForm {
   menuIds: string;
   remark: string;
   menuCheckStrictly: boolean;
-  status: string;
 }

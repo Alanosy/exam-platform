@@ -135,16 +135,14 @@ const initFormData: TenantPkgForm = {
     packageName: '',
     menuIds: '',
     remark: '',
-    menuCheckStrictly: true,
-    status: ''
+    menuCheckStrictly: true
 };
 const data = reactive<PageData<TenantPkgForm, TenantPkgQuery>>({
     form: {...initFormData},
     queryParams: {
         pageNum: 1,
         pageSize: 10,
-        packageName: '',
-        status: '',
+        packageName: ''
     },
     rules: {
         packageId: [{ required: true, message: "租户套餐id不能为空", trigger: "blur" }],
