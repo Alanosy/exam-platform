@@ -137,6 +137,7 @@ aside {
   border: 1px solid var(--el-border-color-light);
   background-color: var(--el-bg-color-overlay);
   padding: 0.75rem;
+  transition: all ease 0.3s;
 
   &:hover {
     box-shadow: 0 2px 12px #0000001a;
