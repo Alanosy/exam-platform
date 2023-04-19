@@ -1,40 +1,42 @@
 <template>
   <div class="p-2">
     <transition :enter-active-class="proxy?.animate.searchAnimate.enter" :leave-active-class="proxy?.animate.searchAnimate.leave">
-      <div class="search" v-show="showSearch">
-        <el-form ref="queryFormRef" :model="queryParams" :inline="true" label-width="68px">
-          <el-form-item label="角色名称" prop="roleName">
-            <el-input v-model="queryParams.roleName" placeholder="请输入角色名称" clearable style="width: 240px" @keyup.enter="handleQuery" />
-          </el-form-item>
-          <el-form-item label="权限字符" prop="roleKey">
-            <el-input v-model="queryParams.roleKey" placeholder="请输入权限字符" clearable style="width: 240px" @keyup.enter="handleQuery" />
-          </el-form-item>
-          <el-form-item label="状态" prop="status">
-            <el-select v-model="queryParams.status" placeholder="角色状态" clearable style="width: 240px">
-              <el-option v-for="dict in sys_normal_disable" :key="dict.value" :label="dict.label" :value="dict.value" />
-            </el-select>
-          </el-form-item>
-          <el-form-item label="创建时间" style="width: 308px">
-            <el-date-picker
-              v-model="dateRange"
-              value-format="YYYY-MM-DD"
-              type="daterange"
-              range-separator="-"
-              start-placeholder="开始日期"
-              end-placeholder="结束日期"
-              :default-time="[new Date(2000, 1, 1, 0, 0, 0), new Date(2000, 1, 1, 23, 59, 59)]"
-            ></el-date-picker>
-          </el-form-item>
+      <div class="mb-[10px]" v-show="showSearch">
+        <el-card shadow="hover">
+          <el-form ref="queryFormRef" :model="queryParams" :inline="true" label-width="68px">
+            <el-form-item label="角色名称" prop="roleName">
+              <el-input v-model="queryParams.roleName" placeholder="请输入角色名称" clearable style="width: 240px" @keyup.enter="handleQuery" />
+            </el-form-item>
+            <el-form-item label="权限字符" prop="roleKey">
+              <el-input v-model="queryParams.roleKey" placeholder="请输入权限字符" clearable style="width: 240px" @keyup.enter="handleQuery" />
+            </el-form-item>
+            <el-form-item label="状态" prop="status">
+              <el-select v-model="queryParams.status" placeholder="角色状态" clearable style="width: 240px">
+                <el-option v-for="dict in sys_normal_disable" :key="dict.value" :label="dict.label" :value="dict.value" />
+              </el-select>
+            </el-form-item>
+            <el-form-item label="创建时间" style="width: 308px">
+              <el-date-picker
+                v-model="dateRange"
+                value-format="YYYY-MM-DD"
+                type="daterange"
+                range-separator="-"
+                start-placeholder="开始日期"
+                end-placeholder="结束日期"
+                :default-time="[new Date(2000, 1, 1, 0, 0, 0), new Date(2000, 1, 1, 23, 59, 59)]"
+              ></el-date-picker>
+            </el-form-item>
 
-          <el-form-item>
-            <el-button type="primary" @click="handleQuery" icon="Search">搜索</el-button>
-            <el-button @click="resetQuery" icon="Refresh">重置</el-button>
-          </el-form-item>
-        </el-form>
+            <el-form-item>
+              <el-button type="primary" @click="handleQuery" icon="Search">搜索</el-button>
+              <el-button @click="resetQuery" icon="Refresh">重置</el-button>
+            </el-form-item>
+          </el-form>
+        </el-card>
       </div>
     </transition>
 
-    <el-card shadow="never">
+    <el-card shadow="hover">
       <template #header>
         <el-row :gutter="10">
           <el-col :span="1.5">

@@ -1,28 +1,30 @@
 <template>
   <div class="p-2">
     <transition :enter-active-class="proxy?.animate.searchAnimate.enter" :leave-active-class="proxy?.animate.searchAnimate.leave">
-      <div class="search" v-show="showSearch">
-        <el-form :model="queryParams" ref="queryFormRef" :inline="true" label-width="68px">
-          <el-form-item label="部门id" prop="deptId">
-            <el-input v-model="queryParams.deptId" placeholder="请输入部门id" clearable @keyup.enter="handleQuery" />
-          </el-form-item>
-          <el-form-item label="用户id" prop="userId">
-            <el-input v-model="queryParams.userId" placeholder="请输入用户id" clearable @keyup.enter="handleQuery" />
-          </el-form-item>
-          <el-form-item label="排序号" prop="orderNum">
-            <el-input v-model="queryParams.orderNum" placeholder="请输入排序号" clearable @keyup.enter="handleQuery" />
-          </el-form-item>
-          <el-form-item label="key键" prop="testKey">
-            <el-input v-model="queryParams.testKey" placeholder="请输入key键" clearable @keyup.enter="handleQuery" />
-          </el-form-item>
-          <el-form-item label="值" prop="value">
-            <el-input v-model="queryParams.value" placeholder="请输入值" clearable @keyup.enter="handleQuery" />
-          </el-form-item>
-          <el-form-item>
-            <el-button type="primary" icon="Search" @click="handleQuery">搜索</el-button>
-            <el-button icon="Refresh" @click="resetQuery">重置</el-button>
-          </el-form-item>
-        </el-form>
+      <div class="mb-[10px]" v-show="showSearch">
+        <el-card shadow="hover">
+          <el-form :model="queryParams" ref="queryFormRef" :inline="true" label-width="68px">
+            <el-form-item label="部门id" prop="deptId">
+              <el-input v-model="queryParams.deptId" placeholder="请输入部门id" clearable @keyup.enter="handleQuery" />
+            </el-form-item>
+            <el-form-item label="用户id" prop="userId">
+              <el-input v-model="queryParams.userId" placeholder="请输入用户id" clearable @keyup.enter="handleQuery" />
+            </el-form-item>
+            <el-form-item label="排序号" prop="orderNum">
+              <el-input v-model="queryParams.orderNum" placeholder="请输入排序号" clearable @keyup.enter="handleQuery" />
+            </el-form-item>
+            <el-form-item label="key键" prop="testKey">
+              <el-input v-model="queryParams.testKey" placeholder="请输入key键" clearable @keyup.enter="handleQuery" />
+            </el-form-item>
+            <el-form-item label="值" prop="value">
+              <el-input v-model="queryParams.value" placeholder="请输入值" clearable @keyup.enter="handleQuery" />
+            </el-form-item>
+            <el-form-item>
+              <el-button type="primary" icon="Search" @click="handleQuery">搜索</el-button>
+              <el-button icon="Refresh" @click="resetQuery">重置</el-button>
+            </el-form-item>
+          </el-form>
+        </el-card>
       </div>
     </transition>
 
@@ -36,7 +38,9 @@
             <el-button type="success" plain icon="Edit" :disabled="single" @click="handleUpdate()" v-hasPermi="['demo:demo:edit']">修改</el-button>
           </el-col>
           <el-col :span="1.5">
-            <el-button type="danger" plain icon="Delete" :disabled="multiple" @click="handleDelete()" v-hasPermi="['demo:demo:remove']">删除</el-button>
+            <el-button type="danger" plain icon="Delete" :disabled="multiple" @click="handleDelete()" v-hasPermi="['demo:demo:remove']"
+              >删除</el-button
+            >
           </el-col>
           <el-col :span="1.5">
             <el-button type="warning" plain icon="Download" @click="handleExport" v-hasPermi="['demo:demo:export']">导出</el-button>
@@ -65,13 +69,7 @@
         </el-table-column>
       </el-table>
 
-      <pagination
-          v-show="total>0"
-          :total="total"
-          v-model:page="queryParams.pageNum"
-          v-model:limit="queryParams.pageSize"
-          @pagination="getList"
-      />
+      <pagination v-show="total>0" :total="total" v-model:page="queryParams.pageNum" v-model:limit="queryParams.pageSize" @pagination="getList" />
     </el-card>
     <!-- 添加或修改测试单对话框 -->
     <el-dialog :title="dialog.title" v-model="dialog.visible" width="500px" append-to-body>

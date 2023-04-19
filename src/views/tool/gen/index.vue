@@ -1,36 +1,38 @@
 <template>
   <div class="p-2">
     <transition :enter-active-class="proxy?.animate.searchAnimate.enter" :leave-active-class="proxy?.animate.searchAnimate.leave">
-      <div class="search" v-show="showSearch">
-        <el-form :model="queryParams" ref="queryFormRef" :inline="true" label-width="68px">
-          <el-form-item label="数据源" prop="dataName">
-            <el-input v-model="queryParams.dataName" placeholder="请输入数据源名称" clearable style="width: 200px" @keyup.enter="handleQuery" />
-          </el-form-item>
-          <el-form-item label="表名称" prop="tableName">
-            <el-input v-model="queryParams.tableName" placeholder="请输入表名称" clearable style="width: 200px" @keyup.enter="handleQuery" />
-          </el-form-item>
-          <el-form-item label="表描述" prop="tableComment">
-            <el-input v-model="queryParams.tableComment" placeholder="请输入表描述" clearable style="width: 200px" @keyup.enter="handleQuery" />
-          </el-form-item>
-          <el-form-item label="创建时间" style="width: 308px">
-            <el-date-picker
-              v-model="dateRange"
-              value-format="YYYY-MM-DD"
-              type="daterange"
-              range-separator="-"
-              start-placeholder="开始日期"
-              end-placeholder="结束日期"
-            ></el-date-picker>
-          </el-form-item>
-          <el-form-item>
-            <el-button type="primary" icon="Search" @click="handleQuery">搜索</el-button>
-            <el-button icon="Refresh" @click="resetQuery">重置</el-button>
-          </el-form-item>
-        </el-form>
+      <div class="mb-[10px]" v-show="showSearch">
+        <el-card shadow="hover">
+          <el-form :model="queryParams" ref="queryFormRef" :inline="true" label-width="68px">
+            <el-form-item label="数据源" prop="dataName">
+              <el-input v-model="queryParams.dataName" placeholder="请输入数据源名称" clearable style="width: 200px" @keyup.enter="handleQuery" />
+            </el-form-item>
+            <el-form-item label="表名称" prop="tableName">
+              <el-input v-model="queryParams.tableName" placeholder="请输入表名称" clearable style="width: 200px" @keyup.enter="handleQuery" />
+            </el-form-item>
+            <el-form-item label="表描述" prop="tableComment">
+              <el-input v-model="queryParams.tableComment" placeholder="请输入表描述" clearable style="width: 200px" @keyup.enter="handleQuery" />
+            </el-form-item>
+            <el-form-item label="创建时间" style="width: 308px">
+              <el-date-picker
+                v-model="dateRange"
+                value-format="YYYY-MM-DD"
+                type="daterange"
+                range-separator="-"
+                start-placeholder="开始日期"
+                end-placeholder="结束日期"
+              ></el-date-picker>
+            </el-form-item>
+            <el-form-item>
+              <el-button type="primary" icon="Search" @click="handleQuery">搜索</el-button>
+              <el-button icon="Refresh" @click="resetQuery">重置</el-button>
+            </el-form-item>
+          </el-form>
+        </el-card>
       </div>
     </transition>
 
-    <el-card shadow="never">
+    <el-card shadow="hover">
       <template #header>
         <el-row :gutter="10" class="mb8">
           <el-col :span="1.5">

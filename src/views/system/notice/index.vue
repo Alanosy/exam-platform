@@ -1,28 +1,30 @@
 <template>
   <div class="p-2">
     <transition :enter-active-class="proxy?.animate.searchAnimate.enter" :leave-active-class="proxy?.animate.searchAnimate.leave">
-      <div class="search" v-show="showSearch">
-        <el-form :model="queryParams" ref="queryFormRef" :inline="true" label-width="68px">
-          <el-form-item label="公告标题" prop="noticeTitle">
-            <el-input v-model="queryParams.noticeTitle" placeholder="请输入公告标题" clearable style="width: 200px" @keyup.enter="handleQuery" />
-          </el-form-item>
-          <el-form-item label="操作人员" prop="createByName">
-            <el-input v-model="queryParams.createByName" placeholder="请输入操作人员" clearable style="width: 200px" @keyup.enter="handleQuery" />
-          </el-form-item>
-          <el-form-item label="类型" prop="noticeType">
-            <el-select v-model="queryParams.noticeType" placeholder="公告类型" clearable style="width: 200px">
-              <el-option v-for="dict in sys_notice_type" :key="dict.value" :label="dict.label" :value="dict.value" />
-            </el-select>
-          </el-form-item>
-          <el-form-item>
-            <el-button type="primary" icon="Search" @click="handleQuery">搜索</el-button>
-            <el-button icon="Refresh" @click="resetQuery">重置</el-button>
-          </el-form-item>
-        </el-form>
+      <div class="mb-[10px]" v-show="showSearch">
+        <el-card shadow="hover">
+          <el-form :model="queryParams" ref="queryFormRef" :inline="true" label-width="68px">
+            <el-form-item label="公告标题" prop="noticeTitle">
+              <el-input v-model="queryParams.noticeTitle" placeholder="请输入公告标题" clearable style="width: 200px" @keyup.enter="handleQuery" />
+            </el-form-item>
+            <el-form-item label="操作人员" prop="createByName">
+              <el-input v-model="queryParams.createByName" placeholder="请输入操作人员" clearable style="width: 200px" @keyup.enter="handleQuery" />
+            </el-form-item>
+            <el-form-item label="类型" prop="noticeType">
+              <el-select v-model="queryParams.noticeType" placeholder="公告类型" clearable style="width: 200px">
+                <el-option v-for="dict in sys_notice_type" :key="dict.value" :label="dict.label" :value="dict.value" />
+              </el-select>
+            </el-form-item>
+            <el-form-item>
+              <el-button type="primary" icon="Search" @click="handleQuery">搜索</el-button>
+              <el-button icon="Refresh" @click="resetQuery">重置</el-button>
+            </el-form-item>
+          </el-form>
+        </el-card>
       </div>
     </transition>
 
-    <el-card shadow="never">
+    <el-card shadow="hover">
       <template #header>
         <el-row :gutter="10" class="mb8">
           <el-col :span="1.5">

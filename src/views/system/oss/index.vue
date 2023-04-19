@@ -1,40 +1,42 @@
 <template>
   <div class="p-2">
     <transition :enter-active-class="proxy?.animate.searchAnimate.enter" :leave-active-class="proxy?.animate.searchAnimate.leave">
-      <div class="search" v-show="showSearch">
-        <el-form :model="queryParams" ref="queryFormRef" :inline="true" label-width="68px">
-          <el-form-item label="文件名" prop="fileName">
-            <el-input v-model="queryParams.fileName" placeholder="请输入文件名" clearable style="width: 200px" @keyup.enter="handleQuery" />
-          </el-form-item>
-          <el-form-item label="原名" prop="originalName">
-            <el-input v-model="queryParams.originalName" placeholder="请输入原名" clearable style="width: 200px" @keyup.enter="handleQuery" />
-          </el-form-item>
-          <el-form-item label="文件后缀" prop="fileSuffix">
-            <el-input v-model="queryParams.fileSuffix" placeholder="请输入文件后缀" clearable style="width: 200px" @keyup.enter="handleQuery" />
-          </el-form-item>
-          <el-form-item label="创建时间">
-            <el-date-picker
-              v-model="daterangeCreateTime"
-              value-format="YYYY-MM-DD HH:mm:ss"
-              type="daterange"
-              range-separator="-"
-              start-placeholder="开始日期"
-              end-placeholder="结束日期"
-              :default-time="[new Date(2000, 1, 1, 0, 0, 0), new Date(2000, 1, 1, 23, 59, 59)]"
-            ></el-date-picker>
-          </el-form-item>
-          <el-form-item label="服务商" prop="service">
-            <el-input v-model="queryParams.service" placeholder="请输入服务商" clearable style="width: 200px" @keyup.enter="handleQuery" />
-          </el-form-item>
-          <el-form-item>
-            <el-button type="primary" icon="search" @click="handleQuery">搜索</el-button>
-            <el-button icon="Refresh" @click="resetQuery">重置</el-button>
-          </el-form-item>
-        </el-form>
+      <div class="mb-[10px]" v-show="showSearch">
+        <el-card shadow="hover">
+          <el-form :model="queryParams" ref="queryFormRef" :inline="true" label-width="68px">
+            <el-form-item label="文件名" prop="fileName">
+              <el-input v-model="queryParams.fileName" placeholder="请输入文件名" clearable style="width: 200px" @keyup.enter="handleQuery" />
+            </el-form-item>
+            <el-form-item label="原名" prop="originalName">
+              <el-input v-model="queryParams.originalName" placeholder="请输入原名" clearable style="width: 200px" @keyup.enter="handleQuery" />
+            </el-form-item>
+            <el-form-item label="文件后缀" prop="fileSuffix">
+              <el-input v-model="queryParams.fileSuffix" placeholder="请输入文件后缀" clearable style="width: 200px" @keyup.enter="handleQuery" />
+            </el-form-item>
+            <el-form-item label="创建时间">
+              <el-date-picker
+                v-model="daterangeCreateTime"
+                value-format="YYYY-MM-DD HH:mm:ss"
+                type="daterange"
+                range-separator="-"
+                start-placeholder="开始日期"
+                end-placeholder="结束日期"
+                :default-time="[new Date(2000, 1, 1, 0, 0, 0), new Date(2000, 1, 1, 23, 59, 59)]"
+              ></el-date-picker>
+            </el-form-item>
+            <el-form-item label="服务商" prop="service">
+              <el-input v-model="queryParams.service" placeholder="请输入服务商" clearable style="width: 200px" @keyup.enter="handleQuery" />
+            </el-form-item>
+            <el-form-item>
+              <el-button type="primary" icon="search" @click="handleQuery">搜索</el-button>
+              <el-button icon="Refresh" @click="resetQuery">重置</el-button>
+            </el-form-item>
+          </el-form>
+        </el-card>
       </div>
     </transition>
 
-    <el-card shadow="never">
+    <el-card shadow="hover">
       <template #header>
         <el-row :gutter="10" class="mb8">
           <el-col :span="1.5">
