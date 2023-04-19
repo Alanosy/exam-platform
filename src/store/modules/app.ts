@@ -1,46 +1,42 @@
-import Cookies from 'js-cookie';
 import zhCN from 'element-plus/es/locale/lang/zh-cn';
 import enUS from 'element-plus/es/locale/lang/en';
 
 export const useAppStore = defineStore('app', () => {
-  const sidebarStatus = Cookies.get('sidebarStatus');
+  const sidebarStatus = useStorage('sidebarStatus', '1');
   const sidebar = reactive({
-    opened: sidebarStatus ? !!+sidebarStatus : true,
+    opened: sidebarStatus.value ? !!+sidebarStatus.value : true,
     withoutAnimation: false,
     hide: false
   });
   const device = ref<string>('desktop');
-  const size = ref(Cookies.get('size') || 'default');
+  const size = useStorage('size', 'default');
 
   // 语言
-  const language = ref(Cookies.get('language'));
+  const language = useStorage('language', 'zh_CN');
   const languageObj: any = {
     en_US: enUS,
     zh_CN: zhCN
   };
   const locale = computed(() => {
-    if (!language.value) {
-      return zhCN;
-    }
     return languageObj[language.value];
   });
 
-  const toggleSideBar = (withoutAnimation?: boolean) => {
+  const toggleSideBar = (withoutAnimation: boolean) => {
     if (sidebar.hide) {
       return false;
     }
 
     sidebar.opened = !sidebar.opened;
-    sidebar.withoutAnimation = withoutAnimation as boolean;
+    sidebar.withoutAnimation = withoutAnimation;
     if (sidebar.opened) {
-      Cookies.set('sidebarStatus', '1');
+      sidebarStatus.value = '1';
     } else {
-      Cookies.set('sidebarStatus', '0');
+      sidebarStatus.value = '0';
     }
   };
 
   const closeSideBar = ({ withoutAnimation }: any): void => {
-    Cookies.set('sidebarStatus', '0');
+    sidebarStatus.value = '0';
     sidebar.opened = false;
     sidebar.withoutAnimation = withoutAnimation;
   };
@@ -49,7 +45,6 @@ export const useAppStore = defineStore('app', () => {
   };
   const setSize = (s: string): void => {
     size.value = s;
-    Cookies.set('size', s);
   };
   const toggleSideBarHide = (status: boolean): void => {
     sidebar.hide = status;
@@ -57,7 +52,6 @@ export const useAppStore = defineStore('app', () => {
 
   const changeLanguage = (val: string): void => {
     language.value = val;
-    Cookies.set('language', val);
   };
 
   return {

@@ -1,9 +1,9 @@
-import Cookies from 'js-cookie';
-
 const TokenKey = 'Admin-Token';
 
-export const getToken = () => Cookies.get(TokenKey);
+const tokenStorage = useStorage<null | string>(TokenKey, null);
 
-export const setToken = (token: string) => Cookies.set(TokenKey, token);
+export const getToken = () => tokenStorage.value;
 
-export const removeToken = () => Cookies.remove(TokenKey);
+export const setToken = (token: string) => (tokenStorage.value = token);
+
+export const removeToken = () => (tokenStorage.value = null);
