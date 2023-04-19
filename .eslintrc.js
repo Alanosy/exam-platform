@@ -29,7 +29,8 @@ module.exports = {
         // 关闭空类型检查 {}
         extendDefaults: true,
         types: {
-          '{}': false
+          '{}': false,
+          'Function': false
         }
       }
     ]

@@ -17,7 +17,7 @@
   </div>
 </template>
 
-<script setup lang="ts">
+<script setup lang="ts" name="HeaderSearch">
 import Fuse from 'fuse.js'
 import { getNormalPath } from '@/utils/ruoyi'
 import { isHttp } from '@/utils/validate'
@@ -123,9 +123,9 @@ onMounted(() => {
     searchPool.value = generateRoutes(routes.value);
 })
 
-watchEffect(() => {
-    searchPool.value = generateRoutes(routes.value)
-})
+// watchEffect(() => {
+//     searchPool.value = generateRoutes(routes.value)
+// })
 
 watch(show, (value) => {
     if (value) {

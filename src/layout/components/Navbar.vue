@@ -20,8 +20,13 @@
           <template #prefix><svg-icon icon-class="company" class="el-input__icon input-icon" /></template>
         </el-select>
 
-        <header-search id="header-search" class="right-menu-item" />
-
+        <!-- <header-search id="header-search" class="right-menu-item" /> -->
+        <search-menu ref="searchMenuRef" />
+        <el-tooltip content="搜索" effect="dark" placement="bottom">
+          <div class="right-menu-item hover-effect" @click="openSearchMenu">
+            <svg-icon class-name="search-icon" icon-class="search" />
+          </div>
+        </el-tooltip>
         <el-tooltip content="Github" effect="dark" placement="bottom">
           <ruo-yi-git id="ruoyi-git" class="right-menu-item hover-effect" />
         </el-tooltip>
@@ -68,6 +73,7 @@
 </template>
 
 <script setup lang="ts">
+import SearchMenu from './topBar/search.vue'
 import useAppStore from '@/store/modules/app'
 import useUserStore from '@/store/modules/user'
 import useSettingsStore from '@/store/modules/settings'
@@ -89,6 +95,12 @@ const tenantList = ref<TenantVO[]>([]);
 const dynamic = ref(false);
 // 租户开关
 const tenantEnabled = ref(true);
+// 搜索菜单
+const searchMenuRef = ref<InstanceType<typeof SearchMenu>>();
+
+const openSearchMenu = () => {
+  searchMenuRef.value?.openSearch()
+}
 
 // 动态切换
 const dynamicTenantEvent = async (tenantId: string) => {
