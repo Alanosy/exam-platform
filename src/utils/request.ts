@@ -7,14 +7,13 @@ import { HttpStatus } from '@/enums/RespEnum';
 import { errorCode } from '@/utils/errorCode';
 import { LoadingInstance } from 'element-plus/es/components/loading/src/loading';
 import FileSaver from 'file-saver';
+import { getLanguage } from '@/lang';
 
 let downloadLoadingInstance: LoadingInstance;
 // 是否显示重新登录
 export const isRelogin = { show: false };
 
 axios.defaults.headers['Content-Type'] = 'application/json;charset=utf-8';
-// 对应国际化资源文件后缀
-axios.defaults.headers['Content-Language'] = 'zh_CN';
 // 创建 axios 实例
 const service = axios.create({
   baseURL: import.meta.env.VITE_APP_BASE_API,
@@ -24,6 +23,9 @@ const service = axios.create({
 // 请求拦截器
 service.interceptors.request.use(
   (config: InternalAxiosRequestConfig) => {
+    // 对应国际化资源文件后缀
+    config.headers['Content-Language'] = getLanguage();
+
     const isToken = (config.headers || {}).isToken === false;
     // 是否需要防止数据重复提交
     const isRepeatSubmit = (config.headers || {}).repeatSubmit === false;

@@ -2,16 +2,16 @@
 import { createI18n } from 'vue-i18n';
 
 // 本地语言包
-import enLocale from './en';
-import zhCnLocale from './zh-cn';
+import enUSLocale from './en_US';
+import zhCNLocale from './zh_CN';
 import Cookies from 'js-cookie';
 
 const messages = {
-  'zh-cn': {
-    ...zhCnLocale
+  zh_CN: {
+    ...zhCNLocale
   },
-  en: {
-    ...enLocale
+  en_US: {
+    ...enUSLocale
   }
 };
 
@@ -33,7 +33,7 @@ export const getLanguage = () => {
       return locale;
     }
   }
-  return 'zh-cn';
+  return 'zh_CN';
 };
 
 const i18n = createI18n({

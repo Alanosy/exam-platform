@@ -1,6 +1,6 @@
 import Cookies from 'js-cookie';
-import zhCn from 'element-plus/es/locale/lang/zh-cn';
-import en from 'element-plus/es/locale/lang/en';
+import zhCN from 'element-plus/es/locale/lang/zh-cn';
+import enUS from 'element-plus/es/locale/lang/en';
 
 export const useAppStore = defineStore('app', () => {
   const sidebarStatus = Cookies.get('sidebarStatus');
@@ -11,14 +11,18 @@ export const useAppStore = defineStore('app', () => {
   });
   const device = ref<string>('desktop');
   const size = ref(Cookies.get('size') || 'default');
+
   // 语言
   const language = ref(Cookies.get('language'));
+  const languageObj: any = {
+    en_US: enUS,
+    zh_CN: zhCN
+  };
   const locale = computed(() => {
-    if (language.value == 'en') {
-      return en;
-    } else {
-      return zhCn;
+    if (!language.value) {
+      return zhCN;
     }
+    return languageObj[language.value];
   });
 
   const toggleSideBar = (withoutAnimation?: boolean) => {
