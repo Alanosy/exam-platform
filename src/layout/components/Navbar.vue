@@ -121,7 +121,7 @@ defineExpose({
 })
 
 const toggleSideBar = () => {
-    appStore.toggleSideBar()
+    appStore.toggleSideBar(false)
 }
 
 const logout = async () => {
