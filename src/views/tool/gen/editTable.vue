@@ -136,54 +136,53 @@ const genInfo = ref(genInfoForm);
 
 /** 提交按钮 */
 const submitForm = () => {
-    const basicForm = basicInfo.value.$refs.basicInfoForm;
-    const genForm = genInfo.value.$refs.genInfoForm;
+  const basicForm = basicInfo.value.$refs.basicInfoForm;
+  const genForm = genInfo.value.$refs.genInfoForm;
 
-    Promise.all([basicForm, genForm].map(getFormPromise)).then(async res => {
-        const validateResult = res.every(item => !!item);
-        if (validateResult) {
-            const genTable: any = Object.assign({}, info.value);
-            genTable.columns = columns.value;
-            genTable.params = {
-                treeCode: info.value?.treeCode,
-                treeName: info.value.treeName,
-                treeParentCode: info.value.treeParentCode,
-                parentMenuId: info.value.parentMenuId
-            };
-            const response = await updateGenTable(genTable);
-            proxy?.$modal.msgSuccess(response.msg);
-            if (response.code === 200) {
-                close();
-            }
-        } else {
-            proxy?.$modal.msgError("表单校验未通过，请重新检查提交内容");
-        }
-    });
+  Promise.all([basicForm, genForm].map(getFormPromise)).then(async res => {
+    const validateResult = res.every(item => !!item);
+    if (validateResult) {
+      const genTable: any = Object.assign({}, info.value);
+      genTable.columns = columns.value;
+      genTable.params = {
+        treeCode: info.value?.treeCode,
+        treeName: info.value.treeName,
+        treeParentCode: info.value.treeParentCode,
+        parentMenuId: info.value.parentMenuId
+      };
+      const response = await updateGenTable(genTable);
+      proxy?.$modal.msgSuccess(response.msg);
+      if (response.code === 200) {
+        close();
+      }
+    } else {
+      proxy?.$modal.msgError("表单校验未通过，请重新检查提交内容");
+    }
+  });
 }
 const getFormPromise = (form: any) => {
-    return new Promise(resolve => {
-        form.validate((res: any) => {
-            resolve(res);
-        });
+  return new Promise(resolve => {
+    form.validate((res: any) => {
+      resolve(res);
     });
+  });
 }
 const close = () => {
-    const obj = { path: "/tool/gen", query: { t: Date.now(), pageNum: route.query.pageNum } };
-    proxy?.$tab.closeOpenPage(obj);
+  const obj = {path: "/tool/gen", query: {t: Date.now(), pageNum: route.query.pageNum}};
+  proxy?.$tab.closeOpenPage(obj);
 }
 
 (async () => {
-    const tableId = route.params && route.params.tableId as string;
-    if (tableId) {
-        // 获取表详细信息
-      const res = await getGenTable(tableId);
-        res.data.info.parentMenuId = Number(res.data.info.parentMenuId);
-        columns.value = res.data.rows;
-        info.value = res.data.info;
-        tables.value = res.data.tables;
-        /** 查询字典下拉列表 */
-        const response = await getDictOptionselect();
-        dictOptions.value = response.data;
-    }
+  const tableId = route.params && route.params.tableId as string;
+  if (tableId) {
+    // 获取表详细信息
+    const res = await getGenTable(tableId);
+    columns.value = res.data.rows;
+    info.value = res.data.info;
+    tables.value = res.data.tables;
+    /** 查询字典下拉列表 */
+    const response = await getDictOptionselect();
+    dictOptions.value = response.data;
+  }
 })();
 </script>
