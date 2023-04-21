@@ -237,8 +237,8 @@ onMounted(() => {
 .tags-view-container {
   height: 34px;
   width: 100%;
-  background: #fff;
-  border-bottom: 1px solid #d8dce5;
+  background-color: var(--el-bg-color);
+  border: 1px solid var(--el-border-color-light);
   box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.12), 0 0 3px 0 rgba(0, 0, 0, 0.04);
   .tags-view-wrapper {
     .tags-view-item {
@@ -247,13 +247,15 @@ onMounted(() => {
       cursor: pointer;
       height: 26px;
       line-height: 26px;
-      border: 1px solid #d8dce5;
-      color: #495060;
-      background: #fff;
+      background-color: var(--el-bg-color);
+      border: 1px solid var(--el-border-color-light);
       padding: 0 8px;
       font-size: 12px;
       margin-left: 5px;
       margin-top: 4px;
+      &:hover {
+        color: var(--el-color-primary);
+      }
       &:first-of-type {
         margin-left: 15px;
       }
@@ -279,7 +281,7 @@ onMounted(() => {
   }
   .contextmenu {
     margin: 0;
-    background: #fff;
+    background: var(--el-bg-color);
     z-index: 3000;
     position: absolute;
     list-style-type: none;

@@ -1,8 +1,7 @@
 <template>
   <el-drawer v-model="showSettings" :withHeader="false" direction="rtl" size="300px" close-on-click-modal>
-    <div class="setting-drawer-title">
-      <h3 class="drawer-title">主题风格设置</h3>
-    </div>
+    <h3 class="drawer-title">主题风格设置</h3>
+
     <div class="setting-drawer-block-checbox">
       <div class="setting-drawer-block-checbox-item" @click="handleTheme('theme-dark')">
         <img src="@/assets/images/dark.svg" alt="dark" />
@@ -35,6 +34,13 @@
         <el-color-picker v-model="theme" :predefine="predefineColors" @change="themeChange" />
       </span>
     </div>
+    <div class="drawer-item">
+      <span>深色模式</span>
+      <span class="comp-style">
+        <el-switch v-model="isDark" @change="toggleDark" class="drawer-switch" />
+      </span>
+    </div>
+
     <el-divider />
 
     <h3 class="drawer-title">系统布局配置</h3>
@@ -102,7 +108,15 @@ const sideTheme = ref(settingsStore.sideTheme);
 const storeSettings = computed(() => settingsStore);
 const predefineColors = ref(["#409EFF", "#ff4500", "#ff8c00", "#ffd700", "#90ee90", "#00ced1", "#1e90ff", "#c71585"]);
 
-/** 是否需要topnav */
+// 是否暗黑模式
+const isDark = useDark({
+  storageKey: 'useDarkKey',
+  valueDark: 'dark',
+  valueLight: 'light',
+});
+const toggleDark = () => useToggle(isDark);
+
+/** 是否需要topNav */
 const topNav = computed({
     get: () => storeSettings.value.topNav,
     set: (val) => {
@@ -234,7 +248,6 @@ defineExpose({
 }
 
 .drawer-item {
-  color: rgba(0, 0, 0, 0.65);
   padding: 12px 0;
   font-size: 14px;
 

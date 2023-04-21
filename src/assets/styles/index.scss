@@ -26,6 +26,10 @@ html {
   box-sizing: border-box;
 }
 
+html.dark .svg-icon, html.dark svg {
+  fill: var(--el-text-color-regular);
+}
+
 #app {
   height: 100%;
 }

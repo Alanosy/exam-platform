@@ -106,7 +106,6 @@ function handleCurrentChange(val: number) {
 
 <style lang="scss" scoped>
 .pagination-container {
-  background: #fff;
   padding: 32px 16px;
   .el-pagination{
     float: v-bind(float);

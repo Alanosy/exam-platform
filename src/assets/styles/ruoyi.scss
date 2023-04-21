@@ -90,8 +90,8 @@ h6 {
   .el-table__fixed-header-wrapper {
     th {
       word-break: break-word;
-      background-color: #f8f8f9 !important;
-      color: #515a6e;
+      background-color: $table-header-bg !important;
+      color: $table-header-text-color;
       height: 40px !important;
       font-size: 13px;
     }
