@@ -73,18 +73,18 @@
 </template>
 
 <script setup lang="ts">
-import SearchMenu from './topBar/search.vue'
-import useAppStore from '@/store/modules/app'
-import useUserStore from '@/store/modules/user'
-import useSettingsStore from '@/store/modules/settings'
+import SearchMenu from './topBar/search.vue';
+import useAppStore from '@/store/modules/app';
+import useUserStore from '@/store/modules/user';
+import useSettingsStore from '@/store/modules/settings';
 import { getTenantList } from "@/api/login";
 import { dynamicClear, dynamicTenant } from "@/api/system/tenant";
 import { ComponentInternalInstance } from "vue";
 import { TenantVO } from "@/api/types";
 
-const appStore = useAppStore()
-const userStore = useUserStore()
-const settingsStore = useSettingsStore()
+const appStore = useAppStore();
+const userStore = useUserStore();
+const settingsStore = useSettingsStore();
 
 const { proxy } = getCurrentInstance() as ComponentInternalInstance;
 
@@ -99,48 +99,48 @@ const tenantEnabled = ref(true);
 const searchMenuRef = ref<InstanceType<typeof SearchMenu>>();
 
 const openSearchMenu = () => {
-  searchMenuRef.value?.openSearch()
+  searchMenuRef.value?.openSearch();
 }
 
 // 动态切换
 const dynamicTenantEvent = async (tenantId: string) => {
-    if (companyName.value != null && companyName.value !== '') {
-        await dynamicTenant(tenantId);
-        dynamic.value = true;
-        proxy?.$tab.closeAllPage();
-        proxy?.$router.push('/');
-    }
+  if (companyName.value != null && companyName.value !== '') {
+    await dynamicTenant(tenantId);
+    dynamic.value = true;
+    proxy?.$tab.closeAllPage();
+    proxy?.$router.push('/');
+  }
 }
 
 const dynamicClearEvent = async () => {
-    await dynamicClear();
-    dynamic.value = false;
-    proxy?.$tab.closeAllPage();
-    proxy?.$router.push('/')
+  await dynamicClear();
+  dynamic.value = false;
+  proxy?.$tab.closeAllPage();
+  proxy?.$router.push('/');
 }
 
 /** 租户列表 */
 const initTenantList = async () => {
-    const { data } = await getTenantList();
-    tenantEnabled.value = data.tenantEnabled === undefined ? true : data.tenantEnabled;
-    if (tenantEnabled.value) {
-        tenantList.value = data.voList;
-    }
+  const { data } = await getTenantList();
+  tenantEnabled.value = data.tenantEnabled === undefined ? true : data.tenantEnabled;
+  if (tenantEnabled.value) {
+    tenantList.value = data.voList;
+  }
 }
 
 defineExpose({
-    initTenantList,
+  initTenantList,
 })
 
 const toggleSideBar = () => {
-    appStore.toggleSideBar(false)
+  appStore.toggleSideBar(false);
 }
 
 const logout = async () => {
     await ElMessageBox.confirm('确定注销并退出系统吗？', '提示', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
-        type: 'warning'
+      confirmButtonText: '确定',
+      cancelButtonText: '取消',
+      type: 'warning'
     })
     await userStore.logout()
     location.href = import.meta.env.VITE_APP_CONTEXT_PATH + 'index';

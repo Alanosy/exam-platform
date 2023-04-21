@@ -87,12 +87,12 @@ const generateRoutes = (routes: RouteOption[], basePath = '', prefixTitle: strin
 					title: [...prefixTitle]
 				}
 				if (r.meta && r.meta.title) {
-						data.title = [...data.title, r.meta.title];
-						if (r.redirect !== 'noRedirect') {
-								// only push the routes with title
-								// special case: need to exclude parent router without redirect
-								res.push(data);
-						}
+					data.title = [...data.title, r.meta.title];
+					if (r.redirect !== 'noRedirect') {
+						// only push the routes with title
+						// special case: need to exclude parent router without redirect
+            res.push(data);
+					}
 				}
 				// recursive child routes
 				if (r.children) {
@@ -114,11 +114,11 @@ const generateRoutes = (routes: RouteOption[], basePath = '', prefixTitle: strin
 const onHandleSelect = (val: any) => {
 	const paths = val.path;
 	if (isHttp(paths)) {
-			// http(s):// 路径新窗口打开
-			const pindex = paths.indexOf("http");
-			window.open(paths.substring(pindex, paths.length), "_blank");
+		// http(s):// 路径新窗口打开
+		const pindex = paths.indexOf("http");
+		window.open(paths.substring(pindex, paths.length), "_blank");
 	} else {
-			router.push(paths)
+		router.push(paths);
 	}
 	state.menuQuery = ''
 	closeSearch();
