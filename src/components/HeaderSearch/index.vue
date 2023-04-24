@@ -18,11 +18,12 @@
 </template>
 
 <script setup lang="ts" name="HeaderSearch">
-import Fuse from 'fuse.js'
-import { getNormalPath } from '@/utils/ruoyi'
-import { isHttp } from '@/utils/validate'
-import usePermissionStore from '@/store/modules/permission'
-import { RouteOption } from 'vue-router'
+import Fuse from 'fuse.js';
+import { getNormalPath } from '@/utils/ruoyi';
+import { isHttp } from '@/utils/validate';
+import usePermissionStore from '@/store/modules/permission';
+import { RouteOption } from 'vue-router';
+import { ElSelect } from 'element-plus';
 
 type Router = Array<{
     path: string;
