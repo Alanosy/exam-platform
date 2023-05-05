@@ -138,7 +138,7 @@
             :total="total"
             v-model:page="queryParams.pageNum"
             v-model:limit="queryParams.pageSize"
-            @pagination="handleQuery"
+            @pagination="getList"
           />
         </el-card>
       </el-col>
