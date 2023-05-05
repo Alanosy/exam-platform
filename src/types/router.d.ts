@@ -13,6 +13,7 @@ declare module 'vue-router' {
       title: string;
       icon: string;
     };
+    query?: string;
   } & RouteRecordRaw;
 
   interface _RouteLocationBase {
