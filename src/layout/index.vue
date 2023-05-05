@@ -1,16 +1,22 @@
 <template>
   <div :class="classObj" class="app-wrapper" :style="{ '--current-color': theme }">
-    <div v-if="device === 'mobile' && sidebar.opened" class="drawer-bg" @click="handleClickOutside"/>
+    <div v-if="device === 'mobile' && sidebar.opened" class="drawer-bg" @click="handleClickOutside" />
     <side-bar v-if="!sidebar.hide" class="sidebar-container" />
     <div :class="{ hasTagsView: needTagsView, sidebarHide: sidebar.hide }" class="main-container">
-      <el-scrollbar>
+      <!-- <el-scrollbar>
         <div :class="{ 'fixed-header': fixedHeader }">
-            <navbar ref="navbarRef" @setLayout="setLayout" />
-            <tags-view v-if="needTagsView" />
+          <navbar ref="navbarRef" @setLayout="setLayout" />
+          <tags-view v-if="needTagsView" />
         </div>
         <app-main />
         <settings ref="settingRef" />
-      </el-scrollbar>
+      </el-scrollbar> -->
+      <div :class="{ 'fixed-header': fixedHeader }">
+        <navbar ref="navbarRef" @setLayout="setLayout" />
+        <tags-view v-if="needTagsView" />
+      </div>
+      <app-main />
+      <settings ref="settingRef" />
     </div>
   </div>
 </template>
@@ -54,17 +60,17 @@ const navbarRef = ref(Navbar);
 const settingRef = ref(Settings);
 
 onMounted(() => {
-    nextTick(() => {
-        navbarRef.value.initTenantList();
-    })
+  nextTick(() => {
+    navbarRef.value.initTenantList();
+  })
 })
 
 const handleClickOutside = () => {
-    useAppStore().closeSideBar({ withoutAnimation: false })
+  useAppStore().closeSideBar({ withoutAnimation: false })
 }
 
 const setLayout = () => {
-    settingRef.value.openSetting();
+  settingRef.value.openSetting();
 }
 </script>
 
@@ -77,18 +83,6 @@ const setLayout = () => {
   position: relative;
   height: 100%;
   width: 100%;
-
-  .el-scrollbar {
-    height: 100%;
-  }
-
-  :deep(.el-scrollbar__bar).is-vertical {
-    z-index: 10;
-  }
-
-  :deep(.el-scrollbar__wrap) {
-    overflow-x: hidden;
-  }
 
   &.mobile.openSidebar {
     position: fixed;
