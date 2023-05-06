@@ -63,7 +63,7 @@
         :total="total"
         v-model:page="queryParams.pageNum"
         v-model:limit="queryParams.pageSize"
-        @pagination="handleQuery"
+        @pagination="getList"
       />
       <select-user ref="selectRef" :roleId="queryParams.roleId" @ok="handleQuery" />
     </el-card>

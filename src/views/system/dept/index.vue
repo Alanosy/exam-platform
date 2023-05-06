@@ -232,7 +232,7 @@ const handleAdd = (row?: DeptVO) => {
             nextTick(() => {
                 reset();
                 if (row && row.deptId) {
-                    form.value.parentId = row?.parentId;
+                    form.value.parentId = row?.deptId;
                 }
             })
         }

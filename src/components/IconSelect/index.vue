@@ -2,7 +2,7 @@
   <div class="relative" :style="{ width: width }">
     <el-input v-model="modelValue" readonly @click="visible = !visible" placeholder="点击选择图标">
       <template #prepend>
-        <svg-icon :icon-class="modelValue as string"></svg-icon>
+        <svg-icon :icon-class="modelValue as string" />
       </template>
     </el-input>
 
@@ -19,7 +19,7 @@
       <el-scrollbar height="w-[200px]">
         <ul class="icon-list">
           <el-tooltip v-for="(iconName, index) in iconNames" :key="index" :content="iconName" placement="bottom" effect="light">
-            <li class="icon-item" @click="selectedIcon(iconName)">
+            <li :class="['icon-item', {active: modelValue == iconName}]" @click="selectedIcon(iconName)">
               <svg-icon color="var(--el-text-color-regular)" :icon-class="iconName" />
             </li>
           </el-tooltip>
@@ -33,15 +33,15 @@
 import icons from '@/components/IconSelect/requireIcons';
 
 const props = defineProps({
-    modelValue: {
-        type: String,
-        require: true
-    },
-    width: {
-        type: String,
-        require: false,
-        default: '400px'
-    }
+  modelValue: {
+    type: String,
+    require: true
+  },
+  width: {
+    type: String,
+    require: false,
+    default: '400px'
+  }
 });
 
 const emit = defineEmits(['update:modelValue']);
@@ -55,22 +55,21 @@ const filterValue = ref('');
  * 筛选图标
  */
 const filterIcons = () => {
-    if (filterValue.value) {
-        iconNames.value = icons.filter(iconName =>
-            iconName.includes(filterValue.value)
-        );
-    } else {
-        iconNames.value = icons;
-    }
+  if (filterValue.value) {
+    iconNames.value = icons.filter(iconName =>
+      iconName.includes(filterValue.value)
+    );
+  } else {
+    iconNames.value = icons;
+  }
 }
-
 /**
  * 选择图标
  * @param iconName 选择的图标名称
  */
 const selectedIcon = (iconName: string) => {
-    emit('update:modelValue', iconName);
-    visible.value = false;
+  emit('update:modelValue', iconName);
+  visible.value = false;
 }
 </script>
 
@@ -101,5 +100,9 @@ const selectedIcon = (iconName: string) => {
       transform: scaleX(1.1);
     }
   }
+  .active {
+      border-color: var(--el-color-primary);
+      color: var(--el-color-primary);
+    }
 }
 </style>

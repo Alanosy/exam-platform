@@ -104,7 +104,7 @@ const setVisibleNumber = () => {
   visibleNumber.value = parseInt(String(width / 85));
 }
 
-const handleSelect = (key: string, keyPath: string[]) => {
+const handleSelect = (key: string) => {
   currentIndex.value = key;
   const route = routers.value.find(item => item.path === key);
   if (isHttp(key)) {
@@ -112,7 +112,13 @@ const handleSelect = (key: string, keyPath: string[]) => {
     window.open(key, "_blank");
   } else if (!route || !route.children) {
     // 没有子路由路径内部打开
-    router.push({ path: key, fullPath: '' });
+    const routeMenu = childrenMenus.value.find(item => item.path === key);
+    if (routeMenu && routeMenu.query) {
+      let query = JSON.parse(routeMenu.query);
+      router.push({ path: key, query: query });
+    } else {
+      router.push({ path: key });
+    }
     appStore.toggleSideBarHide(true);
   } else {
     // 显示左侧联动菜单

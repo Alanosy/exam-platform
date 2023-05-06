@@ -246,9 +246,10 @@ onMounted(() => {
       position: relative;
       cursor: pointer;
       height: 26px;
-      line-height: 26px;
+      line-height: 23px;
       background-color: var(--el-bg-color);
       border: 1px solid var(--el-border-color-light);
+      color: #495060;
       padding: 0 8px;
       font-size: 12px;
       margin-left: 5px;

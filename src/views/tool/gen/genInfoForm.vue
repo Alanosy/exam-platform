@@ -226,9 +226,9 @@ import { listMenu } from '@/api/system/menu';
 import { ComponentInternalInstance, PropType } from 'vue';
 
 interface MenuOptionsType {
-    menuId: number;
-    menuName: string;
-    children: MenuOptionsType[] | undefined;
+  menuId: number | string;
+  menuName: string;
+  children: MenuOptionsType[] | undefined;
 }
 
 const subColumns = ref<any>([]);
@@ -236,14 +236,14 @@ const menuOptions = ref<Array<MenuOptionsType>>([]);
 const { proxy } = getCurrentInstance() as ComponentInternalInstance;
 
 const props = defineProps({
-    info: {
-        type: Object as PropType<any>,
-        default: null
-    },
-    tables: {
-        type: Array as PropType<any[]>,
-        default: null
-    }
+  info: {
+    type: Object as PropType<any>,
+    default: null
+  },
+  tables: {
+    type: Array as PropType<any[]>,
+    default: null
+  }
 });
 
 const infoForm = computed(() => props.info);
@@ -252,45 +252,46 @@ const table = computed(() => props.tables);
 
 // 表单校验
 const rules = ref({
-    tplCategory: [{ required: true, message: "请选择生成模板", trigger: "blur" }],
-    packageName: [{ required: true, message: "请输入生成包路径", trigger: "blur" }],
-    moduleName: [{ required: true, message: "请输入生成模块名", trigger: "blur" }],
-    businessName: [{ required: true, message: "请输入生成业务名", trigger: "blur" }],
-    functionName: [{ required: true, message: "请输入生成功能名", trigger: "blur" }]
+  tplCategory: [{required: true, message: "请选择生成模板", trigger: "blur"}],
+  packageName: [{required: true, message: "请输入生成包路径", trigger: "blur"}],
+  moduleName: [{required: true, message: "请输入生成模块名", trigger: "blur"}],
+  businessName: [{required: true, message: "请输入生成业务名", trigger: "blur"}],
+  functionName: [{required: true, message: "请输入生成功能名", trigger: "blur"}]
 });
 const subSelectChange = () => {
-    infoForm.value.subTableFkName = "";
+  infoForm.value.subTableFkName = "";
 }
 const tplSelectChange = (value: string) => {
-    if (value !== "sub") {
-        infoForm.value.subTableName = "";
-        infoForm.value.subTableFkName = "";
-    }
+  if (value !== "sub") {
+    infoForm.value.subTableName = "";
+    infoForm.value.subTableFkName = "";
+  }
 }
 const setSubTableColumns = (value: string) => {
-    table.value.forEach(item => {
-        const name = item.tableName;
-        if (value === name) {
-            subColumns.value = item.columns;
-            return;
-        }
-    })
+  table.value.forEach(item => {
+    const name = item.tableName;
+    if (value === name) {
+      subColumns.value = item.columns;
+      return;
+    }
+  })
 }
 
 /** 查询菜单下拉树结构 */
 const getMenuTreeselect = async () => {
-    const res = await listMenu();
-    const data = proxy?.handleTree<MenuOptionsType>(res.data, "menuId");
+  const res = await listMenu();
+  res.data.forEach(m => m.menuId = m.menuId.toString());
+  const data = proxy?.handleTree<MenuOptionsType>(res.data, "menuId");
   if (data) {
-        menuOptions.value = data
-    }
+    menuOptions.value = data
+  }
 }
 
 watch(() => props.info.subTableName, val => {
-    setSubTableColumns(val);
+  setSubTableColumns(val);
 });
 
 onMounted(() => {
-    getMenuTreeselect();
+  getMenuTreeselect();
 })
 </script>
