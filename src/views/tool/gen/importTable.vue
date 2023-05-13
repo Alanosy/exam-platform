@@ -1,8 +1,13 @@
 <template>
   <!-- 导入表 -->
-  <el-dialog title="导入表" v-model="visible" width="800px" top="5vh" append-to-body>
+  <el-dialog title="导入表" v-model="visible" width="1100px" top="5vh" append-to-body>
     <el-form :model="queryParams" ref="queryFormRef" :inline="true">
-      <el-form-item label="表名称" prop="tableName">
+      <el-form-item label="数据源" prop="dataName">
+            <el-select v-model="queryParams.dataName" filterable placeholder="请选择/输入数据源名称" style="width: 200px">
+              <el-option v-for="item in dataNameList" :key="item" :label="item" :value="item"> </el-option>
+            </el-select>
+          </el-form-item>
+          <el-form-item label="表名称" prop="tableName">
         <el-input v-model="queryParams.tableName" placeholder="请输入表名称" clearable @keyup.enter="handleQuery" />
       </el-form-item>
       <el-form-item label="表描述" prop="tableComment">
@@ -33,7 +38,7 @@
 </template>
 
 <script setup lang="ts">
-import { listDbTable, importTable } from '@/api/tool/gen';
+import { listDbTable, importTable, getDataNames } from '@/api/tool/gen';
 import { DbTableQuery, DbTableVO } from '@/api/tool/gen/types';
 import { ComponentInternalInstance } from 'vue';
 import { ElTable, ElForm } from 'element-plus';
@@ -50,14 +55,22 @@ const queryFormRef = ref(ElForm);
 const queryParams = reactive<DbTableQuery>({
     pageNum: 1,
     pageSize: 10,
+    dataName: '',
     tableName: '',
     tableComment: ''
 });
+const dataNameList = ref<Array<string>>([]);
 
 const emit = defineEmits(["ok"]);
 
 /** 查询参数列表 */
-const show = () => {
+const show = (dataName: string) => {
+    getDataNameList();
+    if(dataName){
+      queryParams.dataName = dataName;
+    } else {
+      queryParams.dataName = 'master';
+    }
     getList();
     visible.value = true;
 }
@@ -92,12 +105,17 @@ const handleImportTable = async () => {
         proxy?.$modal.msgError("请选择要导入的表");
         return;
     }
-    const res = await importTable({ tables: tableNames });
+    const res = await importTable({ tables: tableNames, dataName: queryParams.dataName });
     proxy?.$modal.msgSuccess(res.msg);
     if (res.code === 200) {
         visible.value = false;
         emit("ok");
     }
+}
+/** 查询多数据源名称 */
+const getDataNameList = async () => {
+  const res = await getDataNames()
+  dataNameList.value = res.data;
 }
 
 defineExpose({
