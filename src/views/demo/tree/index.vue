@@ -247,13 +247,13 @@ const handleUpdate = (row: TreeVO) => {
 
 /** 提交按钮 */
 const submitForm = () => {
-  treeFormRef.value.validate((valid: boolean) => {
+  treeFormRef.value.validate(async (valid: boolean) => {
     if (valid) {
       buttonLoading.value = true;
       if (form.value.id) {
-        updateTree(form.value).finally(() => buttonLoading.value = false);
+        await updateTree(form.value).finally(() => buttonLoading.value = false);
       } else {
-        addTree(form.value).finally(() => buttonLoading.value = false);
+        await addTree(form.value).finally(() => buttonLoading.value = false);
       }
       proxy?.$modal.msgSuccess("操作成功");
       dialog.visible = false;

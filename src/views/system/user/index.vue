@@ -8,6 +8,7 @@
           <el-tree
             class="mt-2"
             ref="deptTreeRef"
+            node-key="id"
             :data="deptOptions"
             :props="{ label: 'label', children: 'children' }"
             :expand-on-click-node="false"
@@ -442,6 +443,8 @@ const resetQuery = () => {
     dateRange.value = ['','']
     queryFormRef.value.resetFields();
     queryParams.value.pageNum = 1;
+    queryParams.value.deptId = undefined;
+    deptTreeRef.value.setCurrentKey(null);
     handleQuery();
 }
 
