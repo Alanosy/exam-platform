@@ -1,6 +1,7 @@
 export interface TableVO extends BaseEntity {
   createDept: number | string;
   tableId: string | number;
+  dataName: string;
   tableName: string;
   tableComment: string;
   subTableName?: any;
@@ -97,6 +98,7 @@ export interface DbTableVO {
 }
 
 export interface DbTableQuery extends PageQuery {
+  dataName: string;
   tableName: string;
   tableComment: string;
 }
