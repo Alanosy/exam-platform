@@ -1,38 +1,39 @@
 <template>
   <div class="p-2">
     <transition :enter-active-class="proxy?.animate.searchAnimate.enter" :leave-active-class="proxy?.animate.searchAnimate.leave">
-      <div class="mb-[10px]" v-show="showSearch">
-        <el-card shadow="hover">
-          <el-form :model="queryParams" ref="queryFormRef" :inline="true" label-width="68px">
-            <el-form-item label="数据源" prop="dataName">
-              <el-input v-model="queryParams.dataName" placeholder="请输入数据源名称" clearable style="width: 200px" @keyup.enter="handleQuery" />
-            </el-form-item>
-            <el-form-item label="表名称" prop="tableName">
-              <el-input v-model="queryParams.tableName" placeholder="请输入表名称" clearable style="width: 200px" @keyup.enter="handleQuery" />
-            </el-form-item>
-            <el-form-item label="表描述" prop="tableComment">
-              <el-input v-model="queryParams.tableComment" placeholder="请输入表描述" clearable style="width: 200px" @keyup.enter="handleQuery" />
-            </el-form-item>
-            <el-form-item label="创建时间" style="width: 308px">
-              <el-date-picker
-                v-model="dateRange"
-                value-format="YYYY-MM-DD"
-                type="daterange"
-                range-separator="-"
-                start-placeholder="开始日期"
-                end-placeholder="结束日期"
-              ></el-date-picker>
-            </el-form-item>
-            <el-form-item>
-              <el-button type="primary" icon="Search" @click="handleQuery">搜索</el-button>
-              <el-button icon="Refresh" @click="resetQuery">重置</el-button>
-            </el-form-item>
-          </el-form>
-        </el-card>
+      <div class="search" v-show="showSearch">
+        <el-form :model="queryParams" ref="queryFormRef" :inline="true" label-width="68px">
+          <el-form-item label="数据源" prop="dataName">
+            <el-select v-model="queryParams.dataName" filterable clearable placeholder="请选择/输入数据源名称" style="width: 200px">
+              <el-option key="" label="全部" value="" />
+              <el-option v-for="item in dataNameList" :key="item" :label="item" :value="item"> </el-option>
+            </el-select>
+          </el-form-item>
+          <el-form-item label="表名称" prop="tableName">
+            <el-input v-model="queryParams.tableName" placeholder="请输入表名称" clearable style="width: 200px" @keyup.enter="handleQuery" />
+          </el-form-item>
+          <el-form-item label="表描述" prop="tableComment">
+            <el-input v-model="queryParams.tableComment" placeholder="请输入表描述" clearable style="width: 200px" @keyup.enter="handleQuery" />
+          </el-form-item>
+          <el-form-item label="创建时间" style="width: 308px">
+            <el-date-picker
+              v-model="dateRange"
+              value-format="YYYY-MM-DD"
+              type="daterange"
+              range-separator="-"
+              start-placeholder="开始日期"
+              end-placeholder="结束日期"
+            ></el-date-picker>
+          </el-form-item>
+          <el-form-item>
+            <el-button type="primary" icon="Search" @click="handleQuery">搜索</el-button>
+            <el-button icon="Refresh" @click="resetQuery">重置</el-button>
+          </el-form-item>
+        </el-form>
       </div>
     </transition>
 
-    <el-card shadow="hover">
+    <el-card shadow="never">
       <template #header>
         <el-row :gutter="10" class="mb8">
           <el-col :span="1.5">
@@ -60,6 +61,7 @@
             <span>{{ (queryParams.pageNum - 1) * queryParams.pageSize + scope.$index + 1 }}</span>
           </template>
         </el-table-column>
+        <el-table-column label="数据源" align="center" prop="dataName" :show-overflow-tooltip="true" />
         <el-table-column label="表名称" align="center" prop="tableName" :show-overflow-tooltip="true" />
         <el-table-column label="表描述" align="center" prop="tableComment" :show-overflow-tooltip="true" />
         <el-table-column label="实体" align="center" prop="className" :show-overflow-tooltip="true" />
@@ -109,7 +111,7 @@
 </template>
 
 <script setup name="Gen" lang="ts">
-import { listTable, previewTable, delTable, genCode, synchDb } from '@/api/tool/gen';
+import { listTable, previewTable, delTable, genCode, synchDb, getDataNames } from '@/api/tool/gen';
 import { TableQuery, TableVO } from '@/api/tool/gen/types';
 import router from '@/router';
 import importTable from './importTable.vue';
@@ -126,9 +128,9 @@ const ids = ref<Array<string | number>>([]);
 const single = ref(true);
 const multiple = ref(true);
 const total = ref(0);
-const tableNames = ref<Array<string>>([]);
 const dateRange = ref<[DateModelType, DateModelType]>(['', '']);
 const uniqueId = ref("");
+const dataNameList = ref<Array<string>>([]);
 
 const queryFormRef = ref(ElForm);
 const importRef = ref(importTable);
@@ -138,7 +140,7 @@ const queryParams = ref<TableQuery>({
     pageSize: 10,
     tableName: '',
     tableComment: '',
-    dataName: "master"
+    dataName: ""
 })
 
 const preview = ref <any>({
@@ -149,8 +151,6 @@ const dialog = reactive<DialogOption>({
     visible: false,
     title: '代码预览'
 });
-
-localStorage.setItem('dataName', queryParams.value.dataName);
 
 onActivated(() => {
     const time = route.query.t;
@@ -163,6 +163,12 @@ onActivated(() => {
     }
 })
 
+/** 查询多数据源名称 */
+const getDataNameList = async () => {
+  const res = await getDataNames()
+  dataNameList.value = res.data;
+}
+
 /** 查询表集合 */
 const getList = async () => {
     loading.value = true;
@@ -173,34 +179,33 @@ const getList = async () => {
 }
 /** 搜索按钮操作 */
 const handleQuery = () => {
-    localStorage.setItem('dataName', queryParams.value.dataName);
     queryParams.value.pageNum = 1;
     getList();
 }
 /** 生成代码操作 */
 const handleGenTable = async (row?: TableVO) => {
-    const tbNames = row?.tableName || tableNames.value;
-    if (tbNames == "") {
+    const tbIds = row?.tableId || ids.value;
+    if (tbIds == "") {
         proxy?.$modal.msgError('请选择要生成的数据');
         return;
     }
     if (row?.genType === "1") {
-        await genCode(row.tableName);
+        await genCode(row.tableId);
         proxy?.$modal.msgSuccess('成功生成到自定义路径：' + row.genPath);
     } else {
-        proxy?.$download.zip('/tool/gen/batchGenCode?tables=' + tbNames, 'ruoyi.zip');
+        proxy?.$download.zip('/tool/gen/batchGenCode?tableIdStr=' + tbIds, 'ruoyi.zip');
     }
 }
 /** 同步数据库操作 */
 const handleSynchDb = async (row: TableVO) => {
-    const tableName = row.tableName;
-    await proxy?.$modal.confirm('确认要强制同步"' + tableName + '"表结构吗？');
-    await synchDb(tableName);
+    const tableId = row.tableId;
+    await proxy?.$modal.confirm('确认要强制同步"' + row.tableName + '"表结构吗？');
+    await synchDb(tableId);
     proxy?.$modal.msgSuccess('同步成功');
 }
 /** 打开导入表弹窗 */
 const openImportTable = () => {
-    importRef.value.show();
+    importRef.value.show(queryParams.value.dataName);
 }
 /** 重置按钮操作 */
 const resetQuery = () => {
@@ -222,7 +227,6 @@ const copyTextSuccess = () => {
 // 多选框选中数据
 const handleSelectionChange = (selection: TableVO[]) => {
     ids.value = selection.map(item => item.tableId);
-    tableNames.value = selection.map(item => item.tableName);
     single.value = selection.length != 1;
     multiple.value = !selection.length;
 }
@@ -242,5 +246,6 @@ const handleDelete = async (row?: TableVO) => {
 
 onMounted(() => {
     getList();
+    getDataNameList();
 })
 </script>

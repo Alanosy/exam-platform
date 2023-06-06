@@ -360,7 +360,7 @@ const reset = () => {
     menuNodeAll.value = false
     deptExpand.value = true
     deptNodeAll.value = false
-    form.value = initForm
+    form.value = { ...initForm };
     roleFormRef.value.resetFields();
 
 }
