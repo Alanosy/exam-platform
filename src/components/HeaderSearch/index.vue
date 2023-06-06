@@ -23,7 +23,6 @@ import { getNormalPath } from '@/utils/ruoyi';
 import { isHttp } from '@/utils/validate';
 import usePermissionStore from '@/store/modules/permission';
 import { RouteOption } from 'vue-router';
-import { ElSelect } from 'element-plus';
 
 type Router = Array<{
     path: string;
@@ -35,7 +34,7 @@ const options = ref<any>([]);
 const searchPool = ref<Router>([]);
 const show = ref(false);
 const fuse = ref();
-const headerSearchSelectRef = ref(ElSelect);
+const headerSearchSelectRef = ref<ElSelectInstance>();
 const router = useRouter();
 const routes = computed(() => usePermissionStore().routes);
 
@@ -143,40 +142,40 @@ watch(searchPool, (list) => {
 
 <style lang="scss" scoped>
 .header-search {
-  font-size: 0 !important;
+    font-size: 0 !important;
 
-  .search-icon {
-    cursor: pointer;
-    font-size: 18px;
-    vertical-align: middle;
-  }
-
-  .header-search-select {
-    font-size: 18px;
-    transition: width 0.2s;
-    width: 0;
-    overflow: hidden;
-    background: transparent;
-    border-radius: 0;
-    display: inline-block;
-    vertical-align: middle;
-
-    :deep(.el-input__inner) {
-      border-radius: 0;
-      border: 0;
-      padding-left: 0;
-      padding-right: 0;
-      box-shadow: none !important;
-      border-bottom: 1px solid #d9d9d9;
-      vertical-align: middle;
+    .search-icon {
+        cursor: pointer;
+        font-size: 18px;
+        vertical-align: middle;
     }
-  }
 
-  &.show {
     .header-search-select {
-      width: 210px;
-      margin-left: 10px;
+        font-size: 18px;
+        transition: width 0.2s;
+        width: 0;
+        overflow: hidden;
+        background: transparent;
+        border-radius: 0;
+        display: inline-block;
+        vertical-align: middle;
+
+        :deep(.el-input__inner) {
+            border-radius: 0;
+            border: 0;
+            padding-left: 0;
+            padding-right: 0;
+            box-shadow: none !important;
+            border-bottom: 1px solid #d9d9d9;
+            vertical-align: middle;
+        }
     }
-  }
+
+    &.show {
+        .header-search-select {
+            width: 210px;
+            margin-left: 10px;
+        }
+    }
 }
 </style>

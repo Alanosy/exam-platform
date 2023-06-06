@@ -17,7 +17,9 @@
       :on-preview="handlePictureCardPreview"
       :class="{ hide: fileList.length >= limit }"
     >
-      <el-icon class="avatar-uploader-icon"><plus /></el-icon>
+      <el-icon class="avatar-uploader-icon">
+        <plus />
+      </el-icon>
     </el-upload>
     <!-- 上传提示 -->
     <div class="el-upload__tip" v-if="showTip">
@@ -42,25 +44,16 @@ import { getToken } from "@/utils/auth";
 import { listByIds, delOss } from "@/api/system/oss";
 import { ComponentInternalInstance, PropType } from "vue";
 import { OssVO } from "@/api/system/oss/types";
-import { ElUpload, UploadFile } from "element-plus";
+import { propTypes } from '@/utils/propTypes';
 
 const props = defineProps({
     modelValue: [String, Object, Array],
     // 图片数量限制
-    limit: {
-        type: Number,
-        default: 5,
-    },
+    limit: propTypes.number.def(5),
     // 大小限制(MB)
-    fileSize: {
-        type: Number,
-        default: 5,
-    },
+    fileSize: propTypes.number.def(5),
     // 文件类型, 例如['png', 'jpg', 'jpeg']
-    fileType: {
-        type: Array as PropType<string[]>,
-        default: () => ["png", "jpg", "jpeg"],
-    },
+    fileType: propTypes.array.def(["png", "jpg", "jpeg"]),
     // 是否显示提示
     isShowTip: {
         type: Boolean,
@@ -84,12 +77,12 @@ const showTip = computed(
     () => props.isShowTip && (props.fileType || props.fileSize)
 );
 
-const imageUploadRef = ref(ElUpload);
+const imageUploadRef = ref<ElUploadInstance>();
 
 watch(() => props.modelValue, async val => {
     if (val) {
         // 首先将值转为数组
-        let list:OssVO[] = [];
+        let list: OssVO[] = [];
         if (Array.isArray(val)) {
             list = val as OssVO[];
         } else {
@@ -112,7 +105,7 @@ watch(() => props.modelValue, async val => {
         fileList.value = [];
         return [];
     }
-},{ deep: true, immediate: true });
+}, { deep: true, immediate: true });
 
 /** 上传前loading加载 */
 const handleBeforeUpload = (file: any) => {
@@ -122,7 +115,7 @@ const handleBeforeUpload = (file: any) => {
         if (file.name.lastIndexOf(".") > -1) {
             fileExtension = file.name.slice(file.name.lastIndexOf(".") + 1);
         }
-        isImg = props.fileType.some((type) => {
+        isImg = props.fileType.some((type: any) => {
             if (file.type.indexOf(type) > -1) return true;
             if (fileExtension && fileExtension.indexOf(type) > -1) return true;
             return false;
@@ -161,7 +154,7 @@ const handleUploadSuccess = (res: any, file: UploadFile) => {
         number.value--;
         proxy?.$modal.closeLoading();
         proxy?.$modal.msgError(res.msg);
-        imageUploadRef.value.handleRemove(file);
+        imageUploadRef.value?.handleRemove(file);
         uploadedSuccessfully();
     }
 }
@@ -207,7 +200,7 @@ const listToString = (list: any[], separator?: string) => {
     let strs = "";
     separator = separator || ",";
     for (let i in list) {
-        if(undefined !== list[i].ossId && list[i].url.indexOf("blob:") !== 0) {
+        if (undefined !== list[i].ossId && list[i].url.indexOf("blob:") !== 0) {
             strs += list[i].ossId + separator;
         }
     }

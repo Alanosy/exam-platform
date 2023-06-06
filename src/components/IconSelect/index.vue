@@ -31,17 +31,11 @@
 
 <script setup lang="ts">
 import icons from '@/components/IconSelect/requireIcons';
+import { propTypes } from '@/utils/propTypes';
 
 const props = defineProps({
-  modelValue: {
-    type: String,
-    require: true
-  },
-  width: {
-    type: String,
-    require: false,
-    default: '400px'
-  }
+  modelValue: propTypes.string.isRequired,
+  width: propTypes.string.def('400px')
 });
 
 const emit = defineEmits(['update:modelValue']);

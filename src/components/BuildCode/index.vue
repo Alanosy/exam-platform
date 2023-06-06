@@ -1,8 +1,6 @@
 <!-- 代码构建 -->
 <script setup lang="ts">
 
-import { ComponentInternalInstance } from "vue";
-
 const props = defineProps({
   showBtn: {
     type: Boolean,

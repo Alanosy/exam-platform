@@ -24,7 +24,7 @@
 </template>
 
 <script setup lang="ts">
-import { PropType } from 'vue';
+import { propTypes } from '@/utils/propTypes';
 
 
 const props = defineProps({
@@ -36,10 +36,7 @@ const props = defineProps({
   // 当前的值
   value: [Number, String, Array] as PropType<number | string | Array<number | string>>,
   // 当未找到匹配的数据时，显示value
-  showValue: {
-    type: Boolean as PropType<boolean>,
-    default: true,
-  },
+  showValue: propTypes.bool.def(true),
 });
 
 const values = computed(() => {

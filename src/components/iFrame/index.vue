@@ -5,11 +5,10 @@
 </template>
 
 <script setup lang="ts">
+import { propTypes } from '@/utils/propTypes';
+
 const props = defineProps({
-  src: {
-    type: String,
-    required: true
-  }
+  src: propTypes.string.isRequired
 })
 
 const height = ref(document.documentElement.clientHeight - 94.5 + "px;")
