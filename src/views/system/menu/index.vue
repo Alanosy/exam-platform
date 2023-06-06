@@ -39,7 +39,6 @@
         :data="menuList"
         row-key="menuId"
         :tree-props="{ children: 'children', hasChildren: 'hasChildren' }"
-        border
         ref="menuTableRef"
         :default-expand-all="isExpandAll"
       >
