@@ -1,7 +1,7 @@
 import { RouteRecordRaw } from 'vue-router';
 
 declare module 'vue-router' {
-  type RouteOption = {
+  declare type RouteOption = {
     hidden?: boolean;
     permissions?: string[];
     roles?: string[];
@@ -16,15 +16,15 @@ declare module 'vue-router' {
     query?: string;
   } & RouteRecordRaw;
 
-  interface _RouteLocationBase {
+  declare interface _RouteLocationBase {
     children?: RouteOption[];
   }
 
-  interface RouteLocationOptions {
+  declare interface RouteLocationOptions {
     fullPath?: string;
   }
 
-  interface TagView extends Partial<_RouteLocationBase> {
+  declare interface TagView extends Partial<_RouteLocationBase> {
     title?: string;
     meta?: {
       link?: string;
