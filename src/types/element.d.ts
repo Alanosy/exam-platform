@@ -26,6 +26,7 @@ declare global {
   declare type ElSliderInstance = InstanceType<typeof ep.ElSlider>;
   declare type ElUploadInstance = InstanceType<typeof ep.ElUpload>;
 
+  declare type CheckboxValueType = ep.CheckboxValueType;
   declare type ElFormRules = ep.FormRules;
   declare type DateModelType = ep.DateModelType;
   declare type UploadFile = typeof ep.UploadFile;

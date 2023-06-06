@@ -2,6 +2,7 @@
   "globals": {
     "ComponentInternalInstance": true,
     "ElFormRules": true,
+    "CheckboxValueType": true,
     "PropType": true,
     "DateModelType": true,
     "UploadFile": true,
