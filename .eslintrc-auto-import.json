@@ -1,6 +1,7 @@
 {
   "globals": {
     "ComponentInternalInstance": true,
+    "TransferKey": true,
     "ElFormRules": true,
     "CheckboxValueType": true,
     "PropType": true,
