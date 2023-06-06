@@ -69,7 +69,7 @@
         </el-table-column>
       </el-table>
 
-      <pagination v-show="total>0" :total="total" v-model:page="queryParams.pageNum" v-model:limit="queryParams.pageSize" @pagination="getList" />
+      <pagination v-show="total > 0" :total="total" v-model:page="queryParams.pageNum" v-model:limit="queryParams.pageSize" @pagination="getList" />
     </el-card>
     <!-- 添加或修改测试单对话框 -->
     <el-dialog :title="dialog.title" v-model="dialog.visible" width="500px" append-to-body>
@@ -103,8 +103,6 @@
 <script setup name="Demo" lang="ts">
 import { listDemo, getDemo, delDemo, addDemo, updateDemo } from '@/api/demo/demo';
 import { DemoVO, DemoQuery, DemoForm } from '@/api/demo/demo/types';
-import { ComponentInternalInstance } from 'vue';
-import { ElForm } from 'element-plus';
 
 const { proxy } = getCurrentInstance() as ComponentInternalInstance;
 
@@ -117,8 +115,8 @@ const single = ref(true);
 const multiple = ref(true);
 const total = ref(0);
 
-const queryFormRef = ref(ElForm);
-const demoFormRef = ref(ElForm);
+const queryFormRef = ref<ElFormInstance>();
+const demoFormRef = ref<ElFormInstance>();
 
 const dialog = reactive<DialogOption>({
   visible: false,
@@ -134,7 +132,7 @@ const initFormData: DemoForm = {
   value: undefined,
 }
 const data = reactive<PageData<DemoForm, DemoQuery>>({
-  form: {...initFormData},
+  form: { ...initFormData },
   queryParams: {
     pageNum: 1,
     pageSize: 10,
@@ -185,8 +183,8 @@ const cancel = () => {
 
 /** 表单重置 */
 const reset = () => {
-  form.value = {...initFormData};
-  demoFormRef.value.resetFields();
+  form.value = { ...initFormData };
+  demoFormRef.value?.resetFields();
 }
 
 /** 搜索按钮操作 */
@@ -197,7 +195,7 @@ const handleQuery = () => {
 
 /** 重置按钮操作 */
 const resetQuery = () => {
-  queryFormRef.value.resetFields();
+  queryFormRef.value?.resetFields();
   handleQuery();
 }
 
@@ -233,13 +231,13 @@ const handleUpdate = (row?: DemoVO) => {
 
 /** 提交按钮 */
 const submitForm = () => {
-  demoFormRef.value.validate(async (valid: boolean) => {
+  demoFormRef.value?.validate(async (valid: boolean) => {
     if (valid) {
       buttonLoading.value = true;
       if (form.value.id) {
-        await updateDemo(form.value).finally(() =>  buttonLoading.value = false);
+        await updateDemo(form.value).finally(() => buttonLoading.value = false);
       } else {
-        await addDemo(form.value).finally(() =>  buttonLoading.value = false);
+        await addDemo(form.value).finally(() => buttonLoading.value = false);
       }
       proxy?.$modal.msgSuccess("修改成功");
       dialog.visible = false;

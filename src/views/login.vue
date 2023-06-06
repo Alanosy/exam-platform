@@ -50,7 +50,6 @@ import Cookies from 'js-cookie';
 import { encrypt, decrypt } from '@/utils/jsencrypt';
 import { useUserStore } from '@/store/modules/user';
 import { LoginData, TenantVO } from '@/api/types';
-import { FormRules } from 'element-plus';
 import { to } from 'await-to-js';
 
 const userStore = useUserStore();
@@ -65,7 +64,7 @@ const loginForm = ref<LoginData>({
     uuid: ''
 });
 
-const loginRules: FormRules = {
+const loginRules: ElFormRules = {
     tenantId: [{ required: true, trigger: "blur", message: "请输入您的租户编号" }],
     username: [{ required: true, trigger: 'blur', message: '请输入您的账号' }],
     password: [{ required: true, trigger: 'blur', message: '请输入您的密码' }],

@@ -117,9 +117,8 @@ import { getGenTable, updateGenTable } from '@/api/tool/gen';
 import { DbColumnVO, DbTableVO } from '@/api/tool/gen/types';
 import { optionselect as getDictOptionselect } from '@/api/system/dict/type';
 import { DictTypeVO } from '@/api/system/dict/type/types';
-import basicInfoForm from './basicInfoForm.vue';
-import genInfoForm from "./genInfoForm.vue";
-import { ComponentInternalInstance } from "vue";
+import BasicInfoForm from './basicInfoForm.vue';
+import GenInfoForm from "./genInfoForm.vue";
 
 const route = useRoute();
 const { proxy } = getCurrentInstance() as ComponentInternalInstance;
@@ -131,8 +130,8 @@ const columns = ref<DbColumnVO[]>([]);
 const dictOptions = ref<DictTypeVO[]>([]);
 const info = ref<Partial<DbTableVO>>({});
 
-const basicInfo = ref(basicInfoForm);
-const genInfo = ref(genInfoForm);
+const basicInfo = ref<InstanceType<typeof BasicInfoForm>>();
+const genInfo = ref<InstanceType<typeof GenInfoForm>>();
 
 /** 提交按钮 */
 const submitForm = () => {

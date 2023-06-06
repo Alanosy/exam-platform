@@ -126,7 +126,6 @@
 <script setup name="Cache" lang="ts">
 import { getCache } from '@/api/monitor/cache';
 import * as echarts from 'echarts';
-import { ComponentInternalInstance } from "vue";
 
 const cache = ref<any>({});
 const commandstats = ref();

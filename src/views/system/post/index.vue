@@ -109,7 +109,6 @@
 <script setup name="Post" lang="ts">
 import { listPost, addPost, delPost, getPost, updatePost } from "@/api/system/post";
 import { PostForm, PostQuery, PostVO } from "@/api/system/post/types";
-import { ComponentInternalInstance } from "vue";
 
 const { proxy } = getCurrentInstance() as ComponentInternalInstance;
 const { sys_normal_disable } = toRefs<any>(proxy?.useDict("sys_normal_disable"));
@@ -122,8 +121,8 @@ const single = ref(true);
 const multiple = ref(true);
 const total = ref(0);
 
-const postFormRef = ref(ElForm);
-const queryFormRef = ref(ElForm);
+const postFormRef = ref<ElFormInstance>();
+const queryFormRef = ref<ElFormInstance>();
 
 const dialog = reactive<DialogOption>({
     visible: false,
@@ -173,7 +172,7 @@ const cancel = () => {
 /** 表单重置 */
 const reset = () => {
     form.value = {...initFormData};
-    postFormRef.value.resetFields();
+    postFormRef.value?.resetFields();
 }
 /** 搜索按钮操作 */
 const handleQuery = () => {
@@ -182,7 +181,7 @@ const handleQuery = () => {
 }
 /** 重置按钮操作 */
 const resetQuery = () => {
-    queryFormRef.value.resetFields();
+    queryFormRef.value?.resetFields();
     handleQuery();
 }
 /** 多选框选中数据 */
@@ -212,12 +211,12 @@ const handleUpdate = (row?: PostVO) => {
 }
 /** 提交按钮 */
 const submitForm = () => {
-    postFormRef.value.validate(async (valid: boolean) => {
+    postFormRef.value?.validate(async (valid: boolean) => {
         if (valid) {
             form.value.postId ? await updatePost(form.value) : await addPost(form.value);
             proxy?.$modal.msgSuccess("操作成功");
             dialog.visible = false;
-            getList();
+            await getList();
         }
     });
 }
@@ -226,7 +225,7 @@ const handleDelete = async (row?: PostVO) => {
     const postIds = row?.postId || ids.value;
     await proxy?.$modal.confirm('是否确认删除岗位编号为"' + postIds + '"的数据项？');
     await delPost(postIds);
-    getList();
+    await getList();
     proxy?.$modal.msgSuccess("删除成功");
 }
 /** 导出按钮操作 */

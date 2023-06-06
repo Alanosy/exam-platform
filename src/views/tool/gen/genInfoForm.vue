@@ -223,7 +223,7 @@
 
 <script setup lang="ts">
 import { listMenu } from '@/api/system/menu';
-import { ComponentInternalInstance, PropType } from 'vue';
+import { propTypes } from "@/utils/propTypes";
 
 interface MenuOptionsType {
   menuId: number | string;
@@ -236,14 +236,8 @@ const menuOptions = ref<Array<MenuOptionsType>>([]);
 const { proxy } = getCurrentInstance() as ComponentInternalInstance;
 
 const props = defineProps({
-  info: {
-    type: Object as PropType<any>,
-    default: null
-  },
-  tables: {
-    type: Array as PropType<any[]>,
-    default: null
-  }
+  info: propTypes.any.def(null),
+  tables: propTypes.any.def(null)
 });
 
 const infoForm = computed(() => props.info);
@@ -268,7 +262,7 @@ const tplSelectChange = (value: string) => {
   }
 }
 const setSubTableColumns = (value: string) => {
-  table.value.forEach(item => {
+  table.value.forEach((item: any) => {
     const name = item.tableName;
     if (value === name) {
       subColumns.value = item.columns;

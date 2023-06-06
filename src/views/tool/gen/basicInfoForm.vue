@@ -31,15 +31,10 @@
 </template>
 
 <script setup lang="ts">
-import { PropType } from 'vue';
+import { propTypes } from "@/utils/propTypes";
 
 const prop = defineProps({
-    info: {
-        type: Object as PropType<any>,
-        default: () => {
-            return {};
-        }
-    }
+    info: propTypes.any.def({})
 });
 
 const infoForm = computed(() => prop.info)

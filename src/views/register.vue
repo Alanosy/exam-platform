@@ -58,7 +58,6 @@
 <script setup lang="ts">
 import { getCodeImg, register, getTenantList } from '@/api/login';
 import { RegisterForm, TenantVO } from '@/api/types';
-import { FormRules } from 'element-plus';
 import { to } from 'await-to-js';
 
 const router = useRouter();
@@ -85,7 +84,7 @@ const equalToPassword = (rule: any, value: string, callback: any) => {
     }
 };
 
-const registerRules: FormRules = {
+const registerRules: ElFormRules = {
     tenantId: [
         { required: true, trigger: "blur", message: "请输入您的租户编号" }
     ],

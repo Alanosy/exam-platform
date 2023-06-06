@@ -69,7 +69,7 @@ import resetPwd from "./resetPwd.vue";
 import { getUserProfile } from "@/api/system/user";
 
 const activeTab = ref("userinfo");
-const state = ref<{ user: any; roleGroup: string;  postGroup: string}>({
+const state = ref<Record<string, any>>({
     user: {},
     roleGroup: '',
     postGroup: ''

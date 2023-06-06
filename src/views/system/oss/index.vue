@@ -135,9 +135,7 @@
 <script setup name="Oss" lang="ts">
 import { listOss, delOss } from "@/api/system/oss";
 import ImagePreview from "@/components/ImagePreview/index.vue";
-import { ComponentInternalInstance } from "vue";
 import { OssForm, OssQuery, OssVO } from "@/api/system/oss/types";
-import { DateModelType } from 'element-plus';
 
 const router = useRouter();
 const { proxy } = getCurrentInstance() as ComponentInternalInstance;
@@ -163,8 +161,8 @@ const dialog = reactive<DialogOption>({
 // 默认排序
 const defaultSort = ref({ prop: 'createTime', order: 'ascending' });
 
-const ossFormRef = ref(ElForm);
-const queryFormRef = ref(ElForm);
+const ossFormRef = ref<ElFormInstance>();
+const queryFormRef = ref<ElFormInstance>();
 
 const initFormData = {
     file: undefined,
@@ -217,7 +215,7 @@ function cancel() {
 /** 表单重置 */
 function reset() {
     form.value = { ...initFormData };
-    ossFormRef.value.resetFields();
+    ossFormRef.value?.resetFields();
 }
 /** 搜索按钮操作 */
 function handleQuery() {
@@ -228,7 +226,7 @@ function handleQuery() {
 function resetQuery() {
     showTable.value = false;
     daterangeCreateTime.value = ['', ''];
-    queryFormRef.value.resetFields();
+    queryFormRef.value?.resetFields();
     queryParams.value.orderByColumn = defaultSort.value.prop;
     queryParams.value.isAsc = defaultSort.value.order;
     handleQuery();

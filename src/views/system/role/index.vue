@@ -198,8 +198,6 @@ import { addRole, changeRoleStatus, dataScope, delRole, getRole, listRole, updat
 import { roleMenuTreeselect, treeselect as menuTreeselect } from '@/api/system/menu/index';
 import { RoleVO, RoleForm, RoleQuery, DeptTreeOption } from '@/api/system/role/types';
 import { MenuTreeOption, RoleMenuTree } from '@/api/system/menu/types';
-import { ComponentInternalInstance } from 'vue';
-import { ElTree, ElForm, DateModelType } from 'element-plus';
 
 const router = useRouter();
 const { proxy } = getCurrentInstance() as ComponentInternalInstance;
@@ -230,11 +228,11 @@ const dataScopeOptions = ref([
     { value: "5", label: "仅本人数据权限" }
 ])
 
-const queryFormRef = ref(ElForm);
-const roleFormRef = ref(ElForm);
-const dataScopeRef = ref(ElForm);
-const menuRef = ref(ElTree);
-const deptRef = ref(ElTree);
+const queryFormRef = ref<ElFormInstance>();
+const roleFormRef = ref<ElFormInstance>();
+const dataScopeRef = ref<ElFormInstance>();
+const menuRef = ref<ElTreeInstance>();
+const deptRef = ref<ElTreeInstance>();
 
 const initForm: RoleForm = {
     roleId: undefined,
@@ -297,7 +295,7 @@ const handleQuery = () => {
 /** 重置 */
 const resetQuery = () => {
     dateRange.value = ['', '']
-    queryFormRef.value.resetFields();
+    queryFormRef.value?.resetFields();
     handleQuery();
 }
 /**删除按钮操作 */
@@ -345,23 +343,25 @@ const getMenuTreeselect = async () => {
     menuOptions.value = res.data;
 }
 /** 所有部门节点数据 */
-const getDeptAllCheckedKeys = () => {
+const getDeptAllCheckedKeys = (): any => {
     // 目前被选中的部门节点
-    let checkedKeys = deptRef.value.getCheckedKeys();
+    let checkedKeys = deptRef.value?.getCheckedKeys();
     // 半选中的部门节点
-    let halfCheckedKeys = deptRef.value.getHalfCheckedKeys();
-    checkedKeys.unshift.apply(checkedKeys, halfCheckedKeys);
+    let halfCheckedKeys = deptRef.value?.getHalfCheckedKeys();
+    if(halfCheckedKeys) {
+      checkedKeys?.unshift.apply(checkedKeys, halfCheckedKeys);
+    }
     return checkedKeys
 }
 /** 重置新增的表单以及其他数据  */
 const reset = () => {
-    menuRef.value.setCheckedKeys([]);
+    menuRef.value?.setCheckedKeys([]);
     menuExpand.value = false
     menuNodeAll.value = false
     deptExpand.value = true
     deptNodeAll.value = false
     form.value = { ...initForm };
-    roleFormRef.value.resetFields();
+    roleFormRef.value?.resetFields();
 
 }
 
@@ -381,19 +381,19 @@ const handleUpdate = async (row?: RoleVO) => {
     const { data } = await getRole(roleId);
     dialog.visible = true;
     dialog.title = "修改角色";
-    nextTick(() => {
-        reset();
-        Object.assign(form.value, data);
-        form.value.roleSort = Number(form.value.roleSort);
-        nextTick(async () => {
-            const res = await roleMenu;
-            let checkedKeys = res.checkedKeys;
-            checkedKeys.forEach((v) => {
-                nextTick(() => {
-                    menuRef.value.setChecked(v, true, false);
-                })
-            })
+    await nextTick(() => {
+      reset();
+      Object.assign(form.value, data);
+      form.value.roleSort = Number(form.value.roleSort);
+      nextTick(async () => {
+        const res = await roleMenu;
+        let checkedKeys = res.checkedKeys;
+        checkedKeys.forEach((v) => {
+          nextTick(() => {
+            menuRef.value?.setChecked(v, true, false);
+          })
         })
+      })
     })
 }
 /** 根据角色ID查询菜单树结构 */
@@ -410,25 +410,29 @@ const getRoleDeptTreeSelect = async (roleId: string | number) => {
     return res.data;
 }
 /** 树权限（展开/折叠）*/
-const handleCheckedTreeExpand = (value: any, type: string) => {
+const handleCheckedTreeExpand = (value: boolean, type: string) => {
     if (type == "menu") {
         let treeList = menuOptions.value;
         for (let i = 0; i < treeList.length; i++) {
+          if (menuRef.value) {
             menuRef.value.store.nodesMap[treeList[i].id].expanded = value;
+          }
         }
     } else if (type == "dept") {
         let treeList = deptOptions.value;
         for (let i = 0; i < treeList.length; i++) {
-            deptRef.value.store.nodesMap[treeList[i].id].expanded = value;
+            if (deptRef.value) {
+              deptRef.value.store.nodesMap[treeList[i].id].expanded = value;
+            }
         }
     }
 }
 /** 树权限（全选/全不选） */
 const handleCheckedTreeNodeAll = (value: any, type: string) => {
     if (type == "menu") {
-        menuRef.value.setCheckedNodes(value ? menuOptions.value : []);
+        menuRef.value?.setCheckedNodes(value ? menuOptions.value as any : []);
     } else if (type == "dept") {
-        deptRef.value.setCheckedNodes(value ? deptOptions.value : []);
+        deptRef.value?.setCheckedNodes(value ? deptOptions.value as any : []);
     }
 }
 /** 树权限（父子联动） */
@@ -440,17 +444,19 @@ const handleCheckedTreeConnect = (value: any, type: string) => {
     }
 }
 /** 所有菜单节点数据 */
-const getMenuAllCheckedKeys = () => {
+const getMenuAllCheckedKeys = (): any => {
     // 目前被选中的菜单节点
-    let checkedKeys = menuRef.value.getCheckedKeys();
+    let checkedKeys = menuRef.value?.getCheckedKeys();
     // 半选中的菜单节点
-    let halfCheckedKeys = menuRef.value.getHalfCheckedKeys();
-    checkedKeys.unshift.apply(checkedKeys, halfCheckedKeys);
+    let halfCheckedKeys = menuRef.value?.getHalfCheckedKeys();
+    if (halfCheckedKeys) {
+      checkedKeys?.unshift.apply(checkedKeys, halfCheckedKeys);
+    }
     return checkedKeys;
 }
 /** 提交按钮 */
 const submitForm = () => {
-    roleFormRef.value.validate(async (valid: boolean) => {
+    roleFormRef.value?.validate(async (valid: boolean) => {
         if (valid) {
             form.value.menuIds = getMenuAllCheckedKeys()
             form.value.roleId ? await updateRole(form.value) : await addRole(form.value);
@@ -468,7 +474,7 @@ const cancel = () => {
 /** 选择角色权限范围触发 */
 const dataScopeSelectChange = (value: string) => {
     if (value !== "2") {
-        deptRef.value.setCheckedKeys([])
+        deptRef.value?.setCheckedKeys([])
     }
 }
 /** 分配数据权限操作 */
@@ -478,13 +484,13 @@ const handleDataScope = async (row: RoleVO) => {
     Object.assign(form.value, response.data);
     openDataScope.value = true;
     dialog.title = "分配数据权限";
-    nextTick(async () => {
-        const res = await roleDeptTreeselect;
-        nextTick(() => {
-            if (deptRef.value) {
-                deptRef.value.setCheckedKeys(res.checkedKeys);
-            }
-        })
+    await nextTick(async () => {
+      const res = await roleDeptTreeselect;
+      await nextTick(() => {
+        if (deptRef.value) {
+          deptRef.value.setCheckedKeys(res.checkedKeys);
+        }
+      })
     })
 }
 /** 提交按钮（数据权限） */
@@ -499,7 +505,7 @@ const submitDataScope = async () => {
 }
 /** 取消按钮（数据权限）*/
 const cancelDataScope = () => {
-    dataScopeRef.value.resetFields();
+    dataScopeRef.value?.resetFields();
     form.value = {...initForm};
     openDataScope.value = false;
 }

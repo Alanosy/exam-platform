@@ -3,11 +3,11 @@
   <el-dialog title="导入表" v-model="visible" width="1100px" top="5vh" append-to-body>
     <el-form :model="queryParams" ref="queryFormRef" :inline="true">
       <el-form-item label="数据源" prop="dataName">
-            <el-select v-model="queryParams.dataName" filterable placeholder="请选择/输入数据源名称" style="width: 200px">
-              <el-option v-for="item in dataNameList" :key="item" :label="item" :value="item"> </el-option>
-            </el-select>
-          </el-form-item>
-          <el-form-item label="表名称" prop="tableName">
+        <el-select v-model="queryParams.dataName" filterable placeholder="请选择/输入数据源名称" style="width: 200px">
+          <el-option v-for="item in dataNameList" :key="item" :label="item" :value="item"> </el-option>
+        </el-select>
+      </el-form-item>
+      <el-form-item label="表名称" prop="tableName">
         <el-input v-model="queryParams.tableName" placeholder="请输入表名称" clearable @keyup.enter="handleQuery" />
       </el-form-item>
       <el-form-item label="表描述" prop="tableComment">
@@ -40,8 +40,6 @@
 <script setup lang="ts">
 import { listDbTable, importTable, getDataNames } from '@/api/tool/gen';
 import { DbTableQuery, DbTableVO } from '@/api/tool/gen/types';
-import { ComponentInternalInstance } from 'vue';
-import { ElTable, ElForm } from 'element-plus';
 
 const total = ref(0);
 const visible = ref(false);
@@ -49,8 +47,8 @@ const tables = ref<Array<string>>([]);
 const dbTableList = ref<Array<DbTableVO>>([]);
 const { proxy } = getCurrentInstance() as ComponentInternalInstance;
 
-const tableRef = ref(ElTable);
-const queryFormRef = ref(ElForm);
+const tableRef = ref<ElTableInstance>();
+const queryFormRef = ref<ElFormInstance>();
 
 const queryParams = reactive<DbTableQuery>({
     pageNum: 1,
@@ -76,7 +74,8 @@ const show = (dataName: string) => {
 }
 /** 单击选择行 */
 const clickRow = (row: DbTableVO) => {
-    tableRef.value.toggleRowSelection(row);
+    // ele bug
+    tableRef.value?.toggleRowSelection(row);
 }
 /** 多选框选中数据 */
 const handleSelectionChange = (selection: DbTableVO[]) => {
@@ -95,7 +94,7 @@ const handleQuery = () => {
 }
 /** 重置按钮操作 */
 const resetQuery = () => {
-    queryFormRef.value.resetFields();
+    queryFormRef.value?.resetFields();
     handleQuery();
 }
 /** 导入按钮操作 */

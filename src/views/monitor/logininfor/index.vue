@@ -100,9 +100,7 @@
 
 <script setup name="Logininfor" lang="ts">
 import { list, delLoginInfo, cleanLoginInfo, unlockLoginInfo } from "@/api/monitor/loginInfo";
-import { ComponentInternalInstance } from "vue";
 import { LoginInfoQuery, LoginInfoVO } from "@/api/monitor/loginInfo/types";
-import { DateModelType } from 'element-plus';
 
 const { proxy } = getCurrentInstance() as ComponentInternalInstance;
 const { sys_common_status } = toRefs<any>(proxy?.useDict("sys_common_status"));
@@ -118,8 +116,8 @@ const total = ref(0);
 const dateRange = ref<[DateModelType,DateModelType]>(['', '']);
 const defaultSort = ref<any>({ prop: "loginTime", order: "descending" });
 
-const queryFormRef = ref(ElForm);
-const loginInfoTableRef = ref(ElTable);
+const queryFormRef = ref<ElFormInstance>();
+const loginInfoTableRef = ref<ElTableInstance>();
 // 查询参数
 const queryParams = ref<LoginInfoQuery>({
     pageNum: 1,
@@ -147,9 +145,9 @@ const handleQuery = () => {
 /** 重置按钮操作 */
 const resetQuery = () => {
     dateRange.value = ['', ''];
-    queryFormRef.value.resetFields();
+    queryFormRef.value?.resetFields();
     queryParams.value.pageNum = 1;
-    loginInfoTableRef.value.sort(defaultSort.value.prop, defaultSort.value.order);
+    loginInfoTableRef.value?.sort(defaultSort.value.prop, defaultSort.value.order);
 }
 /** 多选框选中数据 */
 const handleSelectionChange = (selection: LoginInfoVO[]) => {
@@ -169,14 +167,14 @@ const handleDelete = async (row?: LoginInfoVO) => {
     const infoIds = row?.infoId || ids.value;
     await proxy?.$modal.confirm('是否确认删除访问编号为"' + infoIds + '"的数据项?');
     await delLoginInfo(infoIds);
-    getList();
+    await getList();
     proxy?.$modal.msgSuccess("删除成功");
 }
 /** 清空按钮操作 */
 const handleClean = async () => {
     await proxy?.$modal.confirm("是否确认清空所有登录日志数据项?");
     await cleanLoginInfo();
-    getList();
+    await getList();
     proxy?.$modal.msgSuccess("清空成功");
 }
 /** 解锁按钮操作 */
