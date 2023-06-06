@@ -135,8 +135,8 @@ const genInfo = ref<InstanceType<typeof GenInfoForm>>();
 
 /** 提交按钮 */
 const submitForm = () => {
-  const basicForm = basicInfo.value.$refs.basicInfoForm;
-  const genForm = genInfo.value.$refs.genInfoForm;
+  const basicForm = basicInfo.value?.$refs.basicInfoForm;
+  const genForm = genInfo.value?.$refs.genInfoForm;
 
   Promise.all([basicForm, genForm].map(getFormPromise)).then(async res => {
     const validateResult = res.every(item => !!item);
@@ -167,7 +167,7 @@ const getFormPromise = (form: any) => {
   });
 }
 const close = () => {
-  const obj = {path: "/tool/gen", query: {t: Date.now(), pageNum: route.query.pageNum}};
+  const obj = { path: "/tool/gen", query: { t: Date.now(), pageNum: route.query.pageNum } };
   proxy?.$tab.closeOpenPage(obj);
 }
 

@@ -133,12 +133,12 @@
 
 <script setup name="OssConfig" lang="ts">
 import {
-    listOssConfig,
-    getOssConfig,
-    delOssConfig,
-    addOssConfig,
-    updateOssConfig,
-    changeOssConfigStatus
+  listOssConfig,
+  getOssConfig,
+  delOssConfig,
+  addOssConfig,
+  updateOssConfig,
+  changeOssConfigStatus
 } from "@/api/system/ossConfig";
 import { OssConfigForm, OssConfigQuery, OssConfigVO } from "@/api/system/ossConfig/types";
 
@@ -159,189 +159,189 @@ const queryFormRef = ref<ElFormInstance>();
 const ossConfigFormRef = ref<ElFormInstance>();
 
 const dialog = reactive<DialogOption>({
-    visible: false,
-    title: ''
+  visible: false,
+  title: ''
 });
 
 // 列显隐信息
 const columns = ref<FieldOption[]>([
-    { key: 0, label: `主建`, visible: true },
-    { key: 1, label: `配置key`, visible: false },
-    { key: 2, label: `访问站点`, visible: true },
-    { key: 3, label: `自定义域名`, visible: true },
-    { key: 4, label: `桶名称`, visible: true },
-    { key: 5, label: `前缀`, visible: true },
-    { key: 6, label: `域`, visible: true },
-    { key: 7, label: `桶权限类型`, visible: true },
-    { key: 8, label: `状态`, visible: true }
+  { key: 0, label: `主建`, visible: true },
+  { key: 1, label: `配置key`, visible: false },
+  { key: 2, label: `访问站点`, visible: true },
+  { key: 3, label: `自定义域名`, visible: true },
+  { key: 4, label: `桶名称`, visible: true },
+  { key: 5, label: `前缀`, visible: true },
+  { key: 6, label: `域`, visible: true },
+  { key: 7, label: `桶权限类型`, visible: true },
+  { key: 8, label: `状态`, visible: true }
 ]);
 
 
 const initFormData: OssConfigForm = {
-    ossConfigId: undefined,
-    configKey: '',
-    accessKey: '',
-    secretKey: '',
-    bucketName: '',
-    prefix: '',
-    endpoint: '',
-    domain: '',
-    isHttps: "N",
-    accessPolicy: "1",
-    region: '',
-    status: "1",
-    remark: '',
+  ossConfigId: undefined,
+  configKey: '',
+  accessKey: '',
+  secretKey: '',
+  bucketName: '',
+  prefix: '',
+  endpoint: '',
+  domain: '',
+  isHttps: "N",
+  accessPolicy: "1",
+  region: '',
+  status: "1",
+  remark: '',
 }
 const data = reactive<PageData<OssConfigForm, OssConfigQuery>>({
-    form: { ...initFormData },
-    // 查询参数
-    queryParams: {
-        pageNum: 1,
-        pageSize: 10,
-        configKey: '',
-        bucketName: '',
-        status: '',
-    },
-    rules: {
-        configKey: [{ required: true, message: "configKey不能为空", trigger: "blur" },],
-        accessKey: [
-            { required: true, message: "accessKey不能为空", trigger: "blur" },
-            {
-                min: 2,
-                max: 200,
-                message: "accessKey长度必须介于 2 和 100 之间",
-                trigger: "blur",
-            },
-        ],
-        secretKey: [
-            { required: true, message: "secretKey不能为空", trigger: "blur" },
-            {
-                min: 2,
-                max: 100,
-                message: "secretKey长度必须介于 2 和 100 之间",
-                trigger: "blur",
-            },
-        ],
-        bucketName: [
-            { required: true, message: "bucketName不能为空", trigger: "blur" },
-            {
-                min: 2,
-                max: 100,
-                message: "bucketName长度必须介于 2 和 100 之间",
-                trigger: "blur",
-            },
-        ],
-        endpoint: [
-            { required: true, message: "endpoint不能为空", trigger: "blur" },
-            {
-                min: 2,
-                max: 100,
-                message: "endpoint名称长度必须介于 2 和 100 之间",
-                trigger: "blur",
-            },
-        ],
-        accessPolicy: [{ required: true, message: "accessPolicy不能为空", trigger: "blur" }]
-    }
+  form: { ...initFormData },
+  // 查询参数
+  queryParams: {
+    pageNum: 1,
+    pageSize: 10,
+    configKey: '',
+    bucketName: '',
+    status: '',
+  },
+  rules: {
+    configKey: [{ required: true, message: "configKey不能为空", trigger: "blur" },],
+    accessKey: [
+      { required: true, message: "accessKey不能为空", trigger: "blur" },
+      {
+        min: 2,
+        max: 200,
+        message: "accessKey长度必须介于 2 和 100 之间",
+        trigger: "blur",
+      },
+    ],
+    secretKey: [
+      { required: true, message: "secretKey不能为空", trigger: "blur" },
+      {
+        min: 2,
+        max: 100,
+        message: "secretKey长度必须介于 2 和 100 之间",
+        trigger: "blur",
+      },
+    ],
+    bucketName: [
+      { required: true, message: "bucketName不能为空", trigger: "blur" },
+      {
+        min: 2,
+        max: 100,
+        message: "bucketName长度必须介于 2 和 100 之间",
+        trigger: "blur",
+      },
+    ],
+    endpoint: [
+      { required: true, message: "endpoint不能为空", trigger: "blur" },
+      {
+        min: 2,
+        max: 100,
+        message: "endpoint名称长度必须介于 2 和 100 之间",
+        trigger: "blur",
+      },
+    ],
+    accessPolicy: [{ required: true, message: "accessPolicy不能为空", trigger: "blur" }]
+  }
 });
 
 const { queryParams, form, rules } = toRefs(data);
 
 /** 查询对象存储配置列表 */
 const getList = async () => {
-    loading.value = true;
-    const res = await listOssConfig(queryParams.value);
-    ossConfigList.value = res.rows;
-    total.value = res.total;
-    loading.value = false;
+  loading.value = true;
+  const res = await listOssConfig(queryParams.value);
+  ossConfigList.value = res.rows;
+  total.value = res.total;
+  loading.value = false;
 }
 /** 取消按钮 */
 const cancel = () => {
-    dialog.visible = false;
-    reset();
+  dialog.visible = false;
+  reset();
 }
 /** 表单重置 */
 const reset = () => {
-    form.value = { ...initFormData };
-    ossConfigFormRef.value?.resetFields();
+  form.value = { ...initFormData };
+  ossConfigFormRef.value?.resetFields();
 }
 /** 搜索按钮操作 */
 const handleQuery = () => {
-    queryParams.value.pageNum = 1;
-    getList();
+  queryParams.value.pageNum = 1;
+  getList();
 }
 /** 重置按钮操作 */
 const resetQuery = () => {
-    queryFormRef.value?.resetFields();
-    handleQuery();
+  queryFormRef.value?.resetFields();
+  handleQuery();
 }
 /** 选择条数  */
 const handleSelectionChange = (selection: OssConfigVO[]) => {
-    ids.value = selection.map(item => item.ossConfigId);
-    single.value = selection.length != 1;
-    multiple.value = !selection.length;
+  ids.value = selection.map(item => item.ossConfigId);
+  single.value = selection.length != 1;
+  multiple.value = !selection.length;
 }
 /** 新增按钮操作 */
 const handleAdd = () => {
-    dialog.visible = true;
-    dialog.title = "添加对象存储配置";
-    nextTick(() => {
-        reset();
-    })
+  dialog.visible = true;
+  dialog.title = "添加对象存储配置";
+  nextTick(() => {
+    reset();
+  })
 }
 /** 修改按钮操作 */
 const handleUpdate = (row?: OssConfigVO) => {
-    loading.value = true;
-    dialog.visible = true;
-    dialog.title = "修改对象存储配置";
-    const ossConfigId = row?.ossConfigId || ids.value[0];
-    nextTick(async () => {
-        reset();
-        const res = await getOssConfig(ossConfigId);
-        loading.value = false;
-        form.value = res.data;
-    })
+  loading.value = true;
+  dialog.visible = true;
+  dialog.title = "修改对象存储配置";
+  const ossConfigId = row?.ossConfigId || ids.value[0];
+  nextTick(async () => {
+    reset();
+    const res = await getOssConfig(ossConfigId);
+    loading.value = false;
+    form.value = res.data;
+  })
 }
 /** 提交按钮 */
 const submitForm = () => {
-    ossConfigFormRef.value?.validate(async (valid: boolean) => {
-        if (valid) {
-            buttonLoading.value = true;
-            if (form.value.ossConfigId) {
-                await updateOssConfig(form.value).finally(() => buttonLoading.value = false);
-            } else {
-                await addOssConfig(form.value).finally(() => buttonLoading.value = false);
-            }
-            proxy?.$modal.msgSuccess("新增成功");
-            dialog.visible = false;
-            getList();
-        }
-    });
+  ossConfigFormRef.value?.validate(async (valid: boolean) => {
+    if (valid) {
+      buttonLoading.value = true;
+      if (form.value.ossConfigId) {
+        await updateOssConfig(form.value).finally(() => buttonLoading.value = false);
+      } else {
+        await addOssConfig(form.value).finally(() => buttonLoading.value = false);
+      }
+      proxy?.$modal.msgSuccess("新增成功");
+      dialog.visible = false;
+      getList();
+    }
+  });
 }
 /** 状态修改  */
-const  handleStatusChange = async (row: OssConfigVO) => {
-    let text = row.status === "0" ? "启用" : "停用";
-    try {
-        await proxy?.$modal.confirm('确认要"' + text + '""' + row.configKey + '"配置吗?');
-        await changeOssConfigStatus(row.ossConfigId, row.status, row.configKey);
-        getList()
-        proxy?.$modal.msgSuccess(text + "成功");
-    } catch { return } finally {
-        row.status = row.status === "0" ? "1" : "0";
-    }
+const handleStatusChange = async (row: OssConfigVO) => {
+  let text = row.status === "0" ? "启用" : "停用";
+  try {
+    await proxy?.$modal.confirm('确认要"' + text + '""' + row.configKey + '"配置吗?');
+    await changeOssConfigStatus(row.ossConfigId, row.status, row.configKey);
+    getList()
+    proxy?.$modal.msgSuccess(text + "成功");
+  } catch { return } finally {
+    row.status = row.status === "0" ? "1" : "0";
+  }
 
 }
 /** 删除按钮操作 */
 const handleDelete = async (row?: OssConfigVO) => {
-    const ossConfigIds = row?.ossConfigId || ids.value;
-    await proxy?.$modal.confirm('是否确认删除OSS配置编号为"' + ossConfigIds + '"的数据项?');
-    loading.value = true;
-    await delOssConfig(ossConfigIds).finally(() => loading.value = false);
-    getList();
-    proxy?.$modal.msgSuccess("删除成功");
+  const ossConfigIds = row?.ossConfigId || ids.value;
+  await proxy?.$modal.confirm('是否确认删除OSS配置编号为"' + ossConfigIds + '"的数据项?');
+  loading.value = true;
+  await delOssConfig(ossConfigIds).finally(() => loading.value = false);
+  getList();
+  proxy?.$modal.msgSuccess("删除成功");
 
 }
 
 onMounted(() => {
-    getList();
+  getList();
 })
 </script>

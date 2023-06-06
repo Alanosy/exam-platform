@@ -70,22 +70,22 @@ import { getUserProfile } from "@/api/system/user";
 
 const activeTab = ref("userinfo");
 const state = ref<Record<string, any>>({
-    user: {},
-    roleGroup: '',
-    postGroup: ''
+  user: {},
+  roleGroup: '',
+  postGroup: ''
 });
 
 const userForm = ref({});
 
 const getUser = async () => {
-    const res = await getUserProfile();
-    state.value.user = res.data.user;
-    userForm.value = { ...res.data.user }
-    state.value.roleGroup = res.data.roleGroup;
-    state.value.postGroup = res.data.postGroup;
+  const res = await getUserProfile();
+  state.value.user = res.data.user;
+  userForm.value = { ...res.data.user }
+  state.value.roleGroup = res.data.roleGroup;
+  state.value.postGroup = res.data.postGroup;
 };
 
 onMounted(() => {
-    getUser();
+  getUser();
 })
 </script>

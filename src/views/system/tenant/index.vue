@@ -82,7 +82,7 @@
         </el-table-column>
       </el-table>
 
-      <pagination v-show="total>0" :total="total" v-model:page="queryParams.pageNum" v-model:limit="queryParams.pageSize" @pagination="getList" />
+      <pagination v-show="total > 0" :total="total" v-model:page="queryParams.pageNum" v-model:limit="queryParams.pageSize" @pagination="getList" />
     </el-card>
     <!-- 添加或修改租户对话框 -->
     <el-dialog :title="dialog.title" v-model="dialog.visible" width="500px" append-to-body>
@@ -162,192 +162,192 @@ const queryFormRef = ref<ElFormInstance>();
 const tenantFormRef = ref<ElFormInstance>();
 
 const dialog = reactive<DialogOption>({
-    visible: false,
-    title: ''
+  visible: false,
+  title: ''
 });
 
 const initFormData: TenantForm = {
-    id: undefined,
-    tenantId: undefined,
-    contactUserName: '',
-    contactPhone: '',
-    username: '',
-    password: '',
-    companyName: '',
-    licenseNumber: '',
-    domain: '',
-    address: '',
-    intro: '',
-    remark: '',
-    packageId: '',
-    expireTime: '',
-    accountCount: 0,
-    status: '0',
+  id: undefined,
+  tenantId: undefined,
+  contactUserName: '',
+  contactPhone: '',
+  username: '',
+  password: '',
+  companyName: '',
+  licenseNumber: '',
+  domain: '',
+  address: '',
+  intro: '',
+  remark: '',
+  packageId: '',
+  expireTime: '',
+  accountCount: 0,
+  status: '0',
 }
 const data = reactive<PageData<TenantForm, TenantQuery>>({
-    form: {...initFormData},
-    queryParams: {
-        pageNum: 1,
-        pageSize: 10,
-        tenantId: '',
-        contactUserName: '',
-        contactPhone: '',
-        companyName: ''
-    },
-    rules: {
-        id: [{ required: true, message: "id不能为空", trigger: "blur" }],
-        tenantId: [{ required: true, message: "租户编号不能为空", trigger: "blur" }],
-        contactUserName: [{ required: true, message: "联系人不能为空", trigger: "blur" }],
-        contactPhone: [{ required: true, message: "联系电话不能为空", trigger: "blur" }],
-        companyName: [{ required: true, message: "企业名称不能为空", trigger: "blur" }],
-        username: [
-            { required: true, message: "用户名不能为空", trigger: "blur" },
-            { min: 2, max: 20, message: '用户名称长度必须介于 2 和 20 之间', trigger: 'blur' }
-        ],
-        password: [
-            { required: true, message: "密码不能为空", trigger: "blur" },
-            { min: 5, max: 20, message: '用户密码长度必须介于 5 和 20 之间', trigger: 'blur' }
-        ]
-    }
+  form: { ...initFormData },
+  queryParams: {
+    pageNum: 1,
+    pageSize: 10,
+    tenantId: '',
+    contactUserName: '',
+    contactPhone: '',
+    companyName: ''
+  },
+  rules: {
+    id: [{ required: true, message: "id不能为空", trigger: "blur" }],
+    tenantId: [{ required: true, message: "租户编号不能为空", trigger: "blur" }],
+    contactUserName: [{ required: true, message: "联系人不能为空", trigger: "blur" }],
+    contactPhone: [{ required: true, message: "联系电话不能为空", trigger: "blur" }],
+    companyName: [{ required: true, message: "企业名称不能为空", trigger: "blur" }],
+    username: [
+      { required: true, message: "用户名不能为空", trigger: "blur" },
+      { min: 2, max: 20, message: '用户名称长度必须介于 2 和 20 之间', trigger: 'blur' }
+    ],
+    password: [
+      { required: true, message: "密码不能为空", trigger: "blur" },
+      { min: 5, max: 20, message: '用户密码长度必须介于 5 和 20 之间', trigger: 'blur' }
+    ]
+  }
 });
 
 const { queryParams, form, rules } = toRefs(data);
 
 /** 查询所有租户套餐 */
 const getTenantPackage = async () => {
-    const res = await selectTenantPackage()
-    packageList.value = res.data;
+  const res = await selectTenantPackage()
+  packageList.value = res.data;
 }
 
 /** 查询租户列表 */
 const getList = async () => {
-    loading.value = true;
-    const res = await listTenant(queryParams.value);
-    tenantList.value = res.rows;
-    total.value = res.total;
-    loading.value = false;
+  loading.value = true;
+  const res = await listTenant(queryParams.value);
+  tenantList.value = res.rows;
+  total.value = res.total;
+  loading.value = false;
 }
 
 // 租户套餐状态修改
 const handleStatusChange = async (row: TenantVO) => {
-    let text = row.status === "0" ? "启用" : "停用";
-    try {
-        await proxy?.$modal.confirm('确认要"' + text + '""' + row.companyName + '"租户吗？');
-        await changeTenantStatus(row.id, row.tenantId, row.status);
-        proxy?.$modal.msgSuccess(text + "成功");
-    } catch {
-        row.status = row.status === "0" ? "1" : "0";
-    }
+  let text = row.status === "0" ? "启用" : "停用";
+  try {
+    await proxy?.$modal.confirm('确认要"' + text + '""' + row.companyName + '"租户吗？');
+    await changeTenantStatus(row.id, row.tenantId, row.status);
+    proxy?.$modal.msgSuccess(text + "成功");
+  } catch {
+    row.status = row.status === "0" ? "1" : "0";
+  }
 
 
 }
 
 // 取消按钮
 const cancel = () => {
-    reset();
-    dialog.visible = false;
+  reset();
+  dialog.visible = false;
 }
 
 // 表单重置
 const reset = () => {
-    form.value = {...initFormData};
-    tenantFormRef.value?.resetFields();
+  form.value = { ...initFormData };
+  tenantFormRef.value?.resetFields();
 }
 
 /** 搜索按钮操作 */
 const handleQuery = () => {
-    queryParams.value.pageNum = 1;
-    getList();
+  queryParams.value.pageNum = 1;
+  getList();
 }
 
 /** 重置按钮操作 */
 const resetQuery = () => {
-    queryFormRef.value?.resetFields();
-    handleQuery();
+  queryFormRef.value?.resetFields();
+  handleQuery();
 }
 
 // 多选框选中数据
 const handleSelectionChange = (selection: TenantVO[]) => {
-    ids.value = selection.map(item => item.id);
-    single.value = selection.length != 1;
-    multiple.value = !selection.length;
+  ids.value = selection.map(item => item.id);
+  single.value = selection.length != 1;
+  multiple.value = !selection.length;
 }
 
 /** 新增按钮操作 */
 const handleAdd = () => {
-    dialog.visible = true;
-    dialog.title = "添加租户";
-    nextTick(() => {
-        reset();
-        getTenantPackage();
-    })
+  dialog.visible = true;
+  dialog.title = "添加租户";
+  nextTick(() => {
+    reset();
+    getTenantPackage();
+  })
 }
 
 /** 修改按钮操作 */
 const handleUpdate = (row?: TenantVO) => {
-    loading.value = true;
-    dialog.visible = true;
-    dialog.title = "修改租户";
-    nextTick(async () => {
-        reset();
-        await getTenantPackage();
-        const _id = row?.id || ids.value[0];
-        const res = await getTenant(_id);
-        loading.value = false;
-        Object.assign(form.value, res.data)
-    })
+  loading.value = true;
+  dialog.visible = true;
+  dialog.title = "修改租户";
+  nextTick(async () => {
+    reset();
+    await getTenantPackage();
+    const _id = row?.id || ids.value[0];
+    const res = await getTenant(_id);
+    loading.value = false;
+    Object.assign(form.value, res.data)
+  })
 }
 
 /** 提交按钮 */
 const submitForm = () => {
-    tenantFormRef.value?.validate(async (valid: boolean) => {
-        if (valid) {
-            buttonLoading.value = true;
-            if (form.value.id) {
-                await updateTenant(form.value).finally(() => buttonLoading.value = false);
-            } else {
-                await addTenant(form.value).finally(() => buttonLoading.value = false);
-            }
-            proxy?.$modal.msgSuccess("操作成功");
-            dialog.visible = false;
-            getList();
-        }
-    });
+  tenantFormRef.value?.validate(async (valid: boolean) => {
+    if (valid) {
+      buttonLoading.value = true;
+      if (form.value.id) {
+        await updateTenant(form.value).finally(() => buttonLoading.value = false);
+      } else {
+        await addTenant(form.value).finally(() => buttonLoading.value = false);
+      }
+      proxy?.$modal.msgSuccess("操作成功");
+      dialog.visible = false;
+      getList();
+    }
+  });
 }
 
 /** 删除按钮操作 */
 const handleDelete = async (row?: TenantVO) => {
-    const _ids = row?.id || ids.value;
-    await proxy?.$modal.confirm('是否确认删除租户编号为"' + _ids + '"的数据项？')
-    loading.value = true;
-    await delTenant(_ids).finally(() => loading.value = false);
-    await getList();
-    proxy?.$modal.msgSuccess("删除成功");
+  const _ids = row?.id || ids.value;
+  await proxy?.$modal.confirm('是否确认删除租户编号为"' + _ids + '"的数据项？')
+  loading.value = true;
+  await delTenant(_ids).finally(() => loading.value = false);
+  await getList();
+  proxy?.$modal.msgSuccess("删除成功");
 
 
 }
 
 /** 同步租户套餐按钮操作 */
 const handleSyncTenantPackage = async (row: TenantVO) => {
-    try {
-        await proxy?.$modal.confirm('是否确认同步租户套餐租户编号为"' + row.tenantId + '"的数据项？');
-        loading.value = true;
-        await syncTenantPackage(row.tenantId, row.packageId);
-        await getList();
-        proxy?.$modal.msgSuccess("同步成功");
-    } catch {return} finally {
-        loading.value = false;
-    }
+  try {
+    await proxy?.$modal.confirm('是否确认同步租户套餐租户编号为"' + row.tenantId + '"的数据项？');
+    loading.value = true;
+    await syncTenantPackage(row.tenantId, row.packageId);
+    await getList();
+    proxy?.$modal.msgSuccess("同步成功");
+  } catch { return } finally {
+    loading.value = false;
+  }
 }
 
 /** 导出按钮操作 */
 const handleExport = () => {
-    proxy?.download('system/tenant/export', {
-        ...queryParams.value
-    }, `tenant_${new Date().getTime()}.xlsx`)
+  proxy?.download('system/tenant/export', {
+    ...queryParams.value
+  }, `tenant_${new Date().getTime()}.xlsx`)
 }
 
 onMounted(() => {
-    getList();
+  getList();
 })
 </script>

@@ -125,117 +125,117 @@ const postFormRef = ref<ElFormInstance>();
 const queryFormRef = ref<ElFormInstance>();
 
 const dialog = reactive<DialogOption>({
-    visible: false,
-    title: ''
+  visible: false,
+  title: ''
 });
 
 const initFormData: PostForm = {
-    postId: undefined,
-    postCode: '',
-    postName: '',
-    postSort: 0,
-    status: "0",
-    remark: ''
+  postId: undefined,
+  postCode: '',
+  postName: '',
+  postSort: 0,
+  status: "0",
+  remark: ''
 }
 
 const data = reactive<PageData<PostForm, PostQuery>>({
-    form: {...initFormData},
-    queryParams: {
-        pageNum: 1,
-        pageSize: 10,
-        postCode: '',
-        postName: '',
-        status: ''
-    },
-    rules: {
-        postName: [{ required: true, message: "岗位名称不能为空", trigger: "blur" }],
-        postCode: [{ required: true, message: "岗位编码不能为空", trigger: "blur" }],
-        postSort: [{ required: true, message: "岗位顺序不能为空", trigger: "blur" }],
-    }
+  form: { ...initFormData },
+  queryParams: {
+    pageNum: 1,
+    pageSize: 10,
+    postCode: '',
+    postName: '',
+    status: ''
+  },
+  rules: {
+    postName: [{ required: true, message: "岗位名称不能为空", trigger: "blur" }],
+    postCode: [{ required: true, message: "岗位编码不能为空", trigger: "blur" }],
+    postSort: [{ required: true, message: "岗位顺序不能为空", trigger: "blur" }],
+  }
 });
 
 const { queryParams, form, rules } = toRefs<PageData<PostForm, PostQuery>>(data);
 
 /** 查询岗位列表 */
 const getList = async () => {
-    loading.value = true;
-    const res = await listPost(queryParams.value);
-    postList.value = res.rows;
-    total.value = res.total;
-    loading.value = false;
+  loading.value = true;
+  const res = await listPost(queryParams.value);
+  postList.value = res.rows;
+  total.value = res.total;
+  loading.value = false;
 }
 /** 取消按钮 */
 const cancel = () => {
-    reset();
-    dialog.visible = false;
+  reset();
+  dialog.visible = false;
 }
 /** 表单重置 */
 const reset = () => {
-    form.value = {...initFormData};
-    postFormRef.value?.resetFields();
+  form.value = { ...initFormData };
+  postFormRef.value?.resetFields();
 }
 /** 搜索按钮操作 */
 const handleQuery = () => {
-    queryParams.value.pageNum = 1;
-    getList();
+  queryParams.value.pageNum = 1;
+  getList();
 }
 /** 重置按钮操作 */
 const resetQuery = () => {
-    queryFormRef.value?.resetFields();
-    handleQuery();
+  queryFormRef.value?.resetFields();
+  handleQuery();
 }
 /** 多选框选中数据 */
 const handleSelectionChange = (selection: PostVO[]) => {
-    ids.value = selection.map(item => item.postId);
-    single.value = selection.length != 1;
-    multiple.value = !selection.length;
+  ids.value = selection.map(item => item.postId);
+  single.value = selection.length != 1;
+  multiple.value = !selection.length;
 }
 /** 新增按钮操作 */
 const handleAdd = () => {
-    dialog.visible = true;
-    dialog.title = "添加岗位";
-    nextTick(() => {
-        reset();
-    })
+  dialog.visible = true;
+  dialog.title = "添加岗位";
+  nextTick(() => {
+    reset();
+  })
 }
 /** 修改按钮操作 */
 const handleUpdate = (row?: PostVO) => {
-    dialog.visible = true;
-    dialog.title = "修改岗位";
-    nextTick(async () => {
-        reset();
-        const postId = row?.postId || ids.value[0];
-        const res = await getPost(postId);
-        form.value = res.data;
-    })
+  dialog.visible = true;
+  dialog.title = "修改岗位";
+  nextTick(async () => {
+    reset();
+    const postId = row?.postId || ids.value[0];
+    const res = await getPost(postId);
+    form.value = res.data;
+  })
 }
 /** 提交按钮 */
 const submitForm = () => {
-    postFormRef.value?.validate(async (valid: boolean) => {
-        if (valid) {
-            form.value.postId ? await updatePost(form.value) : await addPost(form.value);
-            proxy?.$modal.msgSuccess("操作成功");
-            dialog.visible = false;
-            await getList();
-        }
-    });
+  postFormRef.value?.validate(async (valid: boolean) => {
+    if (valid) {
+      form.value.postId ? await updatePost(form.value) : await addPost(form.value);
+      proxy?.$modal.msgSuccess("操作成功");
+      dialog.visible = false;
+      await getList();
+    }
+  });
 }
 /** 删除按钮操作 */
 const handleDelete = async (row?: PostVO) => {
-    const postIds = row?.postId || ids.value;
-    await proxy?.$modal.confirm('是否确认删除岗位编号为"' + postIds + '"的数据项？');
-    await delPost(postIds);
-    await getList();
-    proxy?.$modal.msgSuccess("删除成功");
+  const postIds = row?.postId || ids.value;
+  await proxy?.$modal.confirm('是否确认删除岗位编号为"' + postIds + '"的数据项？');
+  await delPost(postIds);
+  await getList();
+  proxy?.$modal.msgSuccess("删除成功");
 }
 /** 导出按钮操作 */
 const handleExport = () => {
-    proxy?.download("system/post/export", {
-        ...queryParams.value
-    }, `post_${new Date().getTime()}.xlsx`);
+  proxy?.download("system/post/export", {
+    ...queryParams.value
+  }, `post_${new Date().getTime()}.xlsx`);
 }
 
 onMounted(() => {
-    getList();
+  getList();
 });
 </script>

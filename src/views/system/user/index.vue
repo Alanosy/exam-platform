@@ -211,7 +211,7 @@
             <el-form-item label="状态">
               <el-radio-group v-model="form.status">
                 <el-radio v-for="dict in sys_normal_disable" :key="dict.value" :label="dict.value">{{
-                    dict.label }}</el-radio>
+                  dict.label }}</el-radio>
               </el-radio-group>
             </el-form-item>
           </el-col>
@@ -317,7 +317,7 @@ const ids = ref<Array<number | string>>([]);
 const single = ref(true);
 const multiple = ref(true);
 const total = ref(0);
-const dateRange = ref<[DateModelType, DateModelType]>(['','']);
+const dateRange = ref<[DateModelType, DateModelType]>(['', '']);
 const deptName = ref('');
 const deptOptions = ref<DeptVO[]>([]);
 const initPassword = ref('123456');
@@ -325,28 +325,28 @@ const postOptions = ref<PostVO[]>([]);
 const roleOptions = ref<RoleVO[]>([]);
 /*** 用户导入参数 */
 const upload = reactive<ImportOption>({
-    // 是否显示弹出层（用户导入）
-    open: false,
-    // 弹出层标题（用户导入）
-    title: "",
-    // 是否禁用上传
-    isUploading: false,
-    // 是否更新已经存在的用户数据
-    updateSupport: 0,
-    // 设置上传的请求头部
-    headers: { Authorization: "Bearer " + getToken() },
-    // 上传的地址
-    url: import.meta.env.VITE_APP_BASE_API + "/system/user/importData"
+  // 是否显示弹出层（用户导入）
+  open: false,
+  // 弹出层标题（用户导入）
+  title: "",
+  // 是否禁用上传
+  isUploading: false,
+  // 是否更新已经存在的用户数据
+  updateSupport: 0,
+  // 设置上传的请求头部
+  headers: { Authorization: "Bearer " + getToken() },
+  // 上传的地址
+  url: import.meta.env.VITE_APP_BASE_API + "/system/user/importData"
 })
 // 列显隐信息
 const columns = ref<FieldOption[]>([
-    { key: 0, label: `用户编号`, visible: false },
-    { key: 1, label: `用户名称`, visible: true },
-    { key: 2, label: `用户昵称`, visible: true },
-    { key: 3, label: `部门`, visible: true },
-    { key: 4, label: `手机号码`, visible: true },
-    { key: 5, label: `状态`, visible: true },
-    { key: 6, label: `创建时间`, visible: true }
+  { key: 0, label: `用户编号`, visible: false },
+  { key: 1, label: `用户名称`, visible: true },
+  { key: 2, label: `用户昵称`, visible: true },
+  { key: 3, label: `部门`, visible: true },
+  { key: 4, label: `手机号码`, visible: true },
+  { key: 5, label: `状态`, visible: true },
+  { key: 6, label: `创建时间`, visible: true }
 ])
 
 
@@ -356,243 +356,243 @@ const userFormRef = ref<ElFormInstance>();
 const uploadRef = ref<ElUploadInstance>();
 
 const dialog = reactive<DialogOption>({
-    visible: false,
-    title: ''
+  visible: false,
+  title: ''
 });
 
 const initFormData: UserForm = {
-    userId: undefined,
-    deptId: undefined,
-    userName: '',
-    nickName: undefined,
-    password: '',
-    phonenumber: undefined,
-    email: undefined,
-    sex: undefined,
-    status: "0",
-    remark: '',
-    postIds: [],
-    roleIds: []
+  userId: undefined,
+  deptId: undefined,
+  userName: '',
+  nickName: undefined,
+  password: '',
+  phonenumber: undefined,
+  email: undefined,
+  sex: undefined,
+  status: "0",
+  remark: '',
+  postIds: [],
+  roleIds: []
 }
 const data = reactive<PageData<UserForm, UserQuery>>({
-    form: { ...initFormData },
-    queryParams: {
-        pageNum: 1,
-        pageSize: 10,
-        userName: '',
-        phonenumber: '',
-        status: '',
-        deptId: ''
-    },
-    rules: {
-        userName: [{ required: true, message: "用户名称不能为空", trigger: "blur" }, { min: 2, max: 20, message: "用户名称长度必须介于 2 和 20 之间", trigger: "blur" }],
-        nickName: [{ required: true, message: "用户昵称不能为空", trigger: "blur" }],
-        password: [{ required: true, message: "用户密码不能为空", trigger: "blur" }, { min: 5, max: 20, message: "用户密码长度必须介于 5 和 20 之间", trigger: "blur" }],
-        email: [{ type: "email", message: "请输入正确的邮箱地址", trigger: ["blur", "change"] }],
-        phonenumber: [{ pattern: /^1[3|4|5|6|7|8|9][0-9]\d{8}$/, message: "请输入正确的手机号码", trigger: "blur" }]
-    }
+  form: { ...initFormData },
+  queryParams: {
+    pageNum: 1,
+    pageSize: 10,
+    userName: '',
+    phonenumber: '',
+    status: '',
+    deptId: ''
+  },
+  rules: {
+    userName: [{ required: true, message: "用户名称不能为空", trigger: "blur" }, { min: 2, max: 20, message: "用户名称长度必须介于 2 和 20 之间", trigger: "blur" }],
+    nickName: [{ required: true, message: "用户昵称不能为空", trigger: "blur" }],
+    password: [{ required: true, message: "用户密码不能为空", trigger: "blur" }, { min: 5, max: 20, message: "用户密码长度必须介于 5 和 20 之间", trigger: "blur" }],
+    email: [{ type: "email", message: "请输入正确的邮箱地址", trigger: ["blur", "change"] }],
+    phonenumber: [{ pattern: /^1[3|4|5|6|7|8|9][0-9]\d{8}$/, message: "请输入正确的手机号码", trigger: "blur" }]
+  }
 })
 
 const { queryParams, form, rules } = toRefs<PageData<UserForm, UserQuery>>(data)
 
 /** 通过条件过滤节点  */
 const filterNode = (value: string, data: any) => {
-    if (!value) return true
-    return data.label.indexOf(value) !== -1
+  if (!value) return true
+  return data.label.indexOf(value) !== -1
 }
 /** 根据名称筛选部门树 */
 watchEffect(
-    () => {deptTreeRef.value?.filter(deptName.value);},
-    {
-        flush: 'post' // watchEffect会在DOM挂载或者更新之前就会触发，此属性控制在DOM元素更新后运行
-    }
+  () => { deptTreeRef.value?.filter(deptName.value); },
+  {
+    flush: 'post' // watchEffect会在DOM挂载或者更新之前就会触发，此属性控制在DOM元素更新后运行
+  }
 );
 
 /** 查询部门下拉树结构 */
 const getTreeSelect = async () => {
-    const res = await api.deptTreeSelect();
-    deptOptions.value = res.data;
+  const res = await api.deptTreeSelect();
+  deptOptions.value = res.data;
 };
 
 /** 查询用户列表 */
 const getList = async () => {
-    loading.value = true;
-    const res = await api.listUser(proxy?.addDateRange(queryParams.value, dateRange.value));
-    loading.value = false;
-    userList.value = res.rows;
-    total.value = res.total;
+  loading.value = true;
+  const res = await api.listUser(proxy?.addDateRange(queryParams.value, dateRange.value));
+  loading.value = false;
+  userList.value = res.rows;
+  total.value = res.total;
 }
 
 /** 节点单击事件 */
 const handleNodeClick = (data: DeptVO) => {
-    queryParams.value.deptId = data.id;
-    handleQuery()
+  queryParams.value.deptId = data.id;
+  handleQuery()
 }
 
 
 /** 搜索按钮操作 */
 const handleQuery = () => {
-    queryParams.value.pageNum = 1
-    getList()
+  queryParams.value.pageNum = 1
+  getList()
 }
 /** 重置按钮操作 */
 const resetQuery = () => {
-    dateRange.value = ['','']
-    queryFormRef.value?.resetFields();
-    queryParams.value.pageNum = 1;
-    queryParams.value.deptId = undefined;
-    deptTreeRef.value?.setCurrentKey(undefined);
-    handleQuery();
+  dateRange.value = ['', '']
+  queryFormRef.value?.resetFields();
+  queryParams.value.pageNum = 1;
+  queryParams.value.deptId = undefined;
+  deptTreeRef.value?.setCurrentKey(undefined);
+  handleQuery();
 }
 
 /** 删除按钮操作 */
 const handleDelete = async (row?: UserVO) => {
-    const userIds = row?.userId || ids.value;
-    const [err] = await to(proxy?.$modal.confirm('是否确认删除用户编号为"' + userIds + '"的数据项？') as any);
-    if (!err) {
-        await api.delUser(userIds);
-        await getList();
-        proxy?.$modal.msgSuccess("删除成功");
-    }
+  const userIds = row?.userId || ids.value;
+  const [err] = await to(proxy?.$modal.confirm('是否确认删除用户编号为"' + userIds + '"的数据项？') as any);
+  if (!err) {
+    await api.delUser(userIds);
+    await getList();
+    proxy?.$modal.msgSuccess("删除成功");
+  }
 }
 
 /** 用户状态修改  */
 const handleStatusChange = async (row: UserVO) => {
-    let text = row.status === "0" ? "启用" : "停用"
-    try {
-        await proxy?.$modal.confirm('确认要"' + text + '""' + row.userName + '"用户吗?');
-        await api.changeUserStatus(row.userId, row.status);
-        proxy?.$modal.msgSuccess(text + "成功");
-    } catch (err) {
-        row.status = row.status === "0" ? "1" : "0";
-    }
+  let text = row.status === "0" ? "启用" : "停用"
+  try {
+    await proxy?.$modal.confirm('确认要"' + text + '""' + row.userName + '"用户吗?');
+    await api.changeUserStatus(row.userId, row.status);
+    proxy?.$modal.msgSuccess(text + "成功");
+  } catch (err) {
+    row.status = row.status === "0" ? "1" : "0";
+  }
 }
 /** 跳转角色分配 */
 const handleAuthRole = (row: UserVO) => {
-    const userId = row.userId;
-    router.push("/system/user-auth/role/" + userId);
+  const userId = row.userId;
+  router.push("/system/user-auth/role/" + userId);
 }
 
 /** 重置密码按钮操作 */
 const handleResetPwd = async (row: UserVO) => {
-    const [err, res] = await to(ElMessageBox.prompt('请输入"' + row.userName + '"的新密码', "提示", {
-        confirmButtonText: "确定",
-        cancelButtonText: "取消",
-        closeOnClickModal: false,
-        inputPattern: /^.{5,20}$/,
-        inputErrorMessage: "用户密码长度必须介于 5 和 20 之间",
-    }))
-    if (!err) {
-        await api.resetUserPwd(row.userId, res.value);
-        proxy?.$modal.msgSuccess("修改成功，新密码是：" + res.value);
-    }
+  const [err, res] = await to(ElMessageBox.prompt('请输入"' + row.userName + '"的新密码', "提示", {
+    confirmButtonText: "确定",
+    cancelButtonText: "取消",
+    closeOnClickModal: false,
+    inputPattern: /^.{5,20}$/,
+    inputErrorMessage: "用户密码长度必须介于 5 和 20 之间",
+  }))
+  if (!err) {
+    await api.resetUserPwd(row.userId, res.value);
+    proxy?.$modal.msgSuccess("修改成功，新密码是：" + res.value);
+  }
 }
 
 /** 选择条数  */
 const handleSelectionChange = (selection: UserVO[]) => {
-    ids.value = selection.map((item) => item.userId);
-    single.value = selection.length != 1;
-    multiple.value = !selection.length;
+  ids.value = selection.map((item) => item.userId);
+  single.value = selection.length != 1;
+  multiple.value = !selection.length;
 }
 
 /** 导入按钮操作 */
 const handleImport = () => {
-    upload.title = "用户导入";
-    upload.open = true;
+  upload.title = "用户导入";
+  upload.open = true;
 }
 /** 导出按钮操作 */
 const handleExport = () => {
-    proxy?.download("system/user/export", {
-        ...queryParams.value,
-    }, `user_${new Date().getTime()}.xlsx`);
+  proxy?.download("system/user/export", {
+    ...queryParams.value,
+  }, `user_${new Date().getTime()}.xlsx`);
 };
 /** 下载模板操作 */
 const importTemplate = () => {
-    proxy?.download("system/user/importTemplate", {
-    }, `user_template_${new Date().getTime()}.xlsx`);
+  proxy?.download("system/user/importTemplate", {
+  }, `user_template_${new Date().getTime()}.xlsx`);
 }
 
 /**文件上传中处理 */
 const handleFileUploadProgress = () => {
-    upload.isUploading = true;
+  upload.isUploading = true;
 }
 /** 文件上传成功处理 */
 const handleFileSuccess = (response: any, file: UploadFile) => {
-    upload.open = false;
-    upload.isUploading = false;
-    uploadRef.value?.handleRemove(file);
-    ElMessageBox.alert("<div style='overflow: auto;overflow-x: hidden;max-height: 70vh;padding: 10px 20px 0;'>" + response.msg + "</div>", "导入结果", { dangerouslyUseHTMLString: true });
-    getList();
+  upload.open = false;
+  upload.isUploading = false;
+  uploadRef.value?.handleRemove(file);
+  ElMessageBox.alert("<div style='overflow: auto;overflow-x: hidden;max-height: 70vh;padding: 10px 20px 0;'>" + response.msg + "</div>", "导入结果", { dangerouslyUseHTMLString: true });
+  getList();
 }
 
 /** 提交上传文件 */
 function submitFileForm() {
-    uploadRef.value?.submit();
+  uploadRef.value?.submit();
 }
 
 /** 初始化部门数据 */
 const initTreeData = async () => {
-    // 判断部门的数据是否存在，存在不获取，不存在则获取
-    if (deptOptions.value === undefined) {
-        const { data } = await treeselect();
-        deptOptions.value = data;
-    }
+  // 判断部门的数据是否存在，存在不获取，不存在则获取
+  if (deptOptions.value === undefined) {
+    const { data } = await treeselect();
+    deptOptions.value = data;
+  }
 }
 
 
 /** 重置操作表单 */
 const reset = () => {
-    form.value = { ...initFormData };
-    userFormRef.value?.resetFields();
+  form.value = { ...initFormData };
+  userFormRef.value?.resetFields();
 }
 /** 取消按钮 */
 const cancel = () => {
-    reset();
-    dialog.visible = false;
+  reset();
+  dialog.visible = false;
 }
 
 /** 新增按钮操作 */
 const handleAdd = () => {
-    dialog.visible = true;
-    dialog.title = "新增用户";
-    nextTick(async () => {
-        reset();
-        await initTreeData();
-        const { data } = await api.getUser();
-        postOptions.value = data.posts;
-        roleOptions.value = data.roles;
-        form.value.password = initPassword.value;
-    })
+  dialog.visible = true;
+  dialog.title = "新增用户";
+  nextTick(async () => {
+    reset();
+    await initTreeData();
+    const { data } = await api.getUser();
+    postOptions.value = data.posts;
+    roleOptions.value = data.roles;
+    form.value.password = initPassword.value;
+  })
 }
 /** 修改按钮操作 */
 const handleUpdate = (row?: UserForm) => {
-    dialog.visible = true;
-    dialog.title = "修改用户";
-    nextTick(async () => {
-        reset();
-        await initTreeData();
-        const userId = row?.userId || ids.value[0]
-        const { data } = await api.getUser(userId)
-        Object.assign(form.value, data.user);
-        postOptions.value = data.posts;
-        roleOptions.value = data.roles;
-        form.value.postIds = data.postIds;
-        form.value.roleIds = data.roleIds;
-        form.value.password = "";
-    })
+  dialog.visible = true;
+  dialog.title = "修改用户";
+  nextTick(async () => {
+    reset();
+    await initTreeData();
+    const userId = row?.userId || ids.value[0]
+    const { data } = await api.getUser(userId)
+    Object.assign(form.value, data.user);
+    postOptions.value = data.posts;
+    roleOptions.value = data.roles;
+    form.value.postIds = data.postIds;
+    form.value.roleIds = data.roleIds;
+    form.value.password = "";
+  })
 
 }
 
 /** 提交按钮 */
 const submitForm = () => {
-    userFormRef.value?.validate(async (valid: boolean) => {
-        if (valid) {
-            form.value.userId ? await api.updateUser(form.value) : await api.addUser(form.value);
-            proxy?.$modal.msgSuccess("操作成功");
-            dialog.visible = false;
-            await getList();
-        }
-    })
+  userFormRef.value?.validate(async (valid: boolean) => {
+    if (valid) {
+      form.value.userId ? await api.updateUser(form.value) : await api.addUser(form.value);
+      proxy?.$modal.msgSuccess("操作成功");
+      dialog.visible = false;
+      await getList();
+    }
+  })
 }
 
 
@@ -600,23 +600,23 @@ const submitForm = () => {
  * 关闭用户弹窗
  */
 const closeDialog = () => {
-    dialog.visible = false;
-    resetForm();
+  dialog.visible = false;
+  resetForm();
 }
 
 /**
  * 重置表单
  */
 const resetForm = () => {
-    userFormRef.value?.resetFields();
-    userFormRef.value?.clearValidate();
+  userFormRef.value?.resetFields();
+  userFormRef.value?.clearValidate();
 
-    form.value.id = undefined;
-    form.value.status = '1';
+  form.value.id = undefined;
+  form.value.status = '1';
 }
 onMounted(() => {
-    getTreeSelect() // 初始化部门数据
-    getList() // 初始化列表数据
+  getTreeSelect() // 初始化部门数据
+  getList() // 初始化列表数据
 });
 </script>
 

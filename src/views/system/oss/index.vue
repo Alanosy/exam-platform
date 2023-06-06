@@ -154,8 +154,8 @@ const previewListResource = ref(true);
 const daterangeCreateTime = ref<[DateModelType, DateModelType]>(['', '']);
 
 const dialog = reactive<DialogOption>({
-    visible: false,
-    title: ''
+  visible: false,
+  title: ''
 });
 
 // 默认排序
@@ -165,175 +165,175 @@ const ossFormRef = ref<ElFormInstance>();
 const queryFormRef = ref<ElFormInstance>();
 
 const initFormData = {
-    file: undefined,
+  file: undefined,
 }
 const data = reactive<PageData<OssForm, OssQuery>>({
-    form: { ...initFormData },
-    // 查询参数
-    queryParams: {
-        pageNum: 1,
-        pageSize: 10,
-        fileName: '',
-        originalName: '',
-        fileSuffix: '',
-        createTime: '',
-        service: '',
-        orderByColumn: defaultSort.value.prop,
-        isAsc: defaultSort.value.order
-    },
-    rules: {
-        file: [
-            { required: true, message: "文件不能为空", trigger: "blur" }
-        ]
-    }
+  form: { ...initFormData },
+  // 查询参数
+  queryParams: {
+    pageNum: 1,
+    pageSize: 10,
+    fileName: '',
+    originalName: '',
+    fileSuffix: '',
+    createTime: '',
+    service: '',
+    orderByColumn: defaultSort.value.prop,
+    isAsc: defaultSort.value.order
+  },
+  rules: {
+    file: [
+      { required: true, message: "文件不能为空", trigger: "blur" }
+    ]
+  }
 });
 
 const { queryParams, form, rules } = toRefs(data);
 
 /** 查询OSS对象存储列表 */
 const getList = async () => {
-    loading.value = true;
-    const res = await proxy?.getConfigKey("sys.oss.previewListResource");
-    previewListResource.value = res?.msg === undefined ? true : res.msg === 'true';
-    const response = await listOss(proxy?.addDateRange(queryParams.value, daterangeCreateTime.value, "CreateTime"));
-    ossList.value = response.rows;
-    total.value = response.total;
-    loading.value = false;
-    showTable.value = true;
+  loading.value = true;
+  const res = await proxy?.getConfigKey("sys.oss.previewListResource");
+  previewListResource.value = res?.msg === undefined ? true : res.msg === 'true';
+  const response = await listOss(proxy?.addDateRange(queryParams.value, daterangeCreateTime.value, "CreateTime"));
+  ossList.value = response.rows;
+  total.value = response.total;
+  loading.value = false;
+  showTable.value = true;
 }
 function checkFileSuffix(fileSuffix: string[]) {
-    let arr = ["png", "jpg", "jpeg"];
-    return arr.some(type => {
-        return fileSuffix.indexOf(type) > -1;
-    });
+  let arr = ["png", "jpg", "jpeg"];
+  return arr.some(type => {
+    return fileSuffix.indexOf(type) > -1;
+  });
 }
 /** 取消按钮 */
 function cancel() {
-    dialog.visible = false;
-    reset();
+  dialog.visible = false;
+  reset();
 }
 /** 表单重置 */
 function reset() {
-    form.value = { ...initFormData };
-    ossFormRef.value?.resetFields();
+  form.value = { ...initFormData };
+  ossFormRef.value?.resetFields();
 }
 /** 搜索按钮操作 */
 function handleQuery() {
-    queryParams.value.pageNum = 1;
-    getList();
+  queryParams.value.pageNum = 1;
+  getList();
 }
 /** 重置按钮操作 */
 function resetQuery() {
-    showTable.value = false;
-    daterangeCreateTime.value = ['', ''];
-    queryFormRef.value?.resetFields();
-    queryParams.value.orderByColumn = defaultSort.value.prop;
-    queryParams.value.isAsc = defaultSort.value.order;
-    handleQuery();
+  showTable.value = false;
+  daterangeCreateTime.value = ['', ''];
+  queryFormRef.value?.resetFields();
+  queryParams.value.orderByColumn = defaultSort.value.prop;
+  queryParams.value.isAsc = defaultSort.value.order;
+  handleQuery();
 }
 /** 选择条数  */
 function handleSelectionChange(selection: OssVO[]) {
-    ids.value = selection.map(item => item.ossId);
-    single.value = selection.length != 1;
-    multiple.value = !selection.length;
+  ids.value = selection.map(item => item.ossId);
+  single.value = selection.length != 1;
+  multiple.value = !selection.length;
 }
 /** 设置列的排序为我们自定义的排序 */
 const handleHeaderClass = ({ column }: any): any => {
-    column.order = column.multiOrder
+  column.order = column.multiOrder
 }
 /** 点击表头进行排序 */
 const handleHeaderCLick = (column: any) => {
-    if (column.sortable !== 'custom') {
-        return
-    }
-    switch (column.multiOrder) {
-        case 'descending':
-            column.multiOrder = 'ascending';
-            break;
-        case 'ascending':
-            column.multiOrder = '';
-            break;
-        default:
-            column.multiOrder = 'descending';
-            break;
-    }
-    handleOrderChange(column.property, column.multiOrder)
+  if (column.sortable !== 'custom') {
+    return
+  }
+  switch (column.multiOrder) {
+    case 'descending':
+      column.multiOrder = 'ascending';
+      break;
+    case 'ascending':
+      column.multiOrder = '';
+      break;
+    default:
+      column.multiOrder = 'descending';
+      break;
+  }
+  handleOrderChange(column.property, column.multiOrder)
 }
 const handleOrderChange = (prop: string, order: string) => {
-    let orderByArr = queryParams.value.orderByColumn ? queryParams.value.orderByColumn.split(",") : [];
-    let isAscArr = queryParams.value.isAsc ? queryParams.value.isAsc.split(",") : [];
-    let propIndex = orderByArr.indexOf(prop)
-    if (propIndex !== -1) {
-        if (order) {
-            //排序里已存在 只修改排序
-            isAscArr[propIndex] = order;
-        } else {
-            //如果order为null 则删除排序字段和属性
-            isAscArr.splice(propIndex, 1);//删除排序
-            orderByArr.splice(propIndex, 1);//删除属性
-        }
+  let orderByArr = queryParams.value.orderByColumn ? queryParams.value.orderByColumn.split(",") : [];
+  let isAscArr = queryParams.value.isAsc ? queryParams.value.isAsc.split(",") : [];
+  let propIndex = orderByArr.indexOf(prop)
+  if (propIndex !== -1) {
+    if (order) {
+      //排序里已存在 只修改排序
+      isAscArr[propIndex] = order;
     } else {
-        //排序里不存在则新增排序
-        orderByArr.push(prop);
-        isAscArr.push(order);
+      //如果order为null 则删除排序字段和属性
+      isAscArr.splice(propIndex, 1);//删除排序
+      orderByArr.splice(propIndex, 1);//删除属性
     }
-    //合并排序
-    queryParams.value.orderByColumn = orderByArr.join(",");
-    queryParams.value.isAsc = isAscArr.join(",");
-    getList();
+  } else {
+    //排序里不存在则新增排序
+    orderByArr.push(prop);
+    isAscArr.push(order);
+  }
+  //合并排序
+  queryParams.value.orderByColumn = orderByArr.join(",");
+  queryParams.value.isAsc = isAscArr.join(",");
+  getList();
 }
 /** 任务日志列表查询 */
 const handleOssConfig = () => {
-    router.push('/system/oss-config/index')
+  router.push('/system/oss-config/index')
 }
 /** 文件按钮操作 */
 const handleFile = () => {
-    dialog.visible = true;
-    dialog.title = "上传文件";
-    nextTick(() => {
-        reset();
-        type.value = 0;
-    })
+  dialog.visible = true;
+  dialog.title = "上传文件";
+  nextTick(() => {
+    reset();
+    type.value = 0;
+  })
 }
 /** 图片按钮操作 */
 const handleImage = () => {
-    dialog.visible = true;
-    dialog.title = "上传图片";
-    nextTick(() => {
-        reset();
-        type.value = 1;
-    })
+  dialog.visible = true;
+  dialog.title = "上传图片";
+  nextTick(() => {
+    reset();
+    type.value = 1;
+  })
 }
 /** 提交按钮 */
 const submitForm = () => {
-    dialog.visible = false;
-    getList();
+  dialog.visible = false;
+  getList();
 }
 /** 下载按钮操作 */
 const handleDownload = (row: OssVO) => {
-    proxy?.$download.oss(row.ossId)
+  proxy?.$download.oss(row.ossId)
 }
 /** 用户状态修改  */
 const handlePreviewListResource = async (preview: boolean) => {
-    let text = preview ? "启用" : "停用";
-    try {
-      await proxy?.$modal.confirm('确认要"' + text + '""预览列表图片"配置吗?');
-      await proxy?.updateConfigByKey("sys.oss.previewListResource", preview);
-      getList()
-      proxy?.$modal.msgSuccess(text + "成功");
-    } catch { return }
+  let text = preview ? "启用" : "停用";
+  try {
+    await proxy?.$modal.confirm('确认要"' + text + '""预览列表图片"配置吗?');
+    await proxy?.updateConfigByKey("sys.oss.previewListResource", preview);
+    getList()
+    proxy?.$modal.msgSuccess(text + "成功");
+  } catch { return }
 }
 /** 删除按钮操作 */
 const handleDelete = async (row?: OssVO) => {
-    const ossIds = row?.ossId || ids.value;
-    await proxy?.$modal.confirm('是否确认删除OSS对象存储编号为"' + ossIds + '"的数据项?');
-    loading.value = true;
-    await delOss(ossIds).finally(() => loading.value = false);
-    getList();
-    proxy?.$modal.msgSuccess("删除成功");
+  const ossIds = row?.ossId || ids.value;
+  await proxy?.$modal.confirm('是否确认删除OSS对象存储编号为"' + ossIds + '"的数据项?');
+  loading.value = true;
+  await delOss(ossIds).finally(() => loading.value = false);
+  getList();
+  proxy?.$modal.msgSuccess("删除成功");
 }
 
 onMounted(() => {
-    getList();
+  getList();
 })
 </script>

@@ -136,31 +136,31 @@ const queryFormRef = ref<ElFormInstance>();
 const importRef = ref<InstanceType<typeof ImportTable>>();
 
 const queryParams = ref<TableQuery>({
-    pageNum: 1,
-    pageSize: 10,
-    tableName: '',
-    tableComment: '',
-    dataName: ""
+  pageNum: 1,
+  pageSize: 10,
+  tableName: '',
+  tableComment: '',
+  dataName: ""
 })
 
-const preview = ref <any>({
-    data: {},
-    activeName: 'domain.java'
+const preview = ref<any>({
+  data: {},
+  activeName: 'domain.java'
 })
 const dialog = reactive<DialogOption>({
-    visible: false,
-    title: '代码预览'
+  visible: false,
+  title: '代码预览'
 });
 
 onActivated(() => {
-    const time = route.query.t;
-    if (time != null && time != uniqueId.value) {
-        uniqueId.value = time as string;
-        queryParams.value.pageNum = Number(route.query.pageNum);
-        dateRange.value = ['', ''];
-        queryFormRef.value?.resetFields();
-        getList();
-    }
+  const time = route.query.t;
+  if (time != null && time != uniqueId.value) {
+    uniqueId.value = time as string;
+    queryParams.value.pageNum = Number(route.query.pageNum);
+    dateRange.value = ['', ''];
+    queryFormRef.value?.resetFields();
+    getList();
+  }
 })
 
 /** 查询多数据源名称 */
@@ -171,81 +171,81 @@ const getDataNameList = async () => {
 
 /** 查询表集合 */
 const getList = async () => {
-    loading.value = true;
-    const res = await listTable(proxy?.addDateRange(queryParams.value, dateRange.value));
-    tableList.value = res.rows;
-    total.value = res.total;
-    loading.value = false;
+  loading.value = true;
+  const res = await listTable(proxy?.addDateRange(queryParams.value, dateRange.value));
+  tableList.value = res.rows;
+  total.value = res.total;
+  loading.value = false;
 }
 /** 搜索按钮操作 */
 const handleQuery = () => {
-    queryParams.value.pageNum = 1;
-    getList();
+  queryParams.value.pageNum = 1;
+  getList();
 }
 /** 生成代码操作 */
 const handleGenTable = async (row?: TableVO) => {
-    const tbIds = row?.tableId || ids.value;
-    if (tbIds == "") {
-        proxy?.$modal.msgError('请选择要生成的数据');
-        return;
-    }
-    if (row?.genType === "1") {
-        await genCode(row.tableId);
-        proxy?.$modal.msgSuccess('成功生成到自定义路径：' + row.genPath);
-    } else {
-        proxy?.$download.zip('/tool/gen/batchGenCode?tableIdStr=' + tbIds, 'ruoyi.zip');
-    }
+  const tbIds = row?.tableId || ids.value;
+  if (tbIds == "") {
+    proxy?.$modal.msgError('请选择要生成的数据');
+    return;
+  }
+  if (row?.genType === "1") {
+    await genCode(row.tableId);
+    proxy?.$modal.msgSuccess('成功生成到自定义路径：' + row.genPath);
+  } else {
+    proxy?.$download.zip('/tool/gen/batchGenCode?tableIdStr=' + tbIds, 'ruoyi.zip');
+  }
 }
 /** 同步数据库操作 */
 const handleSynchDb = async (row: TableVO) => {
-    const tableId = row.tableId;
-    await proxy?.$modal.confirm('确认要强制同步"' + row.tableName + '"表结构吗？');
-    await synchDb(tableId);
-    proxy?.$modal.msgSuccess('同步成功');
+  const tableId = row.tableId;
+  await proxy?.$modal.confirm('确认要强制同步"' + row.tableName + '"表结构吗？');
+  await synchDb(tableId);
+  proxy?.$modal.msgSuccess('同步成功');
 }
 /** 打开导入表弹窗 */
 const openImportTable = () => {
-    importRef.value.show(queryParams.value.dataName);
+  importRef.value?.show(queryParams.value.dataName);
 }
 /** 重置按钮操作 */
 const resetQuery = () => {
-    dateRange.value = ['', ''];
-    queryFormRef.value?.resetFields();
-    handleQuery();
+  dateRange.value = ['', ''];
+  queryFormRef.value?.resetFields();
+  handleQuery();
 }
 /** 预览按钮 */
 const handlePreview = async (row: TableVO) => {
-    const res = await previewTable(row.tableId);
-    preview.value.data = res.data;
-    dialog.visible = true;
-    preview.value.activeName = 'domain.java';
+  const res = await previewTable(row.tableId);
+  preview.value.data = res.data;
+  dialog.visible = true;
+  preview.value.activeName = 'domain.java';
 }
 /** 复制代码成功 */
 const copyTextSuccess = () => {
-    proxy?.$modal.msgSuccess('复制成功');
+  proxy?.$modal.msgSuccess('复制成功');
 }
 // 多选框选中数据
 const handleSelectionChange = (selection: TableVO[]) => {
-    ids.value = selection.map(item => item.tableId);
-    single.value = selection.length != 1;
-    multiple.value = !selection.length;
+  ids.value = selection.map(item => item.tableId);
+  single.value = selection.length != 1;
+  multiple.value = !selection.length;
 }
 /** 修改按钮操作 */
 const handleEditTable = (row?: TableVO) => {
-    const tableId = row?.tableId || ids.value[0];
-    router.push({ path: '/tool/gen-edit/index/' + tableId, query: { pageNum: queryParams.value.pageNum } });
+  const tableId = row?.tableId || ids.value[0];
+  router.push({ path: '/tool/gen-edit/index/' + tableId, query: { pageNum: queryParams.value.pageNum } });
 }
 /** 删除按钮操作 */
 const handleDelete = async (row?: TableVO) => {
-    const tableIds = row?.tableId || ids.value;
-    await proxy?.$modal.confirm('是否确认删除表编号为"' + tableIds + '"的数据项？');
-    await delTable(tableIds);
-    getList();
-    proxy?.$modal.msgSuccess('删除成功');
+  const tableIds = row?.tableId || ids.value;
+  await proxy?.$modal.confirm('是否确认删除表编号为"' + tableIds + '"的数据项？');
+  await delTable(tableIds);
+  getList();
+  proxy?.$modal.msgSuccess('删除成功');
 }
 
 onMounted(() => {
-    getList();
-    getDataNameList();
+  getList();
+  getDataNameList();
 })
 </script>
