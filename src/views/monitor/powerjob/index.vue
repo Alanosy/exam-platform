@@ -5,5 +5,5 @@
 </template>
 
 <script setup lang="ts">
-const url = ref(import.meta.env.VITE_APP_XXL_JOB_ADMIN);
+const url = ref(import.meta.env.VITE_APP_POWERJOB_ADMIN);
 </script>
