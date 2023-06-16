@@ -13,7 +13,9 @@ export function login(data: LoginData): AxiosPromise<LoginResult> {
     username: data.username.trim(),
     password: data.password,
     code: data.code,
-    uuid: data.uuid
+    uuid: data.uuid,
+    clientId: 'e5cd7e4891bf95d1d19206ce24a7b32e',
+    grantType: 'password'
   };
   return request({
     url: '/auth/login',
