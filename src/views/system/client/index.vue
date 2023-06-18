@@ -47,7 +47,15 @@
         <el-table-column label="客户端id" align="center" prop="clientId" />
         <el-table-column label="客户端key" align="center" prop="clientKey" />
         <el-table-column label="客户端秘钥" align="center" prop="clientSecret" />
-        <el-table-column label="授权类型" align="center" prop="grantType" />
+        <el-table-column label="授权类型" align="center">
+          <template #default="scope">
+            <div>
+              <template v-for="type in scope.row.grantTypeList">
+                <dict-tag class="el-check-tag" :options="sys_grant_type" :value="type" />
+              </template>
+            </div>
+          </template>
+        </el-table-column>
         <el-table-column label="Token活跃超时时间" align="center" prop="activityTimeout" />
         <el-table-column label="Token固定超时时间" align="center" prop="timeout" />
         <el-table-column label="状态" align="center" key="status">
