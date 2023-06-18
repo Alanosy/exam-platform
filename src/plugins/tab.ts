@@ -17,7 +17,7 @@ export default {
     }
     // prettier-ignore
     await useTagsViewStore().delCachedView(obj)
-    router.replace({
+    await router.replace({
       path: '/redirect' + obj.path,
       query: obj.query
     });
@@ -34,9 +34,9 @@ export default {
     if (obj === undefined) {
       // prettier-ignore
       const { visitedViews } = await useTagsViewStore().delView(router.currentRoute.value) as any
-      const latestView = visitedViews.slice(-1)[0]
+      const latestView = visitedViews.slice(-1)[0];
       if (latestView) {
-        return router.push(latestView.fullPath)
+        return router.push(latestView.fullPath);
       }
       return router.push('/');
     }
@@ -58,9 +58,15 @@ export default {
   closeOtherPage(obj: TagView) {
     return useTagsViewStore().delOthersViews(obj || router.currentRoute.value);
   },
-  // 打开tab页签
-  openPage(url: RouteLocationRaw) {
-    return router.push(url);
+  /**
+   * 打开tab页签
+   * @param url 路由地址
+   * @param title 标题
+   * @param query 参数
+   */
+  openPage(url: string, title?: string, query?: any) {
+    const obj = { path: url, query: { ...query, title } };
+    return router.push(obj);
   },
   // 修改tab页签
   updatePage(obj: TagView) {

@@ -167,6 +167,7 @@ export const useTagsViewStore = defineStore('tagsView', () => {
 
   const addCachedView = (view: TagView): void => {
     const viewName = view.name as string;
+    if (!viewName) return;
     if (cachedViews.value.includes(viewName)) return;
     if (!view.meta?.noCache) {
       cachedViews.value.push(viewName);

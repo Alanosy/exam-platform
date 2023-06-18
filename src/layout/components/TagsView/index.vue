@@ -125,6 +125,9 @@ const initTags = () => {
 }
 const addTags = () => {
     const { name } = route;
+    if(route.query.title) {
+        route.meta.title = route.query.title;
+    }
     if (name) {
         useTagsViewStore().addView(route);
         if (route.meta.link) {
