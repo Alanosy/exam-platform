@@ -25,6 +25,7 @@ declare global {
   declare type ElRateInstance = InstanceType<typeof ep.ElRate>;
   declare type ElSliderInstance = InstanceType<typeof ep.ElSlider>;
   declare type ElUploadInstance = InstanceType<typeof ep.ElUpload>;
+  declare type ElScrollbarInstance = InstanceType<typeof ep.ElScrollbar>;
 
   declare type TransferKey = ep.TransferKey;
   declare type CheckboxValueType = ep.CheckboxValueType;

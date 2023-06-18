@@ -26,6 +26,7 @@
     "ElDatePickerInstance": true,
     "ElTimePickerInstance": true,
     "ElTimeSelectInstance": true,
+    "ElScrollbarInstance": true,
     "ElCascaderInstance": true,
     "ElColorPickerInstance": true,
     "ElRateInstance": true,
