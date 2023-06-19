@@ -63,9 +63,9 @@ export const delClient = (id: string | number | Array<string | number>) => {
 };
 
 /**
- * 用户状态修改
- * @param userId 用户ID
- * @param status 用户状态
+ * 状态修改
+ * @param id ID
+ * @param status 状态
  */
 export function changeStatus(id: number | string, status: string) {
   const data = {
