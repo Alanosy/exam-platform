@@ -3,8 +3,8 @@
 </template>
 
 <script setup lang="ts">
-import { socialLogin } from '@/api/login';
-import { setToken } from '@/utils/auth';
+import {socialLogin} from '@/api/login';
+import {setToken} from '@/utils/auth';
 
 const route = useRoute();
 const router = useRouter();

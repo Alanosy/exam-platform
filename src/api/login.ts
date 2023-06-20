@@ -72,9 +72,6 @@ export function socialLogin(source: string, code: any, state: any): AxiosPromise
   return request({
     url: '/auth/social-login/' + source,
     method: 'get',
-    headers: {
-      isToken: true
-    },
     params: data
   });
 }

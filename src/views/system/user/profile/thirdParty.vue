@@ -34,14 +34,14 @@
           <span class="app-name">Github</span>
         </a>
 
-        <a class="third-app" href="#" title="功能开发中...">
+        <a class="third-app" href="#" @click="authUrl('wechar');" title="使用 微信 账号授权登录">
           <div class="git-other-login-icon">
             <svg-icon icon-class="wechat" />
           </div>
           <span class="app-name">WeiXin</span>
         </a>
 
-        <a class="third-app" href="#" title="功能开发中...">
+        <a class="third-app" href="#" @click="authUrl('qq');" title="使用 QQ 账号授权登录">
           <div class="git-other-login-icon">
             <svg-icon icon-class="qq" />
           </div>
