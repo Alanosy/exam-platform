@@ -4,10 +4,7 @@ import request from '@/utils/request';
 export function authBinding(source: string) {
   return request({
     url: '/auth/binding/' + source,
-    method: 'get',
-    headers: {
-      isToken: true
-    }
+    method: 'get'
   });
 }
 
@@ -15,19 +12,13 @@ export function authBinding(source: string) {
 export function authUnlock(authId: string) {
   return request({
     url: '/auth/unlock/' + authId,
-    method: 'delete',
-    headers: {
-      isToken: true
-    }
+    method: 'delete'
   });
 }
 //获取授权列表
 export function getAuthList() {
   return request({
     url: '/system/social/list',
-    method: 'get',
-    headers: {
-      isToken: true
-    }
+    method: 'get'
   });
 }

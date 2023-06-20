@@ -38,10 +38,10 @@
       </el-form-item>
       <div style="display: flex;justify-content: flex-end;flex-direction: row;">
         <el-button circle>
-          <svg-icon icon-class="qq" @click="doSocialLogin('QQ')" />
+          <svg-icon icon-class="qq" @click="doSocialLogin('qq')" />
         </el-button>
         <el-button circle>
-          <svg-icon icon-class="wechat" @click="doSocialLogin('Wechat')" />
+          <svg-icon icon-class="wechat" @click="doSocialLogin('wechat')" />
         </el-button>
         <el-button circle>
           <svg-icon icon-class="gitee" @click="doSocialLogin('gitee')" />
