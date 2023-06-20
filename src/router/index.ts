@@ -38,6 +38,11 @@ export const constantRoutes: RouteOption[] = [
     ]
   },
   {
+    path: '/social-login',
+    hidden: true,
+    component: () => import('@/layout/components/socialLogin/index.vue')
+  },
+  {
     path: '/login',
     component: () => import('@/views/login.vue'),
     hidden: true
