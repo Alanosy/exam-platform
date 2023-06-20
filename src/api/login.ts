@@ -60,6 +60,21 @@ export function getCodeImg(): AxiosPromise<VerifyCodeResult> {
     timeout: 20000
   });
 }
+/**
+ * 第三方登录
+ * @param source 第三方登录类型
+ * */
+export function socialLogin(source: string, code: any, state: any): AxiosPromise<any> {
+  const data = {
+    code,
+    state
+  };
+  return request({
+    url: '/auth/social-login/' + source,
+    method: 'get',
+    params: data
+  });
+}
 
 // 获取用户详细信息
 export function getInfo(): AxiosPromise<UserInfo> {

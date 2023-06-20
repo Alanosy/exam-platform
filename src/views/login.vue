@@ -4,7 +4,7 @@
       <h3 class="title">RuoYi-Vue-Plus多租户管理系统</h3>
       <el-form-item prop="tenantId" v-if="tenantEnabled">
         <el-select v-model="loginForm.tenantId" filterable placeholder="请选择/输入公司名称" style="width: 100%">
-          <el-option v-for="item in tenantList" :key="item.tenantId" :label="item.companyName" :value="item.tenantId"> </el-option>
+          <el-option v-for="item in tenantList" :key="item.tenantId" :label="item.companyName" :value="item.tenantId"></el-option>
           <template #prefix><svg-icon icon-class="company" class="el-input__icon input-icon" /></template>
         </el-select>
       </el-form-item>
@@ -36,6 +36,20 @@
           <router-link class="link-type" :to="'/register'">立即注册</router-link>
         </div>
       </el-form-item>
+      <div style="display: flex;justify-content: flex-end;flex-direction: row;">
+        <el-button circle>
+          <svg-icon icon-class="qq" @click="doSocialLogin('qq')" />
+        </el-button>
+        <el-button circle>
+          <svg-icon icon-class="wechat" @click="doSocialLogin('wechat')" />
+        </el-button>
+        <el-button circle>
+          <svg-icon icon-class="gitee" @click="doSocialLogin('gitee')" />
+        </el-button>
+        <el-button circle>
+          <svg-icon icon-class="github" @click="doSocialLogin('github')" />
+        </el-button>
+      </div>
     </el-form>
     <!--  底部  -->
     <div class="el-login-footer">
@@ -46,11 +60,13 @@
 
 <script setup lang="ts">
 import { getCodeImg, getTenantList } from '@/api/login';
+import { authBinding } from '@/api/system/social/auth';
 import Cookies from 'js-cookie';
 import { encrypt, decrypt } from '@/utils/jsencrypt';
 import { useUserStore } from '@/store/modules/user';
 import { LoginData, TenantVO } from '@/api/types';
 import { to } from 'await-to-js';
+import { HttpStatus } from "@/enums/RespEnum";
 
 const userStore = useUserStore();
 const router = useRouter();
@@ -82,12 +98,12 @@ const tenantEnabled = ref(true);
 // 注册开关
 const register = ref(false);
 const redirect = ref(undefined);
-const loginRef = ref(ElForm);
+const loginRef = ref<ElFormInstance>();
 // 租户列表
 const tenantList = ref<TenantVO[]>([]);
 
 const handleLogin = () => {
-  loginRef.value.validate(async (valid: boolean, fields: any) => {
+  loginRef.value?.validate(async (valid: boolean, fields: any) => {
     if (valid) {
       loading.value = true;
       // 勾选了需要记住密码设置在 cookie 中设置记住用户名和密码
@@ -104,7 +120,6 @@ const handleLogin = () => {
         Cookies.remove('rememberMe');
       }
       // 调用action的登录方法
-      // prittier-ignore
       const [err] = await to(userStore.login(loginForm.value));
       if (!err) {
         await router.push({ path: redirect.value || '/' });
@@ -161,6 +176,21 @@ const initTenantList = async () => {
     }
   }
 }
+/**
+ * 第三方登录
+ * @param type
+ */
+const doSocialLogin = (type: string) => {
+  authBinding(type).then((res: any) => {
+    if (res.code === HttpStatus.SUCCESS) {
+      window.location.href = res.msg;
+  } else {
+      ElMessage.error(res.msg);
+    }
+  });
+};
+
+
 
 onMounted(() => {
   getCode();
