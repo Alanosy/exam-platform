@@ -3,8 +3,11 @@ import router from '@/router';
 import { TagView, RouteLocationRaw } from 'vue-router';
 
 export default {
-  // 刷新当前tab页签
-  async refreshPage(obj: TagView): Promise<void> {
+  /**
+   * 刷新当前tab页签
+   * @param obj 标签对象
+   */
+  async refreshPage(obj?: TagView): Promise<void> {
     const { path, query, matched } = router.currentRoute.value;
     if (obj === undefined) {
       matched.forEach((m) => {
@@ -15,11 +18,16 @@ export default {
         }
       });
     }
-    // prettier-ignore
-    await useTagsViewStore().delCachedView(obj)
+    let query1: undefined | {} = {};
+    let path1: undefined | string = '';
+    if (obj) {
+      query1 = obj.query;
+      path1 = obj.path;
+    }
+    await useTagsViewStore().delCachedView(obj);
     await router.replace({
-      path: '/redirect' + obj.path,
-      query: obj.query
+      path: '/redirect' + path1,
+      query: query1
     });
   },
   // 关闭当前tab页签，打开新页签
@@ -68,7 +76,10 @@ export default {
     const obj = { path: url, query: { ...query, title } };
     return router.push(obj);
   },
-  // 修改tab页签
+  /**
+   * 修改tab页签
+   * @param obj 标签对象
+   */
   updatePage(obj: TagView) {
     return useTagsViewStore().updateVisitedView(obj);
   }

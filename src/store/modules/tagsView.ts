@@ -54,8 +54,11 @@ export const useTagsViewStore = defineStore('tagsView', () => {
       resolve([...visitedViews.value]);
     });
   };
-  const delCachedView = (view: TagView): Promise<string[]> => {
-    const viewName = view.name as string;
+  const delCachedView = (view?: TagView): Promise<string[]> => {
+    let viewName = '';
+    if (view) {
+      viewName = view.name as string;
+    }
     return new Promise((resolve) => {
       const index = cachedViews.value.indexOf(viewName);
       index > -1 && cachedViews.value.splice(index, 1);
