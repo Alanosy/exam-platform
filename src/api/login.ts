@@ -67,10 +67,11 @@ export function getCodeImg(): AxiosPromise<VerifyCodeResult> {
 export function socialLogin(source: string, code: any, state: any): AxiosPromise<any> {
   const data = {
     code,
-    state
+    state,
+    source
   };
   return request({
-    url: '/auth/social-login/' + source,
+    url: '/auth/social-login',
     method: 'get',
     params: data
   });
