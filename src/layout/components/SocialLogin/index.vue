@@ -22,13 +22,13 @@ await socialLogin(source, code, state)
   .then(async (res) => {
     if (res.code !== 200) {
       ElMessage.error(res.msg);
-      router.go(-2);
+      location.href = import.meta.env.VITE_APP_CONTEXT_PATH + 'index';
       return;
     }
     loading.value = false;
     setToken(res.msg);
     ElMessage.success('登录成功');
-    router.go(-2);
+    location.href = import.meta.env.VITE_APP_CONTEXT_PATH + 'index';
   })
   .catch(() => {
     loading.value = false;
