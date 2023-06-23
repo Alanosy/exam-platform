@@ -1,6 +1,7 @@
 import type modal from '@/plugins/modal';
 import type tab from '@/plugins/tab';
 import type download from '@/plugins/download';
+import type auth from '@/plugins/auth';
 import type animate from '@/animate';
 import type { useDict } from '@/utils/dict';
 import type { addDateRange, handleTree, selectDictLabel, selectDictLabels, parseTime } from '@/utils/ruoyi';
@@ -13,6 +14,7 @@ declare module '@vue/runtime-core' {
     $modal: typeof modal;
     $tab: typeof tab;
     $download: typeof download;
+    $auth: typeof auth;
     animate: typeof animate;
 
     useDict: typeof useDict;
