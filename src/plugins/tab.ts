@@ -55,15 +55,15 @@ export default {
     return useTagsViewStore().delAllViews();
   },
   // 关闭左侧tab页签
-  closeLeftPage(obj: TagView) {
+  closeLeftPage(obj?: TagView) {
     return useTagsViewStore().delLeftTags(obj || router.currentRoute.value);
   },
   // 关闭右侧tab页签
-  closeRightPage(obj: TagView) {
+  closeRightPage(obj?: TagView) {
     return useTagsViewStore().delRightTags(obj || router.currentRoute.value);
   },
   // 关闭其他tab页签
-  closeOtherPage(obj: TagView) {
+  closeOtherPage(obj?: TagView) {
     return useTagsViewStore().delOthersViews(obj || router.currentRoute.value);
   },
   /**
