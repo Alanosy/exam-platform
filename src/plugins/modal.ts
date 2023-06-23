@@ -27,7 +27,7 @@ export default {
     ElMessageBox.alert(content, '系统提示', { type: 'error' });
   },
   // 成功提示
-  alertSuccess(content: string, s: string, p: { dangerouslyUseHTMLString: boolean }) {
+  alertSuccess(content: string) {
     ElMessageBox.alert(content, '系统提示', { type: 'success' });
   },
   // 警告提示
