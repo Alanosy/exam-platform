@@ -25,9 +25,14 @@ export interface ClientVO {
   grantTypeList: string[];
 
   /**
+   * 设备类型
+   */
+  deviceType: string;
+
+  /**
    * token活跃超时时间
    */
-  activityTimeout: number;
+  activeTimeout: number;
 
   /**
    * token固定超时
@@ -68,9 +73,14 @@ export interface ClientForm extends BaseEntity {
   grantTypeList?: string[];
 
   /**
+   * 设备类型
+   */
+  deviceType?: string;
+
+  /**
    * token活跃超时时间
    */
-  activityTimeout?: number;
+  activeTimeout?: number;
 
   /**
    * token固定超时
@@ -106,9 +116,14 @@ export interface ClientQuery extends PageQuery {
   grantType?: string;
 
   /**
+   * 设备类型
+   */
+  deviceType?: string;
+
+  /**
    * token活跃超时时间
    */
-  activityTimeout?: number;
+  activeTimeout?: number;
 
   /**
    * token固定超时

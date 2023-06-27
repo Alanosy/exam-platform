@@ -56,7 +56,12 @@
             </div>
           </template>
         </el-table-column>
-        <el-table-column label="Token活跃超时时间" align="center" prop="activityTimeout" />
+        <el-table-column label="设备类型" align="center">
+          <template #default="scope">
+            <dict-tag :options="sys_device_type" :value="scope.row.deviceType" />
+          </template>
+        </el-table-column>
+        <el-table-column label="Token活跃超时时间" align="center" prop="activeTimeout" />
         <el-table-column label="Token固定超时时间" align="center" prop="timeout" />
         <el-table-column label="状态" align="center" key="status">
           <template #default="scope">
@@ -100,7 +105,15 @@
             ></el-option>
           </el-select>
         </el-form-item>
-        <el-form-item prop="activityTimeout" label-width="auto">
+        <el-form-item label="设备类型" prop="deviceType">
+          <el-select v-model="form.deviceType" placeholder="请输入设备类型">
+            <el-option
+              v-for="dict in sys_device_type"
+              :key="dict.value" :label="dict.label" :value="dict.value"
+            ></el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item prop="activeTimeout" label-width="auto">
           <template #label>
             <span>
               <el-tooltip content="指定时间无操作则过期（单位：秒），默认30分钟（1800秒）" placement="top">
@@ -109,7 +122,7 @@
               Token活跃超时时间
             </span>
           </template>
-          <el-input v-model="form.activityTimeout" placeholder="请输入Token活跃超时时间" />
+          <el-input v-model="form.activeTimeout" placeholder="请输入Token活跃超时时间" />
         </el-form-item>
         <el-form-item prop="timeout" label-width="auto">
           <template #label>
@@ -149,6 +162,7 @@ import { ElForm } from 'element-plus';
 const { proxy } = getCurrentInstance() as ComponentInternalInstance;
 const { sys_normal_disable } = toRefs<any>(proxy?.useDict("sys_normal_disable"));
 const { sys_grant_type } = toRefs<any>(proxy?.useDict("sys_grant_type"));
+const { sys_device_type } = toRefs<any>(proxy?.useDict("sys_device_type"));
 
 const clientList = ref<ClientVO[]>([]);
 const buttonLoading = ref(false);
@@ -173,7 +187,8 @@ const initFormData: ClientForm = {
   clientKey: undefined,
   clientSecret: undefined,
   grantTypeList: undefined,
-  activityTimeout: undefined,
+  deviceType: undefined,
+  activeTimeout: undefined,
   timeout: undefined,
   status: undefined,
 }
@@ -186,7 +201,8 @@ const data = reactive<PageData<ClientForm, ClientQuery>>({
     clientKey: undefined,
     clientSecret: undefined,
     grantType: undefined,
-    activityTimeout: undefined,
+    deviceType: undefined,
+    activeTimeout: undefined,
     timeout: undefined,
     status: undefined,
   },
@@ -205,6 +221,9 @@ const data = reactive<PageData<ClientForm, ClientQuery>>({
     ],
     grantTypeList: [
       { required: true, message: "授权类型不能为空", trigger: "change" }
+    ],
+    deviceType: [
+      { required: true, message: "设备类型不能为空", trigger: "change" }
     ],
   }
 });
