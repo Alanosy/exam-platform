@@ -21,13 +21,15 @@ export interface LoginData {
   rememberMe?: boolean;
   code?: string;
   uuid?: string;
+  clientId: string;
+  grantType: string;
 }
 
 /**
  * 登录响应
  */
 export interface LoginResult {
-  token: string;
+  access_token: string;
 }
 
 /**
