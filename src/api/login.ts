@@ -66,11 +66,15 @@ export function getCodeImg(): AxiosPromise<VerifyCodeResult> {
  * 第三方登录
  * @param source 第三方登录类型
  * */
-export function socialLogin(source: string, code: any, state: any): AxiosPromise<any> {
+export function socialLogin(source: string, tenantId: string, loginType: string, code: any, state: any): AxiosPromise<any> {
   const data = {
     code,
     state,
-    source
+    source,
+    tenantId,
+    loginType,
+    clientId: 'e5cd7e4891bf95d1d19206ce24a7b32e',
+    grantType: 'social'
   };
   return request({
     url: '/auth/social-login',
