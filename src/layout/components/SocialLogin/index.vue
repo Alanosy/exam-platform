@@ -21,7 +21,6 @@ const code = route.query.code;
 const state = route.query.state;
 const source = route.query.source as string;
 const tenantId = Cookies.get("tenantId") ? Cookies.get("tenantId") as string : '000000';
-const loginType = getToken() ? 'register' : 'login';
 
 /**
  * 通过code获取token
@@ -29,7 +28,7 @@ const loginType = getToken() ? 'register' : 'login';
  * @param {string} code
  * @param {string} state
  */
-await socialLogin(source, tenantId, loginType, code, state)
+await socialLogin(source, tenantId, code, state)
   .then(async (res) => {
     if (res.code !== 200) {
       ElMessage.error(res.msg);
@@ -37,10 +36,9 @@ await socialLogin(source, tenantId, loginType, code, state)
       return;
     }
     loading.value = false;
-    // setToken(res.msg);
-    loginType === 'login' ? setToken(res.data) : ElMessage.success(res.msg);
+    setToken(res.data.access_token)
+    ElMessage.success(res.msg);
     location.href = import.meta.env.VITE_APP_CONTEXT_PATH + 'index';
-
   })
   .catch(() => {
     loading.value = false;
