@@ -2,6 +2,7 @@ import request from '@/utils/request';
 import { AxiosPromise } from 'axios';
 import { LoginData, LoginResult, VerifyCodeResult, TenantInfo } from './types';
 import { UserInfo } from '@/api/system/user/types';
+import { da } from 'element-plus/es/locale';
 
 /**
  * @param data {LoginData}
@@ -9,11 +10,9 @@ import { UserInfo } from '@/api/system/user/types';
  */
 export function login(data: LoginData): AxiosPromise<LoginResult> {
   const params = {
-    tenantId: data.tenantId,
-    username: data.username.trim(),
-    password: data.password,
-    code: data.code,
-    uuid: data.uuid
+    ...data,
+    clientId: data.clientId || 'e5cd7e4891bf95d1d19206ce24a7b32e',
+    grantType: data.grantType || 'password'
   };
   return request({
     url: '/auth/login',
@@ -58,6 +57,22 @@ export function getCodeImg(): AxiosPromise<VerifyCodeResult> {
     },
     method: 'get',
     timeout: 20000
+  });
+}
+/**
+ * 第三方登录
+ * @param source 第三方登录类型
+ * */
+export function callback(data: LoginData): AxiosPromise<any> {
+  const LoginData = {
+    ...data,
+    clientId: 'e5cd7e4891bf95d1d19206ce24a7b32e',
+    grantType: 'social'
+  };
+  return request({
+    url: '/auth/social/callback',
+    method: 'post',
+    data: LoginData
   });
 }
 
