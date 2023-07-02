@@ -23,8 +23,8 @@ export const useUserStore = defineStore('user', () => {
     const [err, res] = await to(loginApi(userInfo));
     if (res) {
       const data = res.data;
-      setToken(data.access_token);
-      token.value = data.access_token;
+      setToken(data.token);
+      token.value = data.token;
       return Promise.resolve();
     }
     return Promise.reject(err);

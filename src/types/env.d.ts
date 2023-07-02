@@ -65,7 +65,7 @@ interface ImportMetaEnv {
   VITE_APP_BASE_URL: string;
   VITE_APP_CONTEXT_PATH: string;
   VITE_APP_MONITRO_ADMIN: string;
-  VITE_APP_POWERJOB_ADMIN: string;
+  VITE_APP_XXL_JOB_ADMIN: string;
   VITE_APP_ENV: string;
 }
 interface ImportMeta {

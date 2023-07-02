@@ -1,5 +1,4 @@
 .DS_Store
-.history
 node_modules/
 dist/
 npm-debug.log*
