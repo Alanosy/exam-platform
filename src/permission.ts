@@ -10,7 +10,7 @@ import useSettingsStore from '@/store/modules/settings';
 import usePermissionStore from '@/store/modules/permission';
 
 NProgress.configure({ showSpinner: false });
-const whiteList = ['/login', '/register', '/social-login'];
+const whiteList = ['/login', '/register', '/social-callback'];
 
 router.beforeEach(async (to, from, next) => {
   NProgress.start();

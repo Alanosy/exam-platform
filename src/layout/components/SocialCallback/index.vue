@@ -1,5 +1,5 @@
 <template>
-  <div v-loading="loading" class="social-login"></div>
+  <div v-loading="loading" class="social-callback"></div>
 </template>
 
 <script setup lang="ts">
