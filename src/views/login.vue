@@ -4,7 +4,8 @@
       <h3 class="title">RuoYi-Vue-Plus多租户管理系统</h3>
       <el-form-item prop="tenantId" v-if="tenantEnabled">
         <el-select v-model="loginForm.tenantId" filterable placeholder="请选择/输入公司名称" style="width: 100%">
-          <el-option v-for="item in tenantList" :key="item.tenantId" :label="item.companyName" :value="item.tenantId"></el-option>
+          <el-option v-for="item in tenantList" :key="item.tenantId" :label="item.companyName"
+            :value="item.tenantId"></el-option>
           <template #prefix><svg-icon icon-class="company" class="el-input__icon input-icon" /></template>
         </el-select>
       </el-form-item>
@@ -14,12 +15,14 @@
         </el-input>
       </el-form-item>
       <el-form-item prop="password">
-        <el-input v-model="loginForm.password" type="password" size="large" auto-complete="off" placeholder="密码" @keyup.enter="handleLogin">
+        <el-input v-model="loginForm.password" type="password" size="large" auto-complete="off" placeholder="密码"
+          @keyup.enter="handleLogin">
           <template #prefix><svg-icon icon-class="password" class="el-input__icon input-icon" /></template>
         </el-input>
       </el-form-item>
       <el-form-item prop="code" v-if="captchaEnabled">
-        <el-input v-model="loginForm.code" size="large" auto-complete="off" placeholder="验证码" style="width: 63%" @keyup.enter="handleLogin">
+        <el-input v-model="loginForm.code" size="large" auto-complete="off" placeholder="验证码" style="width: 63%"
+          @keyup.enter="handleLogin">
           <template #prefix><svg-icon icon-class="validCode" class="el-input__icon input-icon" /></template>
         </el-input>
         <div class="login-code">
@@ -177,6 +180,12 @@ const initTenantList = async () => {
     }
   }
 }
+
+//检测租户选择框的变化
+watch(() => loginForm.value.tenantId, (val: string) => {
+  Cookies.set("tenantId", loginForm.value.tenantId, { expires: 30 })
+});
+
 /**
  * 第三方登录
  * @param type
@@ -185,7 +194,7 @@ const doSocialLogin = (type: string) => {
   authBinding(type).then((res: any) => {
     if (res.code === 200) {
       window.location.href = res.msg;
-  } else {
+    } else {
       ElMessage.error(res.msg);
     }
   });
