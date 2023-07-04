@@ -5,7 +5,7 @@
 </template>
 
 <script setup>
-const url = ref('https://javalionli.gitee.io/plus-doc');
+const url = ref('https://plus-doc.dromara.org/');
 
 function goto() {
   window.open(url.value)
