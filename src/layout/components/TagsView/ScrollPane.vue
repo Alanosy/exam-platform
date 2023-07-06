@@ -96,7 +96,7 @@ defineExpose({
     bottom: 0px;
   }
   :deep(.el-scrollbar__wrap) {
-    height: 39px;
+    height: 49px;
   }
 }
 </style>
