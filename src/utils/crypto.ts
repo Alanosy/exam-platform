@@ -23,10 +23,10 @@ export const generateAesKey = () => {
 };
 
 /**
- * 随机生成aes 密钥
+ * 加密base64
  * @returns {string}
  */
-export const encryptBase64 = (str: string) => {
+export const encryptBase64 = (str: CryptoJS.lib.WordArray) => {
   return CryptoJS.enc.Base64.stringify(str);
 };
 
