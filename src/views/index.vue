@@ -33,14 +33,14 @@
           * 部署方式 Docker 容器编排 一键部署业务集群<br />
           * 国际化 SpringMessage Spring标准国际化方案<br />
         </p>
-        <p><b>当前版本:</b> <span>v5.0.0</span></p>
+        <p><b>当前版本:</b> <span>v5.1.0</span></p>
         <p>
           <el-tag type="danger">&yen;免费开源</el-tag>
         </p>
         <p>
           <el-button type="primary" icon="Cloudy" plain @click="goTarget('https://gitee.com/dromara/RuoYi-Vue-Plus')">访问码云</el-button>
           <el-button type="primary" icon="Cloudy" plain @click="goTarget('https://github.com/dromara/RuoYi-Vue-Plus')">访问GitHub</el-button>
-          <el-button type="primary" icon="Cloudy" plain @click="goTarget('https://javalionli.gitee.io/plus-doc/#/ruoyi-vue-plus/changlog')"
+          <el-button type="primary" icon="Cloudy" plain @click="goTarget('https://plus-doc.dromara.org/#/ruoyi-vue-plus/changlog')"
             >更新日志</el-button
           >
         </p>
@@ -78,14 +78,14 @@
           * 分布式监控 Prometheus、Grafana 全方位性能监控<br />
           * 其余与 Vue 版本一致<br />
         </p>
-        <p><b>当前版本:</b> <span>v2.0.0</span></p>
+        <p><b>当前版本:</b> <span>v2.1.0</span></p>
         <p>
           <el-tag type="danger">&yen;免费开源</el-tag>
         </p>
         <p>
           <el-button type="primary" icon="Cloudy" plain @click="goTarget('https://gitee.com/dromara/RuoYi-Cloud-Plus')">访问码云</el-button>
           <el-button type="primary" icon="Cloudy" plain @click="goTarget('https://github.com/dromara/RuoYi-Cloud-Plus')">访问GitHub</el-button>
-          <el-button type="primary" icon="Cloudy" plain @click="goTarget('https://javalionli.gitee.io/plus-doc/#/ruoyi-cloud-plus/changlog')"
+          <el-button type="primary" icon="Cloudy" plain @click="goTarget('https://plus-doc.dromara.org/#/ruoyi-cloud-plus/changlog')"
             >更新日志</el-button
           >
         </p>

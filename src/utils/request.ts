@@ -8,6 +8,8 @@ import { errorCode } from '@/utils/errorCode';
 import { LoadingInstance } from 'element-plus/es/components/loading/src/loading';
 import FileSaver from 'file-saver';
 import { getLanguage } from '@/lang';
+import { encryptBase64, encryptWithAes, generateAesKey } from '@/utils/crypto';
+import { encrypt } from '@/utils/jsencrypt';
 
 let downloadLoadingInstance: LoadingInstance;
 // 是否显示重新登录
@@ -29,6 +31,8 @@ service.interceptors.request.use(
     const isToken = (config.headers || {}).isToken === false;
     // 是否需要防止数据重复提交
     const isRepeatSubmit = (config.headers || {}).repeatSubmit === false;
+    // 是否需要加密
+    const isEncrypt = (config.headers || {}).isEncrypt === 'true';
     if (getToken() && !isToken) {
       config.headers['Authorization'] = 'Bearer ' + getToken(); // 让每个请求携带自定义token 请根据实际情况自行修改
     }
@@ -62,6 +66,13 @@ service.interceptors.request.use(
           cache.session.setJSON('sessionObj', requestObj);
         }
       }
+    }
+    // 当开启参数加密
+    if (isEncrypt && (config.method === 'post' || config.method === 'put')) {
+      // 生成一个 AES 密钥
+      const aesKey = generateAesKey();
+      config.headers['encrypt-key'] = encrypt(encryptBase64(aesKey));
+      config.data = typeof config.data === 'object' ? encryptWithAes(JSON.stringify(config.data), aesKey) : encryptWithAes(config.data, aesKey);
     }
     // FormData数据去请求头Content-Type
     if (config.data instanceof FormData) {

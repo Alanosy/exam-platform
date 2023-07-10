@@ -72,7 +72,7 @@ const userStore = useUserStore();
 const router = useRouter();
 
 const loginForm = ref<LoginData>({
-  tenantId: "000000",
+  tenantId: '000000',
   username: 'admin',
   password: 'admin123',
   rememberMe: false,
@@ -176,6 +176,12 @@ const initTenantList = async () => {
     }
   }
 }
+
+//检测租户选择框的变化
+watch(() => loginForm.value.tenantId, (val: string) => {
+  Cookies.set("tenantId", loginForm.value.tenantId, { expires: 30 })
+});
+
 /**
  * 第三方登录
  * @param type
@@ -183,8 +189,9 @@ const initTenantList = async () => {
 const doSocialLogin = (type: string) => {
   authBinding(type).then((res: any) => {
     if (res.code === HttpStatus.SUCCESS) {
-      window.location.href = res.msg;
-  } else {
+      // 获取授权地址跳转
+      window.location.href = res.data;
+    } else {
       ElMessage.error(res.msg);
     }
   });

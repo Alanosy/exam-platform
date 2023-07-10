@@ -3,22 +3,24 @@ import { AxiosPromise } from 'axios';
 import { LoginData, LoginResult, VerifyCodeResult, TenantInfo } from './types';
 import { UserInfo } from '@/api/system/user/types';
 
+// pc端固定客户端授权id
+const clientId = 'e5cd7e4891bf95d1d19206ce24a7b32e';
+
 /**
  * @param data {LoginData}
  * @returns
  */
 export function login(data: LoginData): AxiosPromise<LoginResult> {
   const params = {
-    tenantId: data.tenantId,
-    username: data.username.trim(),
-    password: data.password,
-    code: data.code,
-    uuid: data.uuid
+    ...data,
+    clientId: data.clientId || clientId,
+    grantType: data.grantType || 'password'
   };
   return request({
     url: '/auth/login',
     headers: {
-      isToken: false
+      isToken: false,
+      isEncrypt: true
     },
     method: 'post',
     data: params
@@ -60,19 +62,20 @@ export function getCodeImg(): AxiosPromise<VerifyCodeResult> {
     timeout: 20000
   });
 }
+
 /**
  * 第三方登录
- * @param source 第三方登录类型
- * */
-export function socialLogin(source: string, code: any, state: any): AxiosPromise<any> {
-  const data = {
-    code,
-    state
+ */
+export function callback(data: LoginData): AxiosPromise<any> {
+  const LoginData = {
+    ...data,
+    clientId: clientId,
+    grantType: 'social'
   };
   return request({
-    url: '/auth/social-login/' + source,
-    method: 'get',
-    params: data
+    url: '/auth/social/callback',
+    method: 'post',
+    data: LoginData
   });
 }
 

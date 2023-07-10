@@ -80,7 +80,7 @@ const unlockAuth = (row: any) => {
 const authUrl = (source: string) => {
   authBinding(source).then((res: any) => {
     if (res.code === 200) {
-      window.location.href = res.msg;
+      window.location.href = res.data;
     } else {
       ElMessage.error(res.msg);
     }

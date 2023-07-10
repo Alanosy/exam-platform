@@ -38,9 +38,9 @@ export const constantRoutes: RouteOption[] = [
     ]
   },
   {
-    path: '/social-login',
+    path: '/social-callback',
     hidden: true,
-    component: () => import('@/layout/components/SocialLogin/index.vue')
+    component: () => import('@/layout/components/SocialCallback/index.vue')
   },
   {
     path: '/login',
@@ -180,5 +180,6 @@ const router = createRouter({
     }
   }
 });
+
 
 export default router;
