@@ -19,7 +19,8 @@ export function login(data: LoginData): AxiosPromise<LoginResult> {
   return request({
     url: '/auth/login',
     headers: {
-      isToken: false
+      isToken: false,
+      isEncrypt: true
     },
     method: 'post',
     data: params
