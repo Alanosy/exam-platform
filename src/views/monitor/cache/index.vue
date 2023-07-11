@@ -2,7 +2,7 @@
   <div class="p-2">
     <el-row>
       <el-col :span="24" class="card-box">
-        <el-card>
+        <el-card shadow="hover">
           <template #header>
             <Monitor style="width: 1em; height: 1em; vertical-align: middle;" />
             <span style="vertical-align: middle;">基本信息</span>
@@ -98,7 +98,7 @@
       </el-col>
 
       <el-col :span="12" class="card-box">
-        <el-card>
+        <el-card shadow="hover">
           <template #header>
             <PieChart style="width: 1em; height: 1em; vertical-align: middle;" />
             <span style="vertical-align: middle;">命令统计</span>
@@ -110,7 +110,7 @@
       </el-col>
 
       <el-col :span="12" class="card-box">
-        <el-card>
+        <el-card shadow="hover">
           <template #header>
             <Odometer style="width: 1em; height: 1em; vertical-align: middle;" /> <span style="vertical-align: middle;">内存信息</span>
           </template>
@@ -126,7 +126,6 @@
 <script setup name="Cache" lang="ts">
 import { getCache } from '@/api/monitor/cache';
 import * as echarts from 'echarts';
-import { ComponentInternalInstance } from "vue";
 
 const cache = ref<any>({});
 const commandstats = ref();

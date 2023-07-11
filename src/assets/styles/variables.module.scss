@@ -1,3 +1,38 @@
+// 全局SCSS变量
+:root {
+  --menuBg: #304156;
+  --menuColor: #bfcbd9;
+  --menuActiveText: #f4f4f5;
+  --menuHover: #263445;
+
+  --subMenuBg: #1f2d3d;
+  --subMenuActiveText: #f4f4f5;
+  --subMenuHover: #001528;
+  --subMenuTitleHover: #293444;
+
+  --tableHeaderBg: #f8f8f9;
+  --tableHeaderTextColor: #515a6e;
+}
+html.dark {
+  --menuBg: #1d1e1f;
+  --menuColor: #bfcbd9;
+  --menuActiveText: #f4f4f5;
+  --menuHover: #171819;
+
+  --subMenuBg: #1d1e1f;
+  --subMenuActiveText: #1d1e1f;
+  --subMenuHover: #171819;
+  --subMenuTitleHover: #171819;
+
+  --tableHeaderBg: var(--el-bg-color);
+  --tableHeaderTextColor: var(--el-text-color);
+
+  // 覆盖ele 高亮当前行的标准暗色
+  .el-tree-node__content {
+    --el-color-primary-light-9: #262727;
+  }
+}
+
 // base color
 $blue: #324157;
 $light-blue: #3a71a8;
@@ -9,32 +44,22 @@ $yellow: #fec171;
 $panGreen: #30b08f;
 
 // 默认菜单主题风格
-$base-menu-color: #bfcbd9;
-$base-menu-color-active: #f4f4f5;
-$base-menu-background: #304156;
+$base-menu-color: var(--menuColor);
+$base-menu-hover: var(--menuHover);
+$base-menu-color-active: var(--menuActiveText);
+$base-menu-background: var(--menuBg);
 $base-logo-title-color: #ffffff;
 
 $base-menu-light-color: rgba(0, 0, 0, 0.7);
 $base-menu-light-background: #ffffff;
 $base-logo-light-title-color: #001529;
 
-$base-sub-menu-background: #1f2d3d;
-$base-sub-menu-hover: #001528;
-
-// 自定义暗色菜单风格
-/**
-$base-menu-color:hsla(0,0%,100%,.65);
-$base-menu-color-active:#fff;
-$base-menu-background:#001529;
-$base-logo-title-color: #ffffff;
-
-$base-menu-light-color:rgba(0,0,0,.70);
-$base-menu-light-background:#ffffff;
-$base-logo-light-title-color: #001529;
-
-$base-sub-menu-background:#000c17;
-$base-sub-menu-hover:#001528;
-*/
+$base-sub-menu-background: var(--subMenuBg);
+$base-sub-menu-hover: var(--subMenuHover);
+$base-sub-menu-title-hover: var(--subMenuTitleHover);
+// 表单头背景色和标题颜色
+$table-header-bg: var(--tableHeaderBg);
+$table-header-text-color: var(--tableHeaderTextColor);
 
 $--color-primary: #409eff;
 $--color-success: #67c23a;

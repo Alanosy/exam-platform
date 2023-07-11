@@ -20,8 +20,13 @@
           <template #prefix><svg-icon icon-class="company" class="el-input__icon input-icon" /></template>
         </el-select>
 
-        <header-search id="header-search" class="right-menu-item" />
-
+        <!-- <header-search id="header-search" class="right-menu-item" /> -->
+        <search-menu ref="searchMenuRef" />
+        <el-tooltip content="搜索" effect="dark" placement="bottom">
+          <div class="right-menu-item hover-effect" @click="openSearchMenu">
+            <svg-icon class-name="search-icon" icon-class="search" />
+          </div>
+        </el-tooltip>
         <el-tooltip content="Github" effect="dark" placement="bottom">
           <ruo-yi-git id="ruoyi-git" class="right-menu-item hover-effect" />
         </el-tooltip>
@@ -68,17 +73,18 @@
 </template>
 
 <script setup lang="ts">
-import useAppStore from '@/store/modules/app'
-import useUserStore from '@/store/modules/user'
-import useSettingsStore from '@/store/modules/settings'
+import SearchMenu from './topBar/search.vue';
+import useAppStore from '@/store/modules/app';
+import useUserStore from '@/store/modules/user';
+import useSettingsStore from '@/store/modules/settings';
 import { getTenantList } from "@/api/login";
 import { dynamicClear, dynamicTenant } from "@/api/system/tenant";
 import { ComponentInternalInstance } from "vue";
 import { TenantVO } from "@/api/types";
 
-const appStore = useAppStore()
-const userStore = useUserStore()
-const settingsStore = useSettingsStore()
+const appStore = useAppStore();
+const userStore = useUserStore();
+const settingsStore = useSettingsStore();
 
 const { proxy } = getCurrentInstance() as ComponentInternalInstance;
 
@@ -89,46 +95,52 @@ const tenantList = ref<TenantVO[]>([]);
 const dynamic = ref(false);
 // 租户开关
 const tenantEnabled = ref(true);
+// 搜索菜单
+const searchMenuRef = ref<InstanceType<typeof SearchMenu>>();
+
+const openSearchMenu = () => {
+  searchMenuRef.value?.openSearch();
+}
 
 // 动态切换
 const dynamicTenantEvent = async (tenantId: string) => {
-    if (companyName.value != null && companyName.value !== '') {
-        await dynamicTenant(tenantId);
-        dynamic.value = true;
-        proxy?.$tab.closeAllPage();
-        proxy?.$router.push('/');
-    }
+  if (companyName.value != null && companyName.value !== '') {
+    await dynamicTenant(tenantId);
+    dynamic.value = true;
+    proxy?.$tab.closeAllPage();
+    proxy?.$router.push('/');
+  }
 }
 
 const dynamicClearEvent = async () => {
-    await dynamicClear();
-    dynamic.value = false;
-    proxy?.$tab.closeAllPage();
-    proxy?.$router.push('/')
+  await dynamicClear();
+  dynamic.value = false;
+  proxy?.$tab.closeAllPage();
+  proxy?.$router.push('/');
 }
 
 /** 租户列表 */
 const initTenantList = async () => {
-    const { data } = await getTenantList();
-    tenantEnabled.value = data.tenantEnabled === undefined ? true : data.tenantEnabled;
-    if (tenantEnabled.value) {
-        tenantList.value = data.voList;
-    }
+  const { data } = await getTenantList();
+  tenantEnabled.value = data.tenantEnabled === undefined ? true : data.tenantEnabled;
+  if (tenantEnabled.value) {
+    tenantList.value = data.voList;
+  }
 }
 
 defineExpose({
-    initTenantList,
+  initTenantList,
 })
 
 const toggleSideBar = () => {
-    appStore.toggleSideBar(false)
+  appStore.toggleSideBar(false);
 }
 
 const logout = async () => {
     await ElMessageBox.confirm('确定注销并退出系统吗？', '提示', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
-        type: 'warning'
+      confirmButtonText: '确定',
+      cancelButtonText: '取消',
+      type: 'warning'
     })
     await userStore.logout()
     location.href = import.meta.env.VITE_APP_CONTEXT_PATH + 'index';
@@ -169,7 +181,7 @@ const handleCommand = (command: string) => {
   height: 50px;
   overflow: hidden;
   position: relative;
-  background: #fff;
+  //background: #fff;
   box-shadow: 0 1px 4px rgba(0, 21, 41, 0.08);
 
   .hamburger-container {

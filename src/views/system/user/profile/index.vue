@@ -74,11 +74,11 @@ import { getAuthList } from "@/api/system/social/auth";
 import { getUserProfile } from "@/api/system/user";
 
 const activeTab = ref("userinfo");
-const state = ref<{ user: any; roleGroup: string;  postGroup: string; auths:any[]}>({
+const state = ref<Record<string, any>>({
     user: {},
     roleGroup: '',
     postGroup: '',
-    auths: [],
+    auths: []
 });
 
 const userForm = ref({});

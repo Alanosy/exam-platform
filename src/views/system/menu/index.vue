@@ -1,25 +1,27 @@
 <template>
   <div class="p-2">
     <transition :enter-active-class="proxy?.animate.searchAnimate.enter" :leave-active-class="proxy?.animate.searchAnimate.leave">
-      <div class="search" v-show="showSearch">
-        <el-form ref="queryFormRef" :model="queryParams" :inline="true" label-width="68px">
-          <el-form-item label="菜单名称" prop="menuName">
-            <el-input v-model="queryParams.menuName" placeholder="请输入菜单名称" clearable @keyup.enter="handleQuery" />
-          </el-form-item>
-          <el-form-item label="状态" prop="status">
-            <el-select v-model="queryParams.status" placeholder="菜单状态" clearable>
-              <el-option v-for="dict in sys_normal_disable" :key="dict.value" :label="dict.label" :value="dict.value" />
-            </el-select>
-          </el-form-item>
-          <el-form-item>
-            <el-button type="primary" icon="Search" @click="handleQuery">搜索</el-button>
-            <el-button icon="Refresh" @click="resetQuery">重置</el-button>
-          </el-form-item>
-        </el-form>
+      <div class="mb-[10px]" v-show="showSearch">
+        <el-card shadow="hover">
+          <el-form ref="queryFormRef" :model="queryParams" :inline="true" label-width="68px">
+            <el-form-item label="菜单名称" prop="menuName">
+              <el-input v-model="queryParams.menuName" placeholder="请输入菜单名称" clearable @keyup.enter="handleQuery" />
+            </el-form-item>
+            <el-form-item label="状态" prop="status">
+              <el-select v-model="queryParams.status" placeholder="菜单状态" clearable>
+                <el-option v-for="dict in sys_normal_disable" :key="dict.value" :label="dict.label" :value="dict.value" />
+              </el-select>
+            </el-form-item>
+            <el-form-item>
+              <el-button type="primary" icon="Search" @click="handleQuery">搜索</el-button>
+              <el-button icon="Refresh" @click="resetQuery">重置</el-button>
+            </el-form-item>
+          </el-form>
+        </el-card>
       </div>
     </transition>
 
-    <el-card shadow="never">
+    <el-card shadow="hover">
       <template #header>
         <el-row :gutter="10">
           <el-col :span="1.5">
@@ -37,7 +39,6 @@
         :data="menuList"
         row-key="menuId"
         :tree-props="{ children: 'children', hasChildren: 'hasChildren' }"
-        border
         ref="menuTableRef"
         :default-expand-all="isExpandAll"
       >
@@ -262,14 +263,12 @@
 <script setup name="Menu" lang="ts">
 import { addMenu, delMenu, getMenu, listMenu, updateMenu } from '@/api/system/menu';
 import { MenuForm, MenuQuery, MenuVO } from '@/api/system/menu/types';
-import { ComponentInternalInstance } from 'vue';
 import { MenuTypeEnum } from '@/enums/MenuTypeEnum';
-import { ElTable, ElForm } from 'element-plus';
 
 interface MenuOptionsType {
-    menuId: number;
-    menuName: string;
-    children: MenuOptionsType[] | undefined;
+  menuId: number;
+  menuName: string;
+  children: MenuOptionsType[] | undefined;
 }
 
 const { proxy } = getCurrentInstance() as ComponentInternalInstance
@@ -282,136 +281,136 @@ const menuOptions = ref<MenuOptionsType[]>([])
 const isExpandAll = ref(false)
 
 const dialog = reactive<DialogOption>({
-    visible: false,
-    title: ''
+  visible: false,
+  title: ''
 });
 
-const queryFormRef = ref(ElForm);
-const menuFormRef = ref(ElForm);
+const queryFormRef = ref<ElFormInstance>();
+const menuFormRef = ref<ElFormInstance>();
 const initFormData = {
-    path: '',
-    menuId: undefined,
-    parentId: 0,
-    menuName: '',
-    icon: '',
-    menuType: MenuTypeEnum.M,
-    orderNum: 1,
-    isFrame: "1",
-    isCache: "0",
-    visible: "0",
-    status: "0"
+  path: '',
+  menuId: undefined,
+  parentId: 0,
+  menuName: '',
+  icon: '',
+  menuType: MenuTypeEnum.M,
+  orderNum: 1,
+  isFrame: "1",
+  isCache: "0",
+  visible: "0",
+  status: "0"
 }
 const data = reactive<PageData<MenuForm, MenuQuery>>({
-    form: { ...initFormData },
-    queryParams: {
-        menuName: undefined,
-        status: undefined
-    },
-    rules: {
-        menuName: [{ required: true, message: "菜单名称不能为空", trigger: "blur" }],
-        orderNum: [{ required: true, message: "菜单顺序不能为空", trigger: "blur" }],
-        path: [{ required: true, message: "路由地址不能为空", trigger: "blur" }]
-    },
+  form: { ...initFormData },
+  queryParams: {
+    menuName: undefined,
+    status: undefined
+  },
+  rules: {
+    menuName: [{ required: true, message: "菜单名称不能为空", trigger: "blur" }],
+    orderNum: [{ required: true, message: "菜单顺序不能为空", trigger: "blur" }],
+    path: [{ required: true, message: "路由地址不能为空", trigger: "blur" }]
+  },
 })
 
-const menuTableRef = ref(ElTable);
+const menuTableRef = ref<ElTableInstance>();
 
 const { queryParams, form, rules } = toRefs<PageData<MenuForm, MenuQuery>>(data)
 /** 查询菜单列表 */
 const getList = async () => {
-    loading.value = true
-    const res = await listMenu(queryParams.value);
-    const data = proxy?.handleTree<MenuVO>(res.data, "menuId")
-    if (data) {
-        menuList.value = data
-    }
-    loading.value = false
+  loading.value = true
+  const res = await listMenu(queryParams.value);
+  const data = proxy?.handleTree<MenuVO>(res.data, "menuId")
+  if (data) {
+    menuList.value = data
+  }
+  loading.value = false
 }
 /** 查询菜单下拉树结构 */
 const getTreeselect = async () => {
-    menuOptions.value = []
-    const response = await listMenu();
-    const menu: MenuOptionsType = { menuId: 0, menuName: "主类目", children: [] }
-    menu.children = proxy?.handleTree<MenuOptionsType>(response.data, "menuId")
-    menuOptions.value.push(menu)
+  menuOptions.value = []
+  const response = await listMenu();
+  const menu: MenuOptionsType = { menuId: 0, menuName: "主类目", children: [] }
+  menu.children = proxy?.handleTree<MenuOptionsType>(response.data, "menuId")
+  menuOptions.value.push(menu)
 }
 /** 取消按钮 */
 const cancel = () => {
-    reset()
-    dialog.visible = false
+  reset()
+  dialog.visible = false
 }
 /** 表单重置 */
 const reset = () => {
-    form.value = { ...initFormData };
-    menuFormRef.value.resetFields();
+  form.value = { ...initFormData };
+  menuFormRef.value?.resetFields();
 }
 
 /** 搜索按钮操作 */
 const handleQuery = () => {
-    getList();
+  getList();
 }
 /** 重置按钮操作 */
 const resetQuery = () => {
-    queryFormRef.value.resetFields();
-    handleQuery();
+  queryFormRef.value?.resetFields();
+  handleQuery();
 }
 /** 新增按钮操作 */
 const handleAdd = (row?: MenuVO) => {
-    dialog.visible = true;
-    dialog.title = "添加菜单";
-    getTreeselect();
-    nextTick(() => {
-        reset();
-        row && row.menuId ? form.value.parentId = row.menuId : form.value.parentId = 0;
-    })
+  dialog.visible = true;
+  dialog.title = "添加菜单";
+  getTreeselect();
+  nextTick(() => {
+    reset();
+    row && row.menuId ? form.value.parentId = row.menuId : form.value.parentId = 0;
+  })
 
 }
 /** 展开/折叠操作 */
 const handleToggleExpandAll = () => {
-    isExpandAll.value = !isExpandAll.value;
-    toggleExpandAll(menuList.value, isExpandAll.value)
+  isExpandAll.value = !isExpandAll.value;
+  toggleExpandAll(menuList.value, isExpandAll.value)
 }
 /** 展开/折叠所有 */
 const toggleExpandAll = (data: MenuVO[], status: boolean) => {
-    data.forEach((item: MenuVO) => {
-        menuTableRef.value.toggleRowExpansion(item, status)
-        if (item.children && item.children.length > 0) toggleExpandAll(item.children, status)
-    })
+  data.forEach((item: MenuVO) => {
+    menuTableRef.value?.toggleRowExpansion(item, status)
+    if (item.children && item.children.length > 0) toggleExpandAll(item.children, status)
+  })
 }
 /** 修改按钮操作 */
 const handleUpdate = async (row: MenuVO) => {
-    await getTreeselect();
-    dialog.visible = true;
-    dialog.title = "修改菜单";
-    await nextTick(async () => {
-        if (row.menuId) {
-            const { data } = await getMenu(row.menuId);
-            reset();
-            form.value = data;
-        }
-    })
+  await getTreeselect();
+  dialog.visible = true;
+  dialog.title = "修改菜单";
+  await nextTick(async () => {
+    if (row.menuId) {
+      const { data } = await getMenu(row.menuId);
+      reset();
+      form.value = data;
+    }
+  })
 
 }
 /** 提交按钮 */
 const submitForm = () => {
-    menuFormRef.value.validate(async (valid: boolean) => {
-        if (valid) {
-            form.value.menuId ? await updateMenu(form.value) : await addMenu(form.value);
-            proxy?.$modal.msgSuccess("操作成功");
-            dialog.visible = false;
-            getList();
-        }
-    })
+  menuFormRef.value?.validate(async (valid: boolean) => {
+    if (valid) {
+      form.value.menuId ? await updateMenu(form.value) : await addMenu(form.value);
+      proxy?.$modal.msgSuccess("操作成功");
+      dialog.visible = false;
+      await getList();
+    }
+  })
 }
 /** 删除按钮操作 */
 const handleDelete = async (row: MenuVO) => {
-    await proxy?.$modal.confirm('是否确认删除名称为"' + row.menuName + '"的数据项?');
-    await delMenu(row.menuId);
-    getList();
-    proxy?.$modal.msgSuccess("删除成功");
+  await proxy?.$modal.confirm('是否确认删除名称为"' + row.menuName + '"的数据项?');
+  await delMenu(row.menuId);
+  await getList();
+  proxy?.$modal.msgSuccess("删除成功");
 }
 
 onMounted(() => {
-    getList();
+  getList();
 });
 </script>

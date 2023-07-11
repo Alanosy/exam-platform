@@ -1,38 +1,40 @@
 <template>
   <div class="p-2">
     <transition :enter-active-class="proxy?.animate.searchAnimate.enter" :leave-active-class="proxy?.animate.searchAnimate.leave">
-      <div class="search" v-show="showSearch">
-        <el-form :model="queryParams" ref="queryFormRef" :inline="true" label-width="68px">
-          <el-form-item label="参数名称" prop="configName">
-            <el-input v-model="queryParams.configName" placeholder="请输入参数名称" clearable style="width: 240px" @keyup.enter="handleQuery" />
-          </el-form-item>
-          <el-form-item label="参数键名" prop="configKey">
-            <el-input v-model="queryParams.configKey" placeholder="请输入参数键名" clearable style="width: 240px" @keyup.enter="handleQuery" />
-          </el-form-item>
-          <el-form-item label="系统内置" prop="configType">
-            <el-select v-model="queryParams.configType" placeholder="系统内置" clearable>
-              <el-option v-for="dict in sys_yes_no" :key="dict.value" :label="dict.label" :value="dict.value" />
-            </el-select>
-          </el-form-item>
-          <el-form-item label="创建时间" style="width: 308px;">
-            <el-date-picker
-              v-model="dateRange"
-              value-format="YYYY-MM-DD HH:mm:ss"
-              type="daterange"
-              range-separator="-"
-              start-placeholder="开始日期"
-              end-placeholder="结束日期"
-              :default-time="[new Date(2000, 1, 1, 0, 0, 0), new Date(2000, 1, 1, 23, 59, 59)]"
-            ></el-date-picker>
-          </el-form-item>
-          <el-form-item>
-            <el-button type="primary" icon="Search" @click="handleQuery">搜索</el-button>
-            <el-button icon="Refresh" @click="resetQuery">重置</el-button>
-          </el-form-item>
-        </el-form>
+      <div class="mb-[10px]" v-show="showSearch">
+        <el-card shadow="hover">
+          <el-form :model="queryParams" ref="queryFormRef" :inline="true" label-width="68px">
+            <el-form-item label="参数名称" prop="configName">
+              <el-input v-model="queryParams.configName" placeholder="请输入参数名称" clearable style="width: 240px" @keyup.enter="handleQuery" />
+            </el-form-item>
+            <el-form-item label="参数键名" prop="configKey">
+              <el-input v-model="queryParams.configKey" placeholder="请输入参数键名" clearable style="width: 240px" @keyup.enter="handleQuery" />
+            </el-form-item>
+            <el-form-item label="系统内置" prop="configType">
+              <el-select v-model="queryParams.configType" placeholder="系统内置" clearable>
+                <el-option v-for="dict in sys_yes_no" :key="dict.value" :label="dict.label" :value="dict.value" />
+              </el-select>
+            </el-form-item>
+            <el-form-item label="创建时间" style="width: 308px;">
+              <el-date-picker
+                v-model="dateRange"
+                value-format="YYYY-MM-DD HH:mm:ss"
+                type="daterange"
+                range-separator="-"
+                start-placeholder="开始日期"
+                end-placeholder="结束日期"
+                :default-time="[new Date(2000, 1, 1, 0, 0, 0), new Date(2000, 1, 1, 23, 59, 59)]"
+              ></el-date-picker>
+            </el-form-item>
+            <el-form-item>
+              <el-button type="primary" icon="Search" @click="handleQuery">搜索</el-button>
+              <el-button icon="Refresh" @click="resetQuery">重置</el-button>
+            </el-form-item>
+          </el-form>
+        </el-card>
       </div>
     </transition>
-    <el-card shadow="never">
+    <el-card shadow="hover">
       <template #header>
         <el-row :gutter="10" class="mb8">
           <el-col :span="1.5">
@@ -123,8 +125,6 @@
 <script setup name="Config" lang="ts">
 import { listConfig, getConfig, delConfig, addConfig, updateConfig, refreshCache } from "@/api/system/config";
 import { ConfigForm, ConfigQuery, ConfigVO } from "@/api/system/config/types";
-import { ComponentInternalInstance } from "vue";
-import { DateModelType } from 'element-plus';
 
 const { proxy } = getCurrentInstance() as ComponentInternalInstance;
 const { sys_yes_no } = toRefs<any>(proxy?.useDict("sys_yes_no"));
@@ -138,124 +138,124 @@ const multiple = ref(true);
 const total = ref(0);
 const dateRange = ref<[DateModelType, DateModelType]>(['', '']);
 
-const queryFormRef = ref(ElForm);
-const configFormRef = ref(ElForm);
+const queryFormRef = ref<ElFormInstance>();
+const configFormRef = ref<ElFormInstance>();
 const dialog = reactive<DialogOption>({
-    visible: false,
-    title: ''
+  visible: false,
+  title: ''
 });
 const initFormData: ConfigForm = {
-    configId: undefined,
-    configName: '',
-    configKey: '',
-    configValue: '',
-    configType: "Y",
-    remark: ''
+  configId: undefined,
+  configName: '',
+  configKey: '',
+  configValue: '',
+  configType: "Y",
+  remark: ''
 }
 const data = reactive<PageData<ConfigForm, ConfigQuery>>({
-    form: {...initFormData},
-    queryParams: {
-        pageNum: 1,
-        pageSize: 10,
-        configName: '',
-        configKey: '',
-        configType: '',
-    },
-    rules: {
-        configName: [{ required: true, message: "参数名称不能为空", trigger: "blur" }],
-        configKey: [{ required: true, message: "参数键名不能为空", trigger: "blur" }],
-        configValue: [{ required: true, message: "参数键值不能为空", trigger: "blur" }]
-    }
+  form: { ...initFormData },
+  queryParams: {
+    pageNum: 1,
+    pageSize: 10,
+    configName: '',
+    configKey: '',
+    configType: '',
+  },
+  rules: {
+    configName: [{ required: true, message: "参数名称不能为空", trigger: "blur" }],
+    configKey: [{ required: true, message: "参数键名不能为空", trigger: "blur" }],
+    configValue: [{ required: true, message: "参数键值不能为空", trigger: "blur" }]
+  }
 });
 
 const { queryParams, form, rules } = toRefs(data);
 
 /** 查询参数列表 */
 const getList = async () => {
-    loading.value = true;
-    const res = await listConfig(proxy?.addDateRange(queryParams.value, dateRange.value));
-    configList.value = res.rows;
-    total.value = res.total;
-    loading.value = false;
+  loading.value = true;
+  const res = await listConfig(proxy?.addDateRange(queryParams.value, dateRange.value));
+  configList.value = res.rows;
+  total.value = res.total;
+  loading.value = false;
 }
 /** 取消按钮 */
 const cancel = () => {
-    reset();
-    dialog.visible = false;
+  reset();
+  dialog.visible = false;
 }
 /** 表单重置 */
 const reset = () => {
-    form.value = {...initFormData};
-    configFormRef.value.resetFields();
+  form.value = { ...initFormData };
+  configFormRef.value?.resetFields();
 }
 /** 搜索按钮操作 */
 const handleQuery = () => {
-    queryParams.value.pageNum = 1;
-    getList();
+  queryParams.value.pageNum = 1;
+  getList();
 }
 /** 重置按钮操作 */
 const resetQuery = () => {
-    dateRange.value = ['', ''];
-    queryFormRef.value.resetFields();
-    handleQuery();
+  dateRange.value = ['', ''];
+  queryFormRef.value?.resetFields();
+  handleQuery();
 }
 /** 多选框选中数据 */
 const handleSelectionChange = (selection: ConfigVO[]) => {
-    ids.value = selection.map(item => item.configId);
-    single.value = selection.length != 1;
-    multiple.value = !selection.length;
+  ids.value = selection.map(item => item.configId);
+  single.value = selection.length != 1;
+  multiple.value = !selection.length;
 }
 /** 新增按钮操作 */
 const handleAdd = () => {
-    dialog.visible = true;
-    dialog.title = "添加参数";
-    nextTick(() => {
-        reset();
-    })
+  dialog.visible = true;
+  dialog.title = "添加参数";
+  nextTick(() => {
+    reset();
+  })
 }
 /** 修改按钮操作 */
 const handleUpdate = (row?: ConfigVO) => {
-    dialog.visible = true;
-    dialog.title = "修改参数";
-    const configId = row?.configId || ids.value[0];
-    nextTick(async () => {
-        reset();
-        const res = await getConfig(configId);
-        form.value = res.data;
-    })
+  dialog.visible = true;
+  dialog.title = "修改参数";
+  const configId = row?.configId || ids.value[0];
+  nextTick(async () => {
+    reset();
+    const res = await getConfig(configId);
+    form.value = res.data;
+  })
 }
 /** 提交按钮 */
 const submitForm = () => {
-    configFormRef.value.validate(async (valid: boolean) => {
-        if (valid) {
-            form.value.configId ? await updateConfig(form.value) : await addConfig(form.value);
-            proxy?.$modal.msgSuccess("操作成功");
-            dialog.visible = false;
-            getList();
-        }
-    });
+  configFormRef.value?.validate(async (valid: boolean) => {
+    if (valid) {
+      form.value.configId ? await updateConfig(form.value) : await addConfig(form.value);
+      proxy?.$modal.msgSuccess("操作成功");
+      dialog.visible = false;
+      await getList();
+    }
+  });
 }
 /** 删除按钮操作 */
 const handleDelete = async (row?: ConfigVO) => {
-    const configIds = row?.configId || ids.value;
-    await proxy?.$modal.confirm('是否确认删除参数编号为"' + configIds + '"的数据项？');
-    await delConfig(configIds);
-    getList();
-    proxy?.$modal.msgSuccess("删除成功");
+  const configIds = row?.configId || ids.value;
+  await proxy?.$modal.confirm('是否确认删除参数编号为"' + configIds + '"的数据项？');
+  await delConfig(configIds);
+  await getList();
+  proxy?.$modal.msgSuccess("删除成功");
 }
 /** 导出按钮操作 */
 const handleExport = () => {
-    proxy?.download("system/config/export", {
-        ...queryParams.value
-    }, `config_${new Date().getTime()}.xlsx`);
+  proxy?.download("system/config/export", {
+    ...queryParams.value
+  }, `config_${new Date().getTime()}.xlsx`);
 }
 /** 刷新缓存按钮操作 */
 const handleRefreshCache = async () => {
-    await refreshCache();
-    proxy?.$modal.msgSuccess("刷新缓存成功");
+  await refreshCache();
+  proxy?.$modal.msgSuccess("刷新缓存成功");
 }
 
 onMounted(() => {
-    getList();
+  getList();
 })
 </script>

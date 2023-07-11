@@ -22,52 +22,23 @@ export default {
 
 <script setup lang="ts">
 import { scrollTo } from '@/utils/scroll-to'
-import { PropType } from "vue";
+import { propTypes } from "@/utils/propTypes";
 
 const props = defineProps({
-    total: {
-        required: true,
-        type: Number
-    },
-    page: {
-        type: Number,
-        default: 1
-    },
-    limit: {
-        type: Number,
-        default: 20
-    },
+    total: propTypes.number,
+    page: propTypes.number.def(1),
+    limit: propTypes.number.def(20),
     pageSizes: {
-        type: Array as PropType<number[]>,
-        default() {
-            return [10, 20, 30, 50]
-        }
+      type: Array as PropType<number[]>,
+      default: () => [10, 20, 30, 50]
     },
     // 移动端页码按钮的数量端默认值5
-    pagerCount: {
-        type: Number,
-        default: document.body.clientWidth < 992 ? 5 : 7
-    },
-    layout: {
-        type: String,
-        default: 'total, sizes, prev, pager, next, jumper'
-    },
-    background: {
-        type: Boolean,
-        default: true
-    },
-    autoScroll: {
-        type: Boolean,
-        default: true
-    },
-    hidden: {
-        type: Boolean,
-        default: false
-    },
-    float: {
-        type: String,
-        default: 'right'
-    }
+    pagerCount: propTypes.number.def(document.body.clientWidth < 992 ? 5 : 7),
+    layout: propTypes.string.def('total, sizes, prev, pager, next, jumper'),
+    background: propTypes.bool.def(true),
+    autoScroll: propTypes.bool.def(true),
+    hidden: propTypes.bool.def(false),
+    float: propTypes.string.def('right')
 })
 
 const emit = defineEmits(['update:page', 'update:limit', 'pagination']);
@@ -106,7 +77,6 @@ function handleCurrentChange(val: number) {
 
 <style lang="scss" scoped>
 .pagination-container {
-  background: #fff;
   padding: 32px 16px;
   .el-pagination{
     float: v-bind(float);

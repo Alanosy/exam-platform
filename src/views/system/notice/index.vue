@@ -1,28 +1,30 @@
 <template>
   <div class="p-2">
     <transition :enter-active-class="proxy?.animate.searchAnimate.enter" :leave-active-class="proxy?.animate.searchAnimate.leave">
-      <div class="search" v-show="showSearch">
-        <el-form :model="queryParams" ref="queryFormRef" :inline="true" label-width="68px">
-          <el-form-item label="公告标题" prop="noticeTitle">
-            <el-input v-model="queryParams.noticeTitle" placeholder="请输入公告标题" clearable style="width: 200px" @keyup.enter="handleQuery" />
-          </el-form-item>
-          <el-form-item label="操作人员" prop="createByName">
-            <el-input v-model="queryParams.createByName" placeholder="请输入操作人员" clearable style="width: 200px" @keyup.enter="handleQuery" />
-          </el-form-item>
-          <el-form-item label="类型" prop="noticeType">
-            <el-select v-model="queryParams.noticeType" placeholder="公告类型" clearable style="width: 200px">
-              <el-option v-for="dict in sys_notice_type" :key="dict.value" :label="dict.label" :value="dict.value" />
-            </el-select>
-          </el-form-item>
-          <el-form-item>
-            <el-button type="primary" icon="Search" @click="handleQuery">搜索</el-button>
-            <el-button icon="Refresh" @click="resetQuery">重置</el-button>
-          </el-form-item>
-        </el-form>
+      <div class="mb-[10px]" v-show="showSearch">
+        <el-card shadow="hover">
+          <el-form :model="queryParams" ref="queryFormRef" :inline="true" label-width="68px">
+            <el-form-item label="公告标题" prop="noticeTitle">
+              <el-input v-model="queryParams.noticeTitle" placeholder="请输入公告标题" clearable style="width: 200px" @keyup.enter="handleQuery" />
+            </el-form-item>
+            <el-form-item label="操作人员" prop="createByName">
+              <el-input v-model="queryParams.createByName" placeholder="请输入操作人员" clearable style="width: 200px" @keyup.enter="handleQuery" />
+            </el-form-item>
+            <el-form-item label="类型" prop="noticeType">
+              <el-select v-model="queryParams.noticeType" placeholder="公告类型" clearable style="width: 200px">
+                <el-option v-for="dict in sys_notice_type" :key="dict.value" :label="dict.label" :value="dict.value" />
+              </el-select>
+            </el-form-item>
+            <el-form-item>
+              <el-button type="primary" icon="Search" @click="handleQuery">搜索</el-button>
+              <el-button icon="Refresh" @click="resetQuery">重置</el-button>
+            </el-form-item>
+          </el-form>
+        </el-card>
       </div>
     </transition>
 
-    <el-card shadow="never">
+    <el-card shadow="hover">
       <template #header>
         <el-row :gutter="10" class="mb8">
           <el-col :span="1.5">
@@ -119,9 +121,7 @@
 
 <script setup name="Notice" lang="ts">
 import { listNotice, getNotice, delNotice, addNotice, updateNotice } from "@/api/system/notice";
-import { ComponentInternalInstance } from "vue";
 import { NoticeForm, NoticeQuery, NoticeVO } from "@/api/system/notice/types";
-import { ElForm } from 'element-plus';
 
 const { proxy } = getCurrentInstance() as ComponentInternalInstance;
 const { sys_notice_status, sys_notice_type } = toRefs<any>(proxy?.useDict("sys_notice_status", "sys_notice_type"));
@@ -134,116 +134,116 @@ const single = ref(true);
 const multiple = ref(true);
 const total = ref(0);
 
-const queryFormRef = ref(ElForm);
-const noticeFormRef = ref(ElForm);
+const queryFormRef = ref<ElFormInstance>();
+const noticeFormRef = ref<ElFormInstance>();
 
 
 const dialog = reactive<DialogOption>({
-    visible: false,
-    title: ''
+  visible: false,
+  title: ''
 });
 
 const initFormData: NoticeForm = {
-    noticeId: undefined,
-    noticeTitle: '',
-    noticeType: '',
-    noticeContent: '',
-    status: "0",
-    remark: '',
-    createByName: ''
+  noticeId: undefined,
+  noticeTitle: '',
+  noticeType: '',
+  noticeContent: '',
+  status: "0",
+  remark: '',
+  createByName: ''
 }
 const data = reactive<PageData<NoticeForm, NoticeQuery>>({
-    form: { ...initFormData },
-    queryParams: {
-        pageNum: 1,
-        pageSize: 10,
-        noticeTitle: '',
-        createByName: '',
-        status: '',
-        noticeType: ''
-    },
-    rules: {
-        noticeTitle: [{ required: true, message: "公告标题不能为空", trigger: "blur" }],
-        noticeType: [{ required: true, message: "公告类型不能为空", trigger: "change" }]
-    },
+  form: { ...initFormData },
+  queryParams: {
+    pageNum: 1,
+    pageSize: 10,
+    noticeTitle: '',
+    createByName: '',
+    status: '',
+    noticeType: ''
+  },
+  rules: {
+    noticeTitle: [{ required: true, message: "公告标题不能为空", trigger: "blur" }],
+    noticeType: [{ required: true, message: "公告类型不能为空", trigger: "change" }]
+  },
 });
 
 const { queryParams, form, rules } = toRefs(data);
 
 /** 查询公告列表 */
 const getList = async () => {
-    loading.value = true;
-    const res = await listNotice(queryParams.value);
-    noticeList.value = res.rows;
-    total.value = res.total;
-    loading.value = false;
+  loading.value = true;
+  const res = await listNotice(queryParams.value);
+  noticeList.value = res.rows;
+  total.value = res.total;
+  loading.value = false;
 }
 /** 取消按钮 */
 const cancel = () => {
-    reset();
-    dialog.visible = false;
+  reset();
+  dialog.visible = false;
 }
 /** 表单重置 */
 const reset = () => {
-    form.value = { ...initFormData };
-    noticeFormRef.value.resetFields();
+  form.value = { ...initFormData };
+  noticeFormRef.value?.resetFields();
 }
 /** 搜索按钮操作 */
 const handleQuery = () => {
-    queryParams.value.pageNum = 1;
-    getList();
+  queryParams.value.pageNum = 1;
+  getList();
 }
 /** 重置按钮操作 */
 const resetQuery = () => {
-    queryFormRef.value.resetFields();
-    handleQuery();
+  queryFormRef.value?.resetFields();
+  handleQuery();
 }
 /** 多选框选中数据 */
 const handleSelectionChange = (selection: NoticeVO[]) => {
-    ids.value = selection.map(item => item.noticeId);
-    single.value = selection.length != 1;
-    multiple.value = !selection.length;
+  ids.value = selection.map(item => item.noticeId);
+  single.value = selection.length != 1;
+  multiple.value = !selection.length;
 }
 /** 新增按钮操作 */
 const handleAdd = () => {
-    dialog.visible = true;
-    dialog.title = "添加公告";
-    nextTick(() => {
-        reset();
-    })
+  dialog.visible = true;
+  dialog.title = "添加公告";
+  nextTick(() => {
+    reset();
+  })
 }
 /**修改按钮操作 */
 const handleUpdate = (row?: NoticeVO) => {
-    dialog.visible = true;
-    dialog.title = "修改公告";
-    nextTick(async () => {
-        const noticeId = row?.noticeId || ids.value[0];
-        reset();
-        const { data } = await getNotice(noticeId);
-        form.value = data;
-    })
+  dialog.visible = true;
+  dialog.title = "修改公告";
+  nextTick(async () => {
+    const noticeId = row?.noticeId || ids.value[0];
+    reset();
+    const { data } = await getNotice(noticeId);
+    form.value = data;
+  })
 }
 /** 提交按钮 */
 const submitForm = () => {
-    noticeFormRef.value.validate(async (valid: boolean) => {
-        if (valid) {
-            form.value.noticeId ? await updateNotice(form.value) : await addNotice(form.value);
-            proxy?.$modal.msgSuccess("修改成功");
-            dialog.visible = false;
-            getList();
-        }
-    });
+  noticeFormRef.value?.validate(async (valid: boolean) => {
+    if (valid) {
+      form.value.noticeId ? await updateNotice(form.value) : await addNotice(form.value);
+      proxy?.$modal.msgSuccess("修改成功");
+      dialog.visible = false;
+      await getList();
+    }
+  });
 }
 /** 删除按钮操作 */
 const handleDelete = async (row?: NoticeVO) => {
-    const noticeIds = row?.noticeId || ids.value
-    await proxy?.$modal.confirm('是否确认删除公告编号为"' + noticeIds + '"的数据项？');
-    await delNotice(noticeIds);
-    getList();
-    proxy?.$modal.msgSuccess("删除成功");
+  const noticeIds = row?.noticeId || ids.value
+  await proxy?.$modal.confirm('是否确认删除公告编号为"' + noticeIds + '"的数据项？');
+  await delNotice(noticeIds);
+  await getList();
+  proxy?.$modal.msgSuccess("删除成功");
 }
 
 onMounted(() => {
-    getList();
+  getList();
 })
 </script>

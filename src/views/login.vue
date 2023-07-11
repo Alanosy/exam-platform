@@ -65,14 +65,14 @@ import Cookies from 'js-cookie';
 import { encrypt, decrypt } from '@/utils/jsencrypt';
 import { useUserStore } from '@/store/modules/user';
 import { LoginData, TenantVO } from '@/api/types';
-import { ElForm, FormRules } from 'element-plus';
 import { to } from 'await-to-js';
+import { HttpStatus } from "@/enums/RespEnum";
 
 const userStore = useUserStore();
 const router = useRouter();
 
 const loginForm = ref<LoginData>({
-  tenantId: "000000",
+  tenantId: '000000',
   username: 'admin',
   password: 'admin123',
   rememberMe: false,
@@ -80,7 +80,7 @@ const loginForm = ref<LoginData>({
   uuid: ''
 });
 
-const loginRules: FormRules = {
+const loginRules: ElFormRules = {
   tenantId: [{ required: true, trigger: "blur", message: "请输入您的租户编号" }],
   username: [{ required: true, trigger: 'blur', message: '请输入您的账号' }],
   password: [{ required: true, trigger: 'blur', message: '请输入您的密码' }],
@@ -98,12 +98,12 @@ const tenantEnabled = ref(true);
 // 注册开关
 const register = ref(false);
 const redirect = ref(undefined);
-const loginRef = ref(ElForm);
+const loginRef = ref<ElFormInstance>();
 // 租户列表
 const tenantList = ref<TenantVO[]>([]);
 
 const handleLogin = () => {
-  loginRef.value.validate(async (valid: boolean, fields: any) => {
+  loginRef.value?.validate(async (valid: boolean, fields: any) => {
     if (valid) {
       loading.value = true;
       // 勾选了需要记住密码设置在 cookie 中设置记住用户名和密码
@@ -120,7 +120,6 @@ const handleLogin = () => {
         Cookies.remove('rememberMe');
       }
       // 调用action的登录方法
-      // prittier-ignore
       const [err] = await to(userStore.login(loginForm.value));
       if (!err) {
         await router.push({ path: redirect.value || '/' });
@@ -189,7 +188,7 @@ watch(() => loginForm.value.tenantId, (val: string) => {
  */
 const doSocialLogin = (type: string) => {
   authBinding(type).then((res: any) => {
-    if (res.code === 200) {
+    if (res.code === HttpStatus.SUCCESS) {
       // 获取授权地址跳转
       window.location.href = res.data;
     } else {

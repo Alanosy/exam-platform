@@ -1,39 +1,41 @@
 <template>
   <div class="p-2">
     <transition :enter-active-class="proxy?.animate.searchAnimate.enter" :leave-active-class="proxy?.animate.searchAnimate.leave">
-      <div class="search" v-show="showSearch">
-        <el-form :model="queryParams" ref="queryFormRef" :inline="true" label-width="68px">
-          <el-form-item label="数据源" prop="dataName">
-            <el-select v-model="queryParams.dataName" filterable clearable placeholder="请选择/输入数据源名称" style="width: 200px">
-              <el-option key="" label="全部" value="" />
-              <el-option v-for="item in dataNameList" :key="item" :label="item" :value="item"> </el-option>
-            </el-select>
-          </el-form-item>
-          <el-form-item label="表名称" prop="tableName">
-            <el-input v-model="queryParams.tableName" placeholder="请输入表名称" clearable style="width: 200px" @keyup.enter="handleQuery" />
-          </el-form-item>
-          <el-form-item label="表描述" prop="tableComment">
-            <el-input v-model="queryParams.tableComment" placeholder="请输入表描述" clearable style="width: 200px" @keyup.enter="handleQuery" />
-          </el-form-item>
-          <el-form-item label="创建时间" style="width: 308px">
-            <el-date-picker
-              v-model="dateRange"
-              value-format="YYYY-MM-DD"
-              type="daterange"
-              range-separator="-"
-              start-placeholder="开始日期"
-              end-placeholder="结束日期"
-            ></el-date-picker>
-          </el-form-item>
-          <el-form-item>
-            <el-button type="primary" icon="Search" @click="handleQuery">搜索</el-button>
-            <el-button icon="Refresh" @click="resetQuery">重置</el-button>
-          </el-form-item>
-        </el-form>
+      <div class="mb-[10px]" v-show="showSearch">
+        <el-card shadow="hover">
+          <el-form :model="queryParams" ref="queryFormRef" :inline="true" label-width="68px">
+            <el-form-item label="数据源" prop="dataName">
+              <el-select v-model="queryParams.dataName" filterable clearable placeholder="请选择/输入数据源名称" style="width: 200px">
+                <el-option key="" label="全部" value="" />
+                <el-option v-for="item in dataNameList" :key="item" :label="item" :value="item"> </el-option>
+              </el-select>
+            </el-form-item>
+            <el-form-item label="表名称" prop="tableName">
+              <el-input v-model="queryParams.tableName" placeholder="请输入表名称" clearable style="width: 200px" @keyup.enter="handleQuery" />
+            </el-form-item>
+            <el-form-item label="表描述" prop="tableComment">
+              <el-input v-model="queryParams.tableComment" placeholder="请输入表描述" clearable style="width: 200px" @keyup.enter="handleQuery" />
+            </el-form-item>
+            <el-form-item label="创建时间" style="width: 308px">
+              <el-date-picker
+                v-model="dateRange"
+                value-format="YYYY-MM-DD"
+                type="daterange"
+                range-separator="-"
+                start-placeholder="开始日期"
+                end-placeholder="结束日期"
+              ></el-date-picker>
+            </el-form-item>
+            <el-form-item>
+              <el-button type="primary" icon="Search" @click="handleQuery">搜索</el-button>
+              <el-button icon="Refresh" @click="resetQuery">重置</el-button>
+            </el-form-item>
+          </el-form>
+        </el-card>
       </div>
     </transition>
 
-    <el-card shadow="never">
+    <el-card shadow="hover">
       <template #header>
         <el-row :gutter="10" class="mb8">
           <el-col :span="1.5">
@@ -99,9 +101,9 @@
           :name="(key as any).substring((key as any).lastIndexOf('/') + 1, (key as any).indexOf('.vm'))"
           :key="value"
         >
-          <el-link :underline="false" icon="DocumentCopy" v-copyText="value" v-copyText:callback="copyTextSuccess" style="float:right"
-            >&nbsp;复制</el-link
-          >
+          <el-link :underline="false" icon="DocumentCopy" v-copyText="value" v-copyText:callback="copyTextSuccess" style="float:right">
+            &nbsp;复制
+          </el-link>
           <pre>{{ value }}</pre>
         </el-tab-pane>
       </el-tabs>
@@ -114,9 +116,7 @@
 import { listTable, previewTable, delTable, genCode, synchDb, getDataNames } from '@/api/tool/gen';
 import { TableQuery, TableVO } from '@/api/tool/gen/types';
 import router from '@/router';
-import importTable from './importTable.vue';
-import { ComponentInternalInstance } from 'vue';
-import { ElForm, DateModelType } from 'element-plus';
+import ImportTable from './importTable.vue';
 
 const route = useRoute();
 const { proxy } = getCurrentInstance() as ComponentInternalInstance;
@@ -132,35 +132,35 @@ const dateRange = ref<[DateModelType, DateModelType]>(['', '']);
 const uniqueId = ref("");
 const dataNameList = ref<Array<string>>([]);
 
-const queryFormRef = ref(ElForm);
-const importRef = ref(importTable);
+const queryFormRef = ref<ElFormInstance>();
+const importRef = ref<InstanceType<typeof ImportTable>>();
 
 const queryParams = ref<TableQuery>({
-    pageNum: 1,
-    pageSize: 10,
-    tableName: '',
-    tableComment: '',
-    dataName: ""
+  pageNum: 1,
+  pageSize: 10,
+  tableName: '',
+  tableComment: '',
+  dataName: ""
 })
 
-const preview = ref <any>({
-    data: {},
-    activeName: 'domain.java'
+const preview = ref<any>({
+  data: {},
+  activeName: 'domain.java'
 })
 const dialog = reactive<DialogOption>({
-    visible: false,
-    title: '代码预览'
+  visible: false,
+  title: '代码预览'
 });
 
 onActivated(() => {
-    const time = route.query.t;
-    if (time != null && time != uniqueId.value) {
-        uniqueId.value = time as string;
-        queryParams.value.pageNum = Number(route.query.pageNum);
-        dateRange.value = ['', ''];
-        queryFormRef.value.resetFields();
-        getList();
-    }
+  const time = route.query.t;
+  if (time != null && time != uniqueId.value) {
+    uniqueId.value = time as string;
+    queryParams.value.pageNum = Number(route.query.pageNum);
+    dateRange.value = ['', ''];
+    queryFormRef.value?.resetFields();
+    getList();
+  }
 })
 
 /** 查询多数据源名称 */
@@ -171,81 +171,81 @@ const getDataNameList = async () => {
 
 /** 查询表集合 */
 const getList = async () => {
-    loading.value = true;
-    const res = await listTable(proxy?.addDateRange(queryParams.value, dateRange.value));
-    tableList.value = res.rows;
-    total.value = res.total;
-    loading.value = false;
+  loading.value = true;
+  const res = await listTable(proxy?.addDateRange(queryParams.value, dateRange.value));
+  tableList.value = res.rows;
+  total.value = res.total;
+  loading.value = false;
 }
 /** 搜索按钮操作 */
 const handleQuery = () => {
-    queryParams.value.pageNum = 1;
-    getList();
+  queryParams.value.pageNum = 1;
+  getList();
 }
 /** 生成代码操作 */
 const handleGenTable = async (row?: TableVO) => {
-    const tbIds = row?.tableId || ids.value;
-    if (tbIds == "") {
-        proxy?.$modal.msgError('请选择要生成的数据');
-        return;
-    }
-    if (row?.genType === "1") {
-        await genCode(row.tableId);
-        proxy?.$modal.msgSuccess('成功生成到自定义路径：' + row.genPath);
-    } else {
-        proxy?.$download.zip('/tool/gen/batchGenCode?tableIdStr=' + tbIds, 'ruoyi.zip');
-    }
+  const tbIds = row?.tableId || ids.value;
+  if (tbIds == "") {
+    proxy?.$modal.msgError('请选择要生成的数据');
+    return;
+  }
+  if (row?.genType === "1") {
+    await genCode(row.tableId);
+    proxy?.$modal.msgSuccess('成功生成到自定义路径：' + row.genPath);
+  } else {
+    proxy?.$download.zip('/tool/gen/batchGenCode?tableIdStr=' + tbIds, 'ruoyi.zip');
+  }
 }
 /** 同步数据库操作 */
 const handleSynchDb = async (row: TableVO) => {
-    const tableId = row.tableId;
-    await proxy?.$modal.confirm('确认要强制同步"' + row.tableName + '"表结构吗？');
-    await synchDb(tableId);
-    proxy?.$modal.msgSuccess('同步成功');
+  const tableId = row.tableId;
+  await proxy?.$modal.confirm('确认要强制同步"' + row.tableName + '"表结构吗？');
+  await synchDb(tableId);
+  proxy?.$modal.msgSuccess('同步成功');
 }
 /** 打开导入表弹窗 */
 const openImportTable = () => {
-    importRef.value.show(queryParams.value.dataName);
+  importRef.value?.show(queryParams.value.dataName);
 }
 /** 重置按钮操作 */
 const resetQuery = () => {
-    dateRange.value = ['', ''];
-    queryFormRef.value.resetFields();
-    handleQuery();
+  dateRange.value = ['', ''];
+  queryFormRef.value?.resetFields();
+  handleQuery();
 }
 /** 预览按钮 */
 const handlePreview = async (row: TableVO) => {
-    const res = await previewTable(row.tableId);
-    preview.value.data = res.data;
-    dialog.visible = true;
-    preview.value.activeName = 'domain.java';
+  const res = await previewTable(row.tableId);
+  preview.value.data = res.data;
+  dialog.visible = true;
+  preview.value.activeName = 'domain.java';
 }
 /** 复制代码成功 */
 const copyTextSuccess = () => {
-    proxy?.$modal.msgSuccess('复制成功');
+  proxy?.$modal.msgSuccess('复制成功');
 }
 // 多选框选中数据
 const handleSelectionChange = (selection: TableVO[]) => {
-    ids.value = selection.map(item => item.tableId);
-    single.value = selection.length != 1;
-    multiple.value = !selection.length;
+  ids.value = selection.map(item => item.tableId);
+  single.value = selection.length != 1;
+  multiple.value = !selection.length;
 }
 /** 修改按钮操作 */
 const handleEditTable = (row?: TableVO) => {
-    const tableId = row?.tableId || ids.value[0];
-    router.push({ path: '/tool/gen-edit/index/' + tableId, query: { pageNum: queryParams.value.pageNum } });
+  const tableId = row?.tableId || ids.value[0];
+  router.push({ path: '/tool/gen-edit/index/' + tableId, query: { pageNum: queryParams.value.pageNum } });
 }
 /** 删除按钮操作 */
 const handleDelete = async (row?: TableVO) => {
-    const tableIds = row?.tableId || ids.value;
-    await proxy?.$modal.confirm('是否确认删除表编号为"' + tableIds + '"的数据项？');
-    await delTable(tableIds);
-    getList();
-    proxy?.$modal.msgSuccess('删除成功');
+  const tableIds = row?.tableId || ids.value;
+  await proxy?.$modal.confirm('是否确认删除表编号为"' + tableIds + '"的数据项？');
+  await delTable(tableIds);
+  getList();
+  proxy?.$modal.msgSuccess('删除成功');
 }
 
 onMounted(() => {
-    getList();
-    getDataNameList();
+  getList();
+  getDataNameList();
 })
 </script>

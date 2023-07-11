@@ -125,6 +125,9 @@ const initTags = () => {
 }
 const addTags = () => {
     const { name } = route;
+    if(route.query.title) {
+        route.meta.title = route.query.title;
+    }
     if (name) {
         useTagsViewStore().addView(route);
         if (route.meta.link) {
@@ -237,8 +240,8 @@ onMounted(() => {
 .tags-view-container {
   height: 34px;
   width: 100%;
-  background: #fff;
-  border-bottom: 1px solid #d8dce5;
+  background-color: var(--el-bg-color);
+  border: 1px solid var(--el-border-color-light);
   box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.12), 0 0 3px 0 rgba(0, 0, 0, 0.04);
   .tags-view-wrapper {
     .tags-view-item {
@@ -247,13 +250,16 @@ onMounted(() => {
       cursor: pointer;
       height: 26px;
       line-height: 23px;
-      border: 1px solid #d8dce5;
+      background-color: var(--el-bg-color);
+      border: 1px solid var(--el-border-color-light);
       color: #495060;
-      background: #fff;
       padding: 0 8px;
       font-size: 12px;
       margin-left: 5px;
       margin-top: 4px;
+      &:hover {
+        color: var(--el-color-primary);
+      }
       &:first-of-type {
         margin-left: 15px;
       }
@@ -279,7 +285,7 @@ onMounted(() => {
   }
   .contextmenu {
     margin: 0;
-    background: #fff;
+    background: var(--el-bg-color);
     z-index: 3000;
     position: absolute;
     list-style-type: none;
@@ -287,7 +293,6 @@ onMounted(() => {
     border-radius: 4px;
     font-size: 12px;
     font-weight: 400;
-    color: #333;
     box-shadow: 2px 2px 3px 0 rgba(0, 0, 0, 0.3);
     li {
       margin: 0;

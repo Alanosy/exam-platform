@@ -18,25 +18,15 @@
 </template>
 
 <script setup lang="ts">
-import { TransferKey } from "element-plus";
-import { PropType } from "vue";
+import { propTypes } from '@/utils/propTypes';
 
 const props = defineProps({
-    showSearch: {
-        type: Boolean,
-        default: true,
-    },
+    showSearch: propTypes.bool.def(true),
     columns: {
         type: Array as PropType<FieldOption[]>,
     },
-    search: {
-        type: Boolean,
-        default: true,
-    },
-    gutter: {
-        type: Number,
-        default: 10,
-    },
+    search: propTypes.bool.def(true),
+    gutter: propTypes.number.def(10),
 })
 
 const emits = defineEmits(['update:showSearch', 'queryTable']);

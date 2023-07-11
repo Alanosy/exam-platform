@@ -45,31 +45,18 @@
 <script setup lang="ts">
 import { getToken } from "@/utils/auth";
 import { listByIds, delOss } from "@/api/system/oss";
-import { ComponentInternalInstance } from "vue";
-import { ElUpload, UploadFile } from "element-plus";
+import { propTypes } from '@/utils/propTypes';
 
 const props = defineProps({
     modelValue: [String, Object, Array],
     // 数量限制
-    limit: {
-        type: Number,
-        default: 5,
-    },
+    limit: propTypes.number.def(5),
     // 大小限制(MB)
-    fileSize: {
-        type: Number,
-        default: 5,
-    },
+    fileSize: propTypes.number.def(5),
     // 文件类型, 例如['png', 'jpg', 'jpeg']
-    fileType: {
-        type: Array,
-        default: () => ["doc", "xls", "ppt", "txt", "pdf"],
-    },
+    fileType: propTypes.array.def(["doc", "xls", "ppt", "txt", "pdf"]),
     // 是否显示提示
-    isShowTip: {
-        type: Boolean,
-        default: true
-    }
+    isShowTip: propTypes.bool.def(true),
 });
 
 const { proxy } = getCurrentInstance() as ComponentInternalInstance;
@@ -86,7 +73,7 @@ const showTip = computed(
     () => props.isShowTip && (props.fileType || props.fileSize)
 );
 
-const fileUploadRef = ref(ElUpload);
+const fileUploadRef = ref<ElUploadInstance>();
 
 watch(() => props.modelValue, async val => {
     if (val) {
@@ -96,7 +83,7 @@ watch(() => props.modelValue, async val => {
         if (Array.isArray(val)) {
             list = val;
         } else {
-            const res =  await listByIds(val as string)
+            const res = await listByIds(val as string)
             list = res.data.map((oss) => {
                 const data = { name: oss.originalName, url: oss.url, ossId: oss.ossId };
                 return data;
@@ -104,7 +91,7 @@ watch(() => props.modelValue, async val => {
         }
         // 然后将数组转为对象数组
         fileList.value = list.map(item => {
-            item = {name: item.name, url: item.url, ossId: item.ossId};
+            item = { name: item.name, url: item.url, ossId: item.ossId };
             item.uid = item.uid || new Date().getTime() + temp++;
             return item;
         });
@@ -112,7 +99,7 @@ watch(() => props.modelValue, async val => {
         fileList.value = [];
         return [];
     }
-},{ deep: true, immediate: true });
+}, { deep: true, immediate: true });
 
 // 上传前校检格式和大小
 const handleBeforeUpload = (file: any) => {
@@ -150,7 +137,7 @@ const handleUploadError = () => {
 }
 
 // 上传成功回调
-const handleUploadSuccess = (res:any, file: UploadFile) => {
+const handleUploadSuccess = (res: any, file: UploadFile) => {
     if (res.code === 200) {
         uploadList.value.push({ name: res.data.fileName, url: res.data.url, ossId: res.data.ossId });
         uploadedSuccessfully();
@@ -158,7 +145,7 @@ const handleUploadSuccess = (res:any, file: UploadFile) => {
         number.value--;
         proxy?.$modal.closeLoading();
         proxy?.$modal.msgError(res.msg);
-        fileUploadRef.value.handleRemove(file);
+        fileUploadRef.value?.handleRemove(file);
         uploadedSuccessfully();
     }
 }
@@ -172,7 +159,7 @@ const handleDelete = (index: number) => {
 }
 
 // 上传结束处理
-const uploadedSuccessfully =() => {
+const uploadedSuccessfully = () => {
     if (number.value > 0 && uploadList.value.length === number.value) {
         fileList.value = fileList.value.filter(f => f.url !== undefined).concat(uploadList.value);
         uploadList.value = [];
@@ -207,21 +194,24 @@ const listToString = (list: any[], separator?: string) => {
 
 <style scoped lang="scss">
 .upload-file-uploader {
-  margin-bottom: 5px;
+    margin-bottom: 5px;
 }
+
 .upload-file-list .el-upload-list__item {
-  border: 1px solid #e4e7ed;
-  line-height: 2;
-  margin-bottom: 10px;
-  position: relative;
+    border: 1px solid #e4e7ed;
+    line-height: 2;
+    margin-bottom: 10px;
+    position: relative;
 }
+
 .upload-file-list .ele-upload-list__item-content {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  color: inherit;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: inherit;
 }
+
 .ele-upload-list__item-content-action .el-link {
-  margin-right: 10px;
+    margin-right: 10px;
 }
 </style>

@@ -6,22 +6,21 @@
 
 <script setup lang="ts">
 import useTagsViewStore from '@/store/modules/tagsView'
-import { ElScrollbar } from 'element-plus';
 import { TagView } from 'vue-router'
 const tagAndTagSpacing = ref(4);
 
-const scrollContainerRef = ref(ElScrollbar)
-const scrollWrapper = computed(() => scrollContainerRef.value.$refs.wrapRef);
+const scrollContainerRef = ref<ElScrollbarInstance>()
+const scrollWrapper = computed(() => scrollContainerRef.value?.$refs.wrapRef as any);
 
 onMounted(() => {
-    scrollWrapper.value.addEventListener('scroll', emitScroll, true)
+    scrollWrapper.value?.addEventListener('scroll', emitScroll, true)
 })
 onBeforeUnmount(() => {
-    scrollWrapper.value.removeEventListener('scroll', emitScroll)
+    scrollWrapper.value?.removeEventListener('scroll', emitScroll)
 })
 
 const handleScroll = (e: WheelEvent) => {
-    const eventDelta = (e as any).wheelDelta || -e.deltaY * 40
+    const eventDelta = (e as any).wheelDelta || - e.deltaY * 40
     const $scrollWrapper = scrollWrapper.value;
     $scrollWrapper.scrollLeft = $scrollWrapper.scrollLeft + eventDelta / 4
 }
@@ -34,7 +33,7 @@ const tagsViewStore = useTagsViewStore()
 const visitedViews = computed(() => tagsViewStore.visitedViews);
 
 const moveToTarget = (currentTag: TagView) => {
-    const $container = scrollContainerRef.value.$el
+    const $container = scrollContainerRef.value?.$el
     const $containerWidth = $container.offsetWidth
     const $scrollWrapper = scrollWrapper.value;
 

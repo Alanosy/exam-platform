@@ -1,39 +1,41 @@
 <template>
   <div class="p-2">
     <transition :enter-active-class="proxy?.animate.searchAnimate.enter" :leave-active-class="proxy?.animate.searchAnimate.leave">
-      <div class="search" v-show="showSearch">
-        <el-form :model="queryParams" ref="queryFormRef" :inline="true" label-width="68px">
-          <el-form-item label="登录地址" prop="ipaddr">
-            <el-input v-model="queryParams.ipaddr" placeholder="请输入登录地址" clearable style="width: 240px;" @keyup.enter="handleQuery" />
-          </el-form-item>
-          <el-form-item label="用户名称" prop="userName">
-            <el-input v-model="queryParams.userName" placeholder="请输入用户名称" clearable style="width: 240px;" @keyup.enter="handleQuery" />
-          </el-form-item>
-          <el-form-item label="状态" prop="status">
-            <el-select v-model="queryParams.status" placeholder="登录状态" clearable style="width: 240px">
-              <el-option v-for="dict in sys_common_status" :key="dict.value" :label="dict.label" :value="dict.value" />
-            </el-select>
-          </el-form-item>
-          <el-form-item label="登录时间" style="width: 308px">
-            <el-date-picker
-              v-model="dateRange"
-              value-format="YYYY-MM-DD HH:mm:ss"
-              type="daterange"
-              range-separator="-"
-              start-placeholder="开始日期"
-              end-placeholder="结束日期"
-              :default-time="[new Date(2000, 1, 1, 0, 0, 0), new Date(2000, 1, 1, 23, 59, 59)]"
-            ></el-date-picker>
-          </el-form-item>
-          <el-form-item>
-            <el-button type="primary" icon="Search" @click="handleQuery">搜索</el-button>
-            <el-button icon="Refresh" @click="resetQuery">重置</el-button>
-          </el-form-item>
-        </el-form>
+      <div class="mb-[10px]" v-show="showSearch">
+        <el-card shadow="hover">
+          <el-form :model="queryParams" ref="queryFormRef" :inline="true" label-width="68px">
+            <el-form-item label="登录地址" prop="ipaddr">
+              <el-input v-model="queryParams.ipaddr" placeholder="请输入登录地址" clearable style="width: 240px;" @keyup.enter="handleQuery" />
+            </el-form-item>
+            <el-form-item label="用户名称" prop="userName">
+              <el-input v-model="queryParams.userName" placeholder="请输入用户名称" clearable style="width: 240px;" @keyup.enter="handleQuery" />
+            </el-form-item>
+            <el-form-item label="状态" prop="status">
+              <el-select v-model="queryParams.status" placeholder="登录状态" clearable style="width: 240px">
+                <el-option v-for="dict in sys_common_status" :key="dict.value" :label="dict.label" :value="dict.value" />
+              </el-select>
+            </el-form-item>
+            <el-form-item label="登录时间" style="width: 308px">
+              <el-date-picker
+                v-model="dateRange"
+                value-format="YYYY-MM-DD HH:mm:ss"
+                type="daterange"
+                range-separator="-"
+                start-placeholder="开始日期"
+                end-placeholder="结束日期"
+                :default-time="[new Date(2000, 1, 1, 0, 0, 0), new Date(2000, 1, 1, 23, 59, 59)]"
+              ></el-date-picker>
+            </el-form-item>
+            <el-form-item>
+              <el-button type="primary" icon="Search" @click="handleQuery">搜索</el-button>
+              <el-button icon="Refresh" @click="resetQuery">重置</el-button>
+            </el-form-item>
+          </el-form>
+        </el-card>
       </div>
     </transition>
 
-    <el-card shadow="never">
+    <el-card shadow="hover">
       <template #header>
         <el-row :gutter="10" class="mb8">
           <el-col :span="1.5">
@@ -98,9 +100,7 @@
 
 <script setup name="Logininfor" lang="ts">
 import { list, delLoginInfo, cleanLoginInfo, unlockLoginInfo } from "@/api/monitor/loginInfo";
-import { ComponentInternalInstance } from "vue";
 import { LoginInfoQuery, LoginInfoVO } from "@/api/monitor/loginInfo/types";
-import { DateModelType } from 'element-plus';
 
 const { proxy } = getCurrentInstance() as ComponentInternalInstance;
 const { sys_common_status } = toRefs<any>(proxy?.useDict("sys_common_status"));
@@ -116,8 +116,8 @@ const total = ref(0);
 const dateRange = ref<[DateModelType,DateModelType]>(['', '']);
 const defaultSort = ref<any>({ prop: "loginTime", order: "descending" });
 
-const queryFormRef = ref(ElForm);
-const loginInfoTableRef = ref(ElTable);
+const queryFormRef = ref<ElFormInstance>();
+const loginInfoTableRef = ref<ElTableInstance>();
 // 查询参数
 const queryParams = ref<LoginInfoQuery>({
     pageNum: 1,
@@ -145,9 +145,9 @@ const handleQuery = () => {
 /** 重置按钮操作 */
 const resetQuery = () => {
     dateRange.value = ['', ''];
-    queryFormRef.value.resetFields();
+    queryFormRef.value?.resetFields();
     queryParams.value.pageNum = 1;
-    loginInfoTableRef.value.sort(defaultSort.value.prop, defaultSort.value.order);
+    loginInfoTableRef.value?.sort(defaultSort.value.prop, defaultSort.value.order);
 }
 /** 多选框选中数据 */
 const handleSelectionChange = (selection: LoginInfoVO[]) => {
@@ -167,14 +167,14 @@ const handleDelete = async (row?: LoginInfoVO) => {
     const infoIds = row?.infoId || ids.value;
     await proxy?.$modal.confirm('是否确认删除访问编号为"' + infoIds + '"的数据项?');
     await delLoginInfo(infoIds);
-    getList();
+    await getList();
     proxy?.$modal.msgSuccess("删除成功");
 }
 /** 清空按钮操作 */
 const handleClean = async () => {
     await proxy?.$modal.confirm("是否确认清空所有登录日志数据项?");
     await cleanLoginInfo();
-    getList();
+    await getList();
     proxy?.$modal.msgSuccess("清空成功");
 }
 /** 解锁按钮操作 */

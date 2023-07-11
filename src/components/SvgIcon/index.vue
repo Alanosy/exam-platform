@@ -5,19 +5,12 @@
 </template>
 
 <script setup lang="ts">
+import { propTypes } from '@/utils/propTypes';
+
 const props = defineProps({
-    iconClass: {
-        type: String,
-        required: true
-    },
-    className: {
-        type: String,
-        default: ''
-    },
-    color: {
-        type: String,
-        default: ''
-    },
+    iconClass: propTypes.string.isRequired,
+    className: propTypes.string.def(''),
+    color: propTypes.string.def(''),
 })
 const iconName =  computed(() => `#icon-${props.iconClass}`);
 const svgClass = computed(() => {

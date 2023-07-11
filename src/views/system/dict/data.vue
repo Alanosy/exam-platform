@@ -1,29 +1,31 @@
 <template>
   <div class="p-2">
     <transition :enter-active-class="proxy?.animate.searchAnimate.enter" :leave-active-class="proxy?.animate.searchAnimate.leave">
-      <div class="search" v-show="showSearch">
-        <el-form :model="queryParams" ref="queryFormRef" :inline="true" label-width="68px">
-          <el-form-item label="字典名称" prop="dictType">
-            <el-select v-model="queryParams.dictType" style="width: 200px">
-              <el-option v-for="item in typeOptions" :key="item.dictId" :label="item.dictName" :value="item.dictType" />
-            </el-select>
-          </el-form-item>
-          <el-form-item label="字典标签" prop="dictLabel">
-            <el-input v-model="queryParams.dictLabel" placeholder="请输入字典标签" clearable style="width: 200px" @keyup.enter="handleQuery" />
-          </el-form-item>
-          <el-form-item label="状态" prop="status">
-            <el-select v-model="queryParams.status" placeholder="数据状态" clearable style="width: 200px">
-              <el-option v-for="dict in sys_normal_disable" :key="dict.value" :label="dict.label" :value="dict.value" />
-            </el-select>
-          </el-form-item>
-          <el-form-item>
-            <el-button type="primary" icon="Search" @click="handleQuery">搜索</el-button>
-            <el-button icon="Refresh" @click="resetQuery">重置</el-button>
-          </el-form-item>
-        </el-form>
+      <div class="mb-[10px]" v-show="showSearch">
+        <el-card shadow="hover">
+          <el-form :model="queryParams" ref="queryFormRef" :inline="true" label-width="68px">
+            <el-form-item label="字典名称" prop="dictType">
+              <el-select v-model="queryParams.dictType" style="width: 200px">
+                <el-option v-for="item in typeOptions" :key="item.dictId" :label="item.dictName" :value="item.dictType" />
+              </el-select>
+            </el-form-item>
+            <el-form-item label="字典标签" prop="dictLabel">
+              <el-input v-model="queryParams.dictLabel" placeholder="请输入字典标签" clearable style="width: 200px" @keyup.enter="handleQuery" />
+            </el-form-item>
+            <el-form-item label="状态" prop="status">
+              <el-select v-model="queryParams.status" placeholder="数据状态" clearable style="width: 200px">
+                <el-option v-for="dict in sys_normal_disable" :key="dict.value" :label="dict.label" :value="dict.value" />
+              </el-select>
+            </el-form-item>
+            <el-form-item>
+              <el-button type="primary" icon="Search" @click="handleQuery">搜索</el-button>
+              <el-button icon="Refresh" @click="resetQuery">重置</el-button>
+            </el-form-item>
+          </el-form>
+        </el-card>
       </div>
     </transition>
-    <el-card shadow="never">
+    <el-card shadow="hover">
       <template #header>
         <el-row :gutter="10" class="mb8">
           <el-col :span="1.5">
@@ -136,9 +138,7 @@ import useDictStore from '@/store/modules/dict'
 import { optionselect as getDictOptionselect, getType } from "@/api/system/dict/type";
 import { listData, getData, delData, addData, updateData } from "@/api/system/dict/data";
 import { DictTypeVO } from '@/api/system/dict/type/types';
-import { ComponentInternalInstance } from "vue";
 import { DictDataForm, DictDataQuery, DictDataVO } from "@/api/system/dict/data/types";
-import { ElForm } from 'element-plus';
 
 const { proxy } = getCurrentInstance() as ComponentInternalInstance
 const { sys_normal_disable } = toRefs<any>(proxy?.useDict("sys_normal_disable"));
@@ -154,159 +154,159 @@ const total = ref(0);
 const defaultDictType = ref("");
 const typeOptions = ref<DictTypeVO[]>([]);
 
-const dataFormRef = ref(ElForm);
-const queryFormRef = ref(ElForm);
+const dataFormRef = ref<ElFormInstance>();
+const queryFormRef = ref<ElFormInstance>();
 
 
 const dialog = reactive<DialogOption>({
-    visible: false,
-    title: ''
+  visible: false,
+  title: ''
 });
 
 // 数据标签回显样式
 const listClassOptions = ref<Array<{ value: string, label: string }>>([
-    { value: "default", label: "默认" },
-    { value: "primary", label: "主要" },
-    { value: "success", label: "成功" },
-    { value: "info", label: "信息" },
-    { value: "warning", label: "警告" },
-    { value: "danger", label: "危险" }
+  { value: "default", label: "默认" },
+  { value: "primary", label: "主要" },
+  { value: "success", label: "成功" },
+  { value: "info", label: "信息" },
+  { value: "warning", label: "警告" },
+  { value: "danger", label: "危险" }
 ]);
 
 const initFormData: DictDataForm = {
-    dictCode: undefined,
-    dictLabel: '',
-    dictValue: '',
-    cssClass: '',
-    listClass: "default",
-    dictSort: 0,
-    status: "0",
-    remark: ''
+  dictCode: undefined,
+  dictLabel: '',
+  dictValue: '',
+  cssClass: '',
+  listClass: "default",
+  dictSort: 0,
+  status: "0",
+  remark: ''
 }
 const data = reactive<PageData<DictDataForm, DictDataQuery>>({
-    form: { ...initFormData },
-    queryParams: {
-        pageNum: 1,
-        pageSize: 10,
-        dictName: '',
-        dictType: '',
-        status: '',
-        dictLabel: ''
-    },
-    rules: {
-        dictLabel: [{ required: true, message: "数据标签不能为空", trigger: "blur" }],
-        dictValue: [{ required: true, message: "数据键值不能为空", trigger: "blur" }],
-        dictSort: [{ required: true, message: "数据顺序不能为空", trigger: "blur" }]
-    }
+  form: { ...initFormData },
+  queryParams: {
+    pageNum: 1,
+    pageSize: 10,
+    dictName: '',
+    dictType: '',
+    status: '',
+    dictLabel: ''
+  },
+  rules: {
+    dictLabel: [{ required: true, message: "数据标签不能为空", trigger: "blur" }],
+    dictValue: [{ required: true, message: "数据键值不能为空", trigger: "blur" }],
+    dictSort: [{ required: true, message: "数据顺序不能为空", trigger: "blur" }]
+  }
 });
 
 const { queryParams, form, rules } = toRefs(data);
 
 /** 查询字典类型详细 */
 const getTypes = async (dictId: string | number) => {
-    const { data } = await getType(dictId);
-    queryParams.value.dictType = data.dictType;
-    defaultDictType.value = data.dictType;
-    getList();
+  const { data } = await getType(dictId);
+  queryParams.value.dictType = data.dictType;
+  defaultDictType.value = data.dictType;
+  getList();
 }
 
 /** 查询字典类型列表 */
 const getTypeList = async () => {
-    const res = await getDictOptionselect()
-    typeOptions.value = res.data;
+  const res = await getDictOptionselect()
+  typeOptions.value = res.data;
 }
 /** 查询字典数据列表 */
 const getList = async () => {
-    loading.value = true;
-    const res = await listData(queryParams.value);
-    dataList.value = res.rows;
-    total.value = res.total;
-    loading.value = false;
+  loading.value = true;
+  const res = await listData(queryParams.value);
+  dataList.value = res.rows;
+  total.value = res.total;
+  loading.value = false;
 }
 /** 取消按钮 */
 const cancel = () => {
-    dialog.visible = false;
-    reset();
+  dialog.visible = false;
+  reset();
 }
 /** 表单重置 */
 const reset = () => {
-    form.value = { ...initFormData };
-    dataFormRef.value.resetFields();
+  form.value = { ...initFormData };
+  dataFormRef.value?.resetFields();
 }
 /** 搜索按钮操作 */
 const handleQuery = () => {
-    queryParams.value.pageNum = 1;
-    getList();
+  queryParams.value.pageNum = 1;
+  getList();
 }
 /** 返回按钮操作 */
 const handleClose = () => {
-    const obj = { path: "/system/dict" };
-    proxy?.$tab.closeOpenPage(obj);
+  const obj = { path: "/system/dict" };
+  proxy?.$tab.closeOpenPage(obj);
 }
 /** 重置按钮操作 */
 const resetQuery = () => {
-    queryFormRef.value.resetFields();
-    queryParams.value.dictType = defaultDictType.value;
-    handleQuery();
+  queryFormRef.value?.resetFields();
+  queryParams.value.dictType = defaultDictType.value;
+  handleQuery();
 }
 /** 新增按钮操作 */
 const handleAdd = () => {
-    dialog.visible = true;
-    dialog.title = "添加字典数据";
-    nextTick(() => {
-        reset();
-        form.value.dictType = queryParams.value.dictType;
-    })
+  dialog.visible = true;
+  dialog.title = "添加字典数据";
+  nextTick(() => {
+    reset();
+    form.value.dictType = queryParams.value.dictType;
+  })
 }
 /** 多选框选中数据 */
 const handleSelectionChange = (selection: DictDataVO[]) => {
-    ids.value = selection.map(item => item.dictCode);
-    single.value = selection.length != 1;
-    multiple.value = !selection.length;
+  ids.value = selection.map(item => item.dictCode);
+  single.value = selection.length != 1;
+  multiple.value = !selection.length;
 }
 /** 修改按钮操作 */
 const handleUpdate = (row?: DictDataVO) => {
-    const dictCode = row?.dictCode || ids.value[0];
-    dialog.visible = true;
-    dialog.title = "修改字典数据";
-    nextTick(async () => {
-        const res =  await getData(dictCode);
-        reset();
-        form.value = res.data;
-    })
+  const dictCode = row?.dictCode || ids.value[0];
+  dialog.visible = true;
+  dialog.title = "修改字典数据";
+  nextTick(async () => {
+    const res = await getData(dictCode);
+    reset();
+    form.value = res.data;
+  })
 }
 /** 提交按钮 */
 const submitForm = () => {
-    dataFormRef.value.validate(async (valid: boolean) => {
-        if (valid) {
-            form.value.dictCode ? await updateData(form.value) : await addData(form.value);
-            useDictStore().removeDict(queryParams.value.dictType);
-            proxy?.$modal.msgSuccess("操作成功");
-            dialog.visible = false;
-            getList();
+  dataFormRef.value?.validate(async (valid: boolean) => {
+    if (valid) {
+      form.value.dictCode ? await updateData(form.value) : await addData(form.value);
+      useDictStore().removeDict(queryParams.value.dictType);
+      proxy?.$modal.msgSuccess("操作成功");
+      dialog.visible = false;
+      await getList();
 
-        }
-    });
+    }
+  });
 }
 /** 删除按钮操作 */
 const handleDelete = async (row?: DictDataVO) => {
-    const dictCodes = row?.dictCode || ids.value;
-    await proxy?.$modal.confirm('是否确认删除字典编码为"' + dictCodes + '"的数据项？');
-    await delData(dictCodes);
-    getList();
-    proxy?.$modal.msgSuccess("删除成功");
-    useDictStore().removeDict(queryParams.value.dictType);
+  const dictCodes = row?.dictCode || ids.value;
+  await proxy?.$modal.confirm('是否确认删除字典编码为"' + dictCodes + '"的数据项？');
+  await delData(dictCodes);
+  await getList();
+  proxy?.$modal.msgSuccess("删除成功");
+  useDictStore().removeDict(queryParams.value.dictType);
 
 }
 /** 导出按钮操作 */
 const handleExport = () => {
-    proxy?.download("system/dict/data/export", {
-        ...queryParams.value
-    }, `dict_data_${new Date().getTime()}.xlsx`);
+  proxy?.download("system/dict/data/export", {
+    ...queryParams.value
+  }, `dict_data_${new Date().getTime()}.xlsx`);
 }
 
 onMounted(() => {
-    getTypes(route.params && route.params.dictId as string);
-    getTypeList();
+  getTypes(route.params && route.params.dictId as string);
+  getTypeList();
 })
 </script>

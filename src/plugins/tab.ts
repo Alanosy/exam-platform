@@ -3,8 +3,11 @@ import router from '@/router';
 import { TagView, RouteLocationRaw } from 'vue-router';
 
 export default {
-  // 刷新当前tab页签
-  async refreshPage(obj: TagView): Promise<void> {
+  /**
+   * 刷新当前tab页签
+   * @param obj 标签对象
+   */
+  async refreshPage(obj?: TagView): Promise<void> {
     const { path, query, matched } = router.currentRoute.value;
     if (obj === undefined) {
       matched.forEach((m) => {
@@ -15,11 +18,16 @@ export default {
         }
       });
     }
-    // prettier-ignore
-    await useTagsViewStore().delCachedView(obj)
-    router.replace({
-      path: '/redirect' + obj.path,
-      query: obj.query
+    let query1: undefined | {} = {};
+    let path1: undefined | string = '';
+    if (obj) {
+      query1 = obj.query;
+      path1 = obj.path;
+    }
+    await useTagsViewStore().delCachedView(obj);
+    await router.replace({
+      path: '/redirect' + path1,
+      query: query1
     });
   },
   // 关闭当前tab页签，打开新页签
@@ -34,9 +42,9 @@ export default {
     if (obj === undefined) {
       // prettier-ignore
       const { visitedViews } = await useTagsViewStore().delView(router.currentRoute.value) as any
-      const latestView = visitedViews.slice(-1)[0]
+      const latestView = visitedViews.slice(-1)[0];
       if (latestView) {
-        return router.push(latestView.fullPath)
+        return router.push(latestView.fullPath);
       }
       return router.push('/');
     }
@@ -47,22 +55,31 @@ export default {
     return useTagsViewStore().delAllViews();
   },
   // 关闭左侧tab页签
-  closeLeftPage(obj: TagView) {
+  closeLeftPage(obj?: TagView) {
     return useTagsViewStore().delLeftTags(obj || router.currentRoute.value);
   },
   // 关闭右侧tab页签
-  closeRightPage(obj: TagView) {
+  closeRightPage(obj?: TagView) {
     return useTagsViewStore().delRightTags(obj || router.currentRoute.value);
   },
   // 关闭其他tab页签
-  closeOtherPage(obj: TagView) {
+  closeOtherPage(obj?: TagView) {
     return useTagsViewStore().delOthersViews(obj || router.currentRoute.value);
   },
-  // 打开tab页签
-  openPage(url: RouteLocationRaw) {
-    return router.push(url);
+  /**
+   * 打开tab页签
+   * @param url 路由地址
+   * @param title 标题
+   * @param query 参数
+   */
+  openPage(url: string, title?: string, query?: any) {
+    const obj = { path: url, query: { ...query, title } };
+    return router.push(obj);
   },
-  // 修改tab页签
+  /**
+   * 修改tab页签
+   * @param obj 标签对象
+   */
   updatePage(obj: TagView) {
     return useTagsViewStore().updateVisitedView(obj);
   }

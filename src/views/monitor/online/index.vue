@@ -1,20 +1,22 @@
 <template>
   <div class="p-2">
-    <div class="search">
-      <el-form :model="queryParams" ref="queryFormRef" :inline="true">
-        <el-form-item label="登录地址" prop="ipaddr">
-          <el-input v-model="queryParams.ipaddr" placeholder="请输入登录地址" clearable style="width: 200px" @keyup.enter="handleQuery" />
-        </el-form-item>
-        <el-form-item label="用户名称" prop="userName">
-          <el-input v-model="queryParams.userName" placeholder="请输入用户名称" clearable style="width: 200px" @keyup.enter="handleQuery" />
-        </el-form-item>
-        <el-form-item>
-          <el-button type="primary" icon="Search" @click="handleQuery">搜索</el-button>
-          <el-button icon="Refresh" @click="resetQuery">重置</el-button>
-        </el-form-item>
-      </el-form>
+    <div class="mb-[10px]">
+      <el-card shadow="hover">
+        <el-form :model="queryParams" ref="queryFormRef" :inline="true">
+          <el-form-item label="登录地址" prop="ipaddr">
+            <el-input v-model="queryParams.ipaddr" placeholder="请输入登录地址" clearable style="width: 200px" @keyup.enter="handleQuery" />
+          </el-form-item>
+          <el-form-item label="用户名称" prop="userName">
+            <el-input v-model="queryParams.userName" placeholder="请输入用户名称" clearable style="width: 200px" @keyup.enter="handleQuery" />
+          </el-form-item>
+          <el-form-item>
+            <el-button type="primary" icon="Search" @click="handleQuery">搜索</el-button>
+            <el-button icon="Refresh" @click="resetQuery">重置</el-button>
+          </el-form-item>
+        </el-form>
+      </el-card>
     </div>
-    <div class="panel">
+    <el-card shadow="hover">
       <el-table
         v-loading="loading"
         :data="onlineList.slice((queryParams.pageNum - 1) * queryParams.pageSize, queryParams.pageNum * queryParams.pageSize)"
@@ -48,13 +50,12 @@
       </el-table>
 
       <pagination v-show="total > 0" :total="total" v-model:page="queryParams.pageNum" v-model:limit="queryParams.pageSize" />
-    </div>
+    </el-card>
   </div>
 </template>
 
 <script setup name="Online" lang="ts">
 import { forceLogout, list as initData } from "@/api/monitor/online";
-import { ComponentInternalInstance } from "vue";
 import { OnlineQuery, OnlineVO } from "@/api/monitor/online/types";
 
 const { proxy } = getCurrentInstance() as ComponentInternalInstance;
@@ -63,42 +64,42 @@ const onlineList = ref<OnlineVO[]>([]);
 const loading = ref(true);
 const total = ref(0);
 
-const queryFormRef = ref(ElForm);
+const queryFormRef = ref<ElFormInstance>();
 
 const queryParams = ref<OnlineQuery>({
-    pageNum: 1,
-    pageSize: 10,
-    ipaddr: '',
-    userName: ''
+  pageNum: 1,
+  pageSize: 10,
+  ipaddr: '',
+  userName: ''
 });
 
 /** 查询登录日志列表 */
 const getList = async () => {
-    loading.value = true;
-    const res = await initData(queryParams.value);
-    onlineList.value = res.rows;
-    total.value = res.total;
-    loading.value = false;
+  loading.value = true;
+  const res = await initData(queryParams.value);
+  onlineList.value = res.rows;
+  total.value = res.total;
+  loading.value = false;
 }
 /** 搜索按钮操作 */
 const handleQuery = () => {
-    queryParams.value.pageNum = 1;
-    getList();
+  queryParams.value.pageNum = 1;
+  getList();
 }
 /** 重置按钮操作 */
 const resetQuery = () => {
-    queryFormRef.value.resetFields();
-    handleQuery();
+  queryFormRef.value?.resetFields();
+  handleQuery();
 }
 /** 强退按钮操作 */
 const handleForceLogout = async (row: OnlineVO) => {
-    await proxy?.$modal.confirm('是否确认强退名称为"' + row.userName + '"的用户?');
-    await forceLogout(row.tokenId);
-    getList();
-    proxy?.$modal.msgSuccess("删除成功");
+  await proxy?.$modal.confirm('是否确认强退名称为"' + row.userName + '"的用户?');
+  await forceLogout(row.tokenId);
+  getList();
+  proxy?.$modal.msgSuccess("删除成功");
 }
 
 onMounted(() => {
-    getList();
+  getList();
 })
 </script>
