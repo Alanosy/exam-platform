@@ -56,6 +56,8 @@
 import { authUnlock, authBinding } from "@/api/system/social/auth";
 import { PropType } from "vue";
 
+const { proxy } = getCurrentInstance() as ComponentInternalInstance;
+
 const props = defineProps({
   auths: {
     type: Object as PropType<any>,
@@ -70,9 +72,10 @@ const unlockAuth = (row: any) => {
       return authUnlock(row.id);
     }).then((res: any) => {
       if (res.code === 200) {
-        ElMessage.success("解绑成功");
+        proxy?.$modal.msgSuccess("解绑成功");
+        proxy?.$tab.refreshPage();
       } else {
-        ElMessage.error(res.msg);
+        proxy?.$modal.msgError(res.msg);
       }
     }).catch(() => { });
 };
@@ -82,7 +85,7 @@ const authUrl = (source: string) => {
     if (res.code === 200) {
       window.location.href = res.data;
     } else {
-      ElMessage.error(res.msg);
+      proxy?.$modal.msgError(res.msg);
     }
   });
 };
