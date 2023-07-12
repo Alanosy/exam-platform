@@ -27,6 +27,9 @@ const processResponse = async (res: any) => {
   if (res.code !== 200) {
     throw new Error(res.msg);
   }
+  if (res.data !== null) {
+    setToken(res.data.access_token);
+  }
   ElMessage.success(res.msg);
   location.href = import.meta.env.VITE_APP_CONTEXT_PATH + 'index';
 };
