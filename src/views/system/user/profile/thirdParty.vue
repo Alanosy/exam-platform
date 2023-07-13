@@ -20,32 +20,29 @@
     <div id="git-user-binding">
       <h4 class="provider-desc">你可以绑定以下第三方帐号</h4>
       <div id="authlist" class="user-bind">
-        <a class="third-app" href="#" @click="authUrl('gitee');" title="使用 Gitee 账号授权登录">
-          <div class="git-other-login-icon">
-            <svg-icon icon-class="gitee" />
-          </div>
-          <span class="app-name">Gitee</span>
-        </a>
-
-        <a class="third-app" href="#" @click="authUrl('github');" title="使用 GitHub 账号授权登录">
-          <div class="git-other-login-icon">
-            <svg-icon icon-class="github" />
-          </div>
-          <span class="app-name">Github</span>
-        </a>
-
         <a class="third-app" href="#" @click="authUrl('wechar');" title="使用 微信 账号授权登录">
           <div class="git-other-login-icon">
             <svg-icon icon-class="wechat" />
           </div>
           <span class="app-name">WeiXin</span>
         </a>
-
-        <a class="third-app" href="#" @click="authUrl('qq');" title="使用 QQ 账号授权登录">
+        <a class="third-app" href="#" @click="authUrl('maxkey');" title="使用 MaxKey 账号授权登录">
           <div class="git-other-login-icon">
-            <svg-icon icon-class="qq" />
+            <svg-icon icon-class="maxkey" />
           </div>
-          <span class="app-name">QQ</span>
+          <span class="app-name">MaxKey</span>
+        </a>
+        <a class="third-app" href="#" @click="authUrl('gitee');" title="使用 Gitee 账号授权登录">
+          <div class="git-other-login-icon">
+            <svg-icon icon-class="gitee" />
+          </div>
+          <span class="app-name">Gitee</span>
+        </a>
+        <a class="third-app" href="#" @click="authUrl('github');" title="使用 GitHub 账号授权登录">
+          <div class="git-other-login-icon">
+            <svg-icon icon-class="github" />
+          </div>
+          <span class="app-name">Github</span>
         </a>
       </div>
     </div>

@@ -27,6 +27,20 @@
         </div>
       </el-form-item>
       <el-checkbox v-model="loginForm.rememberMe" style="margin:0px 0px 25px 0px;">记住密码</el-checkbox>
+      <el-form-item style="float: right;">
+        <el-button circle title="微信登录">
+          <svg-icon icon-class="wechat" @click="doSocialLogin('wechat')" />
+        </el-button>
+        <el-button circle title="MaxKey登录">
+          <svg-icon icon-class="maxkey" @click="doSocialLogin('maxkey')" />
+        </el-button>
+        <el-button circle title="Gitee登录">
+          <svg-icon icon-class="gitee" @click="doSocialLogin('gitee')" />
+        </el-button>
+        <el-button circle title="Github登录">
+          <svg-icon icon-class="github" @click="doSocialLogin('github')" />
+        </el-button>
+      </el-form-item>
       <el-form-item style="width:100%;">
         <el-button :loading="loading" size="large" type="primary" style="width:100%;" @click.prevent="handleLogin">
           <span v-if="!loading">登 录</span>
@@ -36,20 +50,6 @@
           <router-link class="link-type" :to="'/register'">立即注册</router-link>
         </div>
       </el-form-item>
-      <div style="display: flex;justify-content: flex-end;flex-direction: row;">
-        <el-button circle>
-          <svg-icon icon-class="qq" @click="doSocialLogin('qq')" />
-        </el-button>
-        <el-button circle>
-          <svg-icon icon-class="wechat" @click="doSocialLogin('wechat')" />
-        </el-button>
-        <el-button circle>
-          <svg-icon icon-class="gitee" @click="doSocialLogin('gitee')" />
-        </el-button>
-        <el-button circle>
-          <svg-icon icon-class="github" @click="doSocialLogin('github')" />
-        </el-button>
-      </div>
     </el-form>
     <!--  底部  -->
     <div class="el-login-footer">
