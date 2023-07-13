@@ -31,12 +31,16 @@ const processResponse = async (res: any) => {
     setToken(res.data.access_token);
   }
   ElMessage.success(res.msg);
-  location.href = import.meta.env.VITE_APP_CONTEXT_PATH + 'index';
+  setTimeout(() => {
+    location.href = import.meta.env.VITE_APP_CONTEXT_PATH + 'index';
+  }, 2000);
 };
 
 const handleError = (error: any) => {
   ElMessage.error(error.message);
-  location.href = import.meta.env.VITE_APP_CONTEXT_PATH + 'index';
+  setTimeout(() => {
+    location.href = import.meta.env.VITE_APP_CONTEXT_PATH + 'index';
+  }, 2000);
 };
 
 const callbackByCode = async (data: LoginData) => {
