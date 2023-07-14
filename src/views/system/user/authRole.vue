@@ -79,7 +79,7 @@ const tableRef = ref<ElTableInstance>();
 /** 单击选中行数据 */
 const clickRow = (row: RoleVO) => {
   // ele的方法有问题，selected应该为可选参数
-  tableRef.value?.toggleRowSelection(row);
+  tableRef.value?.toggleRowSelection(row, false);
 };
 /** 多选框选中数据 */
 const handleSelectionChange = (selection: RoleVO[]) => {

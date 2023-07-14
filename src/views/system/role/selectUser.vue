@@ -85,7 +85,7 @@ const show = () => {
  */
 const clickRow = (row: any) => {
   // ele的bug
-  tableRef.value?.toggleRowSelection(row);
+  tableRef.value?.toggleRowSelection(row, false);
 }
 /** 多选框选中数据 */
 const handleSelectionChange = (selection: UserVO[]) => {

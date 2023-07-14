@@ -75,7 +75,7 @@ const show = (dataName: string) => {
 /** 单击选择行 */
 const clickRow = (row: DbTableVO) => {
   // ele bug
-  tableRef.value?.toggleRowSelection(row);
+  tableRef.value?.toggleRowSelection(row, false);
 }
 /** 多选框选中数据 */
 const handleSelectionChange = (selection: DbTableVO[]) => {
