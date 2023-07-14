@@ -28,16 +28,16 @@
       </el-form-item>
       <el-checkbox v-model="loginForm.rememberMe" style="margin:0px 0px 25px 0px;">记住密码</el-checkbox>
       <el-form-item style="float: right;">
-        <el-button circle title="微信登录" @click="doSocialLogin('wechat')" >
+        <el-button circle title="微信登录" @click="doSocialLogin('wechat')">
           <svg-icon icon-class="wechat" />
         </el-button>
-        <el-button circle title="MaxKey登录" @click="doSocialLogin('maxkey')" >
+        <el-button circle title="MaxKey登录" @click="doSocialLogin('maxkey')">
           <svg-icon icon-class="maxkey" />
         </el-button>
-        <el-button circle title="Gitee登录" @click="doSocialLogin('gitee')" >
+        <el-button circle title="Gitee登录" @click="doSocialLogin('gitee')">
           <svg-icon icon-class="gitee" />
         </el-button>
-        <el-button circle title="Github登录" @click="doSocialLogin('github')" >
+        <el-button circle title="Github登录" @click="doSocialLogin('github')">
           <svg-icon icon-class="github" />
         </el-button>
       </el-form-item>
@@ -62,7 +62,6 @@
 import { getCodeImg, getTenantList } from '@/api/login';
 import { authBinding } from '@/api/system/social/auth';
 import Cookies from 'js-cookie';
-import { encrypt, decrypt } from '@/utils/jsencrypt';
 import { useUserStore } from '@/store/modules/user';
 import { LoginData, TenantVO } from '@/api/types';
 import { to } from 'await-to-js';
@@ -78,7 +77,7 @@ const loginForm = ref<LoginData>({
   rememberMe: false,
   code: '',
   uuid: ''
-});
+} as LoginData);
 
 const loginRules: ElFormRules = {
   tenantId: [{ required: true, trigger: "blur", message: "请输入您的租户编号" }],
@@ -108,8 +107,8 @@ const handleLogin = () => {
       loading.value = true;
       // 勾选了需要记住密码设置在 cookie 中设置记住用户名和密码
       if (loginForm.value.rememberMe) {
-        Cookies.set("tenantId", loginForm.value.tenantId, { expires: 30 });
-        Cookies.set('username', loginForm.value.username, { expires: 30 });
+        Cookies.set("tenantId", String(loginForm.value.tenantId), { expires: 30 });
+        Cookies.set('username', String(loginForm.value.username), { expires: 30 });
         Cookies.set('password', String(loginForm.value.password), { expires: 30 });
         Cookies.set('rememberMe', String(loginForm.value.rememberMe), { expires: 30 });
       } else {
@@ -155,11 +154,11 @@ const getCookie = () => {
   const password = Cookies.get('password');
   const rememberMe = Cookies.get('rememberMe');
   loginForm.value = {
-    tenantId: tenantId === undefined ? loginForm.value.tenantId : tenantId,
-    username: username === undefined ? loginForm.value.username : username,
-    password: password === undefined ? loginForm.value.password : String(password),
+    tenantId: tenantId === undefined ? String(loginForm.value.tenantId) : tenantId,
+    username: username === undefined ? String(loginForm.value.username) : username,
+    password: password === undefined ? String(loginForm.value.password) : String(password),
     rememberMe: rememberMe === undefined ? false : Boolean(rememberMe)
-  };
+  } as LoginData;
 }
 
 
@@ -179,7 +178,7 @@ const initTenantList = async () => {
 
 //检测租户选择框的变化
 watch(() => loginForm.value.tenantId, () => {
-  Cookies.set("tenantId", loginForm.value.tenantId, { expires: 30 })
+  Cookies.set("tenantId", String(loginForm.value.tenantId), { expires: 30 })
 });
 
 /**
