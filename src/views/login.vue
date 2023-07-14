@@ -110,7 +110,7 @@ const handleLogin = () => {
       if (loginForm.value.rememberMe) {
         Cookies.set("tenantId", loginForm.value.tenantId, { expires: 30 });
         Cookies.set('username', loginForm.value.username, { expires: 30 });
-        Cookies.set('password', String(encrypt(loginForm.value.password)), { expires: 30 });
+        Cookies.set('password', String(loginForm.value.password), { expires: 30 });
         Cookies.set('rememberMe', String(loginForm.value.rememberMe), { expires: 30 });
       } else {
         // 否则移除
@@ -157,7 +157,7 @@ const getCookie = () => {
   loginForm.value = {
     tenantId: tenantId === undefined ? loginForm.value.tenantId : tenantId,
     username: username === undefined ? loginForm.value.username : username,
-    password: password === undefined ? loginForm.value.password : (decrypt(password) as string),
+    password: password === undefined ? loginForm.value.password : String(password),
     rememberMe: rememberMe === undefined ? false : Boolean(rememberMe)
   };
 }
@@ -178,7 +178,7 @@ const initTenantList = async () => {
 }
 
 //检测租户选择框的变化
-watch(() => loginForm.value.tenantId, (val: string) => {
+watch(() => loginForm.value.tenantId, () => {
   Cookies.set("tenantId", loginForm.value.tenantId, { expires: 30 })
 });
 
