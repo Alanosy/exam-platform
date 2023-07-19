@@ -19,8 +19,7 @@ export default class ProjectTypes extends VueTypes {
     return toValidableType('style', {
       type: [String, Object],
       default: undefined
-
-    })
+    });
   }
 }
 export { propTypes };

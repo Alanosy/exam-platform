@@ -206,22 +206,18 @@ const handleSelectionChange = (selection: NoticeVO[]) => {
 }
 /** 新增按钮操作 */
 const handleAdd = () => {
+  reset();
   dialog.visible = true;
   dialog.title = "添加公告";
-  nextTick(() => {
-    reset();
-  })
 }
 /**修改按钮操作 */
-const handleUpdate = (row?: NoticeVO) => {
+const handleUpdate = async (row?: NoticeVO) => {
+  reset();
+  const noticeId = row?.noticeId || ids.value[0];
+  const { data } = await getNotice(noticeId);
+  Object.assign(form.value, data);
   dialog.visible = true;
   dialog.title = "修改公告";
-  nextTick(async () => {
-    const noticeId = row?.noticeId || ids.value[0];
-    reset();
-    const { data } = await getNotice(noticeId);
-    form.value = data;
-  })
 }
 /** 提交按钮 */
 const submitForm = () => {

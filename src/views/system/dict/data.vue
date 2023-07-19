@@ -251,12 +251,10 @@ const resetQuery = () => {
 }
 /** 新增按钮操作 */
 const handleAdd = () => {
+  reset();
+  form.value.dictType = queryParams.value.dictType;
   dialog.visible = true;
   dialog.title = "添加字典数据";
-  nextTick(() => {
-    reset();
-    form.value.dictType = queryParams.value.dictType;
-  })
 }
 /** 多选框选中数据 */
 const handleSelectionChange = (selection: DictDataVO[]) => {
@@ -265,15 +263,13 @@ const handleSelectionChange = (selection: DictDataVO[]) => {
   multiple.value = !selection.length;
 }
 /** 修改按钮操作 */
-const handleUpdate = (row?: DictDataVO) => {
+const handleUpdate = async (row?: DictDataVO) => {
+  reset();
   const dictCode = row?.dictCode || ids.value[0];
+  const res = await getData(dictCode);
+  Object.assign(form.value, res.data);
   dialog.visible = true;
   dialog.title = "修改字典数据";
-  nextTick(async () => {
-    const res = await getData(dictCode);
-    reset();
-    form.value = res.data;
-  })
 }
 /** 提交按钮 */
 const submitForm = () => {

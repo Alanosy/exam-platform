@@ -192,22 +192,18 @@ const handleSelectionChange = (selection: PostVO[]) => {
 }
 /** 新增按钮操作 */
 const handleAdd = () => {
+  reset();
   dialog.visible = true;
   dialog.title = "添加岗位";
-  nextTick(() => {
-    reset();
-  })
 }
 /** 修改按钮操作 */
-const handleUpdate = (row?: PostVO) => {
+const handleUpdate = async (row?: PostVO) => {
+  reset();
+  const postId = row?.postId || ids.value[0];
+  const res = await getPost(postId);
+  Object.assign(form.value, res.data);
   dialog.visible = true;
   dialog.title = "修改岗位";
-  nextTick(async () => {
-    reset();
-    const postId = row?.postId || ids.value[0];
-    const res = await getPost(postId);
-    form.value = res.data;
-  })
 }
 /** 提交按钮 */
 const submitForm = () => {

@@ -208,25 +208,19 @@ const handleSelectionChange = (selection: DemoVO[]) => {
 
 /** 新增按钮操作 */
 const handleAdd = () => {
+  reset();
   dialog.visible = true;
   dialog.title = "添加测试单";
-  nextTick(() => {
-    reset();
-  });
 }
 
 /** 修改按钮操作 */
-const handleUpdate = (row?: DemoVO) => {
-  loading.value = true
+const handleUpdate = async (row?: DemoVO) => {
+  reset();
+  const _id = row?.id || ids.value[0]
+  const res = await getDemo(_id);
+  Object.assign(form.value, res.data);
   dialog.visible = true;
   dialog.title = "修改测试单";
-  nextTick(async () => {
-    reset();
-    const _id = row?.id || ids.value[0]
-    const res = await getDemo(_id);
-    loading.value = false;
-    Object.assign(form.value, res.data);
-  });
 }
 
 /** 提交按钮 */

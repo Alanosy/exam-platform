@@ -204,11 +204,9 @@ const resetQuery = () => {
 }
 /** 新增按钮操作 */
 const handleAdd = () => {
+  reset();
   dialog.visible = true;
   dialog.title = "添加字典类型";
-  nextTick(() => {
-    reset();
-  })
 }
 /** 多选框选中数据 */
 const handleSelectionChange = (selection: DictTypeVO[]) => {
@@ -217,16 +215,13 @@ const handleSelectionChange = (selection: DictTypeVO[]) => {
   multiple.value = !selection.length;
 }
 /** 修改按钮操作 */
-const handleUpdate = (row?: DictTypeVO) => {
+const handleUpdate = async (row?: DictTypeVO) => {
+  reset();
+  const dictId = row?.dictId || ids.value[0];
+  const res = await getType(dictId);
+  Object.assign(form.value, res.data);
   dialog.visible = true;
   dialog.title = "修改字典类型";
-  const dictId = row?.dictId || ids.value[0];
-  nextTick(async () => {
-    reset();
-    const res = await getType(dictId);
-    form.value = res.data;
-  })
-
 }
 /** 提交按钮 */
 const submitForm = () => {

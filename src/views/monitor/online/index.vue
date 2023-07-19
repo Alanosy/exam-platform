@@ -95,7 +95,7 @@ const resetQuery = () => {
 const handleForceLogout = async (row: OnlineVO) => {
   await proxy?.$modal.confirm('是否确认强退名称为"' + row.userName + '"的用户?');
   await forceLogout(row.tokenId);
-  getList();
+  await getList();
   proxy?.$modal.msgSuccess("删除成功");
 }
 

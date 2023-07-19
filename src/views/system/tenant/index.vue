@@ -66,7 +66,7 @@
             <el-switch v-model="scope.row.status" active-value="0" inactive-value="1" @change="handleStatusChange(scope.row)"></el-switch>
           </template>
         </el-table-column>
-        <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
+        <el-table-column width="150" label="操作" align="center" fixed="right" class-name="small-padding fixed-width">
           <template #default="scope">
             <el-tooltip content="修改" placement="top">
               <el-button link type="primary" icon="Edit" @click="handleUpdate(scope.row)" v-hasPermi="['system:tenant:edit']"></el-button>
@@ -275,27 +275,21 @@ const handleSelectionChange = (selection: TenantVO[]) => {
 
 /** 新增按钮操作 */
 const handleAdd = () => {
+  reset();
+  getTenantPackage();
   dialog.visible = true;
   dialog.title = "添加租户";
-  nextTick(() => {
-    reset();
-    getTenantPackage();
-  })
 }
 
 /** 修改按钮操作 */
-const handleUpdate = (row?: TenantVO) => {
-  loading.value = true;
+const handleUpdate = async (row?: TenantVO) => {
+  reset();
+  await getTenantPackage();
+  const _id = row?.id || ids.value[0];
+  const res = await getTenant(_id);
+  Object.assign(form.value, res.data)
   dialog.visible = true;
   dialog.title = "修改租户";
-  nextTick(async () => {
-    reset();
-    await getTenantPackage();
-    const _id = row?.id || ids.value[0];
-    const res = await getTenant(_id);
-    loading.value = false;
-    Object.assign(form.value, res.data)
-  })
 }
 
 /** 提交按钮 */
@@ -310,7 +304,7 @@ const submitForm = () => {
       }
       proxy?.$modal.msgSuccess("操作成功");
       dialog.visible = false;
-      getList();
+      await getList();
     }
   });
 }

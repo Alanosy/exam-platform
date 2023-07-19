@@ -356,14 +356,11 @@ const resetQuery = () => {
 }
 /** 新增按钮操作 */
 const handleAdd = (row?: MenuVO) => {
+  reset();
+  getTreeselect();
+  row && row.menuId ? form.value.parentId = row.menuId : form.value.parentId = 0;
   dialog.visible = true;
   dialog.title = "添加菜单";
-  getTreeselect();
-  nextTick(() => {
-    reset();
-    row && row.menuId ? form.value.parentId = row.menuId : form.value.parentId = 0;
-  })
-
 }
 /** 展开/折叠操作 */
 const handleToggleExpandAll = () => {
@@ -379,17 +376,14 @@ const toggleExpandAll = (data: MenuVO[], status: boolean) => {
 }
 /** 修改按钮操作 */
 const handleUpdate = async (row: MenuVO) => {
+  reset();
   await getTreeselect();
+  if (row.menuId) {
+    const { data } = await getMenu(row.menuId);
+    form.value = data;
+  }
   dialog.visible = true;
   dialog.title = "修改菜单";
-  await nextTick(async () => {
-    if (row.menuId) {
-      const { data } = await getMenu(row.menuId);
-      reset();
-      form.value = data;
-    }
-  })
-
 }
 /** 提交按钮 */
 const submitForm = () => {

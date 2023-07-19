@@ -267,34 +267,24 @@ const handleCheckedTreeConnect = (value: CheckboxValueType, type: string) => {
 
 /** 新增按钮操作 */
 const handleAdd = () => {
+  reset();
+  getMenuTreeselect();
   dialog.visible = true;
   dialog.title = "添加租户套餐";
-  nextTick(() => {
-    reset();
-    getMenuTreeselect();
-  });
 };
 
 /** 修改按钮操作 */
-const handleUpdate = (row?: TenantPkgVO) => {
-  loading.value = true;
+const handleUpdate = async (row?: TenantPkgVO) => {
+  reset();
+  const _packageId = row?.packageId || ids.value[0];
+  const response = await getTenantPackage(_packageId);
+  form.value = response.data;
+  const res = await getPackageMenuTreeselect(_packageId);
   dialog.visible = true;
   dialog.title = "修改租户套餐";
-  nextTick(async () => {
-    reset();
-    const _packageId = row?.packageId || ids.value[0];
-    const packageMenu = getPackageMenuTreeselect(_packageId);
-    const response = await getTenantPackage(_packageId);
-    loading.value = false;
-    form.value = response.data;
-    await nextTick(async () => {
-      const res = await packageMenu;
-      let checkedKeys = res.data.checkedKeys;
-      checkedKeys.forEach((v) => {
-        nextTick(() => {
-          menuTreeRef.value?.setChecked(v, true, false);
-        });
-      });
+  res.data.checkedKeys.forEach((v) => {
+    nextTick(() => {
+      menuTreeRef.value?.setChecked(v, true, false);
     });
   });
 };

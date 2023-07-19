@@ -240,7 +240,7 @@ const handleDelete = async (row?: TableVO) => {
   const tableIds = row?.tableId || ids.value;
   await proxy?.$modal.confirm('是否确认删除表编号为"' + tableIds + '"的数据项？');
   await delTable(tableIds);
-  getList();
+  await getList();
   proxy?.$modal.msgSuccess('删除成功');
 }
 

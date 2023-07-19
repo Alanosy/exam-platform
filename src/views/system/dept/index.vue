@@ -219,23 +219,7 @@ const resetQuery = () => {
   queryFormRef.value?.resetFields();
   handleQuery()
 }
-/** 新增按钮操作 */
-const handleAdd = (row?: DeptVO) => {
-  listDept().then(res => {
-    const data = proxy?.handleTree<DeptOptionsType>(res.data, "deptId");
-    if (data) {
-      deptOptions.value = data
-      dialog.visible = true;
-      dialog.title = "添加部门";
-      nextTick(() => {
-        reset();
-        if (row && row.deptId) {
-          form.value.parentId = row?.deptId;
-        }
-      })
-    }
-  })
-}
+
 /** 展开/折叠操作 */
 const handleToggleExpandAll = () => {
   isExpandAll.value = !isExpandAll.value;
@@ -249,28 +233,41 @@ const toggleExpandAll = (data: DeptVO[], status: boolean) => {
   })
 }
 
+/** 新增按钮操作 */
+const handleAdd = async (row?: DeptVO) => {
+  reset();
+  const res = await listDept();
+  const data = proxy?.handleTree<DeptOptionsType>(res.data, "deptId");
+  if (data) {
+    deptOptions.value = data
+    if (row && row.deptId) {
+      form.value.parentId = row?.deptId;
+    }
+    dialog.visible = true;
+    dialog.title = "添加部门";
+  }
+}
+
 /** 修改按钮操作 */
 const handleUpdate = async (row: DeptVO) => {
+  reset();
   const res = await getDept(row.deptId);
+  form.value = res.data
+  const response = await listDeptExcludeChild(row.deptId);
+  const data = proxy?.handleTree<DeptOptionsType>(response.data, "deptId")
+  if (data) {
+    deptOptions.value = data;
+    if (data.length === 0) {
+      const noResultsOptions: DeptOptionsType = {
+        deptId: res.data.parentId,
+        deptName: res.data.parentName,
+        children: []
+      };
+      deptOptions.value.push(noResultsOptions);
+    }
+  }
   dialog.visible = true;
   dialog.title = "修改部门";
-  await nextTick(async () => {
-    reset();
-    form.value = res.data
-    const response = await listDeptExcludeChild(row.deptId);
-    const data = proxy?.handleTree<DeptOptionsType>(response.data, "deptId")
-    if (data) {
-      deptOptions.value = data;
-      if (data.length === 0) {
-        const noResultsOptions: DeptOptionsType = {
-          deptId: res.data.parentId,
-          deptName: res.data.parentName,
-          children: []
-        };
-        deptOptions.value.push(noResultsOptions);
-      }
-    }
-  })
 }
 /** 提交按钮 */
 const submitForm = () => {

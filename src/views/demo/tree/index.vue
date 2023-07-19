@@ -201,17 +201,15 @@ const resetQuery = () => {
 
 /** 新增按钮操作 */
 const handleAdd = (row?: TreeVO) => {
+  reset();
+  getTreeselect();
+  if (row && row.id) {
+    form.value.parentId = row.id;
+  } else {
+    form.value.parentId = 0;
+  }
   dialog.visible = true;
   dialog.title = "添加测试树";
-  nextTick(() => {
-    reset();
-    getTreeselect();
-    if (row != null && row.id) {
-      form.value.parentId = row.id;
-    } else {
-      form.value.parentId = 0;
-    }
-  });
 }
 
 /** 展开/折叠操作 */
@@ -229,20 +227,16 @@ const toggleExpandAll = (data: TreeVO[], status: boolean) => {
 }
 
 /** 修改按钮操作 */
-const handleUpdate = (row: TreeVO) => {
-  loading.value = true;
+const handleUpdate = async (row: TreeVO) => {
+  reset();
+  await getTreeselect();
+  if (row) {
+    form.value.parentId = row.id;
+  }
+  const res = await getTree(row.id);
+  Object.assign(form.value, res.data);
   dialog.visible = true;
   dialog.title = "修改测试树";
-  nextTick(async () => {
-    reset();
-    await getTreeselect();
-    if (row != null) {
-      form.value.parentId = row.id;
-    }
-    const res = await getTree(row.id);
-    loading.value = false;
-    Object.assign(form.value, res.data);
-  });
 }
 
 /** 提交按钮 */

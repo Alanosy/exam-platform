@@ -29,10 +29,14 @@
             <el-button type="primary" plain icon="Plus" @click="handleAdd" v-hasPermi="['system:client:add']">新增</el-button>
           </el-col>
           <el-col :span="1.5">
-            <el-button type="success" plain icon="Edit" :disabled="single" @click="handleUpdate()" v-hasPermi="['system:client:edit']">修改</el-button>
+            <el-button type="success" plain icon="Edit" :disabled="single" @click="handleUpdate()" v-hasPermi="['system:client:edit']">
+              修改
+            </el-button>
           </el-col>
           <el-col :span="1.5">
-            <el-button type="danger" plain icon="Delete" :disabled="multiple" @click="handleDelete()" v-hasPermi="['system:client:remove']">删除</el-button>
+            <el-button type="danger" plain icon="Delete" :disabled="multiple" @click="handleDelete()" v-hasPermi="['system:client:remove']">
+              删除
+            </el-button>
           </el-col>
           <el-col :span="1.5">
             <el-button type="warning" plain icon="Download" @click="handleExport" v-hasPermi="['system:client:export']">导出</el-button>
@@ -50,7 +54,7 @@
         <el-table-column label="授权类型" align="center">
           <template #default="scope">
             <div>
-              <template v-for="type in scope.row.grantTypeList">
+              <template v-for="(type, index) in scope.row.grantTypeList" :key="index">
                 <dict-tag class="el-check-tag" :options="sys_grant_type" :value="type" />
               </template>
             </div>
@@ -80,13 +84,7 @@
         </el-table-column>
       </el-table>
 
-      <pagination
-          v-show="total>0"
-          :total="total"
-          v-model:page="queryParams.pageNum"
-          v-model:limit="queryParams.pageSize"
-          @pagination="getList"
-      />
+      <pagination v-show="total>0" :total="total" v-model:page="queryParams.pageNum" v-model:limit="queryParams.pageSize" @pagination="getList" />
     </el-card>
     <!-- 添加或修改客户端管理对话框 -->
     <el-dialog :title="dialog.title" v-model="dialog.visible" width="500px" append-to-body>
@@ -99,18 +97,12 @@
         </el-form-item>
         <el-form-item label="授权类型" prop="grantTypeList">
           <el-select v-model="form.grantTypeList" multiple placeholder="请输入授权类型">
-            <el-option
-              v-for="dict in sys_grant_type"
-              :key="dict.value" :label="dict.label" :value="dict.value"
-            ></el-option>
+            <el-option v-for="dict in sys_grant_type" :key="dict.value" :label="dict.label" :value="dict.value"></el-option>
           </el-select>
         </el-form-item>
         <el-form-item label="设备类型" prop="deviceType">
           <el-select v-model="form.deviceType" placeholder="请输入设备类型">
-            <el-option
-              v-for="dict in sys_device_type"
-              :key="dict.value" :label="dict.label" :value="dict.value"
-            ></el-option>
+            <el-option v-for="dict in sys_device_type" :key="dict.value" :label="dict.label" :value="dict.value"></el-option>
           </el-select>
         </el-form-item>
         <el-form-item prop="activeTimeout" label-width="auto">
@@ -156,8 +148,6 @@
 <script setup name="Client" lang="ts">
 import { listClient, getClient, delClient, addClient, updateClient, changeStatus } from '@/api/system/client';
 import { ClientVO, ClientQuery, ClientForm } from '@/api/system/client/types';
-import { ComponentInternalInstance } from 'vue';
-import { ElForm } from 'element-plus';
 
 const { proxy } = getCurrentInstance() as ComponentInternalInstance;
 const { sys_normal_disable } = toRefs<any>(proxy?.useDict("sys_normal_disable"));
@@ -173,8 +163,8 @@ const single = ref(true);
 const multiple = ref(true);
 const total = ref(0);
 
-const queryFormRef = ref(ElForm);
-const clientFormRef = ref(ElForm);
+const queryFormRef = ref<ElFormInstance>();
+const clientFormRef = ref<ElFormInstance>();
 
 const dialog = reactive<DialogOption>({
   visible: false,
@@ -248,7 +238,7 @@ const cancel = () => {
 /** 表单重置 */
 const reset = () => {
   form.value = {...initFormData};
-  clientFormRef.value.resetFields();
+  clientFormRef.value?.resetFields();
 }
 
 /** 搜索按钮操作 */
@@ -259,7 +249,7 @@ const handleQuery = () => {
 
 /** 重置按钮操作 */
 const resetQuery = () => {
-  queryFormRef.value.resetFields();
+  queryFormRef.value?.resetFields();
   handleQuery();
 }
 
@@ -272,30 +262,24 @@ const handleSelectionChange = (selection: ClientVO[]) => {
 
 /** 新增按钮操作 */
 const handleAdd = () => {
+  reset();
   dialog.visible = true;
   dialog.title = "添加客户端管理";
-  nextTick(() => {
-    reset();
-  });
 }
 
 /** 修改按钮操作 */
-const handleUpdate = (row?: ClientVO) => {
-  loading.value = true
+const handleUpdate = async (row?: ClientVO) => {
+  reset();
+  const _id = row?.id || ids.value[0]
+  const res = await getClient(_id);
+  Object.assign(form.value, res.data);
   dialog.visible = true;
   dialog.title = "修改客户端管理";
-  nextTick(async () => {
-    reset();
-    const _id = row?.id || ids.value[0]
-    const res = await getClient(_id);
-    loading.value = false;
-    Object.assign(form.value, res.data);
-  });
 }
 
 /** 提交按钮 */
 const submitForm = () => {
-  clientFormRef.value.validate(async (valid: boolean) => {
+  clientFormRef.value?.validate(async (valid: boolean) => {
     if (valid) {
       buttonLoading.value = true;
       if (form.value.id) {

@@ -15,7 +15,7 @@
             </el-form-item>
             <el-form-item label="创建时间">
               <el-date-picker
-                v-model="daterangeCreateTime"
+                v-model="dateRangeCreateTime"
                 value-format="YYYY-MM-DD HH:mm:ss"
                 type="daterange"
                 range-separator="-"
@@ -151,7 +151,7 @@ const multiple = ref(true);
 const total = ref(0);
 const type = ref(0);
 const previewListResource = ref(true);
-const daterangeCreateTime = ref<[DateModelType, DateModelType]>(['', '']);
+const dateRangeCreateTime = ref<[DateModelType, DateModelType]>(['', '']);
 
 const dialog = reactive<DialogOption>({
   visible: false,
@@ -195,7 +195,7 @@ const getList = async () => {
   loading.value = true;
   const res = await proxy?.getConfigKey("sys.oss.previewListResource");
   previewListResource.value = res?.msg === undefined ? true : res.msg === 'true';
-  const response = await listOss(proxy?.addDateRange(queryParams.value, daterangeCreateTime.value, "CreateTime"));
+  const response = await listOss(proxy?.addDateRange(queryParams.value, dateRangeCreateTime.value, "CreateTime"));
   ossList.value = response.rows;
   total.value = response.total;
   loading.value = false;
@@ -225,7 +225,7 @@ function handleQuery() {
 /** 重置按钮操作 */
 function resetQuery() {
   showTable.value = false;
-  daterangeCreateTime.value = ['', ''];
+  dateRangeCreateTime.value = ['', ''];
   queryFormRef.value?.resetFields();
   queryParams.value.orderByColumn = defaultSort.value.prop;
   queryParams.value.isAsc = defaultSort.value.order;
@@ -288,21 +288,17 @@ const handleOssConfig = () => {
 }
 /** 文件按钮操作 */
 const handleFile = () => {
+  reset();
+  type.value = 0;
   dialog.visible = true;
   dialog.title = "上传文件";
-  nextTick(() => {
-    reset();
-    type.value = 0;
-  })
 }
 /** 图片按钮操作 */
 const handleImage = () => {
+  reset();
+  type.value = 1;
   dialog.visible = true;
   dialog.title = "上传图片";
-  nextTick(() => {
-    reset();
-    type.value = 1;
-  })
 }
 /** 提交按钮 */
 const submitForm = () => {
@@ -319,7 +315,7 @@ const handlePreviewListResource = async (preview: boolean) => {
   try {
     await proxy?.$modal.confirm('确认要"' + text + '""预览列表图片"配置吗?');
     await proxy?.updateConfigByKey("sys.oss.previewListResource", preview);
-    getList()
+    await getList()
     proxy?.$modal.msgSuccess(text + "成功");
   } catch { return }
 }
@@ -329,7 +325,7 @@ const handleDelete = async (row?: OssVO) => {
   await proxy?.$modal.confirm('是否确认删除OSS对象存储编号为"' + ossIds + '"的数据项?');
   loading.value = true;
   await delOss(ossIds).finally(() => loading.value = false);
-  getList();
+  await getList();
   proxy?.$modal.msgSuccess("删除成功");
 }
 

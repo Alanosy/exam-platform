@@ -207,22 +207,18 @@ const handleSelectionChange = (selection: ConfigVO[]) => {
 }
 /** 新增按钮操作 */
 const handleAdd = () => {
+  reset();
   dialog.visible = true;
   dialog.title = "添加参数";
-  nextTick(() => {
-    reset();
-  })
 }
 /** 修改按钮操作 */
-const handleUpdate = (row?: ConfigVO) => {
+const handleUpdate = async (row?: ConfigVO) => {
+  reset();
+  const configId = row?.configId || ids.value[0];
+  const res = await getConfig(configId);
+  Object.assign(form.value, res.data);
   dialog.visible = true;
   dialog.title = "修改参数";
-  const configId = row?.configId || ids.value[0];
-  nextTick(async () => {
-    reset();
-    const res = await getConfig(configId);
-    form.value = res.data;
-  })
 }
 /** 提交按钮 */
 const submitForm = () => {

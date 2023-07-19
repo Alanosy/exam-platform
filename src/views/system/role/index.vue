@@ -265,12 +265,10 @@ const data = reactive<PageData<RoleForm, RoleQuery>>({
 })
 const { form, queryParams, rules } = toRefs(data)
 
-
 const dialog = reactive<DialogOption>({
   visible: false,
   title: ''
 });
-
 
 /**
  * 查询角色列表
@@ -367,34 +365,27 @@ const reset = () => {
 
 /** 添加角色 */
 const handleAdd = () => {
+  reset();
+  getMenuTreeselect();
   dialog.visible = true;
   dialog.title = "添加角色";
-  nextTick(() => {
-    reset();
-    getMenuTreeselect();
-  })
 }
 /** 修改角色 */
 const handleUpdate = async (row?: RoleVO) => {
+  reset();
   const roleId = row?.roleId || ids.value[0]
-  const roleMenu = getRoleMenuTreeselect(roleId)
   const { data } = await getRole(roleId);
-  dialog.visible = true;
+  Object.assign(form.value, data);
+  form.value.roleSort = Number(form.value.roleSort);
+  const res = await getRoleMenuTreeselect(roleId);
   dialog.title = "修改角色";
-  await nextTick(() => {
-    reset();
-    Object.assign(form.value, data);
-    form.value.roleSort = Number(form.value.roleSort);
-    nextTick(async () => {
-      const res = await roleMenu;
-      let checkedKeys = res.checkedKeys;
-      checkedKeys.forEach((v) => {
-        nextTick(() => {
-          menuRef.value?.setChecked(v, true, false);
-        })
-      })
+  dialog.visible = true;
+  res.checkedKeys.forEach((v) => {
+    nextTick(() => {
+      menuRef.value?.setChecked(v, true, false);
     })
   })
+
 }
 /** 根据角色ID查询菜单树结构 */
 const getRoleMenuTreeselect = (roleId: string | number) => {
@@ -479,18 +470,13 @@ const dataScopeSelectChange = (value: string) => {
 }
 /** 分配数据权限操作 */
 const handleDataScope = async (row: RoleVO) => {
-  const roleDeptTreeselect = getRoleDeptTreeSelect(row.roleId);
   const response = await getRole(row.roleId);
   Object.assign(form.value, response.data);
+  const res = await getRoleDeptTreeSelect(row.roleId);
   openDataScope.value = true;
   dialog.title = "分配数据权限";
-  await nextTick(async () => {
-    const res = await roleDeptTreeselect;
-    await nextTick(() => {
-      if (deptRef.value) {
-        deptRef.value.setCheckedKeys(res.checkedKeys);
-      }
-    })
+  await nextTick(() => {
+    deptRef.value?.setCheckedKeys(res.checkedKeys);
   })
 }
 /** 提交按钮（数据权限） */

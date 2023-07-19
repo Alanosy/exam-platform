@@ -64,7 +64,7 @@
             <el-switch v-model="scope.row.status" active-value="0" inactive-value="1" @change="handleStatusChange(scope.row)"></el-switch>
           </template>
         </el-table-column>
-        <el-table-column label="操作" align="center" width="150" class-name="small-padding fixed-width">
+        <el-table-column label="操作" fixed="right" align="center" width="150" class-name="small-padding">
           <template #default="scope">
             <el-tooltip content="修改" placement="top">
               <el-button link type="primary" icon="Edit" @click="handleUpdate(scope.row)" v-hasPermi="['system:oss:edit']"></el-button>
@@ -282,24 +282,18 @@ const handleSelectionChange = (selection: OssConfigVO[]) => {
 }
 /** 新增按钮操作 */
 const handleAdd = () => {
+  reset();
   dialog.visible = true;
   dialog.title = "添加对象存储配置";
-  nextTick(() => {
-    reset();
-  })
 }
 /** 修改按钮操作 */
-const handleUpdate = (row?: OssConfigVO) => {
-  loading.value = true;
+const handleUpdate = async (row?: OssConfigVO) => {
+  reset();
+  const ossConfigId = row?.ossConfigId || ids.value[0];
+  const res = await getOssConfig(ossConfigId);
+  Object.assign(form.value, res.data);
   dialog.visible = true;
   dialog.title = "修改对象存储配置";
-  const ossConfigId = row?.ossConfigId || ids.value[0];
-  nextTick(async () => {
-    reset();
-    const res = await getOssConfig(ossConfigId);
-    loading.value = false;
-    form.value = res.data;
-  })
 }
 /** 提交按钮 */
 const submitForm = () => {
@@ -313,7 +307,7 @@ const submitForm = () => {
       }
       proxy?.$modal.msgSuccess("新增成功");
       dialog.visible = false;
-      getList();
+      await getList();
     }
   });
 }
@@ -323,7 +317,7 @@ const handleStatusChange = async (row: OssConfigVO) => {
   try {
     await proxy?.$modal.confirm('确认要"' + text + '""' + row.configKey + '"配置吗?');
     await changeOssConfigStatus(row.ossConfigId, row.status, row.configKey);
-    getList()
+    await getList()
     proxy?.$modal.msgSuccess(text + "成功");
   } catch { return } finally {
     row.status = row.status === "0" ? "1" : "0";
@@ -336,7 +330,7 @@ const handleDelete = async (row?: OssConfigVO) => {
   await proxy?.$modal.confirm('是否确认删除OSS配置编号为"' + ossConfigIds + '"的数据项?');
   loading.value = true;
   await delOssConfig(ossConfigIds).finally(() => loading.value = false);
-  getList();
+  await getList();
   proxy?.$modal.msgSuccess("删除成功");
 
 }

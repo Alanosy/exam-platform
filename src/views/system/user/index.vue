@@ -154,7 +154,7 @@
     </el-row>
 
     <!-- 添加或修改用户配置对话框 -->
-    <el-dialog :title="dialog.title" v-model="dialog.visible" width="600px" append-to-body @close="closeDialog">
+    <el-dialog ref="formDialogRef" :title="dialog.title" v-model="dialog.visible" width="600px" append-to-body @close="closeDialog">
       <el-form :model="form" :rules="rules" ref="userFormRef" label-width="80px">
         <el-row>
           <el-col :span="12">
@@ -354,6 +354,7 @@ const deptTreeRef = ref<ElTreeInstance>();
 const queryFormRef = ref<ElFormInstance>();
 const userFormRef = ref<ElFormInstance>();
 const uploadRef = ref<ElUploadInstance>();
+const formDialogRef = ref<ElDialogInstance>();
 
 const dialog = reactive<DialogOption>({
   visible: false,
@@ -547,40 +548,35 @@ const reset = () => {
 }
 /** 取消按钮 */
 const cancel = () => {
-  reset();
   dialog.visible = false;
+  reset();
 }
 
 /** 新增按钮操作 */
-const handleAdd = () => {
+const handleAdd = async () => {
+  reset();
+  const { data } = await api.getUser();
   dialog.visible = true;
   dialog.title = "新增用户";
-  nextTick(async () => {
-    reset();
-    await initTreeData();
-    const { data } = await api.getUser();
-    postOptions.value = data.posts;
-    roleOptions.value = data.roles;
-    form.value.password = initPassword.value;
-  })
+  await initTreeData();
+  postOptions.value = data.posts;
+  roleOptions.value = data.roles;
+  form.value.password = initPassword.value;
 }
 /** 修改按钮操作 */
-const handleUpdate = (row?: UserForm) => {
+const handleUpdate = async (row?: UserForm) => {
+  reset();
+  const userId = row?.userId || ids.value[0]
+  const { data } = await api.getUser(userId)
   dialog.visible = true;
   dialog.title = "修改用户";
-  nextTick(async () => {
-    reset();
-    await initTreeData();
-    const userId = row?.userId || ids.value[0]
-    const { data } = await api.getUser(userId)
-    Object.assign(form.value, data.user);
-    postOptions.value = data.posts;
-    roleOptions.value = data.roles;
-    form.value.postIds = data.postIds;
-    form.value.roleIds = data.roleIds;
-    form.value.password = "";
-  })
-
+  await initTreeData();
+  Object.assign(form.value, data.user);
+  postOptions.value = data.posts;
+  roleOptions.value = data.roles;
+  form.value.postIds = data.postIds;
+  form.value.roleIds = data.roleIds;
+  form.value.password = "";
 }
 
 /** 提交按钮 */
