@@ -54,7 +54,7 @@ export function logout() {
  */
 export function getCodeImg(): AxiosPromise<VerifyCodeResult> {
   return request({
-    url: '/code',
+    url: '/auth/code',
     headers: {
       isToken: false
     },
