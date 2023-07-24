@@ -16,6 +16,7 @@ let downloadLoadingInstance: LoadingInstance;
 export const isRelogin = { show: false };
 
 axios.defaults.headers['Content-Type'] = 'application/json;charset=utf-8';
+axios.defaults.headers['clientid'] = import.meta.env.VITE_APP_CLIENT_ID;
 // 创建 axios 实例
 const service = axios.create({
   baseURL: import.meta.env.VITE_APP_BASE_API,

@@ -4,7 +4,7 @@ import { LoginData, LoginResult, VerifyCodeResult, TenantInfo } from './types';
 import { UserInfo } from '@/api/system/user/types';
 
 // pc端固定客户端授权id
-const clientId = 'e5cd7e4891bf95d1d19206ce24a7b32e';
+const clientId = import.meta.env.VITE_APP_CLIENT_ID;
 
 /**
  * @param data {LoginData}
