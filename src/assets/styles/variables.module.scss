@@ -10,6 +10,7 @@
   --subMenuHover: #001528;
   --subMenuTitleHover: #293444;
 
+  --fixedHeaderBg: #ffffff;
   --tableHeaderBg: #f8f8f9;
   --tableHeaderTextColor: #515a6e;
 }
@@ -24,6 +25,7 @@ html.dark {
   --subMenuHover: #171819;
   --subMenuTitleHover: #171819;
 
+  --fixedHeaderBg: #171819;
   --tableHeaderBg: var(--el-bg-color);
   --tableHeaderTextColor: var(--el-text-color);
 
@@ -58,6 +60,7 @@ $base-sub-menu-background: var(--subMenuBg);
 $base-sub-menu-hover: var(--subMenuHover);
 $base-sub-menu-title-hover: var(--subMenuTitleHover);
 // 表单头背景色和标题颜色
+$fixed-header-bg: var(--fixedHeaderBg);
 $table-header-bg: var(--tableHeaderBg);
 $table-header-text-color: var(--tableHeaderTextColor);
 
