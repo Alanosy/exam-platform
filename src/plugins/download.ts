@@ -16,7 +16,10 @@ export default {
         method: 'get',
         url: url,
         responseType: 'blob',
-        headers: { Authorization: 'Bearer ' + getToken() }
+        headers: {
+          Authorization: 'Bearer ' + getToken(),
+          clientid: import.meta.env.VITE_APP_CLIENT_ID
+        }
       });
       const isBlob = blobValidate(res.data);
       if (isBlob) {
@@ -42,7 +45,8 @@ export default {
         responseType: 'blob',
         headers: {
           Authorization: 'Bearer ' + getToken(),
-          datasource: localStorage.getItem('dataName')
+          datasource: localStorage.getItem('dataName'),
+          clientid: import.meta.env.VITE_APP_CLIENT_ID
         }
       });
       const isBlob = blobValidate(res.data);
