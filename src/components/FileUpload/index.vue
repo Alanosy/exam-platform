@@ -43,9 +43,9 @@
 </template>
 
 <script setup lang="ts">
-import { getToken } from "@/utils/auth";
 import { listByIds, delOss } from "@/api/system/oss";
 import { propTypes } from '@/utils/propTypes';
+import { globalHeaders } from "@/utils/request";
 
 const props = defineProps({
     modelValue: [String, Object, Array],
@@ -66,7 +66,7 @@ const uploadList = ref<any[]>([]);
 
 const baseUrl = import.meta.env.VITE_APP_BASE_API;
 const uploadFileUrl = ref(baseUrl + "/resource/oss/upload"); // 上传文件服务器地址
-const headers = ref({ Authorization: "Bearer " + getToken() });
+const headers = ref(globalHeaders);
 
 const fileList = ref<any[]>([]);
 const showTip = computed(

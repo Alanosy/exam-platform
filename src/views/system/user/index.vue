@@ -305,6 +305,7 @@ import { DeptVO } from "@/api/system/dept/types";
 import { RoleVO } from "@/api/system/role/types";
 import { PostVO } from "@/api/system/post/types";
 import { to } from "await-to-js";
+import { globalHeaders } from "@/utils/request";
 
 const router = useRouter();
 const { proxy } = getCurrentInstance() as ComponentInternalInstance
@@ -334,7 +335,7 @@ const upload = reactive<ImportOption>({
   // 是否更新已经存在的用户数据
   updateSupport: 0,
   // 设置上传的请求头部
-  headers: { Authorization: "Bearer " + getToken() },
+  headers: globalHeaders,
   // 上传的地址
   url: import.meta.env.VITE_APP_BASE_API + "/system/user/importData"
 })

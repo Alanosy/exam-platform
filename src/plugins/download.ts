@@ -1,9 +1,9 @@
 import axios from 'axios';
 import FileSaver from 'file-saver';
-import { getToken } from '@/utils/auth';
 import errorCode from '@/utils/errorCode';
 import { blobValidate } from '@/utils/ruoyi';
 import { LoadingInstance } from 'element-plus/es/components/loading/src/loading';
+import { globalHeaders } from "@/utils/request";
 
 const baseURL = import.meta.env.VITE_APP_BASE_API;
 let downloadLoadingInstance: LoadingInstance;
@@ -16,10 +16,7 @@ export default {
         method: 'get',
         url: url,
         responseType: 'blob',
-        headers: {
-          Authorization: 'Bearer ' + getToken(),
-          clientid: import.meta.env.VITE_APP_CLIENT_ID
-        }
+        headers: globalHeaders,
       });
       const isBlob = blobValidate(res.data);
       if (isBlob) {
@@ -43,11 +40,7 @@ export default {
         method: 'get',
         url: url,
         responseType: 'blob',
-        headers: {
-          Authorization: 'Bearer ' + getToken(),
-          datasource: localStorage.getItem('dataName'),
-          clientid: import.meta.env.VITE_APP_CLIENT_ID
-        }
+        headers: globalHeaders,
       });
       const isBlob = blobValidate(res.data);
       if (isBlob) {

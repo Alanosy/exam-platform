@@ -29,8 +29,8 @@
 <script setup lang="ts">
 import { QuillEditor, Quill } from '@vueup/vue-quill';
 import '@vueup/vue-quill/dist/vue-quill.snow.css';
-import { getToken } from "@/utils/auth";
 import { propTypes } from '@/utils/propTypes';
+import { globalHeaders } from "@/utils/request";
 
 const props = defineProps({
   /* 编辑器的内容 */
@@ -50,7 +50,7 @@ const props = defineProps({
 const { proxy } = getCurrentInstance() as ComponentInternalInstance;
 
 const upload = reactive<UploadOption>({
-  headers: { Authorization: "Bearer " + getToken() },
+  headers: globalHeaders,
   url: import.meta.env.VITE_APP_BASE_API + '/resource/oss/upload'
 })
 const myQuillEditor = ref();
