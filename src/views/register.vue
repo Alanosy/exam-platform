@@ -132,13 +132,14 @@ const handleRegister = () => {
 }
 
 const getCode = async () => {
-  const { data } = await getCodeImg();
+  const res = await getCodeImg();
+  const { data } = res;
   captchaEnabled.value = data.captchaEnabled === undefined ? true : data.captchaEnabled;
   if (captchaEnabled.value) {
-    codeUrl.value = "data:image/gif;base64," + data.img;
+    codeUrl.value = 'data:image/gif;base64,' + data.img;
     registerForm.value.uuid = data.uuid;
   }
-}
+};
 
 const initTenantList = async () => {
   const { data } = await getTenantList();
