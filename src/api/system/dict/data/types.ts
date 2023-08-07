@@ -1,7 +1,6 @@
 export interface DictDataQuery extends PageQuery {
   dictName: string;
   dictType: string;
-  status: string;
   dictLabel: string;
 }
 
@@ -12,7 +11,6 @@ export interface DictDataVO extends BaseEntity {
   cssClass: string;
   listClass: ElTagType;
   dictSort: number;
-  status: string;
   remark: string;
 }
 
@@ -24,6 +22,5 @@ export interface DictDataForm {
   cssClass: string;
   listClass: ElTagType;
   dictSort: number;
-  status: string;
   remark: string;
 }

@@ -12,11 +12,6 @@
             <el-form-item label="字典标签" prop="dictLabel">
               <el-input v-model="queryParams.dictLabel" placeholder="请输入字典标签" clearable style="width: 200px" @keyup.enter="handleQuery" />
             </el-form-item>
-            <el-form-item label="状态" prop="status">
-              <el-select v-model="queryParams.status" placeholder="数据状态" clearable style="width: 200px">
-                <el-option v-for="dict in sys_normal_disable" :key="dict.value" :label="dict.label" :value="dict.value" />
-              </el-select>
-            </el-form-item>
             <el-form-item>
               <el-button type="primary" icon="Search" @click="handleQuery">搜索</el-button>
               <el-button icon="Refresh" @click="resetQuery">重置</el-button>
@@ -61,11 +56,6 @@
         </el-table-column>
         <el-table-column label="字典键值" align="center" prop="dictValue" />
         <el-table-column label="字典排序" align="center" prop="dictSort" />
-        <el-table-column label="状态" align="center" prop="status">
-          <template #default="scope">
-            <dict-tag :options="sys_normal_disable" :value="scope.row.status" />
-          </template>
-        </el-table-column>
         <el-table-column label="备注" align="center" prop="remark" :show-overflow-tooltip="true" />
         <el-table-column label="创建时间" align="center" prop="createTime" width="180">
           <template #default="scope">
@@ -114,11 +104,6 @@
             ></el-option>
           </el-select>
         </el-form-item>
-        <el-form-item label="状态" prop="status">
-          <el-radio-group v-model="form.status">
-            <el-radio v-for="dict in sys_normal_disable" :key="dict.value" :label="dict.value">{{ dict.label }}</el-radio>
-          </el-radio-group>
-        </el-form-item>
         <el-form-item label="备注" prop="remark">
           <el-input v-model="form.remark" type="textarea" placeholder="请输入内容"></el-input>
         </el-form-item>
@@ -141,7 +126,6 @@ import { DictTypeVO } from '@/api/system/dict/type/types';
 import { DictDataForm, DictDataQuery, DictDataVO } from "@/api/system/dict/data/types";
 
 const { proxy } = getCurrentInstance() as ComponentInternalInstance
-const { sys_normal_disable } = toRefs<any>(proxy?.useDict("sys_normal_disable"));
 const route = useRoute();
 
 const dataList = ref<DictDataVO[]>([]);
@@ -180,7 +164,6 @@ const initFormData: DictDataForm = {
   cssClass: '',
   listClass: "default",
   dictSort: 0,
-  status: "0",
   remark: ''
 }
 const data = reactive<PageData<DictDataForm, DictDataQuery>>({
@@ -190,7 +173,6 @@ const data = reactive<PageData<DictDataForm, DictDataQuery>>({
     pageSize: 10,
     dictName: '',
     dictType: '',
-    status: '',
     dictLabel: ''
   },
   rules: {
