@@ -97,7 +97,9 @@
           </el-col>
           <el-col :span="12">
             <el-form-item label="负责人" prop="leader">
-              <el-input v-model="form.leader" placeholder="请输入负责人" maxlength="20" />
+              <el-select v-model="form.leader" placeholder="请选择负责人">
+                <el-option v-for="item in deptUserList" :key="item.userId" :label="item.userName" :value="item.userId" />
+              </el-select>
             </el-form-item>
           </el-col>
           <el-col :span="12">
@@ -114,7 +116,7 @@
             <el-form-item label="部门状态">
               <el-radio-group v-model="form.status">
                 <el-radio v-for="dict in sys_normal_disable" :key="dict.value" :label="dict.value">{{ dict.label
-                }}</el-radio>
+                  }}</el-radio>
               </el-radio-group>
             </el-form-item>
           </el-col>
@@ -133,6 +135,8 @@
 <script setup name="Dept" lang="ts">
 import { listDept, getDept, delDept, addDept, updateDept, listDeptExcludeChild } from "@/api/system/dept"
 import { DeptForm, DeptQuery, DeptVO } from "@/api/system/dept/types";
+import {UserVO} from "@/api/system/user/types";
+import {listUserByDeptId} from "@/api/system/user";
 
 interface DeptOptionsType {
   deptId: number | string;
@@ -149,7 +153,7 @@ const loading = ref(true)
 const showSearch = ref(true)
 const deptOptions = ref<DeptOptionsType[]>([])
 const isExpandAll = ref(true)
-
+const deptUserList = ref<UserVO[]>([]);
 
 const dialog = reactive<DialogOption>({
   visible: false,
@@ -199,6 +203,15 @@ const getList = async () => {
   }
   loading.value = false
 }
+
+/** 查询当前部门的所有用户 */
+async function getDeptAllUser(deptId: any) {
+  if (deptId !== null && deptId !== "" && deptId !== undefined) {
+    const res = await listUserByDeptId(deptId);
+    deptUserList.value = res.data;
+  }
+}
+
 /** 取消按钮 */
 const cancel = () => {
   reset()
@@ -251,6 +264,8 @@ const handleAdd = async (row?: DeptVO) => {
 /** 修改按钮操作 */
 const handleUpdate = async (row: DeptVO) => {
   reset();
+  //查询当前部门所有用户
+  getDeptAllUser(row.deptId);
   const res = await getDept(row.deptId);
   form.value = res.data
   const response = await listDeptExcludeChild(row.deptId);
