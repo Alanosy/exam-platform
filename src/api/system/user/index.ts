@@ -173,7 +173,7 @@ export const updateAuthRole = (data: { userId: string; roleIds: string }) => {
  * 查询当前部门的所有用户信息
  * @param deptId
  */
-export const listUserByDeptId = (deptId: string | number): AxiosPromise<DeptVO[]> => {
+export const listUserByDeptId = (deptId: string | number): AxiosPromise<UserVO[]> => {
   return request({
     url: "/system/user/list/dept/" + deptId,
     method: "get"
