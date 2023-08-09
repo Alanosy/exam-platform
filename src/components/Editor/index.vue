@@ -50,7 +50,7 @@ const props = defineProps({
 const { proxy } = getCurrentInstance() as ComponentInternalInstance;
 
 const upload = reactive<UploadOption>({
-  headers: globalHeaders,
+  headers: globalHeaders(),
   url: import.meta.env.VITE_APP_BASE_API + '/resource/oss/upload'
 })
 const myQuillEditor = ref();

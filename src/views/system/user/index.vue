@@ -335,7 +335,7 @@ const upload = reactive<ImportOption>({
   // 是否更新已经存在的用户数据
   updateSupport: 0,
   // 设置上传的请求头部
-  headers: globalHeaders,
+  headers: globalHeaders(),
   // 上传的地址
   url: import.meta.env.VITE_APP_BASE_API + "/system/user/importData"
 })

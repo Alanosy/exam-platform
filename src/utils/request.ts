@@ -14,9 +14,11 @@ import { encrypt } from '@/utils/jsencrypt';
 let downloadLoadingInstance: LoadingInstance;
 // 是否显示重新登录
 export const isRelogin = { show: false };
-export const globalHeaders = {
-  Authorization: "Bearer " + getToken(),
-  clientid: import.meta.env.VITE_APP_CLIENT_ID
+export const globalHeaders = () => {
+  return {
+    Authorization: "Bearer " + getToken(),
+    clientid: import.meta.env.VITE_APP_CLIENT_ID
+  }
 }
 
 axios.defaults.headers['Content-Type'] = 'application/json;charset=utf-8';

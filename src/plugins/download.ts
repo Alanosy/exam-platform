@@ -16,7 +16,7 @@ export default {
         method: 'get',
         url: url,
         responseType: 'blob',
-        headers: globalHeaders,
+        headers: globalHeaders(),
       });
       const isBlob = blobValidate(res.data);
       if (isBlob) {
@@ -40,7 +40,7 @@ export default {
         method: 'get',
         url: url,
         responseType: 'blob',
-        headers: globalHeaders,
+        headers: globalHeaders(),
       });
       const isBlob = blobValidate(res.data);
       if (isBlob) {
