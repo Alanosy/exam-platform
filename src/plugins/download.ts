@@ -3,7 +3,7 @@ import FileSaver from 'file-saver';
 import errorCode from '@/utils/errorCode';
 import { blobValidate } from '@/utils/ruoyi';
 import { LoadingInstance } from 'element-plus/es/components/loading/src/loading';
-import { globalHeaders } from "@/utils/request";
+import { globalHeaders } from '@/utils/request';
 
 const baseURL = import.meta.env.VITE_APP_BASE_API;
 let downloadLoadingInstance: LoadingInstance;
@@ -16,7 +16,7 @@ export default {
         method: 'get',
         url: url,
         responseType: 'blob',
-        headers: globalHeaders(),
+        headers: globalHeaders()
       });
       const isBlob = blobValidate(res.data);
       if (isBlob) {
@@ -40,7 +40,7 @@ export default {
         method: 'get',
         url: url,
         responseType: 'blob',
-        headers: globalHeaders(),
+        headers: globalHeaders()
       });
       const isBlob = blobValidate(res.data);
       if (isBlob) {

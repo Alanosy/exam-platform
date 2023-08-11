@@ -4,11 +4,11 @@
 const props = defineProps({
   formJson: {
     type: [String, Object],
-    default: {}
+    default: ""
   },
   formData: {
     type: [String, Object],
-    default: {}
+    default: ""
   },
   isView: {
     type: Boolean,

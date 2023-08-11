@@ -37,7 +37,7 @@ export const updateGenTable = (data: DbTableForm) => {
 };
 
 // 导入表
-export const importTable = (data: { tables: string, dataName: string }) => {
+export const importTable = (data: { tables: string; dataName: string }) => {
   return request({
     url: '/tool/gen/importTable',
     method: 'post',

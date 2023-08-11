@@ -16,10 +16,10 @@ let downloadLoadingInstance: LoadingInstance;
 export const isRelogin = { show: false };
 export const globalHeaders = () => {
   return {
-    Authorization: "Bearer " + getToken(),
+    Authorization: 'Bearer ' + getToken(),
     clientid: import.meta.env.VITE_APP_CLIENT_ID
-  }
-}
+  };
+};
 
 axios.defaults.headers['Content-Type'] = 'application/json;charset=utf-8';
 axios.defaults.headers['clientid'] = import.meta.env.VITE_APP_CLIENT_ID;

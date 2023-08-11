@@ -175,8 +175,8 @@ export const updateAuthRole = (data: { userId: string; roleIds: string }) => {
  */
 export const listUserByDeptId = (deptId: string | number): AxiosPromise<UserVO[]> => {
   return request({
-    url: "/system/user/list/dept/" + deptId,
-    method: "get"
+    url: '/system/user/list/dept/' + deptId,
+    method: 'get'
   });
 };
 

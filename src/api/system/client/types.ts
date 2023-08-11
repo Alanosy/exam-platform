@@ -43,7 +43,6 @@ export interface ClientVO {
    * 状态（0正常 1停用）
    */
   status: string;
-
 }
 
 export interface ClientForm extends BaseEntity {
@@ -91,7 +90,6 @@ export interface ClientForm extends BaseEntity {
    * 状态（0正常 1停用）
    */
   status?: string;
-
 }
 
 export interface ClientQuery extends PageQuery {
@@ -134,5 +132,4 @@ export interface ClientQuery extends PageQuery {
    * 状态（0正常 1停用）
    */
   status?: string;
-
 }
