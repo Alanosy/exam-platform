@@ -74,6 +74,9 @@ export const resetUserPwd = (userId: string | number, password: string) => {
   return request({
     url: '/system/user/resetPwd',
     method: 'put',
+    headers: {
+      isEncrypt: true
+    },
     data: data
   });
 };
@@ -130,6 +133,9 @@ export const updateUserPwd = (oldPassword: string, newPassword: string) => {
   return request({
     url: '/system/user/profile/updatePwd',
     method: 'put',
+    headers: {
+      isEncrypt: true
+    },
     params: data
   });
 };
