@@ -32,7 +32,8 @@ export function register(data: any) {
   return request({
     url: '/auth/register',
     headers: {
-      isToken: false
+      isToken: false,
+      isEncrypt: true
     },
     method: 'post',
     data: data
