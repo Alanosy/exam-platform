@@ -4,9 +4,7 @@
 
 <script setup lang="ts">
 import { login, callback } from '@/api/login';
-import { setToken } from '@/utils/auth';
-import Cookies from 'js-cookie';
-import { getToken } from '@/utils/auth';
+import { setToken, getToken } from '@/utils/auth';
 import { LoginData } from '@/api/types';
 
 const route = useRoute();
@@ -20,7 +18,7 @@ const loading = ref(true);
 const code = route.query.code as string;
 const state = route.query.state as string;
 const source = route.query.source as string;
-const tenantId = Cookies.get("tenantId") ? Cookies.get("tenantId") as string : '000000';
+const tenantId = localStorage.getItem("tenantId") ? localStorage.getItem("tenantId") as string : '000000';
 
 
 const processResponse = async (res: any) => {

@@ -61,7 +61,6 @@
 <script setup lang="ts">
 import { getCodeImg, getTenantList } from '@/api/login';
 import { authBinding } from '@/api/system/social/auth';
-import Cookies from 'js-cookie';
 import { useUserStore } from '@/store/modules/user';
 import { LoginData, TenantVO } from '@/api/types';
 import { to } from 'await-to-js';
@@ -105,18 +104,18 @@ const handleLogin = () => {
   loginRef.value?.validate(async (valid: boolean, fields: any) => {
     if (valid) {
       loading.value = true;
-      // 勾选了需要记住密码设置在 cookie 中设置记住用户名和密码
+      // 勾选了需要记住密码设置在 localStorage 中设置记住用户名和密码
       if (loginForm.value.rememberMe) {
-        Cookies.set("tenantId", String(loginForm.value.tenantId), { expires: 30 });
-        Cookies.set('username', String(loginForm.value.username), { expires: 30 });
-        Cookies.set('password', String(loginForm.value.password), { expires: 30 });
-        Cookies.set('rememberMe', String(loginForm.value.rememberMe), { expires: 30 });
+        localStorage.setItem("tenantId", String(loginForm.value.tenantId));
+        localStorage.setItem('username', String(loginForm.value.username));
+        localStorage.setItem('password', String(loginForm.value.password));
+        localStorage.setItem('rememberMe', String(loginForm.value.rememberMe));
       } else {
         // 否则移除
-        Cookies.remove("tenantId");
-        Cookies.remove('username');
-        Cookies.remove('password');
-        Cookies.remove('rememberMe');
+        localStorage.removeItem("tenantId");
+        localStorage.removeItem('username');
+        localStorage.removeItem('password');
+        localStorage.removeItem('rememberMe');
       }
       // 调用action的登录方法
       const [err] = await to(userStore.login(loginForm.value));
@@ -148,11 +147,11 @@ const getCode = async () => {
   }
 };
 
-const getCookie = () => {
-  const tenantId = Cookies.get("tenantId");
-  const username = Cookies.get('username');
-  const password = Cookies.get('password');
-  const rememberMe = Cookies.get('rememberMe');
+const getLoginData = () => {
+  const tenantId = localStorage.getItem("tenantId");
+  const username = localStorage.getItem('username');
+  const password = localStorage.getItem('password');
+  const rememberMe = localStorage.getItem('rememberMe');
   loginForm.value = {
     tenantId: tenantId === undefined ? String(loginForm.value.tenantId) : tenantId,
     username: username === undefined ? String(loginForm.value.username) : username,
@@ -178,7 +177,7 @@ const initTenantList = async () => {
 
 //检测租户选择框的变化
 watch(() => loginForm.value.tenantId, () => {
-  Cookies.set("tenantId", String(loginForm.value.tenantId), { expires: 30 })
+  localStorage.setItem("tenantId", String(loginForm.value.tenantId))
 });
 
 /**
@@ -201,7 +200,7 @@ const doSocialLogin = (type: string) => {
 onMounted(() => {
   getCode();
   initTenantList();
-  getCookie();
+  getLoginData();
 });
 </script>
 
