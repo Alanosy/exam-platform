@@ -153,10 +153,10 @@ const getLoginData = () => {
   const password = localStorage.getItem('password');
   const rememberMe = localStorage.getItem('rememberMe');
   loginForm.value = {
-    tenantId: tenantId === undefined ? String(loginForm.value.tenantId) : tenantId,
-    username: username === undefined ? String(loginForm.value.username) : username,
-    password: password === undefined ? String(loginForm.value.password) : String(password),
-    rememberMe: rememberMe === undefined ? false : Boolean(rememberMe)
+    tenantId: tenantId === null ? String(loginForm.value.tenantId) : tenantId,
+    username: username === null ? String(loginForm.value.username) : username,
+    password: password === null ? String(loginForm.value.password) : String(password),
+    rememberMe: rememberMe === null ? false : Boolean(rememberMe)
   } as LoginData;
 }
 
