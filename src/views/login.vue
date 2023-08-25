@@ -100,6 +100,10 @@ const loginRef = ref<ElFormInstance>();
 // 租户列表
 const tenantList = ref<TenantVO[]>([]);
 
+watch(() => router.currentRoute.value, (newRoute: any) => {
+  redirect.value = newRoute.query && newRoute.query.redirect;
+}, { immediate: true });
+
 const handleLogin = () => {
   loginRef.value?.validate(async (valid: boolean, fields: any) => {
     if (valid) {
