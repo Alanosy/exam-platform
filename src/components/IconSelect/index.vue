@@ -68,6 +68,10 @@ const selectedIcon = (iconName: string) => {
 </script>
 
 <style scoped lang="scss">
+.el-scrollbar {
+  max-height: calc(50vh - 100px)!important;
+  overflow-y: auto;
+}
 .el-divider--horizontal {
   margin: 10px auto !important;
 }
