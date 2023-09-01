@@ -58,7 +58,7 @@
               <router-link to="/user/profile" v-if="!dynamic">
                 <el-dropdown-item>{{ $t('navbar.personalCenter') }}</el-dropdown-item>
               </router-link>
-              <el-dropdown-item command="setLayout">
+              <el-dropdown-item command="setLayout" v-if="settingsStore.showSettings">
                 <span>{{ $t('navbar.layoutSetting') }}</span>
               </el-dropdown-item>
               <el-dropdown-item divided command="logout">
@@ -73,7 +73,7 @@
 </template>
 
 <script setup lang="ts">
-import SearchMenu from './topBar/search.vue';
+import SearchMenu from './TopBar/search.vue';
 import useAppStore from '@/store/modules/app';
 import useUserStore from '@/store/modules/user';
 import useSettingsStore from '@/store/modules/settings';

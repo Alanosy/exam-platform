@@ -5,7 +5,7 @@ import createComponents from './components';
 import createIcons from './icons';
 import createSvgIconsPlugin from './svg-icon';
 import createCompression from './compression';
-import createVueSetupExtend from './vue-setup-extend';
+import createSetupExtend from './setup-extend';
 import path from 'path';
 
 export default (viteEnv: any, isBuild = false): [] => {
@@ -17,6 +17,6 @@ export default (viteEnv: any, isBuild = false): [] => {
   vitePlusgins.push(createCompression(viteEnv));
   vitePlusgins.push(createIcons());
   vitePlusgins.push(createSvgIconsPlugin(path, isBuild));
-  vitePlusgins.push(createVueSetupExtend());
+  vitePlusgins.push(createSetupExtend());
   return vitePlusgins;
 };

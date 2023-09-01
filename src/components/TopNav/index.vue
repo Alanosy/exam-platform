@@ -2,7 +2,9 @@
   <el-menu :default-active="activeMenu" mode="horizontal" @select="handleSelect" :ellipsis="false">
     <template v-for="(item, index) in topMenus">
       <el-menu-item :style="{'--theme': theme}" :index="item.path" :key="index" v-if="index < visibleNumber"
-        ><svg-icon :icon-class="item.meta ? item.meta.icon : '' " /> {{ item.meta?.title }}</el-menu-item
+        ><svg-icon
+        v-if="item.meta && item.meta.icon && item.meta.icon !== '#'"
+        :icon-class="item.meta ? item.meta.icon : '' " /> {{ item.meta?.title }}</el-menu-item
       >
     </template>
 
@@ -179,5 +181,15 @@ onMounted(() => {
   color: #999093 !important;
   padding: 0 5px !important;
   margin: 0 10px !important;
+}
+
+/* 背景色隐藏 */
+.topmenu-container.el-menu--horizontal>.el-menu-item:not(.is-disabled):focus, .topmenu-container.el-menu--horizontal>.el-menu-item:not(.is-disabled):hover, .topmenu-container.el-menu--horizontal>.el-submenu .el-submenu__title:hover {
+  background-color: #ffffff !important;
+}
+
+/* 图标右间距 */
+.topmenu-container .svg-icon {
+  margin-right: 4px;
 }
 </style>

@@ -11,13 +11,13 @@ export const useSettingsStore = defineStore('setting', () => {
     title: ref<string>(''),
     theme: ref<string>(storageSetting.theme || defaultSettings.theme),
     sideTheme: ref<string>(storageSetting.sideTheme || defaultSettings.sideTheme),
-    showSettings: ref<boolean>(storageSetting.showSettings),
-    topNav: ref<boolean>(storageSetting.topNav || defaultSettings.topNav),
-    tagsView: ref<boolean>(storageSetting.tagsView || defaultSettings.tagsView),
-    fixedHeader: ref<boolean>(storageSetting.fixedHeader || defaultSettings.fixedHeader),
-    sidebarLogo: ref<boolean>(storageSetting.sidebarLogo || defaultSettings.sidebarLogo),
-    dynamicTitle: ref<boolean>(storageSetting.dynamicTitle || defaultSettings.dynamicTitle),
-    animationEnable: ref<boolean>(storageSetting.animationEnable || defaultSettings.animationEnable),
+    showSettings: ref<boolean>(storageSetting.showSettings || defaultSettings.showSettings),
+    topNav: ref<boolean>(storageSetting.topNav === undefined ? defaultSettings.topNav : storageSetting.topNav),
+    tagsView: ref<boolean>(storageSetting.tagsView === undefined ? defaultSettings.tagsView : storageSetting.tagsView),
+    fixedHeader: ref<boolean>(storageSetting.fixedHeader === undefined ? defaultSettings.fixedHeader : storageSetting.fixedHeader),
+    sidebarLogo: ref<boolean>(storageSetting.sidebarLogo === undefined ? defaultSettings.sidebarLogo : storageSetting.sidebarLogo),
+    dynamicTitle: ref<boolean>(storageSetting.dynamicTitle === undefined ? defaultSettings.dynamicTitle : storageSetting.dynamicTitle),
+    animationEnable: ref<boolean>(storageSetting.animationEnable === undefined ? defaultSettings.animationEnable : storageSetting.animationEnable),
     dark: ref<boolean>(storageSetting.dark || defaultSettings.dark)
   };
 

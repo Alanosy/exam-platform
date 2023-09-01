@@ -10,7 +10,7 @@
           </template>
           <div>
             <div class="text-center">
-              <userAvatar :user="state.user" />
+              <userAvatar/>
             </div>
             <ul class="list-group list-group-striped">
               <li class="list-group-item">
@@ -66,10 +66,7 @@
 </template>
 
 <script setup name="Profile" lang="ts">
-import userAvatar from "./userAvatar.vue";
-import userInfo from "./userInfo.vue";
-import resetPwd from "./resetPwd.vue";
-import thirdParty from "./thirdParty.vue";
+import UserAvatar from "./userAvatar.vue";
 import { getAuthList } from "@/api/system/social/auth";
 import { getUserProfile } from "@/api/system/user";
 
