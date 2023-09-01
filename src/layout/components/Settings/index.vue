@@ -3,7 +3,7 @@
     <h3 class="drawer-title">主题风格设置</h3>
 
     <div class="setting-drawer-block-checbox">
-      <div class="setting-drawer-block-checbox-item" @click="handleTheme('theme-dark')">
+      <div class="setting-drawer-block-checbox-item" @click="handleTheme(SideThemeEnum.DARK)">
         <img src="@/assets/images/dark.svg" alt="dark" />
         <div v-if="sideTheme === 'theme-dark'" class="setting-drawer-block-checbox-selectIcon" style="display: block;">
           <i aria-label="图标: check" class="anticon anticon-check">
@@ -15,7 +15,7 @@
           </i>
         </div>
       </div>
-      <div class="setting-drawer-block-checbox-item" @click="handleTheme('theme-light')">
+      <div class="setting-drawer-block-checbox-item" @click="handleTheme(SideThemeEnum.LIGHT)">
         <img src="@/assets/images/light.svg" alt="light" />
         <div v-if="sideTheme === 'theme-light'" class="setting-drawer-block-checbox-selectIcon" style="display: block;">
           <i aria-label="图标: check" class="anticon anticon-check">
@@ -95,6 +95,7 @@ import usePermissionStore from '@/store/modules/permission'
 import { handleThemeStyle } from '@/utils/theme'
 import { ComponentInternalInstance } from "vue";
 import { SettingTypeEnum } from "@/enums/SettingTypeEnum";
+import { SideThemeEnum } from "@/enums/SideThemeEnum";
 
 const { proxy } = getCurrentInstance() as ComponentInternalInstance;
 const appStore = useAppStore()
@@ -114,6 +115,13 @@ const isDark = useDark({
   valueDark: 'dark',
   valueLight: 'light',
 });
+watch(isDark, ()=> {
+  if (isDark.value) {
+    settingsStore.changeSetting({ key: SettingTypeEnum.SIDE_THEME, value: SideThemeEnum.DARK })
+  } else {
+    settingsStore.changeSetting({ key: SettingTypeEnum.SIDE_THEME, value: sideTheme.value })
+  }
+})
 const toggleDark = () => useToggle(isDark);
 
 /** 是否需要topNav */
@@ -166,8 +174,13 @@ const themeChange = (val: string | null) => {
     }
 }
 const handleTheme = (val: string) => {
-    settingsStore.changeSetting({ key: SettingTypeEnum.SIDE_THEME, value: val })
     sideTheme.value = val;
+    if (isDark.value && val === SideThemeEnum.LIGHT) {
+      // 暗黑模式颜色不变
+      settingsStore.changeSetting({ key: SettingTypeEnum.SIDE_THEME, value: SideThemeEnum.DARK })
+      return
+    }
+    settingsStore.changeSetting({ key: SettingTypeEnum.SIDE_THEME, value: val })
 }
 const saveSetting = () => {
     proxy?.$modal.loading("正在保存到本地，请稍候...");
