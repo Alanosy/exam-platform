@@ -125,6 +125,7 @@ const handleLogin = () => {
       const [err] = await to(userStore.login(loginForm.value));
       if (!err) {
         await router.push({ path: redirect.value || '/' });
+        loading.value = false;
       } else {
         loading.value = false;
         // 重新获取验证码
