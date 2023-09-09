@@ -53,11 +53,7 @@
         <el-table-column label="客户端秘钥" align="center" prop="clientSecret" />
         <el-table-column label="授权类型" align="center">
           <template #default="scope">
-            <div>
-              <template v-for="(type, index) in scope.row.grantTypeList" :key="index">
-                <dict-tag class="el-check-tag" :options="sys_grant_type" :value="type" />
-              </template>
-            </div>
+            <dict-tag :options="sys_grant_type" :value="scope.row.grantTypeList" />
           </template>
         </el-table-column>
         <el-table-column label="设备类型" align="center">
