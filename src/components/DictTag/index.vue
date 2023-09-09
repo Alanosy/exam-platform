@@ -2,8 +2,7 @@
   <div>
     <template v-for="(item, index) in options">
       <template v-if="values.includes(item.value)">
-        <span v-if="item.elTagType == 'default' || item.elTagType == ''" :key="item.value" :index="index"
-              :class="item.elTagClass">
+        <span v-if="item.elTagType == 'default' || item.elTagType == ''" :key="item.value" :index="index" :class="item.elTagClass">
           {{ item.label + " " }}
         </span>
         <el-tag
@@ -25,7 +24,7 @@
 </template>
 
 <script setup lang="ts">
-import {propTypes} from '@/utils/propTypes';
+import { propTypes } from '@/utils/propTypes';
 
 
 const props = defineProps({
@@ -38,16 +37,11 @@ const props = defineProps({
   value: [Number, String, Array] as PropType<number | string | Array<number | string>>,
   // 当未找到匹配的数据时，显示value
   showValue: propTypes.bool.def(true),
-  separator: {
-    type: String,
-    default: ','
-  }
+  separator: propTypes.string.def(","),
 });
 const values = computed(() => {
   if (props.value === '' || props.value === null || typeof props.value === "undefined") return []
-  let valu= Array.isArray(props.value) ? props.value.map(item => '' + item) : String(props.value).split(props.separator);
-  console.log("valu",valu)
-  return valu
+  return Array.isArray(props.value) ? props.value.map(item => '' + item) : String(props.value).split(props.separator);
 });
 
 const unmatch = computed(() => {
