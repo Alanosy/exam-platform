@@ -4,10 +4,10 @@
       <div class="search" v-show="showSearch">
         <el-form :model="queryParams" ref="queryFormRef" :inline="true" label-width="100px">
           <el-form-item label="客户端key" prop="clientKey">
-            <el-input v-model="queryParams.clientKey" placeholder="请输入客户端key" clearable @keyup.enter="handleQuery" />
+            <el-input v-model="queryParams.clientKey" placeholder="请输入客户端key" clearable style="width: 240px" @keyup.enter="handleQuery" />
           </el-form-item>
           <el-form-item label="客户端秘钥" prop="clientSecret">
-            <el-input v-model="queryParams.clientSecret" placeholder="请输入客户端秘钥" clearable @keyup.enter="handleQuery" />
+            <el-input v-model="queryParams.clientSecret" placeholder="请输入客户端秘钥" clearable style="width: 240px" @keyup.enter="handleQuery" />
           </el-form-item>
           <el-form-item label="状态" prop="status">
             <el-select v-model="queryParams.status" placeholder="状态" clearable>
