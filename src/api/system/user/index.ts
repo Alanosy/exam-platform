@@ -136,7 +136,7 @@ export const updateUserPwd = (oldPassword: string, newPassword: string) => {
     headers: {
       isEncrypt: true
     },
-    params: data
+    data: data
   });
 };
 
