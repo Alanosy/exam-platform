@@ -7,13 +7,23 @@
       <el-tooltip class="item" effect="dark" content="刷新" placement="top">
         <el-button circle icon="Refresh" @click="refresh()" />
       </el-tooltip>
-      <el-tooltip class="item" effect="dark" content="显隐列" placement="top" v-if="columns">
-        <el-button circle icon="Menu" @click="showColumn()" />
+      <el-tooltip class="item" effect="dark" content="显示/隐藏列" placement="top" v-if="columns">
+        <el-popover placement="bottom" trigger="click">
+          <div class="tree-header">显示/隐藏列</div>
+          <el-tree
+            ref="columnRef"
+            :data="columns"
+            show-checkbox
+            @check="columnChange"
+            node-key="key"
+            :props="{ label: 'label', children: 'children' }"
+          ></el-tree>
+          <template #reference>
+            <el-button circle icon="Menu" />
+          </template>
+        </el-popover>
       </el-tooltip>
     </el-row>
-    <el-dialog :title="title" v-model="open" append-to-body>
-      <el-transfer :titles="['显示', '隐藏']" v-model="value" :data="columns" @change="dataChange"></el-transfer>
-    </el-dialog>
   </div>
 </template>
 
@@ -29,14 +39,8 @@ const props = defineProps({
     gutter: propTypes.number.def(10),
 })
 
+const columnRef = ref<ElTreeInstance>();
 const emits = defineEmits(['update:showSearch', 'queryTable']);
-
-// 显隐数据
-const value = ref<Array<number>>([]);
-// 弹出层标题
-const title = ref("显示/隐藏");
-// 是否显示弹出层
-const open = ref(false);
 
 const style = computed(() => {
     const ret: any = {};
@@ -56,23 +60,19 @@ function refresh() {
     emits("queryTable");
 }
 
-// 右侧列表元素变化
-function dataChange(data: TransferKey[]) {
-    props.columns?.forEach((item) => {
-        item.visible = !data.includes(item.key);
-    })
-}
-
-// 打开显隐列dialog
-const showColumn = () => {
-    open.value = true;
+// 更改数据列的显示和隐藏
+function columnChange(...args: any[]) {
+  props.columns?.forEach((item) => {
+    item.visible = args[1].checkedKeys.includes(item.key);
+  })
 }
 
 // 显隐列初始默认隐藏列
 onMounted(() => {
     props.columns?.forEach((item) => {
-        if (!item.visible) {
-            value.value.push(item.key);
+        if (item.visible) {
+          columnRef.value?.setChecked(item.key, true, false);
+            // value.value.push(item.key);
         }
     })
 })
@@ -89,6 +89,11 @@ onMounted(() => {
 }
 
 .my-el-transfer {
+  text-align: center;
+}
+.tree-header{
+  width: 100%;
+  line-height: 24px;
   text-align: center;
 }
 </style>

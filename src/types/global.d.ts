@@ -13,6 +13,7 @@ declare global {
     key: number;
     label: string;
     visible: boolean;
+    children: Array<FieldOption>;
   }
 
   /**
