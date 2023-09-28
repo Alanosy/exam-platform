@@ -1,6 +1,6 @@
 <template>
   <div v-if="!item.hidden">
-    <template v-if="hasOneShowingChild(item.children, item) && (!onlyOneChild.children || onlyOneChild.noShowingChildren) && !item.alwaysShow">
+    <template v-if="hasOneShowingChild(item, item.children) && (!onlyOneChild.children || onlyOneChild.noShowingChildren) && !item.alwaysShow">
       <app-link v-if="onlyOneChild.meta" :to="resolvePath(onlyOneChild.path, onlyOneChild.query)">
         <el-menu-item :index="resolvePath(onlyOneChild.path)" :class="{ 'submenu-title-noDropdown': !isNest }">
           <svg-icon :icon-class="onlyOneChild.meta.icon || (item.meta && item.meta.icon)" />
@@ -18,10 +18,10 @@
       </template>
 
       <sidebar-item
-        v-for="child in item.children"
+        v-for="(child) in item.children as RouteOption[]"
         :key="child.path"
         :is-nest="true"
-        :item="child as RouteOption"
+        :item="child"
         :base-path="resolvePath(child.path)"
         class="nest-menu"
       />
@@ -34,7 +34,6 @@ import { isExternal } from '@/utils/validate'
 import AppLink from './Link.vue'
 import { getNormalPath } from '@/utils/ruoyi'
 import { RouteOption } from "vue-router";
-import { PropType } from "vue";
 
 const props = defineProps({
     // route object
@@ -54,7 +53,7 @@ const props = defineProps({
 
 const onlyOneChild = ref<any>({});
 
-const hasOneShowingChild = (children:RouteOption[] = [], parent: RouteOption) => {
+const hasOneShowingChild = (parent: RouteOption, children?:RouteOption[]) => {
     if (!children) {
         children = [];
     }
@@ -76,8 +75,12 @@ const hasOneShowingChild = (children:RouteOption[] = [], parent: RouteOption) =>
     // Show parent if there are no child router to display
     if (showingChildren.length === 0) {
         onlyOneChild.value = { ...parent, path: '', noShowingChildren: true }
+        if (parent.name === '2222') {
+          console.log(onlyOneChild.value)
+        }
         return true
     }
+
 
     return false
 };

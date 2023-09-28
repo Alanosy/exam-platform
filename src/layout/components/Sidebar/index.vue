@@ -4,7 +4,7 @@
     <el-scrollbar :class="sideTheme" wrap-class="scrollbar-wrapper">
       <transition :enter-active-class="proxy?.animate.menuSearchAnimate.enter" mode="out-in">
         <el-menu
-          :default-active="activeMenu as string"
+          :default-active="activeMenu"
           :collapse="isCollapse"
           :background-color="bgColor"
           :text-color="textColor"
@@ -27,6 +27,7 @@ import variables from '@/assets/styles/variables.module.scss'
 import useAppStore from '@/store/modules/app'
 import useSettingsStore from '@/store/modules/settings'
 import usePermissionStore from '@/store/modules/permission'
+import { RouteOption } from "vue-router";
 const { proxy } = getCurrentInstance() as ComponentInternalInstance;
 
 const route = useRoute();
@@ -34,7 +35,7 @@ const appStore = useAppStore()
 const settingsStore = useSettingsStore()
 const permissionStore = usePermissionStore()
 
-const sidebarRouters =  computed(() => permissionStore.sidebarRouters);
+const sidebarRouters =  computed<RouteOption[]>(() => permissionStore.sidebarRouters);
 const showLogo = computed(() => settingsStore.sidebarLogo);
 const sideTheme = computed(() => settingsStore.sideTheme);
 const theme = computed(() => settingsStore.theme);
