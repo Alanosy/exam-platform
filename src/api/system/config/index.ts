@@ -20,7 +20,7 @@ export function getConfig(configId: string | number): AxiosPromise<ConfigVO> {
 }
 
 // 根据参数键名查询参数值
-export function getConfigKey(configKey: string): AxiosPromise<ConfigVO> {
+export function getConfigKey(configKey: string): AxiosPromise<String> {
   return request({
     url: '/system/config/configKey/' + configKey,
     method: 'get'
