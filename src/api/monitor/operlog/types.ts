@@ -1,4 +1,5 @@
 export interface OperLogQuery extends PageQuery {
+  operIp: string;
   title: string;
   operName: string;
   businessType: string;
