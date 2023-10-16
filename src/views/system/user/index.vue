@@ -561,7 +561,7 @@ const handleAdd = async () => {
   await initTreeData();
   postOptions.value = data.posts;
   roleOptions.value = data.roles;
-  form.value.password = initPassword.value;
+  form.value.password = initPassword.value.toString();
 }
 /** 修改按钮操作 */
 const handleUpdate = async (row?: UserForm) => {
