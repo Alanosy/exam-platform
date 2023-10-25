@@ -88,7 +88,7 @@ const initFuse = (list: Router) => {
 }
 // Filter out the routes that can be displayed in the sidebar
 // And generate the internationalized title
-const generateRoutes = (routes: RouteOption[], basePath = '', prefixTitle: string[] = [], query: any = {}) => {
+const generateRoutes = (routes: RouteOption[], basePath = '', prefixTitle: string[] = []) => {
   let res: Router = []
   routes.forEach(r => {
     // skip hidden router
@@ -114,7 +114,7 @@ const generateRoutes = (routes: RouteOption[], basePath = '', prefixTitle: strin
 
       // recursive child routes
       if (r.children) {
-        const tempRoutes = generateRoutes(r.children, data.path, data.title, data.query);
+        const tempRoutes = generateRoutes(r.children, data.path, data.title);
         if (tempRoutes.length >= 1) {
           res = [...res, ...tempRoutes];
         }
