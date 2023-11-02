@@ -115,18 +115,18 @@ export const sendMsg = (data: any) => {
 // socket 接收数据
 export const websocketonmessage = () => {
   websocket.onmessage = function (e: any) {
-    const msg = JSON.parse(e.data) as any;
-    if (msg.type === 'heartbeat') {
+    if (e.data.indexOf('heartbeat') > 0) {
       resetHeart();
     }
-    if (msg.type === 'ping') {
+    if (e.data.indexOf('ping') > 0) {
       return;
     }
     addNotice({
-      message: msg,
+      message: e.data,
       read: false,
       time: new Date().toLocaleString()
     });
-    return msg;
+    ElMessage.success(e.data);
+    return e.data;
   };
 };

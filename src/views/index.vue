@@ -99,7 +99,7 @@
 import { initWebSocket } from '@/utils/websocket';
 
 onMounted(() => {
-  initWebSocket("ws://"+window.location.host+import.meta.env.VITE_APP_BASE_API+"/resource/websocket");
+  initWebSocket("ws://" + window.location.host + import.meta.env.VITE_APP_BASE_API + "/resource/websocket");
 });
 
 const goTarget = (url:string) => {
