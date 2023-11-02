@@ -126,7 +126,12 @@ export const websocketonmessage = () => {
       read: false,
       time: new Date().toLocaleString()
     });
-    ElMessage.success(e.data);
+    ElNotification({
+      title: '消息',
+      message: e.data,
+      type: 'success',
+      duration: 3000
+    })
     return e.data;
   };
 };
