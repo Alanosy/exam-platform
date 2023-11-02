@@ -27,6 +27,21 @@
             <svg-icon class-name="search-icon" icon-class="search" />
           </div>
         </el-tooltip>
+        <!-- 消息 -->
+        <el-tooltip :content="$t('navbar.message')" effect="dark" placement="bottom">
+          <div>
+            <el-popover placement="bottom" trigger="click" transition="el-zoom-in-top" :width="300" :persistent="false">
+              <template #reference>
+                <el-badge :value="newNotice > 0 ? newNotice : ''" :max="99">
+                  <svg-icon icon-class="message" />
+                </el-badge>
+              </template>
+              <template #default>
+                <notice></notice>
+              </template>
+            </el-popover>
+          </div>
+        </el-tooltip>
         <el-tooltip content="Github" effect="dark" placement="bottom">
           <ruo-yi-git id="ruoyi-git" class="right-menu-item hover-effect" />
         </el-tooltip>
@@ -81,10 +96,14 @@ import { getTenantList } from "@/api/login";
 import { dynamicClear, dynamicTenant } from "@/api/system/tenant";
 import { ComponentInternalInstance } from "vue";
 import { TenantVO } from "@/api/types";
+import notice from './notice/index.vue';
+import useNoticeStore from '@/store/modules/notice';
 
 const appStore = useAppStore();
 const userStore = useUserStore();
 const settingsStore = useSettingsStore();
+const noticeStore = storeToRefs(useNoticeStore());
+const newNotice = ref(<number>0);
 
 const { proxy } = getCurrentInstance() as ComponentInternalInstance;
 
@@ -161,12 +180,21 @@ const handleCommand = (command: string) => {
         commandMap[command]();
     }
 }
+
+//用深度监听 消息
+watch(() => noticeStore.state.value.notices, (newVal, oldVal) => {
+  newNotice.value = newVal.filter((item: any) => !item.read).length;
+}, { deep: true });
 </script>
 
 <style lang="scss" scoped>
 
 :deep(.el-select .el-input__wrapper) {
   height:30px;
+}
+
+:deep(.el-badge__content.is-fixed){
+    top: 12px;
 }
 
 .flex {
