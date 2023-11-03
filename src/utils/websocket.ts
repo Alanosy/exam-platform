@@ -33,7 +33,7 @@ let socketError = 0 as number; // 错误次数
 
 // 初始化socket
 export const initWebSocket = (url: any) => {
-  if (import.meta.env.VITE_APP_WEBSOCKET) {
+  if (!import.meta.env.VITE_APP_WEBSOCKET) {
     return;
   }
   socketUrl = url;
