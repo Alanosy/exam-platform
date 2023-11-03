@@ -20,6 +20,7 @@
 
 import { getToken } from '@/utils/auth';
 import useNoticeStore from '@/store/modules/notice';
+import { ElNotification } from "element-plus";
 
 const { addNotice } = useNoticeStore();
 
@@ -32,6 +33,9 @@ let socketError = 0 as number; // 错误次数
 
 // 初始化socket
 export const initWebSocket = (url: any) => {
+  if (import.meta.env.VITE_APP_WEBSOCKET) {
+    return;
+  }
   socketUrl = url;
   // 初始化 websocket
   websocket = new WebSocket(url + '?Authorization=Bearer ' + getToken() + '&clientid=' + import.meta.env.VITE_APP_CLIENT_ID);
