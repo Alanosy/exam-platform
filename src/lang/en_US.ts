@@ -18,6 +18,7 @@ export default {
     language: 'Language',
     dashboard: 'Dashboard',
     document: 'Document',
+    message: 'Message',
     layoutSize: 'Layout Size',
     selectTenant: 'Select Tenant',
     layoutSetting: 'Layout Setting',

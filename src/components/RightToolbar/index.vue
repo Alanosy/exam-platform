@@ -8,7 +8,7 @@
         <el-button circle icon="Refresh" @click="refresh()" />
       </el-tooltip>
       <el-tooltip class="item" effect="dark" content="显示/隐藏列" placement="top" v-if="columns">
-        <div>
+        <div class="show-btn">
           <el-popover placement="bottom" trigger="click">
             <div class="tree-header">显示/隐藏列</div>
             <el-tree
@@ -97,5 +97,8 @@ onMounted(() => {
   width: 100%;
   line-height: 24px;
   text-align: center;
+}
+.show-btn {
+  margin-left: 12px;
 }
 </style>

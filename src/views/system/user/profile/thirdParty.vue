@@ -20,7 +20,7 @@
     <div id="git-user-binding">
       <h4 class="provider-desc">你可以绑定以下第三方帐号</h4>
       <div id="authlist" class="user-bind">
-        <a class="third-app" href="#" @click="authUrl('wechar');" title="使用 微信 账号授权登录">
+        <a class="third-app" href="#" @click="authUrl('wechat');" title="使用 微信 账号授权登录">
           <div class="git-other-login-icon">
             <svg-icon icon-class="wechat" />
           </div>

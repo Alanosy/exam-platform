@@ -29,6 +29,11 @@ export function login(data: LoginData): AxiosPromise<LoginResult> {
 
 // 注册方法
 export function register(data: any) {
+  const params = {
+    ...data,
+    clientId: clientId,
+    grantType: 'password'
+  };
   return request({
     url: '/auth/register',
     headers: {
@@ -36,7 +41,7 @@ export function register(data: any) {
       isEncrypt: true
     },
     method: 'post',
-    data: data
+    data: params
   });
 }
 

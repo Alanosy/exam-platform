@@ -17,6 +17,7 @@ export default {
     language: '语言',
     dashboard: '首页',
     document: '项目文档',
+    message: '消息',
     layoutSize: '布局大小',
     selectTenant: '选择租户',
     layoutSetting: '布局设置',
