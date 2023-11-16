@@ -69,7 +69,7 @@ interface ImportMetaEnv {
   VITE_APP_ENV: string;
   VITE_APP_RSA_PUBLIC_KEY: string;
   VITE_APP_CLIENT_ID: string;
-  VITE_APP_WEBSOCKET: boolean;
+  VITE_APP_WEBSOCKET: string;
 }
 interface ImportMeta {
   readonly env: ImportMetaEnv;
