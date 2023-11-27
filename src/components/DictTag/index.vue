@@ -2,7 +2,7 @@
   <div>
     <template v-for="(item, index) in options">
       <template v-if="values.includes(item.value)">
-        <span v-if="(item.elTagType == 'default' || item.elTagType == '') && (item.elTagClass == '' || item.elTagClass == null)"
+        <span v-if="(item.elTagType === 'default' || item.elTagType === '') && (item.elTagClass === '' || item.elTagClass == null)"
               :key="item.value" :index="index" :class="item.elTagClass">
           {{ item.label + " " }}
         </span>
@@ -11,7 +11,7 @@
           :disable-transitions="true"
           :key="item.value + ''"
           :index="index"
-          :type="item.elTagType === 'primary' ? '' : item.elTagType"
+          :type="(item.elTagType === 'primary' || item.elTagType === 'default')? '' : item.elTagType"
           :class="item.elTagClass"
         >
           {{ item.label + " " }}
