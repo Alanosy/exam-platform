@@ -62,7 +62,7 @@ import { uploadAvatar } from "@/api/system/user";
 import useUserStore from "@/store/modules/user";
 
 interface Options {
-  img: string | ArrayBuffer | null; // 裁剪图片的地址
+  img: string | any; // 裁剪图片的地址
   autoCrop: boolean; // 是否默认生成截图框
   autoCropWidth: number; // 默认生成截图框宽度
   autoCropHeight: number; // 默认生成截图框高度
