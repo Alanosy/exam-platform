@@ -1,4 +1,4 @@
-import { TagView } from 'vue-router';
+import { TagView, RouteRecordNormalized } from 'vue-router';
 
 export const useTagsViewStore = defineStore('tagsView', () => {
   const visitedViews = ref<TagView[]>([]);
@@ -35,7 +35,9 @@ export const useTagsViewStore = defineStore('tagsView', () => {
   const delView = (view: TagView): Promise<{ visitedViews: TagView[]; cachedViews: string[] }> => {
     return new Promise((resolve) => {
       delVisitedView(view);
-      delCachedView(view);
+      if (!isDynamicRoute(view)) {
+        delCachedView(view);
+      }
       resolve({
         visitedViews: [...visitedViews.value],
         cachedViews: [...cachedViews.value]
@@ -175,6 +177,11 @@ export const useTagsViewStore = defineStore('tagsView', () => {
     if (!view.meta?.noCache) {
       cachedViews.value.push(viewName);
     }
+  };
+
+  const isDynamicRoute = (view: any): boolean => {
+    // 检查匹配的路由记录中是否有动态段
+    return view.matched.some((m: RouteRecordNormalized) => m.path.includes(':'));
   };
 
   return {
