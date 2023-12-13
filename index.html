@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <html>
   <head>
     <meta charset="utf-8" />
@@ -9,7 +9,7 @@
     <title>RuoYi-Vue-Plus多租户管理系统</title>
     <!--[if lt IE 11
       ]><script>
-        window.location.href='/html/ie.html';
+        window.location.href = '/html/ie.html';
       </script><!
     [endif]-->
     <style>
@@ -47,7 +47,7 @@
         margin: -75px 0 0 -75px;
         border-radius: 50%;
         border: 3px solid transparent;
-        border-top-color: #FFF;
+        border-top-color: #fff;
         -webkit-animation: spin 2s linear infinite;
         -ms-animation: spin 2s linear infinite;
         -moz-animation: spin 2s linear infinite;
@@ -57,7 +57,7 @@
       }
 
       #loader:before {
-        content: "";
+        content: '';
         position: absolute;
         top: 5px;
         left: 5px;
@@ -65,7 +65,7 @@
         bottom: 5px;
         border-radius: 50%;
         border: 3px solid transparent;
-        border-top-color: #FFF;
+        border-top-color: #fff;
         -webkit-animation: spin 3s linear infinite;
         -moz-animation: spin 3s linear infinite;
         -o-animation: spin 3s linear infinite;
@@ -74,7 +74,7 @@
       }
 
       #loader:after {
-        content: "";
+        content: '';
         position: absolute;
         top: 15px;
         left: 15px;
@@ -82,14 +82,13 @@
         bottom: 15px;
         border-radius: 50%;
         border: 3px solid transparent;
-        border-top-color: #FFF;
+        border-top-color: #fff;
         -moz-animation: spin 1.5s linear infinite;
         -o-animation: spin 1.5s linear infinite;
         -ms-animation: spin 1.5s linear infinite;
         -webkit-animation: spin 1.5s linear infinite;
         animation: spin 1.5s linear infinite;
       }
-
 
       @-webkit-keyframes spin {
         0% {
@@ -119,13 +118,12 @@
         }
       }
 
-
       #loader-wrapper .loader-section {
         position: fixed;
         top: 0;
         width: 51%;
         height: 100%;
-        background: #7171C6;
+        background: #7171c6;
         z-index: 1000;
         -webkit-transform: translateX(0);
         -ms-transform: translateX(0);
@@ -140,21 +138,20 @@
         right: 0;
       }
 
-
       .loaded #loader-wrapper .loader-section.section-left {
         -webkit-transform: translateX(-100%);
         -ms-transform: translateX(-100%);
         transform: translateX(-100%);
-        -webkit-transition: all 0.7s 0.3s cubic-bezier(0.645, 0.045, 0.355, 1.000);
-        transition: all 0.7s 0.3s cubic-bezier(0.645, 0.045, 0.355, 1.000);
+        -webkit-transition: all 0.7s 0.3s cubic-bezier(0.645, 0.045, 0.355, 1);
+        transition: all 0.7s 0.3s cubic-bezier(0.645, 0.045, 0.355, 1);
       }
 
       .loaded #loader-wrapper .loader-section.section-right {
         -webkit-transform: translateX(100%);
         -ms-transform: translateX(100%);
         transform: translateX(100%);
-        -webkit-transition: all 0.7s 0.3s cubic-bezier(0.645, 0.045, 0.355, 1.000);
-        transition: all 0.7s 0.3s cubic-bezier(0.645, 0.045, 0.355, 1.000);
+        -webkit-transition: all 0.7s 0.3s cubic-bezier(0.645, 0.045, 0.355, 1);
+        transition: all 0.7s 0.3s cubic-bezier(0.645, 0.045, 0.355, 1);
       }
 
       .loaded #loader {
@@ -182,7 +179,7 @@
 
       #loader-wrapper .load_title {
         font-family: 'Open Sans';
-        color: #FFF;
+        color: #fff;
         font-size: 19px;
         width: 100%;
         text-align: center;
@@ -197,7 +194,7 @@
         font-weight: normal;
         font-style: italic;
         font-size: 13px;
-        color: #FFF;
+        color: #fff;
         opacity: 0.5;
       }
     </style>

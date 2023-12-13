@@ -61,10 +61,9 @@
 </template>
 
 <script setup name="Online" lang="ts">
-import { forceLogout, list as initData } from "@/api/monitor/online";
-import { OnlineQuery, OnlineVO } from "@/api/monitor/online/types";
-import api from "@/api/system/user";
-import {to} from "await-to-js";
+import { forceLogout, list as initData } from '@/api/monitor/online';
+import { OnlineQuery, OnlineVO } from '@/api/monitor/online/types';
+import { to } from 'await-to-js';
 
 const { proxy } = getCurrentInstance() as ComponentInternalInstance;
 const { sys_device_type } = toRefs<any>(proxy?.useDict('sys_device_type'));
@@ -106,9 +105,9 @@ const handleForceLogout = async (row: OnlineVO) => {
   if (!err) {
     await forceLogout(row.tokenId);
     await getList();
-    proxy?.$modal.msgSuccess("删除成功");
+    proxy?.$modal.msgSuccess('删除成功');
   }
-}
+};
 
 onMounted(() => {
   getList();

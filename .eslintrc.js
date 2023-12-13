@@ -9,13 +9,13 @@ module.exports = {
     'plugin:vue/vue3-recommended',
     './.eslintrc-auto-import.json',
     'plugin:@typescript-eslint/recommended',
-    "prettier",
-    'plugin:prettier/recommended',
+    'prettier',
+    'plugin:prettier/recommended'
   ],
   parserOptions: {
     ecmaVersion: '2020',
     sourceType: 'module',
-    project: "./tsconfig.*?.json",
+    project: './tsconfig.*?.json',
     parser: '@typescript-eslint/parser'
   },
   plugins: ['vue', '@typescript-eslint', 'import', 'promise', 'node', 'prettier'],

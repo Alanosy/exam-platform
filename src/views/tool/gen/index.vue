@@ -97,9 +97,9 @@
       <el-tabs v-model="preview.activeName">
         <el-tab-pane
           v-for="(value, key) in preview.data"
+          :key="value"
           :label="key.substring(key.lastIndexOf('/') + 1, key.indexOf('.vm'))"
           :name="key.substring(key.lastIndexOf('/') + 1, key.indexOf('.vm'))"
-          :key="value"
         >
           <el-link v-copyText="value" v-copyText:callback="copyTextSuccess" :underline="false" icon="DocumentCopy" style="float: right">
             &nbsp;复制

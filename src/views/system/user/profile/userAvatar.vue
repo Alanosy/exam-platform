@@ -1,7 +1,7 @@
 <template>
   <div class="user-info-head" @click="editCropper()">
     <img :src="options.img" title="点击上传头像" class="img-circle img-lg" />
-    <el-dialog :title="title" v-model="open" width="800px" append-to-body @opened="modalOpened" @close="closeDialog">
+    <el-dialog v-model="open" :title="title" width="800px" append-to-body @opened="modalOpened" @close="closeDialog">
       <el-row>
         <el-col :xs="24" :md="12" :style="{ height: '350px' }">
           <vue-cropper
@@ -138,8 +138,8 @@ const uploadImg = async () => {
     const res = await uploadAvatar(formData);
     open.value = false;
     options.img = res.data.imgUrl;
-    userStore.setAvatar(options.img as string)
-    proxy?.$modal.msgSuccess("修改成功");
+    userStore.setAvatar(options.img as string);
+    proxy?.$modal.msgSuccess('修改成功');
     visible.value = false;
   });
 };
