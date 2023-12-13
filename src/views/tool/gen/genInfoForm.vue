@@ -233,7 +233,7 @@ interface MenuOptionsType {
 
 const subColumns = ref<any>([]);
 const menuOptions = ref<Array<MenuOptionsType>>([]);
-const { proxy } = getCurrentInstance() as ComponentInternalInstance;
+const { proxy } = getCurrentInstance();
 
 const props = defineProps({
   info: propTypes.any.def(null),

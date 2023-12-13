@@ -18,7 +18,7 @@ const props = withDefaults(defineProps<Props>(), {
   isView: false
 });
 
-const vFormRef = ref(null);
+const vFormRef = ref();
 // 获取表单数据-异步
 const getFormData = () => {
   return vFormRef.value.getFormData();
@@ -29,7 +29,7 @@ const getFormData = () => {
  * @param {表单配置} formConf
  * formConfig：{ formTemplate：表单模板，formData：表单数据，hiddenField：需要隐藏的字段字符串集合，disabledField：需要禁用的自读字符串集合}
  */
-const initForm = (formConf) => {
+const initForm = (formConf: any) => {
   const { formTemplate, formData, hiddenField, disabledField } = toRaw(formConf);
   if (formTemplate) {
     vFormRef.value.setFormJson(formTemplate);

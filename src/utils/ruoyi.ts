@@ -245,3 +245,7 @@ export const getNormalPath = (p: string): string => {
 export const blobValidate = (data: any) => {
   return data.type !== 'application/json';
 };
+
+export default {
+  handleTree
+};

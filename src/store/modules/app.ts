@@ -9,7 +9,7 @@ export const useAppStore = defineStore('app', () => {
     hide: false
   });
   const device = ref<string>('desktop');
-  const size = useStorage('size', 'default');
+  const size = useStorage<'large' | 'default' | 'small'>('size', 'default');
 
   // 语言
   const language = useStorage('language', 'zh_CN');
@@ -43,7 +43,7 @@ export const useAppStore = defineStore('app', () => {
   const toggleDevice = (d: string): void => {
     device.value = d;
   };
-  const setSize = (s: string): void => {
+  const setSize = (s: 'large' | 'default' | 'small'): void => {
     size.value = s;
   };
   const toggleSideBarHide = (status: boolean): void => {

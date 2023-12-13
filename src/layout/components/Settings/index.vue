@@ -48,35 +48,35 @@
     <div class="drawer-item">
       <span>开启 TopNav</span>
       <span class="comp-style">
-        <el-switch v-model="topNav" class="drawer-switch" />
+        <el-switch v-model="settingsStore.topNav" class="drawer-switch" @change="topNavChange" />
       </span>
     </div>
 
     <div class="drawer-item">
       <span>开启 Tags-Views</span>
       <span class="comp-style">
-        <el-switch v-model="tagsView" class="drawer-switch" />
+        <el-switch v-model="settingsStore.tagsView" class="drawer-switch" />
       </span>
     </div>
 
     <div class="drawer-item">
       <span>固定 Header</span>
       <span class="comp-style">
-        <el-switch v-model="fixedHeader" class="drawer-switch" />
+        <el-switch v-model="settingsStore.fixedHeader" class="drawer-switch" />
       </span>
     </div>
 
     <div class="drawer-item">
       <span>显示 Logo</span>
       <span class="comp-style">
-        <el-switch v-model="sidebarLogo" class="drawer-switch" />
+        <el-switch v-model="settingsStore.sidebarLogo" class="drawer-switch" />
       </span>
     </div>
 
     <div class="drawer-item">
       <span>动态标题</span>
       <span class="comp-style">
-        <el-switch v-model="dynamicTitle" class="drawer-switch" />
+        <el-switch v-model="settingsStore.dynamicTitle" class="drawer-switch" @change="dynamicTitleChange" />
       </span>
     </div>
 
@@ -93,8 +93,8 @@ import useAppStore from '@/store/modules/app';
 import useSettingsStore from '@/store/modules/settings';
 import usePermissionStore from '@/store/modules/permission';
 import { handleThemeStyle } from '@/utils/theme';
-import { SettingTypeEnum } from '@/enums/SettingTypeEnum';
 import { SideThemeEnum } from '@/enums/SideThemeEnum';
+import defaultSettings from '@/settings';
 
 const { proxy } = getCurrentInstance() as ComponentInternalInstance;
 const appStore = useAppStore();
@@ -113,92 +113,58 @@ const isDark = useDark({
   valueDark: 'dark',
   valueLight: 'light'
 });
+// 匹配菜单颜色
 watch(isDark, () => {
   if (isDark.value) {
-    settingsStore.changeSetting({ key: SettingTypeEnum.SIDE_THEME, value: SideThemeEnum.DARK });
+    settingsStore.sideTheme = SideThemeEnum.DARK;
   } else {
-    settingsStore.changeSetting({ key: SettingTypeEnum.SIDE_THEME, value: sideTheme.value });
+    settingsStore.sideTheme = sideTheme.value;
   }
 });
 const toggleDark = () => useToggle(isDark);
 
-/** 是否需要topNav */
-const topNav = computed({
-  get: () => storeSettings.value.topNav,
-  set: (val) => {
-    settingsStore.changeSetting({ key: SettingTypeEnum.TOP_NAV, value: val });
-    if (!val) {
-      appStore.toggleSideBarHide(false);
-      permissionStore.setSidebarRouters(permissionStore.defaultRoutes);
-    }
+const topNavChange = (val) => {
+  if (!val) {
+    appStore.toggleSideBarHide(false);
+    permissionStore.setSidebarRouters(permissionStore.defaultRoutes);
   }
-});
-/** 是否需要tagview */
-const tagsView = computed({
-  get: () => storeSettings.value.tagsView,
-  set: (val) => {
-    settingsStore.changeSetting({ key: SettingTypeEnum.TAGS_VIEW, value: val });
-  }
-});
-/**是否需要固定头部 */
-const fixedHeader = computed({
-  get: () => storeSettings.value.fixedHeader,
-  set: (val) => {
-    settingsStore.changeSetting({ key: SettingTypeEnum.FIXED_HEADER, value: val });
-  }
-});
-/**是否需要侧边栏的logo */
-const sidebarLogo = computed({
-  get: () => storeSettings.value.sidebarLogo,
-  set: (val) => {
-    settingsStore.changeSetting({ key: SettingTypeEnum.SIDEBAR_LOGO, value: val });
-  }
-});
-/**是否需要侧边栏的动态网页的title */
-const dynamicTitle = computed({
-  get: () => storeSettings.value.dynamicTitle,
-  set: (val) => {
-    settingsStore.changeSetting({ key: SettingTypeEnum.DYNAMIC_TITLE, value: val });
-    // 动态设置网页标题
-    useDynamicTitle();
-  }
-});
+};
+
+const dynamicTitleChange = () => {
+  // 动态设置网页标题
+  useDynamicTitle();
+};
 
 const themeChange = (val: string) => {
-  settingsStore.changeSetting({ key: SettingTypeEnum.THEME, value: val });
-  theme.value = val;
-  if (val) {
-    handleThemeStyle(val);
-  }
+  settingsStore.theme = val;
+  handleThemeStyle(val);
 };
 const handleTheme = (val: string) => {
   sideTheme.value = val;
   if (isDark.value && val === SideThemeEnum.LIGHT) {
     // 暗黑模式颜色不变
-    settingsStore.changeSetting({ key: SettingTypeEnum.SIDE_THEME, value: SideThemeEnum.DARK });
+    settingsStore.sideTheme = SideThemeEnum.DARK;
     return;
   }
-  settingsStore.changeSetting({ key: SettingTypeEnum.SIDE_THEME, value: val });
+  settingsStore.sideTheme = val;
 };
 const saveSetting = () => {
   proxy?.$modal.loading('正在保存到本地，请稍候...');
-  let layoutSetting = {
-    topNav: storeSettings.value.topNav,
-    tagsView: storeSettings.value.tagsView,
-    fixedHeader: storeSettings.value.fixedHeader,
-    sidebarLogo: storeSettings.value.sidebarLogo,
-    dynamicTitle: storeSettings.value.dynamicTitle,
-    sideTheme: storeSettings.value.sideTheme,
-    theme: storeSettings.value.theme
-  };
-  localStorage.setItem('layout-setting', JSON.stringify(layoutSetting));
+  const settings = useStorage<LayoutSetting>('layout-setting', defaultSettings);
+  settings.value.topNav = storeSettings.value.topNav;
+  settings.value.tagsView = storeSettings.value.tagsView;
+  settings.value.fixedHeader = storeSettings.value.fixedHeader;
+  settings.value.sidebarLogo = storeSettings.value.sidebarLogo;
+  settings.value.dynamicTitle = storeSettings.value.dynamicTitle;
+  settings.value.sideTheme = storeSettings.value.sideTheme;
+  settings.value.theme = storeSettings.value.theme;
   setTimeout(() => {
     proxy?.$modal.closeLoading();
   }, 1000);
 };
 const resetSetting = () => {
   proxy?.$modal.loading('正在清除设置缓存并刷新，请稍候...');
-  localStorage.removeItem('layout-setting');
+  useStorage<any>('layout-setting', null).value = null;
   setTimeout('window.location.reload()', 1000);
 };
 const openSetting = () => {

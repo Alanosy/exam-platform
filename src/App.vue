@@ -10,7 +10,7 @@ import { handleThemeStyle } from '@/utils/theme';
 import useAppStore from '@/store/modules/app';
 
 const appStore = useAppStore();
-const size = computed(() => appStore.size as any);
+const size = computed(() => appStore.size);
 
 onMounted(() => {
   nextTick(() => {

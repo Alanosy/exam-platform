@@ -1,13 +1,13 @@
-import type modal from '@/plugins/modal';
-import type tab from '@/plugins/tab';
-import type download from '@/plugins/download';
-import type auth from '@/plugins/auth';
-import type cache from '@/plugins/cache';
-import type animate from '@/animate';
-import type { useDict } from '@/utils/dict';
-import type { addDateRange, handleTree, selectDictLabel, selectDictLabels, parseTime } from '@/utils/ruoyi';
-import type { getConfigKey, updateConfigByKey } from '@/api/system/config';
-import type { download as rd } from '@/utils/request';
+import modal from '@/plugins/modal';
+import tab from '@/plugins/tab';
+import download from '@/plugins/download';
+import auth from '@/plugins/auth';
+import cache from '@/plugins/cache';
+import animate from '@/animate';
+import { useDict } from '@/utils/dict';
+import handleTree, { addDateRange, selectDictLabel, selectDictLabels, parseTime } from '@/utils/ruoyi';
+import { getConfigKey, updateConfigByKey } from '@/api/system/config';
+import { download as rd } from '@/utils/request';
 
 declare module '@vue/runtime-core' {
   interface ComponentCustomProperties {

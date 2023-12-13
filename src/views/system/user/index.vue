@@ -306,9 +306,8 @@ import { to } from 'await-to-js';
 import { globalHeaders } from '@/utils/request';
 
 const router = useRouter();
-const { proxy } = getCurrentInstance() as ComponentInternalInstance;
+const { proxy } = getCurrentInstance();
 const { sys_normal_disable, sys_user_sex } = toRefs<any>(proxy?.useDict('sys_normal_disable', 'sys_user_sex'));
-
 const userList = ref<UserVO[]>();
 const loading = ref(true);
 const showSearch = ref(true);
@@ -512,7 +511,7 @@ const handleResetPwd = async (row: UserVO) => {
       inputErrorMessage: '用户密码长度必须介于 5 和 20 之间'
     })
   );
-  if (!err) {
+  if (!err && res) {
     await api.resetUserPwd(row.userId, res.value);
     proxy?.$modal.msgSuccess('修改成功，新密码是：' + res.value);
   }

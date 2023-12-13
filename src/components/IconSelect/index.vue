@@ -1,5 +1,5 @@
 <template>
-  <div class="relative" :style="{ width: width }">
+  <div class="relative" :style="{ 'width': width }">
     <el-input v-model="modelValue" readonly placeholder="点击选择图标" @click="visible = !visible">
       <template #prepend>
         <svg-icon :icon-class="modelValue" />

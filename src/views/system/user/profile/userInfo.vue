@@ -24,12 +24,10 @@
 
 <script setup lang="ts">
 import { updateUserProfile } from '@/api/system/user';
+import { propTypes } from '@/utils/propTypes';
 
 const props = defineProps({
-  user: {
-    type: Object as PropType<any>,
-    required: true
-  }
+  user: propTypes.any.isRequired
 });
 const userForm = computed(() => props.user);
 const { proxy } = getCurrentInstance() as ComponentInternalInstance;
