@@ -64,11 +64,8 @@ export default defineConfig(({ mode, command }: ConfigEnv): UserConfig => {
         '@vueuse/core',
         'path-to-regexp',
         'echarts',
-        '@wangeditor/editor',
-        '@wangeditor/editor-for-vue',
         'vue-i18n',
         '@vueup/vue-quill',
-        '@iconify/iconify',
 
         'element-plus/es/components/form/style/css',
         'element-plus/es/components/form-item/style/css',

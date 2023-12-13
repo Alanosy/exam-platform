@@ -1,4 +1,4 @@
-import { TagView, RouteRecordNormalized } from 'vue-router';
+import { TagView, RouteRecordNormalized, RouteLocationNormalized } from 'vue-router';
 
 export const useTagsViewStore = defineStore('tagsView', () => {
   const visitedViews = ref<TagView[]>([]);
