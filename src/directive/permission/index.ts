@@ -9,7 +9,7 @@ export const hasPermi: Directive = {
     // 「其他角色」按钮权限校验
     const { value } = binding;
     if (value && value instanceof Array && value.length > 0) {
-      const hasPermission = permissions.some((permi) => {
+      const hasPermission = permissions.some((permi: string) => {
         return permi === '*:*:*' || value.includes(permi);
       });
       if (!hasPermission) {
@@ -30,7 +30,7 @@ export const hasRoles: Directive = {
     const { value } = binding;
     const { roles } = useUserStore();
     if (value && value instanceof Array && value.length > 0) {
-      const hasRole = roles.some((role) => {
+      const hasRole = roles.some((role: string) => {
         return role === 'admin' || value.includes(role);
       });
       if (!hasRole) {

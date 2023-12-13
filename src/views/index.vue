@@ -99,13 +99,13 @@
 import { initWebSocket } from '@/utils/websocket';
 
 onMounted(() => {
-  let protocol = window.location.protocol === 'https:' ? 'wss://' : 'ws://'
-  initWebSocket(protocol + window.location.host + import.meta.env.VITE_APP_BASE_API + "/resource/websocket");
+  let protocol = window.location.protocol === 'https:' ? 'wss://' : 'ws://';
+  initWebSocket(protocol + window.location.host + import.meta.env.VITE_APP_BASE_API + '/resource/websocket');
 });
 
-const goTarget = (url:string) => {
-  window.open(url, '__blank')
-}
+const goTarget = (url: string) => {
+  window.open(url, '__blank');
+};
 </script>
 
 <style scoped lang="scss">
@@ -131,7 +131,7 @@ const goTarget = (url:string) => {
     margin: 0;
   }
 
-  font-family: "open sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-family: 'open sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;
   font-size: 13px;
   color: #676a6c;
   overflow-x: hidden;

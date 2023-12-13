@@ -8,6 +8,6 @@
 const url = ref('https://gitee.com/dromara/RuoYi-Vue-Plus');
 
 function goto() {
-  window.open(url.value)
+  window.open(url.value);
 }
 </script>

@@ -22,7 +22,7 @@ export const useNoticeStore = defineStore('notice', () => {
 
   //实现全部已读
   const readAll = () => {
-    state.notices.forEach((item) => {
+    state.notices.forEach((item: any) => {
       item.read = true;
     });
   };

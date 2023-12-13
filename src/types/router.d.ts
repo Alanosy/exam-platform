@@ -1,36 +1,34 @@
-import { RouteRecordRaw } from 'vue-router';
-
+import { LocationQuery, type RouteMeta as VRouteMeta } from 'vue-router';
 declare module 'vue-router' {
-  declare type RouteOption = {
-    hidden?: boolean;
+  interface RouteMeta extends VRouteMeta {
+    link?: string;
+    title?: string;
+    affix?: boolean;
+    noCache?: boolean;
+    activeMenu?: string;
+    icon?: string;
+    breadcrumb?: boolean;
+  }
+
+  interface _RouteRecordBase {
+    hidden?: boolean | string | number;
     permissions?: string[];
     roles?: string[];
-    component?: any;
-    children?: RouteOption[];
     alwaysShow?: boolean;
-    parentPath?: string;
-    meta?: {
-      title: string;
-      icon: string;
-    };
     query?: string;
-  } & RouteRecordRaw;
-
-  declare interface _RouteLocationBase {
-    children?: RouteOption[];
   }
 
-  declare interface RouteLocationOptions {
+  interface _RouteLocationBase {
+    children?: _RouteRecordBase[];
+    path?: string;
+  }
+
+  interface TagView {
     fullPath?: string;
-  }
-
-  declare interface TagView extends Partial<_RouteLocationBase> {
+    name?: string;
+    path?: string;
     title?: string;
-    meta?: {
-      link?: string;
-      title?: string;
-      affix?: boolean;
-      noCache?: boolean;
-    };
+    meta?: RouteMeta;
+    query?: LocationQuery;
   }
 }

@@ -1,4 +1,4 @@
-import { createWebHistory, createRouter, RouteOption } from 'vue-router';
+import { createWebHistory, createRouter, RouteRecordRaw } from 'vue-router';
 /* Layout */
 import Layout from '@/layout/index.vue';
 
@@ -25,7 +25,7 @@ import Layout from '@/layout/index.vue';
  */
 
 // 公共路由
-export const constantRoutes: RouteOption[] = [
+export const constantRoutes: RouteRecordRaw[] = [
   {
     path: '/redirect',
     component: Layout,
@@ -92,7 +92,7 @@ export const constantRoutes: RouteOption[] = [
 ];
 
 // 动态路由，基于用户权限动态去加载
-export const dynamicRoutes: RouteOption[] = [
+export const dynamicRoutes: RouteRecordRaw[] = [
   {
     path: '/system/user-auth',
     component: Layout,

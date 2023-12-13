@@ -95,7 +95,7 @@
         </el-form-item>
       </el-col>
 
-      <el-col :span="24" v-if="infoForm.genType == '1'">
+      <el-col v-if="infoForm.genType == '1'" :span="24">
         <el-form-item prop="genPath">
           <template #label>
             自定义路径
@@ -223,7 +223,7 @@
 
 <script setup lang="ts">
 import { listMenu } from '@/api/system/menu';
-import { propTypes } from "@/utils/propTypes";
+import { propTypes } from '@/utils/propTypes';
 
 interface MenuOptionsType {
   menuId: number | string;
@@ -246,21 +246,21 @@ const table = computed(() => props.tables);
 
 // 表单校验
 const rules = ref({
-  tplCategory: [{ required: true, message: "请选择生成模板", trigger: "blur" }],
-  packageName: [{ required: true, message: "请输入生成包路径", trigger: "blur" }],
-  moduleName: [{ required: true, message: "请输入生成模块名", trigger: "blur" }],
-  businessName: [{ required: true, message: "请输入生成业务名", trigger: "blur" }],
-  functionName: [{ required: true, message: "请输入生成功能名", trigger: "blur" }]
+  tplCategory: [{ required: true, message: '请选择生成模板', trigger: 'blur' }],
+  packageName: [{ required: true, message: '请输入生成包路径', trigger: 'blur' }],
+  moduleName: [{ required: true, message: '请输入生成模块名', trigger: 'blur' }],
+  businessName: [{ required: true, message: '请输入生成业务名', trigger: 'blur' }],
+  functionName: [{ required: true, message: '请输入生成功能名', trigger: 'blur' }]
 });
 const subSelectChange = () => {
-  infoForm.value.subTableFkName = "";
-}
+  infoForm.value.subTableFkName = '';
+};
 const tplSelectChange = (value: string) => {
-  if (value !== "sub") {
-    infoForm.value.subTableName = "";
-    infoForm.value.subTableFkName = "";
+  if (value !== 'sub') {
+    infoForm.value.subTableName = '';
+    infoForm.value.subTableFkName = '';
   }
-}
+};
 const setSubTableColumns = (value: string) => {
   table.value.forEach((item: any) => {
     const name = item.tableName;
@@ -268,24 +268,27 @@ const setSubTableColumns = (value: string) => {
       subColumns.value = item.columns;
       return;
     }
-  })
-}
+  });
+};
 
 /** 查询菜单下拉树结构 */
 const getMenuTreeselect = async () => {
   const res = await listMenu();
-  res.data.forEach(m => m.menuId = m.menuId.toString());
-  const data = proxy?.handleTree<MenuOptionsType>(res.data, "menuId");
+  res.data.forEach((m) => (m.menuId = m.menuId.toString()));
+  const data = proxy?.handleTree<MenuOptionsType>(res.data, 'menuId');
   if (data) {
-    menuOptions.value = data
+    menuOptions.value = data;
   }
-}
+};
 
-watch(() => props.info.subTableName, val => {
-  setSubTableColumns(val);
-});
+watch(
+  () => props.info.subTableName,
+  (val) => {
+    setSubTableColumns(val);
+  }
+);
 
 onMounted(() => {
   getMenuTreeselect();
-})
+});
 </script>

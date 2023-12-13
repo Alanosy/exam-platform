@@ -5,14 +5,11 @@
 </template>
 
 <script setup lang="ts">
+import { propTypes } from '@/utils/propTypes';
+
 const props = defineProps({
-    src: {
-        type: String,
-        default: "/"
-    },
-    iframeId: {
-        type: String
-    }
+  src: propTypes.string.def('/'),
+  iframeId: propTypes.string.isRequired
 });
-const height = ref(document.documentElement.clientHeight - 94.5 + "px");
+const height = ref(document.documentElement.clientHeight - 94.5 + 'px');
 </script>

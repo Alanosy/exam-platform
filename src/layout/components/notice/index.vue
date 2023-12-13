@@ -1,12 +1,12 @@
 <template>
-  <div class="layout-navbars-breadcrumb-user-news" v-loading="state.loading">
+  <div v-loading="state.loading" class="layout-navbars-breadcrumb-user-news">
     <div class="head-box">
       <div class="head-box-title">通知公告</div>
       <div class="head-box-btn" @click="readAll">全部已读</div>
     </div>
-    <div class="content-box" v-loading="state.loading">
+    <div v-loading="state.loading" class="content-box">
       <template v-if="newsList.length > 0">
-        <div class="content-box-item" v-for="(v, k) in newsList" :key="k" @click="onNewsClick(k)">
+        <div v-for="(v, k) in newsList" :key="k" class="content-box-item" @click="onNewsClick(k)">
           <div class="item-conten">
             <div>{{ v.message }}</div>
             <div class="content-box-msg"></div>
@@ -17,26 +17,24 @@
           <span v-else class="el-tag el-tag--danger el-tag--mini read">未读</span>
         </div>
       </template>
-      <el-empty :description="'消息为空'" v-else></el-empty>
+      <el-empty v-else :description="'消息为空'"></el-empty>
     </div>
-    <div class="foot-box" @click="onGoToGiteeClick" v-if="newsList.length > 0">前往gitee</div>
+    <div v-if="newsList.length > 0" class="foot-box" @click="onGoToGiteeClick">前往gitee</div>
   </div>
 </template>
 
 <script setup lang="ts" name="layoutBreadcrumbUserNews">
-import { ref } from "vue";
-import { storeToRefs } from 'pinia'
-import { nextTick, onMounted, reactive } from "vue";
+import { storeToRefs } from 'pinia';
 import useNoticeStore from '@/store/modules/notice';
 
 const noticeStore = storeToRefs(useNoticeStore());
-const {readAll} = useNoticeStore();
+const { readAll } = useNoticeStore();
 
 // 定义变量内容
 const state = reactive({
-  loading: false,
+  loading: false
 });
-const newsList =ref([]) as any;
+const newsList = ref([]) as any;
 
 /**
  * 初始化数据
@@ -48,7 +46,6 @@ const getTableData = async () => {
   state.loading = false;
 };
 
-
 //点击消息，写入已读
 const onNewsClick = (item: any) => {
   newsList.value[item].read = true;
@@ -58,7 +55,7 @@ const onNewsClick = (item: any) => {
 
 // 前往通知中心点击
 const onGoToGiteeClick = () => {
-  window.open("https://gitee.com/dromara/RuoYi-Vue-Plus/tree/5.X/");
+  window.open('https://gitee.com/dromara/RuoYi-Vue-Plus/tree/5.X/');
 };
 
 onMounted(() => {

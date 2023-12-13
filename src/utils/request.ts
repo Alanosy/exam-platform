@@ -89,7 +89,6 @@ service.interceptors.request.use(
     return config;
   },
   (error: any) => {
-    console.log(error);
     return Promise.reject(error);
   }
 );
@@ -138,7 +137,6 @@ service.interceptors.response.use(
       }
       return Promise.reject('无效的会话，或者会话已过期，请重新登录。');
     } else if (code === HttpStatus.SERVER_ERROR) {
-      console.log(msg);
       ElMessage({ message: msg, type: 'error' });
       return Promise.reject(new Error(msg));
     } else if (code === HttpStatus.WARN) {

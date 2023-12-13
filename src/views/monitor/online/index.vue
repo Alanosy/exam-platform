@@ -2,7 +2,7 @@
   <div class="p-2">
     <div class="mb-[10px]">
       <el-card shadow="hover">
-        <el-form :model="queryParams" ref="queryFormRef" :inline="true">
+        <el-form ref="queryFormRef" :model="queryParams" :inline="true">
           <el-form-item label="登录地址" prop="ipaddr">
             <el-input v-model="queryParams.ipaddr" placeholder="请输入登录地址" clearable style="width: 200px" @keyup.enter="handleQuery" />
           </el-form-item>
@@ -20,7 +20,7 @@
       <el-table
         v-loading="loading"
         :data="onlineList.slice((queryParams.pageNum - 1) * queryParams.pageSize, queryParams.pageNum * queryParams.pageSize)"
-        style="width: 100%;"
+        style="width: 100%"
       >
         <el-table-column label="序号" width="50" type="index" align="center">
           <template #default="scope">
@@ -48,14 +48,14 @@
         <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
           <template #default="scope">
             <el-tooltip content="强退" placement="top">
-              <el-button link type="primary" icon="Delete" @click="handleForceLogout(scope.row)" v-hasPermi="['monitor:online:forceLogout']">
+              <el-button v-hasPermi="['monitor:online:forceLogout']" link type="primary" icon="Delete" @click="handleForceLogout(scope.row)">
               </el-button>
             </el-tooltip>
           </template>
         </el-table-column>
       </el-table>
 
-      <pagination v-show="total > 0" :total="total" v-model:page="queryParams.pageNum" v-model:limit="queryParams.pageSize" />
+      <pagination v-show="total > 0" v-model:page="queryParams.pageNum" v-model:limit="queryParams.pageSize" :total="total" />
     </el-card>
   </div>
 </template>
@@ -67,7 +67,7 @@ import api from "@/api/system/user";
 import {to} from "await-to-js";
 
 const { proxy } = getCurrentInstance() as ComponentInternalInstance;
-const { sys_device_type } = toRefs<any>(proxy?.useDict("sys_device_type"));
+const { sys_device_type } = toRefs<any>(proxy?.useDict('sys_device_type'));
 
 const onlineList = ref<OnlineVO[]>([]);
 const loading = ref(true);
@@ -89,17 +89,17 @@ const getList = async () => {
   onlineList.value = res.rows;
   total.value = res.total;
   loading.value = false;
-}
+};
 /** 搜索按钮操作 */
 const handleQuery = () => {
   queryParams.value.pageNum = 1;
   getList();
-}
+};
 /** 重置按钮操作 */
 const resetQuery = () => {
   queryFormRef.value?.resetFields();
   handleQuery();
-}
+};
 /** 强退按钮操作 */
 const handleForceLogout = async (row: OnlineVO) => {
   const [err] = await to(proxy?.$modal.confirm('是否确认强退名称为"' + row.userName + '"的用户?') as any);
@@ -112,5 +112,5 @@ const handleForceLogout = async (row: OnlineVO) => {
 
 onMounted(() => {
   getList();
-})
+});
 </script>

@@ -1,28 +1,35 @@
 module.exports = {
   env: {
     browser: true,
-    es2021: true,
-    node: true
+    node: true,
+    es6: true
   },
   parser: 'vue-eslint-parser',
   extends: [
-    'eslint:recommended',
-    'plugin:vue/vue3-essential',
-    'plugin:@typescript-eslint/recommended',
+    'plugin:vue/vue3-recommended',
     './.eslintrc-auto-import.json',
-    'plugin:prettier/recommended'
+    'plugin:@typescript-eslint/recommended',
+    "prettier",
+    'plugin:prettier/recommended',
   ],
   parserOptions: {
     ecmaVersion: '2020',
     sourceType: 'module',
+    project: "./tsconfig.*?.json",
     parser: '@typescript-eslint/parser'
   },
-  plugins: ['vue', '@typescript-eslint'],
+  plugins: ['vue', '@typescript-eslint', 'import', 'promise', 'node', 'prettier'],
   rules: {
-    'vue/multi-word-component-names': 'off',
     '@typescript-eslint/no-empty-function': 'off',
     '@typescript-eslint/no-explicit-any': 'off',
+
+    // vue
+    'vue/multi-word-component-names': 'off',
+    'vue/valid-define-props': 'off',
     'vue/no-v-model-argument': 'off',
+    'prefer-rest-params': 'off',
+    // prettier
+    'prettier/prettier': 'error',
     '@typescript-eslint/ban-types': [
       'error',
       {

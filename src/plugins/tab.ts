@@ -1,6 +1,6 @@
 import { useTagsViewStore } from '@/store/modules/tagsView';
 import router from '@/router';
-import { TagView, RouteLocationRaw } from 'vue-router';
+import { TagView, RouteLocationMatched } from 'vue-router';
 
 export default {
   /**
@@ -10,7 +10,7 @@ export default {
   async refreshPage(obj?: TagView): Promise<void> {
     const { path, query, matched } = router.currentRoute.value;
     if (obj === undefined) {
-      matched.forEach((m) => {
+      matched.forEach((m: RouteLocationMatched) => {
         if (m.components && m.components.default && m.components.default.name) {
           if (!['Layout', 'ParentView'].includes(m.components.default.name)) {
             obj = { name: m.components.default.name, path: path, query: query };
@@ -31,8 +31,8 @@ export default {
     });
   },
   // 关闭当前tab页签，打开新页签
-  closeOpenPage(obj: RouteLocationRaw): void {
-    useTagsViewStore().delView(router.currentRoute.value);
+  closeOpenPage(obj: TagView): void {
+    useTagsViewStore().delView(router.currentRoute.value as any);
     if (obj !== undefined) {
       router.push(obj);
     }
@@ -41,10 +41,10 @@ export default {
   async closePage(obj?: TagView): Promise<{ visitedViews: TagView[]; cachedViews: string[] } | any> {
     if (obj === undefined) {
       // prettier-ignore
-      const { visitedViews } = await useTagsViewStore().delView(router.currentRoute.value) as any
+      const { visitedViews } = await useTagsViewStore().delView(router.currentRoute.value as any)
       const latestView = visitedViews.slice(-1)[0];
       if (latestView) {
-        return router.push(latestView.fullPath);
+        return router.push(latestView.fullPath as any);
       }
       return router.push('/');
     }
@@ -56,15 +56,15 @@ export default {
   },
   // 关闭左侧tab页签
   closeLeftPage(obj?: TagView) {
-    return useTagsViewStore().delLeftTags(obj || router.currentRoute.value);
+    return useTagsViewStore().delLeftTags(obj || (router.currentRoute.value as any));
   },
   // 关闭右侧tab页签
   closeRightPage(obj?: TagView) {
-    return useTagsViewStore().delRightTags(obj || router.currentRoute.value);
+    return useTagsViewStore().delRightTags(obj || (router.currentRoute.value as any));
   },
   // 关闭其他tab页签
   closeOtherPage(obj?: TagView) {
-    return useTagsViewStore().delOthersViews(obj || router.currentRoute.value);
+    return useTagsViewStore().delOthersViews(obj || (router.currentRoute.value as any));
   },
   /**
    * 打开tab页签

@@ -21,12 +21,12 @@
       <h4 class="panel-title">角色信息</h4>
       <div>
         <el-table
+          ref="tableRef"
           v-loading="loading"
           :row-key="getRowKey"
-          @row-click="clickRow"
-          ref="tableRef"
-          @selection-change="handleSelectionChange"
           :data="roles.slice((pageNum - 1) * pageSize, pageNum * pageSize)"
+          @row-click="clickRow"
+          @selection-change="handleSelectionChange"
         >
           <el-table-column label="序号" width="55" type="index" align="center">
             <template #default="scope">
@@ -43,8 +43,8 @@
             </template>
           </el-table-column>
         </el-table>
-        <pagination v-show="total > 0" :total="total" v-model:page="pageNum" v-model:limit="pageSize" />
-        <div style="text-align: center;margin-left:-120px;margin-top:30px;">
+        <pagination v-show="total > 0" v-model:page="pageNum" v-model:limit="pageSize" :total="total" />
+        <div style="text-align: center; margin-left: -120px; margin-top: 30px">
           <el-button type="primary" @click="submitForm()">提交</el-button>
           <el-button @click="close()">返回</el-button>
         </div>
@@ -55,9 +55,9 @@
 </template>
 
 <script setup name="AuthRole" lang="ts">
-import { RoleVO } from "@/api/system/role/types";
-import { getAuthRole, updateAuthRole } from "@/api/system/user";
-import { UserForm } from "@/api/system/user/types";
+import { RoleVO } from '@/api/system/role/types';
+import { getAuthRole, updateAuthRole } from '@/api/system/user';
+import { UserForm } from '@/api/system/user/types';
 
 const route = useRoute();
 const { proxy } = getCurrentInstance() as ComponentInternalInstance;
@@ -70,7 +70,7 @@ const roleIds = ref<Array<string | number>>([]);
 const roles = ref<RoleVO[]>([]);
 const form = ref<Partial<UserForm>>({
   nickName: undefined,
-  userName: "",
+  userName: '',
   userId: undefined
 });
 
@@ -83,7 +83,7 @@ const clickRow = (row: RoleVO) => {
 };
 /** 多选框选中数据 */
 const handleSelectionChange = (selection: RoleVO[]) => {
-  roleIds.value = selection.map(item => item.roleId);
+  roleIds.value = selection.map((item) => item.roleId);
 };
 /** 保存选中的数据编号 */
 const getRowKey = (row: RoleVO): string => {
@@ -91,15 +91,15 @@ const getRowKey = (row: RoleVO): string => {
 };
 /** 关闭按钮 */
 const close = () => {
-  const obj = { path: "/system/user" };
+  const obj = { path: '/system/user' };
   proxy?.$tab.closeOpenPage(obj);
 };
 /** 提交按钮 */
 const submitForm = async () => {
   const userId = form.value.userId;
-  const rIds = roleIds.value.join(",");
+  const rIds = roleIds.value.join(',');
   await updateAuthRole({ userId: userId as string, roleIds: rIds });
-  proxy?.$modal.msgSuccess("授权成功");
+  proxy?.$modal.msgSuccess('授权成功');
   close();
 };
 
@@ -112,7 +112,7 @@ const getList = async () => {
     Object.assign(roles.value, res.data.roles);
     total.value = roles.value.length;
     await nextTick(() => {
-      roles.value.forEach(row => {
+      roles.value.forEach((row) => {
         if (row?.flag) {
           tableRef.value?.toggleRowSelection(row, true);
         }

@@ -1,8 +1,9 @@
 declare module '*.vue' {
   import { DefineComponent } from 'vue';
-  const component: DefineComponent<{}, {}, any>;
-  export default component;
+  const Component: DefineComponent<{}, {}, any>;
+  export default Component;
 }
+
 declare module '*.avif' {
   const src: string;
   export default src;

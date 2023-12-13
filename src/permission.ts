@@ -8,6 +8,7 @@ import { isRelogin } from '@/utils/request';
 import useUserStore from '@/store/modules/user';
 import useSettingsStore from '@/store/modules/settings';
 import usePermissionStore from '@/store/modules/permission';
+import { RouteRecordRaw } from 'vue-router';
 
 NProgress.configure({ showSpinner: false });
 const whiteList = ['/login', '/register', '/social-callback'];
@@ -35,7 +36,7 @@ router.beforeEach(async (to, from, next) => {
           isRelogin.show = false;
           const accessRoutes = await usePermissionStore().generateRoutes();
           // 根据roles权限生成可访问的路由表
-          accessRoutes.forEach((route) => {
+          accessRoutes.forEach((route: RouteRecordRaw) => {
             if (!isHttp(route.path)) {
               router.addRoute(route); // 动态添加可访问路由表
             }
@@ -48,7 +49,7 @@ router.beforeEach(async (to, from, next) => {
     }
   } else {
     // 没有token
-    if (whiteList.indexOf(to.path) !== -1) {
+    if (whiteList.indexOf(to.path as string) !== -1) {
       // 在免登录白名单，直接进入
       next();
     } else {

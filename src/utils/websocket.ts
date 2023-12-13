@@ -20,7 +20,7 @@
 
 import { getToken } from '@/utils/auth';
 import useNoticeStore from '@/store/modules/notice';
-import { ElNotification } from "element-plus";
+import { ElNotification } from 'element-plus';
 
 const { addNotice } = useNoticeStore();
 
@@ -135,7 +135,7 @@ export const websocketonmessage = () => {
       message: e.data,
       type: 'success',
       duration: 3000
-    })
+    });
     return e.data;
   };
 };

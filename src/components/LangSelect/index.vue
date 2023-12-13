@@ -20,16 +20,15 @@ import { useAppStore } from '@/store/modules/app';
 const appStore = useAppStore();
 const { locale } = useI18n();
 
-
 const message: any = {
   zh_CN: '切换语言成功！',
-  en_US: 'Switch Language Successful!',
-}
+  en_US: 'Switch Language Successful!'
+};
 const handleLanguageChange = (lang: string) => {
   locale.value = lang;
   appStore.changeLanguage(lang);
   ElMessage.success(message[lang] || '切换语言成功！');
-}
+};
 </script>
 
 <style lang="scss" scoped>
