@@ -123,7 +123,7 @@ watch(isDark, () => {
 });
 const toggleDark = () => useToggle(isDark);
 
-const topNavChange = (val) => {
+const topNavChange = (val: any) => {
   if (!val) {
     appStore.toggleSideBarHide(false);
     permissionStore.setSidebarRouters(permissionStore.defaultRoutes);

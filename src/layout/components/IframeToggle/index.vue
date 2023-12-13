@@ -1,13 +1,11 @@
 <template>
-  <transition-group name="fade-transform" mode="out-in">
-    <inner-link
-      v-for="(item, index) in tagsViewStore.iframeViews"
-      v-show="route.path === item.path"
-      :key="item.path"
-      :iframe-id="'iframe' + index"
-      :src="iframeUrl(item.meta ? item.meta.link : '', item.query)"
-    ></inner-link>
-  </transition-group>
+  <inner-link
+    v-for="(item, index) in tagsViewStore.iframeViews"
+    v-show="route.path === item.path"
+    :key="item.path"
+    :iframe-id="'iframe' + index"
+    :src="iframeUrl(item.meta ? item.meta.link : '', item.query)"
+  ></inner-link>
 </template>
 
 <script setup lang="ts">
@@ -17,7 +15,7 @@ import useTagsViewStore from '@/store/modules/tagsView';
 const route = useRoute();
 const tagsViewStore = useTagsViewStore();
 
-function iframeUrl(url: string, query: any) {
+function iframeUrl(url: string | undefined, query: any) {
   if (Object.keys(query).length > 0) {
     let params = Object.keys(query)
       .map((key) => key + '=' + query[key])
