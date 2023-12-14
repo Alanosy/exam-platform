@@ -51,14 +51,12 @@
 
 <script lang="ts" setup>
 import { authUnlock, authBinding } from '@/api/system/social/auth';
-import { PropType } from 'vue';
+import { propTypes } from '@/utils/propTypes';
 
 const { proxy } = getCurrentInstance() as ComponentInternalInstance;
 
 const props = defineProps({
-  auths: {
-    type: Object as PropType<any>
-  }
+  auths: propTypes.any.isRequired
 });
 const auths = computed(() => props.auths);
 

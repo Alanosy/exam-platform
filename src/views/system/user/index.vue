@@ -372,7 +372,8 @@ const initFormData: UserForm = {
   postIds: [],
   roleIds: []
 };
-const data = reactive<PageData<UserForm, UserQuery>>({
+
+const initData: PageData<UserForm, UserQuery> = {
   form: { ...initFormData },
   queryParams: {
     pageNum: 1,
@@ -380,7 +381,8 @@ const data = reactive<PageData<UserForm, UserQuery>>({
     userName: '',
     phonenumber: '',
     status: '',
-    deptId: ''
+    deptId: '',
+    roleId: ''
   },
   rules: {
     userName: [
@@ -417,7 +419,8 @@ const data = reactive<PageData<UserForm, UserQuery>>({
       }
     ]
   }
-});
+};
+const data = reactive<PageData<UserForm, UserQuery>>(initData);
 
 const { queryParams, form, rules } = toRefs<PageData<UserForm, UserQuery>>(data);
 

@@ -1,4 +1,5 @@
-import type { ComponentInternalInstance as ComponentInstance, PropType as VuePropType } from 'vue/runtime-core';
+import type { ComponentInternalInstance as ComponentInstance } from 'vue/runtime-core';
+import type { PropType as VuePropType } from 'vue';
 import { LanguageEnum } from '@/enums/LanguageEnum';
 
 declare global {

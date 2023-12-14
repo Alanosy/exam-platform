@@ -143,7 +143,7 @@ const moveToCurrentTag = () => {
         scrollPaneRef.value?.moveToTarget(r);
         // when query is different then update
         if (r.fullPath !== route.fullPath) {
-          useTagsViewStore().updateVisitedView(route);
+          useTagsViewStore().updateVisitedView(route as any);
         }
       }
     }
@@ -163,14 +163,14 @@ const closeSelectedTag = (view: TagView) => {
   });
 };
 const closeRightTags = () => {
-  proxy?.$tab.closeRightPage(selectedTag.value).then((visitedViews) => {
-    if (!visitedViews.find((i) => i.fullPath === route.fullPath)) {
+  proxy?.$tab.closeRightPage(selectedTag.value).then((visitedViews: TagView[]) => {
+    if (!visitedViews.find((i: TagView) => i.fullPath === route.fullPath)) {
       toLastView(visitedViews);
     }
   });
 };
 const closeLeftTags = () => {
-  proxy?.$tab.closeLeftPage(selectedTag.value).then((visitedViews) => {
+  proxy?.$tab.closeLeftPage(selectedTag.value).then((visitedViews: TagView[]) => {
     if (!visitedViews.find((i: TagView) => i.fullPath === route.fullPath)) {
       toLastView(visitedViews);
     }

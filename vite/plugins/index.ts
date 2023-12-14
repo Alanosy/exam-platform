@@ -9,14 +9,14 @@ import createSetupExtend from './setup-extend';
 import path from 'path';
 
 export default (viteEnv: any, isBuild = false): [] => {
-  const vitePlusgins: any = [];
-  vitePlusgins.push(vue());
-  vitePlusgins.push(createUnoCss());
-  vitePlusgins.push(createAutoImport(path));
-  vitePlusgins.push(createComponents(path));
-  vitePlusgins.push(createCompression(viteEnv));
-  vitePlusgins.push(createIcons());
-  vitePlusgins.push(createSvgIconsPlugin(path, isBuild));
-  vitePlusgins.push(createSetupExtend());
-  return vitePlusgins;
+  const vitePlugins: any = [];
+  vitePlugins.push(vue());
+  vitePlugins.push(createUnoCss());
+  vitePlugins.push(createAutoImport(path));
+  vitePlugins.push(createComponents(path));
+  vitePlugins.push(createCompression(viteEnv));
+  vitePlugins.push(createIcons());
+  vitePlugins.push(createSvgIconsPlugin(path, isBuild));
+  vitePlugins.push(createSetupExtend());
+  return vitePlugins;
 };

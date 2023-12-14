@@ -48,7 +48,10 @@ import { propTypes } from '@/utils/propTypes';
 import { globalHeaders } from '@/utils/request';
 
 const props = defineProps({
-  modelValue: [String, Object, Array],
+  modelValue: {
+    type: [String, Object, Array],
+    default: () => []
+  },
   // 数量限制
   limit: propTypes.number.def(5),
   // 大小限制(MB)
@@ -79,11 +82,11 @@ watch(
     if (val) {
       let temp = 1;
       // 首先将值转为数组
-      let list = [];
+      let list: any[] = [];
       if (Array.isArray(val)) {
         list = val;
       } else {
-        const res = await listByIds(val as string);
+        const res = await listByIds(val);
         list = res.data.map((oss) => {
           const data = {
             name: oss.originalName,

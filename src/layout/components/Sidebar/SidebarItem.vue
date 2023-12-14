@@ -36,7 +36,6 @@ import { getNormalPath } from '@/utils/ruoyi';
 import { RouteRecordRaw } from 'vue-router';
 
 const props = defineProps({
-  // route object
   item: {
     type: Object as PropType<RouteRecordRaw>,
     required: true
@@ -85,7 +84,7 @@ const resolvePath = (routePath: string, routeQuery?: string): any => {
   if (isExternal(routePath)) {
     return routePath;
   }
-  if (isExternal(props.basePath)) {
+  if (isExternal(props.basePath as string)) {
     return props.basePath;
   }
   if (routeQuery) {

@@ -33,9 +33,9 @@ const isDashboard = (route: RouteLocationMatched) => {
   }
   return name.trim() === 'Index';
 };
-const handleLink = (item: RouteLocationMatched) => {
+const handleLink = (item) => {
   const { redirect, path } = item;
-  redirect ? router.push(redirect as string) : router.push(path);
+  redirect ? router.push(redirect) : router.push(path);
 };
 
 watchEffect(() => {

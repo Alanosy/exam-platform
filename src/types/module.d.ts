@@ -30,3 +30,8 @@ declare module '@vue/runtime-core' {
     parseTime: typeof parseTime;
   }
 }
+
+declare module 'vform3-builds' {
+  const content: any;
+  export = content;
+}

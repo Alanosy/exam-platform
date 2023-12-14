@@ -68,7 +68,7 @@ export const selectDictLabel = (datas: any, value: number | string) => {
   if (value === undefined) {
     return '';
   }
-  const actions = [];
+  const actions: Array<string | number> = [];
   Object.keys(datas).some((key) => {
     if (datas[key].value == '' + value) {
       actions.push(datas[key].label);

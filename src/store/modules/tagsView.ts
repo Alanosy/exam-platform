@@ -123,7 +123,7 @@ export const useTagsViewStore = defineStore('tagsView', () => {
     });
   };
 
-  const updateVisitedView = (view: TagView | RouteLocationNormalized): void => {
+  const updateVisitedView = (view: TagView): void => {
     for (let v of visitedViews.value) {
       if (v.path === view.path) {
         v = Object.assign(v, view);
@@ -170,7 +170,7 @@ export const useTagsViewStore = defineStore('tagsView', () => {
     });
   };
 
-  const addCachedView = (view: TagView | RouteLocationNormalized): void => {
+  const addCachedView = (view: TagView): void => {
     const viewName = view.name as string;
     if (!viewName) return;
     if (cachedViews.value.includes(viewName)) return;

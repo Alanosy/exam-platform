@@ -33,7 +33,7 @@ const realSrc = computed(() => {
 
 const realSrcList = computed(() => {
   if (!props.src) {
-    return;
+    return [];
   }
   let real_src_list = props.src.split(',');
   let srcList: string[] = [];

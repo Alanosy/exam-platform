@@ -27,10 +27,13 @@
 </template>
 
 <script setup lang="ts">
-import { QuillEditor, Quill } from '@vueup/vue-quill';
 import '@vueup/vue-quill/dist/vue-quill.snow.css';
+
+import { QuillEditor, Quill } from '@vueup/vue-quill';
 import { propTypes } from '@/utils/propTypes';
 import { globalHeaders } from '@/utils/request';
+
+defineEmits(['update:modelValue']);
 
 const props = defineProps({
   /* 编辑器的内容 */
@@ -55,7 +58,7 @@ const upload = reactive<UploadOption>({
 });
 const quillEditorRef = ref();
 
-const options = ref({
+const options = ref<any>({
   theme: 'snow',
   bounds: document.body,
   debug: 'warn',

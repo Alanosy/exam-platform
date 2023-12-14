@@ -50,7 +50,8 @@ import { UserQuery } from '@/api/system/user/types';
 
 const props = defineProps({
   roleId: {
-    type: [Number, String]
+    type: [Number, String],
+    required: true
   }
 });
 

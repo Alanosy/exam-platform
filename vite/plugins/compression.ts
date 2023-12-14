@@ -1,6 +1,6 @@
 import compression from 'vite-plugin-compression';
 
-export default function createCompression(env: any) {
+export default (env: any) => {
   const { VITE_BUILD_COMPRESS } = env;
   const plugin: any[] = [];
   if (VITE_BUILD_COMPRESS) {
@@ -25,4 +25,4 @@ export default function createCompression(env: any) {
     }
   }
   return plugin;
-}
+};

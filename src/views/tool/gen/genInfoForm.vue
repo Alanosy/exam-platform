@@ -228,16 +228,16 @@ import { propTypes } from '@/utils/propTypes';
 interface MenuOptionsType {
   menuId: number | string;
   menuName: string;
-  children: MenuOptionsType[] | undefined;
+  children?: MenuOptionsType[];
 }
+const { proxy } = getCurrentInstance();
 
 const subColumns = ref<any>([]);
 const menuOptions = ref<Array<MenuOptionsType>>([]);
-const { proxy } = getCurrentInstance();
 
 const props = defineProps({
-  info: propTypes.any.def(null),
-  tables: propTypes.any.def(null)
+  info: propTypes.any.isRequired,
+  tables: propTypes.any.isRequired
 });
 
 const infoForm = computed(() => props.info);
@@ -276,6 +276,7 @@ const getMenuTreeselect = async () => {
   const res = await listMenu();
   res.data.forEach((m) => (m.menuId = m.menuId.toString()));
   const data = proxy?.handleTree<MenuOptionsType>(res.data, 'menuId');
+
   if (data) {
     menuOptions.value = data;
   }

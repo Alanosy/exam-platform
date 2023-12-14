@@ -46,7 +46,10 @@ import { propTypes } from '@/utils/propTypes';
 import { globalHeaders } from '@/utils/request';
 
 const props = defineProps({
-  modelValue: [String, Object, Array],
+  modelValue: {
+    type: [String, Object, Array],
+    default: () => []
+  },
   // 图片数量限制
   limit: propTypes.number.def(5),
   // 大小限制(MB)

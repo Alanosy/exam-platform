@@ -16,6 +16,7 @@ declare module 'vue-router' {
     roles?: string[];
     alwaysShow?: boolean;
     query?: string;
+    parentPath?: string;
   }
 
   interface _RouteLocationBase {

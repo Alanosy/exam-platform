@@ -2,21 +2,25 @@
   "compilerOptions": {
     "target": "esnext",
     "module": "esnext",
-    "useDefineForClassFields": true,
-    "moduleResolution": "node",
+//    "useDefineForClassFields": true,
+    "moduleResolution": "bundler",
     "strict": true,
     "jsx": "preserve",
     "sourceMap": true,
     "resolveJsonModule": true,
     "esModuleInterop": true,
+    "strictFunctionTypes": false,
     "lib": ["esnext", "dom"],
+    "noImplicitAny": false,
     "baseUrl": ".",
     "allowJs": true,
+    "experimentalDecorators": true,
     "paths": {
       "@/*": ["src/*"]
     },
     "types": ["vite/client"],
     "skipLibCheck": true,
+    "removeComments": true,
     // 允许默认导入
     "allowSyntheticDefaultImports": true,
     "forceConsistentCasingInFileNames": true

@@ -60,6 +60,7 @@ import 'vue-cropper/dist/index.css';
 import { VueCropper } from 'vue-cropper';
 import { uploadAvatar } from '@/api/system/user';
 import useUserStore from '@/store/modules/user';
+import { UploadRawFile } from 'element-plus';
 
 interface Options {
   img: string | any; // 裁剪图片的地址
@@ -118,7 +119,7 @@ const changeScale = (num: number) => {
   cropper.value.changeScale(num);
 };
 /** 上传预处理 */
-const beforeUpload = (file: any) => {
+const beforeUpload = (file: UploadRawFile): any => {
   if (file.type.indexOf('image/') == -1) {
     proxy?.$modal.msgError('文件格式错误，请上传图片类型,如：JPG，PNG后缀的文件。');
   } else {
@@ -138,7 +139,7 @@ const uploadImg = async () => {
     const res = await uploadAvatar(formData);
     open.value = false;
     options.img = res.data.imgUrl;
-    userStore.setAvatar(options.img as string);
+    userStore.setAvatar(options.img);
     proxy?.$modal.msgSuccess('修改成功');
     visible.value = false;
   });
