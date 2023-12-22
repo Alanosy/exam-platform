@@ -63,6 +63,10 @@ export const useUserStore = defineStore('user', () => {
     removeToken();
   };
 
+  const setAvatar = (value: string) => {
+    avatar.value = value;
+  };
+
   return {
     userId,
     token,
@@ -72,7 +76,8 @@ export const useUserStore = defineStore('user', () => {
     permissions,
     login,
     getInfo,
-    logout
+    logout,
+    setAvatar
   };
 });
 

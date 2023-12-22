@@ -2,7 +2,7 @@
   <div class="relative" :style="{ width: width }">
     <el-input v-model="modelValue" readonly @click="visible = !visible" placeholder="点击选择图标">
       <template #prepend>
-        <svg-icon :icon-class="modelValue as string" />
+        <svg-icon :icon-class="modelValue" />
       </template>
     </el-input>
 

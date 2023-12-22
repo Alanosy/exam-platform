@@ -63,6 +63,8 @@
 <script setup name="Online" lang="ts">
 import { forceLogout, list as initData } from "@/api/monitor/online";
 import { OnlineQuery, OnlineVO } from "@/api/monitor/online/types";
+import api from "@/api/system/user";
+import {to} from "await-to-js";
 
 const { proxy } = getCurrentInstance() as ComponentInternalInstance;
 const { sys_device_type } = toRefs<any>(proxy?.useDict("sys_device_type"));
@@ -100,10 +102,12 @@ const resetQuery = () => {
 }
 /** 强退按钮操作 */
 const handleForceLogout = async (row: OnlineVO) => {
-  await proxy?.$modal.confirm('是否确认强退名称为"' + row.userName + '"的用户?');
-  await forceLogout(row.tokenId);
-  await getList();
-  proxy?.$modal.msgSuccess("删除成功");
+  const [err] = await to(proxy?.$modal.confirm('是否确认强退名称为"' + row.userName + '"的用户?') as any);
+  if (!err) {
+    await forceLogout(row.tokenId);
+    await getList();
+    proxy?.$modal.msgSuccess("删除成功");
+  }
 }
 
 onMounted(() => {

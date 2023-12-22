@@ -105,12 +105,12 @@ const registerRules: ElFormRules = {
 const codeUrl = ref("");
 const loading = ref(false);
 const captchaEnabled = ref(true);
-const registerRef = ref(ElForm);
+const registerRef = ref<ElFormInstance>();
 // 租户列表
 const tenantList = ref<TenantVO[]>([]);
 
 const handleRegister = () => {
-  registerRef.value.validate(async (valid: boolean) => {
+  registerRef.value?.validate(async (valid: boolean) => {
     if (valid) {
       loading.value = true;
       const [err] = await to(register(registerForm.value));

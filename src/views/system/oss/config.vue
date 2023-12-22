@@ -29,13 +29,13 @@
       <template #header>
         <el-row :gutter="10" class="mb8">
           <el-col :span="1.5">
-            <el-button type="primary" plain icon="Plus" @click="handleAdd" v-hasPermi="['system:oss:add']">新增</el-button>
+            <el-button type="primary" plain icon="Plus" @click="handleAdd" v-hasPermi="['system:ossConfig:add']">新增</el-button>
           </el-col>
           <el-col :span="1.5">
-            <el-button type="success" plain icon="Edit" :disabled="single" @click="handleUpdate()" v-hasPermi="['system:oss:edit']">修改</el-button>
+            <el-button type="success" plain icon="Edit" :disabled="single" @click="handleUpdate()" v-hasPermi="['system:ossConfig:edit']">修改</el-button>
           </el-col>
           <el-col :span="1.5">
-            <el-button type="danger" plain icon="Delete" :disabled="multiple" @click="handleDelete()" v-hasPermi="['system:oss:remove']">
+            <el-button type="danger" plain icon="Delete" :disabled="multiple" @click="handleDelete()" v-hasPermi="['system:ossConfig:remove']">
               删除
             </el-button>
           </el-col>
@@ -67,10 +67,10 @@
         <el-table-column label="操作" fixed="right" align="center" width="150" class-name="small-padding">
           <template #default="scope">
             <el-tooltip content="修改" placement="top">
-              <el-button link type="primary" icon="Edit" @click="handleUpdate(scope.row)" v-hasPermi="['system:oss:edit']"></el-button>
+              <el-button link type="primary" icon="Edit" @click="handleUpdate(scope.row)" v-hasPermi="['system:ossConfig:edit']"></el-button>
             </el-tooltip>
             <el-tooltip content="删除" placement="top">
-              <el-button link type="primary" icon="Delete" @click="handleDelete(scope.row)" v-hasPermi="['system:oss:remove']"></el-button>
+              <el-button link type="primary" icon="Delete" @click="handleDelete(scope.row)" v-hasPermi="['system:ossConfig:remove']"></el-button>
             </el-tooltip>
           </template>
         </el-table-column>

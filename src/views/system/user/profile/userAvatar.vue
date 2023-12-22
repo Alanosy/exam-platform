@@ -1,6 +1,6 @@
 <template>
   <div class="user-info-head" @click="editCropper()">
-    <img :src="options.img as string" title="点击上传头像" class="img-circle img-lg" />
+    <img :src="options.img" title="点击上传头像" class="img-circle img-lg" />
     <el-dialog :title="title" v-model="open" width="800px" append-to-body @opened="modalOpened" @close="closeDialog">
       <el-row>
         <el-col :xs="24" :md="12" :style="{ height: '350px' }">
@@ -62,7 +62,7 @@ import { uploadAvatar } from "@/api/system/user";
 import useUserStore from "@/store/modules/user";
 
 interface Options {
-  img: string | ArrayBuffer | null; // 裁剪图片的地址
+  img: string | any; // 裁剪图片的地址
   autoCrop: boolean; // 是否默认生成截图框
   autoCropWidth: number; // 默认生成截图框宽度
   autoCropHeight: number; // 默认生成截图框高度
@@ -140,7 +140,7 @@ const uploadImg = async () => {
     const res = await uploadAvatar(formData);
     open.value = false;
     options.img = res.data.imgUrl;
-    userStore.avatar = options.img as string
+    userStore.setAvatar(options.img as string)
     proxy?.$modal.msgSuccess("修改成功");
     visible.value = false;
   });

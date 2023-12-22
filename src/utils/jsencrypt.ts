@@ -4,7 +4,7 @@ import JSEncrypt from 'jsencrypt';
 const publicKey = import.meta.env.VITE_APP_RSA_PUBLIC_KEY;
 
 // 前端不建议存放私钥 不建议解密数据 因为都是透明的意义不大
-const privateKey = '**********';
+const privateKey = import.meta.env.VITE_APP_RSA_PRIVATE_KEY;
 
 // 加密
 export const encrypt = (txt: string) => {
