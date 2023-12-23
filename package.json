@@ -23,10 +23,10 @@
     "@vueuse/core": "10.7.0",
     "animate.css": "4.1.1",
     "await-to-js": "^3.0.0",
-    "axios": "^1.3.4",
-    "crypto-js": "^4.1.1",
+    "axios": "^1.6.0",
+    "crypto-js": "^4.2.0",
     "echarts": "5.4.3",
-    "element-plus": "2.4.3",
+    "element-plus": "2.4.4",
     "file-saver": "2.0.5",
     "fuse.js": "6.6.2",
     "js-cookie": "3.0.5",
@@ -46,9 +46,9 @@
   "devDependencies": {
     "@iconify/json": "^2.2.157",
     "@intlify/unplugin-vue-i18n": "1.6.0",
-    "@types/crypto-js": "^4.1.1",
+    "@types/crypto-js": "^4.2.0",
     "@types/file-saver": "2.0.5",
-    "@types/js-cookie": "3.0.3",
+    "@types/js-cookie": "3.0.5",
     "@types/node": "18.14.2",
     "@types/nprogress": "0.2.0",
     "@types/path-browserify": "^1.0.0",
@@ -73,7 +73,7 @@
     "postcss": "^8.4.21",
     "prettier": "3.1.1",
     "sass": "1.69.5",
-    "typescript": "5.2.2",
+    "typescript": "5.3",
     "unocss": "^0.58.0",
     "unplugin-auto-import": "0.17.2",
     "unplugin-icons": "0.18.1",
@@ -84,6 +84,6 @@
     "vitest": "^0.29.7",
     "vue-eslint-parser": "9.3.2",
     "vue-tsc": "0.35.0",
-    "vite": "5.0.4"
+    "vite": "5.0.5"
   }
 }
