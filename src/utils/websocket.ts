@@ -20,6 +20,7 @@
 
 import { getToken } from '@/utils/auth';
 import { ElNotification } from 'element-plus';
+import useNoticeStore from '@/store/modules/notice';
 
 let socketUrl: any = ''; // socket地址
 let websocket: any = null; // websocket 实例
@@ -27,14 +28,12 @@ let heartTime: any = null; // 心跳定时器实例
 let socketHeart = 0 as number; // 心跳次数
 const HeartTimeOut = 10000; // 心跳超时时间 10000 = 10s
 let socketError = 0 as number; // 错误次数
-let noticeStore: any = null;
 
 // 初始化socket
-export const initWebSocket = (url: any, store: any) => {
+export const initWebSocket = (url: any) => {
   if (import.meta.env.VITE_APP_WEBSOCKET === 'false') {
     return;
   }
-  noticeStore = store;
   socketUrl = url;
   // 初始化 websocket
   websocket = new WebSocket(url + '?Authorization=Bearer ' + getToken() + '&clientid=' + import.meta.env.VITE_APP_CLIENT_ID);
@@ -99,7 +98,7 @@ export const sendSocketHeart = () => {
 export const reconnect = () => {
   if (socketError <= 2) {
     clearInterval(heartTime);
-    initWebSocket(socketUrl, noticeStore);
+    initWebSocket(socketUrl);
     socketError = socketError + 1;
     // eslint-disable-next-line prettier/prettier
     console.log('socket重连', socketError);
@@ -124,7 +123,7 @@ export const websocketonmessage = () => {
     if (e.data.indexOf('ping') > 0) {
       return;
     }
-    noticeStore.addNotice({
+    useNoticeStore().addNotice({
       message: e.data,
       read: false,
       time: new Date().toLocaleString()
