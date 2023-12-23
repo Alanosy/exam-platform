@@ -96,13 +96,6 @@
 </template>
 
 <script setup name="Index" lang="ts">
-import { initWebSocket } from '@/utils/websocket';
-
-onMounted(() => {
-  let protocol = window.location.protocol === 'https:' ? 'wss://' : 'ws://';
-  initWebSocket(protocol + window.location.host + import.meta.env.VITE_APP_BASE_API + '/resource/websocket');
-});
-
 const goTarget = (url: string) => {
   window.open(url, '__blank');
 };

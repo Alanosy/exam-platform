@@ -27,6 +27,14 @@ import { AppMain, Navbar, Settings, TagsView } from './components';
 import useAppStore from '@/store/modules/app';
 import useSettingsStore from '@/store/modules/settings';
 
+import { initWebSocket } from '@/utils/websocket';
+import useNoticeStore from '@/store/modules/notice';
+
+onMounted(() => {
+  let protocol = window.location.protocol === 'https:' ? 'wss://' : 'ws://';
+  initWebSocket(protocol + window.location.host + import.meta.env.VITE_APP_BASE_API + '/resource/websocket', useNoticeStore());
+});
+
 const settingsStore = useSettingsStore();
 const theme = computed(() => settingsStore.theme);
 const sidebar = computed(() => useAppStore().sidebar);
