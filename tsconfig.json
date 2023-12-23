@@ -4,7 +4,7 @@
     "module": "esnext",
 //    "useDefineForClassFields": true,
     "moduleResolution": "bundler",
-    "strict": true,
+    "strict": false,
     "jsx": "preserve",
     "sourceMap": true,
     "resolveJsonModule": true,
