@@ -222,7 +222,7 @@ const submitForm = () => {
   noticeFormRef.value?.validate(async (valid: boolean) => {
     if (valid) {
       form.value.noticeId ? await updateNotice(form.value) : await addNotice(form.value);
-      proxy?.$modal.msgSuccess('修改成功');
+      proxy?.$modal.msgSuccess('操作成功');
       dialog.visible = false;
       await getList();
     }
