@@ -303,7 +303,7 @@ const handleStatusChange = async (row: ClientVO) => {
   let text = row.status === '0' ? '启用' : '停用';
   try {
     await proxy?.$modal.confirm('确认要"' + text + '"吗?');
-    await changeStatus(row.id, row.status);
+    await changeStatus(row.clientId, row.status);
     proxy?.$modal.msgSuccess(text + '成功');
   } catch (err) {
     row.status = row.status === '0' ? '1' : '0';

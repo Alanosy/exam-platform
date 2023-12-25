@@ -7,7 +7,7 @@ export interface ClientVO {
   /**
    * 客户端id
    */
-  clientId: string | number;
+  clientId: string;
 
   /**
    * 客户端key
