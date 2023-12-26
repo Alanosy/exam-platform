@@ -172,7 +172,7 @@ const initFormData: DeptForm = {
   email: undefined,
   status: '0'
 };
-const data = reactive<PageData<DeptForm, DeptQuery>>({
+const initData: PageData<DeptForm, DeptQuery> = {
   form: { ...initFormData },
   queryParams: {
     pageNum: 1,
@@ -187,7 +187,8 @@ const data = reactive<PageData<DeptForm, DeptQuery>>({
     email: [{ type: 'email', message: '请输入正确的邮箱地址', trigger: ['blur', 'change'] }],
     phone: [{ pattern: /^1[3|4|5|6|7|8|9][0-9]\d{8}$/, message: '请输入正确的手机号码', trigger: 'blur' }]
   }
-});
+};
+const data = reactive<PageData<DeptForm, DeptQuery>>(initData);
 
 const { queryParams, form, rules } = toRefs<PageData<DeptForm, DeptQuery>>(data);
 

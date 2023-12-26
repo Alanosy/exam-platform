@@ -1,5 +1,4 @@
-import axios from 'axios';
-
+export {};
 declare module 'axios' {
   interface AxiosResponse<T = any> {
     code: number;

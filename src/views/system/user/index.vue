@@ -306,7 +306,7 @@ import { to } from 'await-to-js';
 import { globalHeaders } from '@/utils/request';
 
 const router = useRouter();
-const { proxy } = getCurrentInstance();
+const { proxy } = getCurrentInstance() as ComponentInternalInstance;
 const { sys_normal_disable, sys_user_sex } = toRefs<any>(proxy?.useDict('sys_normal_disable', 'sys_user_sex'));
 const userList = ref<UserVO[]>();
 const loading = ref(true);

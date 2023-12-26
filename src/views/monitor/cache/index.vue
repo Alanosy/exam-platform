@@ -126,8 +126,9 @@
 <script setup name="Cache" lang="ts">
 import { getCache } from '@/api/monitor/cache';
 import * as echarts from 'echarts';
+import { CacheVO } from '@/api/monitor/cache/types';
 
-const cache = ref<any>({});
+const cache = ref<Partial<CacheVO>>({});
 const commandstats = ref();
 const usedmemory = ref();
 const { proxy } = getCurrentInstance() as ComponentInternalInstance;

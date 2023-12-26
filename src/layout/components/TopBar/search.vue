@@ -54,7 +54,7 @@ const state = reactive<SearchState>({
 const openSearch = () => {
   state.menuQuery = '';
   state.isShowSearch = true;
-  state.menuList = generateRoutes(routes.value);
+  state.menuList = generateRoutes(routes.value as any);
   nextTick(() => {
     setTimeout(() => {
       layoutMenuAutocompleteRef.value.focus();

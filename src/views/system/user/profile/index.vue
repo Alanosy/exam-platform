@@ -27,7 +27,7 @@
               </li>
               <li class="list-group-item">
                 <svg-icon icon-class="tree" />所属部门
-                <div v-if="state.user.dept" class="pull-right">{{ state.user.dept.deptName }} / {{ state.postGroup }}</div>
+                <div v-if="state.user.dept" class="pull-right">{{ state.user.dept?.deptName }} / {{ state.postGroup }}</div>
               </li>
               <li class="list-group-item">
                 <svg-icon icon-class="peoples" />所属角色
@@ -72,9 +72,16 @@ import ResetPwd from './resetPwd.vue';
 import ThirdParty from './thirdParty.vue';
 import { getAuthList } from '@/api/system/social/auth';
 import { getUserProfile } from '@/api/system/user';
+import { UserVO } from '@/api/system/user/types';
 
 const activeTab = ref('userinfo');
-const state = ref<Record<string, any>>({
+interface State {
+  user: Partial<UserVO>;
+  roleGroup: string;
+  postGroup: string;
+  auths: any;
+}
+const state = ref<State>({
   user: {},
   roleGroup: '',
   postGroup: '',
