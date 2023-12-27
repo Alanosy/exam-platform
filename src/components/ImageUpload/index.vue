@@ -81,14 +81,14 @@ const imageUploadRef = ref<ElUploadInstance>();
 
 watch(
   () => props.modelValue,
-  async (val) => {
+  async (val: string) => {
     if (val) {
       // 首先将值转为数组
       let list: OssVO[] = [];
       if (Array.isArray(val)) {
         list = val as OssVO[];
       } else {
-        const res = await listByIds(val as string);
+        const res = await listByIds(val);
         list = res.data;
       }
       // 然后将数组转为对象数组

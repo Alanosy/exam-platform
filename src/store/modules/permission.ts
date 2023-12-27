@@ -18,6 +18,16 @@ export const usePermissionStore = defineStore('permission', () => {
   const topbarRouters = ref<RouteRecordRaw[]>([]);
   const sidebarRouters = ref<RouteRecordRaw[]>([]);
 
+  const getRoutes = (): RouteRecordRaw[] => {
+    return routes.value;
+  };
+  const getSidebarRoutes = (): RouteRecordRaw[] => {
+    return sidebarRouters.value;
+  };
+  const getTopbarRoutes = (): RouteRecordRaw[] => {
+    return topbarRouters.value;
+  };
+
   const setRoutes = (newRoutes: RouteRecordRaw[]): void => {
     addRoutes.value = newRoutes;
     routes.value = constantRoutes.concat(newRoutes);
@@ -108,7 +118,20 @@ export const usePermissionStore = defineStore('permission', () => {
     });
     return children;
   };
-  return { routes, setRoutes, generateRoutes, setSidebarRouters, topbarRouters, sidebarRouters, defaultRoutes };
+  return {
+    routes,
+    topbarRouters,
+    sidebarRouters,
+    defaultRoutes,
+
+    getRoutes,
+    getSidebarRoutes,
+    getTopbarRoutes,
+
+    setRoutes,
+    generateRoutes,
+    setSidebarRouters
+  };
 });
 
 // 动态路由遍历，验证是否具备权限

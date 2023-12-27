@@ -5,13 +5,13 @@
 </template>
 
 <script setup lang="ts">
+import { RouteLocationNormalized } from 'vue-router';
 import useTagsViewStore from '@/store/modules/tagsView';
-import { TagView } from 'vue-router';
 
 const tagAndTagSpacing = ref(4);
 
 const scrollContainerRef = ref<ElScrollbarInstance>();
-const scrollWrapper = computed(() => scrollContainerRef.value?.$refs.wrapRef as any);
+const scrollWrapper = computed(() => scrollContainerRef.value?.$refs.wrapRef);
 
 onMounted(() => {
   scrollWrapper.value?.addEventListener('scroll', emitScroll, true);
@@ -33,7 +33,7 @@ const emitScroll = () => {
 const tagsViewStore = useTagsViewStore();
 const visitedViews = computed(() => tagsViewStore.visitedViews);
 
-const moveToTarget = (currentTag: TagView) => {
+const moveToTarget = (currentTag: RouteLocationNormalized) => {
   const $container = scrollContainerRef.value?.$el;
   const $containerWidth = $container.offsetWidth;
   const $scrollWrapper = scrollWrapper.value;

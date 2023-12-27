@@ -36,7 +36,7 @@ const show = ref(false);
 const fuse = ref();
 const headerSearchSelectRef = ref<ElSelectInstance>();
 const router = useRouter();
-const routes = computed(() => usePermissionStore().routes);
+const routes = computed(() => usePermissionStore().getRoutes());
 
 const click = () => {
   show.value = !show.value;
@@ -149,7 +149,7 @@ watch(show, (value) => {
   }
 });
 
-watch(searchPool, (list) => {
+watch(searchPool, (list: Router) => {
   initFuse(list);
 });
 </script>

@@ -1,6 +1,6 @@
 import type * as ep from 'element-plus';
 declare global {
-  declare type ElTagType = '' | 'success' | 'warning' | 'info' | 'danger' | 'default' | 'primary';
+  declare type ElTagType = 'success' | 'info' | 'warning' | 'danger' | '';
   declare type ElFormInstance = ep.FormInstance;
   declare type ElTableInstance = ep.TableInstance;
   declare type ElUploadInstance = ep.UploadInstance;
@@ -32,5 +32,4 @@ declare global {
   declare type ElFormRules = ep.FormRules;
   declare type DateModelType = ep.DateModelType;
   declare type UploadFile = ep.UploadFile;
-
 }

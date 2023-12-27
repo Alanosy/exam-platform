@@ -22,6 +22,7 @@ declare module 'vue-router' {
   interface _RouteLocationBase {
     children?: _RouteRecordBase[];
     path?: string;
+    title?: string;
   }
 
   interface TagView {
@@ -33,3 +34,5 @@ declare module 'vue-router' {
     query?: LocationQuery;
   }
 }
+
+export {};

@@ -43,7 +43,7 @@ const router = useRouter();
 // 主题颜色
 const theme = computed(() => settingsStore.theme);
 // 所有的路由信息
-const routers = computed(() => permissionStore.topbarRouters);
+const routers = computed(() => permissionStore.getTopbarRoutes());
 
 // 顶部显示菜单
 const topMenus = computed(() => {

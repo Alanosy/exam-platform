@@ -35,7 +35,7 @@ const route = useRoute();
 const appStore = useAppStore();
 const settingsStore = useSettingsStore();
 const permissionStore = usePermissionStore();
-const sidebarRouters = computed<RouteRecordRaw[]>(() => permissionStore.sidebarRouters);
+const sidebarRouters = computed<RouteRecordRaw[]>(() => permissionStore.getSidebarRoutes());
 const showLogo = computed(() => settingsStore.sidebarLogo);
 const sideTheme = computed(() => settingsStore.sideTheme);
 const theme = computed(() => settingsStore.theme);

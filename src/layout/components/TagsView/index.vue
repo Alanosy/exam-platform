@@ -32,24 +32,24 @@
 <script setup lang="ts">
 import ScrollPane from './ScrollPane.vue';
 import { getNormalPath } from '@/utils/ruoyi';
-import useTagsViewStore from '@/store/modules/tagsView';
 import useSettingsStore from '@/store/modules/settings';
 import usePermissionStore from '@/store/modules/permission';
-import { RouteRecordRaw, TagView } from 'vue-router';
+import useTagsViewStore from '@/store/modules/tagsView';
+import { RouteRecordRaw, RouteLocationNormalized } from 'vue-router';
 
 const visible = ref(false);
 const top = ref(0);
 const left = ref(0);
-const selectedTag = ref<TagView>({});
-const affixTags = ref<TagView[]>([]);
+const selectedTag = ref<RouteLocationNormalized>();
+const affixTags = ref<RouteLocationNormalized[]>([]);
 const scrollPaneRef = ref<InstanceType<typeof ScrollPane>>();
 
 const { proxy } = getCurrentInstance() as ComponentInternalInstance;
 const route = useRoute();
 const router = useRouter();
 
-const visitedViews = computed(() => useTagsViewStore().visitedViews);
-const routes = computed(() => usePermissionStore().routes);
+const visitedViews = computed(() => useTagsViewStore().getVisitedViews());
+const routes = computed(() => usePermissionStore().getRoutes());
 const theme = computed(() => useSettingsStore().theme);
 
 watch(route, () => {
@@ -64,18 +64,18 @@ watch(visible, (value) => {
   }
 });
 
-const isActive = (r: TagView): boolean => {
+const isActive = (r: RouteLocationNormalized): boolean => {
   return r.path === route.path;
 };
-const activeStyle = (tag: TagView) => {
+const activeStyle = (tag: RouteLocationNormalized) => {
   if (!isActive(tag)) return {};
   return {
     'background-color': theme.value,
     'border-color': theme.value
   };
 };
-const isAffix = (tag: TagView) => {
-  return tag.meta && tag.meta.affix;
+const isAffix = (tag: RouteLocationNormalized) => {
+  return tag?.meta && tag?.meta?.affix;
 };
 const isFirstView = () => {
   try {
@@ -92,12 +92,17 @@ const isLastView = () => {
   }
 };
 const filterAffixTags = (routes: RouteRecordRaw[], basePath = '') => {
-  let tags: TagView[] = [];
+  let tags: RouteLocationNormalized[] = [];
 
   routes.forEach((route) => {
     if (route.meta && route.meta.affix) {
       const tagPath = getNormalPath(basePath + '/' + route.path);
       tags.push({
+        hash: '',
+        matched: [],
+        params: undefined,
+        query: undefined,
+        redirectedFrom: undefined,
         fullPath: tagPath,
         path: tagPath,
         name: route.name as string,
@@ -114,7 +119,7 @@ const filterAffixTags = (routes: RouteRecordRaw[], basePath = '') => {
   return tags;
 };
 const initTags = () => {
-  const res = filterAffixTags(routes.value as any);
+  const res = filterAffixTags(routes.value);
   affixTags.value = res;
   for (const tag of res) {
     // Must have tag name
@@ -143,19 +148,19 @@ const moveToCurrentTag = () => {
         scrollPaneRef.value?.moveToTarget(r);
         // when query is different then update
         if (r.fullPath !== route.fullPath) {
-          useTagsViewStore().updateVisitedView(route as any);
+          useTagsViewStore().updateVisitedView(route);
         }
       }
     }
   });
 };
-const refreshSelectedTag = (view: TagView) => {
+const refreshSelectedTag = (view: RouteLocationNormalized) => {
   proxy?.$tab.refreshPage(view);
   if (route.meta.link) {
-    useTagsViewStore().delIframeView(route as any);
+    useTagsViewStore().delIframeView(route);
   }
 };
-const closeSelectedTag = (view: TagView) => {
+const closeSelectedTag = (view: RouteLocationNormalized) => {
   proxy?.$tab.closePage(view).then(({ visitedViews }: any) => {
     if (isActive(view)) {
       toLastView(visitedViews, view);
@@ -163,15 +168,15 @@ const closeSelectedTag = (view: TagView) => {
   });
 };
 const closeRightTags = () => {
-  proxy?.$tab.closeRightPage(selectedTag.value).then((visitedViews: TagView[]) => {
-    if (!visitedViews.find((i: TagView) => i.fullPath === route.fullPath)) {
+  proxy?.$tab.closeRightPage(selectedTag.value).then((visitedViews: RouteLocationNormalized[]) => {
+    if (!visitedViews.find((i: RouteLocationNormalized) => i.fullPath === route.fullPath)) {
       toLastView(visitedViews);
     }
   });
 };
 const closeLeftTags = () => {
-  proxy?.$tab.closeLeftPage(selectedTag.value).then((visitedViews: TagView[]) => {
-    if (!visitedViews.find((i: TagView) => i.fullPath === route.fullPath)) {
+  proxy?.$tab.closeLeftPage(selectedTag.value).then((visitedViews: RouteLocationNormalized[]) => {
+    if (!visitedViews.find((i: RouteLocationNormalized) => i.fullPath === route.fullPath)) {
       toLastView(visitedViews);
     }
   });
@@ -182,7 +187,7 @@ const closeOthersTags = () => {
     moveToCurrentTag();
   });
 };
-const closeAllTags = (view: TagView) => {
+const closeAllTags = (view: RouteLocationNormalized) => {
   proxy?.$tab.closeAllPage().then(({ visitedViews }) => {
     if (affixTags.value.some((tag) => tag.path === route.path)) {
       return;
@@ -190,7 +195,7 @@ const closeAllTags = (view: TagView) => {
     toLastView(visitedViews, view);
   });
 };
-const toLastView = (visitedViews: TagView[], view?: TagView) => {
+const toLastView = (visitedViews: RouteLocationNormalized[], view?: RouteLocationNormalized) => {
   const latestView = visitedViews.slice(-1)[0];
   if (latestView) {
     router.push(latestView.fullPath as string);
@@ -205,7 +210,7 @@ const toLastView = (visitedViews: TagView[], view?: TagView) => {
     }
   }
 };
-const openMenu = (tag: TagView, e: MouseEvent) => {
+const openMenu = (tag: RouteLocationNormalized, e: MouseEvent) => {
   const menuMinWidth = 105;
   const offsetLeft = proxy?.$el.getBoundingClientRect().left; // container margin left
   const offsetWidth = proxy?.$el.offsetWidth; // container width

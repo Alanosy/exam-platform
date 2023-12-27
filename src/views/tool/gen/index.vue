@@ -143,7 +143,10 @@ const queryParams = ref<TableQuery>({
   dataName: ''
 });
 
-const preview = ref<any>({
+const preview = ref<{
+  data: Record<string, string>;
+  activeName: string;
+}>({
   data: {},
   activeName: 'domain.java'
 });
