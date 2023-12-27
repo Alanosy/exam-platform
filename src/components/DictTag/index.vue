@@ -29,11 +29,13 @@
 </template>
 
 <script setup lang="ts">
+import { propTypes } from '@/utils/propTypes';
+
 interface Props {
   options: Array<DictDataOption>;
   value: number | string | Array<number | string>;
-  showValue: boolean;
-  separator: string;
+  showValue?: boolean;
+  separator?: string;
 }
 const props = withDefaults(defineProps<Props>(), {
   showValue: true,
