@@ -11,7 +11,7 @@ import { download as rd } from '@/utils/request';
 
 export {};
 
-declare module '@vue/runtime-core' {
+declare module 'vue' {
   interface ComponentCustomProperties {
     // 全局方法声明
     $modal: typeof modal;
