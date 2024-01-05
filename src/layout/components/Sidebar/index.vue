@@ -13,7 +13,7 @@
           :collapse-transition="false"
           mode="vertical"
         >
-          <sidebar-item v-for="(route, index) in sidebarRouters" :key="route.path + index" :item="route" :base-path="route.path" />
+          <sidebar-item v-for="(r, index) in sidebarRouters" :key="r.path + index" :item="r" :base-path="r.path" />
         </el-menu>
       </transition>
     </el-scrollbar>
