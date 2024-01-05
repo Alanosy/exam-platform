@@ -35,7 +35,7 @@
           <span class="el-icon-document"> {{ getFileName(file.name) }} </span>
         </el-link>
         <div class="ele-upload-list__item-content-action">
-          <el-link :underline="false" type="danger" @click="handleDelete(index)">删除</el-link>
+          <el-button type="danger" link @click="handleDelete(index)">删除</el-button>
         </div>
       </li>
     </transition-group>
@@ -43,8 +43,8 @@
 </template>
 
 <script setup lang="ts">
-import { listByIds, delOss } from '@/api/system/oss';
 import { propTypes } from '@/utils/propTypes';
+import { delOss, listByIds } from '@/api/system/oss';
 import { globalHeaders } from '@/utils/request';
 
 const props = defineProps({
@@ -88,12 +88,11 @@ watch(
       } else {
         const res = await listByIds(val);
         list = res.data.map((oss) => {
-          const data = {
+          return {
             name: oss.originalName,
             url: oss.url,
             ossId: oss.ossId
           };
-          return data;
         });
       }
       // 然后将数组转为对象数组
