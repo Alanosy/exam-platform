@@ -298,12 +298,12 @@
 <script setup name="User" lang="ts">
 import api from '@/api/system/user';
 import { UserForm, UserQuery, UserVO } from '@/api/system/user/types';
-import { treeselect } from '@/api/system/dept';
 import { DeptVO } from '@/api/system/dept/types';
 import { RoleVO } from '@/api/system/role/types';
 import { PostVO } from '@/api/system/post/types';
-import { to } from 'await-to-js';
+import { treeselect } from '@/api/system/dept';
 import { globalHeaders } from '@/utils/request';
+import { to } from 'await-to-js';
 
 const router = useRouter();
 const { proxy } = getCurrentInstance() as ComponentInternalInstance;
