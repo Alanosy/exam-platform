@@ -13,16 +13,16 @@
       :headers="upload.headers"
     >
     </el-upload>
-    <div class="editor">
-      <quill-editor
-        ref="quillEditorRef"
-        v-model:content="content"
-        content-type="html"
-        :options="options"
-        :style="styles"
-        @text-change="(e: any) => $emit('update:modelValue', content)"
-      />
-    </div>
+  </div>
+  <div class="editor">
+    <quill-editor
+      ref="quillEditorRef"
+      v-model:content="content"
+      content-type="html"
+      :options="options"
+      :style="styles"
+      @text-change="(e: any) => $emit('update:modelValue', content)"
+    />
   </div>
 </template>
 
@@ -64,30 +64,18 @@ const options = ref<any>({
   debug: 'warn',
   modules: {
     // 工具栏配置
-    toolbar: {
-      container: [
-        ['bold', 'italic', 'underline', 'strike'], // 加粗 斜体 下划线 删除线
-        ['blockquote', 'code-block'], // 引用  代码块
-        [{ list: 'ordered' }, { list: 'bullet' }], // 有序、无序列表
-        [{ indent: '-1' }, { indent: '+1' }], // 缩进
-        [{ size: ['small', false, 'large', 'huge'] }], // 字体大小
-        [{ header: [1, 2, 3, 4, 5, 6, false] }], // 标题
-        [{ color: [] }, { background: [] }], // 字体颜色、字体背景颜色
-        [{ align: [] }], // 对齐方式
-        ['clean'], // 清除文本格式
-        ['link', 'image', 'video'] // 链接、图片、视频
-      ],
-      handlers: {
-        image: function (value: any) {
-          if (value) {
-            // 调用element图片上传
-            (document.querySelector('.editor-img-uploader>.el-upload') as HTMLDivElement)?.click();
-          } else {
-            Quill.format('image', true);
-          }
-        }
-      }
-    }
+    toolbar: [
+      ['bold', 'italic', 'underline', 'strike'], // 加粗 斜体 下划线 删除线
+      ['blockquote', 'code-block'], // 引用  代码块
+      [{ list: 'ordered' }, { list: 'bullet' }], // 有序、无序列表
+      [{ indent: '-1' }, { indent: '+1' }], // 缩进
+      [{ size: ['small', false, 'large', 'huge'] }], // 字体大小
+      [{ header: [1, 2, 3, 4, 5, 6, false] }], // 标题
+      [{ color: [] }, { background: [] }], // 字体颜色、字体背景颜色
+      [{ align: [] }], // 对齐方式
+      ['clean'], // 清除文本格式
+      ['link', 'image', 'video'] // 链接、图片、视频
+    ]
   },
   placeholder: '请输入内容',
   readOnly: props.readOnly
@@ -129,7 +117,7 @@ const handleUploadSuccess = (res: any) => {
     quill.setSelection(length + 1);
     proxy?.$modal.closeLoading();
   } else {
-    proxy?.$modal.loading(res.msg);
+    proxy?.$modal.msgError("图片插入失败");
     proxy?.$modal.closeLoading();
   }
 };
@@ -157,7 +145,6 @@ const handleBeforeUpload = (file: any) => {
 
 // 图片失败拦截
 const handleUploadError = (err: any) => {
-  console.error(err);
   proxy?.$modal.msgError('上传文件失败');
 };
 </script>
