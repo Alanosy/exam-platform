@@ -4,6 +4,7 @@
   "description": "RuoYi-Vue-Plus多租户管理系统",
   "author": "LionLi",
   "license": "MIT",
+  "type": "module",
   "scripts": {
     "dev": "vite serve --mode development",
     "build:prod": "vite build --mode production",
