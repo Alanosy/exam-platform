@@ -57,6 +57,7 @@ const upload = reactive<UploadOption>({
   url: import.meta.env.VITE_APP_BASE_API + '/resource/oss/upload'
 });
 const quillEditorRef = ref();
+const uploadRef = ref<HTMLDivElement>();
 
 const options = ref<any>({
   theme: 'snow',
@@ -66,27 +67,27 @@ const options = ref<any>({
     // 工具栏配置
     toolbar: {
       container: [
-        ["bold", "italic", "underline", "strike"],       // 加粗 斜体 下划线 删除线
-        ["blockquote", "code-block"],                    // 引用  代码块
-        [{ list: "ordered" }, { list: "bullet" }],       // 有序、无序列表
-        [{ indent: "-1" }, { indent: "+1" }],            // 缩进
-        [{ size: ["small", false, "large", "huge"] }],   // 字体大小
-        [{ header: [1, 2, 3, 4, 5, 6, false] }],         // 标题
-        [{ color: [] }, { background: [] }],             // 字体颜色、字体背景颜色
-        [{ align: [] }],                                 // 对齐方式
-        ["clean"],                                       // 清除文本格式
-        ["link", "image", "video"]                       // 链接、图片、视频
+        ['bold', 'italic', 'underline', 'strike'], // 加粗 斜体 下划线 删除线
+        ['blockquote', 'code-block'], // 引用  代码块
+        [{ list: 'ordered' }, { list: 'bullet' }], // 有序、无序列表
+        [{ indent: '-1' }, { indent: '+1' }], // 缩进
+        [{ size: ['small', false, 'large', 'huge'] }], // 字体大小
+        [{ header: [1, 2, 3, 4, 5, 6, false] }], // 标题
+        [{ color: [] }, { background: [] }], // 字体颜色、字体背景颜色
+        [{ align: [] }], // 对齐方式
+        ['clean'], // 清除文本格式
+        ['link', 'image', 'video'] // 链接、图片、视频
       ],
       handlers: {
-        image: function (value: any) {
+        image: (value: boolean) => {
           if (value) {
             // 调用element图片上传
-            proxy?.$refs.uploadRef.click();
+            uploadRef.value.click();
           } else {
-            Quill.format("image", true);
+            Quill.format('image', true);
           }
-        },
-      },
+        }
+      }
     }
   },
   placeholder: '请输入内容',
@@ -107,7 +108,7 @@ const styles = computed(() => {
 const content = ref('');
 watch(
   () => props.modelValue,
-  (v) => {
+  (v: string) => {
     if (v !== content.value) {
       content.value = v === undefined ? '<p></p>' : v;
     }
@@ -129,7 +130,7 @@ const handleUploadSuccess = (res: any) => {
     quill.setSelection(length + 1);
     proxy?.$modal.closeLoading();
   } else {
-    proxy?.$modal.msgError("图片插入失败");
+    proxy?.$modal.msgError('图片插入失败');
     proxy?.$modal.closeLoading();
   }
 };
