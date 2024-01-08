@@ -34,6 +34,9 @@
         <el-button circle title="MaxKey登录" @click="doSocialLogin('maxkey')">
           <svg-icon icon-class="maxkey" />
         </el-button>
+        <el-button circle title="TopIam登录" @click="doSocialLogin('topiam')">
+          <svg-icon icon-class="topiam" />
+        </el-button>
         <el-button circle title="Gitee登录" @click="doSocialLogin('gitee')">
           <svg-icon icon-class="gitee" />
         </el-button>
