@@ -1,19 +1,8 @@
 // 自定义国际化配置
 import { createI18n } from 'vue-i18n';
 
-// 本地语言包
-import enUSLocale from './en_US';
-import zhCNLocale from './zh_CN';
 import { LanguageEnum } from '@/enums/LanguageEnum';
-
-const messages = {
-  zh_CN: {
-    ...zhCNLocale
-  },
-  en_US: {
-    ...enUSLocale
-  }
-};
+import messages from '@intlify/unplugin-vue-i18n/messages';
 
 /**
  * 获取当前语言
@@ -28,6 +17,7 @@ export const getLanguage = (): LanguageEnum => {
 };
 
 const i18n = createI18n({
+  globalInjection: true,
   legacy: false,
   locale: getLanguage(),
   messages
