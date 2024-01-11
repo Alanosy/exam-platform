@@ -18,6 +18,7 @@ export const getLanguage = (): LanguageEnum => {
 
 const i18n = createI18n({
   globalInjection: true,
+  allowComposition: true,
   legacy: false,
   locale: getLanguage(),
   messages
