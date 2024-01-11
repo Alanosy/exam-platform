@@ -1,4 +1,3 @@
-import { DeptVO } from './../dept/types';
 import { RoleVO } from '@/api/system/role/types';
 import { PostVO } from '@/api/system/post/types';
 
@@ -40,7 +39,7 @@ export interface UserVO extends BaseEntity {
   loginIp: string;
   loginDate: string;
   remark: string;
-  dept: DeptVO;
+  deptName: string;
   roles: RoleVO[];
   roleIds: any;
   postIds: any;
