@@ -50,12 +50,13 @@ const values = computed(() => {
 const unmatch = computed(() => {
   if (props.options?.length == 0 || props.value === '' || props.value === null || typeof props.value === 'undefined') return false;
   // 传入值为非数组
+  let unmatch = false; // 添加一个标志来判断是否有未匹配项
   values.value.forEach((item) => {
     if (!props.options.some((v) => v.value === item)) {
-      return true; // 如果有未匹配项，将标志设置为true
+      unmatch = true; // 如果有未匹配项，将标志设置为true
     }
   });
-  return false; // 返回标志的值
+  return unmatch; // 返回标志的值
 });
 
 const unmatchArray = computed(() => {
