@@ -36,11 +36,12 @@ service.interceptors.request.use(
     // 对应国际化资源文件后缀
     config.headers['Content-Language'] = getLanguage();
 
-    const isToken = (config.headers || {}).isToken === false;
+    const isToken = config.headers?.isToken === false;
     // 是否需要防止数据重复提交
-    const isRepeatSubmit = (config.headers || {}).repeatSubmit === false;
+    const isRepeatSubmit = config.headers?.repeatSubmit === false;
     // 是否需要加密
-    const isEncrypt = (config.headers || {}).isEncrypt === 'true';
+    const isEncrypt = config.headers?.isEncrypt === 'true';
+
     if (getToken() && !isToken) {
       config.headers['Authorization'] = 'Bearer ' + getToken(); // 让每个请求携带自定义token 请根据实际情况自行修改
     }
