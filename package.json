@@ -30,6 +30,7 @@
     "element-plus": "2.4.4",
     "file-saver": "2.0.5",
     "fuse.js": "7.0.0",
+    "image-conversion": "^2.1.1",
     "js-cookie": "3.0.5",
     "jsencrypt": "3.3.2",
     "nprogress": "0.2.0",
