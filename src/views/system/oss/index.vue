@@ -197,11 +197,10 @@ const getList = async () => {
   loading.value = false;
   showTable.value = true;
 };
-function checkFileSuffix(fileSuffix: string[]) {
-  let arr = ['png', 'jpg', 'jpeg'];
-  return arr.some((type) => {
-    return fileSuffix.indexOf(type) > -1;
-  });
+function checkFileSuffix(fileSuffix: string | string[]) {
+  const arr = [".png", ".jpg", ".jpeg"];
+  const suffixArray = Array.isArray(fileSuffix) ? fileSuffix : [fileSuffix];
+  return suffixArray.some(suffix => arr.includes(suffix.toLowerCase()));
 }
 /** 取消按钮 */
 function cancel() {
