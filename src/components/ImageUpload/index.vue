@@ -44,6 +44,7 @@ import { listByIds, delOss } from '@/api/system/oss';
 import { OssVO } from '@/api/system/oss/types';
 import { propTypes } from '@/utils/propTypes';
 import { globalHeaders } from '@/utils/request';
+import { compressAccurately } from 'image-conversion';
 
 const props = defineProps({
   modelValue: {
@@ -60,7 +61,14 @@ const props = defineProps({
   isShowTip: {
     type: Boolean,
     default: true
-  }
+  },
+  // 是否支持压缩，默认否
+  compressSupport: {
+    type: Boolean,
+    default: false
+  },
+  // 压缩目标大小，单位KB。默认300KB以上文件才压缩，并压缩至300KB以内
+  compressTargetSize: propTypes.number.def(300)
 });
 
 const { proxy } = getCurrentInstance() as ComponentInternalInstance;
@@ -138,8 +146,16 @@ const handleBeforeUpload = (file: any) => {
       return false;
     }
   }
-  proxy?.$modal.loading('正在上传图片，请稍候...');
-  number.value++;
+
+  //压缩图片，开启压缩并且大于指定的压缩大小时才压缩
+  if (props.compressSupport && file.size / 1024 > props.compressTargetSize) {
+    proxy?.$modal.loading('正在上传图片，请稍候...');
+    number.value++;
+    return compressAccurately(file, props.compressTargetSize);
+  } else {
+    proxy?.$modal.loading('正在上传图片，请稍候...');
+    number.value++;
+  }
 };
 
 // 文件个数超出
