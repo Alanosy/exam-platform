@@ -32,6 +32,10 @@ VXETable.config({
   zIndex: 999999
 });
 
+// 修改 el-dialog 默认点击遮照为不关闭
+import { ElDialog } from 'element-plus';
+ElDialog.props.closeOnClickModal.default = false;
+
 const app = createApp(App);
 
 app.use(ElementIcons);
