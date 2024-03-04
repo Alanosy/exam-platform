@@ -395,7 +395,8 @@ const initData: PageData<UserForm, UserQuery> = {
         max: 20,
         message: '用户密码长度必须介于 5 和 20 之间',
         trigger: 'blur'
-      }
+      },
+      { pattern: /^[^<>"'|\\]+$/, message: "不能包含非法字符：< > \" ' \\\ |", trigger: "blur" }
     ],
     email: [
       {
@@ -504,7 +505,12 @@ const handleResetPwd = async (row: UserVO) => {
       cancelButtonText: '取消',
       closeOnClickModal: false,
       inputPattern: /^.{5,20}$/,
-      inputErrorMessage: '用户密码长度必须介于 5 和 20 之间'
+      inputErrorMessage: '用户密码长度必须介于 5 和 20 之间',
+      inputValidator: (value) => {
+        if (/<|>|"|'|\||\\/.test(value)) {
+          return "不能包含非法字符：< > \" ' \\\ |"
+        }
+      }
     })
   );
   if (!err && res) {

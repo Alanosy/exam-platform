@@ -44,7 +44,8 @@ const rules = ref({
       max: 20,
       message: '长度在 6 到 20 个字符',
       trigger: 'blur'
-    }
+    },
+    { pattern: /^[^<>"'|\\]+$/, message: "不能包含非法字符：< > \" ' \\\ |", trigger: "blur" }
   ],
   confirmPassword: [
     { required: true, message: '确认密码不能为空', trigger: 'blur' },
