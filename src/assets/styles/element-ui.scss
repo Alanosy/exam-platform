@@ -1,4 +1,15 @@
-// cover some element-ui styles
+
+.el-collapse {
+  .collapse__title {
+    font-weight: 600;
+    padding: 0 8px;
+    font-size: 1.2em;
+    line-height: 1.1em;
+  }
+  .el-collapse-item__content {
+    padding: 0 8px;
+  }
+}
 
 .el-divider--horizontal {
   margin-bottom: 10px;
@@ -67,6 +78,12 @@
 
       .el-dialog__body {
         padding: 15px !important;
+      }
+      .el-dialog__header {
+        padding: 16px 16px 8px 16px;
+        box-sizing: border-box;
+        border-bottom: 1px solid #e8e8e8;
+        margin-right: 0;
       }
     }
   }
