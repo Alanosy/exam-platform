@@ -67,7 +67,7 @@
                 <el-form-item v-if="formData.allocationType === AllocationTypeEnum.USER" label="分配人员">
                   <el-input v-model="formData.fixedAssignee" @change="fixedAssigneeChange">
                     <template #append>
-                      <el-button icon="Search" size="small" type="primary" @click="proxy.$modal.msgWarning('开发中。。。。。。')" />
+                      <!-- <el-button icon="Search" size="small" type="primary" @click="proxy.$modal.msgWarning('开发中。。。。。。')" /> -->
                     </template>
                   </el-input>
                 </el-form-item>

@@ -45,7 +45,7 @@ const component = computed(() => {
   if (sequenceType.includes(type)) return SequenceFlowPanel;
   if (gatewayType.includes(type)) return GatewayPanel;
   if (processType.includes(type)) return ProcessPanel;
-  return proxy?.$modal.msgWarning('面板开发中....');
+  //return proxy?.$modal.msgWarning('面板开发中....');
 });
 
 const nodeName = computed(() => {
