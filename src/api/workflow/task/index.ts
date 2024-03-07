@@ -130,13 +130,13 @@ export const backProcess = (data: object) => {
 };
 
 /**
- * 获取流程状态
+ * 获取当前任务
  * @param taskId
  * @returns
  */
-export const getBusinessStatus = (taskId: string) => {
+export const getTaskById = (taskId: string) => {
   return request({
-    url: '/workflow/task/getBusinessStatus/' + taskId,
+    url: '/workflow/task/getTaskById/' + taskId,
     method: 'get'
   });
 };

@@ -1,5 +1,5 @@
 <template>
-  <el-dialog v-model="dialog.visible" :title="dialog.title" width="50%" draggable :before-close="cancel" :close-on-click-modal="false">
+  <el-dialog v-model="dialog.visible" :title="dialog.title" width="50%" draggable :before-close="cancel" center :close-on-click-modal="false">
     <el-form v-loading="loading" :model="form" label-width="120px">
       <el-form-item label="消息提醒">
         <el-checkbox-group v-model="form.messageType">
@@ -8,7 +8,7 @@
           <el-checkbox label="3" name="type">短信</el-checkbox>
         </el-checkbox-group>
       </el-form-item>
-      <el-form-item label="附件">
+      <el-form-item label="附件" v-if="task.businessStatus === 'waiting'">
         <fileUpload v-model="form.fileId" :fileType="['doc', 'xls', 'ppt', 'txt', 'pdf', 'xlsx', 'docx', 'zip']" :fileSize="'20'"/>
       </el-form-item>
       <el-form-item label="抄送">
@@ -17,18 +17,22 @@
             {{ user.userName }}
           </el-tag>
       </el-form-item>
-      <el-form-item label="审批意见" v-if="businessStatus === 'waiting'">
+      <el-form-item label="审批意见" v-if="task.businessStatus === 'waiting'">
         <el-input v-model="form.message" type="textarea" resize="none" />
       </el-form-item>
     </el-form>
     <template #footer>
       <span class="dialog-footer">
-        <el-button v-loading="buttonLoading" @click="cancel">取消</el-button>
         <el-button v-loading="buttonLoading" type="primary" @click="handleCompleteTask"> 提交 </el-button>
-        <el-button v-if="businessStatus === 'waiting'" v-loading="buttonLoading" type="danger" @click="handleBackProcess"> 退回 </el-button>
+        <el-button v-if="task.businessStatus === 'waiting' && task.multiInstance" v-loading="buttonLoading" type="primary" @click="addMultiInstanceUser"> 加签 </el-button>
+        <el-button v-if="task.businessStatus === 'waiting' && task.multiInstance" v-loading="buttonLoading" type="primary" @click="deleteMultiInstanceUser"> 减签 </el-button>
+        <el-button v-if="task.businessStatus === 'waiting'" v-loading="buttonLoading" type="danger" @click="handleBackProcess"> 退回 </el-button>
+        <el-button v-loading="buttonLoading" @click="cancel">取消</el-button>
       </span>
     </template>
     <UserSelect ref="userSelectCopyRef" :data="selectCopyUserIds" @confirm-call-back="userSelectCopyCallBack"></UserSelect>
+    <!-- 加签组件 -->
+    <multiInstanceUser ref="multiInstanceUserRef" :title="title" @submit-callback="handleQuery" />
   </el-dialog>
 </template>
 
@@ -36,11 +40,15 @@
 import { ref } from 'vue';
 import { ComponentInternalInstance } from 'vue';
 import { ElForm } from 'element-plus';
-import { completeTask, backProcess, getBusinessStatus } from '@/api/workflow/task';
+import { completeTask, backProcess, getTaskById } from '@/api/workflow/task';
 import UserSelect from '@/components/UserSelect';
+import MultiInstanceUser from '@/components/Process/multiInstanceUser.vue';
 const { proxy } = getCurrentInstance() as ComponentInternalInstance;
 import { UserVO } from '@/api/system/user/types';
+import { TaskVO } from '@/api/workflow/task/types';
 const userSelectCopyRef = ref<InstanceType<typeof UserSelect>>();
+  //加签组件
+const multiInstanceUserRef = ref<InstanceType<typeof MultiInstanceUser>>();
 
 const props = defineProps({
   taskVariables: {
@@ -52,16 +60,41 @@ const props = defineProps({
 const loading = ref(true);
 //按钮
 const buttonLoading = ref(true);
-//流程状态
-const businessStatus = ref<string>('');
 //任务id
 const taskId = ref<string>('');
 //抄送人
 const selectCopyUserList = ref<UserVO[]>([]);
 //抄送人id
 const selectCopyUserIds = ref<string>(undefined);
-  
-
+//任务
+const task = ref<TaskVO>({
+  id: undefined,
+  name: undefined,
+  description: undefined,
+  priority: undefined,
+  owner: undefined,
+  assignee: undefined,
+  assigneeName: undefined,
+  processInstanceId: undefined,
+  executionId: undefined,
+  taskDefinitionId: undefined,
+  processDefinitionId: undefined,
+  endTime: undefined,
+  taskDefinitionKey: undefined,
+  dueDate: undefined,
+  category: undefined,
+  parentTaskId: undefined,
+  tenantId: undefined,
+  claimTime: undefined,
+  businessStatus: undefined,
+  businessStatusName: undefined,
+  processDefinitionName: undefined,
+  processDefinitionKey: undefined,
+  participantVo: undefined,
+  multiInstance: undefined
+});
+//加签 减签标题
+const title = ref('');
 const dialog = reactive<DialogOption>({
   visible: false,
   title: '提示'
@@ -85,8 +118,8 @@ const openDialog = (id?: string) => {
   loading.value = true;
   buttonLoading.value = true;
   nextTick(() => {
-    getBusinessStatus(taskId.value).then((response) => {
-      businessStatus.value = response.data;
+    getTaskById(taskId.value).then((response) => {
+      task.value = response.data;
       loading.value = false;
       buttonLoading.value = false;
     });
@@ -155,6 +188,20 @@ const handleCopyCloseTag = (user: UserVO) => {
   const index = selectCopyUserList.value.findIndex((item) => item.userId === userId);
   selectCopyUserList.value.splice(index, 1);
   selectCopyUserIds.value = selectCopyUserList.value.map((item) => item.userId).join(',');
+};
+//加签
+const addMultiInstanceUser = () => {
+  if (multiInstanceUserRef.value) {
+    title.value = '加签人员';
+    multiInstanceUserRef.value.getAddMultiInstanceList(taskId.value, []);
+  }
+};
+//减签
+const deleteMultiInstanceUser = () => {
+  if (multiInstanceUserRef.value) {
+    title.value = '减签人员';
+    multiInstanceUserRef.value.getDeleteMultiInstanceList(taskId.value);
+  }
 };
 /**
  * 对外暴露子组件方法
