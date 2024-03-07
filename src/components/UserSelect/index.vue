@@ -290,8 +290,6 @@ const close = () => {
 watch(
   () => userDialog.visible.value,
   (newValue: boolean) => {
-    console.log(selectUserList.value)
-
     if (newValue) {
       initSelectUser();
     } else {
