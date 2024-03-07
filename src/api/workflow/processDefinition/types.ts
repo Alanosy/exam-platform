@@ -16,7 +16,7 @@ export interface ProcessDefinitionVO extends BaseEntity {
   deploymentTime: string;
 }
 
-export interface ProcessDefinitionXmlVO {
+export interface definitionXmlVO {
   xml: string[];
   xmlStr: string;
 }

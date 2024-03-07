@@ -6,9 +6,9 @@ import { TaskQuery, TaskVO } from '@/api/workflow/task/types';
  * @param query
  * @returns {*}
  */
-export const getTaskWaitByPage = (query: TaskQuery): AxiosPromise<TaskVO[]> => {
+export const getPageByTaskWait = (query: TaskQuery): AxiosPromise<TaskVO[]> => {
   return request({
-    url: '/workflow/task/getTaskWaitByPage',
+    url: '/workflow/task/getPageByTaskWait',
     method: 'get',
     params: query
   });
@@ -19,9 +19,9 @@ export const getTaskWaitByPage = (query: TaskQuery): AxiosPromise<TaskVO[]> => {
  * @param query
  * @returns {*}
  */
-export const getTaskFinishByPage = (query: TaskQuery): AxiosPromise<TaskVO[]> => {
+export const getPageByTaskFinish = (query: TaskQuery): AxiosPromise<TaskVO[]> => {
   return request({
-    url: '/workflow/task/getTaskFinishByPage',
+    url: '/workflow/task/getPageByTaskFinish',
     method: 'get',
     params: query
   });
@@ -32,9 +32,9 @@ export const getTaskFinishByPage = (query: TaskQuery): AxiosPromise<TaskVO[]> =>
  * @param query
  * @returns {*}
  */
-export const getTaskCopyByPage = (query: TaskQuery): AxiosPromise<TaskVO[]> => {
+export const getPageByTaskCopy = (query: TaskQuery): AxiosPromise<TaskVO[]> => {
   return request({
-    url: '/workflow/task/getTaskCopyByPage',
+    url: '/workflow/task/getPageByTaskCopy',
     method: 'get',
     params: query
   });
@@ -45,9 +45,9 @@ export const getTaskCopyByPage = (query: TaskQuery): AxiosPromise<TaskVO[]> => {
  * @param query
  * @returns {*}
  */
-export const getAllTaskWaitByPage = (query: TaskQuery): AxiosPromise<TaskVO[]> => {
+export const getPageByAllTaskWait = (query: TaskQuery): AxiosPromise<TaskVO[]> => {
   return request({
-    url: '/workflow/task/getAllTaskWaitByPage',
+    url: '/workflow/task/getPageByAllTaskWait',
     method: 'get',
     params: query
   });
@@ -58,9 +58,9 @@ export const getAllTaskWaitByPage = (query: TaskQuery): AxiosPromise<TaskVO[]> =
  * @param query
  * @returns {*}
  */
-export const getAllTaskFinishByPage = (query: TaskQuery): AxiosPromise<TaskVO[]> => {
+export const getPageByAllTaskFinish = (query: TaskQuery): AxiosPromise<TaskVO[]> => {
   return request({
-    url: '/workflow/task/getAllTaskFinishByPage',
+    url: '/workflow/task/getPageByAllTaskFinish',
     method: 'get',
     params: query
   });
@@ -169,9 +169,9 @@ export const deleteMultiInstanceExecution = (data: object) => {
 
 /**
  * 修改任务办理人
- * @param taskIds 
- * @param userId 
- * @returns 
+ * @param taskIds
+ * @param userId
+ * @returns
  */
 export const updateAssignee = (taskIds: Array<string>,userId: string) => {
   return request({

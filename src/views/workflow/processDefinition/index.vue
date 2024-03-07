@@ -194,13 +194,13 @@
 <script lang="ts" setup name="processDefinition">
 import {
   listProcessDefinition,
-  processDefinitionImage,
-  processDefinitionXml,
+  definitionImage,
+  definitionXml,
   deleteProcessDefinition,
-  updateProcessDefState,
+  updateDefinitionState,
   convertToModel,
   deployProcessFile,
-  getProcessDefinitionListByKey
+  getListByKey
 } from '@/api/workflow/processDefinition';
 import ProcessPreview from './components/processPreview.vue';
 import { listCategory } from '@/api/workflow/category';
@@ -320,7 +320,7 @@ const getList = async () => {
 const getProcessDefinitionHitoryList = async (id: string, key: string) => {
   processDefinitionDialog.visible = true;
   loading.value = true;
-  const resp = await getProcessDefinitionListByKey(key);
+  const resp = await getListByKey(key);
   if (resp.data && resp.data.length > 0) {
     processDefinitionHistoryList.value = resp.data.filter((item: any) => item.id !== id);
   }
@@ -330,7 +330,7 @@ const getProcessDefinitionHitoryList = async (id: string, key: string) => {
 //预览图片
 const clickPreviewImg = async (id: string) => {
   loading.value = true;
-  const resp = await processDefinitionImage(id);
+  const resp = await definitionImage(id);
   if (previewRef.value) {
     url.value = [];
     url.value.push('data:image/png;base64,' + resp.data);
@@ -341,7 +341,7 @@ const clickPreviewImg = async (id: string) => {
 //预览xml
 const clickPreviewXML = async (id: string) => {
   loading.value = true;
-  const resp = await processDefinitionXml(id);
+  const resp = await definitionXml(id);
   if (previewRef.value) {
     url.value = [];
     url.value = resp.data.xml;
@@ -367,7 +367,7 @@ const handleProcessDefState = async (row: ProcessDefinitionVO) => {
   }
   await proxy?.$modal.confirm(msg);
   loading.value = true;
-  await updateProcessDefState(row.id).finally(() => (loading.value = false));
+  await updateDefinitionState(row.id).finally(() => (loading.value = false));
   await getList();
   proxy?.$modal.msgSuccess('操作成功');
 };

@@ -107,7 +107,7 @@
 </template>
 
 <script lang="ts" setup>
-import { getCurrentSubmitByPage, deleteRuntimeProcessAndHisInst, cancelProcessApply } from '@/api/workflow/processInstance';
+import { getPageByCurrent, deleteRunAndHisInstance, cancelProcessApply } from '@/api/workflow/processInstance';
 import ApprovalRecord from '@/components/Process/approvalRecord.vue';
 import SubmitVerify from '@/components/Process/submitVerify.vue';
 import { listCategory } from '@/api/workflow/category';
@@ -218,7 +218,7 @@ const handleSelectionChange = (selection: ProcessInstanceVO[]) => {
 //分页
 const getList = () => {
   loading.value = true;
-  getCurrentSubmitByPage(queryParams.value).then((resp) => {
+  getPageByCurrent(queryParams.value).then((resp) => {
     processInstanceList.value = resp.rows;
     total.value = resp.total;
     loading.value = false;
@@ -231,7 +231,7 @@ const handleDelete = async (row: ProcessInstanceVO) => {
   await proxy?.$modal.confirm('是否确认删除id为【' + id + '】的数据项？');
   loading.value = true;
   if ('running' === tab.value) {
-    await deleteRuntimeProcessAndHisInst(id).finally(() => (loading.value = false));
+    await deleteRunAndHisInstance(id).finally(() => (loading.value = false));
     getList();
   }
   proxy?.$modal.msgSuccess('删除成功');

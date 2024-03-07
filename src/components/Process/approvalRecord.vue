@@ -55,7 +55,7 @@
                         </template>
                       </el-table-column>
                     </el-table>
-                    
+
                   </el-popover>
               </template>
             </el-table-column>
@@ -69,7 +69,7 @@
   </el-dialog>
 </template>
 <script lang="ts" setup>
-import { getHistoryProcessImage, getHistoryRecord } from '@/api/workflow/processInstance';
+import { getHistoryImage, getHistoryRecord } from '@/api/workflow/processInstance';
 const { proxy } = getCurrentInstance() as ComponentInternalInstance;
 import { ref } from 'vue';
 const props = defineProps({
@@ -99,7 +99,7 @@ const init = async (processInstanceId: string) => {
   loading.value = true;
   historyList.value = [];
   graphicInfoVos.value = [];
-  getHistoryProcessImage(processInstanceId).then((res) => {
+  getHistoryImage(processInstanceId).then((res) => {
     src.value = 'data:image/png;base64,' + res.data
   });
   getHistoryRecord(processInstanceId).then((response) => {

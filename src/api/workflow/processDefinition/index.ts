@@ -1,7 +1,6 @@
 import request from '@/utils/request';
-import { ProcessDefinitionQuery, ProcessDefinitionVO, ProcessDefinitionXmlVO } from '@/api/workflow/processDefinition/types';
+import { ProcessDefinitionQuery, ProcessDefinitionVO, definitionXmlVO } from '@/api/workflow/processDefinition/types';
 import { AxiosPromise } from 'axios';
-const baseUrl = import.meta.env.VITE_APP_BASE_API;
 
 /**
  * 获取流程定义列表
@@ -20,9 +19,9 @@ export const listProcessDefinition = (query: ProcessDefinitionQuery): AxiosPromi
  * @param processInstanceId 流程实例id
  * @returns
  */
-export const getProcessDefinitionListByKey = (key: string) => {
+export const getListByKey = (key: string) => {
   return request({
-    url: `/workflow/processDefinition/getProcessDefinitionListByKey/${key}`,
+    url: `/workflow/processDefinition/getListByKey/${key}`,
     method: 'get'
   });
 };
@@ -30,9 +29,9 @@ export const getProcessDefinitionListByKey = (key: string) => {
 /**
  * 通过流程定义id获取流程图
  */
-export const processDefinitionImage = (processDefinitionId: string): AxiosPromise<any> => {
+export const definitionImage = (processDefinitionId: string): AxiosPromise<any> => {
   return request({
-    url: `/workflow/processDefinition/processDefinitionImage/${processDefinitionId}` + '?t' + Math.random(),
+    url: `/workflow/processDefinition/definitionImage/${processDefinitionId}` + '?t' + Math.random(),
     method: 'get'
   });
 };
@@ -42,9 +41,9 @@ export const processDefinitionImage = (processDefinitionId: string): AxiosPromis
  * @param processDefinitionId 流程定义id
  * @returns
  */
-export const processDefinitionXml = (processDefinitionId: string): AxiosPromise<ProcessDefinitionXmlVO> => {
+export const definitionXml = (processDefinitionId: string): AxiosPromise<definitionXmlVO> => {
   return request({
-    url: `/workflow/processDefinition/processDefinitionXml/${processDefinitionId}`,
+    url: `/workflow/processDefinition/definitionXml/${processDefinitionId}`,
     method: 'get'
   });
 };
@@ -67,9 +66,9 @@ export const deleteProcessDefinition = (deploymentId: string, processDefinitionI
  * @param processDefinitionId 流程定义id
  * @returns
  */
-export const updateProcessDefState = (processDefinitionId: string) => {
+export const updateDefinitionState = (processDefinitionId: string) => {
   return request({
-    url: `/workflow/processDefinition/updateProcessDefState/${processDefinitionId}`,
+    url: `/workflow/processDefinition/updateDefinitionState/${processDefinitionId}`,
     method: 'put'
   });
 };
@@ -104,20 +103,10 @@ export function deployProcessFile(data: any) {
  * @param fromProcessDefinitionId
  * @returns
  */
-export const migrationProcessDefinition = (currentProcessDefinitionId: string, fromProcessDefinitionId: string) => {
+export const migrationDefinition = (currentProcessDefinitionId: string, fromProcessDefinitionId: string) => {
   return request({
-    url: `/workflow/processDefinition/migrationProcessDefinition/${currentProcessDefinitionId}/${fromProcessDefinitionId}`,
+    url: `/workflow/processDefinition/migrationDefinition/${currentProcessDefinitionId}/${fromProcessDefinitionId}`,
     method: 'put'
   });
 };
 
-/**
- * 查询流程定义列表
- * @returns
- */
-export const getProcessDefinitionList = () => {
-  return request({
-    url: `/workflow/processDefinition/getProcessDefinitionList`,
-    method: 'get'
-  });
-};

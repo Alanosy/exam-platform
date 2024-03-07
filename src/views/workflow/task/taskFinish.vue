@@ -62,7 +62,7 @@
 </template>
 
 <script lang="ts" setup>
-import { getTaskFinishByPage } from '@/api/workflow/task';
+import { getPageByTaskFinish } from '@/api/workflow/task';
 import ApprovalRecord from '@/components/Process/approvalRecord.vue';
 import { TaskQuery, TaskVO } from '@/api/workflow/task/types';
 //审批记录组件
@@ -119,7 +119,7 @@ const handleSelectionChange = (selection: any) => {
 };
 const getFinishList = () => {
   loading.value = true;
-  getTaskFinishByPage(queryParams.value).then((resp) => {
+  getPageByTaskFinish(queryParams.value).then((resp) => {
     taskList.value = resp.rows;
     total.value = resp.total;
     loading.value = false;

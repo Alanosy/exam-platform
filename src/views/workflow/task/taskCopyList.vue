@@ -73,7 +73,7 @@
 </template>
 
 <script lang="ts" setup>
-import { getTaskCopyByPage} from '@/api/workflow/task';
+import { getPageByTaskCopy} from '@/api/workflow/task';
 import ApprovalRecord from '@/components/Process/approvalRecord.vue';
 import { TaskQuery, TaskVO } from '@/api/workflow/task/types';
 //审批记录组件
@@ -131,7 +131,7 @@ const handleSelectionChange = (selection: any) => {
 //分页
 const getTaskCopyList = () => {
   loading.value = true;
-  getTaskCopyByPage(queryParams.value).then((resp) => {
+  getPageByTaskCopy(queryParams.value).then((resp) => {
     taskList.value = resp.rows;
     total.value = resp.total;
     loading.value = false;

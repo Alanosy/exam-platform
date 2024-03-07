@@ -7,9 +7,9 @@ import { UserVO } from '@/api/system/user/types';
  * @param query
  * @returns {*}
  */
-export const getWorkflowAddMultiListByPage = (query: object) => {
+export const getPageByAddMultiInstance = (query: object) => {
   return request({
-    url: '/workflow/user/getWorkflowAddMultiListByPage',
+    url: '/workflow/user/getPageByAddMultiInstance',
     method: 'get',
     params: query
   });
@@ -20,9 +20,9 @@ export const getWorkflowAddMultiListByPage = (query: object) => {
  * @param query
  * @returns {*}
  */
-export const getWorkflowDeleteMultiInstanceList = (taskId: string) => {
+export const getListByDeleteMultiInstance = (taskId: string) => {
   return request({
-    url: '/workflow/user/getWorkflowDeleteMultiInstanceList/' + taskId,
+    url: '/workflow/user/getListByDeleteMultiInstance/' + taskId,
     method: 'get'
   });
 };
@@ -44,9 +44,9 @@ export const getUserListByIds = (userIdList: any[]): AxiosPromise<UserVO[]> => {
  * @param query
  * @returns {*}
  */
-export const getUserListByPage = (query: object) => {
+export const getPageByUserList = (query: object) => {
   return request({
-    url: '/workflow/user/getUserListByPage',
+    url: '/workflow/user/getPageByUserList',
     method: 'get',
     params: query
   });

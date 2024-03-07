@@ -1,17 +1,15 @@
 import request from '@/utils/request';
 import { ProcessInstanceQuery, ProcessInstanceVO } from '@/api/workflow/processInstance/types';
 import { AxiosPromise } from 'axios';
-import { string } from 'vue-types';
-const baseUrl = import.meta.env.VITE_APP_BASE_API;
 
 /**
  * 查询运行中实例列表
  * @param query
  * @returns {*}
  */
-export const getProcessInstanceRunningByPage = (query: ProcessInstanceQuery): AxiosPromise<ProcessInstanceVO[]> => {
+export const getPageByRunning = (query: ProcessInstanceQuery): AxiosPromise<ProcessInstanceVO[]> => {
   return request({
-    url: '/workflow/processInstance/getProcessInstanceRunningByPage',
+    url: '/workflow/processInstance/getPageByRunning',
     method: 'get',
     params: query
   });
@@ -22,9 +20,9 @@ export const getProcessInstanceRunningByPage = (query: ProcessInstanceQuery): Ax
  * @param query
  * @returns {*}
  */
-export const getProcessInstanceFinishByPage = (query: ProcessInstanceQuery): AxiosPromise<ProcessInstanceVO[]> => {
+export const getPageByFinish = (query: ProcessInstanceQuery): AxiosPromise<ProcessInstanceVO[]> => {
   return request({
-    url: '/workflow/processInstance/getProcessInstanceFinishByPage',
+    url: '/workflow/processInstance/getPageByFinish',
     method: 'get',
     params: query
   });
@@ -33,9 +31,19 @@ export const getProcessInstanceFinishByPage = (query: ProcessInstanceQuery): Axi
 /**
  * 通过流程实例id获取历史流程图
  */
-export const getHistoryProcessImage = (processInstanceId: string) => {
+export const getHistoryImage = (processInstanceId: string) => {
   return request({
-    url: `/workflow/processInstance/getHistoryProcessImage/${processInstanceId}` + '?t' + Math.random(),
+    url: `/workflow/processInstance/getHistoryImage/${processInstanceId}` + '?t' + Math.random(),
+    method: 'get'
+  });
+};
+
+/**
+ * 通过流程实例id获取历史流程图运行中，历史等节点
+ */
+export const getHistoryList = (processInstanceId: string) => {
+  return request({
+    url: `/workflow/processInstance/getHistoryList/${processInstanceId}` + '?t' + Math.random(),
     method: 'get'
   });
 };
@@ -57,9 +65,9 @@ export const getHistoryRecord = (processInstanceId: string) => {
  * @param data 参数
  * @returns
  */
-export const deleteRuntimeProcessInst = (data: object) => {
+export const deleteRunInstance = (data: object) => {
   return request({
-    url: `/workflow/processInstance/deleteRuntimeProcessInst`,
+    url: `/workflow/processInstance/deleteRunInstance`,
     method: 'post',
     data: data
   });
@@ -70,9 +78,9 @@ export const deleteRuntimeProcessInst = (data: object) => {
  * @param processInstanceId 流程实例id
  * @returns
  */
-export const deleteRuntimeProcessAndHisInst = (processInstanceId: string | string[]) => {
+export const deleteRunAndHisInstance = (processInstanceId: string | string[]) => {
   return request({
-    url: `/workflow/processInstance/deleteRuntimeProcessAndHisInst/${processInstanceId}`,
+    url: `/workflow/processInstance/deleteRunAndHisInstance/${processInstanceId}`,
     method: 'delete'
   });
 };
@@ -82,9 +90,9 @@ export const deleteRuntimeProcessAndHisInst = (processInstanceId: string | strin
  * @param processInstanceId 流程实例id
  * @returns
  */
-export const deleteFinishProcessAndHisInst = (processInstanceId: string | string[]) => {
+export const deleteFinishAndHisInstance = (processInstanceId: string | string[]) => {
   return request({
-    url: `/workflow/processInstance/deleteFinishProcessAndHisInst/${processInstanceId}`,
+    url: `/workflow/processInstance/deleteFinishAndHisInstance/${processInstanceId}`,
     method: 'delete'
   });
 };
@@ -94,9 +102,9 @@ export const deleteFinishProcessAndHisInst = (processInstanceId: string | string
  * @param query
  * @returns {*}
  */
-export const getCurrentSubmitByPage = (query: ProcessInstanceQuery): AxiosPromise<ProcessInstanceVO[]> => {
+export const getPageByCurrent = (query: ProcessInstanceQuery): AxiosPromise<ProcessInstanceVO[]> => {
   return request({
-    url: '/workflow/processInstance/getCurrentSubmitByPage',
+    url: '/workflow/processInstance/getPageByCurrent',
     method: 'get',
     params: query
   });

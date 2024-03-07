@@ -101,17 +101,17 @@
     <submitVerify ref="submitVerifyRef" :task-id="taskId" @submit-callback="handleQuery" />
     <!-- 加签组件 -->
     <multiInstanceUser ref="multiInstanceUserRef" :title="title" @submit-callback="handleQuery" />
-    <!-- 加签组件 -->
-    <SysUser ref="sysUserRef" :multiple="true" @submit-callback="submitCallback" />
+    <!-- 选人组件 -->
+    <selectSysUser ref="selectSysUserRef" :multiple="true" @submit-callback="submitCallback" />
   </div>
 </template>
 
 <script lang="ts" setup>
-import { getAllTaskWaitByPage, getAllTaskFinishByPage, updateAssignee } from '@/api/workflow/task';
+import { getPageByAllTaskWait, getPageByAllTaskFinish, updateAssignee } from '@/api/workflow/task';
 import ApprovalRecord from '@/components/Process/approvalRecord.vue';
 import SubmitVerify from '@/components/Process/submitVerify.vue';
-import MultiInstanceUser from '@/components/Process/multiInstance-user.vue';
-import SysUser from '@/components/Process/sys-user.vue';
+import MultiInstanceUser from '@/components/Process/multiInstanceUser.vue';
+import SelectSysUser from '@/components/Process/selectSysUser.vue';
 import { TaskQuery, TaskVO } from '@/api/workflow/task/types';
 //提交组件
 const submitVerifyRef = ref<InstanceType<typeof SubmitVerify>>();
@@ -120,7 +120,7 @@ const approvalRecordRef = ref<InstanceType<typeof ApprovalRecord>>();
 //加签组件
 const multiInstanceUserRef = ref<InstanceType<typeof MultiInstanceUser>>();
 //选人组件
-const sysUserRef = ref<InstanceType<typeof SysUser>>();
+const selectSysUserRef = ref<InstanceType<typeof SelectSysUser>>();
 
 const queryFormRef = ref<ElFormInstance>();
 const { proxy } = getCurrentInstance() as ComponentInternalInstance;
@@ -205,7 +205,7 @@ const changeTab = async (data: string) => {
 //分页
 const getWaitingList = () => {
   loading.value = true;
-  getAllTaskWaitByPage(queryParams.value).then((resp) => {
+  getPageByAllTaskWait(queryParams.value).then((resp) => {
     taskList.value = resp.rows;
     total.value = resp.total;
     loading.value = false;
@@ -213,22 +213,22 @@ const getWaitingList = () => {
 };
 const getFinishList = () => {
   loading.value = true;
-  getAllTaskFinishByPage(queryParams.value).then((resp) => {
+  getPageByAllTaskFinish(queryParams.value).then((resp) => {
     taskList.value = resp.rows;
     total.value = resp.total;
     loading.value = false;
   });
 };
 const handleUpdate = () => {
-  if (sysUserRef.value) {
-    sysUserRef.value.getUserList([]);
+  if (selectSysUserRef.value) {
+    selectSysUserRef.value.getUserList([]);
   }
 };
 //修改办理人
 const submitCallback = (data) => {
   if (data && data.value.length > 0) {
     updateAssignee(ids.value, data.value[0].userId).then((resp) => {
-      sysUserRef.value.close();
+      selectSysUserRef.value.close();
       proxy?.$modal.msgSuccess('操作成功');
       handleQuery();
     });

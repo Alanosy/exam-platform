@@ -89,7 +89,7 @@
 </template>
 
 <script lang="ts" setup>
-import { getTaskWaitByPage, claim, returnTask } from '@/api/workflow/task';
+import { getPageByTaskWait, claim, returnTask } from '@/api/workflow/task';
 import ApprovalRecord from '@/components/Process/approvalRecord.vue';
 import SubmitVerify from '@/components/Process/submitVerify.vue';
 import { TaskQuery, TaskVO } from '@/api/workflow/task/types';
@@ -150,7 +150,7 @@ const handleSelectionChange = (selection: any) => {
 //分页
 const getWaitingList = () => {
   loading.value = true;
-  getTaskWaitByPage(queryParams.value).then((resp) => {
+  getPageByTaskWait(queryParams.value).then((resp) => {
     taskList.value = resp.rows;
     total.value = resp.total;
     loading.value = false;
