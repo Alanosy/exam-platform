@@ -179,3 +179,17 @@ export const updateAssignee = (taskIds: Array<string>,userId: string) => {
     method: 'put'
   });
 };
+
+/**
+ * 转办任务
+ * @param taskIds
+ * @param userId
+ * @returns
+ */
+export const transferTask = (data: object) => {
+  return request({
+    url: `/workflow/task/transferTask`,
+    method: 'post',
+    data: data
+  });
+};

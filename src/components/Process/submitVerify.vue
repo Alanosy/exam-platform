@@ -24,15 +24,19 @@
     <template #footer>
       <span class="dialog-footer">
         <el-button v-loading="buttonLoading" type="primary" @click="handleCompleteTask"> 提交 </el-button>
+        <el-button v-if="task.businessStatus === 'waiting' && task.multiInstance" v-loading="buttonLoading" type="primary" @click="openTransferTask"> 转办 </el-button>
         <el-button v-if="task.businessStatus === 'waiting' && task.multiInstance" v-loading="buttonLoading" type="primary" @click="addMultiInstanceUser"> 加签 </el-button>
         <el-button v-if="task.businessStatus === 'waiting' && task.multiInstance" v-loading="buttonLoading" type="primary" @click="deleteMultiInstanceUser"> 减签 </el-button>
         <el-button v-if="task.businessStatus === 'waiting'" v-loading="buttonLoading" type="danger" @click="handleBackProcess"> 退回 </el-button>
         <el-button v-loading="buttonLoading" @click="cancel">取消</el-button>
       </span>
     </template>
-    <UserSelect ref="userSelectCopyRef" :data="selectCopyUserIds" @confirm-call-back="userSelectCopyCallBack"></UserSelect>
+    <!-- 抄送 -->
+    <UserSelect ref="userSelectCopyRef" :multiple="userMultiple" :data="selectCopyUserIds" @confirm-call-back="userSelectCopyCallBack"></UserSelect>
+    <!-- 转办 -->
+    <UserSelect ref="transferTaskRef" :multiple="userMultiple" @confirm-call-back="handleTransferTask"></UserSelect>
     <!-- 加签组件 -->
-    <multiInstanceUser ref="multiInstanceUserRef" :title="title" @submit-callback="handleQuery" />
+    <multiInstanceUser ref="multiInstanceUserRef" :title="title" @submit-callback='closeDialog' />
   </el-dialog>
 </template>
 
@@ -40,13 +44,14 @@
 import { ref } from 'vue';
 import { ComponentInternalInstance } from 'vue';
 import { ElForm } from 'element-plus';
-import { completeTask, backProcess, getTaskById } from '@/api/workflow/task';
+import { completeTask, backProcess, getTaskById,transferTask } from '@/api/workflow/task';
 import UserSelect from '@/components/UserSelect';
 import MultiInstanceUser from '@/components/Process/multiInstanceUser.vue';
 const { proxy } = getCurrentInstance() as ComponentInternalInstance;
 import { UserVO } from '@/api/system/user/types';
 import { TaskVO } from '@/api/workflow/task/types';
 const userSelectCopyRef = ref<InstanceType<typeof UserSelect>>();
+const transferTaskRef = ref<InstanceType<typeof UserSelect>>();
   //加签组件
 const multiInstanceUserRef = ref<InstanceType<typeof MultiInstanceUser>>();
 
@@ -66,6 +71,9 @@ const taskId = ref<string>('');
 const selectCopyUserList = ref<UserVO[]>([]);
 //抄送人id
 const selectCopyUserIds = ref<string>(undefined);
+//是否多选人员
+const userMultiple = ref(false);
+
 //任务
 const task = ref<TaskVO>({
   id: undefined,
@@ -107,6 +115,9 @@ const form = ref<Record<string, any>>({
   messageType: ['1'],
   wfCopyList: []
 });
+const closeDialog = () => {
+  dialog.visible = false
+}
 //打开弹窗
 const openDialog = (id?: string) => {
   selectCopyUserIds.value = undefined
@@ -172,6 +183,7 @@ const cancel = async () => {
 };
 //打开抄送人员
 const openUserSelectCopy = () => {
+  userMultiple.value = true
   userSelectCopyRef.value.open();
 };
 //确认抄送人员
@@ -203,6 +215,31 @@ const deleteMultiInstanceUser = () => {
     multiInstanceUserRef.value.getDeleteMultiInstanceList(taskId.value);
   }
 };
+//打开转办
+const openTransferTask = () => {
+  userMultiple.value = false
+  transferTaskRef.value.open();
+};
+//转办
+const handleTransferTask  = async (data) => {
+  if(data && data.length > 0){
+    let params = {
+      taskId: taskId.value,
+      userId: data[0].userId,
+      comment: form.value.message
+    }
+    await proxy?.$modal.confirm('是否确认提交？');
+    loading.value = true;
+    buttonLoading.value = true;
+    await transferTask(params).finally(() => (loading.value = false));
+    dialog.visible = false;
+    emits('submitCallback');
+    proxy?.$modal.msgSuccess('操作成功');
+  }else{
+    proxy?.$modal.msgWarning('请选择用户！');
+  }
+}
+
 /**
  * 对外暴露子组件方法
  */
