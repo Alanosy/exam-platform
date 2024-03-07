@@ -59,7 +59,7 @@ const taskId = ref<string>('');
 //抄送人
 const selectCopyUserList = ref<UserVO[]>([]);
 //抄送人id
-const selectCopyUserIds = ref<string>('');
+const selectCopyUserIds = ref<string>(undefined);
   
 
 const dialog = reactive<DialogOption>({
@@ -76,7 +76,7 @@ const form = ref<Record<string, any>>({
 });
 //打开弹窗
 const openDialog = (id?: string) => {
-  selectCopyUserIds.value = ''
+  selectCopyUserIds.value = undefined
   selectCopyUserList.value = []
   form.value.fileId = undefined
   taskId.value = id;

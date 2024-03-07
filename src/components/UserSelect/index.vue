@@ -47,7 +47,7 @@
           </transition>
 
           <el-card shadow="hover">
-            <template #header>
+            <template v-if="prop.multiple" #header>
               <el-tag v-for="user in selectUserList" :key="user.userId" closable style="margin: 2px" @close="handleCloseTag(user)">
                 {{ user.userName }}
               </el-tag>
@@ -60,9 +60,8 @@
               show-overflow
               :data="userList"
               :loading="loading"
-              :row-config="{ keyField: 'userId' }"
-              :checkbox-config="{ reserve: true, checkRowKeys: userIds }"
-              highlight-current-row
+              :row-config="{ keyField: 'userId', isHover: true }"
+              :checkbox-config="{ reserve: true, trigger: 'row', highlight: true, showHeader: prop.multiple }"
               @checkbox-all="handleCheckboxAll"
               @checkbox-change="handleCheckboxChange"
             >
@@ -90,14 +89,14 @@
               v-model:page="queryParams.pageNum"
               v-model:limit="queryParams.pageSize"
               :total="total"
-              @pagination="getList"
+              @pagination="pageList"
             />
           </el-card>
         </el-col>
       </el-row>
 
       <template #footer>
-        <el-button @click="userDialog.closeDialog">取消</el-button>
+        <el-button @click="close">取消</el-button>
         <el-button type="primary" @click="confirm">确定</el-button>
       </template>
     </el-dialog>
@@ -112,17 +111,19 @@ import { VxeTableInstance } from 'vxe-table';
 import useDialog from '@/hooks/useDialog';
 
 interface PropType {
-  modelValue?: UserVO[];
+  modelValue?: UserVO[] | UserVO | undefined;
+  multiple?: boolean;
+  data?: string | number | (string | number)[];
 }
 const prop = withDefaults(defineProps<PropType>(), {
-  modelValue: () => []
+  multiple: true,
+  modelValue: undefined,
+  data: undefined
 });
-const emit = defineEmits(['update:modelValue']);
+const emit = defineEmits(['update:modelValue', 'confirmCallBack']);
 
 const { proxy } = getCurrentInstance() as ComponentInternalInstance;
 const { sys_normal_disable } = toRefs<any>(proxy?.useDict('sys_normal_disable'));
-
-const userIds = computed(() => prop.modelValue.map((item) => item.userId as string));
 
 const userList = ref<UserVO[]>();
 const loading = ref(true);
@@ -151,11 +152,8 @@ const queryParams = ref<UserQuery>({
   roleId: ''
 });
 
-/** 通过条件过滤节点  */
-const filterNode = (value: string, data: any) => {
-  if (!value) return true;
-  return data.label.indexOf(value) !== -1;
-};
+const defaultSelectUserIds = computed(() => computedIds(prop.data));
+
 /** 根据名称筛选部门树 */
 watchEffect(
   () => {
@@ -167,8 +165,28 @@ watchEffect(
 );
 
 const confirm = () => {
-  emit('update:modelValue', [...selectUserList.value]);
+  emit('update:modelValue', selectUserList.value);
+  emit('confirmCallBack', selectUserList.value);
   userDialog.closeDialog();
+};
+
+const computedIds = (data) => {
+    if (data instanceof Array) {
+    return [...data];
+  } else if (typeof data === 'string') {
+    return data.split(',');
+  } else if (typeof data === 'number') {
+    return [data];
+  } else {
+    console.warn('<UserSelect> The data type of data should be array or string or number, but I received other');
+    return [];
+  }
+};
+
+/** 通过条件过滤节点  */
+const filterNode = (value: string, data: any) => {
+  if (!value) return true;
+  return data.label.indexOf(value) !== -1;
 };
 
 /** 查询部门下拉树结构 */
@@ -184,6 +202,14 @@ const getList = async () => {
   loading.value = false;
   userList.value = res.rows;
   total.value = res.total;
+};
+
+const pageList = async () => {
+  await getList();
+  const users = userList.value.filter((item) => {
+    return selectUserList.value.some((user) => user.userId === item.userId);
+  });
+  await tableRef.value.setCheckboxRow(users, true);
 };
 
 /** 节点单击事件 */
@@ -208,6 +234,10 @@ const resetQuery = () => {
 };
 
 const handleCheckboxChange = (checked) => {
+  if (!prop.multiple && checked.checked) {
+    tableRef.value.setCheckboxRow(selectUserList.value, false);
+    selectUserList.value = [];
+  }
   const row = checked.row;
   if (checked.checked) {
     selectUserList.value.push(row);
@@ -234,22 +264,48 @@ const handleCheckboxAll = (checked) => {
 
 const handleCloseTag = (user: UserVO) => {
   const userId = user.userId;
+  // 使用split删除用户
   const index = selectUserList.value.findIndex((item) => item.userId === userId);
   const rows = selectUserList.value[index];
   tableRef.value?.setCheckboxRow(rows, false);
   selectUserList.value.splice(index, 1);
 };
+
+const initSelectUser = async () => {
+  if (defaultSelectUserIds.value.length > 0) {
+    const { data } = await api.optionSelect(defaultSelectUserIds.value);
+    selectUserList.value = data;
+    const users = userList.value.filter((item) => {
+      return defaultSelectUserIds.value.includes(String(item.userId));
+    });
+    await nextTick(() => {
+      tableRef.value.setCheckboxRow(users, true);
+    });
+  }
+};
+const close = () => {
+  userDialog.closeDialog();
+};
+
 watch(
-  () => prop.modelValue,
-  (newVal, oldValue) => {
-    Object.assign(selectUserList.value, newVal);
-  },
-  { deep: true }
+  () => userDialog.visible.value,
+  (newValue: boolean) => {
+    console.log(selectUserList.value)
+
+    if (newValue) {
+      initSelectUser();
+    } else {
+      tableRef.value.clearCheckboxReserve();
+      tableRef.value.clearCheckboxRow();
+      resetQuery();
+      selectUserList.value = [];
+    }
+  }
 );
 
 onMounted(() => {
-  getTreeSelect();
-  getList();
+  getTreeSelect(); // 初始化部门数据
+  getList(); // 初始化列表数据
 });
 
 defineExpose({
