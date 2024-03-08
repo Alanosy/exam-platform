@@ -1,6 +1,7 @@
 import request from '@/utils/request';
 import { AxiosPromise } from 'axios';
 import { TaskQuery, TaskVO } from '@/api/workflow/task/types';
+
 /**
  * 查询待办列表
  * @param query
@@ -71,7 +72,7 @@ export const getPageByAllTaskFinish = (query: TaskQuery): AxiosPromise<TaskVO[]>
  * @param data
  * @returns {*}
  */
-export const startWorkFlow = (data: object) => {
+export const startWorkFlow = (data: object): any => {
   return request({
     url: '/workflow/task/startWorkFlow',
     method: 'post',
@@ -97,7 +98,7 @@ export const completeTask = (data: object) => {
  * @param taskId
  * @returns {*}
  */
-export const claim = (taskId: string) => {
+export const claim = (taskId: string): any => {
   return request({
     url: '/workflow/task/claim/' + taskId,
     method: 'post'
@@ -109,7 +110,7 @@ export const claim = (taskId: string) => {
  * @param taskId
  * @returns {*}
  */
-export const returnTask = (taskId: string) => {
+export const returnTask = (taskId: string): any => {
   return request({
     url: '/workflow/task/returnTask/' + taskId,
     method: 'post'
@@ -118,10 +119,10 @@ export const returnTask = (taskId: string) => {
 
 /**
  * 任务驳回
- * @param taskId
+ * @param data
  * @returns {*}
  */
-export const backProcess = (data: object) => {
+export const backProcess = (data: any): any => {
   return request({
     url: '/workflow/task/backProcess',
     method: 'post',
@@ -146,7 +147,7 @@ export const getTaskById = (taskId: string) => {
  * @param data
  * @returns
  */
-export const addMultiInstanceExecution = (data: object) => {
+export const addMultiInstanceExecution = (data: any) => {
   return request({
     url: '/workflow/task/addMultiInstanceExecution',
     method: 'post',
@@ -159,7 +160,7 @@ export const addMultiInstanceExecution = (data: object) => {
  * @param data
  * @returns
  */
-export const deleteMultiInstanceExecution = (data: object) => {
+export const deleteMultiInstanceExecution = (data: any) => {
   return request({
     url: '/workflow/task/deleteMultiInstanceExecution',
     method: 'post',
@@ -173,7 +174,7 @@ export const deleteMultiInstanceExecution = (data: object) => {
  * @param userId
  * @returns
  */
-export const updateAssignee = (taskIds: Array<string>,userId: string) => {
+export const updateAssignee = (taskIds: Array<string>, userId: string) => {
   return request({
     url: `/workflow/task/updateAssignee/${taskIds}/${userId}`,
     method: 'put'
@@ -182,11 +183,9 @@ export const updateAssignee = (taskIds: Array<string>,userId: string) => {
 
 /**
  * 转办任务
- * @param taskIds
- * @param userId
  * @returns
  */
-export const transferTask = (data: object) => {
+export const transferTask = (data: any) => {
   return request({
     url: `/workflow/task/transferTask`,
     method: 'post',
