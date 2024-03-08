@@ -38,7 +38,6 @@ import MoveCanvasModule from 'diagram-js/lib/navigation/movecanvas';
 import ZoomScrollModule from 'diagram-js/lib/navigation/zoomscroll';
 import { ModuleDeclaration } from 'didi';
 import { Canvas, ModdleElement } from 'bpmn';
-import defaultXML from '@/components/BpmnDesign/assets/defaultXML';
 import EventBus from 'diagram-js/lib/core/EventBus';
 import Overlays from 'diagram-js/lib/features/overlays/Overlays';
 import processApi from '@/api/workflow/processInstance/index';
@@ -146,10 +145,8 @@ const fillColor = () => {
 //递归上色
 const bpmnNodeList = (flowElements, canvas) => {
   flowElements.forEach((n) => {
-    console.log(n);
     if (n.$type === 'bpmn:UserTask') {
       const completeTask = taskList.value.find((m) => m.key === n.id);
-      console.log(completeTask);
       if (completeTask) {
         canvas.addMarker(n.id, completeTask.completed ? 'highlight' : 'highlight-todo');
         n.outgoing?.forEach((nn) => {
@@ -212,7 +209,6 @@ const bpmnNodeList = (flowElements, canvas) => {
           if (completeTask) {
             canvas.addMarker(nn.id, 'highlight');
             canvas.addMarker(n.id, 'highlight');
-            // return;
           }
         });
       }

@@ -3,50 +3,11 @@
     <el-dialog v-model="visible" draggable title="审批记录" :width="props.width" :height="props.height" :close-on-click-modal="false">
       <el-tabs v-model="tabActiveName" class="demo-tabs">
         <el-tab-pane label="流程图" name="bpmn">
-          <!--          <div v-loading="loading">-->
-          <!--            <div style="width: 100%; height: 300px; overflow: auto; position: relative">-->
-          <!--              <div-->
-          <!--                v-for="(graphic, index) in graphicInfoVos"-->
-          <!--                :key="index"-->
-          <!--                :style="{-->
-          <!--                  position: 'absolute',-->
-          <!--                  left: `${graphic.x}px`,-->
-          <!--                  top: `${graphic.y}px`,-->
-          <!--                  width: `${graphic.width}px`,-->
-          <!--                  height: `${graphic.height}px`,-->
-          <!--                  cursor: 'pointer',-->
-          <!--                  zIndex: 99-->
-          <!--                }"-->
-          <!--                @mouseover="handleMouseOver(graphic)"-->
-          <!--                @mouseleave="handleMouseLeave()"-->
-          <!--              ></div>-->
-          <!--              &lt;!&ndash; 弹出的 div 元素 &ndash;&gt;-->
-          <!--              <div-->
-          <!--                v-show="popupVisible"-->
-          <!--                class="triangle"-->
-          <!--                :style="{-->
-          <!--                  position: 'absolute',-->
-          <!--                  left: `${graphicX}px`,-->
-          <!--                  top: `${graphicY}px`,-->
-          <!--                  backgroundColor: '#fff',-->
-          <!--                  padding: '10px',-->
-          <!--                  zIndex: 100-->
-          <!--                }"-->
-          <!--              >-->
-          <!--                <p>审批人员: {{ nodeInfo.nickName }}</p>-->
-          <!--                <p>节点状态：{{ nodeInfo.status }}</p>-->
-          <!--                <p>开始时间：{{ nodeInfo.startTime }}</p>-->
-          <!--                <p>结束时间：{{ nodeInfo.endTime }}</p>-->
-          <!--                <p>审批耗时：{{ nodeInfo.runDuration }}</p>-->
-          <!--              </div>-->
-          <!--              <el-image :src="src" />-->
-          <!--            </div>-->
-          <!--          </div>-->
           <BpmnView ref="bpmnViewRef"></BpmnView>
         </el-tab-pane>
         <el-tab-pane label="审批信息" name="info">
           <div>
-            <el-table :data="historyList" style="width: 100%" border fit max-height="570">
+            <el-table :data="historyList" style="width: 100%" border fit>
               <el-table-column type="index" label="序号" align="center" width="50"></el-table-column>
               <el-table-column prop="name" label="任务名称" sortable align="center"></el-table-column>
               <el-table-column prop="nickName" label="办理人" sortable align="center"></el-table-column>
@@ -88,14 +49,6 @@ import BpmnView from '@/components/BpmnView/index.vue';
 import processApi from '@/api/workflow/processInstance';
 import { propTypes } from '@/utils/propTypes';
 
-type NodeInfo = {
-  nickName?: string;
-  status?: string;
-  startTime?: string;
-  endTime?: string;
-  runDuration?: string;
-};
-
 const { proxy } = getCurrentInstance() as ComponentInternalInstance;
 
 const props = defineProps({
@@ -103,16 +56,9 @@ const props = defineProps({
   height: propTypes.string.def('100%')
 });
 const loading = ref(false);
-const src = ref('');
 const visible = ref(false);
 const historyList = ref<Array<any>>([]);
 const deleteReason = ref<string>('');
-const graphicInfoVos = ref<Array<any>>([]);
-const nodeListInfo = ref<Array<any>>([]);
-const popupVisible = ref(false);
-const nodeInfo = ref<NodeInfo>({});
-const graphicX = ref<number | string>(0);
-const graphicY = ref<number | string>(0);
 const tabActiveName = ref('bpmn');
 
 const bpmnViewRef = ref<BpmnView>();
@@ -122,43 +68,14 @@ const init = async (instanceId: string) => {
   visible.value = true;
   loading.value = true;
   historyList.value = [];
-  graphicInfoVos.value = [];
-  processApi.getHistoryImage(instanceId).then((res) => {
-    src.value = 'data:image/png;base64,' + res.data;
-  });
   processApi.getHistoryRecord(instanceId).then((resp) => {
     historyList.value = resp.data.historyRecordList;
-    graphicInfoVos.value = resp.data.graphicInfoVos;
-    nodeListInfo.value = resp.data.nodeListInfo;
     deleteReason.value = resp.data.deleteReason;
     loading.value = false;
   });
   await nextTick(() => {
     bpmnViewRef.value.init(instanceId);
   });
-};
-//悬浮事件
-const handleMouseOver = async (graphic: any) => {
-  graphicX.value = graphic.x + graphic.width + 10;
-  graphicY.value = graphic.y - graphic.height + -10;
-  nodeInfo.value = {};
-  if (nodeListInfo.value && nodeListInfo.value.length > 0) {
-    let info = nodeListInfo.value.find((e: any) => e.taskDefinitionKey == graphic.nodeId);
-    if (info) {
-      nodeInfo.value = {
-        nickName: info.nickName,
-        status: info.status,
-        startTime: info.startTime,
-        endTime: info.endTime,
-        runDuration: info.runDuration
-      };
-      popupVisible.value = true;
-    }
-  }
-};
-//关闭
-const handleMouseLeave = async () => {
-  popupVisible.value = false;
 };
 
 /** 下载按钮操作 */
@@ -189,8 +106,8 @@ defineExpose({
 
 .container {
   :deep(.el-dialog .el-dialog__body) {
-    max-height: calc(100vh - 300px) !important;
-    min-height: calc(100vh - 300px) !important;
+    max-height: calc(100vh - 170px) !important;
+    min-height: calc(100vh - 170px) !important;
   }
 }
 </style>
