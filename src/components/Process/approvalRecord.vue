@@ -1,37 +1,50 @@
 <template>
-  <el-dialog v-model="visible" draggable title="审批记录" :width="props.width" :height="props.height" append-to-body
-    :close-on-click-modal="false">
-    <div v-loading="loading">
-      <div style="width: 100%;height: 300px;overflow: auto;position: relative;">
-        <div v-for="(graphic, index) in graphicInfoVos" :key="index" :style="{
-          position: 'absolute',
-          left: `${graphic.x}px`,
-          top: `${graphic.y}px`,
-          width: `${graphic.width}px`,
-          height: `${graphic.height}px`,
-          cursor: 'pointer',
-          zIndex: 99
-        }" @mouseover="handleMouseOver(graphic)" @mouseleave="handleMouseLeave()"></div>
-        <!-- 弹出的 div 元素 -->
-        <div v-show="popupVisible" class="triangle" :style="{
-          position: 'absolute',
-          left: `${graphicX}px`,
-          top: `${graphicY}px`,
-          backgroundColor: '#fff',
-          padding: '10px',
-          zIndex: 100
-        }">
-          <p>审批人员: {{ nodeInfo.nickName }}</p>
-          <p>节点状态：{{ nodeInfo.status }}</p>
-          <p>开始时间：{{ nodeInfo.startTime }}</p>
-          <p>结束时间：{{ nodeInfo.endTime }}</p>
-          <p>审批耗时：{{ nodeInfo.runDuration }}</p>
+  <el-dialog v-model="visible" draggable title="审批记录" :width="props.width" :height="props.height" append-to-body :close-on-click-modal="false">
+    <el-tabs v-model="tabActiveName" class="demo-tabs">
+      <el-tab-pane label="流程图" name="bpmn">
+        <div v-loading="loading">
+          <div style="width: 100%; height: 300px; overflow: auto; position: relative">
+            <div
+              v-for="(graphic, index) in graphicInfoVos"
+              :key="index"
+              :style="{
+                position: 'absolute',
+                left: `${graphic.x}px`,
+                top: `${graphic.y}px`,
+                width: `${graphic.width}px`,
+                height: `${graphic.height}px`,
+                cursor: 'pointer',
+                zIndex: 99
+              }"
+              @mouseover="handleMouseOver(graphic)"
+              @mouseleave="handleMouseLeave()"
+            ></div>
+            <!-- 弹出的 div 元素 -->
+            <div
+              v-show="popupVisible"
+              class="triangle"
+              :style="{
+                position: 'absolute',
+                left: `${graphicX}px`,
+                top: `${graphicY}px`,
+                backgroundColor: '#fff',
+                padding: '10px',
+                zIndex: 100
+              }"
+            >
+              <p>审批人员: {{ nodeInfo.nickName }}</p>
+              <p>节点状态：{{ nodeInfo.status }}</p>
+              <p>开始时间：{{ nodeInfo.startTime }}</p>
+              <p>结束时间：{{ nodeInfo.endTime }}</p>
+              <p>审批耗时：{{ nodeInfo.runDuration }}</p>
+            </div>
+            <el-image :src="src" />
+          </div>
         </div>
-        <el-image :src="src" />
-      </div>
-      <div>
-        <el-table :data="historyList" style="width: 100%" border fit max-height="570">
-          <el-table-column label="流程审批历史记录" align="center">
+      </el-tab-pane>
+      <el-tab-pane label="审批信息" name="info">
+        <div>
+          <el-table :data="historyList" style="width: 100%" border fit max-height="570">
             <el-table-column type="index" label="序号" align="center" width="50"></el-table-column>
             <el-table-column prop="name" label="任务名称" sortable align="center"></el-table-column>
             <el-table-column prop="nickName" label="办理人" sortable align="center"></el-table-column>
@@ -43,44 +56,47 @@
             <el-table-column prop="comment" label="审批意见" sortable align="center"></el-table-column>
             <el-table-column prop="attachmentList" label="附件" sortable align="center">
               <template #default="scope">
-                <el-popover placement="right"  v-if="scope.row.attachmentList && scope.row.attachmentList.length > 0" :width="310" trigger="click">
-                    <template #reference>
-                      <el-button style="margin-right: 16px">附件</el-button>
-                    </template>
-                    <el-table border :data="scope.row.attachmentList">
-                      <el-table-column prop="name" width="202" :show-overflow-tooltip="true" label="附件名称"></el-table-column>
-                      <el-table-column prop="name" width="80" align="center" :show-overflow-tooltip="true" label="操作">
-                        <template #default="tool">
-                          <el-button type="text" @click="handleDownload(tool.row.contentId)">下载</el-button>
-                        </template>
-                      </el-table-column>
-                    </el-table>
-
-                  </el-popover>
+                <el-popover v-if="scope.row.attachmentList && scope.row.attachmentList.length > 0" placement="right" :width="310" trigger="click">
+                  <template #reference>
+                    <el-button style="margin-right: 16px">附件</el-button>
+                  </template>
+                  <el-table border :data="scope.row.attachmentList">
+                    <el-table-column prop="name" width="202" :show-overflow-tooltip="true" label="附件名称"></el-table-column>
+                    <el-table-column prop="name" width="80" align="center" :show-overflow-tooltip="true" label="操作">
+                      <template #default="tool">
+                        <el-button type="text" @click="handleDownload(tool.row.contentId)">下载</el-button>
+                      </template>
+                    </el-table-column>
+                  </el-table>
+                </el-popover>
               </template>
             </el-table-column>
             <el-table-column prop="startTime" label="开始时间" sortable align="center"></el-table-column>
             <el-table-column prop="endTime" label="结束时间" sortable align="center"></el-table-column>
             <el-table-column prop="runDuration" label="运行时长" sortable align="center"></el-table-column>
-          </el-table-column>
-        </el-table>
-      </div>
-    </div>
+          </el-table>
+        </div>
+      </el-tab-pane>
+    </el-tabs>
   </el-dialog>
 </template>
 <script lang="ts" setup>
-import { getHistoryImage, getHistoryRecord } from '@/api/workflow/processInstance';
+import processApi from '@/api/workflow/processInstance';
+import { propTypes } from '@/utils/propTypes';
+
+type NodeInfo = {
+  nickName?: string;
+  status?: string;
+  startTime?: string;
+  endTime?: string;
+  runDuration?: string;
+};
+
 const { proxy } = getCurrentInstance() as ComponentInternalInstance;
-import { ref } from 'vue';
+
 const props = defineProps({
-  width: {
-    type: String,
-    default: '70%'
-  },
-  height: {
-    type: String,
-    default: '100%'
-  }
+  width: propTypes.string.def('70%'),
+  height: propTypes.string.def('100%')
 });
 const loading = ref(false);
 const src = ref('');
@@ -90,23 +106,25 @@ const deleteReason = ref<string>('');
 const graphicInfoVos = ref<Array<any>>([]);
 const nodeListInfo = ref<Array<any>>([]);
 const popupVisible = ref(false);
-const nodeInfo = ref<any>({});
+const nodeInfo = ref<NodeInfo>({});
 const graphicX = ref<number | string>(0);
 const graphicY = ref<number | string>(0);
+const tabActiveName = ref('bpmn');
+
 //初始化查询审批记录
-const init = async (processInstanceId: string) => {
+const init = async (instanceId: string) => {
   visible.value = true;
   loading.value = true;
   historyList.value = [];
   graphicInfoVos.value = [];
-  getHistoryImage(processInstanceId).then((res) => {
-    src.value = 'data:image/png;base64,' + res.data
+  processApi.getHistoryImage(instanceId).then((res) => {
+    src.value = 'data:image/png;base64,' + res.data;
   });
-  getHistoryRecord(processInstanceId).then((response) => {
-    historyList.value = response.data.historyRecordList;
-    graphicInfoVos.value = response.data.graphicInfoVos;
-    nodeListInfo.value = response.data.nodeListInfo;
-    deleteReason.value = response.data.deleteReason;
+  processApi.getHistoryRecord(instanceId).then((resp) => {
+    historyList.value = resp.data.historyRecordList;
+    graphicInfoVos.value = resp.data.graphicInfoVos;
+    nodeListInfo.value = resp.data.nodeListInfo;
+    deleteReason.value = resp.data.deleteReason;
     loading.value = false;
   });
 };
