@@ -1,37 +1,35 @@
 <template>
-  <el-dialog v-if="bpmnVisible" v-model="bpmnVisible" title="流程进度" append-to-body width="90%" @opened="init(undefined)">
-    <div v-loading="loading" class="bpmnDialogContainers">
-      <el-header style="border-bottom: 1px solid rgb(218 218 218); height: auto">
-        <div class="header-div">
-          <div>
-            <el-tooltip effect="dark" content="自适应屏幕" placement="bottom">
-              <el-button size="small" icon="Rank" @click="fitViewport" />
-            </el-tooltip>
-            <el-tooltip effect="dark" content="放大" placement="bottom">
-              <el-button size="small" icon="ZoomIn" @click="zoomViewport(true)" />
-            </el-tooltip>
-            <el-tooltip effect="dark" content="缩小" placement="bottom">
-              <el-button size="small" icon="ZoomOut" @click="zoomViewport(false)" />
-            </el-tooltip>
-          </div>
-          <div>
-            <div class="tips-label">
-              <div class="un-complete">未完成</div>
-              <div class="in-progress">进行中</div>
-              <div class="complete">已完成</div>
-            </div>
+  <div v-loading="loading" class="bpmnDialogContainers">
+    <el-header style="border-bottom: 1px solid rgb(218 218 218); height: auto">
+      <div class="header-div">
+        <div>
+          <el-tooltip effect="dark" content="自适应屏幕" placement="bottom">
+            <el-button size="small" icon="Rank" @click="fitViewport" />
+          </el-tooltip>
+          <el-tooltip effect="dark" content="放大" placement="bottom">
+            <el-button size="small" icon="ZoomIn" @click="zoomViewport(true)" />
+          </el-tooltip>
+          <el-tooltip effect="dark" content="缩小" placement="bottom">
+            <el-button size="small" icon="ZoomOut" @click="zoomViewport(false)" />
+          </el-tooltip>
+        </div>
+        <div>
+          <div class="tips-label">
+            <div class="un-complete">未完成</div>
+            <div class="in-progress">进行中</div>
+            <div class="complete">已完成</div>
           </div>
         </div>
-      </el-header>
-      <div class="flow-containers">
-        <el-container class="bpmn-el-container" style="align-items: stretch">
-          <el-main style="padding: 0">
-            <div ref="canvas" class="canvas" />
-          </el-main>
-        </el-container>
       </div>
+    </el-header>
+    <div class="flow-containers">
+      <el-container class="bpmn-el-container" style="align-items: stretch">
+        <el-main style="padding: 0">
+          <div ref="canvas" class="canvas" />
+        </el-main>
+      </el-container>
     </div>
-  </el-dialog>
+  </div>
 </template>
 
 <script lang="ts" setup>
@@ -53,10 +51,11 @@ const xml = ref('');
 const loading = ref(false);
 const bpmnVisible = ref(true);
 const historyList = ref([]);
+
 const init = (instanceId) => {
   loading.value = true;
   bpmnVisible.value = true;
-  nextTick(() => {
+  nextTick(async () => {
     if (modeler.value) modeler.value.destroy();
     modeler.value = new BpmnViewer({
       container: canvas.value,
@@ -69,14 +68,11 @@ const init = (instanceId) => {
         MoveCanvasModule
       ] as ModuleDeclaration[]
     });
-    processApi.getHistoryList(instanceId).then((resp) => {
-      xml.value = resp.data.xml;
-      taskList.value = resp.data.taskList;
-      historyList.value = resp.data.historyList;
-      // createDiagram(xml);
-      console.log(resp);
-    });
-    createDiagram(defaultXML);
+    const resp = await processApi.getHistoryList(instanceId);
+    xml.value = resp.data.xml;
+    taskList.value = resp.data.taskList;
+    historyList.value = resp.data.historyList;
+    await createDiagram(xml.value);
     loading.value = false;
   });
 };
@@ -89,7 +85,7 @@ const createDiagram = async (data) => {
     loading.value = false;
     addEventBusListener();
   } catch (err) {
-    //console.error(err.message, err.warnings)
+    console.log(err);
   }
 };
 const addEventBusListener = () => {
@@ -150,8 +146,10 @@ const fillColor = () => {
 //递归上色
 const bpmnNodeList = (flowElements, canvas) => {
   flowElements.forEach((n) => {
+    console.log(n);
     if (n.$type === 'bpmn:UserTask') {
       const completeTask = taskList.value.find((m) => m.key === n.id);
+      console.log(completeTask);
       if (completeTask) {
         canvas.addMarker(n.id, completeTask.completed ? 'highlight' : 'highlight-todo');
         n.outgoing?.forEach((nn) => {
@@ -162,19 +160,19 @@ const bpmnNodeList = (flowElements, canvas) => {
             canvas.addMarker(nn.id, completeTask.completed ? 'highlight' : 'highlight-todo');
             canvas.addMarker(nn.targetRef.id, completeTask.completed ? 'highlight' : 'highlight-todo');
             nn.targetRef.outgoing.forEach((e) => {
-              getway(e.id, e.targetRef.$type, e.targetRef.id, canvas, completeTask.completed);
+              gateway(e.id, e.targetRef.$type, e.targetRef.id, canvas, completeTask.completed);
             });
           } else if (nn.targetRef.$type === 'bpmn:ParallelGateway') {
             canvas.addMarker(nn.id, completeTask.completed ? 'highlight' : 'highlight-todo');
             canvas.addMarker(nn.targetRef.id, completeTask.completed ? 'highlight' : 'highlight-todo');
             nn.targetRef.outgoing.forEach((e) => {
-              getway(e.id, e.targetRef.$type, e.targetRef.id, canvas, completeTask.completed);
+              gateway(e.id, e.targetRef.$type, e.targetRef.id, canvas, completeTask.completed);
             });
           } else if (nn.targetRef.$type === 'bpmn:InclusiveGateway') {
             canvas.addMarker(nn.id, completeTask.completed ? 'highlight' : 'highlight-todo');
             canvas.addMarker(nn.targetRef.id, completeTask.completed ? 'highlight' : 'highlight-todo');
             nn.targetRef.outgoing.forEach((e) => {
-              getway(e.id, e.targetRef.$type, e.targetRef.id, canvas, completeTask.completed);
+              gateway(e.id, e.targetRef.$type, e.targetRef.id, canvas, completeTask.completed);
             });
           }
         });
@@ -207,15 +205,19 @@ const bpmnNodeList = (flowElements, canvas) => {
       }
       bpmnNodeList(n.flowElements, canvas);
     } else if (n.$type === 'bpmn:StartEvent') {
-      n.outgoing.forEach((nn) => {
-        const completeTask = taskList.value.find((m) => m.key === nn.targetRef.id);
-        if (completeTask) {
-          canvas.addMarker(nn.id, 'highlight');
-          canvas.addMarker(n.id, 'highlight');
-          return;
-        }
-      });
+      canvas.addMarker(n.id, 'startEvent');
+      if (n.outgoing) {
+        n.outgoing.forEach((nn) => {
+          const completeTask = taskList.value.find((m) => m.key === nn.targetRef.id);
+          if (completeTask) {
+            canvas.addMarker(nn.id, 'highlight');
+            canvas.addMarker(n.id, 'highlight');
+            // return;
+          }
+        });
+      }
     } else if (n.$type === 'bpmn:EndEvent') {
+      canvas.addMarker(n.id, 'endEvent');
       const completeTask = taskList.value.find((m) => m.key === n.id);
       if (completeTask) {
         canvas.addMarker(completeTask.key, 'highlight');
@@ -225,7 +227,7 @@ const bpmnNodeList = (flowElements, canvas) => {
     }
   });
 };
-const getway = (id, targetRefType, targetRefId, canvas, completed) => {
+const gateway = (id, targetRefType, targetRefId, canvas, completed) => {
   if (targetRefType === 'bpmn:ExclusiveGateway') {
     canvas.addMarker(id, completed ? 'highlight' : 'highlight-todo');
     canvas.addMarker(targetRefId, completed ? 'highlight' : 'highlight-todo');
@@ -239,9 +241,12 @@ const getway = (id, targetRefType, targetRefId, canvas, completed) => {
     canvas.addMarker(targetRefId, completed ? 'highlight' : 'highlight-todo');
   }
 };
+defineExpose({
+  init
+});
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
 .canvas {
   width: 100%;
   height: 100%;
@@ -260,7 +265,7 @@ const getway = (id, targetRefType, targetRefId, canvas, completed) => {
       font-size: 12px;
     }
     .un-complete {
-      border: 1px dashed #000;
+      border: 1px solid #000;
     }
     .in-progress {
       background-color: rgb(255, 237, 204);
@@ -268,7 +273,7 @@ const getway = (id, targetRefType, targetRefId, canvas, completed) => {
     }
     .complete {
       background-color: rgb(204, 230, 204);
-      border: 1px dashed green;
+      border: 1px solid green;
     }
   }
 }
@@ -301,55 +306,60 @@ const getway = (id, targetRefType, targetRefId, canvas, completed) => {
   .load {
     margin-right: 10px;
   }
-  .el-form-item__label {
+  :deep(.el-form-item__label) {
     font-size: 13px;
   }
 
-  .djs-palette {
+  :deep(.djs-palette) {
     left: 0 !important;
     top: 0;
     border-top: none;
   }
 
-  .djs-container svg {
+  :deep(.djs-container svg) {
     min-height: 650px;
   }
 
-  .highlight.djs-shape .djs-visual > :nth-child(1) {
+  :deep(.startEvent.djs-shape .djs-visual > :nth-child(1)) {
+    fill: #77df6d !important;
+  }
+  :deep(.endEvent.djs-shape .djs-visual > :nth-child(1)) {
+    fill: #ee7b77 !important;
+  }
+  :deep(.highlight.djs-shape .djs-visual > :nth-child(1)) {
     fill: green !important;
     stroke: green !important;
     fill-opacity: 0.2 !important;
   }
-  .highlight.djs-shape .djs-visual > :nth-child(2) {
+  :deep(.highlight.djs-shape .djs-visual > :nth-child(2)) {
     fill: green !important;
   }
-  .highlight.djs-shape .djs-visual > path {
+  :deep(.highlight.djs-shape .djs-visual > path) {
     fill: green !important;
     fill-opacity: 0.2 !important;
     stroke: green !important;
   }
-  .highlight.djs-connection > .djs-visual > path {
+  :deep(.highlight.djs-connection > .djs-visual > path) {
     stroke: green !important;
   }
-  .highlight-todo.djs-connection > .djs-visual > path {
+  :deep(.highlight-todo.djs-connection > .djs-visual > path) {
     stroke: orange !important;
     stroke-dasharray: 4px !important;
     fill-opacity: 0.2 !important;
     marker-end: url(#sequenceflow-end-_E7DFDF-_E7DFDF-803g1kf6zwzmcig1y2ulm5egr);
   }
-  .highlight-todo.djs-shape .djs-visual > :nth-child(1) {
+  :deep(.highlight-todo.djs-shape .djs-visual > :nth-child(1)) {
     fill: orange !important;
     stroke: orange !important;
     stroke-dasharray: 4px !important;
     fill-opacity: 0.2 !important;
   }
 }
-.verlays {
+:deep(.verlays) {
   width: 250px;
   background: rgb(102, 102, 102);
   border-radius: 4px;
   border: 1px solid #ebeef5;
-  //padding: 12px;
   color: #fff;
   padding: 15px 10px;
   p {

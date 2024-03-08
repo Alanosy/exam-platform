@@ -41,7 +41,7 @@ export const getHistoryImage = (processInstanceId: string) => {
 /**
  * 通过流程实例id获取历史流程图运行中，历史等节点
  */
-export const getHistoryList = (instanceId: string) => {
+export const getHistoryList = (instanceId: string): AxiosPromise<Record<string, any>> => {
   return request({
     url: `/workflow/processInstance/getHistoryList/${instanceId}` + '?t' + Math.random(),
     method: 'get'
