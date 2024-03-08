@@ -1,6 +1,6 @@
 <template>
   <div class="containers">
-    <div class="app-containers">
+    <div v-loading="loading" class="app-containers">
       <el-container class="h-full">
         <el-container style="align-items: stretch">
           <el-header>
@@ -112,6 +112,7 @@ const perviewXMLShow = ref(false);
 const perviewSVGShow = ref(false);
 const xmlStr = ref('');
 const svgData = ref('');
+const loading = ref(false);
 
 const panelBarClick = () => {
   // 延迟执行，否则会导致面板收起时，属性面板不显示
@@ -285,7 +286,8 @@ const saveXml = async () => {
     xml: xml,
     svg: svg,
     key: process.id,
-    name: process.name
+    name: process.name,
+    loading: loading
   };
   emit('saveCallBack', data);
 };
