@@ -83,7 +83,10 @@
             <el-tooltip v-if="scope.row.processInstanceVo.businessStatus === 'waiting'" content="撤销" placement="top">
               <el-button link type="primary" icon="Notification" @click="handleCancelProcessApply(scope.row.processInstanceVo.id)"></el-button>
             </el-tooltip>
-            <el-tooltip v-if="scope.row.processInstanceVo.businessStatus === 'waiting'" content="审批记录" placement="top">
+            <el-tooltip v-if="scope.row.processInstanceVo.businessStatus === 'waiting' || 
+            scope.row.processInstanceVo.businessStatus === 'finish'||
+            scope.row.processInstanceVo.businessStatus === 'termination'||
+            scope.row.processInstanceVo.businessStatus === 'invalid'" content="审批记录" placement="top">
               <el-button link type="primary" icon="Document" @click="handleApprovalRecord(scope.row.processInstanceVo.id)"></el-button>
             </el-tooltip>
           </template>
@@ -340,7 +343,7 @@ const handleExport = () => {
 
 //提交申请
 const handleStartWorkFlow = async (data: LeaveVO) => {
-  submitFormData.value.processKey = 'leave7';
+  submitFormData.value.processKey = 'leave1';
   submitFormData.value.businessKey = data.id;
   //流程变量
   taskVariables.value = {

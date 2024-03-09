@@ -33,7 +33,7 @@
       <template #header>
         <el-row :gutter="10" class="mb8">
           <el-col :span="1.5">
-            <el-button type="primary" plain icon="Edit" @click="handleUpdate">修改办理人</el-button>
+            <el-button type="primary" plain icon="Edit" :disabled="multiple" @click="handleUpdate">修改办理人</el-button>
           </el-col>
           <right-toolbar v-model:showSearch="showSearch" @query-table="handleQuery"></right-toolbar>
         </el-row>
@@ -97,30 +97,25 @@
     </el-card>
     <!-- 审批记录 -->
     <approvalRecord ref="approvalRecordRef" />
-    <!-- 提交组件 -->
-    <submitVerify ref="submitVerifyRef" :task-id="taskId" @submit-callback="handleQuery" />
     <!-- 加签组件 -->
     <multiInstanceUser ref="multiInstanceUserRef" :title="title" @submit-callback="handleQuery" />
     <!-- 选人组件 -->
-    <selectSysUser ref="selectSysUserRef" :multiple="true" @submit-callback="submitCallback" />
+    <UserSelect ref="userSelectRef" :multiple="false" @confirm-call-back="submitCallback"></UserSelect>
   </div>
 </template>
 
 <script lang="ts" setup>
 import { getPageByAllTaskWait, getPageByAllTaskFinish, updateAssignee } from '@/api/workflow/task';
 import ApprovalRecord from '@/components/Process/approvalRecord.vue';
-import SubmitVerify from '@/components/Process/submitVerify.vue';
 import MultiInstanceUser from '@/components/Process/multiInstanceUser.vue';
-import SelectSysUser from '@/components/Process/selectSysUser.vue';
+import UserSelect from '@/components/UserSelect';
 import { TaskQuery, TaskVO } from '@/api/workflow/task/types';
-//提交组件
-const submitVerifyRef = ref<InstanceType<typeof SubmitVerify>>();
 //审批记录组件
 const approvalRecordRef = ref<InstanceType<typeof ApprovalRecord>>();
 //加签组件
 const multiInstanceUserRef = ref<InstanceType<typeof MultiInstanceUser>>();
-//选人组件
-const selectSysUserRef = ref<InstanceType<typeof SelectSysUser>>();
+//选人组件 
+const userSelectRef = ref<InstanceType<typeof UserSelect>>();
 
 const queryFormRef = ref<ElFormInstance>();
 const { proxy } = getCurrentInstance() as ComponentInternalInstance;
@@ -138,8 +133,6 @@ const showSearch = ref(true);
 const total = ref(0);
 // 模型定义表格数据
 const taskList = ref([]);
-// 任务id
-const taskId = ref('');
 const title = ref('');
 // 查询参数
 const queryParams = ref<TaskQuery>({
@@ -219,19 +212,20 @@ const getFinishList = () => {
     loading.value = false;
   });
 };
+//打开修改选人
 const handleUpdate = () => {
-  if (selectSysUserRef.value) {
-    selectSysUserRef.value.getUserList([]);
-  }
+  userSelectRef.value.open();
 };
 //修改办理人
-const submitCallback = (data) => {
-  if (data && data.value.length > 0) {
-    updateAssignee(ids.value, data.value[0].userId).then((resp) => {
-      selectSysUserRef.value.close();
-      proxy?.$modal.msgSuccess('操作成功');
-      handleQuery();
-    });
+const submitCallback  = async (data) => {
+  if(data && data.length > 0){
+    await proxy?.$modal.confirm('是否确认提交？');
+    loading.value = true;
+    await updateAssignee(ids.value, data[0].userId)
+    handleQuery()
+    proxy?.$modal.msgSuccess('操作成功');
+  }else{
+    proxy?.$modal.msgWarning('请选择用户！');
   }
 };
 </script>
