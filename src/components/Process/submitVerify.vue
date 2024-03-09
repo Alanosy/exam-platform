@@ -24,9 +24,10 @@
     <template #footer>
       <span class="dialog-footer">
         <el-button v-loading="buttonLoading" type="primary" @click="handleCompleteTask"> 提交 </el-button>
-        <el-button v-if="task.businessStatus === 'waiting' && task.multiInstance" v-loading="buttonLoading" type="primary" @click="openTransferTask"> 转办 </el-button>
+        <el-button v-if="task.businessStatus === 'waiting'" v-loading="buttonLoading" type="primary" @click="openTransferTask"> 转办 </el-button>
         <el-button v-if="task.businessStatus === 'waiting' && task.multiInstance" v-loading="buttonLoading" type="primary" @click="addMultiInstanceUser"> 加签 </el-button>
         <el-button v-if="task.businessStatus === 'waiting' && task.multiInstance" v-loading="buttonLoading" type="primary" @click="deleteMultiInstanceUser"> 减签 </el-button>
+        <el-button v-if="task.businessStatus === 'waiting'" v-loading="buttonLoading" type="danger" @click="handleTerminationTask"> 终止 </el-button>
         <el-button v-if="task.businessStatus === 'waiting'" v-loading="buttonLoading" type="danger" @click="handleBackProcess"> 退回 </el-button>
         <el-button v-loading="buttonLoading" @click="cancel">取消</el-button>
       </span>
@@ -44,7 +45,7 @@
 import { ref } from 'vue';
 import { ComponentInternalInstance } from 'vue';
 import { ElForm } from 'element-plus';
-import { completeTask, backProcess, getTaskById,transferTask } from '@/api/workflow/task';
+import { completeTask, backProcess, getTaskById,transferTask,terminationTask } from '@/api/workflow/task';
 import UserSelect from '@/components/UserSelect';
 import MultiInstanceUser from '@/components/Process/multiInstanceUser.vue';
 const { proxy } = getCurrentInstance() as ComponentInternalInstance;
@@ -238,6 +239,22 @@ const handleTransferTask  = async (data) => {
   }else{
     proxy?.$modal.msgWarning('请选择用户！');
   }
+}
+
+//终止任务
+const handleTerminationTask  = async (data) => {
+    let params = {
+      taskId: taskId.value,
+      comment: form.value.message
+    }
+    await proxy?.$modal.confirm('是否确认终止？');
+    loading.value = true;
+    buttonLoading.value = true;
+    await terminationTask(params).finally(() => (loading.value = false));
+    dialog.visible = false;
+    emits('submitCallback');
+    proxy?.$modal.msgSuccess('操作成功');
+  
 }
 
 /**

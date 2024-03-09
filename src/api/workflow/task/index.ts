@@ -192,3 +192,14 @@ export const transferTask = (data: any) => {
     data: data
   });
 };
+/**
+ * 终止任务
+ * @returns
+ */
+export const terminationTask = (data: any) => {
+  return request({
+    url: `/workflow/task/terminationTask`,
+    method: 'post',
+    data: data
+  });
+};
