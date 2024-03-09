@@ -37,3 +37,8 @@ export interface TaskVO extends BaseEntity {
   participantVo: ParticipantVo;
   multiInstance: boolean;
 }
+
+export interface VariableVo {
+  key: string;
+  value: string;
+}

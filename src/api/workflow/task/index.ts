@@ -192,6 +192,7 @@ export const transferTask = (data: any) => {
     data: data
   });
 };
+
 /**
  * 终止任务
  * @returns
@@ -201,5 +202,16 @@ export const terminationTask = (data: any) => {
     url: `/workflow/task/terminationTask`,
     method: 'post',
     data: data
+  });
+};
+
+/**
+ * 查询流程变量
+ * @returns
+ */
+export const getInstanceVariable = (taskId: string) => {
+  return request({
+    url: `/workflow/task/getInstanceVariable/${taskId}`,
+    method: 'get'
   });
 };

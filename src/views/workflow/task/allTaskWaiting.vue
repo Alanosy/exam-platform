@@ -83,6 +83,9 @@
               <el-col v-if="scope.row.multiInstance" :span="1.5">
                 <el-button link type="primary" size="small" icon="Remove" @click="deleteMultiInstanceUser(scope.row)">减签</el-button>
               </el-col>
+              <el-col :span="1.5">
+                <el-button link type="primary" size="small" icon="Document" @click="handleInstanceVariable(scope.row)">流程变量</el-button>
+              </el-col>
             </el-row>
           </template>
         </el-table-column>
@@ -101,15 +104,31 @@
     <multiInstanceUser ref="multiInstanceUserRef" :title="title" @submit-callback="handleQuery" />
     <!-- 选人组件 -->
     <UserSelect ref="userSelectRef" :multiple="false" @confirm-call-back="submitCallback"></UserSelect>
+    <!-- 流程变量开始 -->
+    <el-dialog v-model="variableVisible" draggable title="流程变量" width="60%" :close-on-click-modal="false">
+      <el-card class="box-card" v-loading="variableLoading">
+        <div slot="header" class="clearfix">
+          <span>流程定义名称：<el-tag>{{processDefinitionName}}</el-tag></span>
+        </div>
+        <div v-for="(v,index) in variableList" :key="index" >
+          <el-form :label-position="'right'"  v-if="v.key!=='_FLOWABLE_SKIP_EXPRESSION_ENABLED'" label-width="150px">
+            <el-form-item :label="v.key+'：'">
+              {{v.value}}
+            </el-form-item>
+          </el-form>
+        </div>
+      </el-card>
+    </el-dialog>
+    <!-- 流程变量结束 -->
   </div>
 </template>
 
 <script lang="ts" setup>
-import { getPageByAllTaskWait, getPageByAllTaskFinish, updateAssignee } from '@/api/workflow/task';
+import { getPageByAllTaskWait, getPageByAllTaskFinish, updateAssignee, getInstanceVariable } from '@/api/workflow/task';
 import ApprovalRecord from '@/components/Process/approvalRecord.vue';
 import MultiInstanceUser from '@/components/Process/multiInstanceUser.vue';
 import UserSelect from '@/components/UserSelect';
-import { TaskQuery, TaskVO } from '@/api/workflow/task/types';
+import { TaskQuery, TaskVO, VariableVo } from '@/api/workflow/task/types';
 //审批记录组件
 const approvalRecordRef = ref<InstanceType<typeof ApprovalRecord>>();
 //加签组件
@@ -134,6 +153,16 @@ const total = ref(0);
 // 模型定义表格数据
 const taskList = ref([]);
 const title = ref('');
+// 流程变量是否显示
+const variableVisible = ref(false);
+const variableLoading = ref(true);
+// 流程变量 
+const variableList = ref<VariableVo>({
+  key: '',
+  value: '',
+})
+//流程定义名称
+const processDefinitionName = ref(undefined);
 // 查询参数
 const queryParams = ref<TaskQuery>({
   pageNum: 1,
@@ -227,5 +256,14 @@ const submitCallback  = async (data) => {
   }else{
     proxy?.$modal.msgWarning('请选择用户！');
   }
+};
+//查询流程变量
+const handleInstanceVariable  = async (row: TaskVO) => {
+  variableLoading.value = true
+  variableVisible.value = true
+  processDefinitionName.value = row.processDefinitionName
+  let data = await getInstanceVariable(row.id)
+  variableList.value = data.data
+  variableLoading.value = false
 };
 </script>

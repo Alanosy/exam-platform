@@ -8,7 +8,7 @@
         <el-tab-pane label="审批信息" name="info">
           <div>
             <el-table :data="historyList" style="width: 100%" border fit>
-              <el-table-column type="index" label="序号" align="center" width="50"></el-table-column>
+              <el-table-column type="index" label="序号" align="center" width="60"></el-table-column>
               <el-table-column prop="name" label="任务名称" sortable align="center"></el-table-column>
               <el-table-column prop="nickName" label="办理人" sortable align="center"></el-table-column>
               <el-table-column label="状态" sortable align="center">
@@ -17,6 +17,9 @@
                 </template>
               </el-table-column>
               <el-table-column prop="comment" label="审批意见" sortable align="center"></el-table-column>
+              <el-table-column prop="startTime" label="开始时间" sortable align="center"></el-table-column>
+              <el-table-column prop="endTime" label="结束时间" sortable align="center"></el-table-column>
+              <el-table-column prop="runDuration" label="运行时长" sortable align="center"></el-table-column>
               <el-table-column prop="attachmentList" label="附件" sortable align="center">
                 <template #default="scope">
                   <el-popover v-if="scope.row.attachmentList && scope.row.attachmentList.length > 0" placement="right" :width="310" trigger="click">
@@ -34,9 +37,6 @@
                   </el-popover>
                 </template>
               </el-table-column>
-              <el-table-column prop="startTime" label="开始时间" sortable align="center"></el-table-column>
-              <el-table-column prop="endTime" label="结束时间" sortable align="center"></el-table-column>
-              <el-table-column prop="runDuration" label="运行时长" sortable align="center"></el-table-column>
             </el-table>
           </div>
         </el-tab-pane>
