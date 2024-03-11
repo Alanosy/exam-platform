@@ -41,7 +41,7 @@
             </el-tag>
           </template>
         </el-table-column>
-        <el-table-column align="center" prop="createTime" label="创建时间" width="160"></el-table-column>
+        <el-table-column align="center" prop="startTime" label="创建时间" width="160"></el-table-column>
         <el-table-column label="操作" align="center" width="160" class-name="small-padding fixed-width">
           <template #default="scope">
             <el-button link type="primary" size="small" icon="Document" @click="handleApprovalRecord(scope.row)">审批记录</el-button>

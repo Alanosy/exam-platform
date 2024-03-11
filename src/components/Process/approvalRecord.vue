@@ -5,7 +5,7 @@
         <el-tab-pane label="流程图" name="bpmn">
           <BpmnView ref="bpmnViewRef"></BpmnView>
         </el-tab-pane>
-        <el-tab-pane label="审批信息" name="info">
+        <el-tab-pane label="审批信息" name="info" v-loading="loading">
           <div>
             <el-table :data="historyList" style="width: 100%" border fit>
               <el-table-column type="index" label="序号" align="center" width="60"></el-table-column>
@@ -67,6 +67,7 @@ const bpmnViewRef = ref<BpmnView>();
 const init = async (instanceId: string) => {
   visible.value = true;
   loading.value = true;
+  tabActiveName.value = 'bpmn'
   historyList.value = [];
   processApi.getHistoryRecord(instanceId).then((resp) => {
     historyList.value = resp.data.historyRecordList;
