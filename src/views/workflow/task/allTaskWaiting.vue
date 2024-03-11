@@ -70,7 +70,8 @@
             <el-tag v-else type="success">已完成</el-tag>
           </template>
         </el-table-column>
-        <el-table-column align="center" prop="createTime" label="创建时间" width="160"></el-table-column>
+        <el-table-column align="center" v-if="tab === 'waiting'" prop="createTime" label="创建时间" width="160"></el-table-column>
+        <el-table-column align="center" v-if="tab === 'finish'" prop="startTime" label="创建时间" width="160"></el-table-column>
         <el-table-column label="操作" align="center" width="160" class-name="small-padding fixed-width">
           <template #default="scope">
             <el-row :gutter="10" class="mb8">
