@@ -290,9 +290,9 @@ const typeSelect = [
   { id: '4b8135ab-6bc3-4a0f-80be-22f58bc6c5fd', label: '委托表达式', value: 'delegateExpression' }
 ];
 const eventSelect = [
-  { id: 'e6e0a51a-2d5d-4dc4-b847-b5c14f43a6ab', label: 'start', value: 'start' },
-  { id: '6da97c1e-15fc-4445-8943-75d09f49778e', label: 'end', value: 'end' },
-  { id: '6a2cbcec-e026-4f11-bef7-fff0b5c871e2', label: 'take', value: 'take' }
+  { id: 'e6e0a51a-2d5d-4dc4-b847-b5c14f43a6ab', label: '开始', value: 'start' },
+  { id: '6da97c1e-15fc-4445-8943-75d09f49778e', label: '结束', value: 'end' },
+  { id: '6a2cbcec-e026-4f11-bef7-fff0b5c871e2', label: '启用', value: 'take' }
 ];
 </script>
 
