@@ -125,12 +125,25 @@
     <!-- 部署文件 -->
     <el-dialog v-if="uploadDialog.visible" v-model="uploadDialog.visible" :title="uploadDialog.title" width="30%">
       <div v-loading="uploadDialogLoading">
+        <div class="mb5">
+          <el-text class="mx-1" size="large"><span class="text-danger">*</span>请选择部署流程分类：</el-text>
+          <el-tree-select
+            v-model="selectCategory"
+            :data="categoryOptions"
+            :props="{ value: 'categoryCode', label: 'categoryName', children: 'children' }"
+            filterable
+            value-key="categoryCode"
+            :render-after-expand="false"
+            check-strictly
+            style="width: 240px"
+          />
+        </div>
         <el-upload class="upload-demo" drag accept="application/zip,application/xml,.bpmn" :http-request="handerDeployProcessFile">
-          <el-icon class="UploadFilled"><upload-filled /></el-icon>
-          <div class="el-upload__text"><em>点击上传，选择BPMN流程文件</em></div>
-          <div class="el-upload__text">仅支持 .zip、.bpmn20.xml、bpmn 格式文件</div>
-          <div class="el-upload__text">PS:如若部署请部署从本项目模型管理导出的数据</div>
-      </el-upload>
+            <el-icon class="UploadFilled"><upload-filled /></el-icon>
+            <div class="el-upload__text"><em>点击上传，选择BPMN流程文件</em></div>
+            <div class="el-upload__text">仅支持 .zip、.bpmn20.xml、bpmn 格式文件</div>
+            <div class="el-upload__text">PS:如若部署请部署从本项目模型管理导出的数据</div>
+        </el-upload>
       </div>
     </el-dialog>
 
@@ -232,6 +245,8 @@ const processDefinitionHistoryList = ref<ProcessDefinitionVO[]>([]);
 const url = ref<string[]>([]);
 const categoryOptions = ref<CategoryOption[]>([]);
 const categoryName = ref('');
+/** 部署文件分类选择 */
+const selectCategory = ref();
 
 const uploadDialog = reactive<DialogOption>({
   visible: false,
@@ -382,21 +397,21 @@ const handleConvertToModel = async (row: ProcessDefinitionVO) => {
 //部署文件
 const handerDeployProcessFile = (data: UploadRequestOptions): XMLHttpRequest => {
   let formData = new FormData();
-  if (queryParams.value.categoryCode === 'ALL') {
+  if (selectCategory.value === 'ALL') {
     proxy?.$modal.msgError('顶级节点不可作为分类！');
     return;
   }
-  if (!queryParams.value.categoryCode) {
+  if (!selectCategory.value) {
     proxy?.$modal.msgError('请选择左侧要上传的分类！');
     return;
   }
-  uploadDialogLoading.value = true
+  uploadDialogLoading.value = true;
   formData.append('file', data.file);
-  formData.append('categoryCode', queryParams.value.categoryCode);
+  formData.append('categoryCode', selectCategory.value);
   deployProcessFile(formData).then(() => {
     uploadDialog.visible = false;
     proxy?.$modal.msgSuccess('部署成功');
-    uploadDialogLoading.value = false
+    uploadDialogLoading.value = false;
     handleQuery();
   });
 };
