@@ -121,7 +121,7 @@ const handleRegister = () => {
         await router.push('/login');
       } else {
         loading.value = false;
-        if (captchaEnabled) {
+        if (captchaEnabled.value) {
           getCode();
         }
       }
