@@ -45,10 +45,13 @@
                 <el-button type="primary" plain icon="Plus" @click="handleAdd">新增</el-button>
               </el-col>
               <el-col :span="1.5">
-                <el-button type="success" plain icon="Edit" :disabled="multiple" @click="handleUpdate()">修改</el-button>
+                <el-button type="success" plain icon="Edit" :disabled="single" @click="handleUpdate()">修改</el-button>
               </el-col>
               <el-col :span="1.5">
                 <el-button type="danger" plain icon="Delete" :disabled="multiple" @click="handleDelete()">删除</el-button>
+              </el-col>
+              <el-col :span="1.5">
+                <el-button type="primary" plain :disabled="multiple" icon="Download" @click="clickExportZip()">导出</el-button>
               </el-col>
               <right-toolbar v-model:showSearch="showSearch" @query-table="getList"></right-toolbar>
             </el-row>
@@ -71,9 +74,9 @@
                   <el-col :span="1.5">
                     <el-button link type="primary" size="small" icon="Pointer" @click="clickDesign(scope.row.id)">设计流程</el-button>
                   </el-col>
-                  <el-col :span="1.5">
+                  <!-- <el-col :span="1.5">
                     <el-button link type="primary" size="small" icon="Download" @click="clickExportZip(scope.row)">导出</el-button>
-                  </el-col>
+                  </el-col> -->
                 </el-row>
                 <el-row :gutter="10" class="mb8">
                   <el-col :span="1.5">
@@ -324,8 +327,8 @@ const clickDesign = async (id: string) => {
   await designRef.value.open(id);
 };
 // 导出流程模型
-const clickExportZip = (data: any) => {
-  proxy?.$download.zip('/workflow/model/export/zip/' + data.id, data.name + '-' + data.key);
+const clickExportZip = () => {
+  proxy?.$download.zip('/workflow/model/export/zip/' + ids.value, "模型");
 };
 /** 查询流程分类下拉树结构 */
 const getTreeselect = async () => {
