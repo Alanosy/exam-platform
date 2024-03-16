@@ -84,7 +84,7 @@
               <el-col v-if="scope.row.multiInstance" :span="1.5">
                 <el-button link type="primary" size="small" icon="Remove" @click="deleteMultiInstanceUser(scope.row)">减签</el-button>
               </el-col>
-              <el-col :span="1.5">
+              <el-col v-if="tab === 'waiting'" :span="1.5">
                 <el-button link type="primary" size="small" icon="Document" @click="handleInstanceVariable(scope.row)">流程变量</el-button>
               </el-col>
             </el-row>
