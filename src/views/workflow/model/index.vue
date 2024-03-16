@@ -74,18 +74,15 @@
                   <el-col :span="1.5">
                     <el-button link type="primary" size="small" icon="Pointer" @click="clickDesign(scope.row.id)">设计流程</el-button>
                   </el-col>
-                  <!-- <el-col :span="1.5">
-                    <el-button link type="primary" size="small" icon="Download" @click="clickExportZip(scope.row)">导出</el-button>
-                  </el-col> -->
+                  <el-col :span="1.5">
+                    <el-button link type="primary" size="small" icon="Delete" @click="handleDelete(scope.row)">删除</el-button>
+                  </el-col>
                 </el-row>
                 <el-row :gutter="10" class="mb8">
                   <el-col :span="1.5">
                     <el-button link type="primary" size="small" icon="ScaleToOriginal" @click="clickDeploy(scope.row.id, scope.row.key)">
                       流程部署
                     </el-button>
-                  </el-col>
-                  <el-col :span="1.5">
-                    <el-button link type="primary" size="small" icon="Delete" @click="handleDelete(scope.row)">删除</el-button>
                   </el-col>
                 </el-row>
               </template>
