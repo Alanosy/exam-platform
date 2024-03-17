@@ -215,3 +215,14 @@ export const getInstanceVariable = (taskId: string) => {
     method: 'get'
   });
 };
+
+/**
+ * 获取可驳回得任务节点
+ * @returns
+ */
+export const getTaskNodeList = (processInstanceId: string) => {
+  return request({
+    url: `/workflow/task/getTaskNodeList/${processInstanceId}`,
+    method: 'get'
+  });
+};

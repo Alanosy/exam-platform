@@ -28,7 +28,7 @@
         <el-button v-if="task.businessStatus === 'waiting' && task.multiInstance" v-loading="buttonLoading" type="primary" @click="addMultiInstanceUser"> 加签 </el-button>
         <el-button v-if="task.businessStatus === 'waiting' && task.multiInstance" v-loading="buttonLoading" type="primary" @click="deleteMultiInstanceUser"> 减签 </el-button>
         <el-button v-if="task.businessStatus === 'waiting'" v-loading="buttonLoading" type="danger" @click="handleTerminationTask"> 终止 </el-button>
-        <el-button v-if="task.businessStatus === 'waiting'" v-loading="buttonLoading" type="danger" @click="handleBackProcess"> 退回 </el-button>
+        <el-button v-if="task.businessStatus === 'waiting'" v-loading="buttonLoading" type="danger" @click="handleBackProcessOpen"> 退回 </el-button>
         <el-button v-loading="buttonLoading" @click="cancel">取消</el-button>
       </span>
     </template>
@@ -38,6 +38,39 @@
     <UserSelect ref="transferTaskRef" :multiple="userMultiple" @confirm-call-back="handleTransferTask"></UserSelect>
     <!-- 加签组件 -->
     <multiInstanceUser ref="multiInstanceUserRef" :title="title" @submit-callback='closeDialog' />
+
+    <!-- 驳回开始 -->
+    <el-dialog v-model="backVisible" draggable title="驳回" width="40%" :close-on-click-modal="false">
+      <el-form v-loading="backLoading" :model="backForm" label-width="120px" v-if="task.businessStatus === 'waiting'">
+        <el-form-item label="驳回节点">
+          <el-select clearable placeholder="请选择" v-model="backForm.targetActivityId" style="width: 300px">
+            <el-option
+              v-for="item in taskNodeList"
+              :key="item.nodeId"
+              :label="item.nodeName"
+              :value="item.nodeId"
+            />
+          </el-select>
+        </el-form-item>
+        <el-form-item label="消息提醒">
+          <el-checkbox-group v-model="backForm.messageType">
+            <el-checkbox label="1" name="type" disabled>站内信</el-checkbox>
+            <el-checkbox label="2" name="type">邮件</el-checkbox>
+            <el-checkbox label="3" name="type">短信</el-checkbox>
+          </el-checkbox-group>
+        </el-form-item>
+        <el-form-item label="审批意见">
+          <el-input v-model="backForm.message" type="textarea" resize="none" />
+        </el-form-item>
+      </el-form>
+      <template #footer>
+        <div class="dialog-footer" style="float: right;padding-bottom: 20px;">
+          <el-button type="primary" v-loading="backLoading" @click="handleBackProcess">确认</el-button>
+          <el-button v-loading="backLoading" @click="backVisible = false">取消</el-button>
+        </div>
+      </template>
+    </el-dialog>
+    <!-- 驳回结束 -->
   </el-dialog>
 </template>
 
@@ -45,7 +78,7 @@
 import { ref } from 'vue';
 import { ComponentInternalInstance } from 'vue';
 import { ElForm } from 'element-plus';
-import { completeTask, backProcess, getTaskById,transferTask,terminationTask } from '@/api/workflow/task';
+import { completeTask, backProcess, getTaskById,transferTask,terminationTask,getTaskNodeList } from '@/api/workflow/task';
 import UserSelect from '@/components/UserSelect';
 import MultiInstanceUser from '@/components/Process/multiInstanceUser.vue';
 const { proxy } = getCurrentInstance() as ComponentInternalInstance;
@@ -74,7 +107,11 @@ const selectCopyUserList = ref<UserVO[]>([]);
 const selectCopyUserIds = ref<string>(undefined);
 //是否多选人员
 const userMultiple = ref(false);
-
+// 驳回是否显示
+const backVisible = ref(false);
+const backLoading = ref(true);
+// 可驳回得任务节点
+const taskNodeList = ref([]);
 //任务
 const task = ref<TaskVO>({
   id: undefined,
@@ -115,6 +152,13 @@ const form = ref<Record<string, any>>({
   variables: {},
   messageType: ['1'],
   wfCopyList: []
+});
+const backForm = ref<Record<string, any>>({
+  taskId: undefined,
+  targetActivityId: undefined,
+  message: undefined,
+  variables: {},
+  messageType: ['1']
 });
 const closeDialog = () => {
   dialog.visible = false
@@ -165,14 +209,26 @@ const handleCompleteTask = async () => {
   proxy?.$modal.msgSuccess('操作成功');
 };
 
+/** 驳回弹窗打开 */
+const handleBackProcessOpen = async () => {
+  backForm.value = {}
+  backForm.value.messageType = ['1']
+  backVisible.value = true
+  backLoading.value = true
+  let data = await getTaskNodeList(task.value.processInstanceId)
+  taskNodeList.value = data.data
+  backLoading.value = false
+  backForm.value.targetActivityId = taskNodeList.value[0].nodeId
+}
 /** 驳回流程 */
 const handleBackProcess = async () => {
-  form.value.taskId = taskId.value;
+  backForm.value.taskId = taskId.value;
   await proxy?.$modal.confirm('是否确认驳回到申请人？');
   loading.value = true;
-  buttonLoading.value = true;
-  await backProcess(form.value).finally(() => (loading.value = false));
+  backLoading.value = true;
+  await backProcess(backForm.value).finally(() => (loading.value = false));
   dialog.visible = false;
+  backLoading.value = false
   emits('submitCallback');
   proxy?.$modal.msgSuccess('操作成功');
 };
