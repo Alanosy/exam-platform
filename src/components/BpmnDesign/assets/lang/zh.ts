@@ -62,6 +62,8 @@ export default {
   'Event-based gateway': '事件网关',
   'Exclusive gateway': '互斥网关',
   'Empty pool/participant (removes content)': '清空池/参与者 (删除内容)',
+  'Empty pool/participant': '清空池/参与者',
+  'Expanded pool/participant': '展开池/参与者',
   'Inclusive gateway': '相容网关',
   'Intermediate throw event': '中间抛出事件',
   'Loop': '循环',
