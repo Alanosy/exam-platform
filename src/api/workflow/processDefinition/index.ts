@@ -93,7 +93,10 @@ export function deployProcessFile(data: any) {
   return request({
     url: '/workflow/processDefinition/deployByFile',
     method: 'post',
-    data: data
+    data: data,
+    headers: {
+      repeatSubmit: false
+    }
   });
 }
 
@@ -109,4 +112,3 @@ export const migrationDefinition = (currentProcessDefinitionId: string, fromProc
     method: 'put'
   });
 };
-

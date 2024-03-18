@@ -138,11 +138,18 @@
             style="width: 240px"
           />
         </div>
-        <el-upload class="upload-demo" drag accept="application/zip,application/xml,.bpmn" :http-request="handerDeployProcessFile">
-            <el-icon class="UploadFilled"><upload-filled /></el-icon>
-            <div class="el-upload__text"><em>点击上传，选择BPMN流程文件</em></div>
-            <div class="el-upload__text">仅支持 .zip、.bpmn20.xml、bpmn 格式文件</div>
-            <div class="el-upload__text">PS:如若部署请部署从本项目模型管理导出的数据</div>
+        <el-upload
+          class="upload-demo"
+          drag
+          multiple
+          accept="application/zip,application/xml,.bpmn"
+          :before-upload="handlerBeforeUpload"
+          :http-request="handerDeployProcessFile"
+        >
+          <el-icon class="UploadFilled"><upload-filled /></el-icon>
+          <div class="el-upload__text"><em>点击上传，选择BPMN流程文件</em></div>
+          <div class="el-upload__text">仅支持 .zip、.bpmn20.xml、bpmn 格式文件</div>
+          <div class="el-upload__text">PS:如若部署请部署从本项目模型管理导出的数据</div>
         </el-upload>
       </div>
     </el-dialog>
@@ -394,25 +401,32 @@ const handleConvertToModel = async (row: ProcessDefinitionVO) => {
   proxy?.$modal.msgSuccess('操作成功');
 };
 
-//部署文件
-const handerDeployProcessFile = (data: UploadRequestOptions): XMLHttpRequest => {
-  let formData = new FormData();
+//上传文件前的钩子
+const handlerBeforeUpload = () => {
   if (selectCategory.value === 'ALL') {
     proxy?.$modal.msgError('顶级节点不可作为分类！');
-    return;
+    return false;
   }
   if (!selectCategory.value) {
     proxy?.$modal.msgError('请选择左侧要上传的分类！');
-    return;
+    return false;
   }
+};
+//部署文件
+const handerDeployProcessFile = (data: UploadRequestOptions): XMLHttpRequest => {
+  let formData = new FormData();
   uploadDialogLoading.value = true;
   formData.append('file', data.file);
   formData.append('categoryCode', selectCategory.value);
-  deployProcessFile(formData).then(() => {
-    uploadDialog.visible = false;
-    proxy?.$modal.msgSuccess('部署成功');
-    uploadDialogLoading.value = false;
-    handleQuery();
-  });
+  deployProcessFile(formData)
+    .then(() => {
+      uploadDialog.visible = false;
+      proxy?.$modal.msgSuccess('部署成功');
+      handleQuery();
+    })
+    .finally(() => {
+      uploadDialogLoading.value = false;
+    });
+  return;
 };
 </script>
