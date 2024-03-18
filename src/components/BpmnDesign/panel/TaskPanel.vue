@@ -115,7 +115,7 @@
           <div>
             <el-form-item label="多实例类型">
               <el-select v-model="formData.multiInstanceType" @change="multiInstanceTypeChange">
-                <el-option v-for="item in MultiInstanceType" :key="item.id" :value="item.value" :label="item.label"> </el-option>
+                <el-option v-for="item in constant.MultiInstanceType" :key="item.id" :value="item.value" :label="item.label"> </el-option>
               </el-select>
             </el-form-item>
 
@@ -243,7 +243,7 @@ interface PropType {
   element: ModdleElement;
 }
 const props = withDefaults(defineProps<PropType>(), {});
-const { showConfig, nameChange, idChange, updateProperties, getExtensionElements, createModdleElement } = usePanel({
+const { showConfig, nameChange, idChange, updateProperties, getExtensionElements, createModdleElement, constant } = usePanel({
   element: toRaw(props.element)
 });
 const { parseData } = useParseElement({
@@ -455,12 +455,6 @@ const AllocationTypeSelect = [
 const SpecifyDesc = [
   { id: 'fa253b34-4335-458c-b1bc-b039e2a2b7a6', label: '指定一个人', value: 'specifySingle' },
   { id: '7365ff54-2e05-4312-9bfb-0b8edd779c5b', label: '指定多个人', value: 'specifyMultiple' }
-];
-
-const MultiInstanceType = [
-  { id: '373d4b81-a0d1-4eb8-8685-0d2fb1b468e2', label: '无', value: MultiInstanceTypeEnum.NONE },
-  { id: 'b5acea7c-b7e5-46b0-8778-390db091bdab', label: '串行', value: MultiInstanceTypeEnum.SERIAL },
-  { id: 'b4f0c683-1ccc-43c4-8380-e1b998986caf', label: '并行', value: MultiInstanceTypeEnum.PARALLEL }
 ];
 </script>
 
