@@ -1,6 +1,7 @@
 import showConfig from '@/components/BpmnDesign/assets/showConfig';
 import { ModdleElement } from 'bpmn';
 import useModelerStore from '@/store/modules/modeler';
+import { MultiInstanceTypeEnum } from '@/enums/bpmn/IndexEnums';
 interface Options {
   element: ModdleElement;
 }
@@ -114,8 +115,18 @@ export default (ops: Options) => {
       updateProperties({ name: newVal });
     }
   };
+
+  const constant = {
+    MultiInstanceType: [
+      { id: '373d4b81-a0d1-4eb8-8685-0d2fb1b468e2', label: '无', value: MultiInstanceTypeEnum.NONE },
+      { id: 'b5acea7c-b7e5-46b0-8778-390db091bdab', label: '串行', value: MultiInstanceTypeEnum.SERIAL },
+      { id: 'b4f0c683-1ccc-43c4-8380-e1b998986caf', label: '并行', value: MultiInstanceTypeEnum.PARALLEL }
+    ]
+  };
+
   return {
     elementType,
+    constant,
     showConfig: config,
 
     updateProperties,
