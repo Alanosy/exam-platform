@@ -13,10 +13,10 @@
         <div>
           <el-form ref="formRef" :model="formData" :rules="formRules" label-width="90px">
             <el-form-item prop="id" label="节点 ID">
-              <el-input v-model="formData.id" @change="idChange"> </el-input>
+              <el-input v-model="formData.id" @change="idChange"></el-input>
             </el-form-item>
             <el-form-item prop="name" label="节点名称">
-              <el-input v-model="formData.name" @change="nameChange"> </el-input>
+              <el-input v-model="formData.name" @change="nameChange"></el-input>
             </el-form-item>
           </el-form>
         </div>
@@ -42,11 +42,12 @@
 import useParseElement from '@/components/BpmnDesign/hooks/useParseElement';
 import usePanel from '@/components/BpmnDesign/hooks/usePanel';
 import { ModdleElement } from 'bpmn';
-import { StartEndPanel } from 'bpmnDesign';
+import { ParticipantPanel } from 'bpmnDesign';
 
 interface PropType {
   element: ModdleElement;
 }
+
 const props = withDefaults(defineProps<PropType>(), {});
 const { nameChange, idChange } = usePanel({
   element: toRaw(props.element)
@@ -55,7 +56,7 @@ const { parseData } = useParseElement({
   element: toRaw(props.element)
 });
 
-const formData = ref(parseData<StartEndPanel>());
+const formData = ref(parseData<ParticipantPanel>());
 const currentCollapseItem = ref(['1', '2']);
 const formRules = ref<ElFormRules>({
   id: [{ required: true, message: '请输入', trigger: 'blur' }],
