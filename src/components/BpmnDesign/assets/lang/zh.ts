@@ -16,7 +16,12 @@ export const NodeName = {
   'bpmn:ParallelGateway': '并行网关',
   'bpmn:InclusiveGateway': '相容网关',
   'bpmn:ComplexGateway': '复杂网关',
-  'bpmn:EventBasedGateway': '事件网关'
+  'bpmn:EventBasedGateway': '事件网关',
+  'bpmn:Participant': '池/参与者',
+  'bpmn:SubProcess': '子流程',
+  'bpmn:DataObjectReference': '数据对象引用',
+  'bpmn:DataStoreReference': '数据存储引用',
+  'bpmn:Group': '组'
 };
 
 export default {
@@ -114,5 +119,6 @@ export default {
   'Append message intermediate catch event': '追加中间消息捕获事件',
   'Append timer intermediate catch event': '追加中间定时捕获事件',
   'Append conditional intermediate catch event': '追加中间条件捕获事件',
-  'Append signal intermediate catch event': '追加中间信号捕获事件'
+  'Append signal intermediate catch event': '追加中间信号捕获事件',
+  'flow elements must be children of pools/participants': '流程元素必须是池/参与者的子元素'
 };

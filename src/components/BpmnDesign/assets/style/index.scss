@@ -227,4 +227,55 @@
       opacity: 0.8;
     }
   }
+  .bpmn-icon-data-object {
+    &:hover {
+      &:after {
+        content: '创建数据对象';
+        position: absolute;
+        left: 45px;
+        width: 120px;
+        font-size: 15px;
+        font-weight: bold;
+        color: #3a84de;
+        border-radius: 2px;
+        border: 1px solid #cccccc;
+        background-color: #fafafa;
+        opacity: 0.8;
+      }
+    }
+  }
+  .bpmn-icon-data-store {
+    &:hover {
+      &:after {
+        content: '创建数据存储';
+        position: absolute;
+        left: 100px;
+        width: 120px;
+        font-size: 15px;
+        font-weight: bold;
+        color: #3a84de;
+        border-radius: 2px;
+        border: 1px solid #cccccc;
+        background-color: #fafafa;
+        opacity: 0.8;
+      }
+    }
+  }
+  .bpmn-icon-group {
+    &:hover {
+      &:after {
+        content: '创建分组';
+        position: absolute;
+        left: 100px;
+        width: 100px;
+        font-size: 15px;
+        font-weight: bold;
+        color: #3a84de;
+        border-radius: 2px;
+        border: 1px solid #cccccc;
+        background-color: #fafafa;
+        opacity: 0.8;
+      }
+    }
+  }
 }
