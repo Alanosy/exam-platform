@@ -12,6 +12,7 @@ import StartEndPanel from './StartEndPanel.vue';
 import GatewayPanel from './GatewayPanel.vue';
 import SequenceFlowPanel from './SequenceFlowPanel.vue';
 import ParticipantPanel from './ParticipantPanel.vue';
+import SubProcessPanel from './SubProcessPanel.vue';
 import { Modeler, ModdleElement } from 'bpmn';
 const { proxy } = getCurrentInstance() as ComponentInternalInstance;
 interface propsType {
@@ -47,6 +48,7 @@ const component = computed(() => {
   if (gatewayType.includes(type)) return GatewayPanel;
   if (processType.includes(type)) return ProcessPanel;
   if (type === 'bpmn:Participant') return ParticipantPanel;
+  if (type === 'bpmn:SubProcess') return SubProcessPanel;
   //return proxy?.$modal.msgWarning('面板开发中....');
 });
 
