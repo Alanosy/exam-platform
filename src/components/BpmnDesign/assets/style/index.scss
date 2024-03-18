@@ -228,6 +228,7 @@
     }
   }
   .bpmn-icon-data-object {
+    display: none;
     &:hover {
       &:after {
         content: '创建数据对象';
@@ -245,6 +246,7 @@
     }
   }
   .bpmn-icon-data-store {
+    display: none;
     &:hover {
       &:after {
         content: '创建数据存储';
@@ -262,6 +264,7 @@
     }
   }
   .bpmn-icon-group {
+    display: none;
     &:hover {
       &:after {
         content: '创建分组';
