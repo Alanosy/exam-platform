@@ -22,17 +22,7 @@ class CustomPaletteProvider extends PaletteProvider {
   private readonly _translate: any;
 
   constructor(palette, create, elementFactory, spaceTool, lassoTool, handTool, globalConnect, translate) {
-    super(
-      palette,
-      create,
-      elementFactory,
-      spaceTool,
-      lassoTool,
-      handTool,
-      globalConnect,
-      translate
-      // 2000
-    );
+    super(palette, create, elementFactory, spaceTool, lassoTool, handTool, globalConnect, translate);
     this._palette = palette;
     this._create = create;
     this._elementFactory = elementFactory;
