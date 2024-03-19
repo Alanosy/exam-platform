@@ -289,7 +289,7 @@ defineExpose({
   }
 }
 .bpmn-el-container {
-  height: 500px;
+  height: calc(100vh - 350px);
 }
 .flow-containers {
   width: 100%;
