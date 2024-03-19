@@ -391,7 +391,6 @@ pre {
   box-shadow: #cccccc 0 0 8px;
   max-height: 100%;
   width: 25%;
-  min-width: 200px;
   height: calc(100vh - 80px);
   :deep(.el-collapse) {
     height: calc(100vh - 162px);
