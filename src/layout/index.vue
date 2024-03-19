@@ -46,7 +46,7 @@ const { width } = useWindowSize();
 const WIDTH = 992; // refer to Bootstrap's responsive design
 
 watchEffect(() => {
-  if (device.value === 'mobile' && sidebar.value.opened) {
+  if (device.value === 'mobile') {
     useAppStore().closeSideBar({ withoutAnimation: false });
   }
   if (width.value - 1 < WIDTH) {
