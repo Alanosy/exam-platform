@@ -42,9 +42,9 @@
             </el-row>
           </template>
 
-          <el-table v-loading="loading" :data="processInstanceList" @selection-change="handleSelectionChange">
+          <el-table v-loading="loading" border :data="processInstanceList" @selection-change="handleSelectionChange">
             <el-table-column type="selection" width="55" align="center" />
-            <el-table-column fixed align="center" type="index" label="序号" width="50"></el-table-column>
+            <el-table-column fixed align="center" type="index" label="序号" width="60"></el-table-column>
             <el-table-column v-if="false" fixed align="center" prop="id" label="id"></el-table-column>
             <el-table-column fixed align="center" prop="processDefinitionName" label="流程定义名称"></el-table-column>
             <el-table-column fixed align="center" prop="processDefinitionKey" label="流程定义KEY"></el-table-column>

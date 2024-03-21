@@ -57,18 +57,18 @@
             </el-row>
           </template>
 
-          <el-table v-loading="loading" :data="modelList" @selection-change="handleSelectionChange">
+          <el-table border v-loading="loading" :data="modelList" @selection-change="handleSelectionChange">
             <el-table-column type="selection" width="55" align="center" />
             <el-table-column fixed align="center" type="index" label="序号" width="50"></el-table-column>
-            <el-table-column fixed align="center" prop="name" label="模型名称"></el-table-column>
+            <el-table-column align="center" prop="name" label="模型名称" width="200"></el-table-column>
             <el-table-column align="center" prop="key" label="模型KEY"></el-table-column>
             <el-table-column align="center" prop="version" label="版本号" width="90">
               <template #default="scope"> v{{ scope.row.version }}.0</template>
             </el-table-column>
             <el-table-column align="center" prop="metaInfo" label="备注说明" min-width="130"></el-table-column>
-            <el-table-column align="center" prop="createTime" label="创建时间" width="160"></el-table-column>
-            <el-table-column align="center" prop="lastUpdateTime" label="更新时间" width="160"></el-table-column>
-            <el-table-column fixed="right" label="操作" align="center" width="180" class-name="small-padding fixed-width">
+            <el-table-column align="center" :show-overflow-tooltip="true" prop="createTime" label="创建时间" width="160"></el-table-column>
+            <el-table-column align="center" :show-overflow-tooltip="true" prop="lastUpdateTime" label="更新时间" width="160"></el-table-column>
+            <el-table-column fixed="right" label="操作" align="center" width="150" class-name="small-padding fixed-width">
               <template #default="scope">
                 <el-row :gutter="10" class="mb8">
                   <el-col :span="1.5">

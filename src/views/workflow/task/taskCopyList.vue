@@ -28,9 +28,9 @@
         </el-row>
       </template>
 
-      <el-table v-loading="loading" :data="taskList" @selection-change="handleSelectionChange">
+      <el-table v-loading="loading" border :data="taskList" @selection-change="handleSelectionChange">
         <el-table-column type="selection" width="55" align="center" />
-        <el-table-column fixed align="center" type="index" label="序号" width="50"></el-table-column>
+        <el-table-column fixed align="center" type="index" label="序号" width="60"></el-table-column>
         <el-table-column fixed align="center" prop="processDefinitionName" label="流程定义名称"></el-table-column>
         <el-table-column fixed align="center" prop="processDefinitionKey" label="流程定义KEY"></el-table-column>
         <el-table-column fixed align="center" prop="name" label="任务名称"></el-table-column>

@@ -53,12 +53,12 @@
             </el-row>
           </template>
 
-          <el-table v-loading="loading" :data="processDefinitionList" @selection-change="handleSelectionChange">
+          <el-table border v-loading="loading" :data="processDefinitionList" @selection-change="handleSelectionChange">
             <el-table-column type="selection" width="55" align="center" />
-            <el-table-column fixed align="center" type="index" label="序号" width="50"></el-table-column>
-            <el-table-column fixed align="center" prop="name" label="流程定义名称"></el-table-column>
-            <el-table-column align="center" prop="key" label="标识Key"></el-table-column>
-            <el-table-column align="center" prop="version" label="版本号" width="90">
+            <el-table-column align="center" type="index" label="序号" width="60"></el-table-column>
+            <el-table-column align="center" prop="name" label="流程定义名称"></el-table-column>
+            <el-table-column align="center" prop="key" label="标识KEY" width="80"></el-table-column>
+            <el-table-column align="center" prop="version" label="版本号" width="80">
               <template #default="scope"> v{{ scope.row.version }}.0</template>
             </el-table-column>
             <el-table-column align="center" prop="resourceName" label="流程XML" min-width="80" :show-overflow-tooltip="true">
@@ -71,14 +71,14 @@
                 <el-link type="primary" @click="clickPreviewImg(scope.row.id)">{{ scope.row.diagramResourceName }}</el-link>
               </template>
             </el-table-column>
-            <el-table-column align="center" prop="suspensionState" label="状态" min-width="70">
+            <el-table-column align="center" prop="suspensionState" label="状态" min-width="50">
               <template #default="scope">
                 <el-tag v-if="scope.row.suspensionState == 1" type="success">激活</el-tag>
                 <el-tag v-else type="danger">挂起</el-tag>
               </template>
             </el-table-column>
             <el-table-column align="center" prop="deploymentTime" label="部署时间" :show-overflow-tooltip="true"></el-table-column>
-            <el-table-column fixed="right" label="操作" align="center" width="200" class-name="small-padding fixed-width">
+            <el-table-column fixed="right" label="操作" align="center" width="170" class-name="small-padding fixed-width">
               <template #default="scope">
                 <el-row :gutter="10" class="mb8">
                   <el-col :span="1.5">
@@ -101,9 +101,17 @@
                     <el-button link type="primary" size="small" icon="Sort" @click="handleConvertToModel(scope.row)"> 转换模型 </el-button>
                   </el-col>
                   <el-col :span="1.5">
-                    <el-button link type="primary" size="small" icon="Document" @click="getProcessDefinitionHitoryList(scope.row.id, scope.row.key)">
-                      历史版本
-                    </el-button>
+                    <el-dropdown>
+                      <el-button type="text" size="small">
+                        更多<el-icon class="el-icon--right"><arrow-down /></el-icon>
+                      </el-button>
+                      <template #dropdown>
+                        <el-dropdown-menu>
+                          <el-dropdown-item @click="getProcessDefinitionHitoryList(scope.row.id, scope.row.key)">历史版本</el-dropdown-item>
+                          <el-dropdown-item @click="handleFormOpen(scope.row)">表单配置</el-dropdown-item>
+                        </el-dropdown-menu>
+                      </template>
+                    </el-dropdown>
                   </el-col>
                 </el-row>
               </template>
@@ -158,8 +166,8 @@
     <el-dialog v-if="processDefinitionDialog.visible" v-model="processDefinitionDialog.visible" :title="processDefinitionDialog.title" width="70%">
       <el-table v-loading="loading" :data="processDefinitionHistoryList" @selection-change="handleSelectionChange">
         <el-table-column type="selection" width="55" align="center" />
-        <el-table-column fixed align="center" type="index" label="序号" width="50"></el-table-column>
-        <el-table-column fixed align="center" prop="name" label="流程定义名称"></el-table-column>
+        <el-table-column align="center" type="index" label="序号" width="60"></el-table-column>
+        <el-table-column align="center" prop="name" label="流程定义名称"></el-table-column>
         <el-table-column align="center" prop="key" label="标识Key"></el-table-column>
         <el-table-column align="center" prop="version" label="版本号" width="90">
           <template #default="scope"> v{{ scope.row.version }}.0</template>
@@ -208,6 +216,29 @@
         </el-table-column>
       </el-table>
     </el-dialog>
+    <!-- 表单配置 -->
+    <el-dialog v-model="formDialog.visible" :title="formDialog.title" width="650px" append-to-body :close-on-click-modal="false">
+      <el-form :model="formDefinitionForm" label-width="auto">
+        <el-form-item label="流程KEY">
+          <el-input v-model="formDefinitionForm.processKey" disabled/>
+        </el-form-item>
+        <el-form-item label="路由地址">
+          <el-input v-model="formDefinitionForm.path" placeholder="请假示例路由请填写：/demo/leaveEdit/index"/>
+        </el-form-item>
+        <el-form-item label="备注">
+          <el-input v-model="formDefinitionForm.remark" type="textarea" resize="none"/>
+        </el-form-item>
+      </el-form>
+      
+      <template #footer>
+        <div class="dialog-footer">
+          <el-button @click="formDialog.visible = false">取消</el-button>
+          <el-button type="primary" @click="handlerSaveForm">
+            保存
+          </el-button>
+        </div>
+      </template>
+    </el-dialog>
   </div>
 </template>
 
@@ -224,8 +255,10 @@ import {
 } from '@/api/workflow/processDefinition';
 import ProcessPreview from './components/processPreview.vue';
 import { listCategory } from '@/api/workflow/category';
+import { getByDefId,saveOrUpdate } from '@/api/workflow/formDefinition';
 import { CategoryVO } from '@/api/workflow/category/types';
 import { ProcessDefinitionQuery, ProcessDefinitionVO } from '@/api/workflow/processDefinition/types';
+import { FormDefinitionForm } from '@/api/workflow/formDefinition/types';
 import { UploadRequestOptions } from 'element-plus';
 
 const { proxy } = getCurrentInstance() as ComponentInternalInstance;
@@ -254,6 +287,7 @@ const categoryOptions = ref<CategoryOption[]>([]);
 const categoryName = ref('');
 /** 部署文件分类选择 */
 const selectCategory = ref();
+const formDefinitionForm = ref<FormDefinitionForm>({});
 
 const uploadDialog = reactive<DialogOption>({
   visible: false,
@@ -263,6 +297,11 @@ const uploadDialog = reactive<DialogOption>({
 const processDefinitionDialog = reactive<DialogOption>({
   visible: false,
   title: '历史版本'
+});
+
+const formDialog = reactive<DialogOption>({
+  visible: false,
+  title: '表单配置'
 });
 
 // 查询参数
@@ -429,4 +468,28 @@ const handerDeployProcessFile = (data: UploadRequestOptions): XMLHttpRequest => 
     });
   return;
 };
+//打开表单配置
+const handleFormOpen = async (row: ProcessDefinitionVO) => {
+   formDialog.visible = true
+   formDefinitionForm.value.processKey = row.key
+   formDefinitionForm.value.definitionId = row.id
+   const resp = await getByDefId(row.id)
+   if(resp.data){
+    formDefinitionForm.value = resp.data
+   }else{
+    formDefinitionForm.value.path = undefined
+    formDefinitionForm.value.remark = undefined
+   }
+}
+//保存表单
+const handlerSaveForm = async () => {
+  await proxy?.$modal.confirm('是否确认保存？');
+  saveOrUpdate(formDefinitionForm.value).then(resp=>{
+    if(resp.code === 200){
+      proxy?.$modal.msgSuccess('操作成功');
+      formDialog.visible = false
+      getList();
+    }
+  })
+}
 </script>

@@ -28,9 +28,9 @@
         </el-row>
       </template>
 
-      <el-table v-loading="loading" :data="taskList" @selection-change="handleSelectionChange">
+      <el-table v-loading="loading" border :data="taskList" @selection-change="handleSelectionChange">
         <el-table-column type="selection" width="55" align="center" />
-        <el-table-column fixed align="center" type="index" label="序号" width="50"></el-table-column>
+        <el-table-column fixed align="center" type="index" label="序号" width="60"></el-table-column>
         <el-table-column fixed align="center" prop="processDefinitionName" label="流程定义名称"></el-table-column>
         <el-table-column fixed align="center" prop="processDefinitionKey" label="流程定义KEY"></el-table-column>
         <el-table-column fixed align="center" prop="name" label="任务名称"></el-table-column>
@@ -54,22 +54,14 @@
           </template>
         </el-table-column>
         <el-table-column align="center" prop="createTime" label="创建时间" width="160"></el-table-column>
-        <el-table-column label="操作" align="center" width="160" class-name="small-padding fixed-width">
+        <el-table-column label="操作" align="center" width="200">
           <template #default="scope">
-            <el-row :gutter="10" class="mb8">
-              <el-col :span="1.5">
-                <el-button link type="primary" size="small" icon="Document" @click="handleApprovalRecord(scope.row)">审批记录</el-button>
-              </el-col>
-              <el-col v-if="scope.row.participantVo && (scope.row.participantVo.claim === null || scope.row.participantVo.claim === true)" :span="1.5">
-                <el-button link type="primary" size="small" icon="Edit" @click="submitVerifyOpen(scope.row.id)">办理</el-button>
-              </el-col>
-              <el-col v-if="scope.row.participantVo && scope.row.participantVo.claim === true" :span="1.5">
-                <el-button link type="primary" size="small" icon="Document" @click="handleReturnTask(scope.row.id)">归还</el-button>
-              </el-col>
-              <el-col v-if="scope.row.participantVo && scope.row.participantVo.claim === false" :span="1.5">
-                <el-button link type="primary" size="small" icon="Document" @click="handleClaimTask(scope.row.id)">认领</el-button>
-              </el-col>
-            </el-row>
+              <el-button v-if="scope.row.participantVo && (scope.row.participantVo.claim === null || scope.row.participantVo.claim === true)"
+               type="primary" size="small" icon="Edit" @click="handleOpen(scope.row)">办理</el-button>
+              <el-button v-if="scope.row.participantVo && scope.row.participantVo.claim === true"
+               type="primary" size="small" icon="Document" @click="handleReturnTask(scope.row.id)">归还</el-button>
+              <el-button v-if="scope.row.participantVo && scope.row.participantVo.claim === false"
+               type="primary" size="small" icon="Document" @click="handleClaimTask(scope.row.id)">认领</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -81,22 +73,13 @@
         @pagination="handleQuery"
       />
     </el-card>
-    <!-- 审批记录 -->
-    <approvalRecord ref="approvalRecordRef" />
-    <!-- 提交组件 -->
-    <submitVerify ref="submitVerifyRef" @submit-callback="handleQuery" />
   </div>
 </template>
 
 <script lang="ts" setup>
 import { getPageByTaskWait, claim, returnTask } from '@/api/workflow/task';
-import ApprovalRecord from '@/components/Process/approvalRecord.vue';
-import SubmitVerify from '@/components/Process/submitVerify.vue';
 import { TaskQuery, TaskVO } from '@/api/workflow/task/types';
 //提交组件
-const submitVerifyRef = ref<InstanceType<typeof SubmitVerify>>();
-//审批记录组件
-const approvalRecordRef = ref<InstanceType<typeof ApprovalRecord>>();
 const queryFormRef = ref<ElFormInstance>();
 const { proxy } = getCurrentInstance() as ComponentInternalInstance;
 // 遮罩层
@@ -124,12 +107,6 @@ const queryParams = ref<TaskQuery>({
 onMounted(() => {
   getWaitingList();
 });
-//审批记录
-const handleApprovalRecord = (row: TaskVO) => {
-  if (approvalRecordRef.value) {
-    approvalRecordRef.value.init(row.processInstanceId);
-  }
-};
 /** 搜索按钮操作 */
 const handleQuery = () => {
   getWaitingList();
@@ -156,10 +133,18 @@ const getWaitingList = () => {
     loading.value = false;
   });
 };
-//提交
-const submitVerifyOpen = async (id: string) => {
-  if (submitVerifyRef.value) {
-    submitVerifyRef.value.openDialog(id);
+//办理
+const handleOpen = async (row: TaskVO) => {
+  if(row.wfFormDefinitionVo){
+    proxy.$tab.closePage(proxy.$route);
+    proxy.$router.push({
+      path: `${row.wfFormDefinitionVo.path}/${row.businessKey}/approval`,
+      query: {
+        taskId: row.id
+      }
+    })
+  }else{
+    proxy?.$modal.msgError('请到流程定义菜单配置路由！');
   }
 };
 

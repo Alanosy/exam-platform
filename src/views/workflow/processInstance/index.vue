@@ -56,12 +56,11 @@
             </el-row>
           </template>
 
-          <el-table v-loading="loading" :data="processInstanceList" @selection-change="handleSelectionChange">
+          <el-table v-loading="loading" border :data="processInstanceList" @selection-change="handleSelectionChange">
             <el-table-column type="selection" width="55" align="center" />
-            <el-table-column fixed align="center" type="index" label="序号" width="50"></el-table-column>
-            <el-table-column v-if="false" fixed align="center" prop="id" label="id"></el-table-column>
-            <el-table-column fixed align="center" prop="processDefinitionName" label="流程定义名称"></el-table-column>
-            <el-table-column fixed align="center" prop="processDefinitionKey" label="流程定义KEY"></el-table-column>
+            <el-table-column align="center" type="index" label="序号" width="60"></el-table-column>
+            <el-table-column align="center" prop="processDefinitionName" label="流程定义名称"></el-table-column>
+            <el-table-column align="center" prop="processDefinitionKey" label="流程定义KEY"></el-table-column>
             <el-table-column align="center" prop="processDefinitionVersion" label="版本号" width="90">
               <template #default="scope"> v{{ scope.row.processDefinitionVersion }}.0</template>
             </el-table-column>
@@ -127,7 +126,7 @@
     </el-row>
     <el-dialog v-if="processDefinitionDialog.visible" v-model="processDefinitionDialog.visible" :title="processDefinitionDialog.title" width="70%">
       <el-table v-loading="loading" :data="processDefinitionHistoryList">
-        <el-table-column fixed align="center" type="index" label="序号" width="50"></el-table-column>
+        <el-table-column fixed align="center" type="index" label="序号" width="60"></el-table-column>
         <el-table-column fixed align="center" prop="name" label="流程定义名称"></el-table-column>
         <el-table-column align="center" prop="key" label="标识Key"></el-table-column>
         <el-table-column align="center" prop="version" label="版本号" width="90">

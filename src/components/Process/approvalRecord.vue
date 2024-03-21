@@ -10,7 +10,11 @@
             <el-table :data="historyList" style="width: 100%" border fit>
               <el-table-column type="index" label="序号" align="center" width="60"></el-table-column>
               <el-table-column prop="name" label="任务名称" sortable align="center"></el-table-column>
-              <el-table-column prop="nickName" label="办理人" sortable align="center"></el-table-column>
+              <el-table-column prop="nickName" label="办理人" sortable align="center">
+                <template #default="scope">
+                  <el-tag type="success">{{ scope.row.nickName||'无' }}</el-tag>
+                </template>
+              </el-table-column>
               <el-table-column label="状态" sortable align="center">
                 <template #default="scope">
                   <el-tag type="success">{{ scope.row.statusName }}</el-tag>

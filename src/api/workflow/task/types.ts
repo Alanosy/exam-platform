@@ -36,6 +36,8 @@ export interface TaskVO extends BaseEntity {
   processDefinitionKey: string;
   participantVo: ParticipantVo;
   multiInstance: boolean;
+  businessKey: string;
+  wfFormDefinitionVo: any;
 }
 
 export interface VariableVo {
