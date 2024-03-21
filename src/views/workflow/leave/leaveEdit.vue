@@ -24,31 +24,6 @@
             <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value" />
           </el-select>
         </el-form-item>
-        <el-form-item label="请假类型" prop="leaveType">
-          <el-select v-model="form.leaveType" placeholder="请选择请假类型" style="width: 100%">
-            <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value" />
-          </el-select>
-        </el-form-item>
-        <el-form-item label="请假类型" prop="leaveType">
-          <el-select v-model="form.leaveType" placeholder="请选择请假类型" style="width: 100%">
-            <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value" />
-          </el-select>
-        </el-form-item>
-        <el-form-item label="请假类型" prop="leaveType">
-          <el-select v-model="form.leaveType" placeholder="请选择请假类型" style="width: 100%">
-            <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value" />
-          </el-select>
-        </el-form-item>
-        <el-form-item label="请假类型" prop="leaveType">
-          <el-select v-model="form.leaveType" placeholder="请选择请假类型" style="width: 100%">
-            <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value" />
-          </el-select>
-        </el-form-item>
-        <el-form-item label="请假类型" prop="leaveType">
-          <el-select v-model="form.leaveType" placeholder="请选择请假类型" style="width: 100%">
-            <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value" />
-          </el-select>
-        </el-form-item>
         <el-form-item label="请假时间">
           <el-date-picker
             v-model="leaveTime"
