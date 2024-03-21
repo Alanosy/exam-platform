@@ -1,22 +1,24 @@
 <template>
   <div class="p-2">
-    <el-card shadow="never">
-        <div style="display: flex;justify-content: space-between;">
-          <div>
-            <el-button :loading="buttonLoading" 
-            v-if="routeParams.type === 'add' || (routeParams.type === 'update' && form.processInstanceVo.businessStatus && (form.processInstanceVo.businessStatus === 'draft' || form.processInstanceVo.businessStatus === 'cancel' || form.processInstanceVo.businessStatus === 'back'))"
-            type="info" @click="submitForm('draft')">暂存</el-button>
-            <el-button :loading="buttonLoading" v-if="routeParams.type === 'add' || (routeParams.type === 'update' && form.processInstanceVo && (form.processInstanceVo.businessStatus === 'draft' || form.processInstanceVo.businessStatus === 'cancel' || form.processInstanceVo.businessStatus === 'back'))"
-            type="primary" @click="submitForm('submit')">提 交</el-button>
-            <el-button :loading="buttonLoading" v-if="routeParams.type === 'approval' && form.processInstanceVo && form.processInstanceVo.businessStatus === 'waiting'"
-            type="primary" @click="approvalVerifyOpen">审批</el-button>
-            <el-button @click="handleApprovalRecord" type="primary" v-if="processInstanceId">流程进度</el-button>
+    <el-affix target=".p-2" :offset="80">
+      <el-card shadow="never">
+          <div style="display: flex;justify-content: space-between;">
+            <div>
+              <el-button :loading="buttonLoading" 
+              v-if="routeParams.type === 'add' || (routeParams.type === 'update' && form.processInstanceVo.businessStatus && (form.processInstanceVo.businessStatus === 'draft' || form.processInstanceVo.businessStatus === 'cancel' || form.processInstanceVo.businessStatus === 'back'))"
+              type="info" @click="submitForm('draft')">暂存</el-button>
+              <el-button :loading="buttonLoading" v-if="routeParams.type === 'add' || (routeParams.type === 'update' && form.processInstanceVo && (form.processInstanceVo.businessStatus === 'draft' || form.processInstanceVo.businessStatus === 'cancel' || form.processInstanceVo.businessStatus === 'back'))"
+              type="primary" @click="submitForm('submit')">提 交</el-button>
+              <el-button :loading="buttonLoading" v-if="routeParams.type === 'approval' && form.processInstanceVo && form.processInstanceVo.businessStatus === 'waiting'"
+              type="primary" @click="approvalVerifyOpen">审批</el-button>
+              <el-button @click="handleApprovalRecord" type="primary" v-if="processInstanceId">流程进度</el-button>
+            </div>
+            <div>
+              <el-button style="float: right" @click="goBack()">返回</el-button>
+            </div>
           </div>
-          <div>
-            <el-button style="float: right" @click="goBack()">返回</el-button>
-          </div>
-        </div>
-    </el-card>
+      </el-card>
+    </el-affix>
     <el-card shadow="never">
       <el-form ref="leaveFormRef" :disabled="routeParams.type ==='view'" v-loading="loading" :model="form" :rules="rules" label-width="80px">
         <el-form-item label="请假类型" prop="leaveType">
