@@ -53,9 +53,9 @@
             <el-tag type="success">{{ scope.row.businessStatusName }}</el-tag>
           </template>
         </el-table-column>
-        <el-table-column label="操作" align="center" width="160" class-name="small-padding fixed-width">
+        <el-table-column label="操作" align="center" width="200">
           <template #default="scope">
-            <el-button link type="primary" size="small" icon="Document" @click="handleApprovalRecord(scope.row)">审批记录</el-button>
+              <el-button type="primary" size="small" icon="View" @click="handleView(scope.row)">查看</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -67,17 +67,13 @@
         @pagination="handleQuery"
       />
     </el-card>
-    <!-- 审批记录 -->
-    <approvalRecord ref="approvalRecordRef" />
   </div>
 </template>
 
 <script lang="ts" setup>
 import { getPageByTaskCopy} from '@/api/workflow/task';
-import ApprovalRecord from '@/components/Process/approvalRecord.vue';
-import { TaskQuery, TaskVO } from '@/api/workflow/task/types';
+import { TaskQuery } from '@/api/workflow/task/types';
 //审批记录组件
-const approvalRecordRef = ref<InstanceType<typeof ApprovalRecord>>();
 const queryFormRef = ref<ElFormInstance>();
 const { proxy } = getCurrentInstance() as ComponentInternalInstance;
 // 遮罩层
@@ -102,15 +98,6 @@ const queryParams = ref<TaskQuery>({
   processDefinitionName: undefined,
   processDefinitionKey: undefined
 });
-onMounted(() => {
-  getTaskCopyList();
-});
-//审批记录
-const handleApprovalRecord = (row: TaskVO) => {
-  if (approvalRecordRef.value) {
-    approvalRecordRef.value.init(row.processInstanceId);
-  }
-};
 /** 搜索按钮操作 */
 const handleQuery = () => {
   getTaskCopyList();
@@ -138,4 +125,14 @@ const getTaskCopyList = () => {
   });
 };
 
+/** 查看按钮操作 */
+const handleView = (row) => {
+  proxy.$tab.closePage(proxy.$route);
+  proxy.$router.push(`/demo/leaveEdit/index/${row.id}/view`);
+};
+
+
+onMounted(() => {
+  getTaskCopyList();
+});
 </script>
