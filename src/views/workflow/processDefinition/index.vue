@@ -211,6 +211,9 @@
               <el-col :span="1.5">
                 <el-button link type="primary" icon="Sort" size="small" @click="handleConvertToModel(scope.row)"> 转换模型 </el-button>
               </el-col>
+              <el-col :span="1.5">
+                <el-button link type="primary" icon="Setting" size="small" @click="handleFormOpen(scope.row)"> 表单配置 </el-button>
+              </el-col>
             </el-row>
           </template>
         </el-table-column>

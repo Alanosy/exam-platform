@@ -5,7 +5,7 @@
           <div style="display: flex;justify-content: space-between;">
             <div>
               <el-button :loading="buttonLoading" 
-              v-if="routeParams.type === 'add' || (routeParams.type === 'update' && form.processInstanceVo.businessStatus && (form.processInstanceVo.businessStatus === 'draft' || form.processInstanceVo.businessStatus === 'cancel' || form.processInstanceVo.businessStatus === 'back'))"
+              v-if="routeParams.type === 'add' || (routeParams.type === 'update' && form.processInstanceVo && form.processInstanceVo.businessStatus && (form.processInstanceVo.businessStatus === 'draft' || form.processInstanceVo.businessStatus === 'cancel' || form.processInstanceVo.businessStatus === 'back'))"
               type="info" @click="submitForm('draft')">暂存</el-button>
               <el-button :loading="buttonLoading" v-if="routeParams.type === 'add' || (routeParams.type === 'update' && form.processInstanceVo && (form.processInstanceVo.businessStatus === 'draft' || form.processInstanceVo.businessStatus === 'cancel' || form.processInstanceVo.businessStatus === 'back'))"
               type="primary" @click="submitForm('submit')">提 交</el-button>

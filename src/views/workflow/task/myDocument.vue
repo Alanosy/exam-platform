@@ -64,28 +64,36 @@
             </el-table-column>
             <el-table-column align="center" prop="startTime" label="启动时间" width="160"></el-table-column>
             <el-table-column v-if="tab === 'finish'" align="center" prop="endTime" label="结束时间" width="160"></el-table-column>
-            <el-table-column label="操作" align="center" width="160" class-name="small-padding fixed-width">
+            <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
               <template #default="scope">
-                <el-row :gutter="10" class="mb8">
-                  <el-col :span="1.5">
-                    <el-button link type="primary" size="small" icon="Document" @click="handleApprovalRecord(scope.row.id)">审批记录</el-button>
-                  </el-col>
-                  <el-col
-                    v-if="scope.row.businessStatus === 'draft' || scope.row.businessStatus === 'cancel' || scope.row.businessStatus === 'back'"
-                    :span="1.5"
-                  >
-                    <el-button link type="primary" size="small" icon="Delete" @click="handleDelete(scope.row)">删除</el-button>
-                  </el-col>
-                  <el-col v-if="scope.row.businessStatus === 'waiting'" :span="1.5">
-                    <el-button link type="primary" size="small" icon="Notification" @click="handleCancelProcessApply(scope.row.id)">撤销</el-button>
-                  </el-col>
-                  <el-col
-                    v-if="scope.row.businessStatus === 'draft' || scope.row.businessStatus === 'cancel' || scope.row.businessStatus === 'back'"
-                    :span="1.5"
-                  >
-                    <el-button link type="primary" size="small" icon="Edit" @click="submitVerifyOpen(scope.row.taskVoList[0].id)">提交</el-button>
-                  </el-col>
-                </el-row>
+                <el-tooltip
+                  v-if="
+                    scope.row.businessStatus === 'draft' ||
+                    scope.row.businessStatus === 'cancel' ||
+                    scope.row.businessStatus === 'back'
+                  "
+                  content="修改"
+                  placement="top"
+                >
+                  <el-button v-hasPermi="['demo:leave:edit']" link type="primary" icon="Edit" @click="handleOpen(scope.row,'update')"></el-button>
+                </el-tooltip>
+                <el-tooltip
+                  v-if="
+                    scope.row.businessStatus === 'draft' ||
+                    scope.row.businessStatus === 'cancel' ||
+                    scope.row.businessStatus === 'back'
+                  "
+                  content="删除"
+                  placement="top"
+                >
+                  <el-button v-hasPermi="['demo:leave:remove']" link type="primary" icon="Delete" @click="handleDelete(scope.row)"></el-button>
+                </el-tooltip>
+                <el-tooltip placement="top" content="查看" >
+                  <el-button link type="primary" icon="View" @click="handleOpen(scope.row,'view')"></el-button>
+                </el-tooltip>
+                <el-tooltip v-if="scope.row.businessStatus === 'waiting'" content="撤销" placement="top">
+                  <el-button link type="primary" icon="Notification" @click="handleCancelProcessApply(scope.row.id)"></el-button>
+                </el-tooltip>
               </template>
             </el-table-column>
           </el-table>
@@ -99,8 +107,6 @@
         </el-card>
       </el-col>
     </el-row>
-    <!-- 审批记录 -->
-    <approvalRecord ref="approvalRecordRef" />
     <!-- 提交组件 -->
     <submitVerify ref="submitVerifyRef" @submit-callback="getList" />
   </div>
@@ -108,15 +114,9 @@
 
 <script lang="ts" setup>
 import { getPageByCurrent, deleteRunAndHisInstance, cancelProcessApply } from '@/api/workflow/processInstance';
-import ApprovalRecord from '@/components/Process/approvalRecord.vue';
-import SubmitVerify from '@/components/Process/submitVerify.vue';
 import { listCategory } from '@/api/workflow/category';
 import { CategoryVO } from '@/api/workflow/category/types';
 import { ProcessInstanceQuery, ProcessInstanceVO } from '@/api/workflow/processInstance/types';
-//提交组件
-const submitVerifyRef = ref<InstanceType<typeof SubmitVerify>>();
-//审批记录组件
-const approvalRecordRef = ref<InstanceType<typeof ApprovalRecord>>();
 const { proxy } = getCurrentInstance() as ComponentInternalInstance;
 const queryFormRef = ref<ElFormInstance>();
 const categoryTreeRef = ref<ElTreeInstance>();
@@ -247,10 +247,16 @@ const handleCancelProcessApply = async (processInstanceId: string) => {
   }
   proxy?.$modal.msgSuccess('撤销成功');
 };
-//提交
-const submitVerifyOpen = async (id: string) => {
-  if (submitVerifyRef.value) {
-    submitVerifyRef.value.openDialog(id);
+
+//办理
+const handleOpen = async (row,type) => {
+  if(row.wfFormDefinitionVo){
+    proxy.$tab.closePage(proxy.$route);
+    proxy.$router.push({
+      path: `${row.wfFormDefinitionVo.path}/${row.businessKey}/${type}`
+    })
+  }else{
+    proxy?.$modal.msgError('请到流程定义菜单配置路由！');
   }
 };
 </script>
