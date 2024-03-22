@@ -44,7 +44,7 @@
         <el-table-column align="center" prop="startTime" label="创建时间" width="160"></el-table-column>
         <el-table-column label="操作" align="center" width="200">
           <template #default="scope">
-              <el-button type="primary" size="small" icon="View" @click="handleView(scope.row)">查看</el-button>
+            <el-button type="primary" size="small" icon="View" @click="handleView(scope.row)">查看</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -115,7 +115,7 @@ const getFinishList = () => {
 /** 查看按钮操作 */
 const handleView = (row) => {
   proxy.$tab.closePage(proxy.$route);
-  proxy.$router.push(`/demo/leaveEdit/index/${row.id}/view`);
+  proxy.$router.push(`/demo/leaveEdit/index/${row.businessKey}/view`);
 };
 
 onMounted(() => {
