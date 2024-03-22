@@ -72,20 +72,22 @@
         </el-table-column>
         <el-table-column align="center" v-if="tab === 'waiting'" prop="createTime" label="创建时间" width="160"></el-table-column>
         <el-table-column align="center" v-if="tab === 'finish'" prop="startTime" label="创建时间" width="160"></el-table-column>
-        <el-table-column label="操作" align="center" width="160" class-name="small-padding fixed-width">
+        <el-table-column label="操作" align="center" :width="tab === 'finish' ? '80' : '151'">
           <template #default="scope">
             <el-row :gutter="10" class="mb8">
               <el-col :span="1.5">
-                <el-button link type="primary" size="small" icon="Document" @click="handleApprovalRecord(scope.row)">审批记录</el-button>
-              </el-col>
-              <el-col v-if="scope.row.multiInstance" :span="1.5">
-                <el-button link type="primary" size="small" icon="CirclePlus" @click="addMultiInstanceUser(scope.row)">加签</el-button>
-              </el-col>
-              <el-col v-if="scope.row.multiInstance" :span="1.5">
-                <el-button link type="primary" size="small" icon="Remove" @click="deleteMultiInstanceUser(scope.row)">减签</el-button>
+                <el-button link type="primary" size="small" icon="View" @click="handleView(scope.row)">查看</el-button>
               </el-col>
               <el-col v-if="tab === 'waiting'" :span="1.5">
                 <el-button link type="primary" size="small" icon="Document" @click="handleInstanceVariable(scope.row)">流程变量</el-button>
+              </el-col>
+            </el-row>
+            <el-row :gutter="10" class="mb8" v-if="scope.row.multiInstance" >
+              <el-col :span="1.5">
+                <el-button link type="primary" size="small" icon="Remove" @click="deleteMultiInstanceUser(scope.row)">减签</el-button>
+              </el-col>
+              <el-col :span="1.5">
+                <el-button link type="primary" size="small" icon="CirclePlus" @click="addMultiInstanceUser(scope.row)">加签</el-button>
               </el-col>
             </el-row>
           </template>
@@ -99,8 +101,6 @@
         @pagination="handleQuery"
       />
     </el-card>
-    <!-- 审批记录 -->
-    <approvalRecord ref="approvalRecordRef" />
     <!-- 加签组件 -->
     <multiInstanceUser ref="multiInstanceUserRef" :title="title" @submit-callback="handleQuery" />
     <!-- 选人组件 -->
@@ -126,12 +126,10 @@
 
 <script lang="ts" setup>
 import { getPageByAllTaskWait, getPageByAllTaskFinish, updateAssignee, getInstanceVariable } from '@/api/workflow/task';
-import ApprovalRecord from '@/components/Process/approvalRecord.vue';
 import MultiInstanceUser from '@/components/Process/multiInstanceUser.vue';
 import UserSelect from '@/components/UserSelect';
 import { TaskQuery, TaskVO, VariableVo } from '@/api/workflow/task/types';
 //审批记录组件
-const approvalRecordRef = ref<InstanceType<typeof ApprovalRecord>>();
 //加签组件
 const multiInstanceUserRef = ref<InstanceType<typeof MultiInstanceUser>>();
 //选人组件 
@@ -173,15 +171,7 @@ const queryParams = ref<TaskQuery>({
   processDefinitionKey: undefined
 });
 const tab = ref('waiting');
-onMounted(() => {
-  getWaitingList();
-});
-//审批记录
-const handleApprovalRecord = (row: TaskVO) => {
-  if (approvalRecordRef.value) {
-    approvalRecordRef.value.init(row.processInstanceId);
-  }
-};
+
 //加签
 const addMultiInstanceUser = (row: TaskVO) => {
   if (multiInstanceUserRef.value) {
@@ -218,6 +208,7 @@ const handleSelectionChange = (selection: any) => {
   multiple.value = !selection.length;
 };
 const changeTab = async (data: string) => {
+  taskList.value = []
   queryParams.value.pageNum = 1;
   if ('waiting' === data) {
     getWaitingList();
@@ -267,4 +258,18 @@ const handleInstanceVariable  = async (row: TaskVO) => {
   variableList.value = data.data
   variableLoading.value = false
 };
+/** 查看按钮操作 */
+const handleView = (row) => {
+  if(row.wfFormDefinitionVo){
+    proxy.$tab.closePage(proxy.$route);
+    proxy.$router.push({
+      path: `${row.wfFormDefinitionVo.path}/${row.businessKey}/view`
+    })
+  }else{
+    proxy?.$modal.msgError('请到流程定义菜单配置路由！');
+  }
+};
+onMounted(() => {
+  getWaitingList();
+});
 </script>

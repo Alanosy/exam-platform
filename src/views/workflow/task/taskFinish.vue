@@ -114,8 +114,14 @@ const getFinishList = () => {
 };
 /** 查看按钮操作 */
 const handleView = (row) => {
-  proxy.$tab.closePage(proxy.$route);
-  proxy.$router.push(`/demo/leaveEdit/index/${row.businessKey}/view`);
+  if(row.wfFormDefinitionVo){
+    proxy.$tab.closePage(proxy.$route);
+    proxy.$router.push({
+      path: `${row.wfFormDefinitionVo.path}/${row.businessKey}/view`
+    })
+  }else{
+    proxy?.$modal.msgError('请到流程定义菜单配置路由！');
+  }
 };
 
 onMounted(() => {

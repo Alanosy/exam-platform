@@ -77,27 +77,9 @@
             </el-table-column>
             <el-table-column align="center" prop="startTime" label="启动时间" width="160"></el-table-column>
             <el-table-column v-if="tab === 'finish'" align="center" prop="endTime" label="结束时间" width="160"></el-table-column>
-            <el-table-column label="操作" align="center" width="160" class-name="small-padding fixed-width">
+            <el-table-column label="操作" align="center" :width="tab === 'finish' ? '130' : '160'">
               <template #default="scope">
-                <el-row :gutter="10" class="mb8">
-                  <el-col :span="1.5">
-                    <el-button link type="primary" size="small" icon="Document" @click="handleApprovalRecord(scope.row)">审批记录</el-button>
-                  </el-col>
-                  <el-col :span="1.5">
-                    <el-button link type="primary" size="small" icon="Delete" @click="handleDelete(scope.row)">删除</el-button>
-                  </el-col>
-                </el-row>
                 <el-row v-if="tab === 'running'" :gutter="10" class="mb8">
-                  <el-col :span="1.5">
-                    <el-button
-                      link
-                      type="primary"
-                      size="small"
-                      icon="Sort"
-                      @click="getProcessDefinitionHitoryList(scope.row.processDefinitionId, scope.row.processDefinitionKey)"
-                      >切换版本</el-button
-                    >
-                  </el-col>
                   <el-col :span="1.5">
                     <el-popover :ref="`popoverRef${scope.$index}`" trigger="click" placement="left" :width="300">
                       <el-input v-model="deleteReason" resize="none" :rows="3" type="textarea" placeholder="请输入作废原因" />
@@ -109,6 +91,24 @@
                         <el-button link type="primary" size="small" icon="CircleClose">作废</el-button>
                       </template>
                     </el-popover>
+                  </el-col>
+                  <el-col :span="1.5">
+                    <el-button
+                      link
+                      type="primary"
+                      size="small"
+                      icon="Sort"
+                      @click="getProcessDefinitionHitoryList(scope.row.processDefinitionId, scope.row.processDefinitionKey)"
+                      >切换版本</el-button
+                    >
+                  </el-col>
+                </el-row>
+                <el-row :gutter="10" class="mb8">
+                  <el-col :span="1.5">
+                    <el-button link type="primary" size="small" icon="View" @click="handleView(scope.row)">查看</el-button>
+                  </el-col>
+                  <el-col :span="1.5">
+                    <el-button link type="primary" size="small" icon="Delete" @click="handleDelete(scope.row)">删除</el-button>
                   </el-col>
                 </el-row>
               </template>
@@ -146,8 +146,6 @@
         </el-table-column>
       </el-table>
     </el-dialog>
-    <!-- 审批记录 -->
-    <approvalRecord ref="approvalRecordRef" />
   </div>
 </template>
 
@@ -160,12 +158,10 @@ import {
   deleteRunInstance
 } from '@/api/workflow/processInstance';
 import { getListByKey, migrationDefinition } from '@/api/workflow/processDefinition';
-import ApprovalRecord from '@/components/Process/approvalRecord.vue';
 import { listCategory } from '@/api/workflow/category';
 import { CategoryVO } from '@/api/workflow/category/types';
 import { ProcessInstanceQuery, ProcessInstanceVO } from '@/api/workflow/processInstance/types';
 //审批记录组件
-const approvalRecordRef = ref<InstanceType<typeof ApprovalRecord>>();
 const { proxy } = getCurrentInstance() as ComponentInternalInstance;
 const queryFormRef = ref<ElFormInstance>();
 const categoryTreeRef = ref<ElTreeInstance>();
@@ -213,11 +209,6 @@ const queryParams = ref<ProcessInstanceQuery>({
   categoryCode: undefined
 });
 
-onMounted(() => {
-  getProcessInstanceRunningList();
-  getTreeselect();
-});
-
 /** 节点单击事件 */
 const handleNodeClick = (data: CategoryVO) => {
   queryParams.value.categoryCode = data.categoryCode;
@@ -250,12 +241,6 @@ const getTreeselect = async () => {
   categoryOptions.value.push(data);
 };
 
-//审批记录
-const handleApprovalRecord = (row: any) => {
-  if (approvalRecordRef.value) {
-    approvalRecordRef.value.init(row.id);
-  }
-};
 /** 搜索按钮操作 */
 const handleQuery = () => {
   if ('running' === tab.value) {
@@ -312,6 +297,7 @@ const handleDelete = async (row: any) => {
   proxy?.$modal.msgSuccess('删除成功');
 };
 const changeTab = async (data: string) => {
+  processInstanceList.value = []
   queryParams.value.pageNum = 1;
   if ('running' === data) {
     getProcessInstanceRunningList();
@@ -359,4 +345,20 @@ const handleChange = async (id: string) => {
     loading.value = false;
   });
 };
+/** 查看按钮操作 */
+const handleView = (row) => {
+  if(row.wfFormDefinitionVo){
+    proxy.$tab.closePage(proxy.$route);
+    proxy.$router.push({
+      path: `${row.wfFormDefinitionVo.path}/${row.businessKey}/view`
+    })
+  }else{
+    proxy?.$modal.msgError('请到流程定义菜单配置路由！');
+  }
+};
+
+onMounted(() => {
+  getProcessInstanceRunningList();
+  getTreeselect();
+});
 </script>
