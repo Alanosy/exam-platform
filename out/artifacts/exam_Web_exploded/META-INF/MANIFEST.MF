@@ -1,0 +1,9 @@
+Manifest-Version: 1.0
+Created-By: IntelliJ IDEA
+Built-By: WeiJin
+Build-Jdk: 17.0.5
+Implementation-Title: exam
+Implementation-Version: 0.0.1-SNAPSHOT
+Implementation-Vendor-Id: com.wj
+Main-Class: ${start-class}
+
