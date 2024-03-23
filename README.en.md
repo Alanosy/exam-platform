@@ -1,7 +1,7 @@
-# online-exam-system-backend
+# online-exam-system-frontend
 
 #### Description
-校园在线考试系统前端
+校园在线考试系统
 
 #### Software Architecture
 Software architecture description

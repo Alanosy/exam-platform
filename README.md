@@ -1,7 +1,7 @@
-# online-exam-system-backend
+# online-exam-system-frontend
 
 #### 介绍
-校园在线考试系统前端
+校园在线考试系统
 
 #### 软件架构
 软件架构说明
