@@ -253,7 +253,11 @@ const handleOpen = async (row,type) => {
   if(row.wfFormDefinitionVo){
     proxy.$tab.closePage(proxy.$route);
     proxy.$router.push({
-      path: `${row.wfFormDefinitionVo.path}/${row.businessKey}/${type}`
+      path: `${row.wfFormDefinitionVo.path}`,
+      query: {
+        id: row.businessKey,
+        type: type
+      }
     })
   }else{
     proxy?.$modal.msgError('请到流程定义菜单配置路由！');

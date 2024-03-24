@@ -138,8 +138,10 @@ const handleOpen = async (row: TaskVO) => {
   if(row.wfFormDefinitionVo){
     proxy.$tab.closePage(proxy.$route);
     proxy.$router.push({
-      path: `${row.wfFormDefinitionVo.path}/${row.businessKey}/approval`,
+      path: `${row.wfFormDefinitionVo.path}`,
       query: {
+        id: row.businessKey,
+        type: 'approval',
         taskId: row.id
       }
     })

@@ -175,18 +175,36 @@ const handleSelectionChange = (selection: LeaveVO[]) => {
 const handleAdd = () => {
   proxy.$tab.closePage(proxy.$route);
   proxy.$router.push(`/demo/leaveEdit/index/add/add`);
+  proxy.$router.push({
+      path: `/demo/leaveEdit/index`,
+      query: {
+        type: 'add'
+      }
+  })
 };
 
 /** 修改按钮操作 */
 const handleUpdate = (row?: LeaveVO) => {
   proxy.$tab.closePage(proxy.$route);
-  proxy.$router.push(`/demo/leaveEdit/index/${row.id}/update`);;
+  proxy.$router.push({
+      path: `/demo/leaveEdit/index`,
+      query: {
+        id: row.id,
+        type: 'update'
+      }
+  })
 };
 
 /** 查看按钮操作 */
 const handleView = (row?: LeaveVO) => {
   proxy.$tab.closePage(proxy.$route);
-  proxy.$router.push(`/demo/leaveEdit/index/${row.id}/view`);
+  proxy.$router.push({
+      path: `/demo/leaveEdit/index`,
+      query: {
+        id: row.id,
+        type: 'view'
+      }
+  })
 };
 
 /** 删除按钮操作 */

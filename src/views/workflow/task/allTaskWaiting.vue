@@ -263,7 +263,11 @@ const handleView = (row) => {
   if(row.wfFormDefinitionVo){
     proxy.$tab.closePage(proxy.$route);
     proxy.$router.push({
-      path: `${row.wfFormDefinitionVo.path}/${row.businessKey}/view`
+      path: `${row.wfFormDefinitionVo.path}`,
+      query: {
+        id: row.businessKey,
+        type: 'view'
+      }
     })
   }else{
     proxy?.$modal.msgError('请到流程定义菜单配置路由！');
