@@ -43,3 +43,4 @@
 # Spring Boot specific ignores
 **/target/
 **/out/
+.DS_Store
