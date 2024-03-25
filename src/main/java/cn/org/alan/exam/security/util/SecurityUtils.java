@@ -37,28 +37,28 @@ public class SecurityUtils {
      *
      * @return Long
      */
-    public static Long getUserId() {
-        Long userId = Convert.toLong(getUser().getUserId());
-        return userId;
-    }
+    // public static Long getUserId() {
+    //     Long userId = Convert.toLong(getUser().getUserId());
+    //     return userId;
+    // }
 
     /**
      * 获取部门ID
      *
      * @return
      */
-    public static Long getDeptId() {
-        return Convert.toLong(getUser().getDeptId());
-    }
+    // public static Long getDeptId() {
+    //     return Convert.toLong(getUser().getDeptId());
+    // }
 
     /**
      * 获取数据权限范围
      *
      * @return DataScope
      */
-    public static Integer getDataScope() {
-        return Convert.toInt(getUser().getDataScope());
-    }
+    // public static Integer getDataScope() {
+    //     // return Convert.toInt(getUser().getDataScope());
+    // }
 
 
     /**

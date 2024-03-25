@@ -4,7 +4,7 @@ spring:
     driver-class-name: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://localhost:3306/db_exam?characterEncoding=utf8&serverTimezone=Asia/Shanghai
     username: root
-    password: w20040410
+    password: Aa112211
     # druid 连接池管理
     druid:
       # 初始化时建立物理连接的个数
@@ -93,3 +93,7 @@ mybatis-plus:
       id-type: auto
       table-prefix: t_
   type-aliases-package: cn.org.alan.exam.model.entity
+server:
+  servlet:
+    context-path: /api
+

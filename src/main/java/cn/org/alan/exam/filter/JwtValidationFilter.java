@@ -43,27 +43,27 @@ public class JwtValidationFilter extends OncePerRequestFilter {
      */
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-        String token = request.getHeader(HttpHeaders.AUTHORIZATION);
-        // try {
-        if (StrUtil.isNotBlank(token)) {
-            Map<String, Object> payload = JwtUtils.parseToken(token);
-
-            String jti = Convert.toStr(payload.get(JWTPayload.JWT_ID));
-            Boolean isTokenBlacklisted  = redisTemplate.hasKey(SecurityConstants.BLACKLIST_TOKEN_PREFIX + jti);
-            if (Boolean.TRUE.equals(isTokenBlacklisted)) {
-                ResponseUtils.writeErrMsg(response, ResultCode.TOKEN_INVALID);
-                return;
-            }
-
-            Authentication authentication = JwtUtils.getAuthentication(payload);
-            SecurityContextHolder.getContext().setAuthentication(authentication);
-        }
-        // } catch (BusinessException ex) {
-        //     //this is very important, since it guarantees the user is not authenticated at all
-        //     SecurityContextHolder.clearContext();
-        //     ResponseUtils.writeErrMsg(response, (ResultCode) ex.getResultCode());
-        //     return;
+        // String token = request.getHeader(HttpHeaders.AUTHORIZATION);
+        // // try {
+        // if (StrUtil.isNotBlank(token)) {
+        //     Map<String, Object> payload = JwtUtils.parseToken(token);
+        //
+        //     String jti = Convert.toStr(payload.get(JWTPayload.JWT_ID));
+        //     Boolean isTokenBlacklisted  = redisTemplate.hasKey(SecurityConstants.BLACKLIST_TOKEN_PREFIX + jti);
+        //     if (Boolean.TRUE.equals(isTokenBlacklisted)) {
+        //         ResponseUtils.writeErrMsg(response, ResultCode.TOKEN_INVALID);
+        //         return;
+        //     }
+        //
+        //     // Authentication authentication = JwtUtils.getAuthentication(payload);
+        //     SecurityContextHolder.getContext().setAuthentication(authentication);
         // }
+        // // } catch (BusinessException ex) {
+        // //     //this is very important, since it guarantees the user is not authenticated at all
+        // //     SecurityContextHolder.clearContext();
+        // //     ResponseUtils.writeErrMsg(response, (ResultCode) ex.getResultCode());
+        // //     return;
+        // // }
 
         filterChain.doFilter(request, response);
     }

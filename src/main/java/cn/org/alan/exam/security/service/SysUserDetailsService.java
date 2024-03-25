@@ -7,6 +7,7 @@ import cn.org.alan.exam.mapper.UserMapper;
 import cn.org.alan.exam.model.dto.UserAuthInfo;
 import cn.org.alan.exam.model.entity.User;
 import cn.org.alan.exam.security.model.SysUserDetails;
+import cn.org.alan.exam.service.IUserService;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,26 +28,17 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class SysUserDetailsService implements UserDetailsService {
 
-    // private final SysUserService sysUserService;
+    private final IUserService iUserService;
     @Autowired
     private UserMapper userMapper;
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 
-//        LambdaQueryWrapper<User> wrapper = new LambdaQueryWrapper<User>().eq(User::getUserName, username);
-//        User user = userMapper.selectOne(wrapper);
-//        if (Optional.ofNullable(user).isPresent()){
-//            Result<Object> result = Result.failed(ResultCode.USER_NOT_EXIST);
-//
-//        }
-
-        // UserAuthInfo userAuthInfo = sysUserService.getUserAuthInfo(username);
-        // if (userAuthInfo == null) {
-        //     throw new UsernameNotFoundException(username);
-        // }
-        // return new SysUserDetails(userAuthInfo);
-        return null;
-
+        User userAuthInfo = iUserService.getUserAuthInfo(username);
+        if (userAuthInfo == null) {
+            throw new UsernameNotFoundException(username);
+        }
+        return new SysUserDetails(userAuthInfo);
     }
 }

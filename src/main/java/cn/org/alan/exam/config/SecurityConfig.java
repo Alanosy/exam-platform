@@ -2,6 +2,7 @@ package cn.org.alan.exam.config;
 
 
 import cn.hutool.captcha.generator.CodeGenerator;
+import cn.org.alan.exam.filter.JwtValidationFilter;
 import cn.org.alan.exam.security.constant.SecurityConstants;
 import cn.org.alan.exam.security.exception.MyAccessDeniedHandler;
 import cn.org.alan.exam.security.exception.MyAuthenticationEntryPoint;
@@ -10,6 +11,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -61,6 +63,10 @@ public class SecurityConfig {
         // http.addFilterBefore(new CaptchaValidationFilter(redisTemplate,codeGenerator), UsernamePasswordAuthenticationFilter.class);
         // // JWT 校验过滤器
         // http.addFilterBefore(new JwtValidationFilter(redisTemplate), UsernamePasswordAuthenticationFilter.class);
+        http
+                .authorizeHttpRequests(authorize->authorize.anyRequest().authenticated())
+                .formLogin(Customizer.withDefaults())
+                .httpBasic(Customizer.withDefaults());
 
         return http.build();
     }
