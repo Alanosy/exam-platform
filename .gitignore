@@ -1,5 +1,4 @@
-HELP.md
-target/
+# General ignores
 !.mvn/wrapper/maven-wrapper.jar
 !**/src/main/**/target/
 !**/src/test/**/target/
@@ -13,17 +12,14 @@ target/
 .springBeans
 .sts4-cache
 
-```xml
 **/mvnw
 **/mvnw.cmd
 
-
 **/.mvn
-**/target/
-**/out/
+/target/
 
-.idea
-**/.gitignore
+# Additions for Spring Boot and other IDEs
+/out/
 
 ### IntelliJ IDEA ###
 .idea
@@ -37,9 +33,13 @@ target/
 /dist/
 /nbdist/
 /.nb-gradle/
-build/
+/build/
 !**/src/main/**/build/
 !**/src/test/**/build/
 
 ### VS Code ###
 .vscode/
+
+# Spring Boot specific ignores
+**/target/
+**/out/
