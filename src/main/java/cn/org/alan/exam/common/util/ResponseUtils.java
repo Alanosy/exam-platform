@@ -26,18 +26,7 @@ public class ResponseUtils {
      * @param resultCode
      */
     public static void writeErrMsg(HttpServletResponse response, ResultCode resultCode) throws IOException {
-        switch (resultCode) {
-            case ACCESS_UNAUTHORIZED:
-            case TOKEN_INVALID:
-                response.setStatus(HttpStatus.UNAUTHORIZED.value());
-                break;
-            case TOKEN_ACCESS_FORBIDDEN:
-                response.setStatus(HttpStatus.FORBIDDEN.value());
-                break;
-            default:
-                response.setStatus(HttpStatus.BAD_REQUEST.value());
-                break;
-        }
+
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
         response.setCharacterEncoding("UTF-8");
         response.getWriter().print(JSONUtil.toJsonStr(Result.failed(resultCode)));
