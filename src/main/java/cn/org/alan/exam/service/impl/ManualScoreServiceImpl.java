@@ -1,7 +1,7 @@
 package cn.org.alan.exam.service.impl;
 
-import cn.org.alan.exam.model.entity.ManualScore;
 import cn.org.alan.exam.mapper.ManualScoreMapper;
+import cn.org.alan.exam.model.entity.ManualScore;
 import cn.org.alan.exam.service.IManualScoreService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.stereotype.Service;

@@ -1,10 +1,15 @@
+server:
+  port: 8080
+  servlet:
+    context-path: /api
+
 spring:
   datasource:
-    type: com.alibaba.druid.pool.DruidDataSource
-    driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/db_exam?characterEncoding=utf8&serverTimezone=Asia/Shanghai
+    url: jdbc:mysql://127.0.0.1:3306/db_exam
     username: root
     password: Aa112211
+    type: com.alibaba.druid.pool.DruidDataSource
+    driver-class-name: com.mysql.cj.jdbc.Driver
     # druid 连接池管理
     druid:
       # 初始化时建立物理连接的个数
@@ -37,7 +42,7 @@ spring:
       use-global-data-source-stat: true
       # 通过connectProperties属性来打开mergeSql功能；慢SQL记录
 
-      connect-properties: druid.stat.mergeSql=true;druid.stat.slowSqlMillis=5000
+      #      connect-properties: druid.stat.mergeSql=true;druid.stat.slowSqlMillis=5000
 
       web-stat-filter:
         # 是否启用StatFilter默认值true
@@ -61,12 +66,16 @@ spring:
         allow: 127.0.0.1
         # IP黑名单（共同存在时，deny优先于allow）
         deny:
-  data:
+  main:
+    # 关闭banner
+    banner-mode: off
+    # 允许循环引用
+    allow-circular-references: true
     redis:
-      database: 6
+      database: 0
       host: 127.0.0.1
       port: 6379
-      #      password:
+#      password: 123456
       timeout: 10s
       lettuce:
         pool:
@@ -78,22 +87,15 @@ spring:
           max-idle: 8
           # 连接池中的最小空闲连接 默认0
           min-idle: 0
-# 认证配置
-jwt:
-  # 密钥
-  key: SecretKey012345678901234567890123456789012345678901234567890123456789
-  # token 过期时间(单位:秒)
-  ttl: 7200
 mybatis-plus:
-  configuration:
-    map-underscore-to-camel-case: true
-    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
   global-config:
-    db-config:
-      id-type: auto
-      table-prefix: t_
-  type-aliases-package: cn.org.alan.exam.model.entity
-server:
-  servlet:
-    context-path: /api
+    # 关闭banner
+    banner: false
 
+logging:
+  level:
+    com.xxx.mapper: debug
+
+
+jwt:
+  secret: darfhiogtiasjtgaiosethaosifhbnsakltghweaoirthaoirhnaslgnvaekltgase

@@ -1,7 +1,7 @@
 package cn.org.alan.exam.service.impl;
 
-import cn.org.alan.exam.model.entity.Notice;
 import cn.org.alan.exam.mapper.NoticeMapper;
+import cn.org.alan.exam.model.entity.Notice;
 import cn.org.alan.exam.service.INoticeService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.stereotype.Service;

@@ -3,12 +3,13 @@ package cn.org.alan.exam.model.entity;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
+
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
 /**
  * <p>
- * 
+ *
  * </p>
  *
  * @author WeiJin
@@ -63,7 +64,7 @@ public class User implements Serializable {
     /**
      * 状态  1正常0禁用
      */
-    private Integer state;
+    private Integer status;
 
     public Integer getUserId() {
         return userId;
@@ -121,26 +122,26 @@ public class User implements Serializable {
     public void setCreateTime(LocalDateTime createTime) {
         this.createTime = createTime;
     }
-    public Integer getState() {
-        return state;
+    public Integer getStatus() {
+        return status;
     }
 
-    public void setState(Integer state) {
-        this.state = state;
+    public void setStatus(Integer state) {
+        this.status = state;
     }
 
     @Override
     public String toString() {
         return "User{" +
-            "userId=" + userId +
-            ", userName=" + userName +
-            ", realName=" + realName +
-            ", password=" + password +
-            ", avatar=" + avatar +
-            ", roleId=" + roleId +
-            ", gradeId=" + gradeId +
-            ", createTime=" + createTime +
-            ", state=" + state +
-        "}";
+                "userId=" + userId +
+                ", userName=" + userName +
+                ", realName=" + realName +
+                ", password=" + password +
+                ", avatar=" + avatar +
+                ", roleId=" + roleId +
+                ", gradeId=" + gradeId +
+                ", createTime=" + createTime +
+                ", status=" + status +
+                "}";
     }
 }

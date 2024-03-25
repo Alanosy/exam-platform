@@ -1,7 +1,7 @@
 package cn.org.alan.exam.service.impl;
 
-import cn.org.alan.exam.model.entity.ExerciseRecord;
 import cn.org.alan.exam.mapper.ExerciseRecordMapper;
+import cn.org.alan.exam.model.entity.ExerciseRecord;
 import cn.org.alan.exam.service.IExerciseRecordService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.stereotype.Service;
