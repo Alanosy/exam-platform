@@ -31,23 +31,6 @@ public class SysUserDetails implements UserDetails {
 
     public SysUserDetails(User user) {
         this.user = user;
-        // this.userId = user.getUserId();
-        // Set<String> roles = user.getRoles();
-        // Set<SimpleGrantedAuthority> authorities;
-        // if (CollectionUtil.isNotEmpty(roles)) {
-        //     authorities = roles.stream()
-        //             .map(role -> new SimpleGrantedAuthority("ROLE_" + role)) // 标识角色
-        //             .collect(Collectors.toSet());
-        // } else {
-        //     authorities = Collections.EMPTY_SET;
-        // }
-        // this.authorities = authorities;
-        // this.username = user.getUsername();
-        // this.password = user.getPassword();
-        // this.enabled = ObjectUtil.equal(user.getStatus(), 1);
-        // this.perms = user.getPerms();
-        // this.deptId = user.getDeptId();
-        // this.dataScope = user.getDataScope();
     }
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

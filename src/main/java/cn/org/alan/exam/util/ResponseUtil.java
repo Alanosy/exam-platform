@@ -1,6 +1,6 @@
 package cn.org.alan.exam.util;
 
-import cn.org.alan.exam.model.result.Result;
+import cn.org.alan.exam.common.result.Result;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletResponse;

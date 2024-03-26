@@ -1,9 +1,7 @@
 package cn.org.alan.exam.filter;
 
-
-
 import cn.org.alan.exam.model.entity.User;
-import cn.org.alan.exam.model.result.Result;
+import cn.org.alan.exam.common.result.Result;
 import cn.org.alan.exam.security.model.SysUserDetails;
 import cn.org.alan.exam.util.JwtUtil;
 import cn.org.alan.exam.util.ResponseUtil;
@@ -20,8 +18,6 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
-
-
 import java.io.IOException;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -49,7 +45,7 @@ public class VerifyTokenFilter extends OncePerRequestFilter {
 
         //登录请求放行
         String uri = request.getRequestURI();
-        if ("/api/login".equals(uri)) {
+        if ("/login".equals(uri)) {
             doFilter(request, response, filterChain);
             return;
         }
