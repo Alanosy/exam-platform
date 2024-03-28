@@ -54,6 +54,7 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+        http.authorizeRequests().requestMatchers("/login").permitAll();
         //所有请求的授权都需要认证
         http.authorizeRequests().anyRequest().authenticated();
 

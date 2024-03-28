@@ -1,10 +1,16 @@
 package cn.org.alan.exam.util;
 
+import cn.org.alan.exam.model.entity.User;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.JWTVerificationException;
+import com.auth0.jwt.interfaces.Claim;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.auth0.jwt.interfaces.JWTVerifier;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.annotation.Resource;
+import jakarta.servlet.http.HttpServletRequest;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -22,12 +28,28 @@ import java.util.Map;
 @Component
 @Slf4j
 public class JwtUtil {
+
+    @Resource
+    private ObjectMapper objectMapper;
+
     /**
      * jwt密钥
      */
     @Value("${jwt.secret}")
     private String secret;
 
+    /**
+     * 获取用户id
+     *
+     * @param request
+     * @return
+     */
+    @SneakyThrows
+    public Integer getUserId(HttpServletRequest request) {
+
+        String token = getUser(request.getHeader("Authorization"));
+        return objectMapper.readValue(token, User.class).getUserId();
+    }
 
     /**
      * 创建jwt
