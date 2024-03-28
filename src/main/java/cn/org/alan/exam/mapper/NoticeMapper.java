@@ -3,6 +3,8 @@ package cn.org.alan.exam.mapper;
 import cn.org.alan.exam.model.entity.Notice;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 
+import java.util.List;
+
 /**
  * <p>
  *  Mapper 接口
@@ -13,4 +15,5 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
  */
 public interface NoticeMapper extends BaseMapper<Notice> {
 
+    int removeNotice(List<Integer> noticeIds);
 }

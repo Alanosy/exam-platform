@@ -3,21 +3,13 @@
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="cn.org.alan.exam.mapper.UserMapper">
-    
-    <!--<resultMap id="BaseResultMap" type="entity.cn.org.alan.UserEntity">-->
-    <!--    <id property="id" column="id" jdbcType="INTEGER"/>-->
-    <!--    <result property="name" column="name" jdbcType="VARCHAR"/>-->
-    <!--    <result property="password" column="password" jdbcType="VARCHAR"/>-->
-    <!--    <result property="phone" column="phone" jdbcType="VARCHAR"/>-->
-    <!--</resultMap>-->
-    
-    <!--<sql id="Base_Column_List">-->
-    <!--    id,name,password,phone-->
-    <!--</sql>-->
-    <!--<select id="getinfo" resultType="cn.org.alan.exam.entity.UserEntity">-->
-    <!--    select * from t_user;-->
-    <!--</select>-->
-    <!--<select id="getText" resultType="cn.org.alan.exam.model.entity.User">-->
-    <!--    select * from t_user;-->
-    <!--</select>-->
+    <update id="removeUserGrade">
+        UPDATE t_user
+        SET grade_id = null
+        WHERE id IN
+        <foreach item="userId" collection="userIds" open="(" separator="," close=")">
+            #{userId}
+        </foreach>
+    </update>
+
 </mapper>

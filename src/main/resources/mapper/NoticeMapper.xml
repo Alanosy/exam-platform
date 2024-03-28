@@ -2,4 +2,12 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="cn.org.alan.exam.mapper.NoticeMapper">
 
+    <delete id="removeNotice">
+        delete
+        from t_notice
+        where id IN
+        <foreach item="noticeId" collection="noticeIds" open="(" separator="," close=")">
+            #{noticeId}
+        </foreach>
+    </delete>
 </mapper>

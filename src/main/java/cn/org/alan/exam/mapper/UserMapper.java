@@ -18,4 +18,5 @@ import java.util.List;
 public interface UserMapper extends BaseMapper<User> {
 
     // List<User> getText(Integer id);
+    Integer removeUserGrade(List<Integer> userIds);
 }

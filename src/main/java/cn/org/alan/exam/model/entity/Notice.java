@@ -9,7 +9,7 @@ import java.time.LocalDateTime;
 
 /**
  * <p>
- * 
+ *
  * </p>
  *
  * @author WeiJin
@@ -58,6 +58,7 @@ public class Notice implements Serializable {
     public void setId(Integer id) {
         this.id = id;
     }
+
     public String getTitle() {
         return title;
     }
@@ -65,6 +66,7 @@ public class Notice implements Serializable {
     public void setTitle(String title) {
         this.title = title;
     }
+
     public String getImage() {
         return image;
     }
@@ -72,6 +74,7 @@ public class Notice implements Serializable {
     public void setImage(String image) {
         this.image = image;
     }
+
     public String getContent() {
         return content;
     }
@@ -79,6 +82,7 @@ public class Notice implements Serializable {
     public void setContent(String content) {
         this.content = content;
     }
+
     public Integer getUserId() {
         return userId;
     }
@@ -86,6 +90,7 @@ public class Notice implements Serializable {
     public void setUserId(Integer userId) {
         this.userId = userId;
     }
+
     public LocalDateTime getCreateTime() {
         return createTime;
     }
@@ -97,12 +102,12 @@ public class Notice implements Serializable {
     @Override
     public String toString() {
         return "Notice{" +
-            "id=" + id +
-            ", title=" + title +
-            ", image=" + image +
-            ", content=" + content +
-            ", userId=" + userId +
-            ", createTime=" + createTime +
-        "}";
+                "id=" + id +
+                ", title=" + title +
+                ", image=" + image +
+                ", content=" + content +
+                ", userId=" + userId +
+                ", createTime=" + createTime +
+                "}";
     }
 }
