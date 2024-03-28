@@ -38,18 +38,6 @@ public class JwtUtil {
     @Value("${jwt.secret}")
     private String secret;
 
-    /**
-     * 获取用户id
-     *
-     * @param request
-     * @return
-     */
-    @SneakyThrows
-    public Integer getUserId(HttpServletRequest request) {
-
-        String token = getUser(request.getHeader("Authorization"));
-        return objectMapper.readValue(token, User.class).getUserId();
-    }
 
     /**
      * 创建jwt
@@ -92,7 +80,7 @@ public class JwtUtil {
 
 
     /**
-     * 获取用户信息
+     * 根据token获取用户信息
      *
      * @param token
      * @return
@@ -110,7 +98,7 @@ public class JwtUtil {
     }
 
     /**
-     * 获取权限
+     * 根据token获取权限
      *
      * @param token
      * @return
@@ -126,4 +114,29 @@ public class JwtUtil {
             return null;
         }
     }
+
+    /**
+     * 获取用户id
+     *
+     * @param request
+     * @return
+     */
+    @SneakyThrows
+    public Integer getUserId(HttpServletRequest request) {
+
+        String token = getUser(request.getHeader("Authorization"));
+        return objectMapper.readValue(token, User.class).getUserId();
+    }
+
+    /**
+     * 根据request获取权限
+     *
+     * @param request
+     * @return
+     */
+    public String getPermission(HttpServletRequest request) {
+        List<String> list = getAuthList(request.getHeader("Authorization"));
+        return list.get(0);
+    }
+
 }
