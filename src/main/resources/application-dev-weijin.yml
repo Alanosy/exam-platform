@@ -51,11 +51,12 @@ spring:
 
       stat-view-servlet:
         # 是否启用StatViewServlet默认值true
-        enabled: true
-        # 访问路径为/druid时，跳转到StatViewServlet
-        url-pattern: /druid/*
+        enabled: false
         # 是否能够重置数据
         reset-enable: false
+        # 访问路径为/druid时，跳转到StatViewServlet
+        url-pattern: /druid/*
+
         # 需要账号密码才能访问控制台，默认为root
         login-username: druid
         login-password: druid
@@ -90,11 +91,13 @@ mybatis-plus:
   global-config:
     # 关闭banner
     banner: false
+  configuration:
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+    map-underscore-to-camel-case:
+  type-aliases-package: cn.org.alan.exam.model
 
-logging:
-  level:
-    com.xxx.mapper: debug
 
 
 jwt:
   secret: darfhiogtiasjtgaiosethaosifhbnsakltghweaoirthaoirhnaslgnvaekltgase
+
