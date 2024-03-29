@@ -67,8 +67,7 @@ public class SecurityConfig {
             // 获取权限
             List<SimpleGrantedAuthority> permissions = (List<SimpleGrantedAuthority>) principal.getAuthorities();
             // 将SimpleGrantedAuthority格式的权限转为String
-            List<String> authList = permissions.stream().map(SimpleGrantedAuthority::getAuthority)
-                    .collect(Collectors.toList());
+            List<String> authList = permissions.stream().map(SimpleGrantedAuthority::getAuthority).toList();
             // 将权限和用户信息封装到jwt中
             String token = jwtUtil.createJwt(userInfo, authList);
             // 把token放到redis中

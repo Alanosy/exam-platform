@@ -2,7 +2,11 @@ package cn.org.alan.exam.service;
 
 import cn.org.alan.exam.common.result.Result;
 import cn.org.alan.exam.model.entity.Repo;
+import cn.org.alan.exam.model.vo.RepoVO;
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.IService;
+
+import java.util.List;
 
 /**
  * <p>
@@ -35,4 +39,23 @@ public interface IRepoService extends IService<Repo> {
      * @return 响应返回结果
      */
     Result<String> deleteRepoById(Integer id);
+
+    /**
+     * 根据用户id获取自己的题库
+     * @param userId 用户id
+     * @param permission 身份，教师获取自己的，管理员可以获取所有
+     * @return 响应结果
+     */
+    Result<List<RepoVO>> getRepoList(Integer userId, String permission);
+
+    /**
+     * 分页查询题库
+     * @param pageNum 页码
+     * @param pageSize 每页记录数
+     * @param title 标题
+     * @param userId 用户id
+     * @param permission 角色
+     * @return 返回结果响应
+     */
+    Result<IPage<RepoVO>> pagingRepo(Integer pageNum, Integer pageSize, String title, Integer userId, String permission);
 }

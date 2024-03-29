@@ -57,7 +57,6 @@ public class VerifyTokenFilter extends OncePerRequestFilter {
             return;
         }
 
-
         //校验jwt是否过期
         boolean verify = jwtUtil.verifyToken(authorization);
         if (!verify) {
@@ -67,7 +66,7 @@ public class VerifyTokenFilter extends OncePerRequestFilter {
 
         //验证token在redis中是否存在，k使用sessionId
         if (Boolean.FALSE.equals(stringRedisTemplate.hasKey(request.getSession().getId() + "token"))) {
-            responseUtil.response(response, Result.failed("你已退出登录，请重新登录"));
+            responseUtil.response(response, Result.failed("token无效，请重新登录"));
             return;
         }
 
@@ -77,8 +76,7 @@ public class VerifyTokenFilter extends OncePerRequestFilter {
         //反序列化jwtToken获取用户信息
         User sysUser = objectMapper.readValue(userInfo, User.class);
         //权限转型
-        List<SimpleGrantedAuthority> permissions = authList.stream().map(SimpleGrantedAuthority::new)
-                .collect(Collectors.toList());
+        List<SimpleGrantedAuthority> permissions = authList.stream().map(SimpleGrantedAuthority::new).toList();
 
         //创建登录用户
         SysUserDetails securityUser = new SysUserDetails(sysUser);

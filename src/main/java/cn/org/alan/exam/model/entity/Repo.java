@@ -3,6 +3,8 @@ package cn.org.alan.exam.model.entity;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
+import jakarta.validation.constraints.NotNull;
+import net.sf.jsqlparser.expression.MySQLGroupConcat;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
@@ -34,6 +36,7 @@ public class Repo implements Serializable {
     /**
      * 题库标题
      */
+    @NotNull(message = "题库名不能为空")
     private String title;
 
     /**

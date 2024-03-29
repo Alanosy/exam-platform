@@ -11,6 +11,7 @@ import cn.org.alan.exam.model.vo.GradeVO;
 import cn.org.alan.exam.service.IGradeService;
 import cn.org.alan.exam.util.ClassTokenGenerator;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -18,6 +19,7 @@ import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import jakarta.annotation.Resource;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Arrays;
@@ -26,15 +28,15 @@ import java.util.List;
 /**
  * 服务实现类
  *
- * @author Alan
+ * @author WeiJin
  * @since 2024-03-21
  */
 @Service
 public class GradeServiceImpl extends ServiceImpl<GradeMapper, Grade> implements IGradeService {
-    @Resource
+    @Autowired
     private GradeMapper gradeMapper;
 
-    @Resource
+    @Autowired
     private GradeConverter gradeConverter;
     @Resource
     private UserMapper userMapper;
@@ -53,7 +55,7 @@ public class GradeServiceImpl extends ServiceImpl<GradeMapper, Grade> implements
     }
 
     @Override
-    public Result<String> updateGrade(String id, GradeForm gradeForm) {
+    public Result<String> updateGrade(Integer id, GradeForm gradeForm) {
         LambdaUpdateWrapper<Grade> gradeUpdateWrapper = new LambdaUpdateWrapper<>();
         gradeUpdateWrapper
                 .set(Grade::getGradeName, gradeForm.getGradeName())
@@ -96,26 +98,5 @@ public class GradeServiceImpl extends ServiceImpl<GradeMapper, Grade> implements
         return Result.success("移除成功");
     }
 
-    @Override
-    public Result<List<GradeVO>> getGradeAll(Integer userId) {
-        LambdaQueryWrapper<Grade> gradeLambdaQueryWrapper = new LambdaQueryWrapper<>();
-        gradeLambdaQueryWrapper.eq(Grade::getUserId, userId);
-        List<Grade> grades = gradeMapper.selectList(gradeLambdaQueryWrapper);
-        return Result.success("查询成功", gradeConverter.listEntityToVo(grades));
-    }
-
-    @Override
-    public Result<String> userAddGrade(Integer userId, String code) {
-        LambdaQueryWrapper<Grade> gradeLambdaQueryWrapper = new LambdaQueryWrapper<>();
-        gradeLambdaQueryWrapper.eq(Grade::getCode, code);
-        Grade grade = gradeMapper.selectOne(gradeLambdaQueryWrapper);
-        LambdaUpdateWrapper<User> lambdaUpdateWrapper = new LambdaUpdateWrapper<>();
-        lambdaUpdateWrapper.eq(User::getUserId, userId)
-                .set(User::getGradeId, grade.getId());
-        int rowsAffected = userMapper.update(lambdaUpdateWrapper);
-        if (rowsAffected == 0) {
-            return Result.failed("加入失败");
-        }
-        return Result.success("加入成功");
-    }
 }
+
