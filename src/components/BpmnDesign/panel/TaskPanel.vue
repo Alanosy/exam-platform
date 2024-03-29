@@ -21,6 +21,9 @@
             <el-form-item v-if="showConfig.skipExpression" prop="skipExpression" label="跳过表达式">
               <el-input v-model="formData.skipExpression" @change="skipExpressionChange"> </el-input>
             </el-form-item>
+            <el-form-item prop="formKey" label="表单地址">
+              <el-input v-model="formData.formKey" @change="formKeyChange" placeholder="当前节点表单路由如：/demo/leaveEdit/index"> </el-input>
+            </el-form-item>
           </div>
         </el-collapse-item>
         <el-collapse-item name="2">
@@ -243,7 +246,7 @@ interface PropType {
   element: ModdleElement;
 }
 const props = withDefaults(defineProps<PropType>(), {});
-const { showConfig, nameChange, idChange, updateProperties, getExtensionElements, createModdleElement, constant } = usePanel({
+const { showConfig, nameChange, formKeyChange, idChange, updateProperties, getExtensionElements, createModdleElement, constant } = usePanel({
   element: toRaw(props.element)
 });
 const { parseData } = useParseElement({

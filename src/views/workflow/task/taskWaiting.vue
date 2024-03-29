@@ -135,7 +135,17 @@ const getWaitingList = () => {
 };
 //办理
 const handleOpen = async (row: TaskVO) => {
-  if(row.wfFormDefinitionVo){
+  if (row.formKey != null) {
+    proxy.$tab.closePage(proxy.$route);
+    proxy.$router.push({
+      path: `${row.formKey}`,
+      query: {
+        id: row.businessKey,
+        type: 'approval',
+        taskId: row.id
+      }
+    });
+  } else if (row.wfFormDefinitionVo) {
     proxy.$tab.closePage(proxy.$route);
     proxy.$router.push({
       path: `${row.wfFormDefinitionVo.path}`,
@@ -144,8 +154,8 @@ const handleOpen = async (row: TaskVO) => {
         type: 'approval',
         taskId: row.id
       }
-    })
-  }else{
+    });
+  } else {
     proxy?.$modal.msgError('请到流程定义菜单配置路由！');
   }
 };

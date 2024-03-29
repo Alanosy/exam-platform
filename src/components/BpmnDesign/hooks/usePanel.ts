@@ -115,7 +115,9 @@ export default (ops: Options) => {
       updateProperties({ name: newVal });
     }
   };
-
+  const formKeyChange = (newVal: string) => {
+      updateProperties({ formKey: newVal });
+  };
   const constant = {
     MultiInstanceType: [
       { id: '373d4b81-a0d1-4eb8-8685-0d2fb1b468e2', label: '无', value: MultiInstanceTypeEnum.NONE },
@@ -136,7 +138,7 @@ export default (ops: Options) => {
     createModdleElement,
     idChange,
     nameChange,
-
+    formKeyChange,
     getExtensionElements,
     getPropertiesElements
   };
