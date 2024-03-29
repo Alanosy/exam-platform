@@ -37,6 +37,7 @@ export interface TaskVO extends BaseEntity {
   participantVo: ParticipantVo;
   multiInstance: boolean;
   businessKey: string;
+  formKey: string;
   wfFormDefinitionVo: any;
 }
 

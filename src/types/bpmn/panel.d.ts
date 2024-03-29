@@ -34,6 +34,7 @@ declare module 'bpmnDesign' {
     multiInstanceType: MultiInstanceTypeEnum;
     async?: boolean;
     priority?: number;
+    formKey?: string;
     skipExpression?: string;
     isForCompensation?: boolean;
     triggerServiceTask?: boolean;
