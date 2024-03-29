@@ -24,22 +24,19 @@ import org.springframework.web.bind.annotation.*;
 public class GradeController {
     @Autowired
     private IGradeService gradeService;
-    @Resource
-    private JwtUtil jwtUtil;
-    @Resource
-    private HttpServletRequest request;
+
 
     @GetMapping("/paging")
     public Result getGrade(@Param("pageNum") Integer pageNum,
                            @Param("pageSize") Integer pageSize,
                            @Param("gradeName") String gradeName) {
-        gradeService.getPaging(jwtUtil.getUserId(request), pageNum, pageSize, gradeName);
+        gradeService.getPaging(pageNum, pageSize, gradeName);
         return Result.success();
     }
 
     @PostMapping("/add")
     public Result<String> addGrade(@RequestBody GradeForm gradeForm) {
-        gradeService.addGrade(jwtUtil.getUserId(request), gradeForm);
+        gradeService.addGrade(gradeForm);
 
         return Result.success();
     }

@@ -24,10 +24,6 @@ public class UserController {
 
 
     @Resource
-    private JwtUtil jwtUtil;
-    @Resource
-    private HttpServletRequest request;
-    @Resource
     private IUserService iUserService;
 
 
@@ -47,7 +43,7 @@ public class UserController {
     @PostMapping
     @PreAuthorize("hasAnyAuthority('role_teacher','role_admin')")
     public Result<String> createUser(@Validated(UserGroup.CreateUserGroup.class) @RequestBody UserForm userForm) {
-        return iUserService.createUser(userForm, jwtUtil.getPermission(request));
+        return iUserService.createUser(userForm);
     }
 
     /**
@@ -58,6 +54,6 @@ public class UserController {
     @PutMapping
     @PreAuthorize("hasAnyAuthority('role_student','role_teacher','role_admin')")
     public Result<String> updatePassword(@Validated(UserGroup.UpdatePasswordGroup.class) @RequestBody UserForm userForm){
-       return iUserService.updatePassword(jwtUtil.getUserId(request),userForm);
+       return iUserService.updatePassword(userForm);
     }
 }

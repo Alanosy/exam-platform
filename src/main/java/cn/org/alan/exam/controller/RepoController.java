@@ -27,12 +27,10 @@ import java.util.List;
 public class RepoController {
 
 
-    @Resource
-    private JwtUtil jwtUtil;
+
     @Resource
     private IRepoService iRepoService;
-    @Resource
-    private HttpServletRequest request;
+
 
 
     /**
@@ -45,7 +43,6 @@ public class RepoController {
     @PreAuthorize("hasAnyAuthority('role_teacher','role_admin')")
     public Result<String> addRepo(@Validated @RequestBody Repo repo) {
         //从token获取用户id，放入创建人id属性
-        repo.setUserId(jwtUtil.getUserId(request));
         return iRepoService.addRepo(repo);
     }
 
@@ -82,7 +79,7 @@ public class RepoController {
     @GetMapping("/list")
     @PreAuthorize("hasAnyAuthority('role_teacher','role_admin')")
     public Result<List<RepoVO>> getRepoList() {
-        return iRepoService.getRepoList(jwtUtil.getUserId(request), jwtUtil.getPermission(request));
+        return iRepoService.getRepoList();
     }
 
     /**
@@ -98,7 +95,7 @@ public class RepoController {
     public Result<IPage<RepoVO>> pagingRepo(@RequestParam(value = "pageNum", required = false, defaultValue = "1") Integer pageNum,
                                             @RequestParam(value = "pageSize", required = false, defaultValue = "10") Integer pageSize,
                                             @RequestParam(value = "title", required = false) String title) {
-        return iRepoService.pagingRepo(pageNum, pageSize, title, jwtUtil.getUserId(request), jwtUtil.getPermission(request));
+        return iRepoService.pagingRepo(pageNum, pageSize, title);
     }
 
 

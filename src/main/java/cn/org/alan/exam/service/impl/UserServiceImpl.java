@@ -7,6 +7,7 @@ import cn.org.alan.exam.model.entity.User;
 import cn.org.alan.exam.model.form.UserForm;
 import cn.org.alan.exam.service.IUserService;
 import cn.org.alan.exam.util.DateTimeUtil;
+import cn.org.alan.exam.util.SecurityUtil;
 import com.baomidou.mybatisplus.core.exceptions.MybatisPlusException;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import jakarta.annotation.Resource;
@@ -16,11 +17,15 @@ import org.apache.ibatis.exceptions.PersistenceException;
 import org.springframework.context.ApplicationContextException;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.sql.SQLException;
 import java.sql.SQLIntegrityConstraintViolationException;
+import java.util.Collection;
+import java.util.List;
 
 
 /**
@@ -43,12 +48,14 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
 
 
     @Override
-    public Result<String> createUser(UserForm userForm, String permission) {
+    public Result<String> createUser(UserForm userForm) {
 
         userForm.setCreateTime(DateTimeUtil.getDateTime());
         userForm.setPassword(new BCryptPasswordEncoder().encode("123456"));
+
+        String role = SecurityUtil.getRole();
         //教师只能创建学生
-        if ("role_teacher".equals(permission)) {
+        if ("role_teacher".equals(role)) {
             userForm.setRoleId(1);
         }
 
@@ -65,10 +72,11 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
     }
 
     @Override
-    public Result<String> updatePassword(Integer userId, UserForm userForm) {
+    public Result<String> updatePassword( UserForm userForm) {
         if (!userForm.getNewPassword().equals(userForm.getCheckedPassword())) {
             return Result.failed("两次密码不一致");
         }
+        Integer userId = SecurityUtil.getUserId();
         if (!userMapper.selectById(userId).getPassword().equals(userForm.getOriginPassword())) {
             return Result.failed("旧密码错误");
         }

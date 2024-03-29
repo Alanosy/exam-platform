@@ -10,6 +10,7 @@ import cn.org.alan.exam.model.entity.Repo;
 import cn.org.alan.exam.model.vo.RepoVO;
 import cn.org.alan.exam.service.IRepoService;
 import cn.org.alan.exam.util.DateTimeUtil;
+import cn.org.alan.exam.util.SecurityUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -42,6 +43,7 @@ public class RepoServiceImpl extends ServiceImpl<RepoMapper, Repo> implements IR
     public Result<String> addRepo(Repo repo) {
 
         repo.setCreateTime(DateTimeUtil.getDateTime());
+        repo.setUserId(SecurityUtil.getUserId());
         repoMapper.insert(repo);
 
         return Result.success("保存成功");
@@ -79,23 +81,23 @@ public class RepoServiceImpl extends ServiceImpl<RepoMapper, Repo> implements IR
     }
 
     @Override
-    public Result<List<RepoVO>> getRepoList(Integer userId, String permission) {
+    public Result<List<RepoVO>> getRepoList() {
         LambdaQueryWrapper<Repo> wrapper = new LambdaQueryWrapper<Repo>().select(Repo::getId, Repo::getTitle);
-        if ("role_teacher".equals(permission)) {
-            wrapper.eq(Repo::getUserId, userId);
+        if ("role_teacher".equals(SecurityUtil.getRole())) {
+            wrapper.eq(Repo::getUserId, SecurityUtil.getUserId());
         }
         List<Repo> repos = repoMapper.selectList(wrapper);
         return Result.success(null, repoConverter.listEntityToVo(repos));
     }
 
     @Override
-    public Result<IPage<RepoVO>> pagingRepo(Integer pageNum, Integer pageSize, String title, Integer userId, String permission) {
+    public Result<IPage<RepoVO>> pagingRepo(Integer pageNum, Integer pageSize, String title) {
 
         IPage<RepoVO> page = new Page<>(pageNum, pageSize);
 
-        if ("role_teacher".equals(permission)) {
+        if ("role_teacher".equals(SecurityUtil.getRole())) {
             //教师只查询自己的题库
-            page = repoMapper.pagingRepo(page, title, userId);
+            page = repoMapper.pagingRepo(page, title, SecurityUtil.getUserId());
         } else {
             //管理员可以获取所有题库
             page = repoMapper.pagingRepo(page, title, 0);

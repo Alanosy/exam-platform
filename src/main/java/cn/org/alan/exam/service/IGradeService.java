@@ -18,13 +18,13 @@ import com.baomidou.mybatisplus.extension.service.IService;
 public interface IGradeService extends IService<Grade> {
 
 
-    Result<String> addGrade(Integer userId, GradeForm gradeForm);
+    Result<String> addGrade( GradeForm gradeForm);
 
     Result<String> updateGrade(Integer id, GradeForm gradeForm);
 
     Result<String> deleteGrade(Integer id);
 
-    Result<IPage<GradeVO>> getPaging(Integer userId, Integer pageNum, Integer pageSize, String gradeName);
+    Result<IPage<GradeVO>> getPaging( Integer pageNum, Integer pageSize, String gradeName);
 
     Result<String> removeUserGrade(String ids);
 }
