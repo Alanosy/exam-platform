@@ -5,15 +5,13 @@ import cn.org.alan.exam.converter.GradeConverter;
 import cn.org.alan.exam.mapper.GradeMapper;
 import cn.org.alan.exam.mapper.UserMapper;
 import cn.org.alan.exam.model.entity.Grade;
-import cn.org.alan.exam.model.entity.User;
 import cn.org.alan.exam.model.form.GradeForm;
 import cn.org.alan.exam.model.vo.GradeVO;
 import cn.org.alan.exam.service.IGradeService;
 import cn.org.alan.exam.util.ClassTokenGenerator;
+import cn.org.alan.exam.util.SecurityUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
-import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -43,10 +41,10 @@ public class GradeServiceImpl extends ServiceImpl<GradeMapper, Grade> implements
 
 
     @Override
-    public Result<String> addGrade(Integer userId, GradeForm gradeForm) {
+    public Result<String> addGrade(GradeForm gradeForm) {
         gradeForm.setCode(ClassTokenGenerator.generateClassToken(18));
         Grade grade = gradeConverter.formToEntity(gradeForm);
-        grade.setUserId(userId);
+        grade.setUserId(SecurityUtil.getUserId());
         int rowsAffected = gradeMapper.insert(grade);
         if (rowsAffected == 0) {
             return Result.failed("添加失败");
@@ -77,11 +75,11 @@ public class GradeServiceImpl extends ServiceImpl<GradeMapper, Grade> implements
     }
 
     @Override
-    public Result<IPage<GradeVO>> getPaging(Integer userId, Integer pageNum, Integer pageSize, String gradeName) {
+    public Result<IPage<GradeVO>> getPaging(Integer pageNum, Integer pageSize, String gradeName) {
         Page<Grade> page = new Page<>(pageNum, pageSize);
         LambdaQueryWrapper<Grade> gradeQueryWrapper = new LambdaQueryWrapper<>();
         gradeQueryWrapper.like(StringUtils.isNotBlank(gradeName), Grade::getGradeName, gradeName)
-                .eq(Grade::getUserId, userId);
+                .eq(Grade::getUserId, SecurityUtil.getUserId());
         Page<Grade> gradePage = gradeMapper.selectPage(page, gradeQueryWrapper);
         return Result.success("查询成功", gradeConverter.pageEntityToVo(gradePage));
     }

@@ -128,15 +128,6 @@ public class JwtUtil {
         return objectMapper.readValue(token, User.class).getUserId();
     }
 
-    /**
-     * 根据request获取权限
-     *
-     * @param request
-     * @return
-     */
-    public String getPermission(HttpServletRequest request) {
-        List<String> list = getAuthList(request.getHeader("Authorization"));
-        return list.get(0);
-    }
+
 
 }

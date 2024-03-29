@@ -16,6 +16,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+import java.lang.reflect.InvocationTargetException;
 import java.sql.SQLIntegrityConstraintViolationException;
 
 @RestControllerAdvice
@@ -57,6 +58,7 @@ public class GlobalExceptionHandler {
         return Result.failed("重复");
     }
 
+
     /**
      * 处理消息不可读异常
      * @param e 异常
@@ -73,7 +75,7 @@ public class GlobalExceptionHandler {
      * @param e 异常
      * @return 响应
      */
-    @ExceptionHandler(DuplicateKeyException.class)
+    @ExceptionHandler({DuplicateKeyException.class})
     public Result<String> handleDuplicateKeyException(DuplicateKeyException e){
         String name = e.getMessage().split(":")[2].split(" ")[3];
         log.error(e.getMessage());
