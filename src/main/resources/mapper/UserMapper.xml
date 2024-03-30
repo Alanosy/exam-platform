@@ -3,6 +3,17 @@
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="cn.org.alan.exam.mapper.UserMapper">
+    <insert id="insertBatchUser">
+        insert into t_user
+        values
+        <foreach collection="list" item="user"  separator=",">
+            (null,#{user.userName},#{user.realName},#{user.password},
+             null,#{user.roleId},null,#{user.createTime},1)
+        </foreach>
+    </insert>
+
+
+    <!--批量移除班级-->
     <update id="removeUserGrade">
         UPDATE t_user
         SET grade_id = null

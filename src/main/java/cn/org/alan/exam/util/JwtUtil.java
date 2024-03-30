@@ -115,18 +115,7 @@ public class JwtUtil {
         }
     }
 
-    /**
-     * 获取用户id
-     *
-     * @param request
-     * @return
-     */
-    @SneakyThrows
-    public Integer getUserId(HttpServletRequest request) {
 
-        String token = getUser(request.getHeader("Authorization"));
-        return objectMapper.readValue(token, User.class).getUserId();
-    }
 
 
 

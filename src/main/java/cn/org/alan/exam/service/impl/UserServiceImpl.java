@@ -8,24 +8,22 @@ import cn.org.alan.exam.model.form.UserForm;
 import cn.org.alan.exam.service.IUserService;
 import cn.org.alan.exam.util.DateTimeUtil;
 import cn.org.alan.exam.util.SecurityUtil;
-import com.baomidou.mybatisplus.core.exceptions.MybatisPlusException;
+import cn.org.alan.exam.util.excel.ExcelUtils;
+import com.alibaba.fastjson.JSONArray;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletRequest;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.ibatis.exceptions.PersistenceException;
-import org.springframework.context.ApplicationContextException;
-import org.springframework.dao.DuplicateKeyException;
 import org.springframework.data.redis.core.StringRedisTemplate;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
-import java.sql.SQLException;
-import java.sql.SQLIntegrityConstraintViolationException;
-import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
+import java.util.function.Consumer;
 
 
 /**
@@ -72,7 +70,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
     }
 
     @Override
-    public Result<String> updatePassword( UserForm userForm) {
+    public Result<String> updatePassword(UserForm userForm) {
         if (!userForm.getNewPassword().equals(userForm.getCheckedPassword())) {
             return Result.failed("两次密码不一致");
         }
@@ -94,5 +92,38 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
         }
         return Result.failed("旧密码错误");
 
+    }
+
+    @Override
+    public Result<String> deleteBatchByIds(String ids) {
+        return null;
+    }
+
+    @SneakyThrows
+    @Override
+    @Transactional
+    public Result<String> importUsers(MultipartFile file) {
+        //文件类型判断
+        if (!ExcelUtils.isExcel(Objects.requireNonNull(file.getOriginalFilename()))) {
+            return Result.failed("文件类型必须是xls或xlsx");
+        }
+
+        //读取文件
+        List<UserForm> list = ExcelUtils.readMultipartFile(file, UserForm.class);
+        //参数补充
+        list.forEach(userForm -> {
+            userForm.setPassword(new BCryptPasswordEncoder().encode("123456"));
+            userForm.setCreateTime(DateTimeUtil.getDateTime());
+            if (userForm.getRoleId() == null) {
+                userForm.setUserId(1);
+            }
+        });
+
+
+        if (list.size() > 300) {
+            return Result.failed("表中最多存放1000条数据");
+        }
+        userMapper.insertBatchUser(userConverter.listFromToEntity(list));
+        return Result.success("用户导入成功");
     }
 }

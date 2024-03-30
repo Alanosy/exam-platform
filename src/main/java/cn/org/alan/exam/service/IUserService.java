@@ -4,11 +4,12 @@ import cn.org.alan.exam.common.result.Result;
 import cn.org.alan.exam.model.entity.User;
 import cn.org.alan.exam.model.form.UserForm;
 import com.baomidou.mybatisplus.extension.service.IService;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.FileNotFoundException;
+import java.io.IOException;
 
 /**
- * <p>
- * 服务类
- * </p>
  *
  * @author WeiJin
  * @since 2024-03-21
@@ -31,4 +32,17 @@ public interface IUserService extends IService<User> {
      */
     Result<String> updatePassword( UserForm userForm);
 
+    /**
+     * 批量删除用户
+     * @param ids 用户id
+     * @return 响应结果
+     */
+    Result<String> deleteBatchByIds(String ids);
+
+    /**
+     * Excel导入用户信息
+     * @param file 文件
+     * @return 响应结果
+     */
+    Result<String> importUsers(MultipartFile file);
 }
