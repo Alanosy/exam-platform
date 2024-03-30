@@ -15,6 +15,9 @@ import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.multipart.MaxUploadSizeExceededException;
+import org.springframework.web.multipart.MultipartException;
+import org.springframework.web.multipart.support.MissingServletRequestPartException;
 
 import java.lang.reflect.InvocationTargetException;
 import java.sql.SQLIntegrityConstraintViolationException;
@@ -75,22 +78,57 @@ public class GlobalExceptionHandler {
      * @param e 异常
      * @return 响应
      */
-    @ExceptionHandler({DuplicateKeyException.class})
+    @ExceptionHandler(DuplicateKeyException.class)
     public Result<String> handleDuplicateKeyException(DuplicateKeyException e){
         String name = e.getMessage().split(":")[2].split(" ")[3];
         log.error(e.getMessage());
         return Result.failed(name + "已存在");
     }
 
+
+    /**
+     * 处理文件太大异常
+     * @param e 异常
+     * @return 响应
+     */
+    @ExceptionHandler(MaxUploadSizeExceededException.class)
+    public Result<String> handlerMaxUploadSizeExceededException(MaxUploadSizeExceededException e){
+        log.error(e.getMessage());
+        return Result.failed("文件太大，最大上传5MB");
+    }
+
+    /**
+     * 处理文件获取不到异常
+     * @param e 异常
+     * @return 响应
+     */
+    @ExceptionHandler(MissingServletRequestPartException.class)
+    public Result<String> handlerMissingServletRequestPartException(MissingServletRequestPartException e){
+        log.error(e.getMessage());
+        return Result.failed("没有获取到文件");
+    }
+
+
+
     /**
      * 处理约束违反异常
      * @param e 异常
      * @return 响应
      */
-    @ExceptionHandler({ConstraintViolationException.class})
+    @ExceptionHandler(ConstraintViolationException.class)
     public Result<String> handleConstraintViolationException(ConstraintViolationException e) {
+        log.error(e.getMessage());
         return Result.failed(e.getMessage());
     }
 
-
+    /**
+     * 处理其他异常
+     * @param e 异常
+     * @return 响应
+     */
+    @ExceptionHandler(Exception.class)
+    public Result<String> handleException(Exception e) {
+        log.error(e.getMessage());
+        return Result.failed("未知异常");
+    }
 }

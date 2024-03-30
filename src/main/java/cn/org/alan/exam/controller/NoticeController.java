@@ -37,7 +37,7 @@ public class NoticeController {
     @PostMapping
     @PreAuthorize("hasAnyAuthority('role_teacher','role_admin')")
     public Result<String> addNotice(@RequestBody NoticeForm noticeForm) {
-        return noticeService.addNotice(jwtUtil.getUserId(request), noticeForm);
+        return noticeService.addNotice( noticeForm);
     }
 
     /**
@@ -76,7 +76,7 @@ public class NoticeController {
     public Result<IPage<NoticeVO>> getNotice(@RequestParam(value = "pageNum", required = false, defaultValue = "1") Integer pageNum,
                                              @RequestParam(value = "pageSize", required = false, defaultValue = "10") Integer pageSize,
                                              @RequestParam(value = "title", required = false) String title) {
-        return noticeService.getNotice(jwtUtil.getUserId(request), pageNum, pageSize, title);
+        return noticeService.getNotice( pageNum, pageSize, title);
 
     }
 

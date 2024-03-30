@@ -64,7 +64,6 @@ spring:
         allow: 127.0.0.1
         # IP黑名单（共同存在时，deny优先于allow）
         deny:
-
   main:
     # 关闭banner
     banner-mode: off
@@ -87,6 +86,9 @@ spring:
           max-idle: 8
           # 连接池中的最小空闲连接 默认0
           min-idle: 0
+  servlet:
+    multipart:
+      max-file-size: 5MB
 mybatis-plus:
   global-config:
     # 关闭banner

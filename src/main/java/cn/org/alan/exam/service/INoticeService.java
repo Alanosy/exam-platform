@@ -17,11 +17,11 @@ import com.baomidou.mybatisplus.extension.service.IService;
  */
 public interface INoticeService extends IService<Notice> {
 
-    Result<String> addNotice(Integer userId, NoticeForm noticeForm);
+    Result<String> addNotice( NoticeForm noticeForm);
 
     Result<String> deleteNotice(String ids);
 
     Result<String> updateNotice(String id, NoticeForm noticeForm);
 
-    Result<IPage<NoticeVO>> getNotice(Integer userId, Integer pageNum, Integer pageSize, String title);
+    Result<IPage<NoticeVO>> getNotice( Integer pageNum, Integer pageSize, String title);
 }

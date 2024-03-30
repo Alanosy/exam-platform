@@ -20,4 +20,11 @@ public interface UserMapper extends BaseMapper<User> {
 
     // List<User> getText(Integer id);
     Integer removeUserGrade(List<Integer> userIds);
+
+    /**
+     * 批量添加用户
+     * @param list
+     * @return
+     */
+    Integer insertBatchUser(List<User> list);
 }

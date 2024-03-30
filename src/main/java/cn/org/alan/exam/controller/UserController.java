@@ -12,6 +12,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 /**
  * @Author WeiJin
@@ -48,12 +49,36 @@ public class UserController {
 
     /**
      * 用户修改密码
+     *
      * @param userForm 入参
      * @return 响应结果
      */
     @PutMapping
     @PreAuthorize("hasAnyAuthority('role_student','role_teacher','role_admin')")
-    public Result<String> updatePassword(@Validated(UserGroup.UpdatePasswordGroup.class) @RequestBody UserForm userForm){
-       return iUserService.updatePassword(userForm);
+    public Result<String> updatePassword(@Validated(UserGroup.UpdatePasswordGroup.class) @RequestBody UserForm userForm) {
+        return iUserService.updatePassword(userForm);
+    }
+
+    /**
+     * 批量删除用户
+     *
+     * @param ids 字符串ids
+     * @return 相应结果
+     */
+    @DeleteMapping("/{ids}")
+    @PreAuthorize("hasAnyAuthority('role_teacher','role_admin')")
+    public Result<String> deleteBatchByIds(@PathVariable("ids") String ids) {
+        return iUserService.deleteBatchByIds(ids);
+    }
+
+    /**
+     * Excel导入用户数据
+     * @param file 文件
+     * @return 响应结果
+     */
+    @PostMapping("/import")
+    @PreAuthorize("hasAnyAuthority('role_teacher','role_admin')")
+    public Result<String> importUsers(@RequestParam("file") MultipartFile file) {
+        return iUserService.importUsers(file);
     }
 }
