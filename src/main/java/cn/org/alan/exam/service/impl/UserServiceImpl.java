@@ -2,14 +2,19 @@ package cn.org.alan.exam.service.impl;
 
 import cn.org.alan.exam.common.result.Result;
 import cn.org.alan.exam.converter.UserConverter;
+import cn.org.alan.exam.mapper.GradeMapper;
 import cn.org.alan.exam.mapper.UserMapper;
+import cn.org.alan.exam.model.entity.Grade;
 import cn.org.alan.exam.model.entity.User;
 import cn.org.alan.exam.model.form.UserForm;
+import cn.org.alan.exam.model.vo.UserVo;
 import cn.org.alan.exam.service.IUserService;
 import cn.org.alan.exam.util.DateTimeUtil;
 import cn.org.alan.exam.util.SecurityUtil;
 import cn.org.alan.exam.util.excel.ExcelUtils;
 import com.alibaba.fastjson.JSONArray;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletRequest;
@@ -43,17 +48,17 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
     private HttpServletRequest request;
     @Resource
     private UserConverter userConverter;
+    @Resource
+    private GradeMapper gradeMapper;
 
 
     @Override
     public Result<String> createUser(UserForm userForm) {
 
-        userForm.setCreateTime(DateTimeUtil.getDateTime());
         userForm.setPassword(new BCryptPasswordEncoder().encode("123456"));
 
-        String role = SecurityUtil.getRole();
         //教师只能创建学生
-        if ("role_teacher".equals(role)) {
+        if ("role_teacher".equals(SecurityUtil.getRole())) {
             userForm.setRoleId(1);
         }
 
@@ -79,10 +84,9 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
             return Result.failed("旧密码错误");
         }
 
-        userForm.setUserId(userId);
+
         //密码加密
         userForm.setPassword(new BCryptPasswordEncoder().encode(userForm.getNewPassword()));
-
 
         int updated = userMapper.updateById(userConverter.fromToEntity(userForm));
         //密码修改成功清除redis的token，让用户重新登录
@@ -115,15 +119,39 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
             userForm.setPassword(new BCryptPasswordEncoder().encode("123456"));
             userForm.setCreateTime(DateTimeUtil.getDateTime());
             if (userForm.getRoleId() == null) {
-                userForm.setUserId(1);
+                userForm.setId(1);
             }
         });
 
-
         if (list.size() > 300) {
-            return Result.failed("表中最多存放1000条数据");
+            return Result.failed("表中最多存放300条数据");
         }
         userMapper.insertBatchUser(userConverter.listFromToEntity(list));
         return Result.success("用户导入成功");
+    }
+
+    @Override
+    public Result<UserVo> info() {
+
+        UserVo userVo = userMapper.info(SecurityUtil.getUserId());
+        return Result.success(null,userVo);
+    }
+
+    @Override
+    public Result<String> joinGrade(String code) {
+        //获取班级信息
+        LambdaQueryWrapper<Grade> wrapper = new LambdaQueryWrapper<Grade>().eq(Grade::getCode, code);
+        Grade grade = gradeMapper.selectOne(wrapper);
+        if (Objects.isNull(grade)){
+            return Result.failed("班级口令不存在");
+        }
+        User user = new User();
+        user.setId(SecurityUtil.getUserId());
+        user.setGradeId(grade.getId());
+        int updated = userMapper.updateById(user);
+        if (updated>0){
+            return Result.success("加入班级："+grade.getGradeName()+"成功");
+        }
+        return Result.failed("加入失败");
     }
 }

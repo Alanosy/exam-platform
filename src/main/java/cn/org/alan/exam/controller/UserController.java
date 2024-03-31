@@ -4,6 +4,7 @@ import cn.org.alan.exam.common.result.Result;
 import cn.org.alan.exam.group.UserGroup;
 import cn.org.alan.exam.model.entity.User;
 import cn.org.alan.exam.model.form.UserForm;
+import cn.org.alan.exam.model.vo.UserVo;
 import cn.org.alan.exam.service.IUserService;
 import cn.org.alan.exam.util.JwtUtil;
 import jakarta.annotation.Resource;
@@ -28,10 +29,10 @@ public class UserController {
     private IUserService iUserService;
 
 
-    @GetMapping("/getUser")
-//     @PreAuthorize("hasAnyAuthority('role_student')")
-    public Authentication getUser(Authentication authentication) {
-        return authentication;
+    @GetMapping("/info")
+     @PreAuthorize("hasAnyAuthority('role_student','role_teacher','role_admin')")
+    public Result<UserVo> info() {
+        return iUserService.info();
     }
 
 
@@ -80,5 +81,17 @@ public class UserController {
     @PreAuthorize("hasAnyAuthority('role_teacher','role_admin')")
     public Result<String> importUsers(@RequestParam("file") MultipartFile file) {
         return iUserService.importUsers(file);
+    }
+
+
+    /**
+     * 用户加入班级，只有学生才能加入班级
+     * @param code 班级口令
+     * @return 响应
+     */
+    @PutMapping("/grade/join")
+    @PreAuthorize("hasAnyAuthority('role_student')")
+    public Result<String> joinGrade(@RequestParam("code") String code){
+        return iUserService.joinGrade(code);
     }
 }

@@ -1,8 +1,6 @@
 package cn.org.alan.exam.model.entity;
 
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.annotation.TableName;
+import com.baomidou.mybatisplus.annotation.*;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
@@ -29,6 +27,7 @@ public class UserExerciseRecord implements Serializable {
     /**
      * 用户id
      */
+    @TableField(fill = FieldFill.INSERT)
     private Integer userId;
 
     /**
@@ -49,6 +48,7 @@ public class UserExerciseRecord implements Serializable {
     /**
      * 刷题时间
      */
+    @TableField(fill = FieldFill.INSERT)
     private LocalDateTime createTime;
 
     public Integer getId() {

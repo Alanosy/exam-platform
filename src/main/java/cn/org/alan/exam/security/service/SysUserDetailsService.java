@@ -44,6 +44,7 @@ public class SysUserDetailsService implements UserDetailsService {
         if (Objects.isNull(user)) {
             throw new UsernameNotFoundException("该用户不存在");
         }
+        System.out.println(user);
 
         //根据用户Id获取权限
         List<String> permissions = roleMapper.selectCodeById(user.getRoleId());

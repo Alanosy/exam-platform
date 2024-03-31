@@ -1,8 +1,7 @@
 package cn.org.alan.exam.model.entity;
 
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.annotation.TableName;
+import com.alibaba.druid.sql.dialect.mysql.ast.FullTextType;
+import com.baomidou.mybatisplus.annotation.*;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
@@ -23,8 +22,8 @@ public class User implements Serializable {
     /**
      * ID
      */
-    @TableId(value = "user_id", type = IdType.AUTO)
-    private Integer userId;
+    @TableId(value = "id", type = IdType.AUTO)
+    private Integer id;
 
     /**
      * 用户名
@@ -39,6 +38,7 @@ public class User implements Serializable {
     /**
      * 密码
      */
+    @TableField(fill = FieldFill.INSERT)
     private String password;
 
     /**
@@ -49,6 +49,7 @@ public class User implements Serializable {
     /**
      * 角色id
      */
+    @TableField(fill = FieldFill.INSERT)
     private Integer roleId;
 
     /**
@@ -59,6 +60,7 @@ public class User implements Serializable {
     /**
      * 创建时间   YYYY-MM-DD hh:mm:ss
      */
+    @TableField(fill = FieldFill.INSERT)
     private LocalDateTime createTime;
 
     /**
@@ -66,12 +68,12 @@ public class User implements Serializable {
      */
     private Integer status;
 
-    public Integer getUserId() {
-        return userId;
+    public Integer getId() {
+        return id;
     }
 
-    public void setUserId(Integer userId) {
-        this.userId = userId;
+    public void setId(Integer id) {
+        this.id = id;
     }
     public String getUserName() {
         return userName;
@@ -133,7 +135,7 @@ public class User implements Serializable {
     @Override
     public String toString() {
         return "User{" +
-                "userId=" + userId +
+                "id=" + id +
                 ", userName=" + userName +
                 ", realName=" + realName +
                 ", password=" + password +

@@ -50,6 +50,7 @@ spring:
         exclusions: /druid/*,*.js,*.gif,*.jpg,*.png,*.css,*.ico
 
       stat-view-servlet:
+        login-url: /druid/login
         # 是否启用StatViewServlet默认值true
         enabled: false
         # 是否能够重置数据
@@ -60,6 +61,7 @@ spring:
         # 需要账号密码才能访问控制台，默认为root
         login-username: druid
         login-password: druid
+
         # IP白名单
         allow: 127.0.0.1
         # IP黑名单（共同存在时，deny优先于allow）
@@ -89,6 +91,7 @@ spring:
   servlet:
     multipart:
       max-file-size: 5MB
+
 mybatis-plus:
   global-config:
     # 关闭banner

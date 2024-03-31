@@ -17,7 +17,7 @@ import java.time.LocalDateTime;
 @Data
 public class UserForm {
 
-    private Integer userId;
+    private Integer id;
     private String password;
     private LocalDateTime createTime;
 

@@ -41,28 +41,18 @@ public class RepoServiceImpl extends ServiceImpl<RepoMapper, Repo> implements IR
 
     @Override
     public Result<String> addRepo(Repo repo) {
-
-        repo.setCreateTime(DateTimeUtil.getDateTime());
-        repo.setUserId(SecurityUtil.getUserId());
         repoMapper.insert(repo);
-
         return Result.success("保存成功");
-
-
     }
 
     @Override
     public Result<String> updateRepo(Repo repo, Integer id) {
-
         //修改题库
         LambdaUpdateWrapper<Repo> updateWrapper = new LambdaUpdateWrapper<Repo>()
                 .eq(Repo::getId, id).set(Repo::getTitle, repo.getTitle());
 
         repoMapper.update(updateWrapper);
-
         return Result.success("修改成功");
-
-
     }
 
     @Override

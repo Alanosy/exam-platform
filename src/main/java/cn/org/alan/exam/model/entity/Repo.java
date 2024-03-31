@@ -1,8 +1,6 @@
 package cn.org.alan.exam.model.entity;
 
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.annotation.TableName;
+import com.baomidou.mybatisplus.annotation.*;
 import jakarta.validation.constraints.NotNull;
 import net.sf.jsqlparser.expression.MySQLGroupConcat;
 
@@ -31,6 +29,7 @@ public class Repo implements Serializable {
     /**
      * 创建人id
      */
+    @TableField(fill = FieldFill.INSERT)
     private Integer userId;
 
     /**
@@ -42,6 +41,7 @@ public class Repo implements Serializable {
     /**
      * 创建时间
      */
+    @TableField(fill = FieldFill.INSERT)
     private LocalDateTime createTime;
 
     public Integer getId() {
