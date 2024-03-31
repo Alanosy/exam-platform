@@ -48,9 +48,9 @@
             </template>
           </template>
         </el-table-column>
-        <el-table-column align="center" prop="businessStatusName" label="流程状态" min-width="70">
+        <el-table-column align="center" label="流程状态" min-width="70">
           <template #default="scope">
-            <el-tag type="success">{{ scope.row.businessStatusName }}</el-tag>
+              <dict-tag :options="wf_business_status" :value="scope.row.businessStatus"></dict-tag>
           </template>
         </el-table-column>
         <el-table-column align="center" prop="createTime" label="创建时间" width="160"></el-table-column>
@@ -81,10 +81,10 @@ import { getPageByTaskWait, claim, returnTask } from '@/api/workflow/task';
 import { TaskQuery, TaskVO } from '@/api/workflow/task/types';
 import workflowCommon from '@/api/workflow/workflowCommon';
 import { RouterJumpVo } from '@/api/workflow/workflowCommon/types';
-
+const { proxy } = getCurrentInstance() as ComponentInternalInstance;
+const { wf_business_status } = toRefs<any>(proxy?.useDict('wf_business_status'));
 //提交组件
 const queryFormRef = ref<ElFormInstance>();
-const { proxy } = getCurrentInstance() as ComponentInternalInstance;
 // 遮罩层
 const loading = ref(true);
 // 选中数组

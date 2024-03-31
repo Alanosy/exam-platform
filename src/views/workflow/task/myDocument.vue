@@ -57,10 +57,10 @@
                 <el-tag v-else type="danger">挂起</el-tag>
               </template>
             </el-table-column>
-            <el-table-column align="center" prop="businessStatusName" label="流程状态" min-width="70">
+            <el-table-column align="center" label="流程状态" min-width="70">
               <template #default="scope">
-                <el-tag type="success">{{ scope.row.businessStatusName }}</el-tag>
-              </template>
+                <dict-tag :options="wf_business_status" :value="scope.row.businessStatus"></dict-tag>
+            </template>
             </el-table-column>
             <el-table-column align="center" prop="startTime" label="启动时间" width="160"></el-table-column>
             <el-table-column v-if="tab === 'finish'" align="center" prop="endTime" label="结束时间" width="160"></el-table-column>
@@ -120,6 +120,7 @@ import { ProcessInstanceQuery, ProcessInstanceVO } from '@/api/workflow/processI
 import workflowCommon from '@/api/workflow/workflowCommon';
 import { RouterJumpVo } from '@/api/workflow/workflowCommon/types';
 const { proxy } = getCurrentInstance() as ComponentInternalInstance;
+const { wf_business_status } = toRefs<any>(proxy?.useDict('wf_business_status'));
 const queryFormRef = ref<ElFormInstance>();
 const categoryTreeRef = ref<ElTreeInstance>();
 

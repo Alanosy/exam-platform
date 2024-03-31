@@ -64,9 +64,9 @@
             </el-tag>
           </template>
         </el-table-column>
-        <el-table-column align="center" prop="businessStatusName" label="流程状态" min-width="70">
+        <el-table-column align="center" label="流程状态" min-width="70">
           <template #default="scope">
-            <el-tag v-if="tab === 'waiting'" type="success">{{ scope.row.businessStatusName }}</el-tag>
+            <dict-tag v-if="tab === 'waiting'" :options="wf_business_status" :value="scope.row.businessStatus"></dict-tag>
             <el-tag v-else type="success">已完成</el-tag>
           </template>
         </el-table-column>
@@ -139,6 +139,7 @@ const userSelectRef = ref<InstanceType<typeof UserSelect>>();
 
 const queryFormRef = ref<ElFormInstance>();
 const { proxy } = getCurrentInstance() as ComponentInternalInstance;
+const { wf_business_status } = toRefs<any>(proxy?.useDict('wf_business_status'));
 // 遮罩层
 const loading = ref(true);
 // 选中数组

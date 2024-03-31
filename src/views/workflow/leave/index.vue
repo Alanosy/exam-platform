@@ -51,9 +51,9 @@
         </el-table-column>
         <el-table-column label="请假天数" align="center" prop="leaveDays" />
         <el-table-column label="请假原因" align="center" prop="remark" />
-        <el-table-column align="center" prop="businessStatusName" label="流程状态" min-width="70">
+        <el-table-column align="center" label="流程状态" min-width="70">
           <template #default="scope">
-            <el-tag type="success">{{ scope.row.processInstanceVo.businessStatusName }}</el-tag>
+            <dict-tag :options="wf_business_status" :value="scope.row.processInstanceVo.businessStatus"></dict-tag>
           </template>
         </el-table-column>
         <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
@@ -101,7 +101,7 @@ import { cancelProcessApply } from '@/api/workflow/processInstance';
 import { LeaveForm, LeaveQuery, LeaveVO } from '@/api/workflow/leave/types';
 
 const { proxy } = getCurrentInstance() as ComponentInternalInstance;
-
+const { wf_business_status } = toRefs<any>(proxy?.useDict('wf_business_status'));
 const leaveList = ref<LeaveVO[]>([]);
 const loading = ref(true);
 const showSearch = ref(true);
