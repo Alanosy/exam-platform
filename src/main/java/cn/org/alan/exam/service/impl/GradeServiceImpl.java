@@ -44,7 +44,7 @@ public class GradeServiceImpl extends ServiceImpl<GradeMapper, Grade> implements
     public Result<String> addGrade(GradeForm gradeForm) {
         gradeForm.setCode(ClassTokenGenerator.generateClassToken(18));
         Grade grade = gradeConverter.formToEntity(gradeForm);
-        grade.setUserId(SecurityUtil.getUserId());
+
         int rowsAffected = gradeMapper.insert(grade);
         if (rowsAffected == 0) {
             return Result.failed("添加失败");

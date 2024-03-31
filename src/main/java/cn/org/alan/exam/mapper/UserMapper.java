@@ -1,6 +1,7 @@
 package cn.org.alan.exam.mapper;
 
 import cn.org.alan.exam.model.entity.User;
+import cn.org.alan.exam.model.vo.UserVo;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Mapper;
 
@@ -27,4 +28,11 @@ public interface UserMapper extends BaseMapper<User> {
      * @return
      */
     Integer insertBatchUser(List<User> list);
+
+    /**
+     * 获取用户信息
+     * @param userId 用户id
+     * @return 响应
+     */
+    UserVo info(Integer userId);
 }

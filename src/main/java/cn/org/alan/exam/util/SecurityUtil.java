@@ -1,6 +1,9 @@
 package cn.org.alan.exam.util;
 
 import cn.org.alan.exam.model.entity.User;
+import cn.org.alan.exam.security.model.SysUserDetails;
+import lombok.extern.java.Log;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 
@@ -11,6 +14,7 @@ import java.util.List;
  * @Version 1.0
  * @Date 2024/3/30 0:10
  */
+@Slf4j
 public class SecurityUtil {
     private SecurityUtil(){}
 
@@ -19,8 +23,9 @@ public class SecurityUtil {
      * @return 用户id
      */
     public static Integer getUserId(){
-        User user = (User) (SecurityContextHolder.getContext().getAuthentication().getPrincipal());
-        return user.getUserId();
+        SysUserDetails user = (SysUserDetails) (SecurityContextHolder.getContext().getAuthentication().getPrincipal());
+//        log.info(user.toString());
+        return user.getUser().getId();
     }
 
     /**

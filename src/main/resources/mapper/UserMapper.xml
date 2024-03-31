@@ -3,6 +3,10 @@
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="cn.org.alan.exam.mapper.UserMapper">
+    <sql id="simpleFiled">
+        u.id,u.user_name,u.real_name,u.avatar,u.create_time,u.status
+    </sql>
+
     <insert id="insertBatchUser">
         insert into t_user
         values
@@ -22,5 +26,12 @@
             #{userId}
         </foreach>
     </update>
+
+    <!--获取用户信息-->
+    <select id="info" resultType="cn.org.alan.exam.model.vo.UserVo">
+        select <include refid="simpleFiled"/> ,r.role_name,g.grade_name
+        from t_user u join t_role r on role_id = r.id join t_grade g on grade_id = g.id
+        where u.id = #{userId}
+    </select>
 
 </mapper>

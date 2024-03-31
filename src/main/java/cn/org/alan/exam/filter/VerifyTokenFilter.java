@@ -45,7 +45,7 @@ public class VerifyTokenFilter extends OncePerRequestFilter {
 
         //登录请求放行
         String uri = request.getRequestURI();
-        if ("/login".equals(uri)) {
+        if ("/login".equals(uri) || uri.contains("/druid")) {
             doFilter(request, response, filterChain);
             return;
         }

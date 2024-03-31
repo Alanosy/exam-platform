@@ -54,9 +54,17 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http.authorizeRequests().requestMatchers("/login").permitAll();
-        //所有请求的授权都需要认证
-        http.authorizeRequests().anyRequest().authenticated();
+
+        //放开druid的监测页面
+        http.authorizeHttpRequests(request->{
+            request.requestMatchers("/login").permitAll();
+            //放开druid的监测页面
+            request.requestMatchers("/druid/**").permitAll();
+            //所有请求的授权都需要认证
+            request.anyRequest().authenticated();
+
+        });
+
         // 配置登录成功处理器
         http.formLogin().successHandler((request, response, authentication) -> {
             // 获取用户
