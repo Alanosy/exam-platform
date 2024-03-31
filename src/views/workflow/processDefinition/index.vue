@@ -221,15 +221,17 @@
     </el-dialog>
     <!-- 表单配置 -->
     <el-dialog v-model="formDialog.visible" :title="formDialog.title" width="650px" append-to-body :close-on-click-modal="false">
-      <el-form :model="formDefinitionForm" label-width="auto">
+      <el-form :model="definitionConfigForm" label-width="auto">
         <el-form-item label="流程KEY">
-          <el-input v-model="formDefinitionForm.processKey" disabled/>
+          <el-input v-model="definitionConfigForm.processKey" disabled/>
         </el-form-item>
-        <el-form-item label="路由地址">
-          <el-input v-model="formDefinitionForm.path" placeholder="请假示例路由请填写：/demo/leaveEdit/index"/>
+        <el-form-item label="表单" prop="formId">
+          <el-select v-model="definitionConfigForm.formId" clearable filterable placeholder="请选择表单"  style="width: 260px" >
+            <el-option  v-for="item in formManageList"  :key="item.id"  :label="item.formTypeName+':'+item.formName" :value="item.id" />
+          </el-select>
         </el-form-item>
         <el-form-item label="备注">
-          <el-input v-model="formDefinitionForm.remark" type="textarea" resize="none"/>
+          <el-input v-model="definitionConfigForm.remark" type="textarea" resize="none"/>
         </el-form-item>
       </el-form>
       
@@ -258,12 +260,15 @@ import {
 } from '@/api/workflow/processDefinition';
 import ProcessPreview from './components/processPreview.vue';
 import { listCategory } from '@/api/workflow/category';
-import { getByDefId,saveOrUpdate } from '@/api/workflow/formDefinition';
+import { getByDefId,saveOrUpdate } from '@/api/workflow/definitionConfig';
 import { CategoryVO } from '@/api/workflow/category/types';
 import { ProcessDefinitionQuery, ProcessDefinitionVO } from '@/api/workflow/processDefinition/types';
-import { FormDefinitionForm } from '@/api/workflow/formDefinition/types';
+import { definitionConfigForm } from '@/api/workflow/definitionConfig/types';
 import { UploadRequestOptions } from 'element-plus';
+import { FormManageVO } from '@/api/workflow/formManage/types';
+import { selectListFormManage } from '@/api/workflow/formManage';
 
+const formManageList = ref<FormManageVO[]>([]);
 const { proxy } = getCurrentInstance() as ComponentInternalInstance;
 
 const previewRef = ref<InstanceType<typeof ProcessPreview>>();
@@ -290,7 +295,7 @@ const categoryOptions = ref<CategoryOption[]>([]);
 const categoryName = ref('');
 /** 部署文件分类选择 */
 const selectCategory = ref();
-const formDefinitionForm = ref<FormDefinitionForm>({});
+const definitionConfigForm = ref<definitionConfigForm>({});
 
 const uploadDialog = reactive<DialogOption>({
   visible: false,
@@ -473,26 +478,32 @@ const handerDeployProcessFile = (data: UploadRequestOptions): XMLHttpRequest => 
 };
 //打开表单配置
 const handleFormOpen = async (row: ProcessDefinitionVO) => {
+  listFormManage()
    formDialog.visible = true
-   formDefinitionForm.value.processKey = row.key
-   formDefinitionForm.value.definitionId = row.id
+   definitionConfigForm.value.processKey = row.key
+   definitionConfigForm.value.definitionId = row.id
    const resp = await getByDefId(row.id)
    if(resp.data){
-    formDefinitionForm.value = resp.data
+    definitionConfigForm.value = resp.data
    }else{
-    formDefinitionForm.value.path = undefined
-    formDefinitionForm.value.remark = undefined
+    definitionConfigForm.value.formId = undefined
+    definitionConfigForm.value.remark = undefined
    }
 }
 //保存表单
 const handlerSaveForm = async () => {
   await proxy?.$modal.confirm('是否确认保存？');
-  saveOrUpdate(formDefinitionForm.value).then(resp=>{
+  saveOrUpdate(definitionConfigForm.value).then(resp=>{
     if(resp.code === 200){
       proxy?.$modal.msgSuccess('操作成功');
       formDialog.visible = false
       getList();
     }
   })
+}
+//表单列表
+const listFormManage = async () => {
+  const res = await selectListFormManage();
+  formManageList.value = res.data;
 }
 </script>

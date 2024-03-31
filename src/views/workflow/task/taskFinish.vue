@@ -37,7 +37,7 @@
         <el-table-column fixed align="center" prop="assigneeName" label="办理人">
           <template #default="scope">
             <el-tag type="success">
-              {{ scope.row.assigneeName }}
+              {{ scope.row.assigneeName || '无'}}
             </el-tag>
           </template>
         </el-table-column>
@@ -62,6 +62,8 @@
 <script lang="ts" setup>
 import { getPageByTaskFinish } from '@/api/workflow/task';
 import { TaskQuery, TaskVO } from '@/api/workflow/task/types';
+import workflowCommon from '@/api/workflow/workflowCommon';
+import { RouterJumpVo } from '@/api/workflow/workflowCommon/types';
 //审批记录组件
 const queryFormRef = ref<ElFormInstance>();
 const { proxy } = getCurrentInstance() as ComponentInternalInstance;
@@ -113,19 +115,15 @@ const getFinishList = () => {
   });
 };
 /** 查看按钮操作 */
-const handleView = (row) => {
-  if(row.wfFormDefinitionVo){
-    proxy.$tab.closePage(proxy.$route);
-    proxy.$router.push({
-      path: `${row.wfFormDefinitionVo.path}`,
-      query: {
-        id: row.businessKey,
-        type: 'view'
-      }
-    })
-  }else{
-    proxy?.$modal.msgError('请到流程定义菜单配置路由！');
-  }
+const handleView = (row: TaskVO) => {
+  const routerJumpVo = reactive<RouterJumpVo>({
+    wfDefinitionConfigVo: row.wfDefinitionConfigVo,
+    wfNodeConfigVo: row.wfNodeConfigVo,
+    businessKey: row.businessKey,
+    taskId: row.id,
+    type: 'view'
+  });
+  workflowCommon.routerJump(routerJumpVo,proxy)
 };
 
 onMounted(() => {

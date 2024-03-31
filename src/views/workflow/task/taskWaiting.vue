@@ -43,7 +43,7 @@
             </template>
             <template v-else>
               <el-tag type="success">
-                {{ scope.row.assigneeName }}
+                {{ scope.row.assigneeName || '无' }}
               </el-tag>
             </template>
           </template>
@@ -79,6 +79,9 @@
 <script lang="ts" setup>
 import { getPageByTaskWait, claim, returnTask } from '@/api/workflow/task';
 import { TaskQuery, TaskVO } from '@/api/workflow/task/types';
+import workflowCommon from '@/api/workflow/workflowCommon';
+import { RouterJumpVo } from '@/api/workflow/workflowCommon/types';
+
 //提交组件
 const queryFormRef = ref<ElFormInstance>();
 const { proxy } = getCurrentInstance() as ComponentInternalInstance;
@@ -135,29 +138,14 @@ const getWaitingList = () => {
 };
 //办理
 const handleOpen = async (row: TaskVO) => {
-  if (row.formKey != null) {
-    proxy.$tab.closePage(proxy.$route);
-    proxy.$router.push({
-      path: `${row.formKey}`,
-      query: {
-        id: row.businessKey,
-        type: 'approval',
-        taskId: row.id
-      }
-    });
-  } else if (row.wfFormDefinitionVo) {
-    proxy.$tab.closePage(proxy.$route);
-    proxy.$router.push({
-      path: `${row.wfFormDefinitionVo.path}`,
-      query: {
-        id: row.businessKey,
-        type: 'approval',
-        taskId: row.id
-      }
-    });
-  } else {
-    proxy?.$modal.msgError('请到流程定义菜单配置路由！');
-  }
+  const routerJumpVo = reactive<RouterJumpVo>({
+    wfDefinitionConfigVo: row.wfDefinitionConfigVo,
+    wfNodeConfigVo: row.wfNodeConfigVo,
+    businessKey: row.businessKey,
+    taskId: row.id,
+    type: 'approval'
+  });
+  workflowCommon.routerJump(routerJumpVo,proxy)
 };
 
 /** 认领任务 */

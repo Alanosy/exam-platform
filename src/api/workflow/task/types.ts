@@ -1,3 +1,5 @@
+import { NodeConfigVO } from '@/api/workflow/nodeConfig/types';
+import { DefinitionConfigVO } from '@/api/workflow/definitionConfig/types';
 export interface TaskQuery extends PageQuery {
   name?: string;
   processDefinitionKey?: string;
@@ -37,8 +39,8 @@ export interface TaskVO extends BaseEntity {
   participantVo: ParticipantVo;
   multiInstance: boolean;
   businessKey: string;
-  formKey: string;
-  wfFormDefinitionVo: any;
+  wfNodeConfigVo: NodeConfigVO;
+  wfDefinitionConfigVo: DefinitionConfigVO;
 }
 
 export interface VariableVo {

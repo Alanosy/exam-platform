@@ -161,6 +161,8 @@ import { getListByKey, migrationDefinition } from '@/api/workflow/processDefinit
 import { listCategory } from '@/api/workflow/category';
 import { CategoryVO } from '@/api/workflow/category/types';
 import { ProcessInstanceQuery, ProcessInstanceVO } from '@/api/workflow/processInstance/types';
+import workflowCommon from '@/api/workflow/workflowCommon';
+import { RouterJumpVo } from '@/api/workflow/workflowCommon/types';
 //审批记录组件
 const { proxy } = getCurrentInstance() as ComponentInternalInstance;
 const queryFormRef = ref<ElFormInstance>();
@@ -347,18 +349,14 @@ const handleChange = async (id: string) => {
 };
 /** 查看按钮操作 */
 const handleView = (row) => {
-  if(row.wfFormDefinitionVo){
-    proxy.$tab.closePage(proxy.$route);
-    proxy.$router.push({
-      path: `${row.wfFormDefinitionVo.path}`,
-      query: {
-        id: row.businessKey,
-        type: 'view'
-      }
-    })
-  }else{
-    proxy?.$modal.msgError('请到流程定义菜单配置路由！');
-  }
+  const routerJumpVo = reactive<RouterJumpVo>({
+    wfDefinitionConfigVo: row.wfDefinitionConfigVo,
+    wfNodeConfigVo: row.wfNodeConfigVo,
+    businessKey: row.businessKey,
+    taskId: row.id,
+    type: 'view'
+  });
+  workflowCommon.routerJump(routerJumpVo,proxy)
 };
 
 onMounted(() => {

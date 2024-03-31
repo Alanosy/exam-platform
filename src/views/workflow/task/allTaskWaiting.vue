@@ -54,13 +54,13 @@
             </template>
             <template v-else>
               <el-tag type="success">
-                {{ scope.row.assigneeName }}
+                {{ scope.row.assigneeName || '无'}}
               </el-tag>
             </template>
           </template>
           <template v-else-if="tab === 'finish'" #default="scope">
             <el-tag type="success">
-              {{ scope.row.assigneeName }}
+              {{ scope.row.assigneeName || '无'}}
             </el-tag>
           </template>
         </el-table-column>
@@ -129,6 +129,8 @@ import { getPageByAllTaskWait, getPageByAllTaskFinish, updateAssignee, getInstan
 import MultiInstanceUser from '@/components/Process/multiInstanceUser.vue';
 import UserSelect from '@/components/UserSelect';
 import { TaskQuery, TaskVO, VariableVo } from '@/api/workflow/task/types';
+import workflowCommon from '@/api/workflow/workflowCommon';
+import { RouterJumpVo } from '@/api/workflow/workflowCommon/types';
 //审批记录组件
 //加签组件
 const multiInstanceUserRef = ref<InstanceType<typeof MultiInstanceUser>>();
@@ -260,18 +262,14 @@ const handleInstanceVariable  = async (row: TaskVO) => {
 };
 /** 查看按钮操作 */
 const handleView = (row) => {
-  if(row.wfFormDefinitionVo){
-    proxy.$tab.closePage(proxy.$route);
-    proxy.$router.push({
-      path: `${row.wfFormDefinitionVo.path}`,
-      query: {
-        id: row.businessKey,
-        type: 'view'
-      }
-    })
-  }else{
-    proxy?.$modal.msgError('请到流程定义菜单配置路由！');
-  }
+  const routerJumpVo = reactive<RouterJumpVo>({
+    wfDefinitionConfigVo: row.wfDefinitionConfigVo,
+    wfNodeConfigVo: row.wfNodeConfigVo,
+    businessKey: row.businessKey,
+    taskId: row.id,
+    type: 'view'
+  });
+  workflowCommon.routerJump(routerJumpVo,proxy)
 };
 onMounted(() => {
   getWaitingList();

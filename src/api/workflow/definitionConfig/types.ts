@@ -1,13 +1,15 @@
-export interface FormDefinitionVO {
+import { FormManageVO } from '@/api/workflow/formManage/types';
+
+export interface DefinitionConfigVO {
   /**
    * 主键
    */
   id: string | number;
 
   /**
-   * 路由地址
+   * 表单ID
    */
-  path: string;
+  formId?: string | number;
 
   /**
    * 流程定义ID
@@ -24,18 +26,23 @@ export interface FormDefinitionVO {
    */
   remark: string;
 
+  /**
+   * 表单管理
+   */
+  wfFormManageVo: FormManageVO;
+
 }
 
-export interface FormDefinitionForm extends BaseEntity {
+export interface DefinitionConfigForm extends BaseEntity {
   /**
    * 主键
    */
   id?: string | number;
 
   /**
-   * 路由地址
+   * 表单ID
    */
-  path?: string;
+  formId?: string | number;
 
   /**
    * 流程定义ID
@@ -52,14 +59,20 @@ export interface FormDefinitionForm extends BaseEntity {
    */
   remark?: string;
 
+  /**
+   * 表单管理
+   */
+  wfFormManageVo: FormManageVO;
+
+
 }
 
-export interface FormDefinitionQuery extends PageQuery {
+export interface DefinitionConfigQuery extends PageQuery {
 
   /**
-   * 路由地址
+   * 表单ID
    */
-  path?: string;
+  formId?: string | number;
 
   /**
    * 流程定义ID
@@ -72,9 +85,10 @@ export interface FormDefinitionQuery extends PageQuery {
   processKey?: string;
 
   /**
-   * 日期范围参数
+   * 表单管理
    */
-  params?: any;
+  wfFormManageVo: FormManageVO;
+
 }
 
 

@@ -21,8 +21,10 @@
             <el-form-item v-if="showConfig.skipExpression" prop="skipExpression" label="跳过表达式">
               <el-input v-model="formData.skipExpression" @change="skipExpressionChange"> </el-input>
             </el-form-item>
-            <el-form-item prop="formKey" label="表单地址">
-              <el-input v-model="formData.formKey" @change="formKeyChange" placeholder="当前节点表单路由如：/demo/leaveEdit/index"> </el-input>
+            <el-form-item prop="formKey" label="表单地址" v-loading="formManageListLoading">
+              <el-select @change="formKeyChange" v-model="formData.formKey" clearable filterable placeholder="请选择表单"  style="width: 260px" >
+                <el-option  v-for="item in formManageList"  :key="item.id"  :label="item.formTypeName+':'+item.formName" :value="item.formType+':'+item.id" />
+              </el-select>
             </el-form-item>
           </div>
         </el-collapse-item>
@@ -239,9 +241,10 @@ import { TaskPanel } from 'bpmnDesign';
 import { AllocationTypeEnum, MultiInstanceTypeEnum, SpecifyDescEnum } from '@/enums/bpmn/IndexEnums';
 import { UserVO } from '@/api/system/user/types';
 import { RoleVO } from '@/api/system/role/types';
-
-const { proxy } = getCurrentInstance() as ComponentInternalInstance;
-
+import { selectListFormManage } from '@/api/workflow/formManage';
+import { FormManageVO } from '@/api/workflow/formManage/types';
+const formManageList = ref<FormManageVO[]>([]);
+const formManageListLoading = ref(false);
 interface PropType {
   element: ModdleElement;
 }
@@ -459,6 +462,18 @@ const SpecifyDesc = [
   { id: 'fa253b34-4335-458c-b1bc-b039e2a2b7a6', label: '指定一个人', value: 'specifySingle' },
   { id: '7365ff54-2e05-4312-9bfb-0b8edd779c5b', label: '指定多个人', value: 'specifyMultiple' }
 ];
+
+const listFormManage = async () => {
+  formManageListLoading.value = true
+  const res = await selectListFormManage();
+  formManageList.value = res.data;
+  formManageListLoading.value = false
+}
+onMounted(() => {
+  nextTick(() => {
+    listFormManage();
+  });
+});
 </script>
 
 <style lang="scss" scoped></style>
