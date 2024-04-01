@@ -67,7 +67,7 @@
             <el-option v-for="item in typeSelect" :key="item.id" :value="item.value" :label="item.label"></el-option>
           </el-select>
         </el-form-item>
-        <el-form-item :label="typeSelect.filter(e=>e.value === formData.type)[0].label" prop="className">
+        <el-form-item :label="typeSelect.filter(e=>e.value === formData.type)[0]?typeSelect.filter(e=>e.value === formData.type)[0]?.label:'表达式'" prop="className">
           <el-input v-model="formData.className" type="text"></el-input>
         </el-form-item>
       </el-form>
