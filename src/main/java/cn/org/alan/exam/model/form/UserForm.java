@@ -1,7 +1,6 @@
 package cn.org.alan.exam.model.form;
 
-import cn.org.alan.exam.group.UserGroup;
-import cn.org.alan.exam.util.excel.ExcelImport;
+import cn.org.alan.exam.common.group.UserGroup;
 import com.alibaba.excel.annotation.ExcelProperty;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Data;

@@ -68,7 +68,6 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
         }
 
         User user = userConverter.fromToEntity(userForm);
-
         userMapper.insert(user);
         return Result.failed("用户创建成功");
 
@@ -83,8 +82,6 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
         if (!userMapper.selectById(userId).getPassword().equals(userForm.getOriginPassword())) {
             return Result.failed("旧密码错误");
         }
-
-
         //密码加密
         userForm.setPassword(new BCryptPasswordEncoder().encode(userForm.getNewPassword()));
 
