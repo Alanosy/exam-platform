@@ -1,16 +1,12 @@
 package cn.org.alan.exam.controller;
 
 import cn.org.alan.exam.common.result.Result;
-import cn.org.alan.exam.group.UserGroup;
-import cn.org.alan.exam.model.entity.User;
+import cn.org.alan.exam.common.group.UserGroup;
 import cn.org.alan.exam.model.form.UserForm;
 import cn.org.alan.exam.model.vo.UserVo;
 import cn.org.alan.exam.service.IUserService;
-import cn.org.alan.exam.util.JwtUtil;
 import jakarta.annotation.Resource;
-import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.Authentication;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
