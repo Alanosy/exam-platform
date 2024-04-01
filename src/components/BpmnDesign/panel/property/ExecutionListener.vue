@@ -42,7 +42,7 @@
       :show-close="false"
       append-to-body
     >
-      <el-form ref="formRef" :model="formData" :rules="tableRules" label-width="90px">
+      <el-form ref="formRef" :model="formData" :rules="tableRules" label-width="100px">
         <el-form-item label="事件" prop="event">
           <el-select v-model="formData.event">
             <el-option v-for="item in eventSelect" :key="item.id" :value="item.value" :label="item.label"></el-option>
@@ -66,7 +66,7 @@
             <el-option v-for="item in typeSelect" :key="item.id" :value="item.value" :label="item.label"></el-option>
           </el-select>
         </el-form-item>
-        <el-form-item label="Java 类名" prop="className">
+        <el-form-item :label="typeSelect.filter(e=>e.value === formData.type)[0].label" prop="className">
           <el-input v-model="formData.className" type="text"></el-input>
         </el-form-item>
       </el-form>
