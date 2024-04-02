@@ -3,12 +3,9 @@ package cn.org.alan.exam.service;
 import cn.org.alan.exam.common.result.Result;
 import cn.org.alan.exam.model.entity.User;
 import cn.org.alan.exam.model.form.UserForm;
-import cn.org.alan.exam.model.vo.UserVo;
+import cn.org.alan.exam.model.vo.UserVO;
 import com.baomidou.mybatisplus.extension.service.IService;
 import org.springframework.web.multipart.MultipartFile;
-
-import java.io.FileNotFoundException;
-import java.io.IOException;
 
 /**
  *
@@ -51,7 +48,7 @@ public interface IUserService extends IService<User> {
      * 获取用户信息 用户id从session获取
      * @return 响应结果
      */
-    Result<UserVo> info();
+    Result<UserVO> info();
 
     /**
      * 用户加入班级，只有学生才能加入班级
