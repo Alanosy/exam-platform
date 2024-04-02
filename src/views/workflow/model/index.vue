@@ -60,7 +60,7 @@
           <el-table border v-loading="loading" :data="modelList" @selection-change="handleSelectionChange">
             <el-table-column type="selection" width="55" align="center" />
             <el-table-column fixed align="center" type="index" label="序号" width="50"></el-table-column>
-            <el-table-column align="center" prop="name" label="模型名称" width="200"></el-table-column>
+            <el-table-column align="center" :show-overflow-tooltip="true" prop="name" label="模型名称" width="200"></el-table-column>
             <el-table-column align="center" prop="key" label="模型KEY"></el-table-column>
             <el-table-column align="center" prop="version" label="版本号" width="90">
               <template #default="scope"> v{{ scope.row.version }}.0</template>

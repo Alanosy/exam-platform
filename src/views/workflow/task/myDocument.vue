@@ -44,10 +44,14 @@
 
           <el-table v-loading="loading" border :data="processInstanceList" @selection-change="handleSelectionChange">
             <el-table-column type="selection" width="55" align="center" />
-            <el-table-column fixed align="center" type="index" label="序号" width="60"></el-table-column>
-            <el-table-column v-if="false" fixed align="center" prop="id" label="id"></el-table-column>
-            <el-table-column fixed align="center" prop="processDefinitionName" label="流程定义名称"></el-table-column>
-            <el-table-column fixed align="center" prop="processDefinitionKey" label="流程定义KEY"></el-table-column>
+            <el-table-column align="center" type="index" label="序号" width="60"></el-table-column>
+            <el-table-column v-if="false" align="center" prop="id" label="id"></el-table-column>
+            <el-table-column :show-overflow-tooltip="true"  align="center" label="流程定义名称">
+              <template #default="scope">
+                  <span>{{ scope.row.processDefinitionName }}v{{ scope.row.processDefinitionVersion }}.0</span>
+              </template>
+            </el-table-column>
+            <el-table-column align="center" prop="processDefinitionKey" label="流程定义KEY"></el-table-column>
             <el-table-column align="center" prop="processDefinitionVersion" label="版本号" width="90">
               <template #default="scope"> v{{ scope.row.processDefinitionVersion }}.0</template>
             </el-table-column>

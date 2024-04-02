@@ -56,7 +56,7 @@
           <el-table border v-loading="loading" :data="processDefinitionList" @selection-change="handleSelectionChange">
             <el-table-column type="selection" width="55" align="center" />
             <el-table-column align="center" type="index" label="序号" width="60"></el-table-column>
-            <el-table-column align="center" prop="name" label="流程定义名称"></el-table-column>
+            <el-table-column align="center" prop="name" label="流程定义名称" :show-overflow-tooltip="true"></el-table-column>
             <el-table-column align="center" prop="key" label="标识KEY" width="80"></el-table-column>
             <el-table-column align="center" prop="version" label="版本号" width="80">
               <template #default="scope"> v{{ scope.row.version }}.0</template>
@@ -167,8 +167,8 @@
       <el-table v-loading="loading" :data="processDefinitionHistoryList" @selection-change="handleSelectionChange">
         <el-table-column type="selection" width="55" align="center" />
         <el-table-column align="center" type="index" label="序号" width="60"></el-table-column>
-        <el-table-column align="center" prop="name" label="流程定义名称"></el-table-column>
-        <el-table-column align="center" prop="key" label="标识Key"></el-table-column>
+        <el-table-column align="center" prop="name" label="流程定义名称" :show-overflow-tooltip="true" min-width="80"></el-table-column>
+        <el-table-column align="center" prop="key" label="标识KEY"></el-table-column>
         <el-table-column align="center" prop="version" label="版本号" width="90">
           <template #default="scope"> v{{ scope.row.version }}.0</template>
         </el-table-column>
