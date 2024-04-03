@@ -7,14 +7,12 @@ import cn.org.alan.exam.mapper.UserMapper;
 import cn.org.alan.exam.model.entity.Grade;
 import cn.org.alan.exam.model.entity.User;
 import cn.org.alan.exam.model.form.UserForm;
-import cn.org.alan.exam.model.vo.UserVo;
+import cn.org.alan.exam.model.vo.UserVO;
 import cn.org.alan.exam.service.IUserService;
 import cn.org.alan.exam.util.DateTimeUtil;
 import cn.org.alan.exam.util.SecurityUtil;
 import cn.org.alan.exam.util.excel.ExcelUtils;
-import com.alibaba.fastjson.JSONArray;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletRequest;
@@ -28,7 +26,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.Objects;
-import java.util.function.Consumer;
 
 
 /**
@@ -116,7 +113,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
             userForm.setPassword(new BCryptPasswordEncoder().encode("123456"));
             userForm.setCreateTime(DateTimeUtil.getDateTime());
             if (userForm.getRoleId() == null) {
-                userForm.setId(1);
+                userForm.setRoleId(1);
             }
         });
 
@@ -128,9 +125,8 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
     }
 
     @Override
-    public Result<UserVo> info() {
-
-        UserVo userVo = userMapper.info(SecurityUtil.getUserId());
+    public Result<UserVO> info() {
+        UserVO userVo = userMapper.info(SecurityUtil.getUserId());
         return Result.success(null,userVo);
     }
 
@@ -143,7 +139,6 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
             return Result.failed("班级口令不存在");
         }
         User user = new User();
-        user.setId(SecurityUtil.getUserId());
         user.setGradeId(grade.getId());
         int updated = userMapper.updateById(user);
         if (updated>0){

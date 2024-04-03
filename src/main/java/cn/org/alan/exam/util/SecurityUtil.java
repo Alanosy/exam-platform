@@ -24,7 +24,6 @@ public class SecurityUtil {
      */
     public static Integer getUserId(){
         SysUserDetails user = (SysUserDetails) (SecurityContextHolder.getContext().getAuthentication().getPrincipal());
-//        log.info(user.toString());
         return user.getUser().getId();
     }
 

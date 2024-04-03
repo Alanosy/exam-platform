@@ -26,21 +26,12 @@ public class FiledFullHandler implements MetaObjectHandler {
         //没有创建人id就给他自动填充 放属性名而不是字段名
         if (Objects.isNull(getFieldValByName("userId", metaObject))) {
             log.info("user_id字段满足公共字段自动填充规则，已填充");
-            log.info(SecurityUtil.getUserId().toString());
             this.strictInsertFill(metaObject, "userId", Integer.class, SecurityUtil.getUserId());
         }
         if (Objects.isNull(getFieldValByName("createTime", metaObject))) {
             log.info("create_time字段满足公共字段自动填充规则，已填充");
             this.strictInsertFill(metaObject, "createTime", LocalDateTime.class, DateTimeUtil.getDateTime());
         }
-//        if (Objects.isNull(getFieldValByName("password", metaObject))) {
-//            log.info("password字段满足公共字段自动填充规则，已填充");
-//            this.strictInsertFill(metaObject, "password", String.class, new BCryptPasswordEncoder().encode("123456"));
-//        }
-//        if (Objects.isNull(getFieldValByName("role_id", metaObject))) {
-//            log.info("role_id字段满足公共字段自动填充规则，已填充");
-//            this.strictInsertFill(metaObject, "role_id", Integer.class, 1);
-//        }
     }
 
     @Override

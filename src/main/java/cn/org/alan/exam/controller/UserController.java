@@ -3,7 +3,7 @@ package cn.org.alan.exam.controller;
 import cn.org.alan.exam.common.result.Result;
 import cn.org.alan.exam.common.group.UserGroup;
 import cn.org.alan.exam.model.form.UserForm;
-import cn.org.alan.exam.model.vo.UserVo;
+import cn.org.alan.exam.model.vo.UserVO;
 import cn.org.alan.exam.service.IUserService;
 import jakarta.annotation.Resource;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -27,7 +27,7 @@ public class UserController {
 
     @GetMapping("/info")
      @PreAuthorize("hasAnyAuthority('role_student','role_teacher','role_admin')")
-    public Result<UserVo> info() {
+    public Result<UserVO> info() {
         return iUserService.info();
     }
 

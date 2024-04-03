@@ -7,7 +7,7 @@ import java.time.LocalDateTime;
 
 /**
  * <p>
- * 
+ *
  * </p>
  *
  * @author WeiJin
@@ -27,7 +27,7 @@ public class Question implements Serializable {
     /**
      * 试题类型
      */
-    private String quType;
+    private Integer quType;
 
     /**
      * 试题图片
@@ -54,6 +54,19 @@ public class Question implements Serializable {
      * 题库id
      */
     private Integer repoId;
+    /**
+     * 创建人id
+     */
+    @TableField(fill = FieldFill.INSERT)
+    private Integer userId;
+
+    public Integer getUserId() {
+        return userId;
+    }
+
+    public void setUserId(Integer userId) {
+        this.userId = userId;
+    }
 
     public Integer getId() {
         return id;
@@ -62,13 +75,15 @@ public class Question implements Serializable {
     public void setId(Integer id) {
         this.id = id;
     }
-    public String getQuType() {
+
+    public Integer getQuType() {
         return quType;
     }
 
-    public void setQuType(String quType) {
+    public void setQuType(Integer quType) {
         this.quType = quType;
     }
+
     public String getImage() {
         return image;
     }
@@ -76,6 +91,7 @@ public class Question implements Serializable {
     public void setImage(String image) {
         this.image = image;
     }
+
     public String getContent() {
         return content;
     }
@@ -83,6 +99,7 @@ public class Question implements Serializable {
     public void setContent(String content) {
         this.content = content;
     }
+
     public LocalDateTime getCreateTime() {
         return createTime;
     }
@@ -90,6 +107,7 @@ public class Question implements Serializable {
     public void setCreateTime(LocalDateTime createTime) {
         this.createTime = createTime;
     }
+
     public String getAnalysis() {
         return analysis;
     }
@@ -97,6 +115,7 @@ public class Question implements Serializable {
     public void setAnalysis(String analysis) {
         this.analysis = analysis;
     }
+
     public Integer getRepoId() {
         return repoId;
     }
@@ -108,13 +127,14 @@ public class Question implements Serializable {
     @Override
     public String toString() {
         return "Question{" +
-            "id=" + id +
-            ", quType=" + quType +
-            ", image=" + image +
-            ", content=" + content +
-            ", createTime=" + createTime +
-            ", analysis=" + analysis +
-            ", repoId=" + repoId +
-        "}";
+                "id=" + id +
+                ", quType=" + quType +
+                ", image='" + image + '\'' +
+                ", content='" + content + '\'' +
+                ", createTime=" + createTime +
+                ", analysis='" + analysis + '\'' +
+                ", repoId=" + repoId +
+                ", userId=" + userId +
+                '}';
     }
 }

@@ -1,5 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="cn.org.alan.exam.mapper.OptionMapper">
-
+    <!--    批量添加选型-->
+    <insert id="insertBatch">
+        insert into t_option
+        values
+        <foreach collection="options" item="option" separator=",">
+            (null,#{option.quId},#{option.isRight},#{option.image},#{option.content},null)
+        </foreach>
+    </insert>
+    <!--    根据试题id列表删除所有试题的选项-->
+    <delete id="deleteBatchByQuIds">
+        delete
+        from t_option
+        where qu_id in
+        <foreach collection="quIdList" item="quId" separator="," open="(" close=")">
+            #{quId}
+        </foreach>
+    </delete>
 </mapper>
