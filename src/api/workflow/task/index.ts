@@ -226,3 +226,15 @@ export const getTaskNodeList = (processInstanceId: string) => {
     method: 'get'
   });
 };
+
+/**
+ * 委托任务
+ * @returns
+ */
+export const delegateTask = (data: any) => {
+  return request({
+    url: `/workflow/task/delegateTask`,
+    method: 'post',
+    data: data
+  });
+};

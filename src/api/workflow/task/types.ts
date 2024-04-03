@@ -32,15 +32,15 @@ export interface TaskVO extends BaseEntity {
   parentTaskId?: any;
   tenantId: string;
   claimTime?: string;
-  businessStatus: string;
-  businessStatusName: string;
-  processDefinitionName: string;
-  processDefinitionKey: string;
-  participantVo: ParticipantVo;
-  multiInstance: boolean;
-  businessKey: string;
-  wfNodeConfigVo: NodeConfigVO;
-  wfDefinitionConfigVo: DefinitionConfigVO;
+  businessStatus?: string;
+  businessStatusName?: string;
+  processDefinitionName?: string;
+  processDefinitionKey?: string;
+  participantVo?: ParticipantVo;
+  multiInstance?: boolean;
+  businessKey?: string;
+  wfNodeConfigVo?: NodeConfigVO;
+  wfDefinitionConfigVo?: DefinitionConfigVO;
 }
 
 export interface VariableVo {

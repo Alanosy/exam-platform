@@ -24,6 +24,7 @@
     <template #footer>
       <span class="dialog-footer">
         <el-button v-loading="buttonLoading" type="primary" @click="handleCompleteTask"> 提交 </el-button>
+        <el-button v-if="task.businessStatus === 'waiting'" v-loading="buttonLoading" type="primary" @click="openDelegateTask"> 委托 </el-button>
         <el-button v-if="task.businessStatus === 'waiting'" v-loading="buttonLoading" type="primary" @click="openTransferTask"> 转办 </el-button>
         <el-button v-if="task.businessStatus === 'waiting' && task.multiInstance" v-loading="buttonLoading" type="primary" @click="addMultiInstanceUser"> 加签 </el-button>
         <el-button v-if="task.businessStatus === 'waiting' && task.multiInstance" v-loading="buttonLoading" type="primary" @click="deleteMultiInstanceUser"> 减签 </el-button>
@@ -33,9 +34,11 @@
       </span>
     </template>
     <!-- 抄送 -->
-    <UserSelect ref="userSelectCopyRef" :multiple="userMultiple" :data="selectCopyUserIds" @confirm-call-back="userSelectCopyCallBack"></UserSelect>
+    <UserSelect ref="userSelectCopyRef" :multiple="true" :data="selectCopyUserIds" @confirm-call-back="userSelectCopyCallBack"></UserSelect>
     <!-- 转办 -->
-    <UserSelect ref="transferTaskRef" :multiple="userMultiple" @confirm-call-back="handleTransferTask"></UserSelect>
+    <UserSelect ref="transferTaskRef" :multiple="false" @confirm-call-back="handleTransferTask"></UserSelect>
+    <!-- 委托 -->
+    <UserSelect ref="delegateTaskRef" :multiple="false" @confirm-call-back="handleDelegateTask"></UserSelect>
     <!-- 加签组件 -->
     <multiInstanceUser ref="multiInstanceUserRef" :title="title" @submit-callback='closeDialog' />
 
@@ -78,7 +81,7 @@
 import { ref } from 'vue';
 import { ComponentInternalInstance } from 'vue';
 import { ElForm } from 'element-plus';
-import { completeTask, backProcess, getTaskById,transferTask,terminationTask,getTaskNodeList } from '@/api/workflow/task';
+import { completeTask, backProcess, getTaskById,transferTask,terminationTask,getTaskNodeList,delegateTask } from '@/api/workflow/task';
 import UserSelect from '@/components/UserSelect';
 import MultiInstanceUser from '@/components/Process/multiInstanceUser.vue';
 const { proxy } = getCurrentInstance() as ComponentInternalInstance;
@@ -86,6 +89,8 @@ import { UserVO } from '@/api/system/user/types';
 import { TaskVO } from '@/api/workflow/task/types';
 const userSelectCopyRef = ref<InstanceType<typeof UserSelect>>();
 const transferTaskRef = ref<InstanceType<typeof UserSelect>>();
+const delegateTaskRef = ref<InstanceType<typeof UserSelect>>();
+
   //加签组件
 const multiInstanceUserRef = ref<InstanceType<typeof MultiInstanceUser>>();
 
@@ -105,8 +110,6 @@ const taskId = ref<string>('');
 const selectCopyUserList = ref<UserVO[]>([]);
 //抄送人id
 const selectCopyUserIds = ref<string>(undefined);
-//是否多选人员
-const userMultiple = ref(false);
 // 驳回是否显示
 const backVisible = ref(false);
 const backLoading = ref(true);
@@ -137,7 +140,10 @@ const task = ref<TaskVO>({
   processDefinitionName: undefined,
   processDefinitionKey: undefined,
   participantVo: undefined,
-  multiInstance: undefined
+  multiInstance: undefined,
+  businessKey: undefined,
+  wfNodeConfigVo: undefined,
+  wfDefinitionConfigVo: undefined
 });
 //加签 减签标题
 const title = ref('');
@@ -240,7 +246,6 @@ const cancel = async () => {
 };
 //打开抄送人员
 const openUserSelectCopy = () => {
-  userMultiple.value = true
   userSelectCopyRef.value.open();
 };
 //确认抄送人员
@@ -274,7 +279,6 @@ const deleteMultiInstanceUser = () => {
 };
 //打开转办
 const openTransferTask = () => {
-  userMultiple.value = false
   transferTaskRef.value.open();
 };
 //转办
@@ -297,6 +301,29 @@ const handleTransferTask  = async (data) => {
   }
 }
 
+//打开委托
+const openDelegateTask = () => {
+  delegateTaskRef.value.open();
+};
+//委托
+const handleDelegateTask  = async (data) => {
+  if(data && data.length > 0){
+    let params = {
+      taskId: taskId.value,
+      userId: data[0].userId,
+      nickName: data[0].nickName
+    }
+    await proxy?.$modal.confirm('是否确认提交？');
+    loading.value = true;
+    buttonLoading.value = true;
+    await delegateTask(params).finally(() => (loading.value = false));
+    dialog.visible = false;
+    emits('submitCallback');
+    proxy?.$modal.msgSuccess('操作成功');
+  }else{
+    proxy?.$modal.msgWarning('请选择用户！');
+  }
+}
 //终止任务
 const handleTerminationTask  = async (data) => {
     let params = {
