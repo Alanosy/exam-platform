@@ -9,6 +9,7 @@
         <el-select
           v-if="userId === 1 && tenantEnabled"
           v-model="companyName"
+          class="min-w-244px"
           clearable
           filterable
           reserve-keyword
