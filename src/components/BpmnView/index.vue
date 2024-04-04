@@ -338,16 +338,35 @@ defineExpose({
   :deep(.highlight.djs-connection > .djs-visual > path) {
     stroke: green !important;
   }
-  :deep(.highlight-todo.djs-connection > .djs-visual > path) {
-    stroke: orange !important;
-    stroke-dasharray: 4px !important;
-    fill-opacity: 0.2 !important;
-    marker-end: url(#sequenceflow-end-_E7DFDF-_E7DFDF-803g1kf6zwzmcig1y2ulm5egr);
+
+  // 边框滚动动画
+  @keyframes path-animation {
+    from {
+      stroke-dashoffset: 100%;
+    }
+
+    to {
+      stroke-dashoffset: 0%;
+    }
   }
-  :deep(.highlight-todo.djs-shape .djs-visual > :nth-child(1)) {
-    fill: orange !important;
-    stroke: orange !important;
+
+  :deep(.highlight-todo.djs-connection > .djs-visual > path) {
+    animation: path-animation 60s;
+    animation-timing-function: linear;
+    animation-iteration-count: infinite;
     stroke-dasharray: 4px !important;
+    stroke: orange !important;
+    fill-opacity: 0.2 !important;
+    marker-end: url('#sequenceflow-end-_E7DFDF-_E7DFDF-803g1kf6zwzmcig1y2ulm5egr');
+  }
+
+  :deep(.highlight-todo.djs-shape .djs-visual > :nth-child(1)) {
+    animation: path-animation 60s;
+    animation-timing-function: linear;
+    animation-iteration-count: infinite;
+    stroke-dasharray: 4px !important;
+    stroke: orange !important;
+    fill: orange !important;
     fill-opacity: 0.2 !important;
   }
 }
