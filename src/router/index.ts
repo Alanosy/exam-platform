@@ -173,7 +173,7 @@ export const dynamicRoutes: RouteRecordRaw[] = [
         path: 'index',
         component: () => import('@/views/workflow/leave/leaveEdit.vue'),
         name: 'leaveEdit',
-        meta: { title: '请假申请', activeMenu: '/demo/leave',noCache:true },
+        meta: { title: '请假申请', activeMenu: '/demo/leave', noCache: true }
       }
     ]
   }
