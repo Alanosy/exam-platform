@@ -1,6 +1,14 @@
 <template>
-  <div class="containers">
-    <div v-loading="loading" class="app-containers">
+  <div class="containers-bpmn">
+    <!-- dark模式下 连接线的箭头样式 -->
+    <svg width="0" height="0" style="position: absolute">
+      <defs>
+        <marker id="markerArrow-dark-mode" viewBox="0 0 20 20" refX="11" refY="10" markerWidth="10" markerHeight="10" orient="auto">
+          <path d="M 1 5 L 11 10 L 1 15 Z" class="arrow-dark" />
+        </marker>
+      </defs>
+    </svg>
+    <div v-loading="loading" class="app-containers-bpmn">
       <el-container class="h-full">
         <el-container style="align-items: stretch">
           <el-header>
@@ -174,7 +182,7 @@ const initDiagram = (xml?: string) => {
  */
 const fitViewport = () => {
   zoom.value = bpmnModeler.value.get<Canvas>('canvas').zoom('fit-viewport');
-  const bbox = document.querySelector<SVGGElement>('.app-containers .viewport').getBBox();
+  const bbox = document.querySelector<SVGGElement>('.app-containers-bpmn .viewport').getBBox();
   const currentViewBox = bpmnModeler.value.get<Canvas>('canvas').viewbox();
   const elementMid = {
     x: bbox.x + bbox.width / 2 - 65,
@@ -320,23 +328,95 @@ defineExpose({
 });
 </script>
 
-<style lang="scss" scoped>
-$bg-image: 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGRlZnM+PHBhdHRlcm4gaWQ9ImEiIHdpZHRoPSI0MCIgaGVpZ2h0PSI0MCIgcGF0dGVyblVuaXRzPSJ1c2VyU3BhY2VPblVzZSI+PHBhdGggZD0iTTAgMTBoNDBNMTAgMHY0ME0wIDIwaDQwTTIwIDB2NDBNMCAzMGg0ME0zMCAwdjQwIiBmaWxsPSJub25lIiBzdHJva2U9IiNlMGUwZTAiIG9wYWNpdHk9Ii4yIi8+PHBhdGggZD0iTTQwIDBIMHY0MCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjZTBlMGUwIi8+PC9wYXR0ZXJuPjwvZGVmcz48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSJ1cmwoI2EpIi8+PC9zdmc+';
+<style lang="scss">
+/** 夜间模式 线条的颜色 */
+$stroke-color-dark: white;
+$bpmn-font-size: 12px;
+/** 日间模式 字体颜色 */
+$bpmn-font-color-dark: white;
+/** 夜间模式 字体颜色 */
+$bpmn-font-color-light: #222;
 
-/** 从左侧拖动时的背景图 */
-:deep(svg.new-parent) {
-  background: url($bg-image) !important;
+/* 背景网格 */
+@mixin djs-container {
+  background-image: linear-gradient(90deg, hsl(0deg 0% 78.4% / 15%) 10%, transparent 0), linear-gradient(hsl(0deg 0% 78.4% / 15%) 10%, transparent 0) !important;
+  background-size: 10px 10px !important;
 }
 
-.containers {
+html[class='light'] {
+  /** 从左侧拖动时的背景图 */
+  svg.new-parent {
+    @include djs-container;
+  }
+
+  /** 双击编辑元素时样式保持一致 */
+  div.djs-direct-editing-parent {
+    border-radius: 10px;
+    background-color: transparent !important;
+    color: $bpmn-font-color-light;
+  }
+
+  g.djs-visual {
+    .djs-label {
+      fill: $bpmn-font-color-light !important;
+      font-size: $bpmn-font-size !important;
+    }
+  }
+}
+
+html[class='dark'] {
+  /** dark模式下 连接线的箭头样式 */
+  .arrow-dark {
+    stroke-width: 1px;
+    stroke-linecap: round;
+    stroke: $stroke-color-dark;
+    fill: $stroke-color-dark;
+    stroke-linejoin: round;
+  }
+
+  /** 从左侧拖动时的背景图 */
+  svg.new-parent {
+    background-color: black !important;
+    @include djs-container;
+  }
+
+  /** 双击编辑元素时样式保持一致 */
+  div.djs-direct-editing-parent {
+    border-radius: 10px;
+    background-color: transparent !important;
+    color: $bpmn-font-color-dark;
+  }
+
+  /** 元素相关设置 */
+  g.djs-visual {
+    /** 元素边框 需要去除文字(.djs-label) */
+    & > *:first-child:not(.djs-label) {
+      stroke: $stroke-color-dark !important;
+    }
+
+    /** 字体颜色 */
+    .djs-label {
+      fill: $bpmn-font-color-dark !important;
+      font-size: $bpmn-font-size !important;
+    }
+
+    /* 连接线样式 */
+    path[data-corner-radius] {
+      stroke: $stroke-color-dark !important;
+      marker-end: url('#markerArrow-dark-mode') !important;
+    }
+  }
+}
+
+.containers-bpmn {
   height: 100%;
-  .app-containers {
+  .app-containers-bpmn {
     width: 100%;
     height: 100%;
     .canvas {
       width: 100%;
       height: 100%;
-      background: url($bg-image);
+      @include djs-container;
     }
     .el-header {
       height: 35px;
@@ -379,7 +459,7 @@ pre {
   max-height: calc(80vh - 32px);
   overflow-x: hidden;
   overflow-y: auto;
-  :deep(.hljs) {
+  .hljs {
     word-break: break-word;
     white-space: pre-wrap;
     padding: 0.5em;
@@ -399,7 +479,7 @@ pre {
   max-height: 100%;
   width: 25%;
   height: calc(100vh - 80px);
-  :deep(.el-collapse) {
+  .el-collapse {
     height: calc(100vh - 162px);
     overflow: auto;
   }
