@@ -50,20 +50,22 @@ spring:
         exclusions: /druid/*,*.js,*.gif,*.jpg,*.png,*.css,*.ico
 
       stat-view-servlet:
+        login-url: /druid/login
         # 是否启用StatViewServlet默认值true
-        enabled: true
-        # 访问路径为/druid时，跳转到StatViewServlet
-        url-pattern: /druid/*
+        enabled: false
         # 是否能够重置数据
         reset-enable: false
+        # 访问路径为/druid时，跳转到StatViewServlet
+        url-pattern: /druid/*
+
         # 需要账号密码才能访问控制台，默认为root
         login-username: druid
         login-password: druid
+
         # IP白名单
         allow: 127.0.0.1
         # IP黑名单（共同存在时，deny优先于allow）
         deny:
-
   main:
     # 关闭banner
     banner-mode: off
@@ -74,7 +76,6 @@ spring:
       database: 0
       host: 127.0.0.1
       port: 6379
-#      password: 123456
       timeout: 10s
       lettuce:
         pool:
@@ -86,15 +87,21 @@ spring:
           max-idle: 8
           # 连接池中的最小空闲连接 默认0
           min-idle: 0
+  servlet:
+    multipart:
+      max-file-size: 5MB
+
 mybatis-plus:
   global-config:
     # 关闭banner
     banner: false
+  configuration:
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+    map-underscore-to-camel-case:
+  type-aliases-package: cn.org.alan.exam.model
 
-logging:
-  level:
-    com.xxx.mapper: debug
 
 
 jwt:
   secret: darfhiogtiasjtgaiosethaosifhbnsakltghweaoirthaoirhnaslgnvaekltgase
+

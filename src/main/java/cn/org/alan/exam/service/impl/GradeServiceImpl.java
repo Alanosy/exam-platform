@@ -24,17 +24,16 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
- * 服务实现类
+ * 班级服务实现类
  *
  * @author WeiJin
  * @since 2024-03-21
  */
 @Service
 public class GradeServiceImpl extends ServiceImpl<GradeMapper, Grade> implements IGradeService {
-    @Autowired
+    @Resource
     private GradeMapper gradeMapper;
-
-    @Autowired
+    @Resource
     private GradeConverter gradeConverter;
     @Resource
     private UserMapper userMapper;
@@ -42,9 +41,10 @@ public class GradeServiceImpl extends ServiceImpl<GradeMapper, Grade> implements
 
     @Override
     public Result<String> addGrade(GradeForm gradeForm) {
+        // 生成班级口令
         gradeForm.setCode(ClassTokenGenerator.generateClassToken(18));
+        // 实体转换
         Grade grade = gradeConverter.formToEntity(gradeForm);
-
         int rowsAffected = gradeMapper.insert(grade);
         if (rowsAffected == 0) {
             return Result.failed("添加失败");
@@ -94,6 +94,14 @@ public class GradeServiceImpl extends ServiceImpl<GradeMapper, Grade> implements
             return Result.failed("移除失败");
         }
         return Result.success("移除成功");
+    }
+
+    @Override
+    public Result<List<GradeVO>> getAllGrade() {
+        LambdaQueryWrapper<Grade> gradeLambdaQueryWrapper = new LambdaQueryWrapper<>();
+        gradeLambdaQueryWrapper.eq(Grade::getUserId,SecurityUtil.getUserId());
+        List<Grade> grades = gradeMapper.selectList(gradeLambdaQueryWrapper);
+        return Result.success("查询成功",gradeConverter.listEntityToVo(grades));
     }
 
 }

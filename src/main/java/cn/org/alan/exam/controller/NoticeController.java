@@ -65,7 +65,7 @@ public class NoticeController {
     }
 
     /**
-     * 分页查找
+     * 教师分页查找
      *
      * @param pageNum
      * @param pageSize
@@ -78,6 +78,11 @@ public class NoticeController {
                                              @RequestParam(value = "title", required = false) String title) {
         return noticeService.getNotice( pageNum, pageSize, title);
 
+    }
+    @GetMapping("/new")
+    public Result<IPage<NoticeVO>> getNewNotice(@RequestParam(value = "pageNum", required = false, defaultValue = "1") Integer pageNum,
+                                                @RequestParam(value = "pageSize", required = false, defaultValue = "10") Integer pageSize){
+        return noticeService.getNewNotice(pageNum,pageSize);
     }
 
 }

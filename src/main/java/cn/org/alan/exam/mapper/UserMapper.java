@@ -4,6 +4,7 @@ import cn.org.alan.exam.model.entity.User;
 import cn.org.alan.exam.model.vo.UserVo;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Mapper;
+import org.springframework.stereotype.Repository;
 
 
 import java.util.List;
@@ -16,7 +17,7 @@ import java.util.List;
  * @author WeiJin
  * @since 2024-03-21
  */
-@Mapper
+@Repository
 public interface UserMapper extends BaseMapper<User> {
 
     // List<User> getText(Integer id);

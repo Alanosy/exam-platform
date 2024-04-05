@@ -79,4 +79,14 @@ public class NoticeServiceImpl extends ServiceImpl<NoticeMapper, Notice> impleme
         Page<Notice> gradePage = noticeMapper.selectPage(page, noticeQueryWrapper);
         return Result.success("查询成功", noticeConverter.pageEntityToVo(gradePage));
     }
+
+    @Override
+    public Result<IPage<NoticeVO>> getNewNotice(Integer pageNum, Integer pageSize) {
+        Page<Notice> page = new Page<>(pageNum, pageSize);
+        LambdaQueryWrapper<Notice> noticeQueryWrapper = new LambdaQueryWrapper<>();
+        noticeQueryWrapper.eq(Notice::getUserId, SecurityUtil.getUserId())
+                .orderByDesc(Notice::getCreateTime);
+        Page<Notice> gradePage = noticeMapper.selectPage(page, noticeQueryWrapper);
+        return Result.success("查询成功", noticeConverter.pageEntityToVo(gradePage));
+    }
 }
