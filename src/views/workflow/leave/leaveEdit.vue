@@ -1,24 +1,53 @@
 <template>
   <div class="p-2">
     <el-card shadow="never">
-        <div style="display: flex;justify-content: space-between;">
-          <div>
-            <el-button :loading="buttonLoading" 
-            v-if="routeParams.type === 'add' || (routeParams.type === 'update' && form.processInstanceVo && form.processInstanceVo.businessStatus && (form.processInstanceVo.businessStatus === 'draft' || form.processInstanceVo.businessStatus === 'cancel' || form.processInstanceVo.businessStatus === 'back'))"
-            type="info" @click="submitForm('draft')">暂存</el-button>
-            <el-button :loading="buttonLoading" v-if="routeParams.type === 'add' || (routeParams.type === 'update' && form.processInstanceVo && (form.processInstanceVo.businessStatus === 'draft' || form.processInstanceVo.businessStatus === 'cancel' || form.processInstanceVo.businessStatus === 'back'))"
-            type="primary" @click="submitForm('submit')">提 交</el-button>
-            <el-button :loading="buttonLoading" v-if="routeParams.type === 'approval' && form.processInstanceVo && form.processInstanceVo.businessStatus === 'waiting'"
-            type="primary" @click="approvalVerifyOpen">审批</el-button>
-            <el-button @click="handleApprovalRecord" type="primary" v-if="processInstanceId">流程进度</el-button>
-          </div>
-          <div>
-            <el-button style="float: right" @click="goBack()">返回</el-button>
-          </div>
+      <div style="display: flex; justify-content: space-between">
+        <div>
+          <el-button
+            v-if="
+              routeParams.type === 'add' ||
+              (routeParams.type === 'update' &&
+                form.processInstanceVo &&
+                form.processInstanceVo.businessStatus &&
+                (form.processInstanceVo.businessStatus === 'draft' ||
+                  form.processInstanceVo.businessStatus === 'cancel' ||
+                  form.processInstanceVo.businessStatus === 'back'))
+            "
+            :loading="buttonLoading"
+            type="info"
+            @click="submitForm('draft')"
+            >暂存</el-button
+          >
+          <el-button
+            v-if="
+              routeParams.type === 'add' ||
+              (routeParams.type === 'update' &&
+                form.processInstanceVo &&
+                (form.processInstanceVo.businessStatus === 'draft' ||
+                  form.processInstanceVo.businessStatus === 'cancel' ||
+                  form.processInstanceVo.businessStatus === 'back'))
+            "
+            :loading="buttonLoading"
+            type="primary"
+            @click="submitForm('submit')"
+            >提 交</el-button
+          >
+          <el-button
+            v-if="routeParams.type === 'approval' && form.processInstanceVo && form.processInstanceVo.businessStatus === 'waiting'"
+            :loading="buttonLoading"
+            type="primary"
+            @click="approvalVerifyOpen"
+            >审批</el-button
+          >
+          <el-button v-if="processInstanceId" type="primary" @click="handleApprovalRecord">流程进度</el-button>
         </div>
+        <div>
+          <el-button style="float: right" @click="goBack()">返回</el-button>
+        </div>
+      </div>
     </el-card>
-    <el-card shadow="never" style="height: 78vh;overflow-y: auto;">
-      <el-form ref="leaveFormRef" :disabled="routeParams.type ==='view'" v-loading="loading" :model="form" :rules="rules" label-width="80px">
+    <el-card shadow="never" style="height: 78vh; overflow-y: auto">
+      <el-form ref="leaveFormRef" v-loading="loading" :disabled="routeParams.type === 'view'" :model="form" :rules="rules" label-width="80px">
         <el-form-item label="请假类型" prop="leaveType">
           <el-select v-model="form.leaveType" placeholder="请选择请假类型" style="width: 100%">
             <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value" />
@@ -64,8 +93,8 @@ const loading = ref(true);
 const leaveTime = ref<Array<string>>([]);
 //流程实例id
 const processInstanceId = ref('');
-//路由参数 
-const routeParams = ref<Record<string, any>>({})
+//路由参数
+const routeParams = ref<Record<string, any>>({});
 const options = [
   {
     value: '1',
@@ -98,7 +127,6 @@ const submitFormData = ref<Record<string, any>>({
 });
 const taskVariables = ref<Record<string, any>>({});
 
-
 const initFormData: LeaveForm = {
   id: undefined,
   leaveType: undefined,
@@ -126,7 +154,6 @@ const data = reactive<PageData<LeaveForm, LeaveQuery>>({
 
 const { form, rules } = toRefs(data);
 
-
 /** 表单重置 */
 const reset = () => {
   form.value = { ...initFormData };
@@ -142,7 +169,7 @@ const changeLeaveTime = () => {
 };
 /** 获取详情 */
 const getInfo = () => {
-  loading.value = true
+  loading.value = true;
   buttonLoading.value = false;
   nextTick(async () => {
     const res = await getLeave(routeParams.value.id);
@@ -150,10 +177,10 @@ const getInfo = () => {
     leaveTime.value = [];
     leaveTime.value.push(form.value.startDate);
     leaveTime.value.push(form.value.endDate);
-    if(form.value.processInstanceVo){
-      processInstanceId.value = form.value.processInstanceVo.id
+    if (form.value.processInstanceVo) {
+      processInstanceId.value = form.value.processInstanceVo.id;
     }
-    loading.value = false
+    loading.value = false;
     buttonLoading.value = false;
   });
 };
@@ -180,7 +207,7 @@ const submitForm = (status: string) => {
         buttonLoading.value = false;
         proxy?.$modal.msgSuccess('暂存成功');
         proxy.$tab.closePage(proxy.$route);
-        proxy.$router.go(-1)
+        proxy.$router.go(-1);
       } else {
         await handleStartWorkFlow(res.data);
       }
@@ -212,27 +239,27 @@ const handleApprovalRecord = () => {
 };
 //提交回调
 const submitCallback = async () => {
-  proxy.$tab.closePage(proxy.$route);
-  proxy.$router.go(-1)
+  await proxy.$tab.closePage(proxy.$route);
+  proxy.$router.go(-1);
 };
 
 //返回
 const goBack = () => {
   proxy.$tab.closePage(proxy.$route);
-  proxy.$router.go(-1)
-}
+  proxy.$router.go(-1);
+};
 //审批
 const approvalVerifyOpen = async () => {
   submitVerifyRef.value.openDialog(routeParams.value.taskId);
 };
 onMounted(() => {
   nextTick(async () => {
-      routeParams.value = proxy.$route.query
-      reset();
-      loading.value = false
-      if (routeParams.value.type === 'update' || routeParams.value.type === 'view' || routeParams.value.type === 'approval') {
-        getInfo()
-      }
-  })
+    routeParams.value = proxy.$route.query;
+    reset();
+    loading.value = false;
+    if (routeParams.value.type === 'update' || routeParams.value.type === 'view' || routeParams.value.type === 'approval') {
+      getInfo();
+    }
+  });
 });
 </script>
