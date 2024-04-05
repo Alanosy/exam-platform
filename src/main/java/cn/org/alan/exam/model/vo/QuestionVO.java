@@ -1,8 +1,6 @@
 package cn.org.alan.exam.model.vo;
 
-import com.alibaba.excel.annotation.format.DateTimeFormat;
 import com.fasterxml.jackson.annotation.JsonFormat;
-import jakarta.validation.constraints.Pattern;
 import lombok.Data;
 
 import java.time.LocalDateTime;
@@ -10,19 +8,14 @@ import java.time.LocalDateTime;
 /**
  * @Author WeiJin
  * @Version 1.0
- * @Date 2024/3/31 13:14
+ * @Date 2024/4/2 20:27
  */
 @Data
-public class UserVo {
-
+public class QuestionVO {
     private Integer id;
-    private String userName;
-    private String realName;
-    private String password;
-    private String avatar;
-    private String gradeName;
+    private String content;
+    private String title;
+    private String quType;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime createTime;
-    private String status;
-
 }

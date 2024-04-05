@@ -28,7 +28,7 @@
     </update>
 
     <!--获取用户信息-->
-    <select id="info" resultType="cn.org.alan.exam.model.vo.UserVo">
+    <select id="info" resultType="cn.org.alan.exam.model.vo.UserVO">
         select <include refid="simpleFiled"/> ,r.role_name,g.grade_name
         from t_user u join t_role r on role_id = r.id join t_grade g on grade_id = g.id
         where u.id = #{userId}
