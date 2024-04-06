@@ -142,8 +142,7 @@ const task = ref<TaskVO>({
   participantVo: undefined,
   multiInstance: undefined,
   businessKey: undefined,
-  wfNodeConfigVo: undefined,
-  wfDefinitionConfigVo: undefined
+  wfNodeConfigVo: undefined
 });
 //加签 减签标题
 const title = ref('');
@@ -214,7 +213,7 @@ const handleCompleteTask = async () => {
     dialog.visible = false;
     emits('submitCallback');
     proxy?.$modal.msgSuccess('操作成功');
-  }finally {
+  } finally {
     loading.value = false
     buttonLoading.value = false
   }

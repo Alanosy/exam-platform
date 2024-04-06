@@ -6,3 +6,9 @@ export interface RouterJumpVo {
     taskId: string;
     type: string;
 }
+
+export interface StartProcessBo {
+    businessKey:  string | number;
+    tableName: string;
+    variables: any;
+}

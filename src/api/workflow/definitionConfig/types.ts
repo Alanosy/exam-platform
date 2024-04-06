@@ -7,9 +7,9 @@ export interface DefinitionConfigVO {
   id: string | number;
 
   /**
-   * 表单ID
+   * 表名
    */
-  formId?: string | number;
+  tableName?: string;
 
   /**
    * 流程定义ID
@@ -20,6 +20,11 @@ export interface DefinitionConfigVO {
    * 流程KEY
    */
   processKey: string;
+
+  /**
+   * 流程版本
+   */
+  version?: string | number;
 
   /**
    * 备注
@@ -40,9 +45,9 @@ export interface DefinitionConfigForm extends BaseEntity {
   id?: string | number;
 
   /**
-   * 表单ID
+   * 表名
    */
-  formId?: string | number;
+  tableName?: string;
 
   /**
    * 流程定义ID
@@ -53,6 +58,11 @@ export interface DefinitionConfigForm extends BaseEntity {
    * 流程KEY
    */
   processKey?: string;
+
+  /**
+   * 流程版本
+   */
+  version?: string | number;
 
   /**
    * 备注
@@ -70,9 +80,9 @@ export interface DefinitionConfigForm extends BaseEntity {
 export interface DefinitionConfigQuery extends PageQuery {
 
   /**
-   * 表单ID
+   * 表名
    */
-  formId?: string | number;
+  tableName?: string;
 
   /**
    * 流程定义ID
@@ -83,6 +93,11 @@ export interface DefinitionConfigQuery extends PageQuery {
    * 流程KEY
    */
   processKey?: string;
+
+  /**
+   * 流程版本
+   */
+  version?: string | number;
 
   /**
    * 表单管理

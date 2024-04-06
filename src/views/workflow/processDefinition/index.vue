@@ -61,24 +61,31 @@
             <el-table-column align="center" prop="version" label="版本号" width="80">
               <template #default="scope"> v{{ scope.row.version }}.0</template>
             </el-table-column>
-            <el-table-column align="center" prop="resourceName" label="流程XML" min-width="80" :show-overflow-tooltip="true">
+            <el-table-column align="center" prop="resourceName" label="流程XML" width="100" :show-overflow-tooltip="true">
               <template #default="scope">
                 <el-link type="primary" @click="clickPreviewXML(scope.row.id)">{{ scope.row.resourceName }}</el-link>
               </template>
             </el-table-column>
-            <el-table-column align="center" prop="diagramResourceName" label="流程图片" min-width="80" :show-overflow-tooltip="true">
+            <el-table-column align="center" prop="diagramResourceName" label="流程图片" width="100" :show-overflow-tooltip="true">
               <template #default="scope">
                 <el-link type="primary" @click="clickPreviewImg(scope.row.id)">{{ scope.row.diagramResourceName }}</el-link>
               </template>
             </el-table-column>
-            <el-table-column align="center" prop="suspensionState" label="状态" min-width="50">
+            <el-table-column align="center" prop="suspensionState" label="状态" width="80">
               <template #default="scope">
                 <el-tag v-if="scope.row.suspensionState == 1" type="success">激活</el-tag>
                 <el-tag v-else type="danger">挂起</el-tag>
               </template>
             </el-table-column>
-            <el-table-column align="center" prop="deploymentTime" label="部署时间" :show-overflow-tooltip="true"></el-table-column>
-            <el-table-column fixed="right" label="操作" align="center" width="170" class-name="small-padding fixed-width">
+            <el-table-column align="center" prop="deploymentTime" label="部署时间" width="120" :show-overflow-tooltip="true"></el-table-column>
+            <el-table-column align="center" label="表名/表单KEY" width="120" :show-overflow-tooltip="true">
+              <template #default="scope"> 
+                 <span v-if="scope.row.wfDefinitionConfigVo">
+                  {{ scope.row.wfDefinitionConfigVo.tableName }}
+                 </span>
+              </template>
+            </el-table-column>
+            <el-table-column fixed="right" label="操作" align="center" width="220" class-name="small-padding fixed-width">
               <template #default="scope">
                 <el-row :gutter="10" class="mb8">
                   <el-col :span="1.5">
@@ -93,6 +100,9 @@
                     </el-button>
                   </el-col>
                   <el-col :span="1.5">
+                    <el-button type="text" size="small" icon="Document" @click="getProcessDefinitionHitoryList(scope.row.id, scope.row.key)">历史版本</el-button>
+                  </el-col>
+                  <el-col :span="1.5">
                     <el-button link type="primary" size="small" icon="Delete" @click="handleDelete(scope.row)">删除</el-button>
                   </el-col>
                 </el-row>
@@ -101,16 +111,7 @@
                     <el-button link type="primary" size="small" icon="Sort" @click="handleConvertToModel(scope.row)"> 转换模型 </el-button>
                   </el-col>
                   <el-col :span="1.5">
-                    <el-dropdown>
-                      <el-button type="text" size="small">
-                        更多<el-icon class="el-icon--right"><arrow-down /></el-icon>
-                      </el-button>
-                      <template #dropdown>
-                        <el-dropdown-menu>
-                          <el-dropdown-item @click="getProcessDefinitionHitoryList(scope.row.id, scope.row.key)">历史版本</el-dropdown-item>
-                        </el-dropdown-menu>
-                      </template>
-                    </el-dropdown>
+                    <el-button type="text" size="small" icon="Tickets" @click="handleDefinitionConfigOpen(scope.row)">绑定业务</el-button>
                   </el-col>
                 </el-row>
               </template>
@@ -203,17 +204,42 @@
                 </el-button>
               </el-col>
               <el-col :span="1.5">
-                <el-button link type="primary" icon="Delete" size="small" @click="handleDelete(scope.row)">删除</el-button>
+                <el-button type="text" size="small" icon="Tickets" @click="handleDefinitionConfigOpen(scope.row)">绑定业务</el-button>
               </el-col>
             </el-row>
             <el-row :gutter="10" class="mb8">
               <el-col :span="1.5">
                 <el-button link type="primary" icon="Sort" size="small" @click="handleConvertToModel(scope.row)"> 转换模型 </el-button>
               </el-col>
+              <el-col :span="1.5">
+                <el-button link type="primary" icon="Delete" size="small" @click="handleDelete(scope.row)">删除</el-button>
+              </el-col>
             </el-row>
           </template>
         </el-table-column>
       </el-table>
+    </el-dialog>
+
+    <!-- 表单配置 -->
+    <el-dialog v-model="definitionConfigDialog.visible" :title="definitionConfigDialog.title" width="650px" append-to-body :close-on-click-modal="false">
+      <el-form :model="definitionConfigForm" label-width="auto">
+        <el-form-item label="流程KEY">
+          <el-input v-model="definitionConfigForm.processKey" disabled/>
+        </el-form-item>
+        <el-form-item label="表名" prop="formId">
+          <el-input v-model="definitionConfigForm.tableName" placeholder="示例:test_leave"/>
+        </el-form-item>
+        <el-form-item label="备注">
+          <el-input v-model="definitionConfigForm.remark" type="textarea" resize="none"/>
+        </el-form-item>
+      </el-form>
+      
+      <template #footer>
+        <div class="dialog-footer">
+          <el-button @click="definitionConfigDialog.visible = false">取消</el-button>
+          <el-button type="primary" @click="handlerSaveForm">保存</el-button>
+        </div>
+      </template>
     </el-dialog>
   </div>
 </template>
@@ -229,17 +255,20 @@ import {
   deployProcessFile,
   getListByKey
 } from '@/api/workflow/processDefinition';
+import { getByTableNameNotDefId,getByDefId,saveOrUpdate } from '@/api/workflow/definitionConfig';
 import ProcessPreview from './components/processPreview.vue';
 import { listCategory } from '@/api/workflow/category';
 import { CategoryVO } from '@/api/workflow/category/types';
 import { ProcessDefinitionQuery, ProcessDefinitionVO } from '@/api/workflow/processDefinition/types';
-import { UploadRequestOptions } from 'element-plus';
+import { definitionConfigForm } from '@/api/workflow/definitionConfig/types';
+import { UploadRequestOptions, ElMessage, ElMessageBox } from 'element-plus';
 
 const { proxy } = getCurrentInstance() as ComponentInternalInstance;
 
 const previewRef = ref<InstanceType<typeof ProcessPreview>>();
 const queryFormRef = ref<ElFormInstance>();
 const categoryTreeRef = ref<ElTreeInstance>();
+const definitionConfigForm = ref<definitionConfigForm>({});
 
 type CategoryOption = {
   categoryCode: string;
@@ -270,6 +299,11 @@ const uploadDialog = reactive<DialogOption>({
 const processDefinitionDialog = reactive<DialogOption>({
   visible: false,
   title: '历史版本'
+});
+
+const definitionConfigDialog = reactive<DialogOption>({
+  visible: false,
+  title: '流程定义配置'
 });
 
 // 查询参数
@@ -436,4 +470,48 @@ const handerDeployProcessFile = (data: UploadRequestOptions): XMLHttpRequest => 
     });
   return;
 };
+//打开流程定义配置
+const handleDefinitionConfigOpen = async (row: ProcessDefinitionVO) => {
+   definitionConfigDialog.visible = true
+   definitionConfigForm.value.processKey = row.key
+   definitionConfigForm.value.definitionId = row.id
+   definitionConfigForm.value.version = row.version
+   const resp = await getByDefId(row.id)
+   if(resp.data){
+    definitionConfigForm.value = resp.data
+   }else{
+    definitionConfigForm.value.tableName = undefined
+    definitionConfigForm.value.remark = undefined
+   }
+}
+//保存表单
+const handlerSaveForm = async () => {
+  getByTableNameNotDefId(definitionConfigForm.value.tableName,definitionConfigForm.value.definitionId).then(res => {
+    if(res.data && res.data.length > 0){
+      ElMessageBox.confirm('表名已被【'+res.data[0].processKey+'】版本v'+res.data[0].version+'.0绑定确认后将会删除绑定的流程KEY!','提示',{
+          confirmButtonText: '确认',
+          cancelButtonText: '取消',
+          type: 'warning',
+        }
+      ).then(() => {
+          saveOrUpdate(definitionConfigForm.value).then(resp=>{
+            if(resp.code === 200){
+              proxy?.$modal.msgSuccess('操作成功');
+              definitionConfigDialog.visible = false
+              getList();
+            }
+          })
+        })
+    }else{
+      saveOrUpdate(definitionConfigForm.value).then(resp=>{
+        if(resp.code === 200){
+          proxy?.$modal.msgSuccess('操作成功');
+          definitionConfigDialog.visible = false
+          getList();
+        }
+      })
+    }
+  })
+  
+}
 </script>

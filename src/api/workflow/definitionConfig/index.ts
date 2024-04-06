@@ -36,3 +36,15 @@ export const deldefinitionConfig = (id: string | number | Array<string | number>
     method: 'delete'
   });
 };
+
+/**
+ * 查询流程定义配置排除当前查询的流程定义
+ * @param tableName
+ * @param tableName
+ */
+export const getByTableNameNotDefId = (tableName: string,definitionId: string ) => {
+  return request({
+    url: `/workflow/definitionConfig/getByTableNameNotDefId/${tableName}/${definitionId}`,
+    method: 'get'
+  });
+};

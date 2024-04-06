@@ -85,7 +85,7 @@ import { startWorkFlow } from '@/api/workflow/task';
 import SubmitVerify from '@/components/Process/submitVerify.vue';
 import ApprovalRecord from '@/components/Process/approvalRecord.vue';
 import { AxiosResponse } from 'axios';
-
+import { StartProcessBo } from '@/api/workflow/workflowCommon/types';
 const { proxy } = getCurrentInstance() as ComponentInternalInstance;
 
 const buttonLoading = ref(false);
@@ -120,9 +120,9 @@ const approvalRecordRef = ref<InstanceType<typeof ApprovalRecord>>();
 
 const leaveFormRef = ref<ElFormInstance>();
 
-const submitFormData = ref<Record<string, any>>({
+const submitFormData = ref<StartProcessBo>({
   businessKey: '',
-  processKey: '',
+  tableName: '',
   variables: {}
 });
 const taskVariables = ref<Record<string, any>>({});
@@ -191,46 +191,54 @@ const submitForm = (status: string) => {
     proxy?.$modal.msgError('请假时间不能为空');
     return;
   }
-  leaveFormRef.value?.validate(async (valid: boolean) => {
-    form.value.startDate = leaveTime.value[0];
-    form.value.endDate = leaveTime.value[1];
-    if (valid) {
-      buttonLoading.value = true;
-      let res: AxiosResponse<LeaveVO>;
-      if (form.value.id) {
-        res = await updateLeave(form.value);
-      } else {
-        res = await addLeave(form.value);
+  try {
+    leaveFormRef.value?.validate(async (valid: boolean) => {
+      form.value.startDate = leaveTime.value[0];
+      form.value.endDate = leaveTime.value[1];
+      if (valid) {
+        buttonLoading.value = true;
+        let res: AxiosResponse<LeaveVO>;
+        if (form.value.id) {
+          res = await updateLeave(form.value);
+        } else {
+          res = await addLeave(form.value);
+        }
+        form.value = res.data;
+        if (status === 'draft') {
+          buttonLoading.value = false;
+          proxy?.$modal.msgSuccess('暂存成功');
+          proxy.$tab.closePage(proxy.$route);
+          proxy.$router.go(-1);
+        } else {
+          await handleStartWorkFlow(res.data);
+        }
       }
-      form.value = res.data;
-      if (status === 'draft') {
-        buttonLoading.value = false;
-        proxy?.$modal.msgSuccess('暂存成功');
-        proxy.$tab.closePage(proxy.$route);
-        proxy.$router.go(-1);
-      } else {
-        await handleStartWorkFlow(res.data);
-      }
-    }
-  });
+    });
+  } finally {
+    buttonLoading.value = false;
+  }
 };
 
 //提交申请
 const handleStartWorkFlow = async (data: LeaveVO) => {
-  submitFormData.value.processKey = 'leave1';
-  submitFormData.value.businessKey = data.id;
-  //流程变量
-  taskVariables.value = {
-    entity: data,
-    leaveDays: data.leaveDays,
-    userList: [1, 2],
-    userList2: [1, 2]
-  };
-  submitFormData.value.variables = taskVariables.value;
-  const resp = await startWorkFlow(submitFormData.value);
-  if (submitVerifyRef.value) {
+  try {
+    submitFormData.value.tableName = 'test_leave';
+    submitFormData.value.businessKey = data.id;
+    //流程变量
+    taskVariables.value = {
+      entity: data,
+      leaveDays: data.leaveDays,
+      userList: [1, 2],
+      userList2: [1, 2]
+    };
+    submitFormData.value.variables = taskVariables.value;
+    const resp = await startWorkFlow(submitFormData.value);
+    if (submitVerifyRef.value) {
+      buttonLoading.value = false;
+      submitVerifyRef.value.openDialog(resp.data.taskId);
+    }
+  } finally {
     buttonLoading.value = false;
-    submitVerifyRef.value.openDialog(resp.data.taskId);
   }
 };
 //审批记录

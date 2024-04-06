@@ -1,3 +1,4 @@
+import { DefinitionConfigVO } from '@/api/workflow/definitionConfig/types';
 export interface ProcessDefinitionQuery extends PageQuery {
   key?: string;
   name?: string;
@@ -14,6 +15,7 @@ export interface ProcessDefinitionVO extends BaseEntity {
   diagramResourceName: string;
   deploymentId: string;
   deploymentTime: string;
+  wfDefinitionConfigVo: DefinitionConfigVO;
 }
 
 export interface definitionXmlVO {
