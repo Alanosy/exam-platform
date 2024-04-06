@@ -40,7 +40,6 @@ export interface TaskVO extends BaseEntity {
   multiInstance?: boolean;
   businessKey?: string;
   wfNodeConfigVo?: NodeConfigVO;
-  wfDefinitionConfigVo?: DefinitionConfigVO;
 }
 
 export interface VariableVo {

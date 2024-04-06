@@ -89,3 +89,16 @@ export const modelDeploy = (id: string): AxiosPromise<void> => {
     method: 'post'
   });
 };
+
+/**
+ * 复制模型
+ * @param data
+ * @returns {*}
+ */
+export const copyModel = (data: ModelForm): AxiosPromise<void> => {
+  return request({
+    url: '/workflow/model/copyModel',
+    method: 'post',
+    data: data
+  });
+};

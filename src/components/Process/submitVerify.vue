@@ -209,10 +209,15 @@ const handleCompleteTask = async () => {
   await proxy?.$modal.confirm('是否确认提交？');
   loading.value = true;
   buttonLoading.value = true;
-  await completeTask(form.value).finally(() => (loading.value = false));
-  dialog.visible = false;
-  emits('submitCallback');
-  proxy?.$modal.msgSuccess('操作成功');
+  try {
+    await completeTask(form.value);
+    dialog.visible = false;
+    emits('submitCallback');
+    proxy?.$modal.msgSuccess('操作成功');
+  }finally {
+    loading.value = false
+    buttonLoading.value = false
+  }
 };
 
 /** 驳回弹窗打开 */

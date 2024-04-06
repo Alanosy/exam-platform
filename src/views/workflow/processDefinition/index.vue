@@ -108,7 +108,6 @@
                       <template #dropdown>
                         <el-dropdown-menu>
                           <el-dropdown-item @click="getProcessDefinitionHitoryList(scope.row.id, scope.row.key)">历史版本</el-dropdown-item>
-                          <el-dropdown-item @click="handleFormOpen(scope.row)">表单配置</el-dropdown-item>
                         </el-dropdown-menu>
                       </template>
                     </el-dropdown>
@@ -211,38 +210,10 @@
               <el-col :span="1.5">
                 <el-button link type="primary" icon="Sort" size="small" @click="handleConvertToModel(scope.row)"> 转换模型 </el-button>
               </el-col>
-              <el-col :span="1.5">
-                <el-button link type="primary" icon="Setting" size="small" @click="handleFormOpen(scope.row)"> 表单配置 </el-button>
-              </el-col>
             </el-row>
           </template>
         </el-table-column>
       </el-table>
-    </el-dialog>
-    <!-- 表单配置 -->
-    <el-dialog v-model="formDialog.visible" :title="formDialog.title" width="650px" append-to-body :close-on-click-modal="false">
-      <el-form :model="definitionConfigForm" label-width="auto">
-        <el-form-item label="流程KEY">
-          <el-input v-model="definitionConfigForm.processKey" disabled/>
-        </el-form-item>
-        <el-form-item label="表单" prop="formId">
-          <el-select v-model="definitionConfigForm.formId" clearable filterable placeholder="请选择表单"  style="width: 260px" >
-            <el-option  v-for="item in formManageList"  :key="item.id"  :label="item.formTypeName+':'+item.formName" :value="item.id" />
-          </el-select>
-        </el-form-item>
-        <el-form-item label="备注">
-          <el-input v-model="definitionConfigForm.remark" type="textarea" resize="none"/>
-        </el-form-item>
-      </el-form>
-      
-      <template #footer>
-        <div class="dialog-footer">
-          <el-button @click="formDialog.visible = false">取消</el-button>
-          <el-button type="primary" @click="handlerSaveForm">
-            保存
-          </el-button>
-        </div>
-      </template>
     </el-dialog>
   </div>
 </template>
@@ -260,15 +231,10 @@ import {
 } from '@/api/workflow/processDefinition';
 import ProcessPreview from './components/processPreview.vue';
 import { listCategory } from '@/api/workflow/category';
-import { getByDefId,saveOrUpdate } from '@/api/workflow/definitionConfig';
 import { CategoryVO } from '@/api/workflow/category/types';
 import { ProcessDefinitionQuery, ProcessDefinitionVO } from '@/api/workflow/processDefinition/types';
-import { definitionConfigForm } from '@/api/workflow/definitionConfig/types';
 import { UploadRequestOptions } from 'element-plus';
-import { FormManageVO } from '@/api/workflow/formManage/types';
-import { selectListFormManage } from '@/api/workflow/formManage';
 
-const formManageList = ref<FormManageVO[]>([]);
 const { proxy } = getCurrentInstance() as ComponentInternalInstance;
 
 const previewRef = ref<InstanceType<typeof ProcessPreview>>();
@@ -295,7 +261,6 @@ const categoryOptions = ref<CategoryOption[]>([]);
 const categoryName = ref('');
 /** 部署文件分类选择 */
 const selectCategory = ref();
-const definitionConfigForm = ref<definitionConfigForm>({});
 
 const uploadDialog = reactive<DialogOption>({
   visible: false,
@@ -305,11 +270,6 @@ const uploadDialog = reactive<DialogOption>({
 const processDefinitionDialog = reactive<DialogOption>({
   visible: false,
   title: '历史版本'
-});
-
-const formDialog = reactive<DialogOption>({
-  visible: false,
-  title: '表单配置'
 });
 
 // 查询参数
@@ -476,34 +436,4 @@ const handerDeployProcessFile = (data: UploadRequestOptions): XMLHttpRequest => 
     });
   return;
 };
-//打开表单配置
-const handleFormOpen = async (row: ProcessDefinitionVO) => {
-  listFormManage()
-   formDialog.visible = true
-   definitionConfigForm.value.processKey = row.key
-   definitionConfigForm.value.definitionId = row.id
-   const resp = await getByDefId(row.id)
-   if(resp.data){
-    definitionConfigForm.value = resp.data
-   }else{
-    definitionConfigForm.value.formId = undefined
-    definitionConfigForm.value.remark = undefined
-   }
-}
-//保存表单
-const handlerSaveForm = async () => {
-  await proxy?.$modal.confirm('是否确认保存？');
-  saveOrUpdate(definitionConfigForm.value).then(resp=>{
-    if(resp.code === 200){
-      proxy?.$modal.msgSuccess('操作成功');
-      formDialog.visible = false
-      getList();
-    }
-  })
-}
-//表单列表
-const listFormManage = async () => {
-  const res = await selectListFormManage();
-  formManageList.value = res.data;
-}
 </script>

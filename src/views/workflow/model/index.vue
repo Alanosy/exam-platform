@@ -59,7 +59,7 @@
 
           <el-table border v-loading="loading" :data="modelList" @selection-change="handleSelectionChange">
             <el-table-column type="selection" width="55" align="center" />
-            <el-table-column fixed align="center" type="index" label="序号" width="50"></el-table-column>
+            <el-table-column fixed align="center" type="index" label="序号" width="80"></el-table-column>
             <el-table-column align="center" :show-overflow-tooltip="true" prop="name" label="模型名称" width="200"></el-table-column>
             <el-table-column align="center" prop="key" label="模型KEY"></el-table-column>
             <el-table-column align="center" prop="version" label="版本号" width="90">
@@ -68,7 +68,7 @@
             <el-table-column align="center" prop="metaInfo" label="备注说明" min-width="130"></el-table-column>
             <el-table-column align="center" :show-overflow-tooltip="true" prop="createTime" label="创建时间" width="160"></el-table-column>
             <el-table-column align="center" :show-overflow-tooltip="true" prop="lastUpdateTime" label="更新时间" width="160"></el-table-column>
-            <el-table-column fixed="right" label="操作" align="center" width="150" class-name="small-padding fixed-width">
+            <el-table-column fixed="right" label="操作" align="center" width="170" class-name="small-padding fixed-width">
               <template #default="scope">
                 <el-row :gutter="10" class="mb8">
                   <el-col :span="1.5">
@@ -82,6 +82,11 @@
                   <el-col :span="1.5">
                     <el-button link type="primary" size="small" icon="ScaleToOriginal" @click="clickDeploy(scope.row.id, scope.row.key)">
                       流程部署
+                    </el-button>
+                  </el-col>
+                  <el-col :span="1.5">
+                    <el-button link type="primary" size="small" icon="CopyDocument" @click="handleCopy(scope.row)">
+                      复制模型
                     </el-button>
                   </el-col>
                 </el-row>
@@ -105,10 +110,10 @@
     <el-dialog v-model="dialog.visible" :title="dialog.title" width="650px" append-to-body :close-on-click-modal="false">
       <el-form ref="formRef" :model="form" :rules="rules" label-width="100px">
         <el-form-item label="模型名称：" prop="name">
-          <el-input v-model="form.name" :disabled="ids && ids.length > 0" maxlength="20" show-word-limit />
+          <el-input v-model="form.name" :disabled="ids && ids.length > 0 && billType === 'update'" maxlength="20" show-word-limit />
         </el-form-item>
         <el-form-item label="模型KEY：" prop="key">
-          <el-input v-model="form.key" :disabled="ids && ids.length > 0" maxlength="20" show-word-limit />
+          <el-input v-model="form.key" :disabled="ids && ids.length > 0 && billType === 'update'" maxlength="20" show-word-limit />
         </el-form-item>
         <el-form-item label="流程分类" prop="categoryCode">
           <el-tree-select
@@ -139,6 +144,7 @@ import Design from './design.vue';
 import { listModel, addModel, delModel, modelDeploy, getInfo, update } from '@/api/workflow/model';
 import { ModelQuery, ModelForm, ModelVO } from '@/api/workflow/model/types';
 import { listCategory } from '@/api/workflow/category';
+import { copyModel } from '@/api/workflow/model/index';
 
 const { proxy } = getCurrentInstance() as ComponentInternalInstance;
 
@@ -163,7 +169,7 @@ const total = ref(0);
 const modelList = ref<ModelVO[]>([]);
 const categoryOptions = ref<CategoryOption[]>([]);
 const categoryName = ref('');
-const modelId = ref<string>('');
+const billType = ref<string>('');
 
 const dialog = reactive<DialogOption>({
   visible: false,
@@ -268,14 +274,18 @@ const clickDeploy = async (id: string, key: string) => {
   await getList();
   proxy?.$modal.msgSuccess('部署成功');
 };
+//新增打开
 const handleAdd = () => {
+  billType.value = 'add';
   ids.value = [];
   getTreeselect();
   form.value = { ...initFormData };
   dialog.visible = true;
   dialog.title = '新增模型';
 };
+//修改打开
 const handleUpdate = () => {
+  billType.value = 'update';
   dialog.title = '修改模型';
   nextTick(async () => {
     await getTreeselect();
@@ -286,20 +296,35 @@ const handleUpdate = () => {
   });
 };
 
+//复制打开
+const handleCopy = (row?: ModelVO) => {
+  billType.value = 'copy';
+  dialog.title = '复制模型';
+  nextTick(async () => {
+    await getTreeselect();
+    form.value = { ...initFormData };
+    form.value.id = row.id
+    dialog.visible = true;
+  });
+};
+
 /** 提交按钮 */
 const submitForm = () => {
   formRef.value.validate(async (valid: boolean) => {
     if (valid) {
       buttonLoading.value = true;
-      if (ids.value && ids.value.length > 0) {
+      if('copy' === billType.value){
+        await copyModel(form.value);
+        proxy?.$modal.msgSuccess('操作成功');
+      }else if(ids.value && ids.value.length > 0 && 'update' === billType.value){
         form.value.id = ids.value[0];
         await update(form.value);
-        proxy?.$modal.msgSuccess('新增成功');
-      } else {
+        proxy?.$modal.msgSuccess('操作成功');
+      }else {
         initXml(form.value.key, form.value.name);
         form.value.xml = xml.value;
         await addModel(form.value);
-        proxy?.$modal.msgSuccess('新增成功');
+        proxy?.$modal.msgSuccess('操作成功');
       }
       dialog.visible = false;
       await getList();
