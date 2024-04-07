@@ -2,8 +2,11 @@ package cn.org.alan.exam.service;
 
 import cn.org.alan.exam.common.result.Result;
 import cn.org.alan.exam.model.entity.Exam;
-import cn.org.alan.exam.model.form.ExamForm;
+import cn.org.alan.exam.model.form.exam.ExamAddForm;
+import cn.org.alan.exam.model.form.exam.ExamForm;
 import cn.org.alan.exam.model.vo.*;
+import cn.org.alan.exam.model.vo.exam.ExamQuAnswerForm;
+import cn.org.alan.exam.model.vo.exam.PaperQuDetailVO;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.IService;
 
@@ -18,17 +21,17 @@ import com.baomidou.mybatisplus.extension.service.IService;
 public interface IExamService extends IService<Exam> {
     /**
      * 创建考试
-     * @param examForm
+     * @param examAddForm
      * @return
      */
-    Result<String> createExam(ExamForm examForm);
+    Result<String> createExam(ExamAddForm examAddForm);
 
     /**
      * 修改考试
      * @param examForm
      * @return
      */
-    Result<String> updateExam(ExamForm examForm);
+    Result<String> updateExam(ExamForm examForm,Integer id);
 
     /**
      * 删除考试
@@ -44,7 +47,7 @@ public interface IExamService extends IService<Exam> {
      * @param title
      * @return
      */
-    Result<IPage<ExamVO>> getPagingExam(Integer pageNum, Integer pageSize, Integer title);
+    Result<IPage<ExamVO>> getPagingExam(Integer pageNum, Integer pageSize, String title);
 
     /**
      * 获取考试题目id列表
@@ -85,7 +88,7 @@ public interface IExamService extends IService<Exam> {
      * 填充答案
      * @return
      */
-    Result<ExamFillVO> addAnswer();
+    Result<ExamFillVO> addAnswer(ExamQuAnswerForm examQuAnswerForm);
 
     /**
      * 根据班级获得考试

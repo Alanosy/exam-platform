@@ -2,8 +2,12 @@ package cn.org.alan.exam.controller;
 
 
 import cn.org.alan.exam.common.result.Result;
-import cn.org.alan.exam.model.form.ExamForm;
+import cn.org.alan.exam.model.entity.ExamQuAnswer;
+import cn.org.alan.exam.model.form.exam.ExamAddForm;
+import cn.org.alan.exam.model.form.exam.ExamForm;
 import cn.org.alan.exam.model.vo.*;
+import cn.org.alan.exam.model.vo.exam.ExamQuAnswerForm;
+import cn.org.alan.exam.model.vo.exam.PaperQuDetailVO;
 import cn.org.alan.exam.service.IExamService;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import jakarta.annotation.Resource;
@@ -28,8 +32,8 @@ public class ExamController {
      * @return
      */
     @PostMapping
-    public Result<String> createExam(@RequestBody ExamForm examForm) {
-        return examService.createExam(examForm);
+    public Result<String> createExam(@RequestBody ExamAddForm examAddForm) {
+        return examService.createExam(examAddForm);
     }
 
     /**
@@ -37,9 +41,9 @@ public class ExamController {
      *
      * @return
      */
-    @PutMapping
-    public Result<String> updateExam(@RequestBody ExamForm examForm) {
-        return examService.updateExam(examForm);
+    @PutMapping("/{id}")
+    public Result<String> updateExam(@RequestBody ExamForm examForm,@PathVariable("id") Integer id) {
+        return examService.updateExam(examForm,id);
     }
 
     /**
@@ -58,10 +62,10 @@ public class ExamController {
      * @return
      */
     @GetMapping("/paging")
-    public Result<IPage<ExamVO>> getPagingExam(@RequestParam("pageNum") Integer pageNum,
-                                               @RequestParam("pageSize") Integer pageSize,
-                                               @RequestParam("title") Integer title) {
-        return examService.getPagingExam(pageNum, pageSize,title);
+    public Result<IPage<ExamVO>> getPagingExam(@RequestParam(value = "pageNum", required = false, defaultValue = "1") Integer pageNum,
+                                               @RequestParam(value = "pageSize", required = false, defaultValue = "10") Integer pageSize,
+                                               @RequestParam(value = "title", required = false) String title) {
+        return examService.getPagingExam(pageNum, pageSize, title);
     }
 
     /**
@@ -83,7 +87,7 @@ public class ExamController {
     public Result<PaperQuDetailVO> getQuestionSingle(@RequestParam("examId") String examId,
                                                      @RequestParam("questionId") String questionId) {
 
-        return examService.getQuestionSingle(examId,questionId);
+        return examService.getQuestionSingle(examId, questionId);
     }
 
     /**
@@ -122,7 +126,7 @@ public class ExamController {
      * 填充答案
      */
     @PostMapping("/full-answer")
-    public Result<ExamFillVO> addAnswer() {
-        return examService.addAnswer();
+    public Result<ExamFillVO> addAnswer(@RequestBody ExamQuAnswerForm examQuAnswerForm) {
+        return examService.addAnswer(examQuAnswerForm);
     }
 }

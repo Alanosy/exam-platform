@@ -2,6 +2,7 @@ package cn.org.alan.exam.model.vo;
 
 import com.baomidou.mybatisplus.annotation.FieldFill;
 import com.baomidou.mybatisplus.annotation.TableField;
+import lombok.Data;
 
 import java.time.LocalDateTime;
 
@@ -10,6 +11,7 @@ import java.time.LocalDateTime;
  * @Version
  * @Date 2024/4/1 3:18 PM
  */
+@Data
 public class ExamVO {
     /**
      * id    考试表

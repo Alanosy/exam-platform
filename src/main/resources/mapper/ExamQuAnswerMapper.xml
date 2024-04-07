@@ -1,5 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="cn.org.alan.exam.mapper.ExamQuAnswerMapper">
-
+    <resultMap id="ListResultMap"
+               type="cn.org.alan.exam.model.vo.exam.PaperQuAnswerExtVO">
+        <result column="id" property="id" />
+        <result column="sort" property="sort" />
+        <result column="image" property="image" />
+        <result column="content" property="content" />
+    </resultMap>
+    <select id="list" resultMap="ListResultMap">
+    SELECT op.`id`,eq.`sort`,op.'content',op.'image'
+    FROM t_exam_question eq
+    LEFT JOIN t_option op ON eq.question_id=op.qu_id
+    WHERE op.exam_id=#{examId} AND op.question_id=#{questionId}
+    ORDER BY eq.sort ASC
+    </select>
 </mapper>

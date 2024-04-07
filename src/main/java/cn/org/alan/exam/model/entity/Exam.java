@@ -78,7 +78,7 @@ public class Exam implements Serializable {
     /**
      * 多选题成绩     数据库存储*100，前端正常输入和展示/100
      */
-    private Integer multilScore;
+    private Integer multiScore;
 
     /**
      * 判断题数量 
@@ -194,11 +194,11 @@ public class Exam implements Serializable {
         this.multiCount = multiCount;
     }
     public Integer getMultilScore() {
-        return multilScore;
+        return multiScore;
     }
 
     public void setMultilScore(Integer multilScore) {
-        this.multilScore = multilScore;
+        this.multiScore = multilScore;
     }
     public Integer getJudgeCount() {
         return judgeCount;
@@ -264,7 +264,7 @@ public class Exam implements Serializable {
             ", radioCount=" + radioCount +
             ", radioScore=" + radioScore +
             ", multiCount=" + multiCount +
-            ", multilScore=" + multilScore +
+            ", multiScore=" + multiScore +
             ", judgeCount=" + judgeCount +
             ", judgeScore=" + judgeScore +
             ", saqCount=" + saqCount +
