@@ -2,21 +2,23 @@ package cn.org.alan.exam.controller;
 
 
 import cn.org.alan.exam.common.result.Result;
-import cn.org.alan.exam.model.entity.ExamQuAnswer;
 import cn.org.alan.exam.model.form.exam.ExamAddForm;
-import cn.org.alan.exam.model.form.exam.ExamForm;
-import cn.org.alan.exam.model.vo.*;
-import cn.org.alan.exam.model.vo.exam.ExamQuAnswerForm;
-import cn.org.alan.exam.model.vo.exam.PaperQuDetailVO;
+import cn.org.alan.exam.model.form.exam.ExamUpdateForm;
+import cn.org.alan.exam.model.vo.exam.*;
 import cn.org.alan.exam.service.IExamService;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import jakarta.annotation.Resource;
+import jakarta.validation.constraints.Pattern;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 /**
  * 考试管理
  *
- * @author WeiJin
+ * @author Alan
  * @since 2024-03-21
  */
 @RestController
@@ -32,7 +34,8 @@ public class ExamController {
      * @return
      */
     @PostMapping
-    public Result<String> createExam(@RequestBody ExamAddForm examAddForm) {
+    @PreAuthorize("hasAnyAuthority('role_teacher','role_admin')")
+    public Result<String> createExam(@Validated @RequestBody ExamAddForm examAddForm) {
         return examService.createExam(examAddForm);
     }
 
@@ -42,8 +45,9 @@ public class ExamController {
      * @return
      */
     @PutMapping("/{id}")
-    public Result<String> updateExam(@RequestBody ExamForm examForm,@PathVariable("id") Integer id) {
-        return examService.updateExam(examForm,id);
+    @PreAuthorize("hasAnyAuthority('role_teacher','role_admin')")
+    public Result<String> updateExam(@Validated @RequestBody ExamUpdateForm examUpdateForm, @PathVariable("id") Integer id) {
+        return examService.updateExam(examUpdateForm,id);
     }
 
     /**
@@ -52,7 +56,8 @@ public class ExamController {
      * @return
      */
     @DeleteMapping("/{ids}")
-    public Result<String> deleteExam(@PathVariable("ids") String ids) {
+    @PreAuthorize("hasAnyAuthority('role_teacher','role_admin')")
+    public Result<String> deleteExam(@PathVariable("ids") @Pattern(regexp = "^\\d+(,\\d+)*$|^\\d+$") String ids) {
         return examService.deleteExam(ids);
     }
 
@@ -62,6 +67,7 @@ public class ExamController {
      * @return
      */
     @GetMapping("/paging")
+    @PreAuthorize("hasAnyAuthority('role_teacher','role_admin')")
     public Result<IPage<ExamVO>> getPagingExam(@RequestParam(value = "pageNum", required = false, defaultValue = "1") Integer pageNum,
                                                @RequestParam(value = "pageSize", required = false, defaultValue = "10") Integer pageSize,
                                                @RequestParam(value = "title", required = false) String title) {
@@ -74,7 +80,8 @@ public class ExamController {
      * @return
      */
     @GetMapping("/question/list/{id}")
-    public Result<ExamDetailRespVO> getQuestionList(@PathVariable("id") String id) {
+    @PreAuthorize("hasAnyAuthority('role_teacher','role_admin','role_student')")
+    public Result<List<ExamDetailRespVO>> getQuestionList(@PathVariable("id") String id) {
         return examService.getQuestionList(id);
     }
 
@@ -84,9 +91,9 @@ public class ExamController {
      * @return
      */
     @GetMapping("/question/single")
-    public Result<PaperQuDetailVO> getQuestionSingle(@RequestParam("examId") String examId,
-                                                     @RequestParam("questionId") String questionId) {
-
+    @PreAuthorize("hasAnyAuthority('role_teacher','role_admin','role_student')")
+    public Result<ExamQuDetailVO> getQuestionSingle(@RequestParam("examId") String examId,
+                                                    @RequestParam("questionId") String questionId) {
         return examService.getQuestionSingle(examId, questionId);
     }
 
@@ -94,6 +101,7 @@ public class ExamController {
      * 题目汇总
      */
     @GetMapping("/collect/{id}")
+    @PreAuthorize("hasAnyAuthority('role_teacher','role_admin','role_student')")
     public Result<EXamQuCollectVO> getCollect(@PathVariable("id") String id) {
         return examService.getCollect(id);
     }
@@ -102,6 +110,7 @@ public class ExamController {
      * 获取考试详情信息
      */
     @GetMapping("/detail")
+    @PreAuthorize("hasAnyAuthority('role_teacher','role_admin','role_student')")
     public Result<ExamDetailVO> getDetail(@RequestParam("id") String id) {
         return examService.getDetail(id);
     }
@@ -110,14 +119,18 @@ public class ExamController {
      * 根据班级获得考试
      */
     @GetMapping("/{id}")
-    public Result<ExamVO> getGradeExamList(@PathVariable("id") String id) {
-        return examService.getGradeExamList(id);
+    @PreAuthorize("hasAnyAuthority('role_teacher','role_admin','role_student')")
+    public Result<IPage<ExamGradeVO>> getGradeExamList(@PathVariable("id") String id,
+                                                       @RequestParam(value = "pageNum", required = false, defaultValue = "1") Integer pageNum,
+                                                       @RequestParam(value = "pageSize", required = false, defaultValue = "10") Integer pageSize) {
+        return examService.getGradeExamList(id,pageNum,pageSize);
     }
 
     /**
      * 考试作弊次数添加
      */
     @PostMapping("/cheat")
+    @PreAuthorize("hasAnyAuthority('role_teacher','role_admin','role_student')")
     public Result<String> addCheat() {
         return examService.addCheat();
     }
@@ -126,6 +139,7 @@ public class ExamController {
      * 填充答案
      */
     @PostMapping("/full-answer")
+    @PreAuthorize("hasAnyAuthority('role_teacher','role_admin','role_student')")
     public Result<ExamFillVO> addAnswer(@RequestBody ExamQuAnswerForm examQuAnswerForm) {
         return examService.addAnswer(examQuAnswerForm);
     }

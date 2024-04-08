@@ -38,7 +38,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(AppException.class)
     public Result<String> handleAppException(AppException e) {
         log.error(e.getMessage(), e.getClass());
-        return Result.failed(e.getMessage());
+        return Result.failed(e.getLocalizedMessage());
     }
 
     /**

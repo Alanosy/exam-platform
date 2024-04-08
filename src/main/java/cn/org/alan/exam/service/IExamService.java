@@ -3,19 +3,17 @@ package cn.org.alan.exam.service;
 import cn.org.alan.exam.common.result.Result;
 import cn.org.alan.exam.model.entity.Exam;
 import cn.org.alan.exam.model.form.exam.ExamAddForm;
-import cn.org.alan.exam.model.form.exam.ExamForm;
-import cn.org.alan.exam.model.vo.*;
-import cn.org.alan.exam.model.vo.exam.ExamQuAnswerForm;
-import cn.org.alan.exam.model.vo.exam.PaperQuDetailVO;
+import cn.org.alan.exam.model.form.exam.ExamUpdateForm;
+import cn.org.alan.exam.model.vo.exam.*;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.IService;
 
+import java.util.List;
+
 /**
- * <p>
  *  服务类
- * </p>
  *
- * @author WeiJin
+ * @author Alan
  * @since 2024-03-21
  */
 public interface IExamService extends IService<Exam> {
@@ -28,10 +26,10 @@ public interface IExamService extends IService<Exam> {
 
     /**
      * 修改考试
-     * @param examForm
+     * @param examUpdateForm
      * @return
      */
-    Result<String> updateExam(ExamForm examForm,Integer id);
+    Result<String> updateExam(ExamUpdateForm examUpdateForm, Integer id);
 
     /**
      * 删除考试
@@ -54,7 +52,7 @@ public interface IExamService extends IService<Exam> {
      * @param id
      * @return
      */
-    Result<ExamDetailRespVO> getQuestionList(String id);
+    Result<List<ExamDetailRespVO>> getQuestionList(String id);
 
     /**
      * 获取单题信息
@@ -62,7 +60,7 @@ public interface IExamService extends IService<Exam> {
      * @param questionId
      * @return
      */
-    Result<PaperQuDetailVO> getQuestionSingle(String examId, String questionId);
+    Result<ExamQuDetailVO> getQuestionSingle(String examId, String questionId);
 
     /**
      * 题目汇总
@@ -92,8 +90,9 @@ public interface IExamService extends IService<Exam> {
 
     /**
      * 根据班级获得考试
+     *
      * @param id
      * @return
      */
-    Result<ExamVO> getGradeExamList(String id);
+    Result<IPage<ExamGradeVO>> getGradeExamList(String id, Integer pageNum, Integer pageSize);
 }

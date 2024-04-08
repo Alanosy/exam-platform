@@ -1,28 +1,31 @@
 package cn.org.alan.exam.model.vo.exam;
 
+import cn.org.alan.exam.model.entity.Option;
 import lombok.Data;
+
+import java.util.List;
 
 /**
  * @Author Alan
  * @Version
- * @Date 2024/4/7 11:10 PM
+ * @Date 2024/4/1 3:39 PM
  */
 @Data
-public class PaperQuAnswerExtVO {
+public class ExamQuDetailVO {
     private static final long serialVersionUID = 1L;
-    private Integer id;
 
     /**
-     * 试题图片
+     * 图片
      */
     private String image;
 
     /**
-     * 答案内容
+     * 题目内容
      */
     private String content;
     /**
-     * 顺序
+     * 答案内容
      */
-    private Integer sort;
+    List<Option> answerList;
+
 }

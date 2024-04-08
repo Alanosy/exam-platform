@@ -1,4 +1,4 @@
-package cn.org.alan.exam.model.vo;
+package cn.org.alan.exam.model.vo.exam;
 
 /**
  * @Author Alan

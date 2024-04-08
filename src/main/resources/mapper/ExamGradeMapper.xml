@@ -1,5 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="cn.org.alan.exam.mapper.ExamGradeMapper">
 
+    <insert id="addExamGrade">
+        insert into t_exam_grade (exam_id, grade_id)
+        VALUES
+        <foreach collection="gradeIds" item="gId" separator=",">
+            (#{id},#{gId})
+        </foreach>
+    </insert>
+    <delete id="delExamGrade">
+        delete from t_exam_grade
+        where
+        exam_id=#{id}
+    </delete>
 </mapper>

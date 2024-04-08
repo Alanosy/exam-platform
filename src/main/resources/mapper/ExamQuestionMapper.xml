@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.org.alan.exam.mapper.ExamQuestionMapper">
+
+    <insert id="insertQuestion">
+        insert into t_exam_question (exam_id, question_id,score,sort,type)
+        VALUES
+        <foreach collection="sampledIds" item="qId" separator="," index="sort">
+            (#{examId},#{qId},#{quScore},#{sort},#{quType})
+        </foreach>
+    </insert>
+</mapper>

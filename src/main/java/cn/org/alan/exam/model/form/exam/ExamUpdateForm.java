@@ -1,4 +1,7 @@
 package cn.org.alan.exam.model.form.exam;
+
+import com.baomidou.mybatisplus.annotation.FieldFill;
+import com.baomidou.mybatisplus.annotation.TableField;
 import jakarta.validation.constraints.*;
 import lombok.Data;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -8,10 +11,10 @@ import java.time.LocalDateTime;
 /**
  * @Author Alan
  * @Version
- * @Date 2024/4/5 11:15 PM
+ * @Date 2024/4/1 3:17 PM
  */
 @Data
-public class ExamAddForm {
+public class ExamUpdateForm {
     /**
      * 考试标题
      */
@@ -54,33 +57,19 @@ public class ExamAddForm {
     @NotBlank(message = "班级不能为空")
     @Pattern(regexp = "^\\d+(,\\d+)*$|^\\d+$", message = "班级参数错误，请将传输格式改为 1,2,3,4...且至少包含一个班级ID")
     private String gradeIds;
-    /**
-     * 题库id
-     */
-    @NotBlank(message = "题库不能为空")
-    private Integer repoId;
+
     /**
      * 证书id
      */
     private Integer certificateId;
-    /**
-     * 单选题数量
-     */
-    @NotBlank(message = "及格分不能为空")
-    @Min(value = 0)
-    private Integer radioCount;
+
     /**
      * 单选题分数
      */
     @NotBlank(message = "单选题分数不能为空")
     @Min(value = 0)
     private Integer radioScore;
-    /**
-     * 多选题数量
-     */
-    @NotBlank(message = "多选题数量不能为空")
-    @Min(value = 0)
-    private Integer multiCount;
+
     /**
      * 多选题分数
      */
@@ -90,21 +79,14 @@ public class ExamAddForm {
     /**
      * 判断题数量
      */
-    @NotBlank(message = "判断题数量不能为空")
-    @Min(value = 0)
-    private Integer judgeCount;
+
     /**
      * 判断题分数
      */
     @NotBlank(message = "判断题分数不能为空")
     @Min(value = 0)
     private Integer judgeScore;
-    /**
-     * 简答题数量
-     */
-    @NotBlank(message = "简答题数量不能为空")
-    @Min(value = 0)
-    private Integer saqCount;
+
     /**
      * 简答题分数
      */

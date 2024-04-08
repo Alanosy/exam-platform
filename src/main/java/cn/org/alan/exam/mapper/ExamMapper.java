@@ -7,16 +7,18 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import java.util.List;
 
 /**
- * <p>
  *  Mapper 接口
- * </p>
  *
- * @author WeiJin
+ * @author Alan
  * @since 2024-03-21
  */
 public interface ExamMapper extends BaseMapper<Exam> {
 
-    int createExam(ExamAddForm examAddForm);
+    int delExam(List<Integer> examIds);
 
-    int deleteExam(List<Integer> examIds);
+    int delExamGrade(List<Integer> examIds);
+
+    int delExamRepo(List<Integer> examIds);
+
+    int delExamQue(List<Integer> examIds);
 }

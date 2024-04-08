@@ -2,7 +2,7 @@ package cn.org.alan.exam.service.impl;
 
 import cn.org.alan.exam.mapper.ExamQuAnswerMapper;
 import cn.org.alan.exam.model.entity.ExamQuAnswer;
-import cn.org.alan.exam.model.vo.exam.PaperQuAnswerExtVO;
+import cn.org.alan.exam.model.vo.exam.ExamQuAnswerExtVO;
 import cn.org.alan.exam.service.IExamQuAnswerService;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -21,10 +21,6 @@ import java.util.List;
 @Service
 public class ExamQuAnswerServiceImpl extends ServiceImpl<ExamQuAnswerMapper, ExamQuAnswer> implements IExamQuAnswerService {
 
-    @Override
-    public List<PaperQuAnswerExtVO> listForExam(String examId, String questionId) {
-        return baseMapper.list(examId, questionId);
-    }
 
     @Override
     public List<ExamQuAnswer> listForFill(Integer examId, Integer questionId) {

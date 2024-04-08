@@ -1,4 +1,4 @@
-package cn.org.alan.exam.model.form.exam;
+package cn.org.alan.exam.model.vo.exam;
 
 import com.baomidou.mybatisplus.annotation.FieldFill;
 import com.baomidou.mybatisplus.annotation.TableField;
@@ -9,11 +9,10 @@ import java.time.LocalDateTime;
 /**
  * @Author Alan
  * @Version
- * @Date 2024/4/1 3:17 PM
+ * @Date 2024/4/1 3:18 PM
  */
 @Data
-public class ExamForm {
-
+public class ExamVO {
     /**
      * id    考试表
      */

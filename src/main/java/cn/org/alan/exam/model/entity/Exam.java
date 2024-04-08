@@ -193,11 +193,11 @@ public class Exam implements Serializable {
     public void setMultiCount(Integer multiCount) {
         this.multiCount = multiCount;
     }
-    public Integer getMultilScore() {
+    public Integer getMultiScore() {
         return multiScore;
     }
 
-    public void setMultilScore(Integer multilScore) {
+    public void setMultiScore(Integer multilScore) {
         this.multiScore = multilScore;
     }
     public Integer getJudgeCount() {

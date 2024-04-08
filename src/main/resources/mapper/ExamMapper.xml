@@ -1,18 +1,30 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="cn.org.alan.exam.mapper.ExamMapper">
-
-    <insert id="createExam" useGeneratedKeys="true" keyProperty="id">
-        insert into t_exam (title, exam_duration, passed_score, gross_score, radio_count, radio_score, multi_count,
-                            multi_score, judge_count, judge_score, saq_count, saq_score, start_time, end_time,
-                            certificate_id)
-        values
-        (#{title},#{examDuration},#{passedScore},#{grossScore},#{radioCount},#{radioScore},#{multiCount},
-        #{multiScore},#{judgeCount},#{judgeScore},#{saqCount},#{saqScorre},#{startTime},#{endTime},#{certificateId})
-    </insert>
-    <delete id="deleteExam">
+    <delete id="delExam">
         delete from t_exam
         WHERE id IN
+        <foreach item="examId" collection="examIds" open="(" separator="," close=")">
+            #{examId}
+        </foreach>
+    </delete>
+    <delete id="delExamGrade">
+        delete from t_exam_grade
+        WHERE exam_id IN
+        <foreach item="examId" collection="examIds" open="(" separator="," close=")">
+            #{examId}
+        </foreach>
+    </delete>
+    <delete id="delExamRepo">
+        delete from t_exam_repo
+        WHERE exam_id IN
+        <foreach item="examId" collection="examIds" open="(" separator="," close=")">
+            #{examId}
+        </foreach>
+    </delete>
+    <delete id="delExamQue">
+        delete from t_exam_question
+        WHERE exam_id IN
         <foreach item="examId" collection="examIds" open="(" separator="," close=")">
             #{examId}
         </foreach>
