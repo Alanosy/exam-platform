@@ -3,7 +3,7 @@ package cn.org.alan.exam.controller;
 
 import cn.org.alan.exam.common.group.QuestionGroup;
 import cn.org.alan.exam.common.result.Result;
-import cn.org.alan.exam.model.form.QuestionFrom;
+import cn.org.alan.exam.model.form.question.QuestionFrom;
 import cn.org.alan.exam.model.vo.QuestionVO;
 import cn.org.alan.exam.service.IQuestionService;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -68,5 +68,16 @@ public class QuestionController {
                                                     @RequestParam(value = "repoId", required = false) Integer repoId,
                                                     @RequestParam(value = "type", required = false) Integer type) {
         return iQuestionService.pagingQuestion(pageNum, pageSize, content,type,repoId);
+    }
+
+    /**
+     * 根据试题id获取单题详情
+     * @param id 试题id
+     * @return 响应结果
+     */
+    @GetMapping("/single/{id}")
+    @PreAuthorize("hasAnyAuthority('role_teacher','role_admin')")
+    public Result<QuestionVO> querySingle(@PathVariable("id") Integer id){
+        return iQuestionService.querySingle(id);
     }
 }

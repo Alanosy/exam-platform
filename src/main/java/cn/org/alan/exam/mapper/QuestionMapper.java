@@ -1,5 +1,6 @@
 package cn.org.alan.exam.mapper;
 
+import cn.org.alan.exam.common.result.Result;
 import cn.org.alan.exam.model.entity.Question;
 import cn.org.alan.exam.model.vo.QuestionVO;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
@@ -34,4 +35,11 @@ public interface QuestionMapper extends BaseMapper<Question> {
      * @return 放回结果
      */
     IPage<QuestionVO> pagingQuestion(IPage<QuestionVO> page, String content, Integer repoId, Integer type, Integer userId);
+
+    /**
+     * 根据试题id获取单题详情
+     * @param id 试题id
+     * @return 结果集
+     */
+    QuestionVO selectSingle(Integer id);
 }
