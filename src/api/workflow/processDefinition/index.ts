@@ -50,11 +50,11 @@ export const definitionXml = (processDefinitionId: string): AxiosPromise<definit
 
 /**
  * 删除流程定义
- * @param processDefinitionId 流程定义id
  * @param deploymentId 部署id
+ * @param processDefinitionId 流程定义id
  * @returns
  */
-export const deleteProcessDefinition = (deploymentId: string, processDefinitionId: string) => {
+export const deleteProcessDefinition = (deploymentId: string | string[], processDefinitionId: string | string[]) => {
   return request({
     url: `/workflow/processDefinition/${deploymentId}/${processDefinitionId}`,
     method: 'delete'

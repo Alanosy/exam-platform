@@ -41,6 +41,7 @@
         <transition :enter-active-class="proxy?.animate.searchAnimate.enter" :leave-active-class="proxy?.animate.searchAnimate.leave">
           <div v-show="showSearch" class="mb-[10px]">
             <el-card shadow="hover">
+              <el-button type="danger" icon="Delete" :disabled="multiple" @click="handleDelete">删除</el-button>
               <el-button type="primary" icon="UploadFilled" @click="uploadDialog.visible = true">部署流程文件</el-button>
             </el-card>
           </div>
@@ -277,7 +278,9 @@ type CategoryOption = {
 };
 
 const loading = ref(true);
-const ids = ref<Array<string | number>>([]);
+const ids = ref<Array<any>>([]);
+const deploymentIds = ref<Array<any>>([]);
+const keys = ref<Array<any>>([]);
 const single = ref(true);
 const multiple = ref(true);
 const showSearch = ref(true);
@@ -368,6 +371,8 @@ const resetQuery = () => {
 // 多选框选中数据
 const handleSelectionChange = (selection: any) => {
   ids.value = selection.map((item: any) => item.id);
+  deploymentIds.value = selection.map((item: any) => item.deploymentId);
+  keys.value = selection.map((item: any) => item.key);
   single.value = selection.length !== 1;
   multiple.value = !selection.length;
 };
@@ -414,9 +419,12 @@ const clickPreviewXML = async (id: string) => {
 };
 /** 删除按钮操作 */
 const handleDelete = async (row: ProcessDefinitionVO) => {
-  await proxy?.$modal.confirm('是否确认删除流程定义key为【' + row.key + '】的数据项？');
+  const id = row.id || ids.value;
+  const deployIds = row.deploymentId || deploymentIds.value;
+  const defKeys = row.key || keys.value;
+  await proxy?.$modal.confirm('是否确认删除流程定义KEY为【' + keys.value + '】的数据项？');
   loading.value = true;
-  await deleteProcessDefinition(row.deploymentId, row.id).finally(() => (loading.value = false));
+  await deleteProcessDefinition(deployIds, id).finally(() => (loading.value = false));
   await getList();
   proxy?.$modal.msgSuccess('删除成功');
 };
