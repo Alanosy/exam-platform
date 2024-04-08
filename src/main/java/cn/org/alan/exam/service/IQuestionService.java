@@ -2,7 +2,7 @@ package cn.org.alan.exam.service;
 
 import cn.org.alan.exam.common.result.Result;
 import cn.org.alan.exam.model.entity.Question;
-import cn.org.alan.exam.model.form.QuestionFrom;
+import cn.org.alan.exam.model.form.question.QuestionFrom;
 import cn.org.alan.exam.model.vo.QuestionVO;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.IService;
@@ -45,4 +45,11 @@ public interface IQuestionService extends IService<Question> {
      * @return 响应
      */
     Result<IPage<QuestionVO>> pagingQuestion(Integer pageNum, Integer pageSize, String content, Integer type, Integer repoId);
+
+    /**
+     * 根据试题id获取单题详情
+     * @param id 试题id
+     * @return 结果集
+     */
+    Result<QuestionVO> querySingle(Integer id);
 }

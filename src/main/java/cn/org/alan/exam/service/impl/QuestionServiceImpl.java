@@ -6,7 +6,7 @@ import cn.org.alan.exam.mapper.OptionMapper;
 import cn.org.alan.exam.mapper.QuestionMapper;
 import cn.org.alan.exam.model.entity.Option;
 import cn.org.alan.exam.model.entity.Question;
-import cn.org.alan.exam.model.form.QuestionFrom;
+import cn.org.alan.exam.model.form.question.QuestionFrom;
 import cn.org.alan.exam.model.vo.QuestionVO;
 import cn.org.alan.exam.service.IQuestionService;
 import cn.org.alan.exam.util.SecurityUtil;
@@ -97,5 +97,10 @@ public class QuestionServiceImpl extends ServiceImpl<QuestionMapper, Question> i
         }
 
         return Result.success(null, page);
+    }
+
+    @Override
+    public Result<QuestionVO> querySingle(Integer id) {
+        return Result.success(null,questionMapper.selectSingle(id));
     }
 }

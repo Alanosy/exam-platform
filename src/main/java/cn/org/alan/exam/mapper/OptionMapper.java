@@ -29,4 +29,11 @@ public interface OptionMapper extends BaseMapper<Option> {
      * @return 影响表中记录的条数
      */
     Integer deleteBatchByQuIds(List<Integer> quIdList);
+
+    /**
+     * 根据试题id获取所有选项
+     * @param id 试题id
+     * @return 结果集
+     */
+    List<Option> selectAllByQuestionId(Integer id);
 }
