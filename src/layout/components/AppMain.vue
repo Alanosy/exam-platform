@@ -1,6 +1,6 @@
 <template>
   <section class="app-main">
-    <router-view v-slot="{ Component, route }">
+    <router-view v-slot="{ Component, route }" :key="$route.fullPath">
       <transition :enter-active-class="animante" mode="out-in">
         <keep-alive :include="tagsViewStore.cachedViews">
           <component :is="Component" v-if="!route.meta.link" :key="route.path" />
