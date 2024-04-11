@@ -1,32 +1,16 @@
-package cn.org.alan.exam.model.entity;
+package cn.org.alan.exam.model.form;
 
-import com.baomidou.mybatisplus.annotation.*;
+import com.baomidou.mybatisplus.annotation.FieldFill;
+import com.baomidou.mybatisplus.annotation.TableField;
 
-import java.io.Serializable;
 import java.time.LocalDateTime;
 
 /**
- * <p>
- * 
- * </p>
- *
- * @author WeiJin
- * @since 2024-03-21
+ * @ Author JinXi
+ * @ Version 1.0
+ * @ Date 2024/4/11 15:15
  */
-@TableName("t_certificate")
-public class Certificate implements Serializable {
-
-    private static final long serialVersionUID = 1L;
-
-    /**
-     * ID   证书
-     */
-    @TableId(value = "id", type = IdType.AUTO)
-    private Integer id;
-
-    /**
-     * 证数名称
-     */
+public class CertificateForm {
     private String certificateName;
 
     /**
@@ -45,16 +29,6 @@ public class Certificate implements Serializable {
     @TableField(fill = FieldFill.INSERT)
     private LocalDateTime createTime;
 
-//    public static Integer getId() {
-//        return id;
-//    }
-    public Integer getId(){
-        return id;
-    }
-
-    public void setId(Integer id) {
-        this.id = id;
-    }
     public String getCertificateName() {
         return certificateName;
     }
@@ -62,6 +36,7 @@ public class Certificate implements Serializable {
     public void setCertificateName(String certificateName) {
         this.certificateName = certificateName;
     }
+
     public String getImage() {
         return image;
     }
@@ -69,6 +44,7 @@ public class Certificate implements Serializable {
     public void setImage(String image) {
         this.image = image;
     }
+
     public String getCertificationNuit() {
         return certificationNuit;
     }
@@ -76,6 +52,7 @@ public class Certificate implements Serializable {
     public void setCertificationNuit(String certificationNuit) {
         this.certificationNuit = certificationNuit;
     }
+
     public LocalDateTime getCreateTime() {
         return createTime;
     }
@@ -83,16 +60,4 @@ public class Certificate implements Serializable {
     public void setCreateTime(LocalDateTime createTime) {
         this.createTime = createTime;
     }
-
-    @Override
-    public String toString() {
-        return "Certificate{" +
-            "id=" + id +
-            ", certificateName=" + certificateName +
-            ", image=" + image +
-            ", certificationNuit=" + certificationNuit +
-            ", createTime=" + createTime +
-        "}";
-    }
-
 }
