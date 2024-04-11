@@ -19,10 +19,12 @@ import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import jakarta.annotation.Resource;
+import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
-
+import java.awt.print.Paper;
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -53,6 +55,12 @@ public class ExamServiceImpl extends ServiceImpl<ExamMapper, Exam> implements IE
     private ExamQuestionMapper examQuestionMapper;
     @Resource
     private OptionMapper optionMapper;
+    @Resource
+    private ExamQuAnswerMapper examQuAnswerMapper;
+    @Resource
+    private UserExamsScoreMapper userExamsScoreMapper;
+    @Resource
+    private UserBookMapper userBookMapper;
 
     @Override
     @Transactional
@@ -144,7 +152,7 @@ public class ExamServiceImpl extends ServiceImpl<ExamMapper, Exam> implements IE
         exam.setGrossScore(grossScore);
         int examRows = examMapper.update(exam, examLambdaUpdate);
         if (examRows == 0) {
-            return Result.failed("修改失败");
+            throw new AppException("修改失败");
         }
         // 修改考试班级
         String gradeIdsStr = examUpdateForm.getGradeIds();
@@ -153,11 +161,11 @@ public class ExamServiceImpl extends ServiceImpl<ExamMapper, Exam> implements IE
                 .toList();
         int examGradeRows = examGradeMapper.delExamGrade(exam.getId());
         if (examGradeRows == 0) {
-            return Result.failed("修改失败");
+            throw new AppException("修改失败");
         }
         Integer gradeRows = examGradeMapper.addExamGrade(exam.getId(), gradeIds);
         if (gradeRows == 0) {
-            return Result.failed("修改失败");
+            throw new AppException("修改失败");
         }
         return Result.success("修改成功");
     }
@@ -171,22 +179,22 @@ public class ExamServiceImpl extends ServiceImpl<ExamMapper, Exam> implements IE
                 .toList();
         int examRows = examMapper.delExam(examIds);
         if (examRows == 0) {
-            return Result.failed("删除失败，删除考试表时失败");
+            throw new AppException("删除失败，删除考试表时失败");
         }
         // 删除考试班级记录
         int examGradeRows = examMapper.delExamGrade(examIds);
         if (examGradeRows == 0) {
-            return Result.failed("删除失败，删除考试班级表时失败");
+            throw new AppException("删除失败，删除考试班级表时失败");
         }
         // 删除考试题库记录
         int examRepoRows = examMapper.delExamRepo(examIds);
         if (examRepoRows == 0) {
-            return Result.failed("删除失败，删除考试题库表时失败");
+            throw new AppException("删除失败，删除考试题库表时失败");
         }
         // 删除考试试题记录
         int examQueRows = examMapper.delExamQue(examIds);
         if (examQueRows == 0) {
-            return Result.failed("删除失败，删除考试试题表时失败");
+            throw new AppException("删除失败，删除考试试题表时失败");
         }
         return Result.success("删除成功");
     }
@@ -200,21 +208,25 @@ public class ExamServiceImpl extends ServiceImpl<ExamMapper, Exam> implements IE
         examQuery.like(StringUtils.isNotBlank(title), Exam::getTitle, title)
                 .eq(Exam::getUserId, SecurityUtil.getUserId());
         Page<Exam> examPage = examMapper.selectPage(page, examQuery);
-        // 返回Result<IPage<ExamVO>>对象
-        return Result.success("查询成功", examConverter.pageEntityToVo(examPage));
+        // 实体转换
+        Page<ExamVO> examVOPage = examConverter.pageEntityToVo(examPage);
+
+        return Result.success("查询成功", examVOPage);
     }
 
     @Override
     public Result<List<ExamDetailRespVO>> getQuestionList(String id) {
+        // 根据考试id查询考试试题表
         LambdaQueryWrapper<ExamQuestion> examQuestionLambdaQueryWrapper = new LambdaQueryWrapper<>();
         examQuestionLambdaQueryWrapper.eq(ExamQuestion::getExamId, id);
         List<ExamQuestion> examQuestions = examQuestionMapper.selectList(examQuestionLambdaQueryWrapper);
+        // 实体转换
         List<ExamDetailRespVO> examDetailRespVO = examConverter.listEntityToExamDetailRespVO(examQuestions);
-        return Result.success("查询成功",examDetailRespVO);
+        return Result.success("查询成功", examDetailRespVO);
     }
 
     @Override
-    public Result<ExamQuDetailVO> getQuestionSingle(String examId, String questionId) {
+    public Result<ExamQuDetailVO> getQuestionSingle(Integer examId, Integer questionId) {
         ExamQuDetailVO examQuDetailVO = new ExamQuDetailVO();
         // 问题
         Question quById = questionService.getById(questionId);
@@ -223,29 +235,83 @@ public class ExamServiceImpl extends ServiceImpl<ExamMapper, Exam> implements IE
         examQuDetailVO.setContent(quById.getContent());
         // 答案列表
         LambdaQueryWrapper<Option> optionLambdaQuery = new LambdaQueryWrapper<>();
-        optionLambdaQuery.eq(Option::getQuId,questionId);
+        optionLambdaQuery.eq(Option::getQuId, questionId);
         List<Option> list = optionMapper.selectList(optionLambdaQuery);
         examQuDetailVO.setAnswerList(list);
         return Result.success("获取成功", examQuDetailVO);
     }
 
     @Override
-    public Result<EXamQuCollectVO> getCollect(String id) {
-        return null;
+    public Result<List<ExamQuCollectVO>> getCollect(Integer examId) {
+        List<ExamQuCollectVO> examQuDetailVOS = new ArrayList<>();
+        // 获取考试题目的id
+        LambdaQueryWrapper<ExamQuestion> examQuLambdaQuery = new LambdaQueryWrapper<>();
+        examQuLambdaQuery.eq(ExamQuestion::getExamId, examId);
+        List<ExamQuestion> examQue = examQuestionMapper.selectList(examQuLambdaQuery);
+        for (ExamQuestion temp : examQue) {
+            ExamQuCollectVO examQuCollectVO = new ExamQuCollectVO();
+            // 问题
+            Question quById = questionService.getById(temp.getQuestionId());
+            // 基本信息
+            examQuCollectVO.setImage(quById.getImage());
+            examQuCollectVO.setContent(quById.getContent());
+            // 答案列表
+            LambdaQueryWrapper<Option> optionLambdaQuery = new LambdaQueryWrapper<>();
+            optionLambdaQuery.eq(Option::getQuId, temp.getQuestionId())
+                    .select(Option::getContent)
+                    .select(Option::getId)
+                    .select(Option::getSort)
+                    .select(Option::getImage)
+                    .select(Option::getQuId);
+            List<Option> list = optionMapper.selectList(optionLambdaQuery);
+            examQuCollectVO.setAnswerList(list);
+            // 回答内容
+            LambdaQueryWrapper<ExamQuAnswer> examQuAnswerLambdaQuery = new LambdaQueryWrapper<>();
+            examQuAnswerLambdaQuery.eq(ExamQuAnswer::getExamId, examId)
+                    .eq(ExamQuAnswer::getUserId, SecurityUtil.getUserId())
+                    .select(ExamQuAnswer::getId)
+                    .select(ExamQuAnswer::getQuestionId)
+                    .select(ExamQuAnswer::getCheckout)
+                    .select(ExamQuAnswer::getExamId)
+                    .select(ExamQuAnswer::getAnswerId)
+                    .select(ExamQuAnswer::getAnswerContent);
+            ExamQuAnswer examQuAnswer = examQuAnswerMapper.selectOne(examQuAnswerLambdaQuery);
+            examQuCollectVO.setExamQuAnswer(examQuAnswer);
+            // 添加到List
+            examQuDetailVOS.add(examQuCollectVO);
+        }
+        return Result.success("查询成功", examQuDetailVOS);
     }
 
     @Override
-    public Result<ExamDetailVO> getDetail(String id) {
-        return null;
+    public Result<ExamDetailVO> getDetail(String examId) {
+        // 查询考试详情信息
+        LambdaQueryWrapper<Exam> examLambdaQuery = new LambdaQueryWrapper<>();
+        examLambdaQuery.eq(Exam::getId, examId);
+        Exam exam = examMapper.selectOne(examLambdaQuery);
+        // 实体转换
+        ExamDetailVO examDetailVO = examConverter.examToExamDetailVO(exam);
+        return Result.success("查询成功", examDetailVO);
     }
 
     @Override
-    public Result<String> addCheat() {
-        return null;
+    public Result<String> addCheat(Integer examId) {
+        LambdaQueryWrapper<UserExamsScore> userExamsScoreLambdaQuery = new LambdaQueryWrapper<>();
+        userExamsScoreLambdaQuery.eq(UserExamsScore::getExamId, examId)
+                .eq(UserExamsScore::getUserId, SecurityUtil.getUserId());
+        UserExamsScore userExamsScore = userExamsScoreMapper.selectOne(userExamsScoreLambdaQuery);
+        Exam exam = this.getById(examId);
+        if (userExamsScore.getCount() >= exam.getMaxCount()) {
+            this.handExam(examId);
+            return Result.success("已超过最大切屏次数，已自动交卷");
+        }
+        userExamsScore.setCount(userExamsScore.getCount() + 1);
+        int insert = userExamsScoreMapper.insert(userExamsScore);
+        return Result.success("请勿切屏，最大切屏次数：" + exam.getMaxCount() + ",已切屏次数:" + userExamsScore.getCount());
     }
 
     @Override
-    public Result<ExamFillVO> addAnswer(ExamQuAnswerForm examQuAnswerForm) {
+    public Result<ExamFillVO> addAnswer(ExamQuAnswerVO examQuAnswerForm) {
 
         // 未作答
         if (CollectionUtils.isEmpty(Collections.singleton(examQuAnswerForm.getAnswer()))
@@ -258,13 +324,11 @@ public class ExamServiceImpl extends ServiceImpl<ExamMapper, Exam> implements IE
         boolean right = true;
         // 更新正确答案
         for (ExamQuAnswer item : list) {
-
             if (examQuAnswerForm.getAnswers().contains(item.getId())) {
                 item.setCheckout(1);
             } else {
                 item.setCheckout(0);
             }
-
             // 有一个对不上就是错的
             if (item.getIsRight() != null && !item.getIsRight().equals(item.getCheckout())) {
                 right = false;
@@ -282,11 +346,95 @@ public class ExamServiceImpl extends ServiceImpl<ExamMapper, Exam> implements IE
     }
 
     @Override
-    public Result<IPage<ExamGradeVO>> getGradeExamList(String id, Integer pageNum, Integer pageSize) {
+    public Result<IPage<ExamVO>> getGradeExamList(Integer gradeId, Integer pageNum, Integer pageSize) {
         Page page = new Page(pageNum, pageSize);
+        // 根据班级查找考试ID
         LambdaQueryWrapper<ExamGrade> examLambda = new LambdaQueryWrapper<>();
-        examLambda.eq(ExamGrade::getGradeId, id);
-        Page result = examGradeMapper.selectPage(page, examLambda);
-        return Result.success("查询成功", result);
+        examLambda.eq(ExamGrade::getGradeId, gradeId);
+        ExamGrade examGrade = examGradeMapper.selectOne(examLambda);
+        // 根据用户记录查询已考的考试
+        LambdaQueryWrapper<UserExamsScore> userExamsScoreLambdaQuery = new LambdaQueryWrapper<>();
+        userExamsScoreLambdaQuery.eq(UserExamsScore::getExamId,examGrade.getExamId())
+                .eq(UserExamsScore::getState,1);
+        UserExamsScore userExamsScore = userExamsScoreMapper.selectOne(userExamsScoreLambdaQuery);
+        // 查询考试分页列表
+        LambdaQueryWrapper<Exam> examQuery = new LambdaQueryWrapper<>();
+        examQuery.eq(Exam::getUserId, SecurityUtil.getUserId())
+                .ne(Exam::getId,userExamsScore.getExamId());
+        Page<Exam> examPage = examMapper.selectPage(page, examQuery);
+        // 实体转换
+        Page<ExamVO> examVOPage = examConverter.pageEntityToVo(examPage);
+        return Result.success("查询成功", examVOPage);
+    }
+
+    @Override
+    public Result<ExamQuDetailVO> handExam(Integer examId) {
+        // 获取当前时间
+        LocalDateTime nowTime = LocalDateTime.now();
+        // 查询考试表记录
+        LambdaQueryWrapper<Exam> examLambdaQuery = new LambdaQueryWrapper<>();
+        examLambdaQuery.eq(Exam::getId, examId);
+        Exam examOne = examMapper.selectOne(examLambdaQuery);
+        // 判断交卷是否超时
+        LocalDateTime endTime = examOne.getEndTime();
+        if (endTime.isBefore(nowTime)) {
+            return Result.failed("提交失败，已过交卷时间");
+        }
+        // 判断是否有简答题
+        if (examOne.getSaqCount() != 0) {
+            return Result.success("提交成功，待老师阅卷");
+        }
+        // 设置考试状态
+        UserExamsScore userExamsScore = new UserExamsScore();
+        userExamsScore.setState(1);
+        // 查询用户答题记录
+        LambdaQueryWrapper<ExamQuAnswer> examQuAnswerLambdaQuery = new LambdaQueryWrapper<>();
+        examQuAnswerLambdaQuery.eq(ExamQuAnswer::getUserId, SecurityUtil.getUserId())
+                .eq(ExamQuAnswer::getExamId, examId);
+        List<ExamQuAnswer> examQuAnswer = examQuAnswerMapper.selectList(examQuAnswerLambdaQuery);
+        // 客观分
+        List<UserBook> userBookArrayList = new ArrayList<>();
+        for (ExamQuAnswer temp : examQuAnswer) {
+            if (temp.getIsRight() == 1) {
+                if (temp.getQuestionType() == 1) {
+                    userExamsScore.setUserScore(userExamsScore.getUserScore() + examOne.getRadioScore());
+                } else if (temp.getQuestionType() == 2) {
+                    userExamsScore.setUserScore(userExamsScore.getUserScore() + examOne.getMultiScore());
+                } else if (temp.getQuestionType() == 3) {
+                    userExamsScore.setUserScore(userExamsScore.getUserScore() + examOne.getJudgeScore());
+                }
+            } else if (temp.getIsRight() == 0) {
+                UserBook userBook = new UserBook();
+                userBook.setExamId(examId);
+                userBook.setUserId(SecurityUtil.getUserId());
+                userBook.setQuId(temp.getQuestionId());
+                userBook.setCreateTime(nowTime);
+                userBookArrayList.add(userBook);
+            }
+        }
+        // 把打错的问题加入错题本
+        userBookMapper.addUserBookList(userBookArrayList);
+        // 添加总分和状态
+        LambdaUpdateWrapper<UserExamsScore> userExamsScoreLambdaUpdate = new LambdaUpdateWrapper<>();
+        userExamsScoreLambdaUpdate.eq(UserExamsScore::getUserId, SecurityUtil.getUserId())
+                .eq(UserExamsScore::getExamId, examId);
+        userExamsScoreMapper.update(userExamsScore, userExamsScoreLambdaUpdate);
+        return Result.success("交卷成功");
+    }
+
+    @Override
+    public Result<String> startExam(Integer examId) {
+        UserExamsScore userExamsScore = new UserExamsScore();
+        LambdaQueryWrapper<Exam> examLambdaQuery = new LambdaQueryWrapper<>();
+        examLambdaQuery.eq(Exam::getId, examId);
+        Exam exam = examMapper.selectOne(examLambdaQuery);
+        userExamsScore.setExamId(examId);
+        userExamsScore.setTotalTime(exam.getExamDuration());
+        userExamsScore.setState(0);
+        int rows = userExamsScoreMapper.insert(userExamsScore);
+        if (rows == 0) {
+            return Result.failed("访问失败");
+        }
+        return Result.success("访问成功");
     }
 }

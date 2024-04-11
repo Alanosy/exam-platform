@@ -45,8 +45,8 @@ public class GradeServiceImpl extends ServiceImpl<GradeMapper, Grade> implements
         gradeForm.setCode(ClassTokenGenerator.generateClassToken(18));
         // 实体转换
         Grade grade = gradeConverter.formToEntity(gradeForm);
-        int rowsAffected = gradeMapper.insert(grade);
-        if (rowsAffected == 0) {
+        int rows = gradeMapper.insert(grade);
+        if (rows== 0) {
             return Result.failed("添加失败");
         }
         return Result.success("添加成功");
@@ -58,8 +58,8 @@ public class GradeServiceImpl extends ServiceImpl<GradeMapper, Grade> implements
         gradeUpdateWrapper
                 .set(Grade::getGradeName, gradeForm.getGradeName())
                 .eq(Grade::getId, id);
-        int rowsAffected = gradeMapper.update(gradeUpdateWrapper);
-        if (rowsAffected == 0) {
+        int rows = gradeMapper.update(gradeUpdateWrapper);
+        if (rows == 0) {
             return Result.failed("修改失败");
         }
         return Result.success("修改成功");
@@ -67,8 +67,8 @@ public class GradeServiceImpl extends ServiceImpl<GradeMapper, Grade> implements
 
     @Override
     public Result<String> deleteGrade(Integer id) {
-        int rowsAffected = gradeMapper.deleteById(id);
-        if (rowsAffected == 0) {
+        int rows = gradeMapper.deleteById(id);
+        if (rows == 0) {
             return Result.failed("删除失败");
         }
         return Result.success("删除成功");
@@ -89,8 +89,8 @@ public class GradeServiceImpl extends ServiceImpl<GradeMapper, Grade> implements
         List<Integer> userIds = Arrays.stream(ids.split(","))
                 .map(Integer::parseInt)
                 .toList();
-        int rowsAffected = userMapper.removeUserGrade(userIds);
-        if (rowsAffected == 0) {
+        int rows = userMapper.removeUserGrade(userIds);
+        if (rows == 0) {
             return Result.failed("移除失败");
         }
         return Result.success("移除成功");

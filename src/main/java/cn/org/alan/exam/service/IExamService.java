@@ -60,14 +60,14 @@ public interface IExamService extends IService<Exam> {
      * @param questionId
      * @return
      */
-    Result<ExamQuDetailVO> getQuestionSingle(String examId, String questionId);
+    Result<ExamQuDetailVO> getQuestionSingle(Integer examId, Integer questionId);
 
     /**
      * 题目汇总
-     * @param id
+     * @param examId
      * @return
      */
-    Result<EXamQuCollectVO> getCollect(String id);
+    Result<List<ExamQuCollectVO>> getCollect(Integer examId);
 
     /**
      * 获取考试详情信息
@@ -80,13 +80,13 @@ public interface IExamService extends IService<Exam> {
      * 考试作弊次数添加
      * @return
      */
-    Result<String> addCheat();
+    Result<String> addCheat(Integer examId);
 
     /**
      * 填充答案
      * @return
      */
-    Result<ExamFillVO> addAnswer(ExamQuAnswerForm examQuAnswerForm);
+    Result<ExamFillVO> addAnswer(ExamQuAnswerVO examQuAnswerForm);
 
     /**
      * 根据班级获得考试
@@ -94,5 +94,18 @@ public interface IExamService extends IService<Exam> {
      * @param id
      * @return
      */
-    Result<IPage<ExamGradeVO>> getGradeExamList(String id, Integer pageNum, Integer pageSize);
+    Result<IPage<ExamVO>> getGradeExamList(Integer gradeId, Integer pageNum, Integer pageSize);
+
+    /**
+     * 交卷操作
+     * @param examId
+     * @return
+     */
+    Result<ExamQuDetailVO> handExam(Integer examId);
+
+    /**
+     * 开始考试
+     * @return
+     */
+    Result<String> startExam(Integer examId);
 }

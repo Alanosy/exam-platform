@@ -30,7 +30,7 @@ public class ExamController {
 
     /**
      * 创建考试
-     *
+     * @param examAddForm
      * @return
      */
     @PostMapping
@@ -40,8 +40,20 @@ public class ExamController {
     }
 
     /**
+     * 开始考试
+     * @param examId
+     * @return
+     */
+    @GetMapping("/start")
+    @PreAuthorize("hasAnyAuthority('role_teacher','role_admin','role_student')")
+    public Result<String> startExam(@RequestParam("exam_id") Integer examId) {
+        return examService.startExam(examId);
+    }
+
+    /**
      * 修改考试
-     *
+     * @param examUpdateForm
+     * @param id
      * @return
      */
     @PutMapping("/{id}")
@@ -52,7 +64,7 @@ public class ExamController {
 
     /**
      * 删除考试
-     *
+     * @param ids
      * @return
      */
     @DeleteMapping("/{ids}")
@@ -63,7 +75,9 @@ public class ExamController {
 
     /**
      * 教师分页查找考试列表
-     *
+     * @param pageNum
+     * @param pageSize
+     * @param title
      * @return
      */
     @GetMapping("/paging")
@@ -76,7 +90,7 @@ public class ExamController {
 
     /**
      * 获取考试题目id列表
-     *
+     * @param id
      * @return
      */
     @GetMapping("/question/list/{id}")
@@ -87,27 +101,32 @@ public class ExamController {
 
     /**
      * 获取单题信息
-     *
+     * @param examId
+     * @param questionId
      * @return
      */
     @GetMapping("/question/single")
     @PreAuthorize("hasAnyAuthority('role_teacher','role_admin','role_student')")
-    public Result<ExamQuDetailVO> getQuestionSingle(@RequestParam("examId") String examId,
-                                                    @RequestParam("questionId") String questionId) {
+    public Result<ExamQuDetailVO> getQuestionSingle(@RequestParam("examId") Integer examId,
+                                                    @RequestParam("questionId") Integer questionId) {
         return examService.getQuestionSingle(examId, questionId);
     }
 
     /**
      * 题目汇总
+     * @param examId
+     * @return
      */
     @GetMapping("/collect/{id}")
     @PreAuthorize("hasAnyAuthority('role_teacher','role_admin','role_student')")
-    public Result<EXamQuCollectVO> getCollect(@PathVariable("id") String id) {
-        return examService.getCollect(id);
+    public Result<List<ExamQuCollectVO>> getCollect(@PathVariable("id") Integer examId) {
+        return examService.getCollect(examId);
     }
 
     /**
      * 获取考试详情信息
+     * @param id
+     * @return
      */
     @GetMapping("/detail")
     @PreAuthorize("hasAnyAuthority('role_teacher','role_admin','role_student')")
@@ -117,30 +136,48 @@ public class ExamController {
 
     /**
      * 根据班级获得考试
+     * @param gradeId
+     * @param pageNum
+     * @param pageSize
+     * @return
      */
     @GetMapping("/{id}")
     @PreAuthorize("hasAnyAuthority('role_teacher','role_admin','role_student')")
-    public Result<IPage<ExamGradeVO>> getGradeExamList(@PathVariable("id") String id,
+    public Result<IPage<ExamVO>> getGradeExamList(@PathVariable("id") Integer gradeId,
                                                        @RequestParam(value = "pageNum", required = false, defaultValue = "1") Integer pageNum,
                                                        @RequestParam(value = "pageSize", required = false, defaultValue = "10") Integer pageSize) {
-        return examService.getGradeExamList(id,pageNum,pageSize);
+        return examService.getGradeExamList(gradeId,pageNum,pageSize);
     }
 
     /**
      * 考试作弊次数添加
+     * @param examId
+     * @return
      */
-    @PostMapping("/cheat")
+    @PutMapping("/cheat/{examId}")
     @PreAuthorize("hasAnyAuthority('role_teacher','role_admin','role_student')")
-    public Result<String> addCheat() {
-        return examService.addCheat();
+    public Result<String> addCheat(@PathVariable("examId") Integer examId) {
+        return examService.addCheat(examId);
     }
 
     /**
      * 填充答案
+     * @param examQuAnswerForm
+     * @return
      */
     @PostMapping("/full-answer")
     @PreAuthorize("hasAnyAuthority('role_teacher','role_admin','role_student')")
-    public Result<ExamFillVO> addAnswer(@RequestBody ExamQuAnswerForm examQuAnswerForm) {
+    public Result<ExamFillVO> addAnswer(@RequestBody ExamQuAnswerVO examQuAnswerForm) {
         return examService.addAnswer(examQuAnswerForm);
+    }
+
+    /**
+     * 交卷操作
+     * @param examId
+     * @return
+     */
+    @GetMapping(value = "/hand-exam/{examId}")
+    public Result<ExamQuDetailVO> handleExam(@PathVariable("examId") Integer examId) {
+        return examService.handExam(examId);
     }
 }
