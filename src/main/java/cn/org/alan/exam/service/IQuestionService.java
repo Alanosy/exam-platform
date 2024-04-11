@@ -6,6 +6,7 @@ import cn.org.alan.exam.model.form.question.QuestionFrom;
 import cn.org.alan.exam.model.vo.QuestionVO;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.IService;
+import org.springframework.web.multipart.MultipartFile;
 
 /**
  * <p>
@@ -52,4 +53,19 @@ public interface IQuestionService extends IService<Question> {
      * @return 结果集
      */
     Result<QuestionVO> querySingle(Integer id);
+
+    /**
+     * 修改试题
+     * @param questionFrom 需要修改的试题
+     * @return 结果
+     */
+    Result<String> updateQuestion(QuestionFrom questionFrom);
+
+    /**
+     * 批量导入试题
+     * @param id 题库Id
+     * @param file Excel文件
+     * @return 响应结果
+     */
+    Result<String> importQuestion(Integer id, MultipartFile file);
 }

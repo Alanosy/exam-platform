@@ -1,6 +1,7 @@
 package cn.org.alan.exam.model.form;
 
 import cn.org.alan.exam.common.group.UserGroup;
+import cn.org.alan.exam.util.excel.ExcelImport;
 import com.alibaba.excel.annotation.ExcelProperty;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
@@ -25,14 +26,14 @@ public class UserForm {
     //校验器注解
     @NotBlank(groups = {UserGroup.CreateUserGroup.class, UserGroup.RegisterGroup.class}, message = "用户名不能为空")
     //EasyExcel注解，映射关系
-    @ExcelProperty(value = "用户名*")
+    @ExcelImport(value = "用户名*",unique = true,required = true)
     private String userName;
     @NotBlank(groups = UserGroup.RegisterGroup.class,message = "密码不能为空")
     private String password;
     @NotBlank(groups = {UserGroup.CreateUserGroup.class, UserGroup.RegisterGroup.class}, message = "真实姓名不能为空")
-    @ExcelProperty(value = "真实姓名*")
+    @ExcelImport(value = "真实姓名*")
     private String realName;
-    @ExcelProperty(value = "角色")
+    @ExcelImport(value = "角色")
     private Integer roleId;
 
 

@@ -11,6 +11,7 @@ import jakarta.annotation.Resource;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 /**
  * 试题管理
@@ -55,7 +56,7 @@ public class QuestionController {
      *
      * @param pageNum  页码
      * @param pageSize 每页记录数
-     * @param content    试题名
+     * @param content  试题名
      * @param repoId   题库id
      * @param type     试题类型
      * @return 响应
@@ -67,17 +68,44 @@ public class QuestionController {
                                                     @RequestParam(value = "content", required = false) String content,
                                                     @RequestParam(value = "repoId", required = false) Integer repoId,
                                                     @RequestParam(value = "type", required = false) Integer type) {
-        return iQuestionService.pagingQuestion(pageNum, pageSize, content,type,repoId);
+        return iQuestionService.pagingQuestion(pageNum, pageSize, content, type, repoId);
     }
 
     /**
      * 根据试题id获取单题详情
+     *
      * @param id 试题id
      * @return 响应结果
      */
     @GetMapping("/single/{id}")
     @PreAuthorize("hasAnyAuthority('role_teacher','role_admin')")
-    public Result<QuestionVO> querySingle(@PathVariable("id") Integer id){
+    public Result<QuestionVO> querySingle(@PathVariable("id") Integer id) {
         return iQuestionService.querySingle(id);
+    }
+
+    /**
+     * 修改试题
+     *
+     * @param id           试题Id
+     * @param questionFrom 入参
+     * @return 响应结果
+     */
+    @PutMapping("/{id}")
+    @PreAuthorize("hasAnyAuthority('role_teacher','role_admin')")
+    public Result<String> updateQuestion(@PathVariable("id") Integer id, @RequestBody QuestionFrom questionFrom) {
+        questionFrom.setId(id);
+        return iQuestionService.updateQuestion(questionFrom);
+    }
+
+    /**
+     * 批量导入试题
+     * @param id 题库Id
+     * @param file Excel文件
+     * @return 响应结果
+     */
+    @PostMapping("/import/{id}")
+    @PreAuthorize("hasAnyAuthority('role_teacher','role_admin')")
+    public Result<String> importQuestion(@PathVariable("id") Integer id, @RequestParam("file") MultipartFile file) {
+        return iQuestionService.importQuestion(id,file);
     }
 }

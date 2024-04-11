@@ -6,18 +6,23 @@ import cn.org.alan.exam.mapper.OptionMapper;
 import cn.org.alan.exam.mapper.QuestionMapper;
 import cn.org.alan.exam.model.entity.Option;
 import cn.org.alan.exam.model.entity.Question;
+import cn.org.alan.exam.model.form.question.QuestionExcelFrom;
 import cn.org.alan.exam.model.form.question.QuestionFrom;
 import cn.org.alan.exam.model.vo.QuestionVO;
 import cn.org.alan.exam.service.IQuestionService;
 import cn.org.alan.exam.util.SecurityUtil;
+import cn.org.alan.exam.util.excel.ExcelUtils;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import jakarta.annotation.Resource;
+import lombok.SneakyThrows;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
@@ -40,14 +45,15 @@ public class QuestionServiceImpl extends ServiceImpl<QuestionMapper, Question> i
     @Resource
     private OptionMapper optionMapper;
 
+
     @Override
     @Transactional
     public Result<String> addSingleQuestion(QuestionFrom questionFrom) {
 
         //简答题入参校验
-        if (questionFrom.getQuType() == 4 && StringUtils.isBlank(questionFrom.getAnswer())) {
-            return Result.failed("简答题答案不能为空");
-        }
+//        if (questionFrom.getQuType() == 4 && StringUtils.isBlank(questionFrom.getAnswer())) {
+//            return Result.failed("简答题答案不能为空");
+//        }
         //非简答题入参校验
         List<Option> options = questionFrom.getOptions();
         if (questionFrom.getQuType() != 4 && (Objects.isNull(options) || options.size() < 2)) {
@@ -56,7 +62,7 @@ public class QuestionServiceImpl extends ServiceImpl<QuestionMapper, Question> i
 
         Question question = questionConverter.fromToEntity(questionFrom);
 
-        questionMapper.insertGetId(question);
+        questionMapper.insert(question);
         System.out.println("zhujian:" + question.getId());
         if (question.getQuType() == 4) {
             //简答题添加选项
@@ -102,5 +108,49 @@ public class QuestionServiceImpl extends ServiceImpl<QuestionMapper, Question> i
     @Override
     public Result<QuestionVO> querySingle(Integer id) {
         return Result.success(null,questionMapper.selectSingle(id));
+    }
+
+    @Override
+    @Transactional
+    public Result<String> updateQuestion(QuestionFrom questionFrom) {
+        //修改试题
+
+        Question question = questionConverter.fromToEntity(questionFrom);
+        questionMapper.updateById(question);
+        //修改选项
+        List<Option> options = questionFrom.getOptions();
+        for (Option option : options) {
+            optionMapper.updateById(option);
+        }
+        return Result.success("修改成功");
+    }
+
+    @SneakyThrows
+    @Override
+    @Transactional
+    public Result<String> importQuestion(Integer id, MultipartFile file) {
+        if (!ExcelUtils.isExcel(Objects.requireNonNull(file.getOriginalFilename()))){
+            return Result.failed("该文件不是一个合法的Excel文件");
+        }
+        List<QuestionExcelFrom> questionExcelFroms = ExcelUtils.readMultipartFile(file, QuestionExcelFrom.class);
+        //类型转换
+        List<QuestionFrom> list = QuestionExcelFrom.converterQuestionFrom(questionExcelFroms);
+
+        for (QuestionFrom questionFrom : list) {
+            Question question = questionConverter.fromToEntity(questionFrom);
+            question.setRepoId(id);
+            //添加单题获取Id
+            questionMapper.insert(question);
+            //批量添加选项
+            List<Option> options = questionFrom.getOptions();
+            options.forEach(option -> option.setQuId(question.getId()));
+            //避免简答题没有答案
+            if (!options.isEmpty()){
+                optionMapper.insertBatch(options);
+            }
+
+        }
+
+        return Result.success("导入成功");
     }
 }

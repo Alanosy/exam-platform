@@ -33,6 +33,7 @@ public class QuestionFrom {
      * 试题图片
      */
     private String image;
+    private String analysis;
 
     /**
      * 题干

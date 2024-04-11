@@ -2,11 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="cn.org.alan.exam.mapper.QuestionMapper">
 
-    <!--新增试题获取获取主键-->
-    <insert id="insertGetId" useGeneratedKeys="true" keyColumn="id" keyProperty="id">
-        insert into t_question
-            value(null,#{quType},#{image},#{content},#{createTime},#{analysis},#{repoId}, null)
-    </insert>
+
 
     <!--    分页获取试题信息-->
     <select id="pagingQuestion" resultType="cn.org.alan.exam.model.vo.QuestionVO">
