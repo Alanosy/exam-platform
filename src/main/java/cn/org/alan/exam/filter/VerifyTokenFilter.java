@@ -18,6 +18,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
+
 import java.io.IOException;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -43,9 +44,10 @@ public class VerifyTokenFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
 
-        //登录请求放行
+        //登录、注册、校验验证码、获取验证码、放行
         String uri = request.getRequestURI();
-        if ("/login".equals(uri) || uri.contains("/druid")) {
+        if (uri.contains("login") || uri.contains("verifyCode")
+                || uri.contains("captcha") || uri.contains("register")) {
             doFilter(request, response, filterChain);
             return;
         }
@@ -65,7 +67,7 @@ public class VerifyTokenFilter extends OncePerRequestFilter {
         }
 
         //验证token在redis中是否存在，k使用sessionId
-        if (Boolean.FALSE.equals(stringRedisTemplate.hasKey(request.getSession().getId() + "token"))) {
+        if (Boolean.FALSE.equals(stringRedisTemplate.hasKey("token" + request.getSession().getId()))) {
             responseUtil.response(response, Result.failed("token无效，请重新登录"));
             return;
         }

@@ -1,4 +1,4 @@
-package cn.org.alan.exam.model.form;
+package cn.org.alan.exam.model.form.question;
 
 import cn.org.alan.exam.common.group.QuestionGroup;
 import cn.org.alan.exam.model.entity.Option;
@@ -33,6 +33,7 @@ public class QuestionFrom {
      * 试题图片
      */
     private String image;
+    private String analysis;
 
     /**
      * 题干

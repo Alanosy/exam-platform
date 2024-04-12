@@ -1,35 +1,88 @@
 package cn.org.alan.exam.controller;
 
+import cn.org.alan.exam.common.group.UserGroup;
 import cn.org.alan.exam.common.result.Result;
-import cn.org.alan.exam.service.AuthService;
-import org.springframework.beans.factory.annotation.Autowired;
+import cn.org.alan.exam.model.form.UserForm;
+import cn.org.alan.exam.service.IAuthService;
+import jakarta.annotation.Resource;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 /**
- * @Author Alan
+ * @Author WeiJin
  * @Version
  * @Date 2024/3/25 11:05 AM
  */
 @RestController
-@RequestMapping("/auths")
+@RequestMapping("/api/auths")
 public class AuthController {
 
-    // @Autowired
-    // private AuthService
-    // @PostMapping("/login")
-    public Result login(@RequestParam String username,@RequestParam String password) {
 
-        return null;
+    @Resource
+    private IAuthService iAuthService;
+
+    /**
+     * 用户登录
+     *
+     * @param request request对象，用户获取sessionId
+     * @param username 用户名
+     * @param password 密码
+     * @return token
+     */
+    @PostMapping("/login")
+    public Result<String> login(HttpServletRequest request,
+                                @RequestParam("username") String username,
+                                @RequestParam("password") String password) {
+
+        return iAuthService.login(request,username, password);
     }
 
+    /**
+     * 用户注销
+     * @param request request对象，需要清除session里面的内容
+     * @return 响应结果
+     */
     @DeleteMapping("/logout")
-    public Result logout() {
-        // authService.logout();
-        return Result.success();
+    public Result<String> logout(HttpServletRequest request) {
+        return iAuthService.logout(request);
     }
 
+    /**
+     * 用户注册，只能注册学生
+     *
+     * @param request  request对象，用于获取sessionId
+     * @param userForm 用户信息
+     * @return 响应结果
+     */
+    @PostMapping("/register")
+    public Result<String> register(HttpServletRequest request,
+                                   @RequestBody @Validated(UserGroup.RegisterGroup.class) UserForm userForm) {
+        return iAuthService.register(request, userForm);
+    }
+
+    /**
+     * 获取图片验证码
+     *
+     * @param request  request对象，获取sessionId
+     * @param response response对象，响应图片
+     */
     @GetMapping("/captcha")
-    public Result getCaptcha() {
-        return null;
+    public void getCaptcha(HttpServletRequest request, HttpServletResponse response) {
+        iAuthService.getCaptcha(request, response);
+    }
+
+    /**
+     * 校验验证码
+     *
+     * @param request request对象，获取sessionId
+     * @param code    用户输入的验证码
+     * @return 响应结果
+     */
+    @PostMapping("/verifyCode/{code}")
+    public Result<String> verifyCode(HttpServletRequest request, @PathVariable("code") String code) {
+        return iAuthService.verifyCode(request, code);
     }
 }
