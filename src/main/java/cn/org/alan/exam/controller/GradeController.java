@@ -5,8 +5,10 @@ import cn.org.alan.exam.common.result.Result;
 import cn.org.alan.exam.model.entity.Grade;
 import cn.org.alan.exam.model.form.GradeForm;
 import cn.org.alan.exam.model.vo.GradeVO;
+import cn.org.alan.exam.model.vo.exam.ExamQuDetailVO;
 import cn.org.alan.exam.service.IGradeService;
 import cn.org.alan.exam.util.JwtUtil;
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletRequest;
 import org.apache.ibatis.annotations.Param;
@@ -38,9 +40,9 @@ public class GradeController {
      */
     @GetMapping("/paging")
     @PreAuthorize("hasAnyAuthority('role_teacher','role_admin')")
-    public Result getGrade(@RequestParam("pageNum") Integer pageNum,
-                           @RequestParam("pageSize") Integer pageSize,
-                           @RequestParam("gradeName") String gradeName) {
+    public Result<IPage<GradeVO>>  getGrade(@RequestParam("pageNum") Integer pageNum,
+                                            @RequestParam("pageSize") Integer pageSize,
+                                            @RequestParam("gradeName") String gradeName) {
         return gradeService.getPaging(pageNum, pageSize, gradeName);
     }
 
@@ -101,4 +103,5 @@ public class GradeController {
     public Result<List<GradeVO>> getAllGrade(){
         return gradeService.getAllGrade();
     }
+
 }

@@ -60,6 +60,7 @@ public class NoticeController {
      * @return
      */
     @PutMapping("/{id}")
+    @PreAuthorize("hasAnyAuthority('role_teacher','role_admin')")
     public Result<String> updateNotice(@PathVariable("id") String id, @RequestBody NoticeForm noticeForm) {
         return noticeService.updateNotice(id, noticeForm);
     }
@@ -73,16 +74,16 @@ public class NoticeController {
      * @return
      */
     @GetMapping("/paging")
+    @PreAuthorize("hasAnyAuthority('role_teacher','role_admin')")
     public Result<IPage<NoticeVO>> getNotice(@RequestParam(value = "pageNum", required = false, defaultValue = "1") Integer pageNum,
                                              @RequestParam(value = "pageSize", required = false, defaultValue = "10") Integer pageSize,
                                              @RequestParam(value = "title", required = false) String title) {
         return noticeService.getNotice( pageNum, pageSize, title);
-
     }
     @GetMapping("/new")
+    @PreAuthorize("hasAnyAuthority('role_teacher','role_admin','role_student')")
     public Result<IPage<NoticeVO>> getNewNotice(@RequestParam(value = "pageNum", required = false, defaultValue = "1") Integer pageNum,
                                                 @RequestParam(value = "pageSize", required = false, defaultValue = "10") Integer pageSize){
         return noticeService.getNewNotice(pageNum,pageSize);
     }
-
 }

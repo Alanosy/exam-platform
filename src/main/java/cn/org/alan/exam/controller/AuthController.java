@@ -70,7 +70,6 @@ public class AuthController {
      * @param response response对象，响应图片
      */
     @GetMapping("/captcha")
-    @PreAuthorize("hasAnyAuthority('role_student','role_teacher','role_admin')")
     public void getCaptcha(HttpServletRequest request, HttpServletResponse response) {
         iAuthService.getCaptcha(request, response);
     }
@@ -83,7 +82,6 @@ public class AuthController {
      * @return 响应结果
      */
     @PostMapping("/verifyCode/{code}")
-    @PreAuthorize("hasAnyAuthority('role_student','role_teacher','role_admin')")
     public Result<String> verifyCode(HttpServletRequest request, @PathVariable("code") String code) {
         return iAuthService.verifyCode(request, code);
     }

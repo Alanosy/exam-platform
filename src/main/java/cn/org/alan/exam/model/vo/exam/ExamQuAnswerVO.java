@@ -10,7 +10,7 @@ import java.util.List;
  * @Date 2024/4/7 11:54 PM
  */
 @Data
-public class ExamQuAnswerForm {
+public class ExamQuAnswerVO {
     private Integer examId;
     private Integer questionId;
     /**

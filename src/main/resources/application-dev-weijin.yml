@@ -37,6 +37,7 @@ spring:
       max-pool-prepared-statement-per-connection-size: -1
       # 合并多个DruidDataSource的监控数据
       use-global-data-source-stat: true
+
       # 通过connectProperties属性来打开mergeSql功能；慢SQL记录
 
       #      connect-properties: druid.stat.mergeSql=true;druid.stat.slowSqlMillis=5000
