@@ -134,6 +134,7 @@ defineExpose({
 .layout-search-dialog {
   position: relative;
   :deep(.el-dialog) {
+    padding: 0;
     .el-dialog__header,
     .el-dialog__body {
       display: none;
