@@ -3,6 +3,7 @@ package cn.org.alan.exam.mapper;
 import cn.org.alan.exam.model.entity.User;
 import cn.org.alan.exam.model.vo.UserVO;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import org.apache.ibatis.annotations.Mapper;
 import org.springframework.stereotype.Repository;
 
@@ -11,7 +12,7 @@ import java.util.List;
 
 /**
  * <p>
- *  Mapper 接口
+ * Mapper 接口
  * </p>
  *
  * @author WeiJin
@@ -25,6 +26,7 @@ public interface UserMapper extends BaseMapper<User> {
 
     /**
      * 批量添加用户
+     *
      * @param list
      * @return
      */
@@ -32,8 +34,28 @@ public interface UserMapper extends BaseMapper<User> {
 
     /**
      * 获取用户信息
+     *
      * @param userId 用户id
      * @return 响应
      */
     UserVO info(Integer userId);
+
+    /**
+     * 根据班级Id获取该班级学生Id
+     *
+     * @param classId 班级Id
+     * @return 结果集
+     */
+    List<Integer> selectIdsByClassId(Integer classId);
+
+    /**
+     * 分页获取用户信息
+     *
+     * @param page     分页信息
+     * @param gradeId  班级Id
+     * @param realName 真实姓名
+     * @param roleId   角色Id
+     * @return 查询结果集
+     */
+    IPage<UserVO> pagingUser(IPage<UserVO> page, Integer gradeId, String realName, Integer roleId);
 }
