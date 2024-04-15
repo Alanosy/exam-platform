@@ -57,7 +57,7 @@
             </el-row>
           </template>
 
-          <el-table border v-loading="loading" :data="modelList" @selection-change="handleSelectionChange">
+          <el-table v-loading="loading" border :data="modelList" @selection-change="handleSelectionChange">
             <el-table-column type="selection" width="55" align="center" />
             <el-table-column fixed align="center" type="index" label="序号" width="80"></el-table-column>
             <el-table-column align="center" :show-overflow-tooltip="true" prop="name" label="模型名称" width="200"></el-table-column>
@@ -85,9 +85,7 @@
                     </el-button>
                   </el-col>
                   <el-col :span="1.5">
-                    <el-button link type="primary" size="small" icon="CopyDocument" @click="handleCopy(scope.row)">
-                      复制模型
-                    </el-button>
+                    <el-button link type="primary" size="small" icon="CopyDocument" @click="handleCopy(scope.row)"> 复制模型 </el-button>
                   </el-col>
                 </el-row>
               </template>
@@ -144,7 +142,7 @@ import Design from './design.vue';
 import { listModel, addModel, delModel, modelDeploy, getInfo, update } from '@/api/workflow/model';
 import { ModelQuery, ModelForm, ModelVO } from '@/api/workflow/model/types';
 import { listCategory } from '@/api/workflow/category';
-import { copyModel } from '@/api/workflow/model/index';
+import { copyModel } from '@/api/workflow/model';
 
 const { proxy } = getCurrentInstance() as ComponentInternalInstance;
 
@@ -303,7 +301,7 @@ const handleCopy = (row?: ModelVO) => {
   nextTick(async () => {
     await getTreeselect();
     form.value = { ...initFormData };
-    form.value.id = row.id
+    form.value.id = row.id;
     dialog.visible = true;
   });
 };
@@ -313,14 +311,14 @@ const submitForm = () => {
   formRef.value.validate(async (valid: boolean) => {
     if (valid) {
       buttonLoading.value = true;
-      if('copy' === billType.value){
+      if ('copy' === billType.value) {
         await copyModel(form.value);
         proxy?.$modal.msgSuccess('操作成功');
-      }else if(ids.value && ids.value.length > 0 && 'update' === billType.value){
+      } else if (ids.value && ids.value.length > 0 && 'update' === billType.value) {
         form.value.id = ids.value[0];
         await update(form.value);
         proxy?.$modal.msgSuccess('操作成功');
-      }else {
+      } else {
         initXml(form.value.key, form.value.name);
         form.value.xml = xml.value;
         await addModel(form.value);
@@ -350,7 +348,7 @@ const clickDesign = async (id: string) => {
 };
 // 导出流程模型
 const clickExportZip = () => {
-  proxy?.$download.zip('/workflow/model/export/zip/' + ids.value, "模型");
+  proxy?.$download.zip('/workflow/model/export/zip/' + ids.value, '模型');
 };
 /** 查询流程分类下拉树结构 */
 const getTreeselect = async () => {

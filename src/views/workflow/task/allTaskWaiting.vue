@@ -3,8 +3,8 @@
     <div class="mb-[10px]">
       <el-card shadow="hover" class="text-center">
         <el-radio-group v-model="tab" @change="changeTab(tab)">
-          <el-radio-button label="waiting">待办任务</el-radio-button>
-          <el-radio-button label="finish">已办任务</el-radio-button>
+          <el-radio-button value="waiting">待办任务</el-radio-button>
+          <el-radio-button value="finish">已办任务</el-radio-button>
         </el-radio-group>
       </el-card>
     </div>
@@ -42,9 +42,9 @@
       <el-table v-loading="loading" border :data="taskList" @selection-change="handleSelectionChange">
         <el-table-column type="selection" width="55" align="center" />
         <el-table-column align="center" type="index" label="序号" width="60"></el-table-column>
-        <el-table-column :show-overflow-tooltip="true"  align="center" label="流程定义名称">
+        <el-table-column :show-overflow-tooltip="true" align="center" label="流程定义名称">
           <template #default="scope">
-              <span>{{ scope.row.processDefinitionName }}v{{ scope.row.processDefinitionVersion }}.0</span>
+            <span>{{ scope.row.processDefinitionName }}v{{ scope.row.processDefinitionVersion }}.0</span>
           </template>
         </el-table-column>
         <el-table-column align="center" prop="processDefinitionKey" label="流程定义KEY"></el-table-column>
@@ -58,13 +58,13 @@
             </template>
             <template v-else>
               <el-tag type="success">
-                {{ scope.row.assigneeName || '无'}}
+                {{ scope.row.assigneeName || '无' }}
               </el-tag>
             </template>
           </template>
           <template v-else-if="tab === 'finish'" #default="scope">
             <el-tag type="success">
-              {{ scope.row.assigneeName || '无'}}
+              {{ scope.row.assigneeName || '无' }}
             </el-tag>
           </template>
         </el-table-column>
@@ -74,8 +74,8 @@
             <el-tag v-else type="success">已完成</el-tag>
           </template>
         </el-table-column>
-        <el-table-column align="center" v-if="tab === 'waiting'" prop="createTime" label="创建时间" width="160"></el-table-column>
-        <el-table-column align="center" v-if="tab === 'finish'" prop="startTime" label="创建时间" width="160"></el-table-column>
+        <el-table-column v-if="tab === 'waiting'" align="center" prop="createTime" label="创建时间" width="160"></el-table-column>
+        <el-table-column v-if="tab === 'finish'" align="center" prop="startTime" label="创建时间" width="160"></el-table-column>
         <el-table-column label="操作" align="center" :width="tab === 'finish' ? '80' : '151'">
           <template #default="scope">
             <el-row :gutter="10" class="mb8">
@@ -86,7 +86,7 @@
                 <el-button link type="primary" size="small" icon="Document" @click="handleInstanceVariable(scope.row)">流程变量</el-button>
               </el-col>
             </el-row>
-            <el-row :gutter="10" class="mb8" v-if="scope.row.multiInstance" >
+            <el-row v-if="scope.row.multiInstance" :gutter="10" class="mb8">
               <el-col :span="1.5">
                 <el-button link type="primary" size="small" icon="Remove" @click="deleteMultiInstanceUser(scope.row)">减签</el-button>
               </el-col>
@@ -111,14 +111,18 @@
     <UserSelect ref="userSelectRef" :multiple="false" @confirm-call-back="submitCallback"></UserSelect>
     <!-- 流程变量开始 -->
     <el-dialog v-model="variableVisible" draggable title="流程变量" width="60%" :close-on-click-modal="false">
-      <el-card class="box-card" v-loading="variableLoading">
-        <div slot="header" class="clearfix">
-          <span>流程定义名称：<el-tag>{{processDefinitionName}}</el-tag></span>
-        </div>
-        <div v-for="(v,index) in variableList" :key="index" >
-          <el-form :label-position="'right'"  v-if="v.key!=='_FLOWABLE_SKIP_EXPRESSION_ENABLED'" label-width="150px">
-            <el-form-item :label="v.key+'：'">
-              {{v.value}}
+      <el-card v-loading="variableLoading" class="box-card">
+        <template #header>
+          <div class="clearfix">
+            <span
+              >流程定义名称：<el-tag>{{ processDefinitionName }}</el-tag></span
+            >
+          </div>
+        </template>
+        <div v-for="(v, index) in variableList" :key="index">
+          <el-form v-if="v.key !== '_FLOWABLE_SKIP_EXPRESSION_ENABLED'" :label-position="'right'" label-width="150px">
+            <el-form-item :label="v.key + '：'">
+              {{ v.value }}
             </el-form-item>
           </el-form>
         </div>
@@ -138,7 +142,7 @@ import { RouterJumpVo } from '@/api/workflow/workflowCommon/types';
 //审批记录组件
 //加签组件
 const multiInstanceUserRef = ref<InstanceType<typeof MultiInstanceUser>>();
-//选人组件 
+//选人组件
 const userSelectRef = ref<InstanceType<typeof UserSelect>>();
 
 const queryFormRef = ref<ElFormInstance>();
@@ -162,13 +166,13 @@ const title = ref('');
 // 流程变量是否显示
 const variableVisible = ref(false);
 const variableLoading = ref(true);
-// 流程变量 
+// 流程变量
 const variableList = ref<VariableVo>({
   key: '',
-  value: '',
-})
+  value: ''
+});
 //流程定义名称
-const processDefinitionName = ref(undefined);
+const processDefinitionName = ref();
 // 查询参数
 const queryParams = ref<TaskQuery>({
   pageNum: 1,
@@ -215,7 +219,7 @@ const handleSelectionChange = (selection: any) => {
   multiple.value = !selection.length;
 };
 const changeTab = async (data: string) => {
-  taskList.value = []
+  taskList.value = [];
   queryParams.value.pageNum = 1;
   if ('waiting' === data) {
     getWaitingList();
@@ -245,25 +249,25 @@ const handleUpdate = () => {
   userSelectRef.value.open();
 };
 //修改办理人
-const submitCallback  = async (data) => {
-  if(data && data.length > 0){
+const submitCallback = async (data) => {
+  if (data && data.length > 0) {
     await proxy?.$modal.confirm('是否确认提交？');
     loading.value = true;
-    await updateAssignee(ids.value, data[0].userId)
-    handleQuery()
+    await updateAssignee(ids.value, data[0].userId);
+    handleQuery();
     proxy?.$modal.msgSuccess('操作成功');
-  }else{
+  } else {
     proxy?.$modal.msgWarning('请选择用户！');
   }
 };
 //查询流程变量
-const handleInstanceVariable  = async (row: TaskVO) => {
-  variableLoading.value = true
-  variableVisible.value = true
-  processDefinitionName.value = row.processDefinitionName
-  let data = await getInstanceVariable(row.id)
-  variableList.value = data.data
-  variableLoading.value = false
+const handleInstanceVariable = async (row: TaskVO) => {
+  variableLoading.value = true;
+  variableVisible.value = true;
+  processDefinitionName.value = row.processDefinitionName;
+  let data = await getInstanceVariable(row.id);
+  variableList.value = data.data;
+  variableLoading.value = false;
 };
 /** 查看按钮操作 */
 const handleView = (row) => {
@@ -274,7 +278,7 @@ const handleView = (row) => {
     taskId: row.id,
     type: 'view'
   });
-  workflowCommon.routerJump(routerJumpVo,proxy)
+  workflowCommon.routerJump(routerJumpVo, proxy);
 };
 onMounted(() => {
   getWaitingList();

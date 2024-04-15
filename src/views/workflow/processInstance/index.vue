@@ -23,8 +23,8 @@
         <div class="mb-[10px]">
           <el-card shadow="hover" class="text-center">
             <el-radio-group v-model="tab" @change="changeTab(tab)">
-              <el-radio-button label="running">运行中</el-radio-button>
-              <el-radio-button label="finish">已完成</el-radio-button>
+              <el-radio-button value="running">运行中</el-radio-button>
+              <el-radio-button value="finish">已完成</el-radio-button>
             </el-radio-group>
           </el-card>
         </div>
@@ -61,7 +61,7 @@
             <el-table-column align="center" type="index" label="序号" width="60"></el-table-column>
             <el-table-column :show-overflow-tooltip="true" align="center" label="流程定义名称">
               <template #default="scope">
-                  <span>{{ scope.row.processDefinitionName }}v{{ scope.row.processDefinitionVersion }}.0</span>
+                <span>{{ scope.row.processDefinitionName }}v{{ scope.row.processDefinitionVersion }}.0</span>
               </template>
             </el-table-column>
             <el-table-column align="center" prop="processDefinitionKey" label="流程定义KEY"></el-table-column>
@@ -77,7 +77,7 @@
             <el-table-column align="center" label="流程状态" min-width="70">
               <template #default="scope">
                 <dict-tag :options="wf_business_status" :value="scope.row.businessStatus"></dict-tag>
-            </template>
+              </template>
             </el-table-column>
             <el-table-column align="center" prop="startTime" label="启动时间" width="160"></el-table-column>
             <el-table-column v-if="tab === 'finish'" align="center" prop="endTime" label="结束时间" width="160"></el-table-column>
@@ -304,7 +304,7 @@ const handleDelete = async (row: any) => {
   proxy?.$modal.msgSuccess('删除成功');
 };
 const changeTab = async (data: string) => {
-  processInstanceList.value = []
+  processInstanceList.value = [];
   queryParams.value.pageNum = 1;
   if ('running' === data) {
     getProcessInstanceRunningList();
@@ -361,7 +361,7 @@ const handleView = (row) => {
     taskId: row.id,
     type: 'view'
   });
-  workflowCommon.routerJump(routerJumpVo,proxy)
+  workflowCommon.routerJump(routerJumpVo, proxy);
 };
 
 onMounted(() => {

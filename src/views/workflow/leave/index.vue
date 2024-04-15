@@ -80,7 +80,7 @@
             >
               <el-button v-hasPermi="['demo:leave:remove']" link type="primary" icon="Delete" @click="handleDelete(scope.row)"></el-button>
             </el-tooltip>
-            <el-tooltip placement="top" content="查看" >
+            <el-tooltip placement="top" content="查看">
               <el-button link type="primary" icon="View" @click="handleView(scope.row)"></el-button>
             </el-tooltip>
             <el-tooltip v-if="scope.row.processInstanceVo.businessStatus === 'waiting'" content="撤销" placement="top">
@@ -131,7 +131,7 @@ const options = [
 const queryFormRef = ref<ElFormInstance>();
 
 const data = reactive<PageData<LeaveForm, LeaveQuery>>({
-  form: {  },
+  form: {},
   queryParams: {
     pageNum: 1,
     pageSize: 10,
@@ -176,35 +176,35 @@ const handleAdd = () => {
   proxy.$tab.closePage(proxy.$route);
   proxy.$router.push(`/demo/leaveEdit/index/add/add`);
   proxy.$router.push({
-      path: `/demo/leaveEdit/index`,
-      query: {
-        type: 'add'
-      }
-  })
+    path: `/demo/leaveEdit/index`,
+    query: {
+      type: 'add'
+    }
+  });
 };
 
 /** 修改按钮操作 */
 const handleUpdate = (row?: LeaveVO) => {
   proxy.$tab.closePage(proxy.$route);
   proxy.$router.push({
-      path: `/demo/leaveEdit/index`,
-      query: {
-        id: row.id,
-        type: 'update'
-      }
-  })
+    path: `/demo/leaveEdit/index`,
+    query: {
+      id: row.id,
+      type: 'update'
+    }
+  });
 };
 
 /** 查看按钮操作 */
 const handleView = (row?: LeaveVO) => {
   proxy.$tab.closePage(proxy.$route);
   proxy.$router.push({
-      path: `/demo/leaveEdit/index`,
-      query: {
-        id: row.id,
-        type: 'view'
-      }
-  })
+    path: `/demo/leaveEdit/index`,
+    query: {
+      id: row.id,
+      type: 'view'
+    }
+  });
 };
 
 /** 删除按钮操作 */

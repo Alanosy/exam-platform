@@ -31,9 +31,9 @@
       <el-table v-loading="loading" border :data="taskList" @selection-change="handleSelectionChange">
         <el-table-column type="selection" width="55" align="center" />
         <el-table-column align="center" type="index" label="序号" width="60"></el-table-column>
-        <el-table-column :show-overflow-tooltip="true"  align="center" label="流程定义名称">
+        <el-table-column :show-overflow-tooltip="true" align="center" label="流程定义名称">
           <template #default="scope">
-              <span>{{ scope.row.processDefinitionName }}v{{ scope.row.processDefinitionVersion }}.0</span>
+            <span>{{ scope.row.processDefinitionName }}v{{ scope.row.processDefinitionVersion }}.0</span>
           </template>
         </el-table-column>
         <el-table-column align="center" prop="processDefinitionKey" label="流程定义KEY"></el-table-column>
@@ -47,19 +47,19 @@
             </template>
             <template v-else>
               <el-tag type="success">
-                {{ scope.row.assigneeName || '无'}}
+                {{ scope.row.assigneeName || '无' }}
               </el-tag>
             </template>
           </template>
         </el-table-column>
         <el-table-column align="center" label="流程状态" min-width="70">
           <template #default="scope">
-              <dict-tag :options="wf_business_status" :value="scope.row.businessStatus"></dict-tag>
+            <dict-tag :options="wf_business_status" :value="scope.row.businessStatus"></dict-tag>
           </template>
         </el-table-column>
         <el-table-column label="操作" align="center" width="200">
           <template #default="scope">
-              <el-button type="primary" size="small" icon="View" @click="handleView(scope.row)">查看</el-button>
+            <el-button type="primary" size="small" icon="View" @click="handleView(scope.row)">查看</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -75,7 +75,7 @@
 </template>
 
 <script lang="ts" setup>
-import { getPageByTaskCopy} from '@/api/workflow/task';
+import { getPageByTaskCopy } from '@/api/workflow/task';
 import { TaskQuery } from '@/api/workflow/task/types';
 import workflowCommon from '@/api/workflow/workflowCommon';
 import { RouterJumpVo } from '@/api/workflow/workflowCommon/types';
@@ -141,9 +141,8 @@ const handleView = (row) => {
     taskId: row.id,
     type: 'view'
   });
-  workflowCommon.routerJump(routerJumpVo,proxy)
+  workflowCommon.routerJump(routerJumpVo, proxy);
 };
-
 
 onMounted(() => {
   getTaskCopyList();

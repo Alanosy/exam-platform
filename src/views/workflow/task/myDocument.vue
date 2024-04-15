@@ -46,9 +46,9 @@
             <el-table-column type="selection" width="55" align="center" />
             <el-table-column align="center" type="index" label="序号" width="60"></el-table-column>
             <el-table-column v-if="false" align="center" prop="id" label="id"></el-table-column>
-            <el-table-column :show-overflow-tooltip="true"  align="center" label="流程定义名称">
+            <el-table-column :show-overflow-tooltip="true" align="center" label="流程定义名称">
               <template #default="scope">
-                  <span>{{ scope.row.processDefinitionName }}v{{ scope.row.processDefinitionVersion }}.0</span>
+                <span>{{ scope.row.processDefinitionName }}v{{ scope.row.processDefinitionVersion }}.0</span>
               </template>
             </el-table-column>
             <el-table-column align="center" prop="processDefinitionKey" label="流程定义KEY"></el-table-column>
@@ -64,36 +64,28 @@
             <el-table-column align="center" label="流程状态" min-width="70">
               <template #default="scope">
                 <dict-tag :options="wf_business_status" :value="scope.row.businessStatus"></dict-tag>
-            </template>
+              </template>
             </el-table-column>
             <el-table-column align="center" prop="startTime" label="启动时间" width="160"></el-table-column>
             <el-table-column v-if="tab === 'finish'" align="center" prop="endTime" label="结束时间" width="160"></el-table-column>
             <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
               <template #default="scope">
                 <el-tooltip
-                  v-if="
-                    scope.row.businessStatus === 'draft' ||
-                    scope.row.businessStatus === 'cancel' ||
-                    scope.row.businessStatus === 'back'
-                  "
+                  v-if="scope.row.businessStatus === 'draft' || scope.row.businessStatus === 'cancel' || scope.row.businessStatus === 'back'"
                   content="修改"
                   placement="top"
                 >
-                  <el-button v-hasPermi="['demo:leave:edit']" link type="primary" icon="Edit" @click="handleOpen(scope.row,'update')"></el-button>
+                  <el-button v-hasPermi="['demo:leave:edit']" link type="primary" icon="Edit" @click="handleOpen(scope.row, 'update')"></el-button>
                 </el-tooltip>
                 <el-tooltip
-                  v-if="
-                    scope.row.businessStatus === 'draft' ||
-                    scope.row.businessStatus === 'cancel' ||
-                    scope.row.businessStatus === 'back'
-                  "
+                  v-if="scope.row.businessStatus === 'draft' || scope.row.businessStatus === 'cancel' || scope.row.businessStatus === 'back'"
                   content="删除"
                   placement="top"
                 >
                   <el-button v-hasPermi="['demo:leave:remove']" link type="primary" icon="Delete" @click="handleDelete(scope.row)"></el-button>
                 </el-tooltip>
-                <el-tooltip placement="top" content="查看" >
-                  <el-button link type="primary" icon="View" @click="handleOpen(scope.row,'view')"></el-button>
+                <el-tooltip placement="top" content="查看">
+                  <el-button link type="primary" icon="View" @click="handleOpen(scope.row, 'view')"></el-button>
                 </el-tooltip>
                 <el-tooltip v-if="scope.row.businessStatus === 'waiting'" content="撤销" placement="top">
                   <el-button link type="primary" icon="Notification" @click="handleCancelProcessApply(scope.row.id)"></el-button>
@@ -256,7 +248,7 @@ const handleCancelProcessApply = async (processInstanceId: string) => {
 };
 
 //办理
-const handleOpen = async (row,type) => {
+const handleOpen = async (row, type) => {
   const routerJumpVo = reactive<RouterJumpVo>({
     wfDefinitionConfigVo: row.wfDefinitionConfigVo,
     wfNodeConfigVo: row.wfNodeConfigVo,
@@ -264,6 +256,6 @@ const handleOpen = async (row,type) => {
     taskId: row.id,
     type: type
   });
-  workflowCommon.routerJump(routerJumpVo,proxy)
+  workflowCommon.routerJump(routerJumpVo, proxy);
 };
 </script>

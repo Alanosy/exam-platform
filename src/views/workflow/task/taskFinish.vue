@@ -31,9 +31,9 @@
       <el-table v-loading="loading" border :data="taskList" @selection-change="handleSelectionChange">
         <el-table-column type="selection" width="55" align="center" />
         <el-table-column align="center" type="index" label="序号" width="60"></el-table-column>
-        <el-table-column :show-overflow-tooltip="true"  align="center" label="流程定义名称">
+        <el-table-column :show-overflow-tooltip="true" align="center" label="流程定义名称">
           <template #default="scope">
-              <span>{{ scope.row.processDefinitionName }}v{{ scope.row.processDefinitionVersion }}.0</span>
+            <span>{{ scope.row.processDefinitionName }}v{{ scope.row.processDefinitionVersion }}.0</span>
           </template>
         </el-table-column>
         <el-table-column align="center" prop="processDefinitionKey" label="流程定义KEY"></el-table-column>
@@ -41,7 +41,7 @@
         <el-table-column align="center" prop="assigneeName" label="办理人">
           <template #default="scope">
             <el-tag type="success">
-              {{ scope.row.assigneeName || '无'}}
+              {{ scope.row.assigneeName || '无' }}
             </el-tag>
           </template>
         </el-table-column>
@@ -127,7 +127,7 @@ const handleView = (row: TaskVO) => {
     taskId: row.id,
     type: 'view'
   });
-  workflowCommon.routerJump(routerJumpVo,proxy)
+  workflowCommon.routerJump(routerJumpVo, proxy);
 };
 
 onMounted(() => {

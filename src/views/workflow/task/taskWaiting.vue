@@ -27,13 +27,13 @@
           <right-toolbar v-model:showSearch="showSearch" @query-table="handleQuery"></right-toolbar>
         </el-row>
       </template>
-      
+
       <el-table v-loading="loading" border :data="taskList" @selection-change="handleSelectionChange">
         <el-table-column type="selection" width="55" align="center" />
         <el-table-column align="center" type="index" label="序号" width="60"></el-table-column>
-        <el-table-column :show-overflow-tooltip="true"  align="center" label="流程定义名称">
+        <el-table-column :show-overflow-tooltip="true" align="center" label="流程定义名称">
           <template #default="scope">
-              <span>{{ scope.row.processDefinitionName }}v{{ scope.row.processDefinitionVersion }}.0</span>
+            <span>{{ scope.row.processDefinitionName }}v{{ scope.row.processDefinitionVersion }}.0</span>
           </template>
         </el-table-column>
         <el-table-column align="center" prop="processDefinitionKey" label="流程定义KEY"></el-table-column>
@@ -54,18 +54,36 @@
         </el-table-column>
         <el-table-column align="center" label="流程状态" min-width="70">
           <template #default="scope">
-              <dict-tag :options="wf_business_status" :value="scope.row.businessStatus"></dict-tag>
+            <dict-tag :options="wf_business_status" :value="scope.row.businessStatus"></dict-tag>
           </template>
         </el-table-column>
         <el-table-column align="center" prop="createTime" label="创建时间" width="160"></el-table-column>
         <el-table-column label="操作" align="center" width="200">
           <template #default="scope">
-              <el-button v-if="scope.row.participantVo && (scope.row.participantVo.claim === null || scope.row.participantVo.claim === true)"
-               type="primary" size="small" icon="Edit" @click="handleOpen(scope.row)">办理</el-button>
-              <el-button v-if="scope.row.participantVo && scope.row.participantVo.claim === true"
-               type="primary" size="small" icon="Document" @click="handleReturnTask(scope.row.id)">归还</el-button>
-              <el-button v-if="scope.row.participantVo && scope.row.participantVo.claim === false"
-               type="primary" size="small" icon="Document" @click="handleClaimTask(scope.row.id)">认领</el-button>
+            <el-button
+              v-if="scope.row.participantVo && (scope.row.participantVo.claim === null || scope.row.participantVo.claim === true)"
+              type="primary"
+              size="small"
+              icon="Edit"
+              @click="handleOpen(scope.row)"
+              >办理</el-button
+            >
+            <el-button
+              v-if="scope.row.participantVo && scope.row.participantVo.claim === true"
+              type="primary"
+              size="small"
+              icon="Document"
+              @click="handleReturnTask(scope.row.id)"
+              >归还</el-button
+            >
+            <el-button
+              v-if="scope.row.participantVo && scope.row.participantVo.claim === false"
+              type="primary"
+              size="small"
+              icon="Document"
+              @click="handleClaimTask(scope.row.id)"
+              >认领</el-button
+            >
           </template>
         </el-table-column>
       </el-table>
@@ -149,7 +167,7 @@ const handleOpen = async (row: TaskVO) => {
     taskId: row.id,
     type: 'approval'
   });
-  workflowCommon.routerJump(routerJumpVo,proxy)
+  workflowCommon.routerJump(routerJumpVo, proxy);
 };
 
 /** 认领任务 */
