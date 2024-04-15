@@ -84,7 +84,10 @@ const childrenMenus = computed(() => {
 
 // 默认激活的菜单
 const activeMenu = computed(() => {
-  const path = route.path;
+  let path = route.path;
+  if (path === '/index') {
+    path = '/system/user';
+  }
   let activePath = path;
   if (path !== undefined && path.lastIndexOf('/') > 0 && hideList.indexOf(path) === -1) {
     const tmpPath = path.substring(1, path.length);
