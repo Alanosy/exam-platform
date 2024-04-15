@@ -25,7 +25,7 @@ public class ExamUpdateForm {
     /**
      * 考试时长
      */
-    @NotBlank(message = "请设置考试时间,单位m")
+    @NotNull(message = "请设置考试时间,单位m")
     @Min(value=0,message = "请设置大于0的考试时长")
     private Integer examDuration;
 
@@ -38,7 +38,7 @@ public class ExamUpdateForm {
      * 及格分
      */
     @Min(value=0,message = "及格分数必须大于0")
-    @NotBlank(message = "及格分不能为空")
+    @NotNull(message = "及格分不能为空")
     private Integer passedScore;
     /**
      * 开始时间
@@ -66,14 +66,14 @@ public class ExamUpdateForm {
     /**
      * 单选题分数
      */
-    @NotBlank(message = "单选题分数不能为空")
+    @NotNull(message = "单选题分数不能为空")
     @Min(value = 0)
     private Integer radioScore;
 
     /**
      * 多选题分数
      */
-    @NotBlank(message = "多选题分数不能为空")
+    @NotNull(message = "多选题分数不能为空")
     @Min(value = 0)
     private Integer multiScore;
     /**
@@ -83,14 +83,14 @@ public class ExamUpdateForm {
     /**
      * 判断题分数
      */
-    @NotBlank(message = "判断题分数不能为空")
+    @NotNull(message = "判断题分数不能为空")
     @Min(value = 0)
     private Integer judgeScore;
 
     /**
      * 简答题分数
      */
-    @NotBlank(message = "简答题分数不能为空")
+    @NotNull(message = "简答题分数不能为空")
     @Min(value = 0)
     private Integer saqScore;
 }

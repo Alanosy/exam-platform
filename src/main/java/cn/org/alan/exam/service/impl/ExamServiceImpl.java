@@ -126,6 +126,9 @@ public class ExamServiceImpl extends ServiceImpl<ExamMapper, Exam> implements IE
             Collections.shuffle(typeQuestionIds);
             List<Integer> sampledIds = typeQuestionIds.subList(0, count);
             // 插入试题
+            if(sampledIds.isEmpty()){
+                continue;
+            }
             int examQueRows = examQuestionMapper.insertQuestion(examId, quType, quScore, sampledIds);
             if (examQueRows == 0) {
                 return Result.failed("创建失败");
@@ -159,11 +162,11 @@ public class ExamServiceImpl extends ServiceImpl<ExamMapper, Exam> implements IE
         List<Integer> gradeIds = Arrays.stream(gradeIdsStr.split(","))
                 .map(Integer::parseInt)
                 .toList();
-        int examGradeRows = examGradeMapper.delExamGrade(exam.getId());
+        int examGradeRows = examGradeMapper.delExamGrade(id);
         if (examGradeRows == 0) {
             throw new AppException("修改失败");
         }
-        Integer gradeRows = examGradeMapper.addExamGrade(exam.getId(), gradeIds);
+        Integer gradeRows = examGradeMapper.addExamGrade(id, gradeIds);
         if (gradeRows == 0) {
             throw new AppException("修改失败");
         }
