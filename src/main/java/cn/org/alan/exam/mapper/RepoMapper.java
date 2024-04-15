@@ -22,5 +22,6 @@ public interface RepoMapper extends BaseMapper<Repo> {
      * @param userId 用户名
      * @return 响应结果
      */
-    IPage<RepoVO> pagingRepo(@Param("page") IPage<RepoVO> page, @Param("title") String title, @Param("userId") Integer userId);
+    IPage<RepoVO> pagingRepo(@Param("page") IPage<RepoVO> page, @Param("title") String title,
+                             @Param("userId") Integer userId);
 }

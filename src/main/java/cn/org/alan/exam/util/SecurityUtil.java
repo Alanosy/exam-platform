@@ -35,4 +35,13 @@ public class SecurityUtil {
         List<? extends GrantedAuthority> list = SecurityContextHolder.getContext().getAuthentication().getAuthorities().stream().toList();
         return list.get(0).toString();
     }
+
+//    /**
+//     * 获取当前证书id
+//     * @return 证书id
+//     */
+//    public static String getCertificateId(){
+//        List<? extends GrantedAuthority> list = SecurityContextHolder.getContext().getAuthentication().getAuthorities().stream().toList();
+//        return list.get(0).toString();
+//    }
 }
