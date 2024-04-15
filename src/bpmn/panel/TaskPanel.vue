@@ -50,10 +50,10 @@
             <el-tabs tab-position="left" class="demo-tabs" @tab-click="taskTabClick">
               <el-tab-pane label="身份存储">
                 <el-form-item label="分配人员">
-                  <el-input v-model="assignee.userName" disabled>
-                    <template #append>
-                      <el-button icon="Search" type="primary" @click="openSingleUserSelect" />
-                    </template>
+                  <el-input v-model="formData.fixedAssignee" @change="fixedAssigneeChange">
+                    <!--                    <template #append>-->
+                    <!--                      <el-button icon="Search" type="primary" @click="openSingleUserSelect" />-->
+                    <!--                    </template>-->
                   </el-input>
                 </el-form-item>
                 <el-form-item label="候选人员">
@@ -355,6 +355,7 @@ const taskTabClick = (e) => {
   formData.value.candidateGroups = '';
   formData.value.candidateUsers = '';
   formData.value.assignee = '';
+  // formData.value.fixedAssignee = '';
   assignee.value = {};
 };
 
