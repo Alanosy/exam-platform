@@ -447,7 +447,7 @@ html[class='dark'] {
           line-height: 34px;
         }
         .process-panel-bar:hover {
-          background-color: #f5f7fa;
+          background-color: var(--bpmn-panel-bar-background-color);
         }
       }
     }
@@ -474,8 +474,8 @@ pre {
 .process-panel {
   box-sizing: border-box;
   padding: 0 8px 0 8px;
-  border-left: 1px solid #eeeeee;
-  box-shadow: #cccccc 0 0 8px;
+  border-left: 1px solid var(--bpmn-panel-border);
+  box-shadow: var(--bpmn-panel-box-shadow) 0 0 8px;
   max-height: 100%;
   width: 25%;
   height: calc(100vh - 100px);

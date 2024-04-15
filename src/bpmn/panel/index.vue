@@ -50,6 +50,7 @@ const component = computed(() => {
   if (type === 'bpmn:Participant') return ParticipantPanel;
   if (type === 'bpmn:SubProcess') return SubProcessPanel;
   //return proxy?.$modal.msgWarning('面板开发中....');
+  return undefined;
 });
 
 const nodeName = computed(() => {
@@ -58,6 +59,7 @@ const nodeName = computed(() => {
     const type = bizObj?.eventDefinitions && bizObj?.eventDefinitions.length > 0 ? bizObj.eventDefinitions[0].$type : bizObj.$type;
     return NodeName[type] || type;
   }
+  return '';
 });
 
 const handleModeler = () => {

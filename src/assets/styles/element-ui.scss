@@ -82,7 +82,7 @@
       .el-dialog__header {
         padding: 16px 16px 8px 16px;
         box-sizing: border-box;
-        border-bottom: 1px solid #e8e8e8;
+        border-bottom: 1px solid var(--brder-color);
         margin-right: 0;
       }
     }
