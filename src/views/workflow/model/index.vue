@@ -138,7 +138,7 @@
 </template>
 
 <script lang="ts" setup name="Model">
-import Design from './design.vue';
+import Design from '../../../components/BpmnDesign/index.vue';
 import { listModel, addModel, delModel, modelDeploy, getInfo, update } from '@/api/workflow/model';
 import { ModelQuery, ModelForm, ModelVO } from '@/api/workflow/model/types';
 import { listCategory } from '@/api/workflow/category';

@@ -108,8 +108,9 @@
   </div>
 </template>
 <script setup lang="ts">
-import useParseElement from '@/components/BpmnDesign/hooks/useParseElement';
-import usePanel from '@/components/BpmnDesign/hooks/usePanel';
+import ExecutionListener from './property/ExecutionListener.vue';
+import useParseElement from '../hooks/useParseElement';
+import usePanel from '../hooks/usePanel';
 import { ModdleElement } from 'bpmn';
 import { SubProcessPanel } from 'bpmnDesign';
 import { MultiInstanceTypeEnum } from '@/enums/bpmn/IndexEnums';

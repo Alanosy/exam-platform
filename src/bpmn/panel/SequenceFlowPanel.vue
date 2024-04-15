@@ -18,6 +18,12 @@
             <el-form-item prop="name" label="节点名称">
               <el-input v-model="formData.name" @change="nameChange"> </el-input>
             </el-form-item>
+            <el-form-item prop="conditionExpression" label="跳转条件">
+              <el-input v-model="formData.conditionExpressionValue" @change="conditionExpressionChange"> </el-input>
+            </el-form-item>
+            <el-form-item prop="skipExpression" label="跳过表达式">
+              <el-input v-model="formData.skipExpression" @change="skipExpressionChange"> </el-input>
+            </el-form-item>
           </el-form>
         </div>
       </el-collapse-item>
@@ -39,27 +45,50 @@
   </div>
 </template>
 <script setup lang="ts">
-import useParseElement from '@/components/BpmnDesign/hooks/useParseElement';
-import usePanel from '@/components/BpmnDesign/hooks/usePanel';
+import useParseElement from '../hooks/useParseElement';
+import useModelerStore from '@/store/modules/modeler';
+import usePanel from '../hooks/usePanel';
+import ExecutionListener from './property/ExecutionListener.vue';
 import { Modeler, ModdleElement } from 'bpmn';
-import { StartEndPanel } from 'bpmnDesign';
+import { SequenceFlowPanel } from 'bpmnDesign';
 
 interface PropType {
   element: ModdleElement;
 }
 const props = withDefaults(defineProps<PropType>(), {});
-const { nameChange, idChange } = usePanel({
+const { nameChange, idChange, updateProperties } = usePanel({
   element: toRaw(props.element)
 });
 const { parseData } = useParseElement({
   element: toRaw(props.element)
 });
-
-const formData = ref(parseData<StartEndPanel>());
+const moddle = useModelerStore().getModdle();
 const currentCollapseItem = ref(['1', '2']);
+const formData = ref(parseData<SequenceFlowPanel>());
+
 const formRules = ref<ElFormRules>({
+  processCategory: [{ required: true, message: '请选择', trigger: 'blur' }],
   id: [{ required: true, message: '请输入', trigger: 'blur' }],
   name: [{ required: true, message: '请输入', trigger: 'blur' }]
+});
+
+const conditionExpressionChange = (val: string) => {
+  if (val) {
+    const newCondition = moddle.create('bpmn:FormalExpression', { body: val });
+    updateProperties({ conditionExpression: newCondition });
+  } else {
+    updateProperties({ conditionExpression: null });
+  }
+};
+
+const skipExpressionChange = (val: string) => {
+  updateProperties({ 'flowable:skipExpression': val });
+};
+
+onBeforeMount(() => {
+  if (formData.value.conditionExpression) {
+    formData.value.conditionExpressionValue = formData.value.conditionExpression.body;
+  }
 });
 </script>
 

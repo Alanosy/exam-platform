@@ -44,30 +44,32 @@
     >
       <el-form ref="formRef" :model="formData" :rules="tableRules" label-width="100px">
         <el-form-item label="事件" prop="event">
-          <template #label>
-            <span>
-              事件
-              <el-tooltip placement="top">
-                <el-icon><QuestionFilled /></el-icon>
-                <template #content>
-                  create（创建）：当任务已经创建，并且所有任务参数都已经设置时触发。<br />
-                  assignment（指派）：当任务已经指派给某人时触发。请注意：当流程执行到达用户任务时，在触发create事件之前，会首先触发assignment事件。<br />
-                  complete（完成）：当任务已经完成，从运行时数据中删除前触发。<br />
-                  delete（删除）：在任务即将被删除前触发。请注意任务由completeTask正常完成时也会触发。
-                </template>
-              </el-tooltip>
-            </span>
-          </template>
           <el-select v-model="formData.event">
             <el-option v-for="item in eventSelect" :key="item.id" :value="item.value" :label="item.label"></el-option>
           </el-select>
         </el-form-item>
         <el-form-item label="类型" prop="type">
+          <template #label>
+            <span>
+              类型
+              <el-tooltip placement="top">
+                <el-icon><QuestionFilled /></el-icon>
+                <template #content>
+                  类：示例 com.company.MyCustomListener，自定义类必须实现 org.flowable.engine.delegate.TaskListener 接口<br />
+                  表达式：示例 ${myObject.callMethod(task, task.eventName)}<br />
+                  委托表达式：示例 ${myListenerSpringBean} ，该 springBean 需要实现 org.flowable.engine.delegate.TaskListener 接口
+                </template>
+              </el-tooltip>
+            </span>
+          </template>
           <el-select v-model="formData.type">
             <el-option v-for="item in typeSelect" :key="item.id" :value="item.value" :label="item.label"></el-option>
           </el-select>
         </el-form-item>
-        <el-form-item :label="typeSelect.filter(e=>e.value === formData.type)[0]?typeSelect.filter(e=>e.value === formData.type)[0]?.label:'表达式'" prop="className">
+        <el-form-item
+          :label="typeSelect.filter((e) => e.value === formData.type)[0] ? typeSelect.filter((e) => e.value === formData.type)[0]?.label : '表达式'"
+          prop="className"
+        >
           <el-input v-model="formData.className" type="text"></el-input>
         </el-form-item>
       </el-form>
@@ -88,24 +90,26 @@
 <script setup lang="ts">
 import ListenerParam from './ListenerParam.vue';
 import { VxeTableEvents, VxeTableInstance, VxeTablePropTypes } from 'vxe-table';
-import { TaskListenerVO } from 'bpmnDesign';
-import { ModdleElement } from 'bpmn';
+import { ExecutionListenerVO } from 'bpmnDesign';
+import { Moddle, Modeler, ModdleElement } from 'bpmn';
 
-import usePanel from '@/components/BpmnDesign/hooks/usePanel';
+import usePanel from '../../hooks/usePanel';
 import useDialog from '@/hooks/useDialog';
 import useModelerStore from '@/store/modules/modeler';
 
-const { proxy } = getCurrentInstance() as ComponentInternalInstance;
-
+const emit = defineEmits(['close']);
 interface PropType {
   element: ModdleElement;
 }
 const props = withDefaults(defineProps<PropType>(), {});
 
-const selectRow = ref<TaskListenerVO | null>();
+const { proxy } = getCurrentInstance() as ComponentInternalInstance;
+
+const selectRow = ref<ExecutionListenerVO | null>();
 const formDialog = useDialog({
   title: selectRow.value ? '编辑&保存' : '新增&保存'
 });
+
 const { showConfig, elementType, updateProperties } = usePanel({
   element: toRaw(props.element)
 });
@@ -113,23 +117,20 @@ const { getModdle } = useModelerStore();
 const moddle = getModdle();
 
 const listenerParamRef = ref<InstanceType<typeof ListenerParam>>();
-const tableRef = ref<VxeTableInstance<TaskListenerVO>>();
+const tableRef = ref<VxeTableInstance<ExecutionListenerVO>>();
 const formRef = ref<ElFormInstance>();
 
-const initData: TaskListenerVO = {
+const initData: ExecutionListenerVO = {
   event: '',
   type: '',
   className: '',
-  name: '',
   params: []
 };
-const formData = ref<TaskListenerVO>({ ...initData });
-const currentIndex = ref(0);
-const tableData = ref<TaskListenerVO[]>([]);
-const tableRules = ref<VxeTablePropTypes.EditRules>({
+const formData = ref<ExecutionListenerVO>({ ...initData });
+const tableData = ref<ExecutionListenerVO[]>([]);
+const tableRules = ref<ElFormRules>({
   event: [{ required: true, message: '请选择', trigger: 'blur' }],
   type: [{ required: true, message: '请选择', trigger: 'blur' }],
-  name: [{ required: true, message: '请输入', trigger: 'blur' }],
   className: [{ required: true, message: '请输入', trigger: 'blur' }]
 });
 
@@ -152,26 +153,6 @@ const submitEvent = async () => {
   });
 };
 
-const insertEvent = async () => {
-  Object.assign(formData.value, initData);
-  selectRow.value = null;
-  formDialog.openDialog();
-};
-
-const editEvent = (row: TaskListenerVO) => {
-  Object.assign(formData.value, row);
-  selectRow.value = row;
-  formDialog.openDialog();
-};
-const removeEvent = async (row: TaskListenerVO) => {
-  await proxy?.$modal.confirm('您确定要删除该数据?');
-  const $table = tableRef.value;
-  if ($table) {
-    await $table.remove(row);
-    updateElement();
-  }
-};
-
 const removeSelectRowEvent = async () => {
   const $table = tableRef.value;
   if ($table) {
@@ -184,6 +165,26 @@ const removeSelectRowEvent = async () => {
     }
   }
 };
+const insertEvent = async () => {
+  Object.assign(formData.value, initData);
+  selectRow.value = null;
+  formDialog.openDialog();
+};
+
+const editEvent = (row: ExecutionListenerVO) => {
+  Object.assign(formData.value, row);
+  selectRow.value = row;
+  formDialog.openDialog();
+};
+
+const removeEvent = async (row: ExecutionListenerVO) => {
+  await proxy?.$modal.confirm('您确定要删除该数据?');
+  const $table = tableRef.value;
+  if ($table) {
+    await $table.remove(row);
+    updateElement();
+  }
+};
 const updateElement = () => {
   const $table = tableRef.value;
   const data = $table.getTableData().fullData;
@@ -193,35 +194,35 @@ const updateElement = () => {
       extensionElements = moddle.create('bpmn:ExtensionElements');
     }
     // 清除旧值
-    extensionElements.values = extensionElements.values?.filter((item) => item.$type !== 'flowable:TaskListener') ?? [];
+    extensionElements.values = extensionElements.values?.filter((item) => item.$type !== 'flowable:ExecutionListener') ?? [];
     data.forEach((item) => {
-      const taskListener = moddle.create('flowable:TaskListener');
-      taskListener['event'] = item.event;
-      taskListener[item.type] = item.className;
+      const executionListener = moddle.create('flowable:ExecutionListener');
+      executionListener['event'] = item.event;
+      executionListener[item.type] = item.className;
       if (item.params && item.params.length) {
         item.params.forEach((field) => {
           const fieldElement = moddle.create('flowable:Field');
           fieldElement['name'] = field.name;
           fieldElement[field.type] = field.value;
-          taskListener.get('fields').push(fieldElement);
+          executionListener.get('fields').push(fieldElement);
         });
       }
-      extensionElements.get('values').push(taskListener);
+      extensionElements.get('values').push(executionListener);
     });
     updateProperties({ extensionElements: extensionElements });
   } else {
     const extensionElements = props.element.businessObject[`extensionElements`];
     if (extensionElements) {
-      extensionElements.values = extensionElements.values?.filter((item) => item.$type !== 'flowable:TaskListener') ?? [];
+      extensionElements.values = extensionElements.values?.filter((item) => item.$type !== 'flowable:ExecutionListener') ?? [];
     }
   }
 };
 
-const cellDBLClickEvent: VxeTableEvents.CellDblclick<TaskListenerVO> = ({ row }) => {
+const cellDBLClickEvent: VxeTableEvents.CellDblclick<ExecutionListenerVO> = ({ row }) => {
   editEvent(row);
 };
 
-const menuConfig = reactive<VxeTablePropTypes.MenuConfig<TaskListenerVO>>({
+const menuConfig = reactive<VxeTablePropTypes.MenuConfig<ExecutionListenerVO>>({
   body: {
     options: [
       [
@@ -240,7 +241,7 @@ const menuConfig = reactive<VxeTablePropTypes.MenuConfig<TaskListenerVO>>({
     return true;
   }
 });
-const contextMenuClickEvent: VxeTableEvents.MenuClick<TaskListenerVO> = ({ menu, row, column }) => {
+const contextMenuClickEvent: VxeTableEvents.MenuClick<ExecutionListenerVO> = ({ menu, row, column }) => {
   const $table = tableRef.value;
   if ($table) {
     switch (menu.code) {
@@ -253,10 +254,11 @@ const contextMenuClickEvent: VxeTableEvents.MenuClick<TaskListenerVO> = ({ menu,
     }
   }
 };
+
 const initTableData = () => {
   tableData.value =
     props.element.businessObject.extensionElements?.values
-      .filter((item) => item.$type === 'flowable:TaskListener')
+      .filter((item) => item.$type === 'flowable:ExecutionListener')
       .map((item) => {
         let type;
         if ('class' in item) type = 'class';
@@ -291,10 +293,9 @@ const typeSelect = [
   { id: '4b8135ab-6bc3-4a0f-80be-22f58bc6c5fd', label: '委托表达式', value: 'delegateExpression' }
 ];
 const eventSelect = [
-  { id: 'e6e0a51a-2d5d-4dc4-b847-b5c14f43a6ab', label: '创建', value: 'create' },
-  { id: '6da97c1e-15fc-4445-8943-75d09f49778e', label: '指派', value: 'assignment' },
-  { id: '6a2cbcec-e026-4f11-bef7-fff0b5c871e2', label: '完成', value: 'complete' },
-  { id: '68801972-85f1-482f-bd86-1fad015c26ed', label: '删除', value: 'delete' }
+  { id: 'e6e0a51a-2d5d-4dc4-b847-b5c14f43a6ab', label: '开始', value: 'start' },
+  { id: '6da97c1e-15fc-4445-8943-75d09f49778e', label: '结束', value: 'end' },
+  { id: '6a2cbcec-e026-4f11-bef7-fff0b5c871e2', label: '启用', value: 'take' }
 ];
 </script>
 

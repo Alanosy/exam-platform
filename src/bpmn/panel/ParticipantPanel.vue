@@ -11,12 +11,12 @@
           </div>
         </template>
         <div>
-          <el-form ref="formRef" :model="formData" :rules="formRules" label-width="80px">
+          <el-form ref="formRef" :model="formData" :rules="formRules" label-width="90px">
             <el-form-item prop="id" label="节点 ID">
-              <el-input v-model="formData.id" @change="idChange"> </el-input>
+              <el-input v-model="formData.id" @change="idChange"></el-input>
             </el-form-item>
             <el-form-item prop="name" label="节点名称">
-              <el-input v-model="formData.name" @change="nameChange"> </el-input>
+              <el-input v-model="formData.name" @change="nameChange"></el-input>
             </el-form-item>
           </el-form>
         </div>
@@ -39,15 +39,16 @@
   </div>
 </template>
 <script setup lang="ts">
-import useParseElement from '@/components/BpmnDesign/hooks/useParseElement';
-import usePanel from '@/components/BpmnDesign/hooks/usePanel';
-import { Modeler, ModdleElement } from 'bpmn';
-import { GatewayPanel } from 'bpmnDesign';
-import ExecutionListener from '@/components/BpmnDesign/panel/property/ExecutionListener.vue';
+import useParseElement from '../hooks/useParseElement';
+import usePanel from '../hooks/usePanel';
+import ExecutionListener from './property/ExecutionListener.vue';
+import { ModdleElement } from 'bpmn';
+import { ParticipantPanel } from 'bpmnDesign';
 
 interface PropType {
   element: ModdleElement;
 }
+
 const props = withDefaults(defineProps<PropType>(), {});
 const { nameChange, idChange } = usePanel({
   element: toRaw(props.element)
@@ -55,11 +56,10 @@ const { nameChange, idChange } = usePanel({
 const { parseData } = useParseElement({
   element: toRaw(props.element)
 });
-const currentCollapseItem = ref(['1', '2']);
-const formData = ref(parseData<GatewayPanel>());
 
+const formData = ref(parseData<ParticipantPanel>());
+const currentCollapseItem = ref(['1', '2']);
 const formRules = ref<ElFormRules>({
-  processCategory: [{ required: true, message: '请选择', trigger: 'blur' }],
   id: [{ required: true, message: '请输入', trigger: 'blur' }],
   name: [{ required: true, message: '请输入', trigger: 'blur' }]
 });

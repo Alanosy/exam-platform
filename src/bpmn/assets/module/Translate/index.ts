@@ -1,4 +1,4 @@
-import zh from '@/components/BpmnDesign/assets/lang/zh';
+import zh from '../../lang/zh';
 
 const customTranslate = (template: any, replacements: any) => {
   replacements = replacements || {};

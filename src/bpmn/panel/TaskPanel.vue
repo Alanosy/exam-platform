@@ -21,9 +21,14 @@
             <el-form-item v-if="showConfig.skipExpression" prop="skipExpression" label="跳过表达式">
               <el-input v-model="formData.skipExpression" @change="skipExpressionChange"> </el-input>
             </el-form-item>
-            <el-form-item prop="formKey" label="表单地址" v-loading="formManageListLoading">
-              <el-select @change="formKeyChange" v-model="formData.formKey" clearable filterable placeholder="请选择表单"  style="width: 260px" >
-                <el-option  v-for="item in formManageList"  :key="item.id"  :label="item.formTypeName+':'+item.formName" :value="item.formType+':'+item.id" />
+            <el-form-item v-loading="formManageListLoading" prop="formKey" label="表单地址">
+              <el-select v-model="formData.formKey" clearable filterable placeholder="请选择表单" style="width: 260px" @change="formKeyChange">
+                <el-option
+                  v-for="item in formManageList"
+                  :key="item.id"
+                  :label="item.formTypeName + ':' + item.formName"
+                  :value="item.formType + ':' + item.id"
+                />
               </el-select>
             </el-form-item>
           </div>
@@ -231,11 +236,13 @@
   </div>
 </template>
 <script setup lang="ts">
-import useParseElement from '@/components/BpmnDesign/hooks/useParseElement';
-import usePanel from '@/components/BpmnDesign/hooks/usePanel';
+import useParseElement from '../hooks/useParseElement';
+import usePanel from '../hooks/usePanel';
 import UserSelect from '@/components/UserSelect';
 import RoleSelect from '@/components/RoleSelect';
-import DueDate from '@/components/BpmnDesign/panel/property/DueDate.vue';
+import ExecutionListener from './property/ExecutionListener.vue';
+import TaskListener from './property/TaskListener.vue';
+import DueDate from './property/DueDate.vue';
 import { ModdleElement } from 'bpmn';
 import { TaskPanel } from 'bpmnDesign';
 import { AllocationTypeEnum, MultiInstanceTypeEnum, SpecifyDescEnum } from '@/enums/bpmn/IndexEnums';
@@ -464,11 +471,11 @@ const SpecifyDesc = [
 ];
 
 const listFormManage = async () => {
-  formManageListLoading.value = true
+  formManageListLoading.value = true;
   const res = await selectListFormManage();
   formManageList.value = res.data;
-  formManageListLoading.value = false
-}
+  formManageListLoading.value = false;
+};
 onMounted(() => {
   nextTick(() => {
     listFormManage();

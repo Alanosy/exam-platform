@@ -1,4 +1,4 @@
-import showConfig from '@/components/BpmnDesign/assets/showConfig';
+import showConfig from '../assets/showConfig';
 import { ModdleElement } from 'bpmn';
 import useModelerStore from '@/store/modules/modeler';
 import { MultiInstanceTypeEnum } from '@/enums/bpmn/IndexEnums';
@@ -116,7 +116,7 @@ export default (ops: Options) => {
     }
   };
   const formKeyChange = (newVal: string) => {
-      updateProperties({ formKey: newVal });
+    updateProperties({ formKey: newVal });
   };
   const constant = {
     MultiInstanceType: [
