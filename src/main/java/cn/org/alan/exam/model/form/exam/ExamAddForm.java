@@ -22,7 +22,7 @@ public class ExamAddForm {
     /**
      * 考试时长
      */
-    @NotBlank(message = "请设置考试时间,单位m")
+    @NotNull(message = "请设置考试时间,单位m")
     @Min(value=0,message = "请设置大于0的考试时长")
     private Integer examDuration;
 
@@ -35,7 +35,7 @@ public class ExamAddForm {
      * 及格分
      */
     @Min(value=0,message = "及格分数必须大于0")
-    @NotBlank(message = "及格分不能为空")
+    @NotNull(message = "及格分不能为空")
     private Integer passedScore;
     /**
      * 开始时间
@@ -57,7 +57,7 @@ public class ExamAddForm {
     /**
      * 题库id
      */
-    @NotBlank(message = "题库不能为空")
+    @NotNull(message = "题库不能为空")
     private Integer repoId;
     /**
      * 证书id
@@ -66,49 +66,49 @@ public class ExamAddForm {
     /**
      * 单选题数量
      */
-    @NotBlank(message = "及格分不能为空")
+    @NotNull(message = "及格分不能为空")
     @Min(value = 0)
     private Integer radioCount;
     /**
      * 单选题分数
      */
-    @NotBlank(message = "单选题分数不能为空")
+    @NotNull(message = "单选题分数不能为空")
     @Min(value = 0)
     private Integer radioScore;
     /**
      * 多选题数量
      */
-    @NotBlank(message = "多选题数量不能为空")
+    @NotNull(message = "多选题数量不能为空")
     @Min(value = 0)
     private Integer multiCount;
     /**
      * 多选题分数
      */
-    @NotBlank(message = "多选题分数不能为空")
+    @NotNull(message = "多选题分数不能为空")
     @Min(value = 0)
     private Integer multiScore;
     /**
      * 判断题数量
      */
-    @NotBlank(message = "判断题数量不能为空")
+    @NotNull(message = "判断题数量不能为空")
     @Min(value = 0)
     private Integer judgeCount;
     /**
      * 判断题分数
      */
-    @NotBlank(message = "判断题分数不能为空")
+    @NotNull(message = "判断题分数不能为空")
     @Min(value = 0)
     private Integer judgeScore;
     /**
      * 简答题数量
      */
-    @NotBlank(message = "简答题数量不能为空")
+    @NotNull(message = "简答题数量不能为空")
     @Min(value = 0)
     private Integer saqCount;
     /**
      * 简答题分数
      */
-    @NotBlank(message = "简答题分数不能为空")
+    @NotNull(message = "简答题分数不能为空")
     @Min(value = 0)
     private Integer saqScore;
 }

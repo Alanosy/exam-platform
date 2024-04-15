@@ -64,6 +64,10 @@ public class UserExamsScore implements Serializable {
      * 状态   0正在考试 1考试完成
      */
     private Integer state;
+    /**
+     * 是否阅卷-1 未简答题 0 未阅卷 1已阅卷
+     */
+    private Integer whetherMark;
 
     /**
      * 创建时间  YYYY-MM-DD hh:mm:ss

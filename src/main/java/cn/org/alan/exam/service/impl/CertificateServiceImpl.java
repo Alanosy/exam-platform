@@ -26,7 +26,7 @@ import java.util.List;
  * @since 2024-03-21
  */
 @Service
-public  class CertificateServiceImpl extends ServiceImpl<CertificateMapper, Certificate> implements ICertificateService {
+public class CertificateServiceImpl extends ServiceImpl<CertificateMapper, Certificate> implements ICertificateService {
     //添加属性certificateMapper
     @Resource
     private CertificateMapper certificateMapper;
