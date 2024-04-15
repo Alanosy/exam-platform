@@ -38,23 +38,20 @@
             </el-card>
           </div>
         </transition>
-        <transition :enter-active-class="proxy?.animate.searchAnimate.enter" :leave-active-class="proxy?.animate.searchAnimate.leave">
-          <div v-show="showSearch" class="mb-[10px]">
-            <el-card shadow="hover">
-              <el-button type="danger" icon="Delete" :disabled="multiple" @click="handleDelete">删除</el-button>
-              <el-button type="primary" icon="UploadFilled" @click="uploadDialog.visible = true">部署流程文件</el-button>
-            </el-card>
-          </div>
-        </transition>
         <el-card shadow="hover">
           <template #header>
             <el-row :gutter="10" class="mb8">
-              <el-col :span="1.5"> </el-col>
+              <el-col :span="1.5">
+                <el-button type="danger" icon="Delete" :disabled="multiple" @click="handleDelete()">删除</el-button>
+              </el-col>
+              <el-col :span="1.5">
+                <el-button type="primary" icon="UploadFilled" @click="uploadDialog.visible = true">部署流程文件</el-button>
+              </el-col>
               <right-toolbar v-model:showSearch="showSearch" @query-table="getList"></right-toolbar>
             </el-row>
           </template>
 
-          <el-table border v-loading="loading" :data="processDefinitionList" @selection-change="handleSelectionChange">
+          <el-table v-loading="loading" border :data="processDefinitionList" @selection-change="handleSelectionChange">
             <el-table-column type="selection" width="55" align="center" />
             <el-table-column align="center" type="index" label="序号" width="60"></el-table-column>
             <el-table-column align="center" prop="name" label="流程定义名称" :show-overflow-tooltip="true"></el-table-column>
@@ -80,10 +77,10 @@
             </el-table-column>
             <el-table-column align="center" prop="deploymentTime" label="部署时间" width="120" :show-overflow-tooltip="true"></el-table-column>
             <el-table-column align="center" label="表名/表单KEY" width="120" :show-overflow-tooltip="true">
-              <template #default="scope"> 
-                 <span v-if="scope.row.wfDefinitionConfigVo">
+              <template #default="scope">
+                <span v-if="scope.row.wfDefinitionConfigVo">
                   {{ scope.row.wfDefinitionConfigVo.tableName }}
-                 </span>
+                </span>
               </template>
             </el-table-column>
             <el-table-column fixed="right" label="操作" align="center" width="220" class-name="small-padding fixed-width">
@@ -101,7 +98,9 @@
                     </el-button>
                   </el-col>
                   <el-col :span="1.5">
-                    <el-button type="text" size="small" icon="Document" @click="getProcessDefinitionHitoryList(scope.row.id, scope.row.key)">历史版本</el-button>
+                    <el-button link type="primary" size="small" icon="Document" @click="getProcessDefinitionHitoryList(scope.row.id, scope.row.key)">
+                      历史版本
+                    </el-button>
                   </el-col>
                   <el-col :span="1.5">
                     <el-button link type="primary" size="small" icon="Delete" @click="handleDelete(scope.row)">删除</el-button>
@@ -112,7 +111,7 @@
                     <el-button link type="primary" size="small" icon="Sort" @click="handleConvertToModel(scope.row)"> 转换模型 </el-button>
                   </el-col>
                   <el-col :span="1.5">
-                    <el-button type="text" size="small" icon="Tickets" @click="handleDefinitionConfigOpen(scope.row)">绑定业务</el-button>
+                    <el-button link type="primary" size="small" icon="Tickets" @click="handleDefinitionConfigOpen(scope.row)">绑定业务</el-button>
                   </el-col>
                 </el-row>
               </template>
@@ -222,19 +221,25 @@
     </el-dialog>
 
     <!-- 表单配置 -->
-    <el-dialog v-model="definitionConfigDialog.visible" :title="definitionConfigDialog.title" width="650px" append-to-body :close-on-click-modal="false">
+    <el-dialog
+      v-model="definitionConfigDialog.visible"
+      :title="definitionConfigDialog.title"
+      width="650px"
+      append-to-body
+      :close-on-click-modal="false"
+    >
       <el-form :model="definitionConfigForm" label-width="auto">
         <el-form-item label="流程KEY">
-          <el-input v-model="definitionConfigForm.processKey" disabled/>
+          <el-input v-model="definitionConfigForm.processKey" disabled />
         </el-form-item>
         <el-form-item label="表名" prop="formId">
-          <el-input v-model="definitionConfigForm.tableName" placeholder="示例:test_leave"/>
+          <el-input v-model="definitionConfigForm.tableName" placeholder="示例:test_leave" />
         </el-form-item>
         <el-form-item label="备注">
-          <el-input v-model="definitionConfigForm.remark" type="textarea" resize="none"/>
+          <el-input v-model="definitionConfigForm.remark" type="textarea" resize="none" />
         </el-form-item>
       </el-form>
-      
+
       <template #footer>
         <div class="dialog-footer">
           <el-button @click="definitionConfigDialog.visible = false">取消</el-button>
@@ -256,12 +261,12 @@ import {
   deployProcessFile,
   getListByKey
 } from '@/api/workflow/processDefinition';
-import { getByTableNameNotDefId,getByDefId,saveOrUpdate } from '@/api/workflow/definitionConfig';
+import { getByTableNameNotDefId, getByDefId, saveOrUpdate } from '@/api/workflow/definitionConfig';
 import ProcessPreview from './components/processPreview.vue';
 import { listCategory } from '@/api/workflow/category';
 import { CategoryVO } from '@/api/workflow/category/types';
 import { ProcessDefinitionQuery, ProcessDefinitionVO } from '@/api/workflow/processDefinition/types';
-import { definitionConfigForm } from '@/api/workflow/definitionConfig/types';
+import { DefinitionConfigForm } from '@/api/workflow/definitionConfig/types';
 import { UploadRequestOptions, ElMessage, ElMessageBox } from 'element-plus';
 
 const { proxy } = getCurrentInstance() as ComponentInternalInstance;
@@ -269,7 +274,7 @@ const { proxy } = getCurrentInstance() as ComponentInternalInstance;
 const previewRef = ref<InstanceType<typeof ProcessPreview>>();
 const queryFormRef = ref<ElFormInstance>();
 const categoryTreeRef = ref<ElTreeInstance>();
-const definitionConfigForm = ref<definitionConfigForm>({});
+const definitionConfigForm = ref<DefinitionConfigForm>();
 
 type CategoryOption = {
   categoryCode: string;
@@ -418,11 +423,11 @@ const clickPreviewXML = async (id: string) => {
   }
 };
 /** 删除按钮操作 */
-const handleDelete = async (row: ProcessDefinitionVO) => {
-  const id = row.id || ids.value;
-  const deployIds = row.deploymentId || deploymentIds.value;
-  const defKeys = row.key || keys.value;
-  await proxy?.$modal.confirm('是否确认删除流程定义KEY为【' + keys.value + '】的数据项？');
+const handleDelete = async (row?: ProcessDefinitionVO) => {
+  const id = row?.id || ids.value;
+  const deployIds = row?.deploymentId || deploymentIds.value;
+  const defKeys = row?.key || keys.value;
+  await proxy?.$modal.confirm('是否确认删除流程定义KEY为【' + defKeys + '】的数据项？');
   loading.value = true;
   await deleteProcessDefinition(deployIds, id).finally(() => (loading.value = false));
   await getList();
@@ -480,46 +485,44 @@ const handerDeployProcessFile = (data: UploadRequestOptions): XMLHttpRequest => 
 };
 //打开流程定义配置
 const handleDefinitionConfigOpen = async (row: ProcessDefinitionVO) => {
-   definitionConfigDialog.visible = true
-   definitionConfigForm.value.processKey = row.key
-   definitionConfigForm.value.definitionId = row.id
-   definitionConfigForm.value.version = row.version
-   const resp = await getByDefId(row.id)
-   if(resp.data){
-    definitionConfigForm.value = resp.data
-   }else{
-    definitionConfigForm.value.tableName = undefined
-    definitionConfigForm.value.remark = undefined
-   }
-}
+  definitionConfigDialog.visible = true;
+  definitionConfigForm.value.processKey = row.key;
+  definitionConfigForm.value.definitionId = row.id;
+  definitionConfigForm.value.version = row.version;
+  const resp = await getByDefId(row.id);
+  if (resp.data) {
+    definitionConfigForm.value = resp.data;
+  } else {
+    definitionConfigForm.value.tableName = undefined;
+    definitionConfigForm.value.remark = undefined;
+  }
+};
 //保存表单
 const handlerSaveForm = async () => {
-  getByTableNameNotDefId(definitionConfigForm.value.tableName,definitionConfigForm.value.definitionId).then(res => {
-    if(res.data && res.data.length > 0){
-      ElMessageBox.confirm('表名已被【'+res.data[0].processKey+'】版本v'+res.data[0].version+'.0绑定确认后将会删除绑定的流程KEY!','提示',{
-          confirmButtonText: '确认',
-          cancelButtonText: '取消',
-          type: 'warning',
-        }
-      ).then(() => {
-          saveOrUpdate(definitionConfigForm.value).then(resp=>{
-            if(resp.code === 200){
-              proxy?.$modal.msgSuccess('操作成功');
-              definitionConfigDialog.visible = false
-              getList();
-            }
-          })
-        })
-    }else{
-      saveOrUpdate(definitionConfigForm.value).then(resp=>{
-        if(resp.code === 200){
+  getByTableNameNotDefId(definitionConfigForm.value.tableName, definitionConfigForm.value.definitionId).then((res) => {
+    if (res.data && res.data.length > 0) {
+      ElMessageBox.confirm('表名已被【' + res.data[0].processKey + '】版本v' + res.data[0].version + '.0绑定确认后将会删除绑定的流程KEY!', '提示', {
+        confirmButtonText: '确认',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        saveOrUpdate(definitionConfigForm.value).then((resp) => {
+          if (resp.code === 200) {
+            proxy?.$modal.msgSuccess('操作成功');
+            definitionConfigDialog.visible = false;
+            getList();
+          }
+        });
+      });
+    } else {
+      saveOrUpdate(definitionConfigForm.value).then((resp) => {
+        if (resp.code === 200) {
           proxy?.$modal.msgSuccess('操作成功');
-          definitionConfigDialog.visible = false
+          definitionConfigDialog.visible = false;
           getList();
         }
-      })
+      });
     }
-  })
-  
-}
+  });
+};
 </script>

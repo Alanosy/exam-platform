@@ -2,10 +2,9 @@ import request from '@/utils/request';
 import { AxiosPromise } from 'axios';
 import { DefinitionConfigVO, DefinitionConfigForm } from '@/api/workflow/definitionConfig/types';
 
-
 /**
  * 查询表单配置详细
- * @param id
+ * @param definitionId
  */
 export const getByDefId = (definitionId: string | number): AxiosPromise<DefinitionConfigVO> => {
   return request({
@@ -40,9 +39,9 @@ export const deldefinitionConfig = (id: string | number | Array<string | number>
 /**
  * 查询流程定义配置排除当前查询的流程定义
  * @param tableName
- * @param tableName
+ * @param definitionId
  */
-export const getByTableNameNotDefId = (tableName: string,definitionId: string ) => {
+export const getByTableNameNotDefId = (tableName: string, definitionId: string | number) => {
   return request({
     url: `/workflow/definitionConfig/getByTableNameNotDefId/${tableName}/${definitionId}`,
     method: 'get'
