@@ -15,7 +15,15 @@
           :key="item.value + ''"
           :disable-transitions="true"
           :index="index"
-          :type="item.elTagType === 'primary' || item.elTagType === 'default' ? 'primary' : item.elTagType"
+          :type="
+            item.elTagType === 'primary' ||
+            item.elTagType === 'success' ||
+            item.elTagType === 'info' ||
+            item.elTagType === 'warning' ||
+            item.elTagType === 'danger'
+              ? item.elTagType
+              : 'primary'
+          "
           :class="item.elTagClass"
         >
           {{ item.label + ' ' }}

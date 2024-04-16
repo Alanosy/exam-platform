@@ -55,7 +55,7 @@
             >
             <el-tag
               v-else
-              :type="scope.row.listClass === 'primary' || scope.row.listClass === 'default' ? '' : scope.row.listClass"
+              :type="scope.row.listClass === 'primary' || scope.row.listClass === 'default' ? 'primary' : scope.row.listClass"
               :class="scope.row.cssClass"
               >{{ scope.row.dictLabel }}</el-tag
             >
