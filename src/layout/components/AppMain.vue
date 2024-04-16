@@ -23,13 +23,6 @@ const tagsViewStore = useTagsViewStore();
 const animante = ref<string>('');
 const animationEnable = ref(useSettingsStore().animationEnable);
 watch(
-  () => tagsViewStore.cachedViews,
-  (val) => {
-    console.log(val);
-  },
-  { deep: true }
-);
-watch(
   () => useSettingsStore().animationEnable,
   (val: boolean) => {
     animationEnable.value = val;
