@@ -75,6 +75,7 @@ export default defineConfig(({ mode, command }: ConfigEnv): UserConfig => {
         'bpmn-js/lib/features/context-pad/ContextPadProvider',
         'diagram-js/lib/draw/BaseRenderer',
         'tiny-svg',
+        'image-conversion',
 
         'element-plus/es/components/text/style/css',
         'element-plus/es/components/collapse-item/style/css',
