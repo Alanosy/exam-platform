@@ -138,7 +138,6 @@ const deptTreeRef = ref<ElTreeInstance>();
 const queryFormRef = ref<ElFormInstance>();
 const tableRef = ref<VxeTableInstance<UserVO>>();
 
-
 const userDialog = useDialog({
   title: '用户选择'
 });
@@ -172,7 +171,7 @@ const confirm = () => {
 };
 
 const computedIds = (data) => {
-    if (data instanceof Array) {
+  if (data instanceof Array) {
     return [...data];
   } else if (typeof data === 'string') {
     return data.split(',');
