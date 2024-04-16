@@ -169,7 +169,7 @@ const initFormData: DictDataForm = {
   dictLabel: '',
   dictValue: '',
   cssClass: '',
-  listClass: '',
+  listClass: 'primary',
   dictSort: 0,
   remark: ''
 };

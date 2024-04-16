@@ -15,7 +15,7 @@
           :key="item.value + ''"
           :disable-transitions="true"
           :index="index"
-          :type="item.elTagType === 'primary' || item.elTagType === 'default' ? '' : item.elTagType"
+          :type="item.elTagType === 'primary' || item.elTagType === 'default' ? 'primary' : item.elTagType"
           :class="item.elTagClass"
         >
           {{ item.label + ' ' }}
@@ -29,8 +29,6 @@
 </template>
 
 <script setup lang="ts">
-import { propTypes } from '@/utils/propTypes';
-
 interface Props {
   options: Array<DictDataOption>;
   value: number | string | Array<number | string>;
