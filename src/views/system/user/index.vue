@@ -411,7 +411,8 @@ const initData: PageData<UserForm, UserQuery> = {
         message: '请输入正确的手机号码',
         trigger: 'blur'
       }
-    ]
+    ],
+    roleIds: [{ required: true, message: '用户角色不能为空', trigger: 'blur' }]
   }
 };
 const data = reactive<PageData<UserForm, UserQuery>>(initData);
