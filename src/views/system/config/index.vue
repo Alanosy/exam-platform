@@ -5,10 +5,10 @@
         <el-card shadow="hover">
           <el-form ref="queryFormRef" :model="queryParams" :inline="true" label-width="68px">
             <el-form-item label="参数名称" prop="configName">
-              <el-input v-model="queryParams.configName" placeholder="请输入参数名称" clearable style="width: 240px" @keyup.enter="handleQuery" />
+              <el-input v-model="queryParams.configName" placeholder="请输入参数名称" clearable @keyup.enter="handleQuery" />
             </el-form-item>
             <el-form-item label="参数键名" prop="configKey">
-              <el-input v-model="queryParams.configKey" placeholder="请输入参数键名" clearable style="width: 240px" @keyup.enter="handleQuery" />
+              <el-input v-model="queryParams.configKey" placeholder="请输入参数键名" clearable @keyup.enter="handleQuery" />
             </el-form-item>
             <el-form-item label="系统内置" prop="configType">
               <el-select v-model="queryParams.configType" placeholder="系统内置" clearable>
