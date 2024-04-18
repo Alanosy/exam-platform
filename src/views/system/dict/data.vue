@@ -10,7 +10,7 @@
               </el-select>
             </el-form-item>
             <el-form-item label="字典标签" prop="dictLabel">
-              <el-input v-model="queryParams.dictLabel" placeholder="请输入字典标签" clearable style="width: 200px" @keyup.enter="handleQuery" />
+              <el-input v-model="queryParams.dictLabel" placeholder="请输入字典标签" clearable style="width: 240px"  style="width: 200px" @keyup.enter="handleQuery" />
             </el-form-item>
             <el-form-item>
               <el-button type="primary" icon="Search" @click="handleQuery">搜索</el-button>

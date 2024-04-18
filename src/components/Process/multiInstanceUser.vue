@@ -6,7 +6,7 @@
         <!-- 部门树 -->
         <el-col :lg="4" :xs="24" style="">
           <el-card shadow="hover">
-            <el-input v-model="deptName" placeholder="请输入部门名称" prefix-icon="Search" clearable />
+            <el-input v-model="deptName" placeholder="请输入部门名称" prefix-icon="Search" clearable style="width: 240px"  />
             <el-tree class="mt-2" ref="deptTreeRef" node-key="id" :data="deptOptions"
               :props="{ label: 'label', children: 'children' }" :expand-on-click-node="false"
               :filter-node-method="filterNode" highlight-current default-expand-all
@@ -19,10 +19,10 @@
             <div class="search" v-show="showSearch">
               <el-form ref="queryFormRef" :model="queryParams" :inline="true" label-width="68px">
                 <el-form-item label="用户名称" prop="userName">
-                  <el-input v-model="queryParams.userName" placeholder="请输入用户名称" clearable @keyup.enter="handleQuery" />
+                  <el-input v-model="queryParams.userName" placeholder="请输入用户名称" clearable style="width: 240px"  @keyup.enter="handleQuery" />
                 </el-form-item>
                 <el-form-item label="手机号码" prop="phonenumber">
-                  <el-input v-model="queryParams.phonenumber" placeholder="请输入手机号码" clearable @keyup.enter="handleQuery" />
+                  <el-input v-model="queryParams.phonenumber" placeholder="请输入手机号码" clearable style="width: 240px"  @keyup.enter="handleQuery" />
                 </el-form-item>
                 <el-form-item>
                   <el-button type="primary" @click="handleQuery" icon="Search">搜索</el-button>

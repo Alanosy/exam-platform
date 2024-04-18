@@ -5,19 +5,19 @@
         <el-card shadow="hover">
           <el-form ref="queryFormRef" :model="queryParams" :inline="true" label-width="68px">
             <el-form-item label="部门id" prop="deptId">
-              <el-input v-model="queryParams.deptId" placeholder="请输入部门id" clearable @keyup.enter="handleQuery" />
+              <el-input v-model="queryParams.deptId" placeholder="请输入部门id" clearable style="width: 240px"  @keyup.enter="handleQuery" />
             </el-form-item>
             <el-form-item label="用户id" prop="userId">
-              <el-input v-model="queryParams.userId" placeholder="请输入用户id" clearable @keyup.enter="handleQuery" />
+              <el-input v-model="queryParams.userId" placeholder="请输入用户id" clearable style="width: 240px"  @keyup.enter="handleQuery" />
             </el-form-item>
             <el-form-item label="排序号" prop="orderNum">
-              <el-input v-model="queryParams.orderNum" placeholder="请输入排序号" clearable @keyup.enter="handleQuery" />
+              <el-input v-model="queryParams.orderNum" placeholder="请输入排序号" clearable style="width: 240px"  @keyup.enter="handleQuery" />
             </el-form-item>
             <el-form-item label="key键" prop="testKey">
-              <el-input v-model="queryParams.testKey" placeholder="请输入key键" clearable @keyup.enter="handleQuery" />
+              <el-input v-model="queryParams.testKey" placeholder="请输入key键" clearable style="width: 240px"  @keyup.enter="handleQuery" />
             </el-form-item>
             <el-form-item label="值" prop="value">
-              <el-input v-model="queryParams.value" placeholder="请输入值" clearable @keyup.enter="handleQuery" />
+              <el-input v-model="queryParams.value" placeholder="请输入值" clearable style="width: 240px"  @keyup.enter="handleQuery" />
             </el-form-item>
             <el-form-item>
               <el-button type="primary" icon="Search" @click="handleQuery">搜索</el-button>

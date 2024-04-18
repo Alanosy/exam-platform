@@ -8,10 +8,10 @@
         </el-select>
       </el-form-item>
       <el-form-item label="表名称" prop="tableName">
-        <el-input v-model="queryParams.tableName" placeholder="请输入表名称" clearable @keyup.enter="handleQuery" />
+        <el-input v-model="queryParams.tableName" placeholder="请输入表名称" clearable style="width: 240px"  @keyup.enter="handleQuery" />
       </el-form-item>
       <el-form-item label="表描述" prop="tableComment">
-        <el-input v-model="queryParams.tableComment" placeholder="请输入表描述" clearable @keyup.enter="handleQuery" />
+        <el-input v-model="queryParams.tableComment" placeholder="请输入表描述" clearable style="width: 240px"  @keyup.enter="handleQuery" />
       </el-form-item>
       <el-form-item>
         <el-button type="primary" icon="Search" @click="handleQuery">搜索</el-button>

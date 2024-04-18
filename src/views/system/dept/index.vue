@@ -5,10 +5,10 @@
         <el-card shadow="hover">
           <el-form ref="queryFormRef" :model="queryParams" :inline="true" label-width="68px">
             <el-form-item label="部门名称" prop="deptName">
-              <el-input v-model="queryParams.deptName" placeholder="请输入部门名称" clearable @keyup.enter="handleQuery" />
+              <el-input v-model="queryParams.deptName" placeholder="请输入部门名称" clearable style="width: 240px"  @keyup.enter="handleQuery" />
             </el-form-item>
             <el-form-item label="状态" prop="status">
-              <el-select v-model="queryParams.status" placeholder="部门状态" clearable>
+              <el-select v-model="queryParams.status" placeholder="部门状态" clearable style="width: 240px" >
                 <el-option v-for="dict in sys_normal_disable" :key="dict.value" :label="dict.label" :value="dict.value" />
               </el-select>
             </el-form-item>
