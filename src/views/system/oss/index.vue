@@ -5,13 +5,13 @@
         <el-card shadow="hover">
           <el-form ref="queryFormRef" :model="queryParams" :inline="true" label-width="68px">
             <el-form-item label="文件名" prop="fileName">
-              <el-input v-model="queryParams.fileName" placeholder="请输入文件名" clearable style="width: 240px"  style="width: 200px" @keyup.enter="handleQuery" />
+              <el-input v-model="queryParams.fileName" placeholder="请输入文件名" clearable style="width: 240px"  @keyup.enter="handleQuery" />
             </el-form-item>
             <el-form-item label="原名" prop="originalName">
-              <el-input v-model="queryParams.originalName" placeholder="请输入原名" clearable style="width: 240px"  style="width: 200px" @keyup.enter="handleQuery" />
+              <el-input v-model="queryParams.originalName" placeholder="请输入原名" clearable style="width: 240px"  @keyup.enter="handleQuery" />
             </el-form-item>
             <el-form-item label="文件后缀" prop="fileSuffix">
-              <el-input v-model="queryParams.fileSuffix" placeholder="请输入文件后缀" clearable style="width: 240px"  style="width: 200px" @keyup.enter="handleQuery" />
+              <el-input v-model="queryParams.fileSuffix" placeholder="请输入文件后缀" clearable style="width: 240px"  @keyup.enter="handleQuery" />
             </el-form-item>
             <el-form-item label="创建时间">
               <el-date-picker
