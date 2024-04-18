@@ -103,12 +103,12 @@
           <el-input v-model="form.password" type="password" placeholder="请输入系统用户密码" maxlength="20" />
         </el-form-item>
         <el-form-item label="租户套餐" prop="packageId">
-          <el-select v-model="form.packageId" :disabled="!!form.tenantId" placeholder="请选择租户套餐" clearable style="width: 240px"  style="width: 100%">
+          <el-select v-model="form.packageId" :disabled="!!form.tenantId" placeholder="请选择租户套餐" clearable style="width: 100%">
             <el-option v-for="item in packageList" :key="item.packageId" :label="item.packageName" :value="item.packageId" />
           </el-select>
         </el-form-item>
         <el-form-item label="过期时间" prop="expireTime">
-          <el-date-picker v-model="form.expireTime" clearable style="width: 240px"  type="datetime" value-format="YYYY-MM-DD HH:mm:ss" placeholder="请选择过期时间">
+          <el-date-picker v-model="form.expireTime" clearable type="datetime" value-format="YYYY-MM-DD HH:mm:ss" placeholder="请选择过期时间">
           </el-date-picker>
         </el-form-item>
         <el-form-item label="用户数量" prop="accountCount">

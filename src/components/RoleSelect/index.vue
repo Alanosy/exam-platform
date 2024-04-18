@@ -6,10 +6,10 @@
           <el-card shadow="hover">
             <el-form ref="queryFormRef" :model="queryParams" :inline="true" label-width="68px">
               <el-form-item label="角色名称" prop="roleName">
-                <el-input v-model="queryParams.roleName" placeholder="请输入角色名称" clearable style="width: 240px"  style="width: 180px" @keyup.enter="handleQuery" />
+                <el-input v-model="queryParams.roleName" placeholder="请输入角色名称" clearable style="width: 240px" @keyup.enter="handleQuery" />
               </el-form-item>
               <el-form-item label="权限字符" prop="roleKey">
-                <el-input v-model="queryParams.roleKey" placeholder="请输入权限字符" clearable style="width: 240px"  style="width: 180px" @keyup.enter="handleQuery" />
+                <el-input v-model="queryParams.roleKey" placeholder="请输入权限字符" clearable style="width: 240px"  @keyup.enter="handleQuery" />
               </el-form-item>
 
               <el-form-item>

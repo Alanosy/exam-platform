@@ -11,7 +11,7 @@
               <el-input v-model="queryParams.postName" placeholder="请输入岗位名称" clearable style="width: 240px"  style="width: 200px" @keyup.enter="handleQuery" />
             </el-form-item>
             <el-form-item label="状态" prop="status">
-              <el-select v-model="queryParams.status" placeholder="岗位状态" clearable style="width: 240px"  style="width: 200px">
+              <el-select v-model="queryParams.status" placeholder="岗位状态" clearable style="width: 240px">
                 <el-option v-for="dict in sys_normal_disable" :key="dict.value" :label="dict.label" :value="dict.value" />
               </el-select>
             </el-form-item>
