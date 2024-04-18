@@ -4,6 +4,7 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="cn.org.alan.exam.mapper.UserMapper">
     <sql id="simpleFiled">
+        u.gradeId,u.user_name,u.real_name,u.avatar,u.create_time,u.status
         u
         .
         id
@@ -24,7 +25,7 @@
     <update id="removeUserGrade">
         UPDATE t_user
         SET grade_id = null
-        WHERE id IN
+        WHERE gradeId IN
         <foreach item="userId" collection="userIds" open="(" separator="," close=")">
             #{userId}
         </foreach>

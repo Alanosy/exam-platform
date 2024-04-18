@@ -3,7 +3,7 @@
 <mapper namespace="cn.org.alan.exam.mapper.ExamMapper">
     <delete id="delExam">
         delete from t_exam
-        WHERE id IN
+        WHERE gradeId IN
         <foreach item="examId" collection="examIds" open="(" separator="," close=")">
             #{examId}
         </foreach>

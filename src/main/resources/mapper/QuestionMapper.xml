@@ -6,7 +6,7 @@
 
     <!--    分页获取试题信息-->
     <select id="pagingQuestion" resultType="cn.org.alan.exam.model.vo.QuestionVO">
-        select q.id,
+        select q.gradeId,
         case q.qu_type
         when 1 then '单选题'
         when 2 then '多选题'
@@ -15,7 +15,7 @@
         q.content,
         r.title as repoTitle,
         q.create_time
-        from t_question q join t_repo r on q.repo_id = r.id
+        from t_question q join t_repo r on q.repo_id = r.gradeId
         <trim suffixOverrides="and" prefix="where">
             <if test='content != null and content != ""'>
                 q.content like concat('%',#{content},'%') and
@@ -36,12 +36,12 @@
 
     <resultMap id="singleQuestion" autoMapping="true" type="cn.org.alan.exam.model.vo.QuestionVO">
         <id column="id" property="id"/>
-        <collection property="options" autoMapping="true" column="id" ofType="cn.org.alan.exam.model.entity.Option"
+        <collection property="options" autoMapping="true" column="gradeId" ofType="cn.org.alan.exam.model.entity.Option"
                     select="cn.org.alan.exam.mapper.OptionMapper.selectAllByQuestionId"/>
     </resultMap>
     <!--    根据试题id获取单题详情 一对多查询-->
     <select id="selectSingle" resultMap="singleQuestion">
-        select q.id,
+        select q.gradeId,
                q.content,
                q.image,
                q.analysis,
@@ -52,7 +52,7 @@
                    when 4 then '简答题' end as quType,
                r.title                      as repoTitle
         from t_question as q
-                 join t_repo as r on q.repo_id = r.id
-        where q.id = #{id}
+                 join t_repo as r on q.repo_id = r.gradeId
+        where q.gradeId = #{gradeId}
     </select>
 </mapper>
