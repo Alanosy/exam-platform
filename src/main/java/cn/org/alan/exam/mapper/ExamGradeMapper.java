@@ -18,4 +18,6 @@ public interface ExamGradeMapper extends BaseMapper<ExamGrade> {
     Integer addExamGrade(Integer id, List<Integer> gradeIds);
 
     int delExamGrade(Integer id);
+
+
 }

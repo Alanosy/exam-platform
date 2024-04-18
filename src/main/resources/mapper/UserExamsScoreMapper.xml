@@ -2,4 +2,34 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="cn.org.alan.exam.mapper.UserExamsScoreMapper">
 
+    <!--    根据用户Id列表，考试Id获取该考试的最高分、最低分、平均分、参考人数、及格人数-->
+    <select id="scoreStatistics" resultType="cn.org.alan.exam.model.vo.score.GradeScoreVO">
+        select max(user_score) as maxScore, min(user_score) as minScore, avg(user_score) as avgScore,
+               count(user_score) as attendNum,count(case where user_score >= #{passedScore} then 1 end)
+        from t_user_exam_score
+        where exam_id = #{examId}
+        and user_id in
+        <foreach collection="userIds" item="userId" separator="," open="(" close=")">
+            #{userId}
+        </foreach>
+    </select>
+
+<!--    成绩分页查询-->
+    <select id="pagingScore" resultType="cn.org.alan.exam.model.vo.score.UserScoreVO">
+        select ues.id, e.title, u.real_name, ues.user_time, ues.user_score, ues.limit_time, ues.count
+        from t_user_exams_score as ues
+        join t_user as u on ues.user_id = u.id
+        join t_exam as e on ues.exam_id = e.id
+        <trim prefix="where" prefixOverrides="and">
+            <if test="gradeId != null">
+                u.grade_id = #{gradeId}
+            </if>
+            <if test="examId != null">
+                and ues.exam_id = #{examId}
+            </if>
+            <if test='realName != null and realName != ""'>
+                and u.real_name like concat('%',#{realName},'%')
+            </if>
+        </trim>
+    </select>
 </mapper>

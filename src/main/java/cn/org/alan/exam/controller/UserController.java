@@ -5,6 +5,7 @@ import cn.org.alan.exam.common.group.UserGroup;
 import cn.org.alan.exam.model.form.UserForm;
 import cn.org.alan.exam.model.vo.UserVO;
 import cn.org.alan.exam.service.IUserService;
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import jakarta.annotation.Resource;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
@@ -26,7 +27,7 @@ public class UserController {
 
 
     @GetMapping("/info")
-     @PreAuthorize("hasAnyAuthority('role_student','role_teacher','role_admin')")
+    @PreAuthorize("hasAnyAuthority('role_student','role_teacher','role_admin')")
     public Result<UserVO> info() {
         return iUserService.info();
     }
@@ -70,6 +71,7 @@ public class UserController {
 
     /**
      * Excel导入用户数据
+     *
      * @param file 文件
      * @return 响应结果
      */
@@ -82,12 +84,30 @@ public class UserController {
 
     /**
      * 用户加入班级，只有学生才能加入班级
+     *
      * @param code 班级口令
      * @return 响应
      */
     @PutMapping("/grade/join")
     @PreAuthorize("hasAnyAuthority('role_student')")
-    public Result<String> joinGrade(@RequestParam("code") String code){
+    public Result<String> joinGrade(@RequestParam("code") String code) {
         return iUserService.joinGrade(code);
+    }
+
+    /**
+     * 分页获取用户信息
+     * @param pageNum 页码
+     * @param pageSize 每页记录数
+     * @param gradeId 班级Id
+     * @param realName 真实姓名
+     * @return 响应结果
+     */
+    @GetMapping("/paging")
+    @PreAuthorize("hasAnyAuthority('role_teacher','role_admin')")
+    public Result<IPage<UserVO>> pagingUser(@RequestParam(value = "pageNum", required = false, defaultValue = "1") Integer pageNum,
+                                            @RequestParam(value = "pageSize", required = false, defaultValue = "10") Integer pageSize,
+                                            @RequestParam(value = "gradeId", required = false) Integer gradeId,
+                                            @RequestParam(value = "realName", required = false) String realName){
+        return iUserService.pagingUser(pageNum,pageSize,gradeId,realName);
     }
 }
