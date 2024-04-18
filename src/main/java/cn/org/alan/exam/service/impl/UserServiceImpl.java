@@ -13,6 +13,8 @@ import cn.org.alan.exam.util.DateTimeUtil;
 import cn.org.alan.exam.util.SecurityUtil;
 import cn.org.alan.exam.util.excel.ExcelUtils;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletRequest;
@@ -145,5 +147,17 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
             return Result.success("加入班级："+grade.getGradeName()+"成功");
         }
         return Result.failed("加入失败");
+    }
+
+    @Override
+    public Result<IPage<UserVO>> pagingUser(Integer pageNum, Integer pageSize, Integer gradeId, String realName) {
+        IPage<UserVO> page = new Page<>(pageNum,pageSize);
+        if (SecurityUtil.getRole().equals("role_teacher")){
+            page = userMapper.pagingUser(page,gradeId,realName,1);
+        }else {
+            page = userMapper.pagingUser(page,gradeId,realName,null);
+        }
+
+        return Result.success(null,page);
     }
 }

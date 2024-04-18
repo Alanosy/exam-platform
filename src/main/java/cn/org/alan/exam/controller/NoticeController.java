@@ -80,6 +80,13 @@ public class NoticeController {
                                              @RequestParam(value = "title", required = false) String title) {
         return noticeService.getNotice( pageNum, pageSize, title);
     }
+
+    /**
+     * 获取最新消息
+     * @param pageNum
+     * @param pageSize
+     * @return
+     */
     @GetMapping("/new")
     @PreAuthorize("hasAnyAuthority('role_teacher','role_admin','role_student')")
     public Result<IPage<NoticeVO>> getNewNotice(@RequestParam(value = "pageNum", required = false, defaultValue = "1") Integer pageNum,

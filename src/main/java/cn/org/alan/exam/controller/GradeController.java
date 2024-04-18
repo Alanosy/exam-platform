@@ -41,9 +41,9 @@ public class GradeController {
      */
     @GetMapping("/paging")
     @PreAuthorize("hasAnyAuthority('role_teacher','role_admin')")
-    public Result<IPage<GradeVO>>  getGrade(@RequestParam("pageNum") Integer pageNum,
-                                            @RequestParam("pageSize") Integer pageSize,
-                                            @RequestParam("gradeName") String gradeName) {
+    public Result<IPage<GradeVO>>  getGrade(@RequestParam(value = "pageNum",required = false, defaultValue = "1") Integer pageNum,
+                                            @RequestParam(value = "pageSize",required = false, defaultValue = "10") Integer pageSize,
+                                            @RequestParam(value = "gradeName",required = false) String gradeName) {
         return gradeService.getPaging(pageNum, pageSize, gradeName);
     }
 
@@ -99,7 +99,7 @@ public class GradeController {
      * 获取所有班级列表
      * @return
      */
-    @GetMapping("/all")
+    @GetMapping("/list")
     @PreAuthorize("hasAnyAuthority('role_teacher','role_admin')")
     public Result<List<GradeVO>> getAllGrade(){
         return gradeService.getAllGrade();

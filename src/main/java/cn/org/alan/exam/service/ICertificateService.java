@@ -5,6 +5,7 @@ import cn.org.alan.exam.model.entity.Certificate;
 import cn.org.alan.exam.model.form.CertificateForm;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.IService;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 
@@ -16,6 +17,7 @@ import java.util.List;
  * @author JinXi
  * @since 2024-03-21
  */
+
 public interface ICertificateService extends IService<Certificate> {
     //查询在用的证书列表
 

@@ -4,6 +4,7 @@ import cn.org.alan.exam.common.result.Result;
 import cn.org.alan.exam.model.entity.User;
 import cn.org.alan.exam.model.form.UserForm;
 import cn.org.alan.exam.model.vo.UserVO;
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.IService;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -56,4 +57,15 @@ public interface IUserService extends IService<User> {
      * @return 响应
      */
     Result<String> joinGrade(String code);
+
+    /**
+     * 分页获取用户信息
+     * @param pageNum 页码
+     * @param pageSize 每页记录数
+     * @param gradeId 班级Id
+     * @param realName 真实姓名
+     * @return 查询结果
+     */
+    Result<IPage<UserVO>> pagingUser(Integer pageNum, Integer pageSize, Integer gradeId, String realName);
+
 }

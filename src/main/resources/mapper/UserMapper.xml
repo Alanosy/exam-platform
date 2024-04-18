@@ -5,14 +5,18 @@
 <mapper namespace="cn.org.alan.exam.mapper.UserMapper">
     <sql id="simpleFiled">
         u.gradeId,u.user_name,u.real_name,u.avatar,u.create_time,u.status
+        u
+        .
+        id
+        ,u.user_name,u.real_name,u.avatar,u.create_time,u.status
     </sql>
 
     <insert id="insertBatchUser">
         insert into t_user
         values
-        <foreach collection="list" item="user"  separator=",">
+        <foreach collection="list" item="user" separator=",">
             (null,#{user.userName},#{user.realName},#{user.password},
-             null,#{user.roleId},null,#{user.createTime},1)
+            null,#{user.roleId},null,#{user.createTime},1)
         </foreach>
     </insert>
 
@@ -29,9 +33,44 @@
 
     <!--获取用户信息-->
     <select id="info" resultType="cn.org.alan.exam.model.vo.UserVO">
-        select <include refid="simpleFiled"/> ,r.role_name,g.grade_name
-        from t_user u join t_role r on role_id = r.gradeId join t_grade g on grade_id = g.gradeId
-        where u.gradeId = #{userId}
+        select
+        <include refid="simpleFiled"/>
+        ,r.role_name,g.grade_name
+        from t_user u join t_role r on role_id = r.id join t_grade g on grade_id = g.id
+        where u.id = #{userId}
+    </select>
+
+    <!--    根据班级Id获取该班级学生Id-->
+    <select id="selectIdsByClassId" resultType="java.lang.Integer">
+        select id
+        from t_user
+        where role_id = 1
+          and grade_id = #{classId}
+    </select>
+
+    <!--    分页获取用户信息-->
+    <select id="pagingUser" resultType="cn.org.alan.exam.model.vo.UserVO">
+        select u.id,
+        u.user_name,
+        u.real_name,
+        case u.role_id
+        when 1 then '学生'
+        when 2 then '教师' end roleName,
+        u.create_time,
+        g.grade_name
+        from t_user as u
+        join t_grade as g on u.grade_id = g.id
+        <trim prefixOverrides="and" prefix="where">
+            <if test="gradeId != null">
+                u.grade = #{gradeId}
+            </if>
+            <if test='realName != null and realName !=""'>
+                and u.real_name like concat('%',#{realName},'%')
+            </if>
+            <if test="roleId != null and roleId != 0">
+                and u.role_id = 1
+            </if>
+        </trim>
     </select>
 
 </mapper>

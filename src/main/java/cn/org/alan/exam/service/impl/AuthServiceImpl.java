@@ -69,14 +69,13 @@ public class AuthServiceImpl implements IAuthService {
      */
     @SneakyThrows
     @Override
-    public Result login(HttpServletRequest request, String username, String password) {
-
+    public Result<String> login(HttpServletRequest request, String username, String password) {
 
         //先判断用户是否通过校验
-        String s = stringRedisTemplate.opsForValue().get("isVerifyCode" + request.getSession().getId());
-        if (StringUtils.isBlank(s)) {
-            return Result.failed("请先验证验证码");
-        }
+//        String s = stringRedisTemplate.opsForValue().get("isVerifyCode" + request.getSession().getId());
+//        if (StringUtils.isBlank(s)) {
+//            return Result.failed("请先验证验证码");
+//        }
         //根据用户名获取用户信息
         LambdaQueryWrapper<User> wrapper = new LambdaQueryWrapper<>();
         wrapper.eq(StringUtils.isNotBlank(username), User::getUserName, username);
@@ -86,7 +85,10 @@ public class AuthServiceImpl implements IAuthService {
         if (Objects.isNull(user)) {
             throw new UsernameNotFoundException("该用户不存在");
         }
-
+        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+        if(!encoder.matches(password,user.getPassword())){
+            return Result.failed("密码错误");
+        }
 
         //根据用户Id获取权限
         List<String> permissions = roleMapper.selectCodeById(user.getRoleId());
@@ -100,14 +102,12 @@ public class AuthServiceImpl implements IAuthService {
         //把转型后的权限放进sysUserDetails对象
         sysUserDetails.setPermissions(userPermissions);
 
-
         // 将用户信息转为字符串
         String userInfo = objectMapper.writeValueAsString(user);
 
         String token = jwtUtil.createJwt(userInfo, userPermissions.stream().map(String::valueOf).toList());
         // 把token放到redis中
         stringRedisTemplate.opsForValue().set("token" + request.getSession().getId(), token, 2, TimeUnit.HOURS);
-
 
         //封装用户的身份信息，为后续的身份验证和授权操作提供必要的输入
         //创建UsernamePasswordAuthenticationToken  参数：用户名，密码，权限列表
@@ -145,7 +145,7 @@ public class AuthServiceImpl implements IAuthService {
     public void getCaptcha(HttpServletRequest request, HttpServletResponse response) {
         //生成线性图形验证码的静态方法，参数：图片宽，图片高，验证码字符个数 干扰个数
         LineCaptcha captcha = CaptchaUtil
-                .createLineCaptcha(200, 100, 4, 400);
+                .createLineCaptcha(200, 100, 4, 500);
 
         //把验证码存放进redis
         //获取验证码

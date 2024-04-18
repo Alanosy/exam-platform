@@ -64,6 +64,7 @@ public class GradeServiceImpl extends ServiceImpl<GradeMapper, Grade> implements
 
     @Override
     public Result<String> updateGrade(Integer id, GradeForm gradeForm) {
+        // 更新班级
         LambdaUpdateWrapper<Grade> gradeUpdateWrapper = new LambdaUpdateWrapper<>();
         gradeUpdateWrapper
                 .set(Grade::getGradeName, gradeForm.getGradeName())
@@ -77,6 +78,7 @@ public class GradeServiceImpl extends ServiceImpl<GradeMapper, Grade> implements
 
     @Override
     public Result<String> deleteGrade(Integer id) {
+        // 删除班级
         int rows = gradeMapper.deleteById(id);
         if (rows == 0) {
             return Result.failed("删除失败");
