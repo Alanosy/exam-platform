@@ -23,7 +23,7 @@ public class Role implements Serializable {
      * ID  角色表
      */
     @TableId(value = "id", type = IdType.AUTO)
-    private Integer id;
+    private Integer roleId;
 
     /**
      * 角色名称
@@ -35,12 +35,12 @@ public class Role implements Serializable {
      */
     private String code;
 
-    public Integer getId() {
-        return id;
+    public Integer getRoleId() {
+        return roleId;
     }
 
-    public void setId(Integer id) {
-        this.id = id;
+    public void setRoleId(Integer roleId) {
+        this.roleId = roleId;
     }
     public String getRoleName() {
         return roleName;
@@ -60,7 +60,7 @@ public class Role implements Serializable {
     @Override
     public String toString() {
         return "Role{" +
-            "id=" + id +
+            "roleId=" + roleId +
             ", roleName=" + roleName +
             ", code=" + code +
         "}";

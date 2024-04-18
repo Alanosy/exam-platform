@@ -18,10 +18,10 @@ public class Grade implements Serializable {
     private static final long serialVersionUID = 1L;
 
     /**
-     * id   班级表
+     * gradeId   班级表
      */
     @TableId(value = "id", type = IdType.AUTO)
-    private Integer id;
+    private Integer gradeId;
 
     /**
      * 班级名称
@@ -39,12 +39,12 @@ public class Grade implements Serializable {
      */
     private String code;
 
-    public Integer getId() {
-        return id;
+    public Integer getGradeId() {
+        return gradeId;
     }
 
-    public void setId(Integer id) {
-        this.id = id;
+    public void setGradeId(Integer gradeId) {
+        this.gradeId = gradeId;
     }
     public String getGradeName() {
         return gradeName;
@@ -71,7 +71,7 @@ public class Grade implements Serializable {
     @Override
     public String toString() {
         return "Grade{" +
-            "id=" + id +
+            "gradeId=" + gradeId +
             ", gradeName=" + gradeName +
             ", userId=" + userId +
             ", code=" + code +

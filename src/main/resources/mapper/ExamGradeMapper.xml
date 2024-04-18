@@ -6,12 +6,12 @@
         insert into t_exam_grade (exam_id, grade_id)
         VALUES
         <foreach collection="gradeIds" item="gId" separator=",">
-            (#{id},#{gId})
+            (#{gradeId},#{gId})
         </foreach>
     </insert>
     <delete id="delExamGrade">
         delete from t_exam_grade
         where
-        exam_id=#{id}
+        exam_id=#{gradeId}
     </delete>
 </mapper>

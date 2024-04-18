@@ -4,6 +4,7 @@ package cn.org.alan.exam.controller;
 import cn.org.alan.exam.common.result.Result;
 import cn.org.alan.exam.model.entity.Grade;
 import cn.org.alan.exam.model.form.GradeForm;
+import cn.org.alan.exam.model.form.count.ClassCountResult;
 import cn.org.alan.exam.model.vo.GradeVO;
 import cn.org.alan.exam.model.vo.exam.ExamQuDetailVO;
 import cn.org.alan.exam.service.IGradeService;
@@ -104,4 +105,14 @@ public class GradeController {
         return gradeService.getAllGrade();
     }
 
+
+
+    /**
+     * 统计各班级人数
+     * @return
+     */
+    @GetMapping("/total/grade/count{roleId}")
+    public List<ClassCountResult> getClassCountByRoleId(@PathVariable int roleId) {
+        return gradeService.countStudentsByRoleId(roleId);
+    }
 }

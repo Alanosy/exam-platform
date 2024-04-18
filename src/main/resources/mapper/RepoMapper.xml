@@ -3,13 +3,13 @@
 <mapper namespace="cn.org.alan.exam.mapper.RepoMapper">
 
     <select id="pagingRepo" resultType="RepoVO">
-        select r.id,u.real_name,r.title,r.create_time from t_repo r join t_user u on r.user_id = u.id
+        select r.gradeId,u.real_name,r.title,r.create_time from t_repo r join t_user u on r.user_id = u.gradeId
         <where>
             <if test='title != null and title != ""'>
                 r.title like #{title}
             </if>
             <if test='userId > 0'>
-                r.id = #{userId}
+                r.gradeId = #{userId}
             </if>
         </where>
     </select>

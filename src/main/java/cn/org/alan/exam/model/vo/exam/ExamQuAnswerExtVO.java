@@ -11,7 +11,7 @@ import lombok.Data;
 public class ExamQuAnswerExtVO {
     private static final long serialVersionUID = 1L;
     private Integer id;
-
+    private Integer gradeId;
     /**
      * 试题图片
      */

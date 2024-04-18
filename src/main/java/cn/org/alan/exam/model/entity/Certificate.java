@@ -45,7 +45,7 @@ public class Certificate implements Serializable {
     @TableField(fill = FieldFill.INSERT)
     private LocalDateTime createTime;
 
-//    public static Integer getId() {
+//    public static Integer getGradeId() {
 //        return id;
 //    }
     public Integer getId(){

@@ -4,7 +4,7 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="cn.org.alan.exam.mapper.UserMapper">
     <sql id="simpleFiled">
-        u.id,u.user_name,u.real_name,u.avatar,u.create_time,u.status
+        u.gradeId,u.user_name,u.real_name,u.avatar,u.create_time,u.status
     </sql>
 
     <insert id="insertBatchUser">
@@ -21,7 +21,7 @@
     <update id="removeUserGrade">
         UPDATE t_user
         SET grade_id = null
-        WHERE id IN
+        WHERE gradeId IN
         <foreach item="userId" collection="userIds" open="(" separator="," close=")">
             #{userId}
         </foreach>
@@ -30,8 +30,8 @@
     <!--获取用户信息-->
     <select id="info" resultType="cn.org.alan.exam.model.vo.UserVO">
         select <include refid="simpleFiled"/> ,r.role_name,g.grade_name
-        from t_user u join t_role r on role_id = r.id join t_grade g on grade_id = g.id
-        where u.id = #{userId}
+        from t_user u join t_role r on role_id = r.gradeId join t_grade g on grade_id = g.gradeId
+        where u.gradeId = #{userId}
     </select>
 
 </mapper>
