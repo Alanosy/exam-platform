@@ -18,3 +18,19 @@ export function forceLogout(tokenId: string) {
     method: 'delete'
   });
 }
+
+// 获取当前用户登录在线设备
+export function getOnline() {
+  return request({
+    url: '/monitor/online',
+    method: 'get'
+  });
+}
+
+// 删除当前在线设备
+export function delOnline(tokenId: string) {
+  return request({
+    url: '/monitor/online/' + tokenId,
+    method: 'post'
+  });
+}
