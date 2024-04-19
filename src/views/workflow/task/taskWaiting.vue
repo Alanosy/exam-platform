@@ -76,7 +76,7 @@
 </template>
 
 <script lang="ts" setup>
-import { getPageByTaskWait, claim, returnTask } from '@/api/workflow/task';
+import { getPageByTaskWait } from '@/api/workflow/task';
 import { TaskQuery, TaskVO } from '@/api/workflow/task/types';
 import workflowCommon from '@/api/workflow/workflowCommon';
 import { RouterJumpVo } from '@/api/workflow/workflowCommon/types';
@@ -145,21 +145,5 @@ const handleOpen = async (row: TaskVO) => {
     type: 'approval'
   });
   workflowCommon.routerJump(routerJumpVo, proxy);
-};
-
-/** 认领任务 */
-const handleClaimTask = async (taskId: string) => {
-  loading.value = true;
-  await claim(taskId).finally(() => (loading.value = false));
-  getWaitingList();
-  proxy?.$modal.msgSuccess('操作成功');
-};
-
-/** 归还任务 */
-const handleReturnTask = async (taskId: string) => {
-  loading.value = true;
-  await returnTask(taskId).finally(() => (loading.value = false));
-  getWaitingList();
-  proxy?.$modal.msgSuccess('操作成功');
 };
 </script>
