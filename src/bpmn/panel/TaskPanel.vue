@@ -283,12 +283,18 @@ const dueDateRef = ref<InstanceType<typeof DueDate>>();
 
 const isMultiple = ref(true);
 const openUserSelect = () => {
+  if (!formData.value.candidateUsers) {
+    formData.value.candidateUsers = '-1';
+  }
   userSelectRef.value.open();
 };
 const openSingleUserSelect = () => {
   singleUserSelectRef.value.open();
 };
 const openRoleSelect = () => {
+  if (!formData.value.candidateGroups) {
+    formData.value.candidateGroups = '-1';
+  }
   roleSelectRef.value.open();
 };
 const openDueDate = (e) => {
