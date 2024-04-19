@@ -60,30 +60,7 @@
         <el-table-column align="center" prop="createTime" label="创建时间" width="160"></el-table-column>
         <el-table-column label="操作" align="center" width="200">
           <template #default="scope">
-            <el-button
-              v-if="scope.row.participantVo && (scope.row.participantVo.claim === null || scope.row.participantVo.claim === true)"
-              type="primary"
-              size="small"
-              icon="Edit"
-              @click="handleOpen(scope.row)"
-              >办理</el-button
-            >
-            <el-button
-              v-if="scope.row.participantVo && scope.row.participantVo.claim === true"
-              type="primary"
-              size="small"
-              icon="Document"
-              @click="handleReturnTask(scope.row.id)"
-              >归还</el-button
-            >
-            <el-button
-              v-if="scope.row.participantVo && scope.row.participantVo.claim === false"
-              type="primary"
-              size="small"
-              icon="Document"
-              @click="handleClaimTask(scope.row.id)"
-              >认领</el-button
-            >
+            <el-button type="primary" size="small" icon="Edit" @click="handleOpen(scope.row)">办理</el-button>
           </template>
         </el-table-column>
       </el-table>

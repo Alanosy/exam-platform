@@ -71,7 +71,7 @@ export interface DefinitionConfigForm extends BaseEntity {
   /**
    * 表单管理
    */
-  wfFormManageVo: FormManageVO;
+  wfFormManageVo?: FormManageVO;
 }
 
 export interface DefinitionConfigQuery extends PageQuery {

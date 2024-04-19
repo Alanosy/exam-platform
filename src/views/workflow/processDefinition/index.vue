@@ -274,7 +274,7 @@ const { proxy } = getCurrentInstance() as ComponentInternalInstance;
 const previewRef = ref<InstanceType<typeof ProcessPreview>>();
 const queryFormRef = ref<ElFormInstance>();
 const categoryTreeRef = ref<ElTreeInstance>();
-const definitionConfigForm = ref<DefinitionConfigForm>();
+const definitionConfigForm = ref<DefinitionConfigForm>({});
 
 type CategoryOption = {
   categoryCode: string;
