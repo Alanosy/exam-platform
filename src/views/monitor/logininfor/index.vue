@@ -3,15 +3,15 @@
     <transition :enter-active-class="proxy?.animate.searchAnimate.enter" :leave-active-class="proxy?.animate.searchAnimate.leave">
       <div v-show="showSearch" class="mb-[10px]">
         <el-card shadow="hover">
-          <el-form ref="queryFormRef" :model="queryParams" :inline="true" label-width="68px">
+          <el-form ref="queryFormRef" :model="queryParams" :inline="true">
             <el-form-item label="登录地址" prop="ipaddr">
-              <el-input v-model="queryParams.ipaddr" placeholder="请输入登录地址" clearable style="width: 240px"  @keyup.enter="handleQuery" />
+              <el-input v-model="queryParams.ipaddr" placeholder="请输入登录地址" clearable @keyup.enter="handleQuery" />
             </el-form-item>
             <el-form-item label="用户名称" prop="userName">
-              <el-input v-model="queryParams.userName" placeholder="请输入用户名称" clearable style="width: 240px"  @keyup.enter="handleQuery" />
+              <el-input v-model="queryParams.userName" placeholder="请输入用户名称" clearable @keyup.enter="handleQuery" />
             </el-form-item>
             <el-form-item label="状态" prop="status">
-              <el-select v-model="queryParams.status" placeholder="登录状态" clearable style="width: 240px" >
+              <el-select v-model="queryParams.status" placeholder="登录状态" clearable >
                 <el-option v-for="dict in sys_common_status" :key="dict.value" :label="dict.label" :value="dict.value" />
               </el-select>
             </el-form-item>

@@ -2,7 +2,7 @@
   <div class="p-2">
     <div class="panel">
       <h4 class="panel-title">基本信息</h4>
-      <el-form :model="form" label-width="80px" :inline="true">
+      <el-form :model="form" :inline="true">
         <el-row :gutter="10">
           <el-col :span="2.5">
             <el-form-item label="用户昵称" prop="nickName">

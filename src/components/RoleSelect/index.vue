@@ -4,12 +4,12 @@
       <transition :enter-active-class="proxy?.animate.searchAnimate.enter" :leave-active-class="proxy?.animate.searchAnimate.leave">
         <div v-show="showSearch" class="mb-[10px]">
           <el-card shadow="hover">
-            <el-form ref="queryFormRef" :model="queryParams" :inline="true" label-width="68px">
+            <el-form ref="queryFormRef" :model="queryParams" :inline="true">
               <el-form-item label="角色名称" prop="roleName">
-                <el-input v-model="queryParams.roleName" placeholder="请输入角色名称" clearable style="width: 240px" @keyup.enter="handleQuery" />
+                <el-input v-model="queryParams.roleName" placeholder="请输入角色名称" clearable @keyup.enter="handleQuery" />
               </el-form-item>
               <el-form-item label="权限字符" prop="roleKey">
-                <el-input v-model="queryParams.roleKey" placeholder="请输入权限字符" clearable style="width: 240px"  @keyup.enter="handleQuery" />
+                <el-input v-model="queryParams.roleKey" placeholder="请输入权限字符" clearable @keyup.enter="handleQuery" />
               </el-form-item>
 
               <el-form-item>

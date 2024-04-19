@@ -2,13 +2,13 @@
   <div class="p-2">
     <transition :enter-active-class="proxy?.animate.searchAnimate.enter" :leave-active-class="proxy?.animate.searchAnimate.leave">
       <div v-show="showSearch" class="search">
-        <el-form ref="queryFormRef" :model="queryParams" :inline="true" label-width="68px">
+        <el-form ref="queryFormRef" :model="queryParams" :inline="true">
           <el-form-item label="请假天数" prop="startLeaveDays">
-            <el-input v-model="queryParams.startLeaveDays" placeholder="请输入请假天数" clearable style="width: 240px"  @keyup.enter="handleQuery" />
+            <el-input v-model="queryParams.startLeaveDays" placeholder="请输入请假天数" clearable @keyup.enter="handleQuery" />
           </el-form-item>
           <el-form-item prop="endLeaveDays"> 至 </el-form-item>
           <el-form-item prop="endLeaveDays">
-            <el-input v-model="queryParams.endLeaveDays" placeholder="请输入请假天数" clearable style="width: 240px"  @keyup.enter="handleQuery" />
+            <el-input v-model="queryParams.endLeaveDays" placeholder="请输入请假天数" clearable @keyup.enter="handleQuery" />
           </el-form-item>
           <el-form-item>
             <el-button type="primary" icon="Search" @click="handleQuery">搜索</el-button>

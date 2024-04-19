@@ -3,17 +3,17 @@
     <transition :enter-active-class="proxy?.animate.searchAnimate.enter" :leave-active-class="proxy?.animate.searchAnimate.leave">
       <div v-show="showSearch" class="mb-[10px]">
         <el-card shadow="hover">
-          <el-form ref="queryFormRef" :model="queryParams" :inline="true" label-width="68px">
+          <el-form ref="queryFormRef" :model="queryParams" :inline="true">
             <el-form-item label="文件名" prop="fileName">
-              <el-input v-model="queryParams.fileName" placeholder="请输入文件名" clearable style="width: 240px"  @keyup.enter="handleQuery" />
+              <el-input v-model="queryParams.fileName" placeholder="请输入文件名" clearable @keyup.enter="handleQuery" />
             </el-form-item>
             <el-form-item label="原名" prop="originalName">
-              <el-input v-model="queryParams.originalName" placeholder="请输入原名" clearable style="width: 240px"  @keyup.enter="handleQuery" />
+              <el-input v-model="queryParams.originalName" placeholder="请输入原名" clearable @keyup.enter="handleQuery" />
             </el-form-item>
             <el-form-item label="文件后缀" prop="fileSuffix">
-              <el-input v-model="queryParams.fileSuffix" placeholder="请输入文件后缀" clearable style="width: 240px"  @keyup.enter="handleQuery" />
+              <el-input v-model="queryParams.fileSuffix" placeholder="请输入文件后缀" clearable @keyup.enter="handleQuery" />
             </el-form-item>
-            <el-form-item label="创建时间">
+            <el-form-item label="创建时间" style="width: 308px;">
               <el-date-picker
                 v-model="dateRangeCreateTime"
                 value-format="YYYY-MM-DD HH:mm:ss"
@@ -25,7 +25,7 @@
               ></el-date-picker>
             </el-form-item>
             <el-form-item label="服务商" prop="service">
-              <el-input v-model="queryParams.service" placeholder="请输入服务商" clearable style="width: 240px" @keyup.enter="handleQuery" />
+              <el-input v-model="queryParams.service" placeholder="请输入服务商" clearable @keyup.enter="handleQuery" />
             </el-form-item>
             <el-form-item>
               <el-button type="primary" icon="search" @click="handleQuery">搜索</el-button>

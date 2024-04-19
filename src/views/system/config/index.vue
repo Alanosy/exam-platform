@@ -3,15 +3,15 @@
     <transition :enter-active-class="proxy?.animate.searchAnimate.enter" :leave-active-class="proxy?.animate.searchAnimate.leave">
       <div v-show="showSearch" class="mb-[10px]">
         <el-card shadow="hover">
-          <el-form ref="queryFormRef" :model="queryParams" :inline="true" label-width="68px">
+          <el-form ref="queryFormRef" :model="queryParams" :inline="true">
             <el-form-item label="参数名称" prop="configName">
-              <el-input v-model="queryParams.configName" placeholder="请输入参数名称" clearable style="width: 240px"  @keyup.enter="handleQuery" />
+              <el-input v-model="queryParams.configName" placeholder="请输入参数名称" clearable @keyup.enter="handleQuery" />
             </el-form-item>
             <el-form-item label="参数键名" prop="configKey">
-              <el-input v-model="queryParams.configKey" placeholder="请输入参数键名" clearable style="width: 240px"  @keyup.enter="handleQuery" />
+              <el-input v-model="queryParams.configKey" placeholder="请输入参数键名" clearable @keyup.enter="handleQuery" />
             </el-form-item>
             <el-form-item label="系统内置" prop="configType">
-              <el-select v-model="queryParams.configType" placeholder="系统内置" clearable style="width: 240px" >
+              <el-select v-model="queryParams.configType" placeholder="系统内置" clearable >
                 <el-option v-for="dict in sys_yes_no" :key="dict.value" :label="dict.label" :value="dict.value" />
               </el-select>
             </el-form-item>

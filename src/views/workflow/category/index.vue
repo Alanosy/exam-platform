@@ -2,12 +2,12 @@
   <div class="p-2">
     <transition :enter-active-class="proxy?.animate.searchAnimate.enter" :leave-active-class="proxy?.animate.searchAnimate.leave">
       <div v-show="showSearch" class="search">
-        <el-form ref="queryFormRef" :model="queryParams" :inline="true" label-width="68px">
+        <el-form ref="queryFormRef" :model="queryParams" :inline="true">
           <el-form-item label="分类名称" prop="categoryName">
-            <el-input v-model="queryParams.categoryName" placeholder="请输入分类名称" clearable style="width: 240px"  @keyup.enter="handleQuery" />
+            <el-input v-model="queryParams.categoryName" placeholder="请输入分类名称" clearable @keyup.enter="handleQuery" />
           </el-form-item>
           <el-form-item label="分类编码" prop="categoryCode">
-            <el-input v-model="queryParams.categoryCode" placeholder="请输入分类编码" clearable style="width: 240px"  @keyup.enter="handleQuery" />
+            <el-input v-model="queryParams.categoryCode" placeholder="请输入分类编码" clearable @keyup.enter="handleQuery" />
           </el-form-item>
           <el-form-item>
             <el-button type="primary" icon="Search" @click="handleQuery">搜索</el-button>

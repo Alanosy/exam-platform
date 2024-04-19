@@ -3,12 +3,12 @@
     <transition :enter-active-class="proxy?.animate.searchAnimate.enter" :leave-active-class="proxy?.animate.searchAnimate.leave">
       <div v-show="showSearch" class="mb-[10px]">
         <el-card shadow="hover">
-          <el-form ref="queryFormRef" :model="queryParams" :inline="true" label-width="68px">
+          <el-form ref="queryFormRef" :model="queryParams" :inline="true">
             <el-form-item label="字典名称" prop="dictName">
-              <el-input v-model="queryParams.dictName" placeholder="请输入字典名称" clearable style="width: 240px"  @keyup.enter="handleQuery" />
+              <el-input v-model="queryParams.dictName" placeholder="请输入字典名称" clearable @keyup.enter="handleQuery" />
             </el-form-item>
             <el-form-item label="字典类型" prop="dictType">
-              <el-input v-model="queryParams.dictType" placeholder="请输入字典类型" clearable style="width: 240px"  @keyup.enter="handleQuery" />
+              <el-input v-model="queryParams.dictType" placeholder="请输入字典类型" clearable @keyup.enter="handleQuery" />
             </el-form-item>
             <el-form-item label="创建时间" style="width: 308px">
               <el-date-picker

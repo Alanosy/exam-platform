@@ -23,12 +23,12 @@
         <transition :enter-active-class="proxy?.animate.searchAnimate.enter" :leave-active-class="proxy?.animate.searchAnimate.leave">
           <div v-show="showSearch" class="mb-[10px]">
             <el-card shadow="hover">
-              <el-form v-show="showSearch" ref="queryFormRef" :model="queryParams" :inline="true" label-width="80px">
+              <el-form v-show="showSearch" ref="queryFormRef" :model="queryParams" :inline="true">
                 <el-form-item label="模型名称" prop="name">
-                  <el-input v-model="queryParams.name" placeholder="请输入模型名称" clearable style="width: 240px"  @keyup.enter="handleQuery" />
+                  <el-input v-model="queryParams.name" placeholder="请输入模型名称" clearable @keyup.enter="handleQuery" />
                 </el-form-item>
                 <el-form-item label="模型KEY" prop="key">
-                  <el-input v-model="queryParams.key" placeholder="请输入模型KEY" clearable style="width: 240px"  @keyup.enter="handleQuery" />
+                  <el-input v-model="queryParams.key" placeholder="请输入模型KEY" clearable @keyup.enter="handleQuery" />
                 </el-form-item>
                 <el-form-item>
                   <el-button type="primary" icon="Search" @click="handleQuery">搜索</el-button>

@@ -3,18 +3,18 @@
     <transition :enter-active-class="proxy?.animate.searchAnimate.enter" :leave-active-class="proxy?.animate.searchAnimate.leave">
       <div v-show="showSearch" class="mb-[10px]">
         <el-card shadow="hover">
-          <el-form ref="queryFormRef" :model="queryParams" :inline="true" label-width="68px">
+          <el-form ref="queryFormRef" :model="queryParams" :inline="true">
             <el-form-item label="数据源" prop="dataName">
-              <el-select v-model="queryParams.dataName" filterable clearable placeholder="请选择/输入数据源名称" style="width: 200px">
+              <el-select v-model="queryParams.dataName" filterable clearable placeholder="请选择/输入数据源名称">
                 <el-option key="" label="全部" value="" />
                 <el-option v-for="item in dataNameList" :key="item" :label="item" :value="item"> </el-option>
               </el-select>
             </el-form-item>
             <el-form-item label="表名称" prop="tableName">
-              <el-input v-model="queryParams.tableName" placeholder="请输入表名称" clearable style="width: 240px" @keyup.enter="handleQuery" />
+              <el-input v-model="queryParams.tableName" placeholder="请输入表名称" clearable @keyup.enter="handleQuery" />
             </el-form-item>
             <el-form-item label="表描述" prop="tableComment">
-              <el-input v-model="queryParams.tableComment" placeholder="请输入表描述" clearable style="width: 240px" @keyup.enter="handleQuery" />
+              <el-input v-model="queryParams.tableComment" placeholder="请输入表描述" clearable @keyup.enter="handleQuery" />
             </el-form-item>
             <el-form-item label="创建时间" style="width: 308px">
               <el-date-picker
