@@ -106,14 +106,14 @@
         </el-form-item>
         <el-form-item label="是否HTTPS">
           <el-radio-group v-model="form.isHttps">
-            <el-radio v-for="dict in sys_yes_no" :key="dict.value" :label="dict.value">{{ dict.label }}</el-radio>
+            <el-radio v-for="dict in sys_yes_no" :key="dict.value" :value="dict.value">{{ dict.label }}</el-radio>
           </el-radio-group>
         </el-form-item>
         <el-form-item label="桶权限类型">
           <el-radio-group v-model="form.accessPolicy">
-            <el-radio label="0">private</el-radio>
-            <el-radio label="1">public</el-radio>
-            <el-radio label="2">custom</el-radio>
+            <el-radio value="0">private</el-radio>
+            <el-radio value="1">public</el-radio>
+            <el-radio value="2">custom</el-radio>
           </el-radio-group>
         </el-form-item>
         <el-form-item label="域" prop="region">

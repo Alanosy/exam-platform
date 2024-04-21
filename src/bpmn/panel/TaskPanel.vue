@@ -95,7 +95,7 @@
                 </div>
                 <el-form-item v-if="formData.allocationType === AllocationTypeEnum.SPECIFY && showConfig.specifyDesc" style="">
                   <el-radio-group v-model="formData.specifyDesc" class="ml-4">
-                    <el-radio v-for="item in SpecifyDesc" :key="item.id" :label="item.value" size="large">{{ item.label }}</el-radio>
+                    <el-radio v-for="item in SpecifyDesc" :key="item.id" :value="item.value" size="large">{{ item.label }}</el-radio>
                   </el-radio-group>
                 </el-form-item>
               </el-tab-pane> -->

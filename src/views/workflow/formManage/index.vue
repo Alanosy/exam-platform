@@ -69,7 +69,7 @@
         </el-form-item>
         <el-form-item label="表单类型" prop="formType">
           <el-radio-group v-model="form.formType" @change="form.router = ''">
-            <el-radio v-for="dict in wf_form_type" :key="dict.value" border :label="dict.value">{{ dict.label }}</el-radio>
+            <el-radio v-for="dict in wf_form_type" :key="dict.value" border :value="dict.value">{{ dict.label }}</el-radio>
           </el-radio-group>
         </el-form-item>
         <el-form-item v-if="form.formType === 'static'" label="路由地址" prop="router">

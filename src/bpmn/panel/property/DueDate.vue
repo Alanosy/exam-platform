@@ -4,41 +4,41 @@
       <el-form label-width="100px">
         <el-form-item label="小时">
           <el-radio-group v-model="hourValue" @change="hourChange">
-            <el-radio-button label="4" />
-            <el-radio-button label="8" />
-            <el-radio-button label="12" />
-            <el-radio-button label="24" />
-            <el-radio-button label="自定义" />
+            <el-radio-button value="4" />
+            <el-radio-button value="8" />
+            <el-radio-button value="12" />
+            <el-radio-button value="24" />
+            <el-radio-button value="自定义" />
             <el-input-number v-show="hourValue === '自定义'" v-model="customHourValue" :min="1" @change="customHourValueChange"></el-input-number>
           </el-radio-group>
         </el-form-item>
         <el-form-item label="天">
           <el-radio-group v-model="dayValue" @change="dayChange">
-            <el-radio-button label="1" />
-            <el-radio-button label="2" />
-            <el-radio-button label="3" />
-            <el-radio-button label="4" />
-            <el-radio-button label="自定义" />
+            <el-radio-button value="1" />
+            <el-radio-button value="2" />
+            <el-radio-button value="3" />
+            <el-radio-button value="4" />
+            <el-radio-button value="自定义" />
             <el-input-number v-show="dayValue === '自定义'" v-model="customDayValue" :min="1" @change="customDayValueChange"></el-input-number>
           </el-radio-group>
         </el-form-item>
         <el-form-item label="周">
           <el-radio-group v-model="weekValue" @change="weekChange">
-            <el-radio-button label="1" />
-            <el-radio-button label="2" />
-            <el-radio-button label="3" />
-            <el-radio-button label="4" />
-            <el-radio-button label="自定义" />
+            <el-radio-button value="1" />
+            <el-radio-button value="2" />
+            <el-radio-button value="3" />
+            <el-radio-button value="4" />
+            <el-radio-button value="自定义" />
             <el-input-number v-show="weekValue === '自定义'" v-model="customWeekValue" :min="1" @change="customWeekValueChange"></el-input-number>
           </el-radio-group>
         </el-form-item>
         <el-form-item label="月">
           <el-radio-group v-model="monthValue" @change="monthChange">
-            <el-radio-button label="1" />
-            <el-radio-button label="2" />
-            <el-radio-button label="3" />
-            <el-radio-button label="4" />
-            <el-radio-button label="自定义" />
+            <el-radio-button value="1" />
+            <el-radio-button value="2" />
+            <el-radio-button value="3" />
+            <el-radio-button value="4" />
+            <el-radio-button value="自定义" />
             <el-input-number v-show="monthValue === '自定义'" v-model="customMonthValue" :min="1" @change="customMonthValueChange"></el-input-number>
           </el-radio-group>
         </el-form-item>
