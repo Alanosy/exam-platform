@@ -47,13 +47,13 @@
               <el-switch v-model="formData.async" inline-prompt active-text="是" inactive-text="否" @change="syncChange" />
             </el-form-item>
 
-            <el-tabs tab-position="left" class="demo-tabs" @tab-click="taskTabClick">
+            <el-tabs tab-position="left" class="demo-tabs">
               <el-tab-pane label="身份存储">
                 <el-form-item label="分配人员">
-                  <el-input v-model="formData.fixedAssignee" @change="fixedAssigneeChange">
-                    <!--                    <template #append>-->
-                    <!--                      <el-button icon="Search" type="primary" @click="openSingleUserSelect" />-->
-                    <!--                    </template>-->
+                  <el-input v-model="formData.assignee">
+                    <template #append>
+                      <el-button icon="Search" type="primary" @click="openSingleUserSelect" />
+                    </template>
                   </el-input>
                 </el-form-item>
                 <el-form-item label="候选人员">
@@ -68,16 +68,16 @@
                 </el-form-item>
               </el-tab-pane>
 
-              <el-tab-pane label="固定值">
+              <!-- <el-tab-pane label="固定值">
                 <el-form-item prop="auditUserType" label="分配类型">
                   <el-select v-model="formData.allocationType">
                     <el-option v-for="item in AllocationTypeSelect" :key="item.id" :value="item.value" :label="item.label"> </el-option>
                   </el-select>
                 </el-form-item>
                 <el-form-item v-if="formData.allocationType === AllocationTypeEnum.USER" label="分配人员">
-                  <el-input v-model="formData.fixedAssignee" @change="fixedAssigneeChange">
+                  <el-input v-model="formData.assignee">
                     <template #append>
-                      <!-- <el-button icon="Search" size="small" type="primary" @click="proxy.$modal.msgWarning('开发中。。。。。。')" /> -->
+                      <el-button icon="Search" type="primary" @click="openSingleUserSelect" />
                     </template>
                   </el-input>
                 </el-form-item>
@@ -98,7 +98,7 @@
                     <el-radio v-for="item in SpecifyDesc" :key="item.id" :label="item.value" size="large">{{ item.label }}</el-radio>
                   </el-radio-group>
                 </el-form-item>
-              </el-tab-pane>
+              </el-tab-pane> -->
             </el-tabs>
 
             <el-form-item v-if="showConfig.dueDate" prop="dueDate" label="到期时间">
