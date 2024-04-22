@@ -21,4 +21,11 @@ public interface ExamMapper extends BaseMapper<Exam> {
     int delExamRepo(List<Integer> examIds);
 
     int delExamQue(List<Integer> examIds);
+
+    /**
+     * 删除用户创建的考试
+     * @param userIds 用户id列表
+     * @return 影响数据库记录数
+     */
+    Integer deleteByUserIds(List<Integer> userIds);
 }

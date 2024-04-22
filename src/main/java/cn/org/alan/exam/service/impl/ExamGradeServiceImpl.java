@@ -12,6 +12,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
 
+import java.text.DecimalFormat;
 import java.util.List;
 
 /**
@@ -42,7 +43,9 @@ public class ExamGradeServiceImpl extends ServiceImpl<ExamGradeMapper, ExamGrade
         //获取最高分、最低分、平均分、参考人数、及格人数
         GradeScoreVO scoreVO = userExamsScoreMapper.scoreStatistics(userIds, examId, exam.getPassedScore());
         //及格率
-        scoreVO.setPassingRate((scoreVO.getPassedNum() * 1.0) / (scoreVO.getAttendNum() * 1.0));
+        DecimalFormat format = new DecimalFormat("#.00");
+        String strPassingPate = format.format((scoreVO.getPassedNum() * 1.0) / (scoreVO.getAttendNum() * 1.0));
+        scoreVO.setPassingRate(Double.parseDouble(strPassingPate));
         //获取班级总人数
         Integer totalNum = userMapper
                 .selectCount(new LambdaQueryWrapper<User>().eq(User::getGradeId, classId)).intValue();

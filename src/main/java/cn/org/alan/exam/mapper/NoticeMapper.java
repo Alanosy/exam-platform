@@ -16,4 +16,18 @@ import java.util.List;
 public interface NoticeMapper extends BaseMapper<Notice> {
 
     int removeNotice(List<Integer> noticeIds);
+
+    /**
+     * 删除用户创建的公告
+     * @param userIds 用户id列表
+     * @return 影响记录数
+     */
+    Integer deleteByUserIds(List<Integer> userIds);
+
+    /**
+     * 根据用户id获取公告ids
+     * @param userIds 用户id列表
+     * @return 查询结果
+     */
+    List<Integer> selectIdsByUserIds(List<Integer> userIds);
 }

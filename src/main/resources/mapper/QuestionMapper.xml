@@ -1,7 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="cn.org.alan.exam.mapper.QuestionMapper">
-
+    <delete id="deleteByUserIds">
+        delete from t_question where user_id in
+        <foreach collection="userIds" item="userId" open="(" close=")" separator=",">
+            #{userId}
+        </foreach>
+    </delete>
 
 
     <!--    分页获取试题信息-->
@@ -54,5 +59,11 @@
         from t_question as q
                  join t_repo as r on q.repo_id = r.id
         where q.id = #{id}
+    </select>
+    <select id="selectIdsByUserIds" resultType="java.lang.Integer">
+        select id from t_question where user_id in
+        <foreach collection="userIds" item="userId" open="(" close=")" separator=",">
+            #{userId}
+        </foreach>
     </select>
 </mapper>

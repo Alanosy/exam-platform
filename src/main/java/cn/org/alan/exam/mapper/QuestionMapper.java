@@ -6,6 +6,8 @@ import cn.org.alan.exam.model.vo.QuestionVO;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 
+import java.util.List;
+
 /**
  * <p>
  * Mapper 接口
@@ -36,4 +38,18 @@ public interface QuestionMapper extends BaseMapper<Question> {
      * @return 结果集
      */
     QuestionVO selectSingle(Integer id);
+
+    /**
+     * 删除用户添加的试题
+     * @param userIds 用户id列表
+     * @return 影响记录数
+     */
+    Integer deleteByUserIds(List<Integer> userIds);
+
+    /**
+     * 获取用户创建的试题id列表
+     * @param userIds 用户id列表
+     * @return 查询结果
+     */
+    List<Integer> selectIdsByUserIds(List<Integer> userIds);
 }

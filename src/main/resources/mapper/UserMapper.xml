@@ -4,10 +4,7 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="cn.org.alan.exam.mapper.UserMapper">
     <sql id="simpleFiled">
-        u
-        .
-        id
-        ,u.user_name,u.real_name,u.avatar,u.create_time,u.status
+        u.id,u.user_name,u.real_name,u.avatar,u.create_time,u.status
     </sql>
 
     <insert id="insertBatchUser">
@@ -27,6 +24,12 @@
         WHERE id IN
         <foreach item="userId" collection="userIds" open="(" separator="," close=")">
             #{userId}
+        </foreach>
+    </update>
+    <update id="removeGradeIdByGradeIds">
+        update t_user set grade_id = null where grade_id in
+        <foreach collection="gradeIds" item="gradeId" open="(" close=")" separator=",">
+            #{gradeId}
         </foreach>
     </update>
 
