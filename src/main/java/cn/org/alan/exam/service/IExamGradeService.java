@@ -1,9 +1,12 @@
 package cn.org.alan.exam.service;
 
+import cn.org.alan.exam.model.entity.Exam;
 import cn.org.alan.exam.common.result.Result;
 import cn.org.alan.exam.model.entity.ExamGrade;
 import cn.org.alan.exam.model.vo.score.GradeScoreVO;
 import com.baomidou.mybatisplus.extension.service.IService;
+
+import java.util.List;
 
 /**
  * <p>
@@ -15,6 +18,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
  */
 public interface IExamGradeService extends IService<ExamGrade> {
 
+    List<Exam> getExamGradeCount(int roleId);
     /**
      * 根据班级Id和考试Id获取该班级的平均分、最高分、最低分以及及格率
      * @param examId 考试Id

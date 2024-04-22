@@ -21,7 +21,7 @@
     <update id="removeUserGrade">
         UPDATE t_user
         SET grade_id = null
-        WHERE id IN
+        WHERE gradeId IN
         <foreach item="userId" collection="userIds" open="(" separator="," close=")">
             #{userId}
         </foreach>

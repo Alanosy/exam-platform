@@ -3,6 +3,7 @@ package cn.org.alan.exam.service;
 import cn.org.alan.exam.common.result.Result;
 import cn.org.alan.exam.model.entity.Grade;
 import cn.org.alan.exam.model.form.GradeForm;
+import cn.org.alan.exam.model.form.count.ClassCountResult;
 import cn.org.alan.exam.model.vo.GradeVO;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.IService;
@@ -65,4 +66,16 @@ public interface IGradeService extends IService<Grade> {
      * @return
      */
     Result<List<GradeVO>> getAllGrade();
+
+
+    /**
+     * 各班人数统计
+     * @return
+     */
+    //声明统计role_id为1的各班人数的业务逻辑
+    List<ClassCountResult> countStudentsByRoleId(int roleId);
+
 }
+
+
+

@@ -91,7 +91,7 @@ public interface IExamService extends IService<Exam> {
     /**
      * 根据班级获得考试
      *
-     * @param id
+     * @param gradeId
      * @return
      */
     Result<IPage<ExamVO>> getGradeExamList(Integer gradeId, Integer pageNum, Integer pageSize);
@@ -108,4 +108,7 @@ public interface IExamService extends IService<Exam> {
      * @return
      */
     Result<String> startExam(Integer examId);
+
+
+
 }

@@ -1,5 +1,6 @@
 package cn.org.alan.exam.service.impl;
 
+import cn.org.alan.exam.mapper.ExamGradeMapper;
 import cn.org.alan.exam.common.result.Result;
 import cn.org.alan.exam.mapper.*;
 import cn.org.alan.exam.model.entity.Exam;
@@ -9,6 +10,7 @@ import cn.org.alan.exam.model.vo.score.GradeScoreVO;
 import cn.org.alan.exam.service.IExamGradeService;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import org.springframework.beans.factory.annotation.Autowired;
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
 
@@ -25,6 +27,19 @@ import java.util.List;
  */
 @Service
 public class ExamGradeServiceImpl extends ServiceImpl<ExamGradeMapper, ExamGrade> implements IExamGradeService {
+
+    //各班试卷信息   统计实现ExamGradeService接口，在ExamGradeServiceImpl类中调用Mapper方法：
+    @Autowired
+    private ExamGradeMapper examGradeMapper;
+
+    /**
+     * 各班试卷统计信息
+     * @return
+     */
+    @Override
+    public List<Exam> getExamGradeCount(int roleId) {
+        return examGradeMapper.ExamGradeCount(roleId);
+    }
 
     @Resource
     private UserMapper userMapper;
