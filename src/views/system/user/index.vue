@@ -28,16 +28,11 @@
                   <el-input v-model="queryParams.userName" placeholder="请输入用户名称" clearable @keyup.enter="handleQuery" />
                 </el-form-item>
                 <el-form-item label="手机号码" prop="phonenumber">
-                  <el-input
-                    v-model="queryParams.phonenumber"
-                    placeholder="请输入手机号码"
-                    clearable
-                    @keyup.enter="handleQuery"
-                  />
+                  <el-input v-model="queryParams.phonenumber" placeholder="请输入手机号码" clearable @keyup.enter="handleQuery" />
                 </el-form-item>
 
                 <el-form-item label="状态" prop="status">
-                  <el-select v-model="queryParams.status" placeholder="用户状态" clearable >
+                  <el-select v-model="queryParams.status" placeholder="用户状态" clearable>
                     <el-option v-for="dict in sys_normal_disable" :key="dict.value" :label="dict.label" :value="dict.value" />
                   </el-select>
                 </el-form-item>
@@ -395,7 +390,7 @@ const initData: PageData<UserForm, UserQuery> = {
         message: '用户密码长度必须介于 5 和 20 之间',
         trigger: 'blur'
       },
-      { pattern: /^[^<>"'|\\]+$/, message: "不能包含非法字符：< > \" ' \\\ |", trigger: "blur" }
+      { pattern: /^[^<>"'|\\]+$/, message: '不能包含非法字符：< > " \' \\\ |', trigger: 'blur' }
     ],
     email: [
       {
@@ -508,7 +503,7 @@ const handleResetPwd = async (row: UserVO) => {
       inputErrorMessage: '用户密码长度必须介于 5 和 20 之间',
       inputValidator: (value) => {
         if (/<|>|"|'|\||\\/.test(value)) {
-          return "不能包含非法字符：< > \" ' \\\ |"
+          return '不能包含非法字符：< > " \' \\\ |';
         }
       }
     })
