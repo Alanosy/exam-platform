@@ -7,6 +7,9 @@
             <el-form-item label="部门名称" prop="deptName">
               <el-input v-model="queryParams.deptName" placeholder="请输入部门名称" clearable @keyup.enter="handleQuery" />
             </el-form-item>
+            <el-form-item label="类别编码" prop="deptCategory">
+              <el-input v-model="queryParams.deptCategory" placeholder="请输入类别编码" clearable style="width: 240px" @keyup.enter="handleQuery" />
+            </el-form-item>
             <el-form-item label="状态" prop="status">
               <el-select v-model="queryParams.status" placeholder="部门状态" clearable >
                 <el-option v-for="dict in sys_normal_disable" :key="dict.value" :label="dict.label" :value="dict.value" />
@@ -43,6 +46,7 @@
         :default-expand-all="isExpandAll"
       >
         <el-table-column prop="deptName" label="部门名称" width="260"></el-table-column>
+        <el-table-column prop="deptCategory" align="center" label="类别编码" width="200"></el-table-column>
         <el-table-column prop="orderNum" align="center" label="排序" width="200"></el-table-column>
         <el-table-column prop="status" align="center" label="状态" width="100">
           <template #default="scope">
@@ -88,6 +92,11 @@
           <el-col :span="12">
             <el-form-item label="部门名称" prop="deptName">
               <el-input v-model="form.deptName" placeholder="请输入部门名称" />
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="类别编码" prop="deptCategory">
+              <el-input v-model="form.deptCategory" placeholder="请输入类别编码" />
             </el-form-item>
           </el-col>
           <el-col :span="12">
@@ -166,6 +175,7 @@ const initFormData: DeptForm = {
   deptId: undefined,
   parentId: undefined,
   deptName: undefined,
+  deptCategory: undefined,
   orderNum: 0,
   leader: undefined,
   phone: undefined,
@@ -178,6 +188,7 @@ const initData: PageData<DeptForm, DeptQuery> = {
     pageNum: 1,
     pageSize: 10,
     deptName: undefined,
+    deptCategory: undefined,
     status: undefined
   },
   rules: {

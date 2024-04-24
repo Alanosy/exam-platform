@@ -19,6 +19,15 @@ export function getPost(postId: string | number): AxiosPromise<PostVO> {
   });
 }
 
+// 获取岗位选择框列表
+export function optionselect(query: PostQuery): AxiosPromise<PostVO[]> {
+  return request({
+    url: '/system/post/optionselect',
+    method: 'get',
+    params: query
+  });
+}
+
 // 新增岗位
 export function addPost(data: PostForm) {
   return request({
