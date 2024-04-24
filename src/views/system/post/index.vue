@@ -40,7 +40,8 @@
                     :props="{ value: 'id', label: 'label', children: 'children' }"
                     value-key="id"
                     placeholder="请选择部门"
-                    check-strictly/>
+                    check-strictly
+                  />
                 </el-form-item>
                 <el-form-item label="状态" prop="status">
                   <el-select v-model="queryParams.status" placeholder="岗位状态" clearable>
@@ -114,18 +115,16 @@
             <el-form-item label="岗位名称" prop="postName">
               <el-input v-model="form.postName" placeholder="请输入岗位名称" />
             </el-form-item>
-            <el-col>
-              <el-form-item label="部门" prop="deptId">
-                <el-tree-select
-                  v-model="form.deptId"
-                  :data="deptOptions"
-                  :props="{ value: 'id', label: 'label', children: 'children' }"
-                  value-key="id"
-                  placeholder="请选择部门"
-                  check-strictly
-                />
-              </el-form-item>
-            </el-col>
+            <el-form-item label="部门" prop="deptId">
+              <el-tree-select
+                v-model="form.deptId"
+                :data="deptOptions"
+                :props="{ value: 'id', label: 'label', children: 'children' }"
+                value-key="id"
+                placeholder="请选择部门"
+                check-strictly
+              />
+            </el-form-item>
             <el-form-item label="岗位编码" prop="postCode">
               <el-input v-model="form.postCode" placeholder="请输入编码名称" />
             </el-form-item>

@@ -287,10 +287,11 @@ import api from '@/api/system/user';
 import { UserForm, UserQuery, UserVO } from '@/api/system/user/types';
 import { DeptVO } from '@/api/system/dept/types';
 import { RoleVO } from '@/api/system/role/types';
-import { PostVO } from '@/api/system/post/types';
+import {PostQuery, PostVO} from '@/api/system/post/types';
 import { treeselect } from '@/api/system/dept';
 import { globalHeaders } from '@/utils/request';
 import { to } from 'await-to-js';
+import {optionselect} from "@/api/system/post";
 
 const router = useRouter();
 const { proxy } = getCurrentInstance() as ComponentInternalInstance;
@@ -645,6 +646,15 @@ onMounted(() => {
     initPassword.value = response.data;
   });
 });
+
+// 监测部门变化加载岗位
+watch(
+  () => form.value.deptId,
+  async () => {
+    const response = await optionselect(form.value.deptId);
+    postOptions.value = response.data;
+  }
+);
 </script>
 
 <style lang="scss" scoped></style>
