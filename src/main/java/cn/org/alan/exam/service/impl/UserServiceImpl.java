@@ -214,7 +214,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
             return Result.failed("班级口令不存在");
         }
         User user = new User();
-        user.setGradeId(grade.getGradeId());
+        user.setGradeId(grade.getId());
         int updated = userMapper.updateById(user);
         if (updated > 0) {
             return Result.success("加入班级：" + grade.getGradeName() + "成功");

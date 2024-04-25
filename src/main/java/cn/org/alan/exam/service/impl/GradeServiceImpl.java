@@ -68,7 +68,7 @@ public class GradeServiceImpl extends ServiceImpl<GradeMapper, Grade> implements
         LambdaUpdateWrapper<Grade> gradeUpdateWrapper = new LambdaUpdateWrapper<>();
         gradeUpdateWrapper
                 .set(Grade::getGradeName, gradeForm.getGradeName())
-                .eq(Grade::getGradeId, id);
+                .eq(Grade::getId, id);
         int rows = gradeMapper.update(gradeUpdateWrapper);
         if (rows == 0) {
             return Result.failed("修改失败");
@@ -119,23 +119,24 @@ public class GradeServiceImpl extends ServiceImpl<GradeMapper, Grade> implements
     //统计各班级人数，
     @Override
     public List<ClassCountResult> countStudentsByRoleId(int roleId) {
-        QueryWrapper<User> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("role_id",roleId); //先构建QueryWrapper设置查询条件：role_id为1
-
-        //执行分组查询，获取班级ID和对应的学生数量的映射关系
-        Map<Integer,Integer> classStudentCountMap = gradeMapper.selectMaps(queryWrapper,"gradeId","Count(*)");
-
-        List<ClassCountResult> results = new ArrayList<>();
-        for (Map.Entry<Integer, Integer> entry : classStudentCountMap.entrySet()) {
-            int gradeId = entry.getKey();
-            Grade gradeInfo = gradeService.getById(gradeId); //获取班级id
-            ClassCountResult result = new ClassCountResult();
-            result.setGradeId(gradeInfo.getGradeId());
-            result.setGradeName(gradeInfo.getGradeName());
-            result.setCount(entry.getValue());
-            results.add(result);
-        }
-        return results;
+        // QueryWrapper<User> queryWrapper = new QueryWrapper<>();
+        // queryWrapper.eq("role_id",roleId); //先构建QueryWrapper设置查询条件：role_id为1
+        //
+        // //执行分组查询，获取班级ID和对应的学生数量的映射关系
+        // Map<Integer,Integer> classStudentCountMap = gradeMapper.selectMaps(queryWrapper,"gradeId","Count(*)");
+        //
+        // List<ClassCountResult> results = new ArrayList<>();
+        // for (Map.Entry<Integer, Integer> entry : classStudentCountMap.entrySet()) {
+        //     int gradeId = entry.getKey();
+        //     Grade gradeInfo = gradeService.getById(gradeId); //获取班级id
+        //     ClassCountResult result = new ClassCountResult();
+        //     result.setGradeId(gradeInfo.getId());
+        //     result.setGradeName(gradeInfo.getGradeName());
+        //     result.setCount(entry.getValue());
+        //     results.add(result);
+        // }
+        // return results;
+        return null;
     }
 
 }

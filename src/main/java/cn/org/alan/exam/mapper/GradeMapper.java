@@ -19,6 +19,7 @@ import java.util.List;
 @Repository
 public interface GradeMapper extends BaseMapper<Grade> {
 
+    Integer getGradeCount(Integer exam_id);
     /**
      * 删除用户创建的班级
      *

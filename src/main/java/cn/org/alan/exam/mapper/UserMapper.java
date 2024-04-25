@@ -59,6 +59,8 @@ public interface UserMapper extends BaseMapper<User> {
      */
     IPage<UserVO> pagingUser(IPage<UserVO> page, Integer gradeId, String realName, Integer roleId);
 
+    void stuExamPage(Integer examId);
+
     /**
      * 移除班级
      * @param gradeIds 班级id列表
