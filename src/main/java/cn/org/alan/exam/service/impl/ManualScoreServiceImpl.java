@@ -57,16 +57,16 @@ public class ManualScoreServiceImpl extends ServiceImpl<ManualScoreMapper, Manua
 
     @Override
     public Result<IPage<AnswerExamPageVO>> examPage(Integer pageNum,Integer pageSize) {
-
+        // 设置返回对象
         List<AnswerExamPageVO> answerExamPageVOS = new ArrayList<>();
+        // 查找自己创建的考试
         LambdaQueryWrapper<Exam> examLambdaQueryWrapper = new LambdaQueryWrapper<>();
         examLambdaQueryWrapper.eq(Exam::getUserId, SecurityUtil.getUserId())
                 .select(Exam::getId)
                 .select(Exam::getTitle);
         List<Exam> exams = examMapper.selectList(examLambdaQueryWrapper);
-        // 查找自己创建的考试
-        // SELECT id,title FROM t_exam WHERE user_id = 1
         for (Exam temp : exams) {
+            // 创建列表中单个对象
             AnswerExamPageVO answerExamPageVO = new AnswerExamPageVO();
             answerExamPageVO.setExam(temp);
             Integer classSize = gradeMapper.getGradeCount(temp.getId());
@@ -77,6 +77,8 @@ public class ManualScoreServiceImpl extends ServiceImpl<ManualScoreMapper, Manua
             answerExamPageVO.setNumberOfApplicants(numberOfApplicants);
             answerExamPageVOS.add(answerExamPageVO);
         }
+        // 查找自己创建的考试
+        // SELECT id,title FROM t_exam WHERE user_id = 1
         // 查询考试班级人数（总人数）
         // SELECT COUNT(*) FROM t_grade WHERE id in (SELECT grade_id FROM t_exam_grade WHERE exam_id= 1)
 

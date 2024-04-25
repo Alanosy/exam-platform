@@ -46,5 +46,12 @@ public interface IManualScoreService extends IService<ManualScore> {
      */
     Result<IPage<AnswerExamPageVO>> examPage(Integer pageNum,Integer pageSize);
 
+    /**
+     * 查询考试的用户
+     * @param pageNum
+     * @param pageSize
+     * @param examId
+     * @return
+     */
     Result stuExamPage(Integer pageNum, Integer pageSize, Integer examId);
 }
