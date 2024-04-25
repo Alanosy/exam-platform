@@ -22,75 +22,65 @@ import java.util.List;
  *  服务实现类
  * </p>
  *
- * @author Jinci
+ * @author Jinxin
  * @since 2024-03-21
  */
 @Service
 public class CertificateServiceImpl extends ServiceImpl<CertificateMapper, Certificate> implements ICertificateService {
-    //添加属性certificateMapper
     @Resource
     private CertificateMapper certificateMapper;
 
-    
     //新增证书
     @Override
     public Result<String> addCertificate(CertificateForm certificate) {
-        certificateMapper.insertCertificate(certificateMapper.selectById(1));
-        return Result.success("新增证书成功");
+
+        int insertRows = certificateMapper.insertCertificate(certificateMapper.selectById(1));
+
+        if (insertRows > 0) {
+            return Result.success("添加证书成功");
+        } else {
+            return Result.failed("添加证书失败");
+        }
     }
 
     //查询证书分页信息的方法  实现类
     @Override
-    public Result<IPage<Certificate>> pagingCertificate(Integer pageNum, Integer pageSize, String certificateName,String certificationNuit,String image) {
+    public Result<IPage<Certificate>> pagingCertificate(Integer pageNum, Integer pageSize, String certificateName, String certificationUnit, String image) {
+        Page<Certificate> page = new Page<>(pageNum, pageSize);
+        IPage<Certificate> certificatePage = certificateMapper.pagingCertificate(page, certificateName, certificationUnit, image);
 
-        IPage<Certificate> page = new Page<>(pageNum,pageSize);
-        //按角色查看证书
-        if ("role_teacher".equals(SecurityUtil.getRole())) {
-            //教师只查询自己的证书
-            page = certificateMapper.pagingCertificate(page, certificateName, SecurityUtil.getUserId());
-        } else {
-            //管理员可以获取所有证书
-            page = certificateMapper.pagingCertificate(page, certificateName, 0);
-        }
-
-        return Result.success(null, page);
+        return Result.success(null,certificatePage);
     }
 
-
-    //学生端获取证书
-    public List<Certificate> list(Integer id) {
-        QueryWrapper<Certificate> wrapper = new QueryWrapper<>();
-        wrapper.lambda().eq(Certificate::getId,id);  //使用lambda表达式设置查询条件  （等于id）
-
-        return this.list(wrapper); //执行查询并返回符合条件的所有Certificate对象列表
-    }
-
-
-    //修改证书
     @Override
     public Result<String> updateCertificate(String id, CertificateForm certificateForm) {
-        LambdaUpdateWrapper<Certificate> certificateLambdaUpdateWrapper = new LambdaUpdateWrapper<>();
-        certificateLambdaUpdateWrapper
-                .set(Certificate::getCertificateName, certificateForm.getCertificateName())
-                .eq(Certificate::getId, id);
-        int rowsAffected = certificateMapper.update(certificateLambdaUpdateWrapper);
-        if (rowsAffected == 0) {
-            return Result.failed("修改失败");
+        // 根据ID查询现有证书
+        Certificate existingCertificate = certificateMapper.selectById(id);
+
+        if (existingCertificate == null) {
+            return Result.failed("待更新的证书不存在");
         }
-        return Result.success("修改成功");
+
+
+        // 调用mapper方法更新证书
+        int affectedRows = certificateMapper.updateById(existingCertificate);
+
+        if (affectedRows > 0) {
+            return Result.success("修改证书成功");
+        } else {
+            return Result.failed("修改证书失败");
+        }
     }
 
-    //删除证书
     @Override
     public Result<String> deleteCertificate(String id) {
-        List<Integer> Id = Arrays.stream(id.split(","))
-                .map(Integer::parseInt)
-                .toList();
-        int rowsAffected = certificateMapper.deleteCertificate(Id);
-        if (rowsAffected == 0) {
-            return Result.failed("删除失败");
+        int affectedRows = certificateMapper.deleteById(id);
+
+        if (affectedRows > 0) {
+            return Result.success("删除证书成功");
+        } else {
+            return Result.failed("删除证书失败");
         }
-        return Result.success("删除成功");
     }
 
 }

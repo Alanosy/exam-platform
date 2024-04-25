@@ -1,27 +1,14 @@
 package cn.org.alan.exam.controller;
 
 
-import cn.hutool.db.PageResult;
 import cn.org.alan.exam.common.result.Result;
 import cn.org.alan.exam.model.entity.Certificate;
-import cn.org.alan.exam.model.entity.Repo;
-import cn.org.alan.exam.model.entity.ResponsePojo;
 import cn.org.alan.exam.model.form.CertificateForm;
-import cn.org.alan.exam.model.form.NoticeForm;
-import cn.org.alan.exam.model.vo.RepoVO;
 import cn.org.alan.exam.service.ICertificateService;
-import cn.org.alan.exam.service.IRepoService;
-import cn.org.alan.exam.util.SecurityUtil;
 import com.baomidou.mybatisplus.core.metadata.IPage;
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import jakarta.annotation.Resource;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DuplicateKeyException;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.zip.DataFormatException;
 
 /**
  * <p>

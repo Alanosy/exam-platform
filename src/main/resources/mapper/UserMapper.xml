@@ -4,7 +4,7 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="cn.org.alan.exam.mapper.UserMapper">
     <sql id="simpleFiled">
-        u.gradeId,u.user_name,u.real_name,u.avatar,u.create_time,u.status
+        u.id,u.user_name,u.real_name,u.avatar,u.create_time,u.status
         u
         .
         id
@@ -16,7 +16,7 @@
         values
         <foreach collection="list" item="user" separator=",">
             (null,#{user.userName},#{user.realName},#{user.password},
-            null,#{user.roleId},null,#{user.createTime},1)
+            null,#{user.id},null,#{user.createTime},1)
         </foreach>
     </insert>
 
@@ -25,7 +25,7 @@
     <update id="removeUserGrade">
         UPDATE t_user
         SET grade_id = null
-        WHERE gradeId IN
+        WHERE id IN
         <foreach item="userId" collection="userIds" open="(" separator="," close=")">
             #{userId}
         </foreach>
@@ -61,13 +61,13 @@
         from t_user as u
         join t_grade as g on u.grade_id = g.id
         <trim prefixOverrides="and" prefix="where">
-            <if test="gradeId != null">
-                u.grade = #{gradeId}
+            <if test="id != null">
+                u.grade = #{id}
             </if>
             <if test='realName != null and realName !=""'>
                 and u.real_name like concat('%',#{realName},'%')
             </if>
-            <if test="roleId != null and roleId != 0">
+            <if test="id != null and id != 0">
                 and u.role_id = 1
             </if>
         </trim>

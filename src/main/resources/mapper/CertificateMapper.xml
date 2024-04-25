@@ -1,5 +1,46 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="cn.org.alan.exam.mapper.CertificateMapper">
+    <insert id="insertCertificate"></insert>
+
+    <!-- 根据ID查询证书 -->
+    <select id="selectById" parameterType="string" resultType="cn.org.alan.exam.model.entity.Certificate">
+        SELECT * FROM certificate WHERE id = #{id}
+    </select>
+
+    <!-- 根据条件分页查询证书 -->
+    <select id="selectPage" parameterType="map" resultType="cn.org.alan.exam.model.entity.Certificate">
+        SELECT * FROM certificate
+        <where>
+            <if test="ew != null and ew.certificateName != null">
+                AND certificate_name LIKE CONCAT('%', #{ew.certificateName}, '%')
+            </if>
+            <if test="ew != null and ew.certificationUnit != null">
+                AND certification_unit = #{ew.certificationUnit}
+            </if>
+            <!-- 图片字段与证书名重复，这里假设图片字段名为"background_image" -->
+            <if test="ew != null and ew.image != null">
+                AND background_image = #{ew.image}
+            </if>
+        </where>
+        ORDER BY id DESC
+        LIMIT #{offset}, #{limit}
+    </select>
+
+    <!-- 更新证书信息 -->
+    <update id="updateById" parameterType="cn.org.alan.exam.model.entity.Certificate">
+        UPDATE certificate SET
+        certificate_name = #{certificateName},
+        certification_unit = #{certificationUnit},
+        background_image = #{backgroundImage},
+        <!-- 其他字段... -->
+        modified_time = NOW()
+        WHERE id = #{id}
+    </update>
+
+    <!-- 删除证书 -->
+    <delete id="deleteById" parameterType="string">
+        DELETE FROM certificate WHERE id = #{id}
+    </delete>
 
 </mapper>

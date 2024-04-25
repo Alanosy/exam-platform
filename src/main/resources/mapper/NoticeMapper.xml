@@ -5,7 +5,7 @@
     <delete id="removeNotice">
         delete
         from t_notice
-        where gradeId IN
+        where id IN
         <foreach item="noticeId" collection="noticeIds" open="(" separator="," close=")">
             #{noticeId}
         </foreach>

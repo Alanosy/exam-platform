@@ -9,7 +9,6 @@ import cn.org.alan.exam.model.entity.User;
 import cn.org.alan.exam.model.form.GradeForm;
 import cn.org.alan.exam.model.form.count.ClassCountResult;
 import cn.org.alan.exam.model.vo.GradeVO;
-import cn.org.alan.exam.service.ICertificateService;
 import cn.org.alan.exam.service.IGradeService;
 import cn.org.alan.exam.util.ClassTokenGenerator;
 import cn.org.alan.exam.util.SecurityUtil;
@@ -21,7 +20,6 @@ import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import jakarta.annotation.Resource;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -68,7 +66,7 @@ public class GradeServiceImpl extends ServiceImpl<GradeMapper, Grade> implements
         LambdaUpdateWrapper<Grade> gradeUpdateWrapper = new LambdaUpdateWrapper<>();
         gradeUpdateWrapper
                 .set(Grade::getGradeName, gradeForm.getGradeName())
-                .eq(Grade::getGradeId, id);
+                .eq(Grade::getId, id);
         int rows = gradeMapper.update(gradeUpdateWrapper);
         if (rows == 0) {
             return Result.failed("修改失败");
@@ -130,7 +128,7 @@ public class GradeServiceImpl extends ServiceImpl<GradeMapper, Grade> implements
             int gradeId = entry.getKey();
             Grade gradeInfo = gradeService.getById(gradeId); //获取班级id
             ClassCountResult result = new ClassCountResult();
-            result.setGradeId(gradeInfo.getGradeId());
+            result.setGradeId(gradeInfo.getId());
             result.setGradeName(gradeInfo.getGradeName());
             result.setCount(entry.getValue());
             results.add(result);
