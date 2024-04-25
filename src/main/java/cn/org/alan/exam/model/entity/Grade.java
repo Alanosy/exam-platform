@@ -17,6 +17,7 @@ public class Grade implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
+
     /**
      * id   班级表
      */

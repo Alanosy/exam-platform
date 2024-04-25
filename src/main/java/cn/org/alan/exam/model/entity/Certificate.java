@@ -18,6 +18,7 @@ public class Certificate implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
+
     /**
      * ID   证书
      */
