@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="cn.org.alan.exam.mapper.UserExamsScoreMapper">
 
     <!--    根据用户Id列表，考试Id获取该考试的最高分、最低分、平均分、参考人数、及格人数-->
@@ -31,6 +31,13 @@
                 and u.real_name like concat('%',#{realName},'%')
             </if>
         </trim>
+    </select>
+    <select id="getNumberOfApplicants" resultType="java.lang.Integer">
+        SELECT COUNT(*) FROM t_user_exams_score WHERE state=1 and exam_id= #{exam_id}
+
+    </select>
+    <select id="getCorrectedPaper" resultType="java.lang.Integer">
+        SELECT COUNT(*) FROM t_user_exams_score WHERE whether_mark=1
     </select>
     <!--查询成绩-->
     <select id="selectScores" resultType="cn.org.alan.exam.model.vo.score.ExportScoreVO">

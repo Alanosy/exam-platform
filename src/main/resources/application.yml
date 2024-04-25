@@ -2,4 +2,4 @@ spring:
   application:
     name: exam
   profiles:
-    active: dev-weijin
+    active: dev-alan

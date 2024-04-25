@@ -38,6 +38,10 @@ public interface UserExamsScoreMapper extends BaseMapper<UserExamsScore> {
      */
     IPage<UserScoreVO> pagingScore(IPage<UserScoreVO> page, Integer gradeId, Integer examId, String realName);
 
+    Integer getNumberOfApplicants(Integer examId);
+
+    Integer getCorrectedPaper(Integer examId);
+
     /**
      * 获取成绩
      * @param examId 考试id

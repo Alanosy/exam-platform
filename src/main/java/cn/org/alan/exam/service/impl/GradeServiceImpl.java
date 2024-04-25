@@ -5,12 +5,16 @@ import cn.org.alan.exam.converter.GradeConverter;
 import cn.org.alan.exam.mapper.GradeMapper;
 import cn.org.alan.exam.mapper.UserMapper;
 import cn.org.alan.exam.model.entity.Grade;
+import cn.org.alan.exam.model.entity.User;
 import cn.org.alan.exam.model.form.GradeForm;
+import cn.org.alan.exam.model.form.count.ClassCountResult;
 import cn.org.alan.exam.model.vo.GradeVO;
+import cn.org.alan.exam.service.ICertificateService;
 import cn.org.alan.exam.service.IGradeService;
 import cn.org.alan.exam.util.ClassTokenGenerator;
 import cn.org.alan.exam.util.SecurityUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.StringUtils;
@@ -20,8 +24,10 @@ import jakarta.annotation.Resource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 班级服务实现类
@@ -37,6 +43,10 @@ public class GradeServiceImpl extends ServiceImpl<GradeMapper, Grade> implements
     private GradeConverter gradeConverter;
     @Resource
     private UserMapper userMapper;
+
+    @Resource
+    private IGradeService gradeService;  //用此服务来获取班级信息
+
 
 
     @Override
@@ -105,5 +115,29 @@ public class GradeServiceImpl extends ServiceImpl<GradeMapper, Grade> implements
         List<Grade> grades = gradeMapper.selectList(gradeLambdaQueryWrapper);
         return Result.success("查询成功",gradeConverter.listEntityToVo(grades));
     }
+
+    //统计各班级人数，
+    @Override
+    public List<ClassCountResult> countStudentsByRoleId(int roleId) {
+        // QueryWrapper<User> queryWrapper = new QueryWrapper<>();
+        // queryWrapper.eq("role_id",roleId); //先构建QueryWrapper设置查询条件：role_id为1
+        //
+        // //执行分组查询，获取班级ID和对应的学生数量的映射关系
+        // Map<Integer,Integer> classStudentCountMap = gradeMapper.selectMaps(queryWrapper,"gradeId","Count(*)");
+        //
+        // List<ClassCountResult> results = new ArrayList<>();
+        // for (Map.Entry<Integer, Integer> entry : classStudentCountMap.entrySet()) {
+        //     int gradeId = entry.getKey();
+        //     Grade gradeInfo = gradeService.getById(gradeId); //获取班级id
+        //     ClassCountResult result = new ClassCountResult();
+        //     result.setGradeId(gradeInfo.getId());
+        //     result.setGradeName(gradeInfo.getGradeName());
+        //     result.setCount(entry.getValue());
+        //     results.add(result);
+        // }
+        // return results;
+        return null;
+    }
+
 }
 

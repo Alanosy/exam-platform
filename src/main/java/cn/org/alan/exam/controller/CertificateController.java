@@ -1,27 +1,14 @@
 package cn.org.alan.exam.controller;
 
 
-import cn.hutool.db.PageResult;
 import cn.org.alan.exam.common.result.Result;
 import cn.org.alan.exam.model.entity.Certificate;
-import cn.org.alan.exam.model.entity.Repo;
-import cn.org.alan.exam.model.entity.ResponsePojo;
 import cn.org.alan.exam.model.form.CertificateForm;
-import cn.org.alan.exam.model.form.NoticeForm;
-import cn.org.alan.exam.model.vo.RepoVO;
 import cn.org.alan.exam.service.ICertificateService;
-import cn.org.alan.exam.service.IRepoService;
-import cn.org.alan.exam.util.SecurityUtil;
 import com.baomidou.mybatisplus.core.metadata.IPage;
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import jakarta.annotation.Resource;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DuplicateKeyException;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.zip.DataFormatException;
 
 /**
  * <p>
@@ -65,10 +52,10 @@ public class CertificateController {
     @GetMapping("/paging")
     @PreAuthorize("hasAnyAuthority('role_teacher','role_admin')")
     public Result<IPage<Certificate>> pagingCertificate(@RequestParam(value = "pageNum", required = false, defaultValue = "1") Integer pageNum,
-                                                         @RequestParam(value = "pageSize", required = false, defaultValue = "10") Integer pageSize,
-                                                         @RequestParam(value = "certificateName", required = false) String certificateName,
-                                                         @RequestParam(value = "certificationUnit", required = false) String certificationUnit,
-                                                         @RequestParam(value = "certificateName", required = false) String image
+                                                        @RequestParam(value = "pageSize", required = false, defaultValue = "10") Integer pageSize,
+                                                        @RequestParam(value = "certificateName", required = false) String certificateName,
+                                                        @RequestParam(value = "certificationUnit", required = false) String certificationUnit,
+                                                        @RequestParam(value = "certificateName", required = false) String image
                                                         ) {
             return iCertificateService.pagingCertificate(pageNum, pageSize, certificateName,certificationUnit,image);
     }

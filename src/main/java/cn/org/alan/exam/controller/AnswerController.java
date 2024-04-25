@@ -11,7 +11,7 @@ import jakarta.annotation.Resource;
 import org.springframework.web.bind.annotation.*;
 
 /**
- *     答题管理
+ *    答题管理
  * @Author Alan
  * @Version
  * @Date 2024/3/25 11:20 AM
@@ -56,7 +56,22 @@ public class AnswerController {
      * @return
      */
     @GetMapping("/exam/page")
-    public Result<IPage<AnswerExamPageVO>> examPage(){
-        return manualScoreService.examPage();
+    public Result<IPage<AnswerExamPageVO>> examPage( @RequestParam(value = "pageNum",required = false,defaultValue = "1") Integer pageNum,
+                                                     @RequestParam(value = "pageSize",required = false,defaultValue = "10") Integer pageSize){
+        return manualScoreService.examPage( pageNum, pageSize);
+    }
+
+    /**
+     * 查询考试的用户
+     * @param pageNum
+     * @param pageSize
+     * @param exam_id
+     * @return
+     */
+    @GetMapping("/exam/stu")
+    public Result stuExamPage(@RequestParam(value = "pageNum",required = false,defaultValue = "1") Integer pageNum,
+                          @RequestParam(value = "pageSize",required = false,defaultValue = "10") Integer pageSize,
+                          @RequestParam(value = "exam_id",required = true) Integer exam_id){
+        return manualScoreService.stuExamPage(pageNum,pageSize,exam_id);
     }
 }

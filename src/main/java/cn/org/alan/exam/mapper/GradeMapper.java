@@ -1,6 +1,8 @@
 package cn.org.alan.exam.mapper;
 
 import cn.org.alan.exam.model.entity.Grade;
+import cn.org.alan.exam.model.entity.User;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.springframework.stereotype.Repository;
 
@@ -17,6 +19,7 @@ import java.util.List;
 @Repository
 public interface GradeMapper extends BaseMapper<Grade> {
 
+    Integer getGradeCount(Integer exam_id);
     /**
      * 删除用户创建的班级
      *

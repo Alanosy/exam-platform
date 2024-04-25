@@ -44,5 +44,7 @@ public interface IManualScoreService extends IService<ManualScore> {
      * 分页查找待阅卷考试
      * @return
      */
-    Result<IPage<AnswerExamPageVO>> examPage();
+    Result<IPage<AnswerExamPageVO>> examPage(Integer pageNum,Integer pageSize);
+
+    Result stuExamPage(Integer pageNum, Integer pageSize, Integer examId);
 }
