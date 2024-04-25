@@ -2,9 +2,9 @@ package cn.org.alan.exam.service.impl;
 
 import cn.org.alan.exam.common.result.Result;
 import cn.org.alan.exam.converter.UserConverter;
-import cn.org.alan.exam.mapper.GradeMapper;
-import cn.org.alan.exam.mapper.UserMapper;
+import cn.org.alan.exam.mapper.*;
 import cn.org.alan.exam.model.entity.Grade;
+import cn.org.alan.exam.model.entity.Question;
 import cn.org.alan.exam.model.entity.User;
 import cn.org.alan.exam.model.form.UserForm;
 import cn.org.alan.exam.model.vo.UserVO;
@@ -26,6 +26,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
@@ -49,6 +50,30 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
     private UserConverter userConverter;
     @Resource
     private GradeMapper gradeMapper;
+    @Resource
+    private CertificateUserMapper certificateUserMapper;
+    @Resource
+    private ExamMapper examMapper;
+    @Resource
+    private ExamQuAnswerMapper examQuAnswerMapper;
+    @Resource
+    private ExerciseRecordMapper exerciseRecordMapper;
+    @Resource
+    private GradeExerciseMapper gradeExerciseMapper;
+    @Resource
+    private ManualScoreMapper manualScoreMapper;
+    @Resource
+    private NoticeMapper noticeMapper;
+    @Resource
+    private QuestionMapper questionMapper;
+    @Resource
+    private RepoMapper repoMapper;
+    @Resource
+    private UserBookMapper userBookMapper;
+    @Resource
+    private OptionMapper optionMapper;
+    @Resource
+    private NoticeGradeMapper noticeGradeMapper;
 
 
     @Override
@@ -95,8 +120,56 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
     }
 
     @Override
+    @Transactional
     public Result<String> deleteBatchByIds(String ids) {
-        return null;
+        List<Integer> userIds = Arrays.stream(ids.split(",")).map(Integer::parseInt).toList();
+        //删除用户证书
+        certificateUserMapper.deleteByUserIds(userIds);
+        //删除用户创建的考试
+        examMapper.deleteByUserIds(userIds);
+        //删除用户考试作答记录
+        examQuAnswerMapper.deleteByUserIds(userIds);
+        //删除用户练习记录
+        exerciseRecordMapper.deleteByUserIds(userIds);
+        //清除用户表中的班级id
+        List<Integer> gradeIds = gradeMapper.selectIdsByUserIds(userIds);
+        if (!gradeIds.isEmpty()) {
+            userMapper.removeGradeIdByGradeIds(gradeIds);
+        }
+
+        //删除用户创建的班级
+        gradeMapper.deleteByUserId(userIds);
+        //删除用户创建的可供学生练习的题库关联表
+        gradeExerciseMapper.deleteByUserIds(userIds);
+        //删除用户批改的主观题分数
+        manualScoreMapper.deleteByUserIds(userIds);
+        //删除公告与班级关联表
+        //1.获取公告id
+        List<Integer> noticeIds = noticeMapper.selectIdsByUserIds(userIds);
+        //2.删除公告与班级关联
+        if (!noticeIds.isEmpty()) {
+            noticeGradeMapper.deleteByNoticeIds(noticeIds);
+        }
+        //删除用户创建的公告
+        noticeMapper.deleteByUserIds(userIds);
+
+        //删除试题选项
+        //1.获取用户创建的试题id
+        List<Integer> quIds = questionMapper.selectIdsByUserIds(userIds);
+        //2.根据试题id列表删除选项
+        if (!quIds.isEmpty()) {
+            optionMapper.deleteBatchByQuIds(quIds);
+        }
+        //删除用户创建的试题
+        questionMapper.deleteByUserIds(userIds);
+        //删除用户创建的题库
+        repoMapper.deleteByUserIds(userIds);
+        //删除用户的错题本
+        userBookMapper.deleteByUserIds(userIds);
+        //删除用户
+        userMapper.deleteBatchIds(userIds);
+        //
+        return Result.success("删除成功");
     }
 
     @SneakyThrows
@@ -129,7 +202,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
     @Override
     public Result<UserVO> info() {
         UserVO userVo = userMapper.info(SecurityUtil.getUserId());
-        return Result.success(null,userVo);
+        return Result.success(null, userVo);
     }
 
     @Override
@@ -137,27 +210,29 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
         //获取班级信息
         LambdaQueryWrapper<Grade> wrapper = new LambdaQueryWrapper<Grade>().eq(Grade::getCode, code);
         Grade grade = gradeMapper.selectOne(wrapper);
-        if (Objects.isNull(grade)){
+        if (Objects.isNull(grade)) {
             return Result.failed("班级口令不存在");
         }
         User user = new User();
         user.setGradeId(grade.getGradeId());
         int updated = userMapper.updateById(user);
-        if (updated>0){
-            return Result.success("加入班级："+grade.getGradeName()+"成功");
+        if (updated > 0) {
+            return Result.success("加入班级：" + grade.getGradeName() + "成功");
         }
         return Result.failed("加入失败");
     }
 
     @Override
     public Result<IPage<UserVO>> pagingUser(Integer pageNum, Integer pageSize, Integer gradeId, String realName) {
-        IPage<UserVO> page = new Page<>(pageNum,pageSize);
-        if (SecurityUtil.getRole().equals("role_teacher")){
-            page = userMapper.pagingUser(page,gradeId,realName,1);
-        }else {
-            page = userMapper.pagingUser(page,gradeId,realName,null);
+        IPage<UserVO> page = new Page<>(pageNum, pageSize);
+        if (SecurityUtil.getRole().equals("role_teacher")) {
+            page = userMapper.pagingUser(page, gradeId, realName, 1);
+        } else {
+            page = userMapper.pagingUser(page, gradeId, realName, null);
         }
 
-        return Result.success(null,page);
+        return Result.success(null, page);
     }
+
+
 }
