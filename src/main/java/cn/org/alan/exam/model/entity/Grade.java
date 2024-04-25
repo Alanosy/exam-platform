@@ -5,19 +5,24 @@ import com.baomidou.mybatisplus.annotation.*;
 import java.io.Serializable;
 
 /**
- * @ Author JinXi
- * @ Version 1.0
- * @ Date 2024/4/25 14:02
+ * <p>
+ * 
+ * </p>
+ *
+ * @author WeiJin
+ * @since 2024-03-21
  */
 @TableName("t_grade")
 public class Grade implements Serializable {
+
     private static final long serialVersionUID = 1L;
 
+
     /**
-     * Id   班级表
+     * id   班级表
      */
     @TableId(value = "id", type = IdType.AUTO)
-    private Integer Id;
+    private Integer id;
 
     /**
      * 班级名称
@@ -36,11 +41,11 @@ public class Grade implements Serializable {
     private String code;
 
     public Integer getId() {
-        return Id;
+        return id;
     }
 
     public void setId(Integer id) {
-        this.Id = id;
+        this.id = id;
     }
     public String getGradeName() {
         return gradeName;
@@ -67,10 +72,10 @@ public class Grade implements Serializable {
     @Override
     public String toString() {
         return "Grade{" +
-                "Id=" + Id +
-                ", gradeName=" + gradeName +
-                ", userId=" + userId +
-                ", code=" + code +
-                "}";
+            "id=" + id +
+            ", gradeName=" + gradeName +
+            ", userId=" + userId +
+            ", code=" + code +
+        "}";
     }
 }

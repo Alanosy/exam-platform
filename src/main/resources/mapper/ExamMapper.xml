@@ -29,4 +29,10 @@
             #{examId}
         </foreach>
     </delete>
+    <delete id="deleteByUserIds">
+        delete from t_exam where user_id in
+        <foreach collection="userIds" item="userId" open="(" close=")" separator=",">
+            #{userId}
+        </foreach>
+    </delete>
 </mapper>

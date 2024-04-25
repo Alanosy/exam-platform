@@ -7,6 +7,8 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 /**
  *
  * @author WeiJin
@@ -24,4 +26,11 @@ public interface RepoMapper extends BaseMapper<Repo> {
      */
     IPage<RepoVO> pagingRepo(@Param("page") IPage<RepoVO> page, @Param("title") String title,
                              @Param("userId") Integer userId);
+
+    /**
+     * 删除用户创建的题库
+     * @param userIds 用户id列表
+     * @return 影响记录数
+     */
+    Integer deleteByUserIds(List<Integer> userIds);
 }

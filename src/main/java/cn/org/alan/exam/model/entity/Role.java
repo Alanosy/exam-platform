@@ -32,11 +32,11 @@ public class Role implements Serializable {
     private String code;
 
     public Integer getId() {
-        return Id;
+        return id;
     }
 
     public void setId(Integer id) {
-        this.Id = id;
+        this.id = id;
     }
     public String getRoleName() {
         return roleName;
@@ -56,10 +56,9 @@ public class Role implements Serializable {
     @Override
     public String toString() {
         return "Role{" +
-                "Id=" + Id +
-                ", roleName=" + roleName +
-                ", code=" + code +
-                "}";
+            "id=" + id +
+            ", roleName=" + roleName +
+            ", code=" + code +
+        "}";
     }
-
 }

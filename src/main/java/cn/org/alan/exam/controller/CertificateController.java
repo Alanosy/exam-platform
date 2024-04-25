@@ -52,10 +52,10 @@ public class CertificateController {
     @GetMapping("/paging")
     @PreAuthorize("hasAnyAuthority('role_teacher','role_admin')")
     public Result<IPage<Certificate>> pagingCertificate(@RequestParam(value = "pageNum", required = false, defaultValue = "1") Integer pageNum,
-                                                         @RequestParam(value = "pageSize", required = false, defaultValue = "10") Integer pageSize,
-                                                         @RequestParam(value = "certificateName", required = false) String certificateName,
-                                                         @RequestParam(value = "certificationUnit", required = false) String certificationUnit,
-                                                         @RequestParam(value = "certificateName", required = false) String image
+                                                        @RequestParam(value = "pageSize", required = false, defaultValue = "10") Integer pageSize,
+                                                        @RequestParam(value = "certificateName", required = false) String certificateName,
+                                                        @RequestParam(value = "certificationUnit", required = false) String certificationUnit,
+                                                        @RequestParam(value = "certificateName", required = false) String image
                                                         ) {
             return iCertificateService.pagingCertificate(pageNum, pageSize, certificateName,certificationUnit,image);
     }

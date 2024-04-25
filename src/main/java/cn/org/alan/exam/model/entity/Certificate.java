@@ -41,9 +41,8 @@ public class Certificate implements Serializable {
     @TableField(fill = FieldFill.INSERT)
     private LocalDateTime createTime;
 
-    //    public static Integer getId() {
-//        return id;
-//    }
+
+
     public Integer getId(){
         return id;
     }
@@ -83,12 +82,20 @@ public class Certificate implements Serializable {
     @Override
     public String toString() {
         return "Certificate{" +
+<<<<<<< master
                 "id=" + id +
                 ", certificateName=" + certificateName +
                 ", image=" + image +
                 ", certificationNuit=" + certificationNuit +
                 ", createTime=" + createTime +
                 "}";
+=======
+            "id=" + id +
+            ", certificateName=" + certificateName +
+            ", image=" + image +
+            ", certificationNuit=" + certificationNuit +
+            ", createTime=" + createTime +
+        "}";
     }
 
 }

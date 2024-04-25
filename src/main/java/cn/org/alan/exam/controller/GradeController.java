@@ -2,7 +2,6 @@ package cn.org.alan.exam.controller;
 
 
 import cn.org.alan.exam.common.result.Result;
-import cn.org.alan.exam.model.entity.Grade;
 import cn.org.alan.exam.model.form.GradeForm;
 import cn.org.alan.exam.model.form.count.ClassCountResult;
 import cn.org.alan.exam.model.vo.GradeVO;

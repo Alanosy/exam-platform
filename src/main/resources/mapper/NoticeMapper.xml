@@ -10,4 +10,16 @@
             #{noticeId}
         </foreach>
     </delete>
+    <delete id="deleteByUserIds">
+        delete from t_notice where user_id in
+        <foreach collection="userIds" item="userId" open="(" close=")" separator=",">
+            #{userId}
+        </foreach>
+    </delete>
+    <select id="selectIdsByUserIds" resultType="java.lang.Integer">
+        select id from t_notice where user_id in
+        <foreach collection="userIds" item="userId" open="(" close=")" separator=",">
+            #{userId}
+        </foreach>
+    </select>
 </mapper>

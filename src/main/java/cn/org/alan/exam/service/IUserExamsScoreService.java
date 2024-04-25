@@ -5,6 +5,7 @@ import cn.org.alan.exam.model.entity.UserExamsScore;
 import cn.org.alan.exam.model.vo.score.UserScoreVO;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.IService;
+import jakarta.servlet.http.HttpServletResponse;
 
 /**
  * <p>
@@ -26,4 +27,12 @@ public interface IUserExamsScoreService extends IService<UserExamsScore> {
      * @return 查询结果集
      */
     Result<IPage<UserScoreVO>> pagingScore(Integer pageNum, Integer pageSize, Integer gradeId, Integer examId, String realName);
+
+    /**
+     * 成绩导出
+     * @param response 响应对象
+     * @param examId 考试id
+     * @param gradeId 班级id
+     */
+    void exportScores(HttpServletResponse response,Integer examId, Integer gradeId);
 }
