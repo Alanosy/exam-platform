@@ -22,8 +22,8 @@
 
     <!--    根据试题id获取所有选项-->
     <select id="selectAllByQuestionId" resultType="cn.org.alan.exam.model.entity.Option">
-        select gradeId, qu_id, is_right, image, content, sort
+        select id, qu_id, is_right, image, content, sort
         from t_option
-        where qu_id = #{gradeId}
+        where qu_id = #{id}
     </select>
 </mapper>

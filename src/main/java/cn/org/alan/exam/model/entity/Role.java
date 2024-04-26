@@ -7,23 +7,19 @@ import com.baomidou.mybatisplus.annotation.TableName;
 import java.io.Serializable;
 
 /**
- * <p>
- * 
- * </p>
- *
- * @author WeiJin
- * @since 2024-03-21
+ * @ Author JinXi
+ * @ Version 1.0
+ * @ Date 2024/4/25 14:10
  */
 @TableName("t_role")
 public class Role implements Serializable {
-
     private static final long serialVersionUID = 1L;
 
     /**
      * ID  角色表
      */
     @TableId(value = "id", type = IdType.AUTO)
-    private Integer id;
+    private Integer Id;
 
     /**
      * 角色名称
