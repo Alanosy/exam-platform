@@ -5,10 +5,7 @@
 <mapper namespace="cn.org.alan.exam.mapper.UserMapper">
     <sql id="simpleFiled">
         u.id,u.user_name,u.real_name,u.avatar,u.create_time,u.status
-        u
-        .
-        id
-        ,u.user_name,u.real_name,u.avatar,u.create_time,u.status
+        u.id,u.user_name,u.real_name,u.avatar,u.create_time,u.status
     </sql>
 
     <insert id="insertBatchUser">
@@ -51,7 +48,7 @@
         select id
         from t_user
         where role_id = 1
-          and grade_id = #{classId}
+        and grade_id = #{classId}
     </select>
 
     <!--    分页获取用户信息-->

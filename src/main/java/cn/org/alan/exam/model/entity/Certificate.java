@@ -82,20 +82,13 @@ public class Certificate implements Serializable {
     @Override
     public String toString() {
         return "Certificate{" +
-<<<<<<< master
                 "id=" + id +
                 ", certificateName=" + certificateName +
                 ", image=" + image +
                 ", certificationNuit=" + certificationNuit +
                 ", createTime=" + createTime +
                 "}";
-=======
-            "id=" + id +
-            ", certificateName=" + certificateName +
-            ", image=" + image +
-            ", certificationNuit=" + certificationNuit +
-            ", createTime=" + createTime +
-        "}";
+
     }
 
 }
