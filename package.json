@@ -11,7 +11,6 @@
     "build:dev": "vite build --mode development",
     "preview": "vite preview",
     "lint:eslint": "eslint  --fix --ext .ts,.js,.vue ./src ",
-    "prepare": "husky install",
     "prettier": "prettier --write ."
   },
   "repository": {
@@ -83,7 +82,6 @@
     "eslint-plugin-import": "2.29.1",
     "eslint-plugin-vue": "9.23.0",
     "fast-glob": "3.3.2",
-    "husky": "9.0.11",
     "postcss": "8.4.36",
     "prettier": "3.2.5",
     "sass": "1.72.0",
