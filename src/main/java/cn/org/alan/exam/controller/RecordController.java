@@ -11,6 +11,6 @@ import org.springframework.web.bind.annotation.RestController;
  * @Date 2024/3/25 11:22 AM
  */
 @RestController
-@RequestMapping("/records")
+@RequestMapping("/api/records")
 public class RecordController {
 }
