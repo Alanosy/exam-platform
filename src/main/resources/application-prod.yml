@@ -2,7 +2,7 @@ server:
   port: 8080
 spring:
   datasource:
-    url: jdbc:mysql://47.109.94.143:3306/db_exam
+    url: jdbc:mysql://127.0.0.1:3306/db_exam
     username: db_exam
     password: Aa112211
     type: com.alibaba.druid.pool.DruidDataSource
@@ -75,7 +75,7 @@ spring:
   data:
     redis:
       database: 0
-      host: 47.109.94.143
+      host: 127.0.0.1
       port: 6379
       timeout: 10s
       lettuce:
