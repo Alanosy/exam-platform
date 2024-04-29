@@ -1,7 +1,8 @@
 package cn.org.alan.exam.controller;
 
+import cn.org.alan.exam.common.group.AnswerGroup;
 import cn.org.alan.exam.common.result.Result;
-import cn.org.alan.exam.model.form.answer.CorrectAnswer;
+import cn.org.alan.exam.model.form.answer.CorrectAnswerFrom;
 import cn.org.alan.exam.model.vo.answer.AnswerExamVO;
 import cn.org.alan.exam.model.vo.answer.UncorrectedUserVO;
 import cn.org.alan.exam.model.vo.answer.UserAnswerDetailVO;
@@ -9,6 +10,7 @@ import cn.org.alan.exam.service.IManualScoreService;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import jakarta.annotation.Resource;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -46,8 +48,8 @@ public class AnswerController {
      */
     @PutMapping("/correct")
     @PreAuthorize("hasAnyAuthority('role_teacher','role_admin')")
-    public Result<String> Correct(@RequestBody List<CorrectAnswer> correctAnswers) {
-        return manualScoreService.correct(correctAnswers);
+    public Result<String> Correct(@RequestBody @Validated(AnswerGroup.CorrectGroup.class) List<CorrectAnswerFrom> correctAnswerFroms) {
+        return manualScoreService.correct(correctAnswerFroms);
     }
 
     /**

@@ -2,7 +2,7 @@ package cn.org.alan.exam.service;
 
 import cn.org.alan.exam.common.result.Result;
 import cn.org.alan.exam.model.entity.ManualScore;
-import cn.org.alan.exam.model.form.answer.CorrectAnswer;
+import cn.org.alan.exam.model.form.answer.CorrectAnswerFrom;
 import cn.org.alan.exam.model.vo.answer.AnswerExamVO;
 import cn.org.alan.exam.model.vo.answer.UncorrectedUserVO;
 import cn.org.alan.exam.model.vo.answer.UserAnswerDetailVO;
@@ -32,10 +32,10 @@ public interface IManualScoreService extends IService<ManualScore> {
 
     /**
      * 批改试卷
-     * @param correctAnswers
+     * @param correctAnswerFroms
      * @return
      */
-    Result<String> correct(List<CorrectAnswer> correctAnswers);
+    Result<String> correct(List<CorrectAnswerFrom> correctAnswerFroms);
 
     /**
      * 分页查找待阅卷考试

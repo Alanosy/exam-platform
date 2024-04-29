@@ -3,7 +3,7 @@ package cn.org.alan.exam.service.impl;
 import cn.org.alan.exam.common.result.Result;
 import cn.org.alan.exam.mapper.*;
 import cn.org.alan.exam.model.entity.*;
-import cn.org.alan.exam.model.form.answer.CorrectAnswer;
+import cn.org.alan.exam.model.form.answer.CorrectAnswerFrom;
 import cn.org.alan.exam.model.vo.answer.AnswerExamVO;
 import cn.org.alan.exam.model.vo.answer.UncorrectedUserVO;
 import cn.org.alan.exam.model.vo.answer.UserAnswerDetailVO;
@@ -54,20 +54,20 @@ public class ManualScoreServiceImpl extends ServiceImpl<ManualScoreMapper, Manua
 
     @Override
     @Transactional
-    public Result<String> correct(List<CorrectAnswer> correctAnswers) {
-        List<ManualScore> list = new ArrayList<>(correctAnswers.size());
-        correctAnswers.forEach(correctAnswer -> {
+    public Result<String> correct(List<CorrectAnswerFrom> correctAnswerFroms) {
+        List<ManualScore> list = new ArrayList<>(correctAnswerFroms.size());
+        correctAnswerFroms.forEach(correctAnswerFrom -> {
 
             //获取用户作答信息id
             LambdaQueryWrapper<ExamQuAnswer> wrapper = new LambdaQueryWrapper<ExamQuAnswer>()
                     .select(ExamQuAnswer::getId)
-                    .eq(ExamQuAnswer::getExamId, correctAnswer.getExamId())
-                    .eq(ExamQuAnswer::getUserId, correctAnswer.getUserId())
-                    .eq(ExamQuAnswer::getQuestionId, correctAnswer.getQuestionId());
+                    .eq(ExamQuAnswer::getExamId, correctAnswerFrom.getExamId())
+                    .eq(ExamQuAnswer::getUserId, correctAnswerFrom.getUserId())
+                    .eq(ExamQuAnswer::getQuestionId, correctAnswerFrom.getQuestionId());
 
             ManualScore manualScore = new ManualScore();
             manualScore.setId(examQuAnswerMapper.selectOne(wrapper).getId());
-            manualScore.setScore(correctAnswer.getScore());
+            manualScore.setScore(correctAnswerFrom.getScore());
             list.add(manualScore);
         });
         manualScoreMapper.insertList(list);
