@@ -40,5 +40,7 @@ public interface IManualScoreService extends IService<ManualScore> {
      */
     Result<IPage<AnswerExamVO>> examPage(Integer pageNum, Integer pageSize);
 
+
     Result<IPage<UncorrectedUserVO>> stuExamPage(Integer pageNum, Integer pageSize, Integer examId);
+
 }

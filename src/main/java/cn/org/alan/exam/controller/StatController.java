@@ -1,7 +1,11 @@
 package cn.org.alan.exam.controller;
 
+import cn.org.alan.exam.model.entity.Exam;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
 
 /**
  * <p>
@@ -14,4 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/stat")
 public class StatController {
+
+    //各班试卷统计信息   添加一个自定义的ExamGradeCount统计方法接受教师角色ID作为参数，返回包含各班试卷统计信息的PaperStatistics列表。具体的SQL查询逻辑将在对应的Mapper XML文件（如ExamGradeMapper.xml）中实现。
+
 }

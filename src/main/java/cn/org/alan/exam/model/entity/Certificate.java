@@ -6,18 +6,13 @@ import java.io.Serializable;
 import java.time.LocalDateTime;
 
 /**
- * <p>
- * 
- * </p>
- *
- * @author WeiJin
- * @since 2024-03-21
+ * @ Author JinXi
+ * @ Version 1.0
+ * @ Date 2024/4/25 14:08
  */
 @TableName("t_certificate")
 public class Certificate implements Serializable {
-
     private static final long serialVersionUID = 1L;
-
 
     /**
      * ID   证书
@@ -46,9 +41,8 @@ public class Certificate implements Serializable {
     @TableField(fill = FieldFill.INSERT)
     private LocalDateTime createTime;
 
-//    public static Integer getId() {
-//        return id;
-//    }
+
+
     public Integer getId(){
         return id;
     }
@@ -88,12 +82,13 @@ public class Certificate implements Serializable {
     @Override
     public String toString() {
         return "Certificate{" +
-            "id=" + id +
-            ", certificateName=" + certificateName +
-            ", image=" + image +
-            ", certificationNuit=" + certificationNuit +
-            ", createTime=" + createTime +
-        "}";
+                "id=" + id +
+                ", certificateName=" + certificateName +
+                ", image=" + image +
+                ", certificationNuit=" + certificationNuit +
+                ", createTime=" + createTime +
+                "}";
+
     }
 
 }

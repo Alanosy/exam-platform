@@ -23,8 +23,8 @@ public interface ICertificateService extends IService<Certificate> {
 
     /**
      * 添加证书
-     * @param certificateForm 参数
-     * @return 返回
+     * @param certificateForm 添加证书的参数
+     * @return 返回响应结果，通常包含操作状态和可能的信息
      */
     //新增证书的addCertificate方法（在CertificateController中调用）
     Result<String> addCertificate(CertificateForm certificateForm);
@@ -37,29 +37,25 @@ public interface ICertificateService extends IService<Certificate> {
      * @param certificateName    证书名
      * @param certificationUnit    认证单位
      * @param image    证书背景图片
-     * @return 返回结果响应
+     * @return 返回结果响应  包含分页后的证书列表信息
      */
     //获取后台分页证书 实现类
     Result<IPage<Certificate>> pagingCertificate(Integer pageNum, Integer pageSize, String certificateName, String certificationUnit, String image);
 
-    //学生端获取证书
-    List<Certificate> list(Integer id);
-
 
     /**
      * 修改公告
-     * @param id
-     * @return
+     * @param id  待修改证书的ID
+     * @param certificateForm 更新证书的参数
+     * @return 返回响应结果
      */
-    //修改证书
-
     //修改证书
     Result<String> updateCertificate(String id, CertificateForm certificateForm);
 
     /**
      * 删除公告
-     * @param id
-     * @return
+     * @param id  待删除证书的id
+     * @return   返回响应结果
      */
     Result<String> deleteCertificate(String id);
 

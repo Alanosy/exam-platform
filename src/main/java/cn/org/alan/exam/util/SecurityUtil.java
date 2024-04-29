@@ -1,7 +1,7 @@
 package cn.org.alan.exam.util;
 
 import cn.org.alan.exam.model.entity.User;
-import cn.org.alan.exam.security.model.SysUserDetails;
+import cn.org.alan.exam.security.SysUserDetails;
 import lombok.extern.java.Log;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.GrantedAuthority;

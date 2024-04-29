@@ -6,13 +6,14 @@
         insert into t_exam_grade (exam_id, grade_id)
         VALUES
         <foreach collection="gradeIds" item="gId" separator=",">
-            (#{gradeId},#{gId})
+            (#{id},#{gId})
         </foreach>
     </insert>
+    <update id="ExamGradeCount"></update>
     <delete id="delExamGrade">
         delete from t_exam_grade
         where
-        exam_id=#{gradeId}
+        exam_id=#{id}
     </delete>
     <!--    根据考试id获取所有需要参加考试的人数-->
     <select id="selectClassSize" resultType="java.lang.Integer">

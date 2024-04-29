@@ -76,9 +76,13 @@ public class ManualScoreServiceImpl extends ServiceImpl<ManualScoreMapper, Manua
     }
 
     @Override
+
     public Result<IPage<UncorrectedUserVO>> stuExamPage(Integer pageNum, Integer pageSize, Integer examId) {
         IPage<UncorrectedUserVO> page = new Page<>(pageNum, pageSize);
         page = userExamsScoreMapper.uncorrectedUser(page, examId);
         return Result.success(null, page);
     }
+
+
+
 }

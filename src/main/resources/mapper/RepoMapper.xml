@@ -15,7 +15,7 @@
                 r.title like #{title}
             </if>
             <if test='userId > 0'>
-                r.gradeId = #{userId}
+                r.id = #{userId}
             </if>
         </where>
     </select>
