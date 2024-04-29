@@ -4,7 +4,6 @@ import cn.org.alan.exam.common.result.Result;
 import cn.org.alan.exam.converter.UserConverter;
 import cn.org.alan.exam.mapper.*;
 import cn.org.alan.exam.model.entity.Grade;
-import cn.org.alan.exam.model.entity.Question;
 import cn.org.alan.exam.model.entity.User;
 import cn.org.alan.exam.model.form.UserForm;
 import cn.org.alan.exam.model.vo.UserVO;

@@ -3,3 +3,4 @@ spring:
     name: exam
   profiles:
     active: dev
+

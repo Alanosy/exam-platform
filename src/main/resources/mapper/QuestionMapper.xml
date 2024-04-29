@@ -16,7 +16,7 @@
         when 1 then '单选题'
         when 2 then '多选题'
         when 3 then '判断题'
-        when 4 then '简答题' end quType,
+        when 4 then '简答题' end as quType,
         q.content,
         r.title as repoTitle,
         q.create_time

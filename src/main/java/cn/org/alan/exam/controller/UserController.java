@@ -5,6 +5,7 @@ import cn.org.alan.exam.common.group.UserGroup;
 import cn.org.alan.exam.model.form.UserForm;
 import cn.org.alan.exam.model.vo.UserVO;
 import cn.org.alan.exam.service.IUserService;
+import cn.org.alan.exam.util.SecurityUtil;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import jakarta.annotation.Resource;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -26,9 +27,15 @@ public class UserController {
     private IUserService iUserService;
 
 
+    /**
+     * 获取用户登录信息
+     *
+     * @return 响应结果
+     */
     @GetMapping("/info")
     @PreAuthorize("hasAnyAuthority('role_student','role_teacher','role_admin')")
     public Result<UserVO> info() {
+
         return iUserService.info();
     }
 
@@ -96,9 +103,10 @@ public class UserController {
 
     /**
      * 分页获取用户信息
-     * @param pageNum 页码
+     *
+     * @param pageNum  页码
      * @param pageSize 每页记录数
-     * @param gradeId 班级Id
+     * @param gradeId  班级Id
      * @param realName 真实姓名
      * @return 响应结果
      */
@@ -107,8 +115,8 @@ public class UserController {
     public Result<IPage<UserVO>> pagingUser(@RequestParam(value = "pageNum", required = false, defaultValue = "1") Integer pageNum,
                                             @RequestParam(value = "pageSize", required = false, defaultValue = "10") Integer pageSize,
                                             @RequestParam(value = "gradeId", required = false) Integer gradeId,
-                                            @RequestParam(value = "realName", required = false) String realName){
-        return iUserService.pagingUser(pageNum,pageSize,gradeId,realName);
+                                            @RequestParam(value = "realName", required = false) String realName) {
+        return iUserService.pagingUser(pageNum, pageSize, gradeId, realName);
     }
 
 

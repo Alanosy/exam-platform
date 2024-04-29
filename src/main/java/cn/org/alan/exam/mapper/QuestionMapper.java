@@ -1,6 +1,5 @@
 package cn.org.alan.exam.mapper;
 
-import cn.org.alan.exam.common.result.Result;
 import cn.org.alan.exam.model.entity.Question;
 import cn.org.alan.exam.model.vo.QuestionVO;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;

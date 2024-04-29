@@ -69,6 +69,14 @@ public class UserExamsScore implements Serializable {
      */
     private Integer whetherMark;
 
+    public Integer getWhetherMark() {
+        return whetherMark;
+    }
+
+    public void setWhetherMark(Integer whetherMark) {
+        this.whetherMark = whetherMark;
+    }
+
     /**
      * 创建时间  YYYY-MM-DD hh:mm:ss
      */

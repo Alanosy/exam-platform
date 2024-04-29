@@ -27,6 +27,7 @@
             #{userId}
         </foreach>
     </update>
+    
     <update id="removeGradeIdByGradeIds">
         update t_user set grade_id = null where grade_id in
         <foreach collection="gradeIds" item="gradeId" open="(" close=")" separator=",">

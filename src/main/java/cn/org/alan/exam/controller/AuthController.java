@@ -8,7 +8,6 @@ import cn.org.alan.exam.service.IAuthService;
 import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -29,8 +28,7 @@ public class AuthController {
      * 用户登录
      *
      * @param request request对象，用户获取sessionId
-     * @param username 用户名
-     * @param password 密码
+     * @param user 用户信息
      * @return token
      */
     @PostMapping("/login")

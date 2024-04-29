@@ -3,7 +3,6 @@ package cn.org.alan.exam.service.impl;
 import cn.org.alan.exam.common.result.Result;
 import cn.org.alan.exam.converter.NoticeConverter;
 import cn.org.alan.exam.mapper.NoticeMapper;
-import cn.org.alan.exam.model.entity.Grade;
 import cn.org.alan.exam.model.entity.Notice;
 import cn.org.alan.exam.model.form.NoticeForm;
 import cn.org.alan.exam.model.vo.NoticeVO;

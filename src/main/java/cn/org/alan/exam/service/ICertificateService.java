@@ -50,14 +50,14 @@ public interface ICertificateService extends IService<Certificate> {
      * @return 返回响应结果
      */
     //修改证书
-    Result<String> updateCertificate(String id, CertificateForm certificateForm);
+    Result<String> updateCertificate(Integer id, CertificateForm certificateForm);
 
     /**
      * 删除公告
      * @param id  待删除证书的id
      * @return   返回响应结果
      */
-    Result<String> deleteCertificate(String id);
+    Result<String> deleteCertificate(Integer id);
 
 
 }

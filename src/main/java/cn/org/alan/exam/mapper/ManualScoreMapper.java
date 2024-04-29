@@ -21,4 +21,11 @@ public interface ManualScoreMapper extends BaseMapper<ManualScore> {
      * @return 影响记录数
      */
     Integer deleteByUserIds(List<Integer> userIds);
+
+    /**
+     * 批量添加批改分数
+     * @param manualScores 入参
+     * @return 影响记录数
+     */
+    Integer insertList(List<ManualScore> manualScores);
 }

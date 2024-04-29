@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.*;
 
 /**
  * <p>
- *  证书管理
+ * 证书管理
  * </p>
  *
  * @author zsx
@@ -32,21 +32,22 @@ public class CertificateController {
      */
     @PostMapping
     @PreAuthorize("hasAnyAuthority('role_teacher','role_admin')")
-    public Result<String> addCertificate( @RequestBody CertificateForm certificateForm) {
+    public Result<String> addCertificate(@RequestBody CertificateForm certificateForm) {
         //从token获取用户id，放入创建人id属性
         return iCertificateService.addCertificate(certificateForm);
     }
 
 
     //获取后台分页证书
+
     /**
      * 分页查询证书
      *
-     * @param pageNum  页码
-     * @param pageSize 每页记录数
-     * @param certificateName    证书名
-     * @param certificationUnit    认证单位
-     * @param image    证书背景图片
+     * @param pageNum           页码
+     * @param pageSize          每页记录数
+     * @param certificateName   证书名
+     * @param certificationUnit 认证单位
+     * @param image             证书背景图片
      * @return 响应结果
      */
     @GetMapping("/paging")
@@ -55,9 +56,8 @@ public class CertificateController {
                                                         @RequestParam(value = "pageSize", required = false, defaultValue = "10") Integer pageSize,
                                                         @RequestParam(value = "certificateName", required = false) String certificateName,
                                                         @RequestParam(value = "certificationUnit", required = false) String certificationUnit,
-                                                        @RequestParam(value = "certificateName", required = false) String image
-                                                        ) {
-            return iCertificateService.pagingCertificate(pageNum, pageSize, certificateName,certificationUnit,image);
+                                                        @RequestParam(value = "certificateName", required = false) String image) {
+        return iCertificateService.pagingCertificate(pageNum, pageSize, certificateName, certificationUnit, image);
     }
 
 
@@ -69,8 +69,9 @@ public class CertificateController {
      */
     @PutMapping("/update/{id}")
     @PreAuthorize("hasAnyAuthority('role_teacher','role_admin')")
-    public Result<String> updateCertificate(@PathVariable("id") String id, @RequestBody CertificateForm certificateForm) {
-        return iCertificateService.updateCertificate(id,certificateForm);
+    public Result<String> updateCertificate(@PathVariable("id") Integer id,
+                                            @RequestBody CertificateForm certificateForm) {
+        return iCertificateService.updateCertificate(id, certificateForm);
     }
 
     /**
@@ -81,7 +82,7 @@ public class CertificateController {
      */
     @DeleteMapping("/delete/{id}")
     @PreAuthorize("hasAnyAuthority('role_teacher','role_admin')")
-    public Result<String> deleteCertificate(@PathVariable("id") String id) {
+    public Result<String> deleteCertificate(@PathVariable("id") Integer id) {
         return iCertificateService.deleteCertificate(id);
     }
 

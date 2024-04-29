@@ -5,8 +5,8 @@
     <insert id="insertBatch">
         insert into t_option
         values
-        <foreach collection="options" item="option" separator=",">
-            (null,#{option.quId},#{option.isRight},#{option.image},#{option.content},null)
+        <foreach collection="options" item="option" separator="," index="i">
+            (null,#{option.quId},#{option.isRight},#{option.image},#{option.content},#{i})
         </foreach>
     </insert>
 

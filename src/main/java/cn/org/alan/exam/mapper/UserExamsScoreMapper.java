@@ -1,6 +1,7 @@
 package cn.org.alan.exam.mapper;
 
 import cn.org.alan.exam.model.entity.UserExamsScore;
+import cn.org.alan.exam.model.vo.answer.UncorrectedUserVO;
 import cn.org.alan.exam.model.vo.score.ExportScoreVO;
 import cn.org.alan.exam.model.vo.score.GradeScoreVO;
 import cn.org.alan.exam.model.vo.score.UserScoreVO;
@@ -11,7 +12,7 @@ import java.util.List;
 
 /**
  * <p>
- *  Mapper 接口
+ * Mapper 接口
  * </p>
  *
  * @author WeiJin
@@ -21,8 +22,9 @@ public interface UserExamsScoreMapper extends BaseMapper<UserExamsScore> {
 
     /**
      * 根据用户Id列表，考试Id获取该考试的最高分、最低分、平均分
-     * @param userIds 用户Id列表
-     * @param examId 考试Id
+     *
+     * @param userIds     用户Id列表
+     * @param examId      考试Id
      * @param passedScore 及格分
      * @return 结果
      */
@@ -30,9 +32,10 @@ public interface UserExamsScoreMapper extends BaseMapper<UserExamsScore> {
 
     /**
      * 成绩分页查询
-     * @param page 分页信息
-     * @param gradeId 班级Id
-     * @param examId 考试Id
+     *
+     * @param page     分页信息
+     * @param gradeId  班级Id
+     * @param examId   考试Id
      * @param realName 真实姓名
      * @return 查询结果集
      */
@@ -44,9 +47,18 @@ public interface UserExamsScoreMapper extends BaseMapper<UserExamsScore> {
 
     /**
      * 获取成绩
-     * @param examId 考试id
+     *
+     * @param examId  考试id
      * @param gradeId 班级id
      * @return 查询结果
      */
     List<ExportScoreVO> selectScores(Integer examId, Integer gradeId);
+
+    /**
+     * 根据考试id获取未考试用户
+     * @param page 分页信息
+     * @param examId 考试id
+     * @return 查询结果
+     */
+    IPage<UncorrectedUserVO> uncorrectedUser(IPage<UncorrectedUserVO> page, Integer examId);
 }

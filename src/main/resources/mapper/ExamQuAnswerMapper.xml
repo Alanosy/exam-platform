@@ -3,10 +3,10 @@
 <mapper namespace="cn.org.alan.exam.mapper.ExamQuAnswerMapper">
     <resultMap id="ListResultMap"
                type="cn.org.alan.exam.model.vo.exam.ExamQuAnswerExtVO">
-        <result column="id" property="id" />
-        <result column="sort" property="sort" />
-        <result column="image" property="image" />
-        <result column="content" property="content" />
+        <result column="id" property="id"/>
+        <result column="sort" property="sort"/>
+        <result column="image" property="image"/>
+        <result column="content" property="content"/>
     </resultMap>
     <delete id="deleteByUserIds">
         delete from t_exam_qu_answer where user_id in
@@ -15,16 +15,28 @@
         </foreach>
     </delete>
     <select id="list" resultMap="ListResultMap">
-    SELECT op.`id`,eq.`sort`,op.'content',op.'image'
-    FROM t_exam_question eq
-    LEFT JOIN t_option op ON eq.question_id=op.qu_id
-    WHERE op.exam_id=#{examId} AND op.question_id=#{questionId}
-    ORDER BY eq.sort ASC
+        SELECT op.`id`, eq.`sort`, op.'content', op.'image'
+        FROM t_exam_question eq
+                 LEFT JOIN t_option op ON eq.question_id = op.qu_id
+        WHERE op.exam_id = #{examId}
+          AND op.question_id = #{questionId}
+        ORDER BY eq.sort ASC
     </select>
     <!-- 获取单题作答信息 -->
     <select id="questionAnalyse" resultType="cn.org.alan.exam.model.vo.score.QuestionAnalyseVO">
         select count(case where is_right = 1 then 1 end) as rightCount, count(*) as totalCount
         from t_exam_qu_answer
-        where exam_id = #{examId} and question_id = #{questionId}
+        where exam_id = #{examId}
+          and question_id = #{questionId}
+    </select>
+
+    <!--获取用户回答主观题信息-->
+    <select id="selectUserAnswer" resultType="cn.org.alan.exam.model.vo.answer.UserAnswerDetailVO">
+        select q.id as quId, q.content as quTitle, q.image as quImg, eqa.user_id,eqa.exam_id, eqa.answer_content as answer
+        from t_exam_qu_answer as eqa
+                 left join t_question as q on eqa.question_id = q.id
+                where eqa.question_type = 4
+          and eqa.user_id = #{userId}
+          and eqa.exam_id = #{examId}
     </select>
 </mapper>

@@ -1,77 +1,80 @@
 package cn.org.alan.exam.controller;
 
 import cn.org.alan.exam.common.result.Result;
-import cn.org.alan.exam.model.form.answer.AnswerUpdate;
-import cn.org.alan.exam.model.vo.answer.AnswerExamPageVO;
-import cn.org.alan.exam.model.vo.answer.AnswerPageVO;
-import cn.org.alan.exam.service.IExamQuAnswerService;
+import cn.org.alan.exam.model.form.answer.CorrectAnswer;
+import cn.org.alan.exam.model.vo.answer.AnswerExamVO;
+import cn.org.alan.exam.model.vo.answer.UncorrectedUserVO;
+import cn.org.alan.exam.model.vo.answer.UserAnswerDetailVO;
 import cn.org.alan.exam.service.IManualScoreService;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import jakarta.annotation.Resource;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 /**
- *    答题管理
- * @Author Alan
+ * 答题管理
+ *
+ * @Author WeiJin
  * @Version
  * @Date 2024/3/25 11:20 AM
  */
 @RestController
-@RequestMapping("/answers")
+@RequestMapping("/api/answers")
 public class AnswerController {
     @Resource
     private IManualScoreService manualScoreService;
 
     /**
      * 试卷查询信息
+     *
      * @return
      */
     @GetMapping("/detail")
-    public Result getDetail(@RequestParam Integer userId,
-                            @RequestParam Integer examId){
-        return manualScoreService.getDetail(userId,examId);
+    @PreAuthorize("hasAnyAuthority('role_teacher','role_admin')")
+    public Result<List<UserAnswerDetailVO>> getDetail(@RequestParam Integer userId,
+                                                      @RequestParam Integer examId) {
+        return manualScoreService.getDetail(userId, examId);
     }
 
-    /**
-     * 分页查询答题列表
-     * @return
-     */
-    @GetMapping("/paging")
-    public Result<IPage<AnswerPageVO>> getPaging(@RequestParam(value = "pageNum",required = false, defaultValue = "1") Integer pageNum,
-                                                 @RequestParam(value = "pageSize",required = false, defaultValue = "10") Integer pageSize){
-        return manualScoreService.getPaging(pageNum,pageSize);
-    }
 
     /**
      * 批改试卷
+     *
      * @return
      */
     @PutMapping("/correct")
-    public Result Correct(@RequestBody AnswerUpdate answerUpdate){
-        return manualScoreService.Correct(answerUpdate);
+    @PreAuthorize("hasAnyAuthority('role_teacher','role_admin')")
+    public Result<String> Correct(@RequestBody List<CorrectAnswer> correctAnswers) {
+        return manualScoreService.correct(correctAnswers);
     }
 
     /**
      * 分页查找待阅卷考试
+     *
      * @return
      */
     @GetMapping("/exam/page")
-    public Result<IPage<AnswerExamPageVO>> examPage( @RequestParam(value = "pageNum",required = false,defaultValue = "1") Integer pageNum,
-                                                     @RequestParam(value = "pageSize",required = false,defaultValue = "10") Integer pageSize){
-        return manualScoreService.examPage( pageNum, pageSize);
+    @PreAuthorize("hasAnyAuthority('role_teacher','role_admin')")
+    public Result<IPage<AnswerExamVO>> examPage(@RequestParam(value = "pageNum", required = false, defaultValue = "1") Integer pageNum,
+                                                @RequestParam(value = "pageSize", required = false, defaultValue = "10") Integer pageSize) {
+        return manualScoreService.examPage(pageNum, pageSize);
     }
 
     /**
      * 查询考试的用户
+     *
      * @param pageNum
      * @param pageSize
-     * @param exam_id
+     * @param examId
      * @return
      */
     @GetMapping("/exam/stu")
-    public Result stuExamPage(@RequestParam(value = "pageNum",required = false,defaultValue = "1") Integer pageNum,
-                          @RequestParam(value = "pageSize",required = false,defaultValue = "10") Integer pageSize,
-                          @RequestParam(value = "exam_id",required = true) Integer exam_id){
-        return manualScoreService.stuExamPage(pageNum,pageSize,exam_id);
+    @PreAuthorize("hasAnyAuthority('role_teacher','role_admin')")
+    public Result<IPage<UncorrectedUserVO>> stuExamPage(@RequestParam(value = "pageNum", required = false, defaultValue = "1") Integer pageNum,
+                                                        @RequestParam(value = "pageSize", required = false, defaultValue = "10") Integer pageSize,
+                                                        @RequestParam(value = "examId") Integer examId) {
+        return manualScoreService.stuExamPage(pageNum, pageSize, examId);
     }
 }
