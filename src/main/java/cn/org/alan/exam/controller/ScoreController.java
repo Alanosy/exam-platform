@@ -10,7 +10,6 @@ import cn.org.alan.exam.service.IUserExamsScoreService;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletResponse;
-import org.apache.poi.ss.formula.functions.T;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
@@ -24,7 +23,7 @@ import org.springframework.web.bind.annotation.*;
  * @Date 2024/3/25 11:19 AM
  */
 @RestController
-@RequestMapping("/score")
+@RequestMapping("/api/score")
 public class ScoreController {
 
     @Resource

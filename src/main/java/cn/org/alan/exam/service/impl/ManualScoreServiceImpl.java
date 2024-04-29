@@ -3,9 +3,10 @@ package cn.org.alan.exam.service.impl;
 import cn.org.alan.exam.common.result.Result;
 import cn.org.alan.exam.mapper.*;
 import cn.org.alan.exam.model.entity.*;
-import cn.org.alan.exam.model.form.answer.AnswerUpdate;
+import cn.org.alan.exam.model.form.answer.CorrectAnswer;
 import cn.org.alan.exam.model.vo.answer.AnswerExamVO;
 import cn.org.alan.exam.model.vo.answer.UncorrectedUserVO;
+import cn.org.alan.exam.model.vo.answer.UserAnswerDetailVO;
 import cn.org.alan.exam.service.IManualScoreService;
 import cn.org.alan.exam.util.SecurityUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
@@ -14,8 +15,11 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
+
 
 /**
  * <p>
@@ -33,22 +37,41 @@ public class ManualScoreServiceImpl extends ServiceImpl<ManualScoreMapper, Manua
     @Resource
     private ExamGradeMapper examGradeMapper;
     @Resource
-    private GradeMapper gradeMapper;
-    @Resource
     private UserExamsScoreMapper userExamsScoreMapper;
     @Resource
-    private UserMapper userMapper;
+    private ExamQuAnswerMapper examQuAnswerMapper;
+    @Resource
+    private ManualScoreMapper manualScoreMapper;
+
 
 
     @Override
-    public Result getDetail(Integer userId, Integer examId) {
-        return null;
+    public Result<List<UserAnswerDetailVO>> getDetail(Integer userId, Integer examId) {
+        List<UserAnswerDetailVO> list = examQuAnswerMapper.selectUserAnswer(userId, examId);
+        return Result.success(null, list);
     }
 
 
     @Override
-    public Result correct(AnswerUpdate answerUpdate) {
-        return null;
+    @Transactional
+    public Result<String> correct(List<CorrectAnswer> correctAnswers) {
+        List<ManualScore> list = new ArrayList<>(correctAnswers.size());
+        correctAnswers.forEach(correctAnswer -> {
+
+            //获取用户作答信息id
+            LambdaQueryWrapper<ExamQuAnswer> wrapper = new LambdaQueryWrapper<ExamQuAnswer>()
+                    .select(ExamQuAnswer::getId)
+                    .eq(ExamQuAnswer::getExamId, correctAnswer.getExamId())
+                    .eq(ExamQuAnswer::getUserId, correctAnswer.getUserId())
+                    .eq(ExamQuAnswer::getQuestionId, correctAnswer.getQuestionId());
+
+            ManualScore manualScore = new ManualScore();
+            manualScore.setId(examQuAnswerMapper.selectOne(wrapper).getId());
+            manualScore.setScore(correctAnswer.getScore());
+            list.add(manualScore);
+        });
+        manualScoreMapper.insertList(list);
+        return Result.success("批改成功");
     }
 
     @Override
@@ -82,7 +105,4 @@ public class ManualScoreServiceImpl extends ServiceImpl<ManualScoreMapper, Manua
         page = userExamsScoreMapper.uncorrectedUser(page, examId);
         return Result.success(null, page);
     }
-
-
-
 }

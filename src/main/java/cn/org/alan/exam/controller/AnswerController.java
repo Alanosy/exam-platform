@@ -1,13 +1,17 @@
 package cn.org.alan.exam.controller;
 
 import cn.org.alan.exam.common.result.Result;
-import cn.org.alan.exam.model.form.answer.AnswerUpdate;
+import cn.org.alan.exam.model.form.answer.CorrectAnswer;
 import cn.org.alan.exam.model.vo.answer.AnswerExamVO;
 import cn.org.alan.exam.model.vo.answer.UncorrectedUserVO;
+import cn.org.alan.exam.model.vo.answer.UserAnswerDetailVO;
 import cn.org.alan.exam.service.IManualScoreService;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import jakarta.annotation.Resource;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 /**
  * 答题管理
@@ -28,8 +32,9 @@ public class AnswerController {
      * @return
      */
     @GetMapping("/detail")
-    public Result getDetail(@RequestParam Integer userId,
-                            @RequestParam Integer examId) {
+    @PreAuthorize("hasAnyAuthority('role_teacher','role_admin')")
+    public Result<List<UserAnswerDetailVO>> getDetail(@RequestParam Integer userId,
+                                                      @RequestParam Integer examId) {
         return manualScoreService.getDetail(userId, examId);
     }
 
@@ -40,8 +45,9 @@ public class AnswerController {
      * @return
      */
     @PutMapping("/correct")
-    public Result Correct(@RequestBody AnswerUpdate answerUpdate) {
-        return manualScoreService.correct(answerUpdate);
+    @PreAuthorize("hasAnyAuthority('role_teacher','role_admin')")
+    public Result<String> Correct(@RequestBody List<CorrectAnswer> correctAnswers) {
+        return manualScoreService.correct(correctAnswers);
     }
 
     /**
@@ -50,6 +56,7 @@ public class AnswerController {
      * @return
      */
     @GetMapping("/exam/page")
+    @PreAuthorize("hasAnyAuthority('role_teacher','role_admin')")
     public Result<IPage<AnswerExamVO>> examPage(@RequestParam(value = "pageNum", required = false, defaultValue = "1") Integer pageNum,
                                                 @RequestParam(value = "pageSize", required = false, defaultValue = "10") Integer pageSize) {
         return manualScoreService.examPage(pageNum, pageSize);
@@ -64,6 +71,7 @@ public class AnswerController {
      * @return
      */
     @GetMapping("/exam/stu")
+    @PreAuthorize("hasAnyAuthority('role_teacher','role_admin')")
     public Result<IPage<UncorrectedUserVO>> stuExamPage(@RequestParam(value = "pageNum", required = false, defaultValue = "1") Integer pageNum,
                                                         @RequestParam(value = "pageSize", required = false, defaultValue = "10") Integer pageSize,
                                                         @RequestParam(value = "examId") Integer examId) {

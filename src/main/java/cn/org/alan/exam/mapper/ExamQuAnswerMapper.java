@@ -1,6 +1,7 @@
 package cn.org.alan.exam.mapper;
 
 import cn.org.alan.exam.model.entity.ExamQuAnswer;
+import cn.org.alan.exam.model.vo.answer.UserAnswerDetailVO;
 import cn.org.alan.exam.model.vo.exam.ExamQuAnswerExtVO;
 import cn.org.alan.exam.model.vo.score.QuestionAnalyseVO;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
@@ -33,4 +34,12 @@ public interface ExamQuAnswerMapper extends BaseMapper<ExamQuAnswer> {
      * @return 影响记录数
      */
     Integer deleteByUserIds(List<Integer> userIds);
+
+    /**
+     * 获取用户回答主观题信息
+     * @param userId 用户id
+     * @param examId 考试id
+     * @return 结果集
+     */
+    List<UserAnswerDetailVO> selectUserAnswer(Integer userId, Integer examId);
 }
