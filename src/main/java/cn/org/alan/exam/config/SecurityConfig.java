@@ -4,7 +4,7 @@ package cn.org.alan.exam.config;
 import cn.org.alan.exam.filter.VerifyTokenFilter;
 import cn.org.alan.exam.model.entity.User;
 import cn.org.alan.exam.common.result.Result;
-import cn.org.alan.exam.security.model.SysUserDetails;
+import cn.org.alan.exam.security.SysUserDetails;
 import cn.org.alan.exam.util.JwtUtil;
 import cn.org.alan.exam.util.ResponseUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;

@@ -3,10 +3,7 @@ package cn.org.alan.exam.controller;
 
 import cn.org.alan.exam.common.result.Result;
 import cn.org.alan.exam.model.form.userbook.ReUserBookForm;
-import cn.org.alan.exam.model.vo.userbook.BookOneQuVO;
-import cn.org.alan.exam.model.vo.userbook.ReUserExamBookVO;
-import cn.org.alan.exam.model.vo.userbook.UserExamBookVO;
-import cn.org.alan.exam.model.vo.userbook.UserPageBookVO;
+import cn.org.alan.exam.model.vo.userbook.*;
 import cn.org.alan.exam.service.IUserBookService;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import jakarta.annotation.Resource;
@@ -80,7 +77,7 @@ public class UserBookController {
      * @return
      */
     @PostMapping("/full-book")
-    public Result<String> addBookAnswer(@RequestBody ReUserBookForm reUserBookForm){
-        return userBookService.addBookAnswer();
+    public Result<AddBookAnswerVO> addBookAnswer(@RequestBody ReUserBookForm reUserBookForm){
+        return userBookService.addBookAnswer(reUserBookForm);
     }
 }

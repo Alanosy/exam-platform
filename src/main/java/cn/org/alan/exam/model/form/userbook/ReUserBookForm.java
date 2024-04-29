@@ -2,6 +2,8 @@ package cn.org.alan.exam.model.form.userbook;
 
 import lombok.Data;
 
+import java.util.List;
+
 /**
  * @Author Alan
  * @Version
@@ -9,4 +11,10 @@ import lombok.Data;
  */
 @Data
 public class ReUserBookForm {
+    private Integer examId;
+    private Integer quId;
+    /**
+     * 回答列表
+     */
+    private String answer;
 }

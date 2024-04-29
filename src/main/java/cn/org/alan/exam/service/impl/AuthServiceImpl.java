@@ -8,7 +8,7 @@ import cn.org.alan.exam.mapper.RoleMapper;
 import cn.org.alan.exam.mapper.UserMapper;
 import cn.org.alan.exam.model.entity.User;
 import cn.org.alan.exam.model.form.UserForm;
-import cn.org.alan.exam.security.model.SysUserDetails;
+import cn.org.alan.exam.security.SysUserDetails;
 import cn.org.alan.exam.service.IAuthService;
 import cn.org.alan.exam.util.JwtUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;

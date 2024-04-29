@@ -312,7 +312,9 @@ public class ExamServiceImpl extends ServiceImpl<ExamMapper, Exam> implements IE
     }
 
     @Override
+    @Deprecated
     public Result<ExamFillVO> addAnswer(ExamQuAnswerVO examQuAnswerForm) {
+        // !!! 未写完
 
         // 未作答
         if (CollectionUtils.isEmpty(Collections.singleton(examQuAnswerForm.getAnswer()))

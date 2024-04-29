@@ -1,4 +1,4 @@
-package cn.org.alan.exam.security.model;
+package cn.org.alan.exam.security;
 
 
 import cn.org.alan.exam.model.entity.User;
@@ -9,10 +9,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 /**
  * Spring Security 用户对象
@@ -25,7 +22,6 @@ import java.util.stream.Collectors;
 public class SysUserDetails implements UserDetails {
     private List<SimpleGrantedAuthority> permissions;
     private User user;
-
     private String username;
 
 
