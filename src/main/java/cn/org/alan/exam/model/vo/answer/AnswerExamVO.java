@@ -1,6 +1,5 @@
 package cn.org.alan.exam.model.vo.answer;
 
-import cn.org.alan.exam.model.entity.Exam;
 import lombok.Data;
 
 /**
@@ -9,8 +8,10 @@ import lombok.Data;
  * @Date 2024/4/15 2:17 PM
  */
 @Data
-public class AnswerExamPageVO {
-    private Exam exam;
+public class AnswerExamVO {
+    private Integer examId;
+    private String examTitle;
+    private Integer neededMark;
     private Integer classSize;
     private Integer numberOfApplicants;
     private Integer correctedPaper;

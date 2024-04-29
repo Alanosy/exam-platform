@@ -73,7 +73,11 @@ public class QuestionServiceImpl extends ServiceImpl<QuestionMapper, Question> i
         } else {
             //非简答题添加选项
             //把新建试题获取的id，填入选项中
-            options.forEach(option -> option.setQuId(question.getId()));
+            final int[] count = {0};
+            options.forEach(option -> {
+                option.setQuId(question.getId());
+                option.setSort(++count[0]);
+            });
             optionMapper.insertBatch(options);
         }
         return Result.success("添加成功");
@@ -107,7 +111,7 @@ public class QuestionServiceImpl extends ServiceImpl<QuestionMapper, Question> i
 
     @Override
     public Result<QuestionVO> querySingle(Integer id) {
-        return Result.success(null,questionMapper.selectSingle(id));
+        return Result.success(null, questionMapper.selectSingle(id));
     }
 
     @Override
@@ -129,7 +133,7 @@ public class QuestionServiceImpl extends ServiceImpl<QuestionMapper, Question> i
     @Override
     @Transactional
     public Result<String> importQuestion(Integer id, MultipartFile file) {
-        if (!ExcelUtils.isExcel(Objects.requireNonNull(file.getOriginalFilename()))){
+        if (!ExcelUtils.isExcel(Objects.requireNonNull(file.getOriginalFilename()))) {
             return Result.failed("该文件不是一个合法的Excel文件");
         }
         List<QuestionExcelFrom> questionExcelFroms = ExcelUtils.readMultipartFile(file, QuestionExcelFrom.class);
@@ -143,9 +147,11 @@ public class QuestionServiceImpl extends ServiceImpl<QuestionMapper, Question> i
             questionMapper.insert(question);
             //批量添加选项
             List<Option> options = questionFrom.getOptions();
+            final int[] count = {0};
+            options.forEach(option -> option.setSort(++count[0]));
             options.forEach(option -> option.setQuId(question.getId()));
             //避免简答题没有答案
-            if (!options.isEmpty()){
+            if (!options.isEmpty()) {
                 optionMapper.insertBatch(options);
             }
 

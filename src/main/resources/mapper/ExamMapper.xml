@@ -35,4 +35,10 @@
             #{userId}
         </foreach>
     </delete>
+
+    <select id="selectMarkedList" resultType="cn.org.alan.exam.model.entity.Exam">
+        select id as examId, title as examTitle, case when saq_count > 0 then 1 else 0 end as neededMark
+        from t_exam
+        where user_id = #{id}
+    </select>
 </mapper>

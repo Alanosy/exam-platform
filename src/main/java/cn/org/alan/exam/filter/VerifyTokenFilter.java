@@ -47,7 +47,6 @@ public class VerifyTokenFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
-        log.info("session:{}",request.getSession().getId());
         //登录、注册、校验验证码、获取验证码、放行
         String uri = request.getRequestURI();
         if (uri.contains("login") || uri.contains("verifyCode")

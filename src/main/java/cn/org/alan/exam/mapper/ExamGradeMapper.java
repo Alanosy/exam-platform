@@ -25,5 +25,10 @@ public interface ExamGradeMapper extends BaseMapper<ExamGrade> {
     List<Exam> ExamGradeCount(@Param("roleId") Integer roleId);
 
 
-
+    /**
+     * 根据开始id获取所有需要参加该考试的人数
+     * @param id 考试id
+     * @return 人数
+     */
+    Integer selectClassSize(Integer id);
 }

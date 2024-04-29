@@ -29,8 +29,7 @@ public class AuthController {
      * 用户登录
      *
      * @param request request对象，用户获取sessionId
-     * @param username 用户名
-     * @param password 密码
+     * @param user 用户信息
      * @return token
      */
     @PostMapping("/login")

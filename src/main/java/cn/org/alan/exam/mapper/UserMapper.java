@@ -4,7 +4,6 @@ import cn.org.alan.exam.model.entity.User;
 import cn.org.alan.exam.model.vo.UserVO;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
-import org.apache.ibatis.annotations.Mapper;
 import org.springframework.stereotype.Repository;
 
 
@@ -59,7 +58,7 @@ public interface UserMapper extends BaseMapper<User> {
      */
     IPage<UserVO> pagingUser(IPage<UserVO> page, Integer gradeId, String realName, Integer roleId);
 
-    void stuExamPage(Integer examId);
+
 
     /**
      * 移除班级
@@ -67,4 +66,6 @@ public interface UserMapper extends BaseMapper<User> {
      * @return 影响数据库记录数
      */
     Integer removeGradeIdByGradeIds(List<Integer> gradeIds);
+
+
 }
