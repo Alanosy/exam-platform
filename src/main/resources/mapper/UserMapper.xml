@@ -81,4 +81,13 @@
         SELECT * FROM t_user WHERE id in (SELECT grade_id FROM t_exam_grade WHERE exam_id= #{exam_id})
     </select>
 
+
+    <!--    统计每个班级的学生数量-->
+    <select id="countAndGroupByGradeAndRoleId" resultType="cn.org.alan.exam.model.form.count.ClassCountResult">
+        SELECT g.id AS gradeId, g.name AS gradeName, COUNT(u.id) AS count
+        FROM user u
+            INNER JOIN grade g ON u.grade_id = g.id
+        WHERE u.role_id = #{roleId}
+        GROUP BY g.id
+    </select>
 </mapper>

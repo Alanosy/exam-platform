@@ -75,6 +75,13 @@ public interface IGradeService extends IService<Grade> {
     //声明统计role_id为1的各班人数的业务逻辑
     List<ClassCountResult> countStudentsByRoleId(int roleId);
 
+
+
+    /**
+     * 统计所有班级、试卷、试题数量
+     * @return
+     */
+    Result<ClassCountResult> getAllCounts();
 }
 
 

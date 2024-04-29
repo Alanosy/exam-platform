@@ -101,12 +101,5 @@ public class GradeController {
 
 
 
-    /**
-     * 统计各班级人数
-     * @return
-     */
-    @GetMapping("/total/grade/count{roleId}")
-    public List<ClassCountResult> getClassCountByRoleId(@PathVariable int roleId) {
-        return gradeService.countStudentsByRoleId(roleId);
-    }
+
 }
