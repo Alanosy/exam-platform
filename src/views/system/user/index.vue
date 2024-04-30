@@ -593,6 +593,9 @@ const handleAdd = async () => {
   roleOptions.value = data.roles;
   form.value.password = initPassword.value.toString();
 };
+
+/** 是否已经更改过岗位 */
+const updatedPost = ref(true);
 /** 修改按钮操作 */
 const handleUpdate = async (row?: UserForm) => {
   reset();
@@ -607,6 +610,8 @@ const handleUpdate = async (row?: UserForm) => {
   form.value.postIds = data.postIds;
   form.value.roleIds = data.roleIds;
   form.value.password = '';
+  /** 编辑 默认未修改过岗位 */
+  updatedPost.value = false;
 };
 
 /** 提交按钮 */
@@ -653,8 +658,14 @@ watch(
   async () => {
     const response = await optionselect(form.value.deptId);
     postOptions.value = response.data;
-    /** 变化后需要重新选择岗位 */
-    form.value.postIds = [];
+    /** 判断是否修改过岗位 防止第一次编辑时有岗位信息也被设置为空 */
+    if (updatedPost.value) {
+      /** 变化后需要重新选择岗位 */
+      form.value.postIds = [];
+      return;
+    }
+    /** 执行一次后默认设为已经修改过 */
+    updatedPost.value = true;
   }
 );
 </script>
