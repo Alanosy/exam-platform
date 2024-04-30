@@ -30,7 +30,7 @@ public interface IUserBookService extends IService<UserBook> {
      * @param examId
      * @return
      */
-    Result<List<UserExamBookVO>> getUserExamBook(Integer examId);
+    // Result<List<UserExamBookVO>> getUserExamBook(Integer examId);
 
     /**
      * 查询错题本错题id列表

@@ -19,11 +19,6 @@ import java.util.List;
  */
 public interface IExamQuAnswerService extends IService<ExamQuAnswer> {
 
-
-    List<ExamQuAnswer> listForFill(Integer examId, Integer questionId);
-
-    void updateByKey(ExamQuAnswer equ);
-
     /**
      * 获取某场考试某题作答情况
      * @param examId 考试id

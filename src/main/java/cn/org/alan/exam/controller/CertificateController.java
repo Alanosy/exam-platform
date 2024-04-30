@@ -11,22 +11,20 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 /**
- * <p>
- * 证书管理
- * </p>
+ *  证书管理
  *
  * @author zsx
  * @since 2024-04-1
  */
 @RestController
-@RequestMapping("/certificate")
+@RequestMapping("/api/certificate")
 public class CertificateController {
+
     @Resource
     private ICertificateService iCertificateService;
 
     /**
      * 添加证书，只有教师和管理员可以添加题库
-     *
      * @param certificateForm 添加题库的参数
      * @return 返回响应结果
      */
@@ -37,12 +35,8 @@ public class CertificateController {
         return iCertificateService.addCertificate(certificateForm);
     }
 
-
-    //获取后台分页证书
-
     /**
      * 分页查询证书
-     *
      * @param pageNum           页码
      * @param pageSize          每页记录数
      * @param certificateName   证书名
@@ -60,10 +54,8 @@ public class CertificateController {
         return iCertificateService.pagingCertificate(pageNum, pageSize, certificateName, certificationUnit, image);
     }
 
-
     /**
      * 修改证书
-     *
      * @param id
      * @return
      */
@@ -76,7 +68,6 @@ public class CertificateController {
 
     /**
      * 删除证书
-     *
      * @param id
      * @return
      */
@@ -85,6 +76,4 @@ public class CertificateController {
     public Result<String> deleteCertificate(@PathVariable("id") Integer id) {
         return iCertificateService.deleteCertificate(id);
     }
-
-
 }

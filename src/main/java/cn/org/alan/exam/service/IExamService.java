@@ -86,7 +86,7 @@ public interface IExamService extends IService<Exam> {
      * 填充答案
      * @return
      */
-    Result<ExamFillVO> addAnswer(ExamQuAnswerVO examQuAnswerForm);
+    Result<String> addAnswer(ExamQuAnswerVO examQuAnswerForm);
 
     /**
      * 根据班级获得考试

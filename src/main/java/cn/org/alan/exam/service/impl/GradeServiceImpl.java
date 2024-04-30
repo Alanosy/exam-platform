@@ -53,8 +53,6 @@ public class GradeServiceImpl extends ServiceImpl<GradeMapper, Grade> implements
     @Resource
     private IGradeService gradeService;  //用此服务来获取班级信息
 
-
-
     @Override
     public Result<String> addGrade(GradeForm gradeForm) {
         // 生成班级口令

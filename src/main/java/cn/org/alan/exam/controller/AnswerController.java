@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 /**
- * 答题管理
+ * 答卷管理
  *
  * @Author WeiJin
  * @Version
@@ -25,12 +25,12 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/answers")
 public class AnswerController {
+
     @Resource
     private IManualScoreService manualScoreService;
 
     /**
      * 试卷查询信息
-     *
      * @return
      */
     @GetMapping("/detail")
@@ -40,10 +40,8 @@ public class AnswerController {
         return manualScoreService.getDetail(userId, examId);
     }
 
-
     /**
      * 批改试卷
-     *
      * @return
      */
     @PutMapping("/correct")
@@ -54,7 +52,6 @@ public class AnswerController {
 
     /**
      * 分页查找待阅卷考试
-     *
      * @return
      */
     @GetMapping("/exam/page")
@@ -66,7 +63,6 @@ public class AnswerController {
 
     /**
      * 查询考试的用户
-     *
      * @param pageNum
      * @param pageSize
      * @param examId

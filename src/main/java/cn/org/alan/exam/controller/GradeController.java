@@ -22,12 +22,12 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/grades")
 public class GradeController {
+
     @Resource
     private IGradeService gradeService;
 
     /**
      * 分页查询班级
-     *
      * @param pageNum
      * @param pageSize
      * @param gradeName
@@ -43,7 +43,6 @@ public class GradeController {
 
     /**
      * 新增班级
-     *
      * @param gradeForm
      * @return
      */
@@ -55,7 +54,6 @@ public class GradeController {
 
     /**
      * 修改班级
-     *
      * @param id
      * @param gradeForm
      * @return
@@ -68,7 +66,6 @@ public class GradeController {
 
     /**
      * 删除班级
-     *
      * @param id
      * @return
      */

@@ -14,9 +14,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 /**
- * <p>
  * 成绩管理
- * </p>
  *
  * @Author WeiJin
  * @Version
@@ -35,7 +33,6 @@ public class ScoreController {
 
     /**
      * 根据班级Id和考试Id获取该班级的平均分、最高分、最低分以及及格率
-     *
      * @param examId  考试Id
      * @param classId 班级Id
      * @return 响应结果
@@ -48,7 +45,6 @@ public class ScoreController {
 
     /**
      * 分页获取成绩信息
-     *
      * @param pageNum  页码
      * @param pageSize 每页记录数
      * @param gradeId  班级Id
@@ -63,14 +59,12 @@ public class ScoreController {
                                                   @RequestParam(value = "gradeId", required = false) Integer gradeId,
                                                   @RequestParam(value = "examId", required = false) Integer examId,
                                                   @RequestParam(value = "realName", required = false) String realName) {
-
         return iUserExamsScoreService.pagingScore(pageNum, pageSize, gradeId, examId, realName);
     }
 
 
     /**
      * 获取某场考试某题作答情况
-     *
      * @param examId     考试id
      * @param questionId 试题id
      * @return 响应结果

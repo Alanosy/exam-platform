@@ -30,7 +30,6 @@ public class NoticeController {
 
     /**
      * 添加公告
-     *
      * @param noticeForm
      * @return
      */
@@ -42,7 +41,6 @@ public class NoticeController {
 
     /**
      * 删除公告
-     *
      * @param ids
      * @return
      */
@@ -54,7 +52,6 @@ public class NoticeController {
 
     /**
      * 修改公告
-     *
      * @param id
      * @param noticeForm
      * @return
@@ -67,7 +64,6 @@ public class NoticeController {
 
     /**
      * 教师分页查找
-     *
      * @param pageNum
      * @param pageSize
      * @param title

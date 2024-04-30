@@ -1,10 +1,22 @@
 package cn.org.alan.exam.controller;
 
+import cn.org.alan.exam.common.result.Result;
+import cn.org.alan.exam.model.vo.record.ExamRecordDetailVO;
+import cn.org.alan.exam.model.vo.record.ExamRecordVO;
+import cn.org.alan.exam.model.vo.record.ExerciseRecordDetailVO;
+import cn.org.alan.exam.model.vo.record.ExerciseRecordVO;
+import cn.org.alan.exam.service.IExerciseRecordService;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import jakarta.annotation.Resource;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
+
 /**
- *     考试记录
+ * 考试记录
  *
  * @Author Alan
  * @Version
@@ -13,4 +25,50 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api/records")
 public class RecordController {
+    @Resource
+    private IExerciseRecordService exerciseRecordService;
+
+    /**
+     * 分页查询已考试试卷
+     * @param pageNum
+     * @param pageSize
+     * @return
+     */
+    @GetMapping("/exam/paging")
+    public Result<IPage<ExamRecordVO>> getExamRecordPage(@RequestParam(value = "pageNum",required = false, defaultValue = "1") Integer pageNum,
+                                                   @RequestParam(value = "pageSize",required = false, defaultValue = "10") Integer pageSize){
+        return exerciseRecordService.getExamRecordPage(pageNum,pageSize);
+    }
+
+    /**
+     * 查询试卷详情
+     * @param examId
+     * @return
+     */
+    @GetMapping("/exam/detail")
+    public Result<List<ExamRecordDetailVO>> getExamRecordDetail(@RequestParam("examId") Integer examId){
+        return exerciseRecordService.getExamRecordDetail(examId);
+    }
+
+    /**
+     * 分页查询已考试刷题
+     * @param pageNum
+     * @param pageSize
+     * @return
+     */
+    @GetMapping("/exercise/paging")
+    public Result<IPage<ExerciseRecordVO>> getExerciseRecordPage(@RequestParam(value = "pageNum",required = false, defaultValue = "1") Integer pageNum,
+                                                             @RequestParam(value = "pageSize",required = false, defaultValue = "10") Integer pageSize){
+        return exerciseRecordService.getExerciseRecordPage(pageNum,pageSize);
+    }
+
+    /**
+     * 查询刷题详情
+     * @param examId
+     * @return
+     */
+    @GetMapping("/exercise/detail")
+    public Result<List<ExerciseRecordDetailVO>> getExerciseRecordDetail(@RequestParam("examId") Integer exerciseId){
+        return exerciseRecordService.getExerciseRecordDetail(exerciseId);
+    }
 }

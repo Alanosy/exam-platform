@@ -28,26 +28,6 @@ public class ExamQuAnswerServiceImpl extends ServiceImpl<ExamQuAnswerMapper, Exa
     private ExamQuAnswerMapper examQuAnswerMapper;
 
     @Override
-    public List<ExamQuAnswer> listForFill(Integer examId, Integer questionId) {
-        QueryWrapper<ExamQuAnswer> wrapper = new QueryWrapper<>();
-        wrapper.lambda()
-                .eq(ExamQuAnswer::getExamId, examId)
-                .eq(ExamQuAnswer::getQuestionId, questionId);
-
-        return this.list(wrapper);
-    }
-
-    @Override
-    public void updateByKey(ExamQuAnswer equ) {
-        //查询条件
-        QueryWrapper<ExamQuAnswer> wrapper = new QueryWrapper<>();
-        wrapper.lambda().eq(ExamQuAnswer::getExamId, equ.getExamId())
-                .eq(ExamQuAnswer::getQuestionId, equ.getQuestionId());
-
-        this.update(equ, wrapper);
-    }
-
-    @Override
     public Result<QuestionAnalyseVO> questionAnalyse(Integer examId, Integer questionId) {
         QuestionAnalyseVO questionAnalyseVO = examQuAnswerMapper.questionAnalyse(examId, questionId);
         //正确率保留两位小数

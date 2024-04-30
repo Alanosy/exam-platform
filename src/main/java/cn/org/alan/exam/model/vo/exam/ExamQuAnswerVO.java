@@ -1,5 +1,6 @@
 package cn.org.alan.exam.model.vo.exam;
 
+import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 
 import java.util.List;
@@ -12,14 +13,10 @@ import java.util.List;
 @Data
 public class ExamQuAnswerVO {
     private Integer examId;
-    private Integer questionId;
+    private Integer quId;
     /**
-     * 回答列表
+     * 回答答案
      */
-    private List<String> answers;
-
-    /**
-     * 主观答案
-     */
+    @NotBlank
     private String answer;
 }

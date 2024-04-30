@@ -16,7 +16,7 @@ import java.util.List;
 /**
  * 刷题管理
  *
- * @Author WeiJin
+ * @Author Alan
  * @Version
  * @Date 2024/3/25 11:21 AM
  */
@@ -41,6 +41,5 @@ public class ExerciseController {
                                                      @Nullable
                                                      @RequestParam(value = "quType", required = false) Integer quType){
         return iExerciseRecordService.getQuestionSheet(repoId,quType);
-
     }
 }

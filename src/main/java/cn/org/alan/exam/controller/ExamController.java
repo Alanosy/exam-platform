@@ -167,7 +167,7 @@ public class ExamController {
      */
     @PostMapping("/full-answer")
     @PreAuthorize("hasAnyAuthority('role_teacher','role_admin','role_student')")
-    public Result<ExamFillVO> addAnswer(@RequestBody ExamQuAnswerVO examQuAnswerForm) {
+    public Result<String> addAnswer(@RequestBody ExamQuAnswerVO examQuAnswerForm) {
         return examService.addAnswer(examQuAnswerForm);
     }
 

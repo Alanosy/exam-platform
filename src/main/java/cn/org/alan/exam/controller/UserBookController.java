@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 /**
- *  错题本管理
+ * 错题本管理
  *
  * @author Alan
  * @since 2024-03-21
@@ -40,23 +40,11 @@ public class UserBookController {
     }
 
     /**
-     * 查询某考试的错题
-     * @param examId
-     * @return
-     */
-    @GetMapping("/exam/{examId}")
-    public Result<List<UserExamBookVO>> getUserExamBook(@PathVariable("examId") Integer examId){
-        return userBookService.getUserExamBook(examId);
-    }
-
-    // 重刷某考试的错题
-
-    /**
      * 查询错题本错题id列表
      * @param examId
      * @return
      */
-    @GetMapping("/{examId}")
+    @GetMapping("/question/list/{examId}")
     public Result<List<ReUserExamBookVO>> getReUserExamBook(@PathVariable("examId") Integer examId){
         return userBookService.getReUserExamBook(examId);
     }
@@ -66,7 +54,7 @@ public class UserBookController {
      * @param quId
      * @return
      */
-    @GetMapping("/{quId}")
+    @GetMapping("/question/single/{quId}")
     public Result<BookOneQuVO> getBookOne(@PathVariable("quId") Integer quId){
         return userBookService.getBookOne(quId);
     }

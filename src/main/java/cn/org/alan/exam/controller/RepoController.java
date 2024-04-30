@@ -14,6 +14,8 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 /**
+ * 题库管理
+ *
  * @author WeiJin
  * @since 2024-03-21
  */
@@ -21,16 +23,11 @@ import java.util.List;
 @RequestMapping("/api/repo")
 public class RepoController {
 
-
-
     @Resource
     private IRepoService iRepoService;
 
-
-
     /**
      * 添加题库，只有教师和管理员可以添加题库
-     *
      * @param repo 添加题库的参数
      * @return 返回响应结果
      */
@@ -44,7 +41,6 @@ public class RepoController {
 
     /**
      * 修改题库
-     *
      * @param repo 传递参数
      * @return 返回响应
      */
@@ -56,7 +52,6 @@ public class RepoController {
 
     /**
      * 根据题库id删除题库
-     *
      * @param id 题库id
      * @return 返回响应结果
      */
@@ -68,7 +63,6 @@ public class RepoController {
 
     /**
      * 获取题库id和题库名，教师获取自己的题库，管理员获取所有题库
-     *
      * @return 响应结果
      */
     @GetMapping("/list")
@@ -79,7 +73,6 @@ public class RepoController {
 
     /**
      * 分页查询题库
-     *
      * @param pageNum  页码
      * @param pageSize 每页记录数
      * @param title    题库名

@@ -14,6 +14,8 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 /**
+ * 用户管理
+ *
  * @Author WeiJin
  * @Version 1.0
  * @Date 2024/3/25 15:50
@@ -22,27 +24,22 @@ import org.springframework.web.multipart.MultipartFile;
 @RequestMapping("/api/user")
 public class UserController {
 
-
     @Resource
     private IUserService iUserService;
 
-
     /**
      * 获取用户登录信息
-     *
      * @return 响应结果
      */
     @GetMapping("/info")
     @PreAuthorize("hasAnyAuthority('role_student','role_teacher','role_admin')")
     public Result<UserVO> info() {
-
         return iUserService.info();
     }
 
 
     /**
      * 创建用户，教师只能创建学生，管理员可以创建教师和学生
-     *
      * @param userForm 请求参数，用户名、真实姓名[、角色id]
      * @return 响应结果
      */
@@ -54,7 +51,6 @@ public class UserController {
 
     /**
      * 用户修改密码
-     *
      * @param userForm 入参
      * @return 响应结果
      */
@@ -66,7 +62,6 @@ public class UserController {
 
     /**
      * 批量删除用户
-     *
      * @param ids 字符串ids
      * @return 相应结果
      */
@@ -78,7 +73,6 @@ public class UserController {
 
     /**
      * Excel导入用户数据
-     *
      * @param file 文件
      * @return 响应结果
      */
@@ -103,7 +97,6 @@ public class UserController {
 
     /**
      * 分页获取用户信息
-     *
      * @param pageNum  页码
      * @param pageSize 每页记录数
      * @param gradeId  班级Id

@@ -12,6 +12,8 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 /**
+ * 权限管理
+ *
  * @Author WeiJin
  * @Version
  * @Date 2024/3/25 11:05 AM
@@ -26,7 +28,6 @@ public class AuthController {
 
     /**
      * 用户登录
-     *
      * @param request request对象，用户获取sessionId
      * @param user 用户信息
      * @return token
@@ -50,7 +51,6 @@ public class AuthController {
 
     /**
      * 用户注册，只能注册学生
-     *
      * @param request  request对象，用于获取sessionId
      * @param userForm 用户信息
      * @return 响应结果
@@ -63,7 +63,6 @@ public class AuthController {
 
     /**
      * 获取图片验证码
-     *
      * @param request  request对象，获取sessionId
      * @param response response对象，响应图片
      */
@@ -74,7 +73,6 @@ public class AuthController {
 
     /**
      * 校验验证码
-     *
      * @param request request对象，获取sessionId
      * @param code    用户输入的验证码
      * @return 响应结果

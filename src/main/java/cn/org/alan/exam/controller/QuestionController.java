@@ -23,13 +23,11 @@ import org.springframework.web.multipart.MultipartFile;
 @RequestMapping("/api/questions")
 public class QuestionController {
 
-
     @Resource
     private IQuestionService iQuestionService;
 
     /**
      * 单题添加
-     *
      * @param questionFrom 传参
      * @return 响应
      */
@@ -41,7 +39,6 @@ public class QuestionController {
 
     /**
      * 批量删除试题
-     *
      * @param ids 试题id
      * @return 相应
      */
@@ -53,7 +50,6 @@ public class QuestionController {
 
     /**
      * 分页查询试题
-     *
      * @param pageNum  页码
      * @param pageSize 每页记录数
      * @param content  试题名
@@ -73,7 +69,6 @@ public class QuestionController {
 
     /**
      * 根据试题id获取单题详情
-     *
      * @param id 试题id
      * @return 响应结果
      */
@@ -85,7 +80,6 @@ public class QuestionController {
 
     /**
      * 修改试题
-     *
      * @param id           试题Id
      * @param questionFrom 入参
      * @return 响应结果
