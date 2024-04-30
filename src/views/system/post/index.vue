@@ -28,7 +28,13 @@
                   <el-input v-model="queryParams.postCode" placeholder="请输入岗位编码" clearable @keyup.enter="handleQuery" />
                 </el-form-item>
                 <el-form-item label="类别编码" prop="postCategory">
-                  <el-input v-model="queryParams.postCategory" placeholder="请输入类别编码" clearable style="width: 200px" @keyup.enter="handleQuery" />
+                  <el-input
+                    v-model="queryParams.postCategory"
+                    placeholder="请输入类别编码"
+                    clearable
+                    style="width: 200px"
+                    @keyup.enter="handleQuery"
+                  />
                 </el-form-item>
                 <el-form-item label="岗位名称" prop="postName">
                   <el-input v-model="queryParams.postName" placeholder="请输入岗位名称" clearable @keyup.enter="handleQuery" />
@@ -63,7 +69,9 @@
                 <el-button v-hasPermi="['system:post:add']" type="primary" plain icon="Plus" @click="handleAdd">新增</el-button>
               </el-col>
               <el-col :span="1.5">
-                <el-button v-hasPermi="['system:post:edit']" type="success" plain icon="Edit" :disabled="single" @click="handleUpdate()">修改</el-button>
+                <el-button v-hasPermi="['system:post:edit']" type="success" plain icon="Edit" :disabled="single" @click="handleUpdate()"
+                  >修改</el-button
+                >
               </el-col>
               <el-col :span="1.5">
                 <el-button v-hasPermi="['system:post:remove']" type="danger" plain icon="Delete" :disabled="multiple" @click="handleDelete()">
@@ -106,7 +114,13 @@
             </el-table-column>
           </el-table>
 
-          <pagination v-show="total > 0" v-model:page="queryParams.pageNum" v-model:limit="queryParams.pageSize" :total="total" @pagination="getList" />
+          <pagination
+            v-show="total > 0"
+            v-model:page="queryParams.pageNum"
+            v-model:limit="queryParams.pageSize"
+            :total="total"
+            @pagination="getList"
+          />
         </el-card>
 
         <!-- 添加或修改岗位对话框 -->
@@ -278,6 +292,8 @@ const resetQuery = () => {
   queryParams.value.pageNum = 1;
   queryParams.value.deptId = undefined;
   deptTreeRef.value?.setCurrentKey(undefined);
+  /** 清空左边部门树选中值 */
+  queryParams.value.belongDeptId = undefined;
   handleQuery();
 };
 
