@@ -47,6 +47,8 @@ public class CertificateServiceImpl extends ServiceImpl<CertificateMapper, Certi
                 .pagingCertificate(page, certificateName, certificationUnit, image);
 
         return Result.success(null, certificatePage);
+
+
     }
 
     @Override
@@ -57,6 +59,7 @@ public class CertificateServiceImpl extends ServiceImpl<CertificateMapper, Certi
         if (existingCertificate == null) {
             return Result.failed("待更新的证书不存在");
         }
+
 
         // 调用mapper方法更新证书
         int affectedRows = certificateMapper.updateById(existingCertificate);

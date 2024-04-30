@@ -1,6 +1,7 @@
 package cn.org.alan.exam.mapper;
 
 import cn.org.alan.exam.model.entity.User;
+import cn.org.alan.exam.model.form.count.ClassCountResult;
 import cn.org.alan.exam.model.vo.UserVO;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -8,6 +9,7 @@ import org.springframework.stereotype.Repository;
 
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * <p>
@@ -68,4 +70,5 @@ public interface UserMapper extends BaseMapper<User> {
     Integer removeGradeIdByGradeIds(List<Integer> gradeIds);
 
 
+    List<ClassCountResult> countAndGroupByGradeAndRoleId(int roleId);
 }
