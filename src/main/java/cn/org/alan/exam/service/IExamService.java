@@ -11,7 +11,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import java.util.List;
 
 /**
- *  服务类
+ *  考试服务类
  *
  * @author Alan
  * @since 2024-03-21
@@ -108,7 +108,4 @@ public interface IExamService extends IService<Exam> {
      * @return
      */
     Result<String> startExam(Integer examId);
-
-
-
 }

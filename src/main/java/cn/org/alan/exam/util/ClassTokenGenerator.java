@@ -19,13 +19,9 @@ public class ClassTokenGenerator {
     public static String generateClassToken(int length) {
         SecureRandom random = new SecureRandom();
         StringBuilder tokenBuilder = new StringBuilder(length);
-
         for (int i = 0; i < length; i++) {
             tokenBuilder.append(CHAR_POOL.charAt(random.nextInt(CHAR_POOL.length())));
         }
-
         return tokenBuilder.toString();
     }
-
-
 }

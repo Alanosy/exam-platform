@@ -19,9 +19,15 @@ import java.util.List;
 @Component
 @Mapper(componentModel="spring")
 public interface ExamConverter {
+
     Page<ExamVO> pageEntityToVo(Page<Exam> examPage);
+
     Exam  formToEntity(ExamUpdateForm examUpdateForm);
+
     Exam  formToEntity(ExamAddForm examAddForm);
+
     List<ExamDetailRespVO> listEntityToExamDetailRespVO(List<ExamQuestion> examQuestion);
+
     ExamDetailVO examToExamDetailVO(Exam exam);
+
 }

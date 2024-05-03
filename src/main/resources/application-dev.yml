@@ -101,8 +101,6 @@ mybatis-plus:
     map-underscore-to-camel-case:
   type-aliases-package: cn.org.alan.exam.model
 
-
-
 jwt:
   secret: darfhiogtiasjtgaiosethaosifhbnsakltghweaoirthaoirhnaslgnvaekltgase
 

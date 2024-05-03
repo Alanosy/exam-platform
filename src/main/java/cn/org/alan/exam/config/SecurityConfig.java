@@ -24,8 +24,8 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 /**
  * Spring Security 权限配置
  *
- * @author haoxr
- * @since 2023/2/17
+ * @author Alan
+ * @since 2024/4/17
  */
 @Configuration
 @EnableWebSecurity
@@ -37,7 +37,6 @@ public class SecurityConfig {
     private ResponseUtil responseUtil;
     @Resource
     private VerifyTokenFilter verifyTokenFilter;
-
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -72,7 +71,7 @@ public class SecurityConfig {
     public WebSecurityCustomizer webSecurityCustomizer() {
         return (web) -> web.ignoring()
                 .requestMatchers(
-//                        "/api/auths/**",
+                       // "/api/auths/**",
                         "/webjars/**",
                         "/doc.html",
                         "/swagger-resources/**",
@@ -101,5 +100,4 @@ public class SecurityConfig {
     public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
         return authenticationConfiguration.getAuthenticationManager();
     }
-
 }

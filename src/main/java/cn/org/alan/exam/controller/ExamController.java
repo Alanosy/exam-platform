@@ -8,6 +8,8 @@ import cn.org.alan.exam.model.vo.exam.*;
 import cn.org.alan.exam.service.IExamService;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import jakarta.annotation.Resource;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
@@ -46,7 +48,7 @@ public class ExamController {
      */
     @GetMapping("/start")
     @PreAuthorize("hasAnyAuthority('role_teacher','role_admin','role_student')")
-    public Result<String> startExam(@RequestParam("exam_id") Integer examId) {
+    public Result<String> startExam(@RequestParam("exam_id") @NotNull Integer examId) {
         return examService.startExam(examId);
     }
 
@@ -58,7 +60,7 @@ public class ExamController {
      */
     @PutMapping("/{id}")
     @PreAuthorize("hasAnyAuthority('role_teacher','role_admin')")
-    public Result<String> updateExam(@Validated @RequestBody ExamUpdateForm examUpdateForm, @PathVariable("id") Integer id) {
+    public Result<String> updateExam(@Validated @RequestBody ExamUpdateForm examUpdateForm, @PathVariable("id") @NotNull Integer id) {
         return examService.updateExam(examUpdateForm,id);
     }
 
@@ -95,7 +97,7 @@ public class ExamController {
      */
     @GetMapping("/question/list/{id}")
     @PreAuthorize("hasAnyAuthority('role_teacher','role_admin','role_student')")
-    public Result<List<ExamDetailRespVO>> getQuestionList(@PathVariable("id") String id) {
+    public Result<List<ExamDetailRespVO>> getQuestionList(@PathVariable("id") @NotBlank String id) {
         return examService.getQuestionList(id);
     }
 
@@ -119,7 +121,7 @@ public class ExamController {
      */
     @GetMapping("/collect/{id}")
     @PreAuthorize("hasAnyAuthority('role_teacher','role_admin','role_student')")
-    public Result<List<ExamQuCollectVO>> getCollect(@PathVariable("id") Integer examId) {
+    public Result<List<ExamQuCollectVO>> getCollect(@PathVariable("id") @NotNull Integer examId) {
         return examService.getCollect(examId);
     }
 
@@ -130,7 +132,7 @@ public class ExamController {
      */
     @GetMapping("/detail")
     @PreAuthorize("hasAnyAuthority('role_teacher','role_admin','role_student')")
-    public Result<ExamDetailVO> getDetail(@RequestParam("id") String id) {
+    public Result<ExamDetailVO> getDetail(@RequestParam("id") @NotBlank String id) {
         return examService.getDetail(id);
     }
 
@@ -156,7 +158,7 @@ public class ExamController {
      */
     @PutMapping("/cheat/{examId}")
     @PreAuthorize("hasAnyAuthority('role_teacher','role_admin','role_student')")
-    public Result<String> addCheat(@PathVariable("examId") Integer examId) {
+    public Result<String> addCheat(@PathVariable("examId") @NotNull Integer examId) {
         return examService.addCheat(examId);
     }
 
@@ -167,7 +169,7 @@ public class ExamController {
      */
     @PostMapping("/full-answer")
     @PreAuthorize("hasAnyAuthority('role_teacher','role_admin','role_student')")
-    public Result<String> addAnswer(@RequestBody ExamQuAnswerVO examQuAnswerForm) {
+    public Result<String> addAnswer(@Validated @RequestBody ExamQuAnswerVO examQuAnswerForm) {
         return examService.addAnswer(examQuAnswerForm);
     }
 
@@ -177,7 +179,7 @@ public class ExamController {
      * @return
      */
     @GetMapping(value = "/hand-exam/{examId}")
-    public Result<ExamQuDetailVO> handleExam(@PathVariable("examId") Integer examId) {
+    public Result<ExamQuDetailVO> handleExam(@PathVariable("examId") @NotNull Integer examId) {
         return examService.handExam(examId);
     }
 }

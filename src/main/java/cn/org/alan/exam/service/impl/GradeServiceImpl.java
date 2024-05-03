@@ -25,6 +25,7 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import jakarta.annotation.Resource;
 import org.springframework.data.annotation.Id;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -34,7 +35,7 @@ import java.util.Map;
 /**
  * 班级服务实现类
  *
- * @author WeiJin
+ * @author Alan
  * @since 2024-03-21
  */
 @Service
@@ -49,9 +50,8 @@ public class GradeServiceImpl extends ServiceImpl<GradeMapper, Grade> implements
     private GradeConverter gradeConverter;
     @Resource
     private UserMapper userMapper;
-
     @Resource
-    private IGradeService gradeService;  //用此服务来获取班级信息
+    private IGradeService gradeService;
 
     @Override
     public Result<String> addGrade(GradeForm gradeForm) {
@@ -59,6 +59,7 @@ public class GradeServiceImpl extends ServiceImpl<GradeMapper, Grade> implements
         gradeForm.setCode(ClassTokenGenerator.generateClassToken(18));
         // 实体转换
         Grade grade = gradeConverter.formToEntity(gradeForm);
+        // 添加数据
         int rows = gradeMapper.insert(grade);
         if (rows== 0) {
             return Result.failed("添加失败");
@@ -68,11 +69,12 @@ public class GradeServiceImpl extends ServiceImpl<GradeMapper, Grade> implements
 
     @Override
     public Result<String> updateGrade(Integer id, GradeForm gradeForm) {
-        // 更新班级
+        // 建立更新条件
         LambdaUpdateWrapper<Grade> gradeUpdateWrapper = new LambdaUpdateWrapper<>();
         gradeUpdateWrapper
                 .set(Grade::getGradeName, gradeForm.getGradeName())
                 .eq(Grade::getId, id);
+        // 更新班级
         int rows = gradeMapper.update(gradeUpdateWrapper);
         if (rows == 0) {
             return Result.failed("修改失败");
@@ -92,19 +94,24 @@ public class GradeServiceImpl extends ServiceImpl<GradeMapper, Grade> implements
 
     @Override
     public Result<IPage<GradeVO>> getPaging(Integer pageNum, Integer pageSize, String gradeName) {
+        // 创建分页对象
         Page<Grade> page = new Page<>(pageNum, pageSize);
+        // 查询自己创建的班级
         LambdaQueryWrapper<Grade> gradeQueryWrapper = new LambdaQueryWrapper<>();
         gradeQueryWrapper.like(StringUtils.isNotBlank(gradeName), Grade::getGradeName, gradeName)
                 .eq(Grade::getUserId, SecurityUtil.getUserId());
+        // 实体转换
         Page<Grade> gradePage = gradeMapper.selectPage(page, gradeQueryWrapper);
         return Result.success("查询成功", gradeConverter.pageEntityToVo(gradePage));
     }
 
     @Override
     public Result<String> removeUserGrade(String ids) {
+        // 字符串转换为列表
         List<Integer> userIds = Arrays.stream(ids.split(","))
                 .map(Integer::parseInt)
                 .toList();
+        // 移出班级
         int rows = userMapper.removeUserGrade(userIds);
         if (rows == 0) {
             return Result.failed("移除失败");
@@ -114,32 +121,29 @@ public class GradeServiceImpl extends ServiceImpl<GradeMapper, Grade> implements
 
     @Override
     public Result<List<GradeVO>> getAllGrade() {
-        LambdaQueryWrapper<Grade> gradeLambdaQueryWrapper = new LambdaQueryWrapper<>();
-        gradeLambdaQueryWrapper.eq(Grade::getUserId,SecurityUtil.getUserId());
-        List<Grade> grades = gradeMapper.selectList(gradeLambdaQueryWrapper);
+        // 创建查询条件
+        LambdaQueryWrapper<Grade> gradeWrapper = new LambdaQueryWrapper<>();
+        gradeWrapper.eq(Grade::getUserId,SecurityUtil.getUserId());
+        // 查询当前用户所创建的所有班级
+        List<Grade> grades = gradeMapper.selectList(gradeWrapper);
         return Result.success("查询成功",gradeConverter.listEntityToVo(grades));
     }
 
-    //统计各班级人数，
     @Override
     public List<ClassCountResult> countStudentsByRoleId(int roleId) {
         return userMapper.countAndGroupByGradeAndRoleId(roleId);
     }
-
 
     @Override
     public Result getAllCounts() {
         long gradeCount = gradeMapper.selectCount(null);
         long examCount = examMapper.selectCount(null);
         long questionCount = questionMapper.selectCount(null);
-
         ClassCountResult result = new ClassCountResult();
         result.setGradeCount((int) gradeCount);
         result.setExamCount((int) examCount);
         result.setQuestionCount((int) questionCount);
-
         return Result.success(null,result);
     }
-
 }
 

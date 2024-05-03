@@ -28,7 +28,6 @@ import java.sql.SQLIntegrityConstraintViolationException;
 @Slf4j
 public class GlobalExceptionHandler {
 
-
     /**
      * 处理自定义异常
      *

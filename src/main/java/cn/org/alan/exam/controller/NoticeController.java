@@ -9,7 +9,9 @@ import cn.org.alan.exam.util.JwtUtil;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.constraints.NotBlank;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 /**
@@ -21,12 +23,9 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/api/notices")
 public class NoticeController {
+
     @Resource
     private INoticeService noticeService;
-    @Resource
-    private JwtUtil jwtUtil;
-    @Resource
-    private HttpServletRequest request;
 
     /**
      * 添加公告
@@ -35,7 +34,7 @@ public class NoticeController {
      */
     @PostMapping
     @PreAuthorize("hasAnyAuthority('role_teacher','role_admin')")
-    public Result<String> addNotice(@RequestBody NoticeForm noticeForm) {
+    public Result<String> addNotice(@Validated @RequestBody NoticeForm noticeForm) {
         return noticeService.addNotice( noticeForm);
     }
 
@@ -46,7 +45,7 @@ public class NoticeController {
      */
     @DeleteMapping("/{ids}")
     @PreAuthorize("hasAnyAuthority('role_teacher','role_admin')")
-    public Result<String> deleteNotice(@PathVariable("ids") String ids) {
+    public Result<String> deleteNotice(@PathVariable("ids") @NotBlank String ids) {
         return noticeService.deleteNotice(ids);
     }
 
@@ -58,7 +57,7 @@ public class NoticeController {
      */
     @PutMapping("/{id}")
     @PreAuthorize("hasAnyAuthority('role_teacher','role_admin')")
-    public Result<String> updateNotice(@PathVariable("id") String id, @RequestBody NoticeForm noticeForm) {
+    public Result<String> updateNotice(@PathVariable("id") @NotBlank String id,@Validated @RequestBody NoticeForm noticeForm) {
         return noticeService.updateNotice(id, noticeForm);
     }
 

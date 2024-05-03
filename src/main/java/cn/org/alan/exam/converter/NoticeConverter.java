@@ -15,6 +15,9 @@ import org.springframework.stereotype.Component;
 @Component
 @Mapper(componentModel="spring")
 public interface NoticeConverter {
+
     Notice formToEntity(NoticeForm noticeForm);
+
     Page<NoticeVO> pageEntityToVo(Page<Notice> noticePage);
+
 }

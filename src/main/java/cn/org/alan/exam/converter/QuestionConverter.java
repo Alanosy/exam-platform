@@ -24,5 +24,4 @@ public interface QuestionConverter {
 
     List<QuestionSheetVO> listEntityToVO(List<Question> questions);
 
-
 }

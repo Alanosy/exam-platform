@@ -13,7 +13,7 @@ import java.util.List;
 /**
  * 班级服务类
  *
- * @author WeiJin
+ * @author Alan
  * @since 2024-03-21
  */
 public interface IGradeService extends IService<Grade> {
@@ -67,15 +67,11 @@ public interface IGradeService extends IService<Grade> {
      */
     Result<List<GradeVO>> getAllGrade();
 
-
     /**
      * 各班人数统计
      * @return
      */
-    //声明统计role_id为1的各班人数的业务逻辑
     List<ClassCountResult> countStudentsByRoleId(int roleId);
-
-
 
     /**
      * 统计所有班级、试卷、试题数量

@@ -18,5 +18,7 @@ import java.util.List;
 public interface UserConverter {
 
     User fromToEntity(UserForm userForm);
+
     List<User> listFromToEntity(List<UserForm> list);
+
 }

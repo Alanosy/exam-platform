@@ -10,9 +10,9 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import java.util.List;
 
 /**
- *  服务类
+ *  错题本服务类
  *
- * @author WeiJin
+ * @author Alan
  * @since 2024-03-21
  */
 public interface IUserBookService extends IService<UserBook> {
@@ -24,13 +24,6 @@ public interface IUserBookService extends IService<UserBook> {
      * @return
      */
     Result<IPage<UserPageBookVO>> getPage(Integer pageNum, Integer pageSize, String examName);
-
-    /**
-     * 查询某考试的错题
-     * @param examId
-     * @return
-     */
-    // Result<List<UserExamBookVO>> getUserExamBook(Integer examId);
 
     /**
      * 查询错题本错题id列表

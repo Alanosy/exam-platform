@@ -6,6 +6,5 @@ package cn.org.alan.exam.common.group;
  * @Date 2024/4/1 11:22
  */
 public interface QuestionGroup {
-
      interface QuestionAddGroup extends QuestionGroup{}
 }

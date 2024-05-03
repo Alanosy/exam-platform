@@ -12,7 +12,7 @@ import java.util.Collections;
 /**
  * CORS 资源共享配置
  *
- * @author haoxr
+ * @author Alan
  * @since 2023/4/17
  */
 @Configuration

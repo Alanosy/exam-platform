@@ -50,5 +50,4 @@ public class Result<T> implements Serializable {
         result.setMsg(msg);
         return result;
     }
-
 }

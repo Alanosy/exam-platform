@@ -8,11 +8,9 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.IService;
 
 /**
- * <p>
- * 服务类
- * </p>
+ * 公告服务类
  *
- * @author WeiJin
+ * @author Alan
  * @since 2024-03-21
  */
 public interface INoticeService extends IService<Notice> {

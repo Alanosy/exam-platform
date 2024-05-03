@@ -28,8 +28,8 @@ import java.util.List;
  * @Version 1.0
  * @Date 2024/3/25 19:50
  */
-@Component
 @Slf4j
+@Component
 public class VerifyTokenFilter extends OncePerRequestFilter {
 
     @Resource
@@ -44,55 +44,47 @@ public class VerifyTokenFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
-        //登录、注册、校验验证码、获取验证码、放行
+        // 登录、注册、校验验证码、获取验证码、放行
         String uri = request.getRequestURI();
         if (uri.contains("login") || uri.contains("verifyCode")
                 || uri.contains("captcha") || uri.contains("register")) {
             doFilter(request, response, filterChain);
             return;
         }
-        //获取jwt令牌
+        // 获取jwt令牌
         String authorization = request.getHeader("Authorization");
-        //判断是否为空
+        // 判断是否为空
         if (StringUtils.isBlank(authorization)) {
             responseUtil.response(response, Result.failed("Authorization为空，请先登录"));
             return;
         }
-
-        //校验jwt是否过期
+        // 校验jwt是否过期
         boolean verify = jwtUtil.verifyToken(authorization);
         if (!verify) {
             responseUtil.response(response, Result.failed("token已过期，请重新登录"));
             return;
         }
-
-        //验证token在redis中是否存在，k使用sessionId
+        // 验证token在redis中是否存在，key使用sessionId
         if (Boolean.FALSE.equals(stringRedisTemplate.hasKey("token" + request.getSession().getId()))) {
             responseUtil.response(response, Result.failed("token无效，请重新登录"));
             return;
         }
-
-        //从jwt 获取用户信息和权限
+        // 从jwt 获取用户信息和权限
         String userInfo = jwtUtil.getUser(authorization);
         List<String> authList = jwtUtil.getAuthList(authorization);
-        //反序列化jwtToken获取用户信息
+        // 反序列化jwtToken获取用户信息
         User sysUser = objectMapper.readValue(userInfo, User.class);
-        //权限转型
+        // 权限转型
         List<SimpleGrantedAuthority> permissions = authList.stream().map(SimpleGrantedAuthority::new).toList();
-
-        //创建登录用户
+        // 创建登录用户
         SysUserDetails securityUser = new SysUserDetails(sysUser);
         securityUser.setPermissions(permissions);
-
-        //创建权限授权的token 参数：用户，密码，权限 不给密码因为已经登录了
+        // 创建权限授权的token 参数：用户，密码，权限 不给密码因为已经登录了
         UsernamePasswordAuthenticationToken token =
                 new UsernamePasswordAuthenticationToken(securityUser, null, permissions);
-        //通过安全上下文设置授权token
+        // 通过安全上下文设置授权token
         SecurityContextHolder.getContext().setAuthentication(token);
-        //放行
+        // 放行
         doFilter(request, response, filterChain);
-
     }
-
-
 }

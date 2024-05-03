@@ -27,11 +27,9 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 /**
- * <p>
- * 服务实现类
- * </p>
+ * 错题本服务实现类
  *
- * @author WeiJin
+ * @author Alan
  * @since 2024-03-21
  */
 @Service
@@ -156,10 +154,6 @@ public class UserBookServiceImpl extends ServiceImpl<UserBookMapper, UserBook> i
                         .eq(UserBook::getQuId, reUserBookForm.getQuId());
                 userBookMapper.delete(userBookWrapper);
                 yield Result.success("回答正确");
-
-
-
-
             }
             case 2 -> {
                 Option byId = optionService.getById(reUserBookForm.getAnswer());

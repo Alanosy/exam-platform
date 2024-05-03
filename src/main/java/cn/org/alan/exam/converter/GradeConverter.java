@@ -17,7 +17,11 @@ import java.util.List;
 @Component
 @Mapper(componentModel="spring")
 public interface GradeConverter {
+
     Page<GradeVO> pageEntityToVo(Page<Grade> page);
+
     Grade formToEntity(GradeForm gradeForm);
+
     List<GradeVO> listEntityToVo(List<Grade> page);
+
 }

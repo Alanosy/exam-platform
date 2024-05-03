@@ -13,7 +13,6 @@ public class DateTimeUtil {
     private DateTimeUtil() {
     }
 
-
     private static String format = "yyyy-MM-dd HH:mm:ss";
 
     /**
@@ -24,7 +23,6 @@ public class DateTimeUtil {
     public static LocalDateTime getDateTime() {
         return LocalDateTime.parse(datetimeToStr(LocalDateTime.now()), DateTimeFormatter.ofPattern(format));
     }
-
 
     /**
      * 把字符串时间日期转为LocalDateTime格式

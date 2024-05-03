@@ -18,7 +18,7 @@ import java.util.List;
  * @since 2024-03-21
  */
 @RestController
-@RequestMapping("/api/userbook")
+@RequestMapping("/api/userbooks")
 public class UserBookController {
 
     @Resource

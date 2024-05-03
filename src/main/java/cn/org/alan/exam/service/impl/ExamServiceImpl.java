@@ -68,6 +68,7 @@ public class ExamServiceImpl extends ServiceImpl<ExamMapper, Exam> implements IE
     @Override
     @Transactional
     public Result<String> createExam(ExamAddForm examAddForm) {
+        // 将关于考试相关的实体转换为Exam
         Exam exam = examConverter.formToEntity(examAddForm);
         // 添加考试信息到考试表
         int grossScore = examAddForm.getRadioCount() * examAddForm.getRadioScore()

@@ -8,7 +8,10 @@ import cn.org.alan.exam.model.vo.GradeVO;
 import cn.org.alan.exam.service.IGradeService;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import jakarta.annotation.Resource;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -48,7 +51,7 @@ public class GradeController {
      */
     @PostMapping("/add")
     @PreAuthorize("hasAnyAuthority('role_teacher','role_admin')")
-    public Result<String> addGrade(@RequestBody GradeForm gradeForm) {
+    public Result<String> addGrade(@Validated @RequestBody GradeForm gradeForm) {
         return gradeService.addGrade(gradeForm);
     }
 
@@ -60,7 +63,7 @@ public class GradeController {
      */
     @PutMapping("/update/{id}")
     @PreAuthorize("hasAnyAuthority('role_teacher','role_admin')")
-    public Result<String> updateGrade(@PathVariable("id") Integer id, @RequestBody GradeForm gradeForm) {
+    public Result<String> updateGrade(@PathVariable("id") @NotNull Integer id,@Validated @RequestBody GradeForm gradeForm) {
         return gradeService.updateGrade(id, gradeForm);
     }
 
@@ -71,7 +74,7 @@ public class GradeController {
      */
     @DeleteMapping("/delete/{id}")
     @PreAuthorize("hasAnyAuthority('role_teacher','role_admin')")
-    public Result<String> deleteGrade(@PathVariable("id") Integer id) {
+    public Result<String> deleteGrade(@PathVariable("id") @NotNull Integer id) {
         return gradeService.deleteGrade(id);
     }
 
@@ -81,8 +84,8 @@ public class GradeController {
      * @return
      */
     @PatchMapping("/remove/{ids}")
-    @PreAuthorize("hasAnyAuthority('role_teacher','role_admin')")
-    public Result<String> removeUserGrade(@PathVariable("ids") String ids) {
+    @PreAuthorize("hasAnyAuthority('role_teacher','role_admin','role_studnet')")
+    public Result<String> removeUserGrade(@PathVariable("ids") @NotBlank String ids) {
         return gradeService.removeUserGrade(ids);
     }
 
@@ -95,8 +98,4 @@ public class GradeController {
     public Result<List<GradeVO>> getAllGrade(){
         return gradeService.getAllGrade();
     }
-
-
-
-
 }

@@ -1,6 +1,7 @@
 package cn.org.alan.exam.model.form;
 
 import cn.org.alan.exam.common.result.Result;
+import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 
 /**
@@ -19,6 +20,7 @@ public class NoticeForm {
     /**
      * 公告标题
      */
+    @NotBlank
     private String title;
 
     /**
@@ -29,6 +31,7 @@ public class NoticeForm {
     /**
      * 公告内容
      */
+    @NotBlank
     private String content;
 
     /**

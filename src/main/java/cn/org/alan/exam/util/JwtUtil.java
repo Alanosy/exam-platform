@@ -38,7 +38,6 @@ public class JwtUtil {
     @Value("${jwt.secret}")
     private String secret;
 
-
     /**
      * 创建jwt
      *
@@ -78,7 +77,6 @@ public class JwtUtil {
         }
     }
 
-
     /**
      * 根据token获取用户信息
      *
@@ -114,9 +112,5 @@ public class JwtUtil {
             return null;
         }
     }
-
-
-
-
 
 }

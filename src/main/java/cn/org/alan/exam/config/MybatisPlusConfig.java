@@ -26,7 +26,6 @@ public class MybatisPlusConfig {
         interceptor.addInnerInterceptor(new
                 PaginationInnerInterceptor(DbType.MYSQL));
         //添加元数据对象处理器
-
         return interceptor;
     }
 
@@ -36,7 +35,4 @@ public class MybatisPlusConfig {
         config.setMetaObjectHandler(filedFullHandler);
         return config;
     }
-
-
-
 }
