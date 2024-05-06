@@ -26,4 +26,12 @@
         from t_option
         where qu_id = #{id}
     </select>
+    <!--根据试题Id获取正确个数-->
+    <select id="selectRightCountByIds" resultType="java.lang.Integer">
+        select count(*) from t_option in
+        <foreach collection="optionIds" item="optionId" separator="," open="(" close=")">
+            #{optionId}
+        </foreach>
+        and is_right = 1
+    </select>
 </mapper>

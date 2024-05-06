@@ -1,8 +1,13 @@
 package cn.org.alan.exam.controller;
 
 import cn.org.alan.exam.common.result.Result;
+import cn.org.alan.exam.model.form.ExerciseFillAnswerFrom;
+import cn.org.alan.exam.model.vo.QuestionVO;
+import cn.org.alan.exam.model.vo.exercise.ExerciseRepoVO;
 import cn.org.alan.exam.model.vo.exercise.QuestionSheetVO;
 import cn.org.alan.exam.service.IExerciseRecordService;
+import cn.org.alan.exam.service.IRepoService;
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import jakarta.annotation.Nullable;
 import jakarta.annotation.Resource;
 import jakarta.validation.constraints.Max;
@@ -27,12 +32,15 @@ public class ExerciseController {
 
     @Resource
     private IExerciseRecordService iExerciseRecordService;
+    @Resource
+    private IRepoService iRepoService;
 
     /**
      * 获取试题Id列表
-     * @param repoId
-     * @param quType
-     * @return
+     *
+     * @param repoId 题库Id
+     * @param quType 试题类型
+     * @return 响应结果
      */
     @GetMapping("/{repoId}")
     @PreAuthorize("hasAnyAuthority('role_student','role_teacher','role_admin')")
@@ -40,7 +48,37 @@ public class ExerciseController {
                                                      @Min(value = 1, message = "试题类型最小值应为1")
                                                      @Max(value = 4, message = "试题类型最大值应为4")
                                                      @Nullable
-                                                     @RequestParam(value = "quType", required = false) Integer quType){
-        return iExerciseRecordService.getQuestionSheet(repoId,quType);
+                                                     @RequestParam(value = "quType", required = false) Integer quType) {
+        return iExerciseRecordService.getQuestionSheet(repoId, quType);
+    }
+
+
+    /**
+     * 填充答案，并返回试题信息
+     *
+     * @param exerciseFillAnswerFrom 请求参数
+     * @return 响应结果
+     */
+    @PostMapping("/fillAnswer")
+    @PreAuthorize("hasAnyAuthority('role_student','role_teacher','role_admin')")
+    public Result<QuestionVO> fillAnswer(@RequestBody ExerciseFillAnswerFrom exerciseFillAnswerFrom) {
+        return iExerciseRecordService.fillAnswer(exerciseFillAnswerFrom);
+    }
+
+    /**
+     * 分页获取可刷题库列表
+     *
+     * @param pageNum  页码
+     * @param pageSize 每页记录数
+     * @param title    题库名
+     * @return 响应结果
+     */
+    @GetMapping("getRepo")
+    @PreAuthorize("hasAnyAuthority('role_student','role_teacher','role_admin')")
+    public Result<IPage<ExerciseRepoVO>> getRepo(
+            @RequestParam(value = "pageNum", required = false, defaultValue = "1") Integer pageNum,
+            @RequestParam(value = "pageSize", required = false, defaultValue = "10") Integer pageSize,
+            @RequestParam(value = "title", required = false) String title) {
+        return iRepoService.getRepo(pageNum, pageSize, title);
     }
 }

@@ -4,6 +4,7 @@ import cn.org.alan.exam.common.result.Result;
 import cn.org.alan.exam.model.entity.Exam;
 import cn.org.alan.exam.model.entity.ExamQuAnswer;
 import cn.org.alan.exam.model.form.exam.ExamAddForm;
+import cn.org.alan.exam.model.form.exam.ExamQuAnswerFrom;
 import cn.org.alan.exam.model.form.exam.ExamUpdateForm;
 import cn.org.alan.exam.model.form.examquanswer.ExamQuAnswerAddForm;
 import cn.org.alan.exam.model.vo.exam.*;
@@ -56,7 +57,7 @@ public interface IExamService extends IService<Exam> {
     /**
      * 获取考试题目id列表
      *
-     * @param id
+     * @param examId
      * @return
      */
     Result<List<ExamDetailRespVO>> getQuestionList(Integer examId);
@@ -81,7 +82,7 @@ public interface IExamService extends IService<Exam> {
     /**
      * 获取考试详情信息
      *
-     * @param id
+     * @param examId
      * @return
      */
     Result<ExamDetailVO> getDetail(Integer examId);
@@ -153,7 +154,7 @@ public interface IExamService extends IService<Exam> {
     /**
      * 判断用户是否正在考试
      *
-     * @param userId
+     * @param examId
      * @return
      */
     boolean isUserTakingExam(Integer examId);

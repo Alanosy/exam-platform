@@ -1,9 +1,7 @@
-package cn.org.alan.exam.model.vo.exam;
+package cn.org.alan.exam.model.form.exam;
 
 import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
-
-import java.util.List;
 
 /**
  * @Author Alan
@@ -11,7 +9,7 @@ import java.util.List;
  * @Date 2024/4/7 11:54 PM
  */
 @Data
-public class ExamQuAnswerVO {
+public class ExamQuAnswerFrom {
     private Integer examId;
     private Integer quId;
     /**

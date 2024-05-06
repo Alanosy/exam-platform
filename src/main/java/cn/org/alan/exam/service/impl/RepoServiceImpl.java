@@ -4,9 +4,12 @@ import cn.org.alan.exam.common.result.Result;
 import cn.org.alan.exam.converter.RepoConverter;
 import cn.org.alan.exam.mapper.QuestionMapper;
 import cn.org.alan.exam.mapper.RepoMapper;
+import cn.org.alan.exam.mapper.UserExerciseRecordMapper;
 import cn.org.alan.exam.model.entity.Question;
 import cn.org.alan.exam.model.entity.Repo;
+import cn.org.alan.exam.model.entity.UserExerciseRecord;
 import cn.org.alan.exam.model.vo.RepoVO;
+import cn.org.alan.exam.model.vo.exercise.ExerciseRepoVO;
 import cn.org.alan.exam.service.IRepoService;
 import cn.org.alan.exam.util.SecurityUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
@@ -35,6 +38,8 @@ public class RepoServiceImpl extends ServiceImpl<RepoMapper, Repo> implements IR
 
     @Resource
     private RepoConverter repoConverter;
+    @Resource
+    private UserExerciseRecordMapper userExerciseRecordMapper;
 
 
     @Override
@@ -92,5 +97,29 @@ public class RepoServiceImpl extends ServiceImpl<RepoMapper, Repo> implements IR
         }
 
         return Result.success(null, page);
+    }
+
+    @Override
+    public Result<IPage<ExerciseRepoVO>> getRepo(Integer pageNum, Integer pageSize, String title) {
+        IPage<ExerciseRepoVO> page = new Page<>(pageNum, pageSize);
+        page = repoMapper.selectRepo(page, title);
+        page.getRecords().forEach(repoVO -> {
+            //填充总题数
+            int totalCount = questionMapper
+                    .selectCount(new LambdaQueryWrapper<Question>().eq(Question::getRepoId, repoVO.getId()))
+                    .intValue();
+            repoVO.setTotalCount(totalCount);
+            //填充以刷题数
+            LambdaQueryWrapper<UserExerciseRecord> wrapper = new LambdaQueryWrapper<UserExerciseRecord>()
+                    .select(UserExerciseRecord::getExerciseCount)
+                    .eq(UserExerciseRecord::getUserId, SecurityUtil.getUserId());
+            UserExerciseRecord userExerciseRecord = userExerciseRecordMapper.selectOne(wrapper);
+            if (userExerciseRecord.getExerciseCount() != null && userExerciseRecord.getExerciseCount() != 0){
+                repoVO.setExerciseCount(userExerciseRecord.getExerciseCount());
+            }else {
+                repoVO.setExerciseCount(0);
+            }
+        });
+        return Result.success(null,page);
     }
 }

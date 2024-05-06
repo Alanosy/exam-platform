@@ -59,10 +59,10 @@ public class ExamController {
      * @param id
      * @return
      */
-    @PutMapping("/{examId}")
+    @PutMapping("/{id}")
     @PreAuthorize("hasAnyAuthority('role_teacher','role_admin')")
-    public Result<String> updateExam(@Validated @RequestBody ExamUpdateForm examUpdateForm, @PathVariable("examId") @NotNull Integer examId) {
-        return examService.updateExam(examUpdateForm,examId);
+    public Result<String> updateExam(@Validated @RequestBody ExamUpdateForm examUpdateForm, @PathVariable("id") @NotNull Integer id) {
+        return examService.updateExam(examUpdateForm,id);
     }
 
     /**
@@ -93,7 +93,7 @@ public class ExamController {
 
     /**
      * 获取考试题目id列表
-     * @param id
+     * @param examId
      * @return
      */
     @GetMapping("/question/list/{examId}")
@@ -128,7 +128,7 @@ public class ExamController {
 
     /**
      * 获取考试详情信息
-     * @param id
+     * @param examId
      * @return
      */
     @GetMapping("/detail")

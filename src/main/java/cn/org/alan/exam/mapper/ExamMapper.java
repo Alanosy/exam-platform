@@ -4,6 +4,7 @@ import cn.org.alan.exam.model.entity.Exam;
 import cn.org.alan.exam.model.vo.answer.AnswerExamVO;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
@@ -13,6 +14,7 @@ import java.util.List;
  * @author Alan
  * @since 2024-03-21
  */
+
 public interface ExamMapper extends BaseMapper<Exam> {
 
     int delExam(List<Integer> examIds);

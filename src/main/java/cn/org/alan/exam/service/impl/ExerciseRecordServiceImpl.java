@@ -1,30 +1,33 @@
 package cn.org.alan.exam.service.impl;
 
 import cn.org.alan.exam.common.result.Result;
+import cn.org.alan.exam.converter.ExerciseConverter;
 import cn.org.alan.exam.converter.QuestionConverter;
 import cn.org.alan.exam.converter.RecordConverter;
 import cn.org.alan.exam.mapper.*;
 import cn.org.alan.exam.model.entity.*;
+import cn.org.alan.exam.model.form.ExerciseFillAnswerFrom;
+import cn.org.alan.exam.model.vo.QuestionVO;
 import cn.org.alan.exam.model.vo.exercise.QuestionSheetVO;
 import cn.org.alan.exam.model.vo.record.ExamRecordDetailVO;
 import cn.org.alan.exam.model.vo.record.ExamRecordVO;
 import cn.org.alan.exam.model.vo.record.ExerciseRecordDetailVO;
 import cn.org.alan.exam.model.vo.record.ExerciseRecordVO;
-import cn.org.alan.exam.model.vo.userbook.AddBookAnswerVO;
 import cn.org.alan.exam.service.IExerciseRecordService;
 import cn.org.alan.exam.service.IOptionService;
 import cn.org.alan.exam.util.SecurityUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
-import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -61,6 +64,10 @@ public class ExerciseRecordServiceImpl extends ServiceImpl<ExerciseRecordMapper,
     private UserExerciseRecordMapper userExerciseRecordMapper;
     @Resource
     private RepoMapper repoMapper;
+    @Resource
+    private ExerciseConverter exerciseConverter;
+    @Resource
+    private ExerciseRecordMapper exerciseRecordMapper;
 
 
     @Override
@@ -381,5 +388,65 @@ public class ExerciseRecordServiceImpl extends ServiceImpl<ExerciseRecordMapper,
             exerciseRecordDetailVOS.add(exerciseRecordDetailVO);
         }
         return Result.success("查询成功",exerciseRecordDetailVOS);
+    }
+
+    @Override
+    @Transactional
+    public Result<QuestionVO> fillAnswer(ExerciseFillAnswerFrom exerciseFillAnswerFrom) {
+        ExerciseRecord exerciseRecord = exerciseConverter.fromToEntity(exerciseFillAnswerFrom);
+        boolean flag = false;
+        //对客观题做题正确与否校验
+        if (exerciseFillAnswerFrom.getQuType() != 4) {
+
+            List<Integer> options = Arrays.stream(exerciseRecord.getAnswer().split(","))
+                    .map(Integer::parseInt).toList();
+            Integer count = optionMapper.selectRightCountByIds(options);
+            //填充是否正确
+            if (options.size() == count) {
+                exerciseRecord.setIsRight(1);
+                flag = true;
+            } else {
+                exerciseRecord.setIsRight(0);
+            }
+        }
+
+        exerciseRecordMapper.insert(exerciseRecord);
+        //获取该题库填作答记录
+        LambdaQueryWrapper<UserExerciseRecord> exerciseRecordWrapper = new LambdaQueryWrapper<UserExerciseRecord>()
+                .eq(UserExerciseRecord::getUserId, SecurityUtil.getUserId())
+                .eq(UserExerciseRecord::getRepoId, exerciseRecord.getRepoId());
+        UserExerciseRecord userExerciseRecord = userExerciseRecordMapper.selectOne(exerciseRecordWrapper);
+
+        if (Optional.ofNullable(userExerciseRecord).isEmpty()) {
+            //该题库用户首次刷题，添加一条记录
+            LambdaQueryWrapper<Question> questionWrapper = new LambdaQueryWrapper<Question>()
+                    .eq(Question::getRepoId, exerciseRecord.getRepoId());
+            int totalCount = questionMapper.selectCount(questionWrapper).intValue();
+            UserExerciseRecord insertUserExerciseRecord = new UserExerciseRecord();
+            insertUserExerciseRecord.setExerciseCount(1);
+            insertUserExerciseRecord.setRepoId(exerciseRecord.getRepoId());
+            insertUserExerciseRecord.setTotalCount(totalCount);
+            userExerciseRecordMapper.insert(insertUserExerciseRecord);
+        } else {
+            //该题库非首次刷题，修改刷题数
+            UserExerciseRecord updateUserExerciseRecord = new UserExerciseRecord();
+            updateUserExerciseRecord.setId(userExerciseRecord.getId());
+            updateUserExerciseRecord.setExerciseCount(userExerciseRecord.getExerciseCount() + 1);
+            userExerciseRecordMapper.updateById(updateUserExerciseRecord);
+        }
+        //获取试题信息，返回给用户
+        QuestionVO questionVO = questionMapper.selectSingle(exerciseRecord.getQuestionId());
+
+        //针对不同题型做出不同响应
+        //主观题响应
+        if (exerciseRecord.getQuestionType() == 4) {
+            return Result.success(null, questionVO);
+        }
+
+        if (flag) {
+            return Result.success("回答正确", questionVO);
+        }
+        return Result.success("回答错误", questionVO);
+
     }
 }

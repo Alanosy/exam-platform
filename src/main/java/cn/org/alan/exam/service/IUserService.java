@@ -69,5 +69,10 @@ public interface IUserService extends IService<User> {
     Result<IPage<UserVO>> pagingUser(Integer pageNum, Integer pageSize, Integer gradeId, String realName);
 
 
-
+    /**
+     * 用户上传头像
+     * @param file 文件
+     * @return 结果
+     */
+    Result<String> uploadAvatar(MultipartFile file);
 }

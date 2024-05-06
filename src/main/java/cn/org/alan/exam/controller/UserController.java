@@ -5,6 +5,7 @@ import cn.org.alan.exam.common.group.UserGroup;
 import cn.org.alan.exam.model.form.UserForm;
 import cn.org.alan.exam.model.vo.UserVO;
 import cn.org.alan.exam.service.IUserService;
+import cn.org.alan.exam.util.AliOSSUtil;
 import cn.org.alan.exam.util.SecurityUtil;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import jakarta.annotation.Resource;
@@ -12,6 +13,8 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.util.Objects;
 
 /**
  * 用户管理
@@ -27,8 +30,10 @@ public class UserController {
     @Resource
     private IUserService iUserService;
 
+
     /**
      * 获取用户登录信息
+     *
      * @return 响应结果
      */
     @GetMapping("/info")
@@ -40,6 +45,7 @@ public class UserController {
 
     /**
      * 创建用户，教师只能创建学生，管理员可以创建教师和学生
+     *
      * @param userForm 请求参数，用户名、真实姓名[、角色id]
      * @return 响应结果
      */
@@ -51,6 +57,7 @@ public class UserController {
 
     /**
      * 用户修改密码
+     *
      * @param userForm 入参
      * @return 响应结果
      */
@@ -62,6 +69,7 @@ public class UserController {
 
     /**
      * 批量删除用户
+     *
      * @param ids 字符串ids
      * @return 相应结果
      */
@@ -73,6 +81,7 @@ public class UserController {
 
     /**
      * Excel导入用户数据
+     *
      * @param file 文件
      * @return 响应结果
      */
@@ -97,6 +106,7 @@ public class UserController {
 
     /**
      * 分页获取用户信息
+     *
      * @param pageNum  页码
      * @param pageSize 每页记录数
      * @param gradeId  班级Id
@@ -112,5 +122,15 @@ public class UserController {
         return iUserService.pagingUser(pageNum, pageSize, gradeId, realName);
     }
 
-
+    /**
+     * 用户上传头像
+     *
+     * @param file 文件
+     * @return 响应结果
+     */
+    @PutMapping("/uploadAvatar")
+    @PreAuthorize("hasAnyAuthority('role_student','role_teacher','role_admin')")
+    public Result<String> uploadAvatar(@RequestPart("file") MultipartFile file) {
+        return iUserService.uploadAvatar(file);
+    }
 }

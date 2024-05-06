@@ -102,4 +102,15 @@ public class QuestionController {
     public Result<String> importQuestion(@PathVariable("id") Integer id, @RequestParam("file") MultipartFile file) {
         return iQuestionService.importQuestion(id,file);
     }
+
+    /**
+     * 上传图片
+     * @param file 文件
+     * @return 返回上传后的地址
+     */
+    @PostMapping("/uploadImage")
+    @PreAuthorize("hasAnyAuthority('role_teacher','role_admin')")
+    public Result<String> uploadImage(@RequestPart("file") MultipartFile file){
+        return iQuestionService.uploadImage(file);
+    }
 }
