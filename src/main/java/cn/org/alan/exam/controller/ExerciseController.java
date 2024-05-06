@@ -1,13 +1,8 @@
 package cn.org.alan.exam.controller;
 
 import cn.org.alan.exam.common.result.Result;
-import cn.org.alan.exam.model.form.ExerciseFillAnswerFrom;
-import cn.org.alan.exam.model.vo.QuestionVO;
 import cn.org.alan.exam.model.vo.exercise.QuestionSheetVO;
-import cn.org.alan.exam.model.vo.exercise.ExerciseRepoVO;
 import cn.org.alan.exam.service.IExerciseRecordService;
-import cn.org.alan.exam.service.IRepoService;
-import com.baomidou.mybatisplus.core.metadata.IPage;
 import jakarta.annotation.Nullable;
 import jakarta.annotation.Resource;
 import jakarta.validation.constraints.Max;

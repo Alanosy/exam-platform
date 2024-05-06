@@ -110,3 +110,15 @@ oss:
   access-key-secret: ryuJzWfAKoxvq11SgZ9fqP8GZPbKNL
   bucket-name: online-exam-system-backend
 
+
+logging:
+  level:
+    root: info
+    com.example: debug
+  file:
+    name: ./logs/exam.log
+  logback:
+    rollingpolicy:
+      max-file-size: 10MB
+      total-size-cap: 1GB
+      max-history: 7
