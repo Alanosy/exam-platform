@@ -5,7 +5,6 @@
 <mapper namespace="cn.org.alan.exam.mapper.UserMapper">
     <sql id="simpleFiled">
         u.id,u.user_name,u.real_name,u.avatar,u.create_time,u.status
-        u.id,u.user_name,u.real_name,u.avatar,u.create_time,u.status
     </sql>
 
     <insert id="insertBatchUser">
@@ -39,7 +38,7 @@
         select
         <include refid="simpleFiled"/>
         ,r.role_name,g.grade_name
-        from t_user u join t_role r on role_id = r.id join t_grade g on grade_id = g.id
+        from t_user u join t_role r on role_id = r.id left join t_grade g on grade_id = g.id
         where u.id = #{userId}
     </select>
 
