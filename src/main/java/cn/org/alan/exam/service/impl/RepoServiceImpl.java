@@ -9,6 +9,7 @@ import cn.org.alan.exam.model.entity.Question;
 import cn.org.alan.exam.model.entity.Repo;
 import cn.org.alan.exam.model.entity.UserExerciseRecord;
 import cn.org.alan.exam.model.vo.RepoVO;
+import cn.org.alan.exam.model.vo.exercise.ExerciseRepoVO;
 import cn.org.alan.exam.service.IRepoService;
 import cn.org.alan.exam.util.SecurityUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
@@ -17,7 +18,6 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import jakarta.annotation.Resource;
-import net.sf.jsqlparser.statement.select.Select;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -100,8 +100,8 @@ public class RepoServiceImpl extends ServiceImpl<RepoMapper, Repo> implements IR
     }
 
     @Override
-    public Result<IPage<cn.org.alan.exam.model.vo.exercise.RepoVO>> getRepo(Integer pageNum, Integer pageSize, String title) {
-        IPage<cn.org.alan.exam.model.vo.exercise.RepoVO> page = new Page<>(pageNum, pageSize);
+    public Result<IPage<ExerciseRepoVO>> getRepo(Integer pageNum, Integer pageSize, String title) {
+        IPage<ExerciseRepoVO> page = new Page<>(pageNum, pageSize);
         page = repoMapper.selectRepo(page, title);
         page.getRecords().forEach(repoVO -> {
             //填充总题数

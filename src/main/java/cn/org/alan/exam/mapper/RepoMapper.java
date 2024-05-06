@@ -2,6 +2,7 @@ package cn.org.alan.exam.mapper;
 
 import cn.org.alan.exam.model.entity.Repo;
 import cn.org.alan.exam.model.vo.RepoVO;
+import cn.org.alan.exam.model.vo.exercise.ExerciseRepoVO;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import org.apache.ibatis.annotations.Param;
@@ -42,6 +43,6 @@ public interface RepoMapper extends BaseMapper<Repo> {
      * @param title 题库名
      * @return 结果
      */
-    IPage<cn.org.alan.exam.model.vo.exercise.RepoVO> selectRepo(IPage<cn.org.alan.exam.model.vo.exercise.RepoVO> page,
-                                                                String title);
+    IPage<ExerciseRepoVO> selectRepo(IPage<ExerciseRepoVO> page,
+                                     String title);
 }

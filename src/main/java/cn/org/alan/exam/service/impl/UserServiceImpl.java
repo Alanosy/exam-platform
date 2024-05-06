@@ -7,7 +7,9 @@ import cn.org.alan.exam.model.entity.Grade;
 import cn.org.alan.exam.model.entity.User;
 import cn.org.alan.exam.model.form.UserForm;
 import cn.org.alan.exam.model.vo.UserVO;
+import cn.org.alan.exam.service.IQuestionService;
 import cn.org.alan.exam.service.IUserService;
+import cn.org.alan.exam.util.AliOSSUtil;
 import cn.org.alan.exam.util.DateTimeUtil;
 import cn.org.alan.exam.util.SecurityUtil;
 import cn.org.alan.exam.util.excel.ExcelUtils;
@@ -37,7 +39,6 @@ import java.util.Objects;
 @Service
 @Slf4j
 public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IUserService {
-
 
     @Resource
     private UserMapper userMapper;
@@ -73,6 +74,8 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
     private OptionMapper optionMapper;
     @Resource
     private NoticeGradeMapper noticeGradeMapper;
+    @Resource
+    private IQuestionService iQuestionService;
 
 
     @Override
@@ -224,13 +227,32 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
     @Override
     public Result<IPage<UserVO>> pagingUser(Integer pageNum, Integer pageSize, Integer gradeId, String realName) {
         IPage<UserVO> page = new Page<>(pageNum, pageSize);
-        if (SecurityUtil.getRole().equals("role_teacher")) {
+        if ("role_teacher".equals(SecurityUtil.getRole())) {
             page = userMapper.pagingUser(page, gradeId, realName, 1);
         } else {
             page = userMapper.pagingUser(page, gradeId, realName, null);
         }
 
         return Result.success(null, page);
+    }
+
+    @SneakyThrows
+    @Transactional
+    @Override
+    public Result<String> uploadAvatar(MultipartFile file) {
+        Result<String> result = iQuestionService.uploadImage(file);
+        if (result.getCode() == 0) {
+            return Result.failed("图片上传失败");
+        }
+
+        String url = result.getData();
+        User user = new User();
+        user.setId(SecurityUtil.getUserId());
+        user.setAvatar(url);
+        if (userMapper.updateById(user) > 0) {
+            return Result.success("上传成功", url);
+        }
+        return Result.failed("图片上传失败");
     }
 
 

@@ -68,4 +68,11 @@ public interface IQuestionService extends IService<Question> {
      * @return 响应结果
      */
     Result<String> importQuestion(Integer id, MultipartFile file);
+
+    /**
+     * 上传图片
+     * @param file 文件
+     * @return 返回上传后的地址
+     */
+    Result<String> uploadImage(MultipartFile file);
 }

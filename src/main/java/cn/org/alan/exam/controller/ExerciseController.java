@@ -4,7 +4,7 @@ import cn.org.alan.exam.common.result.Result;
 import cn.org.alan.exam.model.form.ExerciseFillAnswerFrom;
 import cn.org.alan.exam.model.vo.QuestionVO;
 import cn.org.alan.exam.model.vo.exercise.QuestionSheetVO;
-import cn.org.alan.exam.model.vo.exercise.RepoVO;
+import cn.org.alan.exam.model.vo.exercise.ExerciseRepoVO;
 import cn.org.alan.exam.service.IExerciseRecordService;
 import cn.org.alan.exam.service.IRepoService;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -75,7 +75,7 @@ public class ExerciseController {
      */
     @GetMapping("getRepo")
     @PreAuthorize("hasAnyAuthority('role_student','role_teacher','role_admin')")
-    public Result<IPage<RepoVO>> getRepo(
+    public Result<IPage<ExerciseRepoVO>> getRepo(
             @RequestParam(value = "pageNum", required = false, defaultValue = "1") Integer pageNum,
             @RequestParam(value = "pageSize", required = false, defaultValue = "10") Integer pageSize,
             @RequestParam(value = "title", required = false) String title) {

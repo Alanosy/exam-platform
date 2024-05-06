@@ -8,7 +8,7 @@ import lombok.Data;
  * @Date 2024/5/6 11:08
  */
 @Data
-public class RepoVO {
+public class ExerciseRepoVO {
     private Integer id;
     private String repoTitle;
     private Integer totalCount;
