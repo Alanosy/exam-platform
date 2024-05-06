@@ -158,6 +158,7 @@
                 value-key="id"
                 placeholder="请选择归属部门"
                 check-strictly
+                @change="handleDeptChange"
               />
             </el-form-item>
           </el-col>
@@ -594,8 +595,6 @@ const handleAdd = async () => {
   form.value.password = initPassword.value.toString();
 };
 
-/** 是否已经更改过岗位 */
-const updatedPost = ref(true);
 /** 修改按钮操作 */
 const handleUpdate = async (row?: UserForm) => {
   reset();
@@ -610,8 +609,6 @@ const handleUpdate = async (row?: UserForm) => {
   form.value.postIds = data.postIds;
   form.value.roleIds = data.roleIds;
   form.value.password = '';
-  /** 编辑 默认未修改过岗位 */
-  updatedPost.value = false;
 };
 
 /** 提交按钮 */
@@ -652,22 +649,11 @@ onMounted(() => {
   });
 });
 
-// 监测部门变化加载岗位
-watch(
-  () => form.value.deptId,
-  async () => {
-    const response = await optionselect(form.value.deptId);
-    postOptions.value = response.data;
-    /** 判断是否修改过岗位 防止第一次编辑时有岗位信息也被设置为空 */
-    if (updatedPost.value) {
-      /** 变化后需要重新选择岗位 */
-      form.value.postIds = [];
-      return;
-    }
-    /** 执行一次后默认设为已经修改过 */
-    updatedPost.value = true;
-  }
-);
+async function handleDeptChange(value: number | string) {
+  const response = await optionselect(value);
+  postOptions.value = response.data;
+  form.value.postIds = [];
+}
 </script>
 
 <style lang="scss" scoped></style>
