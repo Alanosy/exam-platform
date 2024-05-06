@@ -4,6 +4,7 @@ package cn.org.alan.exam.controller;
 import cn.org.alan.exam.common.result.Result;
 import cn.org.alan.exam.model.form.exam.ExamAddForm;
 import cn.org.alan.exam.model.form.exam.ExamUpdateForm;
+import cn.org.alan.exam.model.form.examquanswer.ExamQuAnswerAddForm;
 import cn.org.alan.exam.model.vo.exam.*;
 import cn.org.alan.exam.service.IExamService;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -58,10 +59,10 @@ public class ExamController {
      * @param id
      * @return
      */
-    @PutMapping("/{id}")
+    @PutMapping("/{examId}")
     @PreAuthorize("hasAnyAuthority('role_teacher','role_admin')")
-    public Result<String> updateExam(@Validated @RequestBody ExamUpdateForm examUpdateForm, @PathVariable("id") @NotNull Integer id) {
-        return examService.updateExam(examUpdateForm,id);
+    public Result<String> updateExam(@Validated @RequestBody ExamUpdateForm examUpdateForm, @PathVariable("examId") @NotNull Integer examId) {
+        return examService.updateExam(examUpdateForm,examId);
     }
 
     /**
@@ -95,10 +96,10 @@ public class ExamController {
      * @param id
      * @return
      */
-    @GetMapping("/question/list/{id}")
+    @GetMapping("/question/list/{examId}")
     @PreAuthorize("hasAnyAuthority('role_teacher','role_admin','role_student')")
-    public Result<List<ExamDetailRespVO>> getQuestionList(@PathVariable("id") @NotBlank String id) {
-        return examService.getQuestionList(id);
+    public Result<List<ExamDetailRespVO>> getQuestionList(@PathVariable("examId") @NotBlank Integer examId) {
+        return examService.getQuestionList(examId);
     }
 
     /**
@@ -132,8 +133,8 @@ public class ExamController {
      */
     @GetMapping("/detail")
     @PreAuthorize("hasAnyAuthority('role_teacher','role_admin','role_student')")
-    public Result<ExamDetailVO> getDetail(@RequestParam("id") @NotBlank String id) {
-        return examService.getDetail(id);
+    public Result<ExamDetailVO> getDetail(@RequestParam("examId") @NotBlank Integer examId) {
+        return examService.getDetail(examId);
     }
 
     /**
@@ -169,7 +170,7 @@ public class ExamController {
      */
     @PostMapping("/full-answer")
     @PreAuthorize("hasAnyAuthority('role_teacher','role_admin','role_student')")
-    public Result<String> addAnswer(@Validated @RequestBody ExamQuAnswerVO examQuAnswerForm) {
+    public Result<String> addAnswer(@Validated @RequestBody ExamQuAnswerAddForm examQuAnswerForm) {
         return examService.addAnswer(examQuAnswerForm);
     }
 

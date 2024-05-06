@@ -27,6 +27,7 @@ public class ExerciseController {
 
     @Resource
     private IExerciseRecordService iExerciseRecordService;
+
     /**
      * 获取试题Id列表
      * @param repoId

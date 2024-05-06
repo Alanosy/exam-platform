@@ -104,3 +104,14 @@ mybatis-plus:
 jwt:
   secret: darfhiogtiasjtgaiosethaosifhbnsakltghweaoirthaoirhnaslgnvaekltgase
 
+logging:
+  level:
+    root: info
+    com.example: debug
+  file:
+    name: ./logs/exam.log
+  logback:
+    rollingpolicy:
+      max-file-size: 10MB
+      total-size-cap: 1GB
+      max-history: 7

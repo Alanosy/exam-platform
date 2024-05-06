@@ -24,7 +24,6 @@ public class SysUserDetails implements UserDetails {
     private User user;
     private String username;
 
-
     public SysUserDetails(User user) {
         this.user = user;
     }
@@ -36,7 +35,6 @@ public class SysUserDetails implements UserDetails {
     public void setPermissions(List<SimpleGrantedAuthority> permissions) {
         this.permissions = permissions;
     }
-
 
     @Override
     public String getPassword() {
