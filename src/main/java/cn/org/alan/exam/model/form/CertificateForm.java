@@ -1,7 +1,9 @@
 package cn.org.alan.exam.model.form;
 
 import com.baomidou.mybatisplus.annotation.FieldFill;
+import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
+import com.baomidou.mybatisplus.annotation.TableId;
 
 import java.time.LocalDateTime;
 
@@ -11,6 +13,13 @@ import java.time.LocalDateTime;
  * @ Date 2024/4/11 15:15
  */
 public class CertificateForm {
+    private static final long serialVersionUID = 1L;
+
+    /**
+     * ID   证书
+     */
+    @TableId(value = "id", type = IdType.AUTO)
+    private Integer id;
     private String certificateName;
 
     /**
@@ -28,6 +37,16 @@ public class CertificateForm {
      */
     @TableField(fill = FieldFill.INSERT)
     private LocalDateTime createTime;
+
+
+
+    public Integer getId(){
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
 
     public String getCertificateName() {
         return certificateName;

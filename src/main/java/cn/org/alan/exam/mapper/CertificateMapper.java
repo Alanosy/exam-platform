@@ -1,6 +1,7 @@
 package cn.org.alan.exam.mapper;
 
 import cn.org.alan.exam.model.entity.Certificate;
+import cn.org.alan.exam.model.form.CertificateForm;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -30,10 +31,10 @@ public interface CertificateMapper extends BaseMapper<Certificate> {
     /**
      * 新增证书
      *
-     * @param certificate 证书实体
+     * @param certificateForm 证书实体
      * @return 影响行数
      */
-    int insertCertificate(Certificate certificate);
+    int insertCertificate(CertificateForm certificateForm);
     /**
      * 根据条件分页查询证书
      *
@@ -52,10 +53,10 @@ public interface CertificateMapper extends BaseMapper<Certificate> {
     /**
      * 更新证书信息
      *
-     * @param certificate 待更新的证书实体
+     * @param certificateForm 待更新的证书实体
      * @return 更新影响行数
      */
-    int updateById(@Param("certificate") Certificate certificate);
+    int updateById(@Param("certificate") CertificateForm certificateForm);
 //    学生端获取证书
 //    @Select("select * from t_certificate where id = #{id}")  //括号里写sql语句
 //    List<Certificate> select(Integer id);

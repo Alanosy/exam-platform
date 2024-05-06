@@ -18,7 +18,9 @@ import java.util.List;
  * @since 2024-03-21
  */
 
+
 public interface ICertificateService extends IService<Certificate> {
+
     //查询在用的证书列表
 
     /**
@@ -45,12 +47,11 @@ public interface ICertificateService extends IService<Certificate> {
 
     /**
      * 修改公告
-     * @param id  待修改证书的ID
      * @param certificateForm 更新证书的参数
      * @return 返回响应结果
      */
     //修改证书
-    Result<String> updateCertificate(Integer id, CertificateForm certificateForm);
+    Result<String> updateCertificate(CertificateForm certificateForm);
 
     /**
      * 删除公告
