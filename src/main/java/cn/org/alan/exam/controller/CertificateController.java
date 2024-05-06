@@ -24,8 +24,8 @@ public class CertificateController {
     private ICertificateService iCertificateService;
 
     /**
-     * 添加证书，只有教师和管理员可以添加题库
-     * @param certificateForm 添加题库的参数
+     * 添加证书，只有教师和管理员可以添加证书
+     * @param certificateForm 添加证书的前端参数
      * @return 返回响应结果
      */
     @PostMapping
@@ -56,20 +56,22 @@ public class CertificateController {
 
     /**
      * 修改证书
-     * @param id
-     * @return
+     * @param id  id
+     * @param certificateForm 修改证书的前端参数
+     * @return 返回响应结果
      */
-    @PutMapping("/update/{id}")
+    @PutMapping("/{id}")
     @PreAuthorize("hasAnyAuthority('role_teacher','role_admin')")
     public Result<String> updateCertificate(@PathVariable("id") Integer id,
                                             @RequestBody CertificateForm certificateForm) {
-        return iCertificateService.updateCertificate(id, certificateForm);
+        certificateForm.setId(id);
+        return iCertificateService.updateCertificate(certificateForm);
     }
 
     /**
      * 删除证书
-     * @param id
-     * @return
+     * @param id id
+     * @return 返回响应结果
      */
     @DeleteMapping("/delete/{id}")
     @PreAuthorize("hasAnyAuthority('role_teacher','role_admin')")
