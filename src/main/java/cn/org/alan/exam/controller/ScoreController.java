@@ -76,7 +76,7 @@ public class ScoreController {
     }
 
     /**
-     * 层级导出
+     * 成绩导出
      * @param response 响应对象
      * @param examId 考试id
      * @param gradeId 班级id
