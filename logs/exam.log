@@ -142,3 +142,608 @@
 2024-05-06T15:29:49.749+08:00  INFO 18888 --- [restartedMain] cn.org.alan.exam.ExamApplication         : Started ExamApplication in 5.702 seconds (process running for 6.425)
 2024-05-06T15:31:12.720+08:00  INFO 18888 --- [SpringApplicationShutdownHook] com.alibaba.druid.pool.DruidDataSource   : {dataSource-1} closing ...
 2024-05-06T15:31:12.729+08:00  INFO 18888 --- [SpringApplicationShutdownHook] com.alibaba.druid.pool.DruidDataSource   : {dataSource-1} closed
+2024-05-06T15:46:17.824+08:00  INFO 8171 --- [restartedMain] cn.org.alan.exam.ExamApplication         : Starting ExamApplication using Java 17.0.8 with PID 8171 (/Users/alan/Documents/Code/项目开发/学校项目/综合项目实战/考试系统/code/online-exam-system-backend/target/classes started by alan in /Users/alan/Documents/Code/项目开发/学校项目/综合项目实战/考试系统/code/online-exam-system-backend)
+2024-05-06T15:46:17.826+08:00  INFO 8171 --- [restartedMain] cn.org.alan.exam.ExamApplication         : The following 1 profile is active: "dev"
+2024-05-06T15:46:17.877+08:00  INFO 8171 --- [restartedMain] .e.DevToolsPropertyDefaultsPostProcessor : Devtools property defaults active! Set 'spring.devtools.add-properties' to 'false' to disable
+2024-05-06T15:46:17.877+08:00  INFO 8171 --- [restartedMain] .e.DevToolsPropertyDefaultsPostProcessor : For additional web related logging consider setting the 'logging.level.web' property to 'DEBUG'
+2024-05-06T15:46:18.961+08:00  INFO 8171 --- [restartedMain] .s.d.r.c.RepositoryConfigurationDelegate : Multiple Spring Data modules found, entering strict repository configuration mode
+2024-05-06T15:46:18.964+08:00  INFO 8171 --- [restartedMain] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data Redis repositories in DEFAULT mode.
+2024-05-06T15:46:19.022+08:00  INFO 8171 --- [restartedMain] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 42 ms. Found 0 Redis repository interfaces.
+2024-05-06T15:46:19.786+08:00  INFO 8171 --- [restartedMain] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port(s): 8080 (http)
+2024-05-06T15:46:19.796+08:00  INFO 8171 --- [restartedMain] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2024-05-06T15:46:19.797+08:00  INFO 8171 --- [restartedMain] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/10.1.8]
+2024-05-06T15:46:19.852+08:00  INFO 8171 --- [restartedMain] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
+2024-05-06T15:46:19.852+08:00  INFO 8171 --- [restartedMain] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 1974 ms
+2024-05-06T15:46:20.364+08:00  INFO 8171 --- [restartedMain] c.a.d.s.b.a.DruidDataSourceAutoConfigure : Init DruidDataSource
+2024-05-06T15:46:21.431+08:00  INFO 8171 --- [restartedMain] com.alibaba.druid.pool.DruidDataSource   : {dataSource-1} inited
+2024-05-06T15:46:22.943+08:00  INFO 8171 --- [restartedMain] o.s.s.web.DefaultSecurityFilterChain     : Will secure any request with [org.springframework.security.web.session.DisableEncodeUrlFilter@4f84a09e, org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter@16494597, org.springframework.security.web.context.SecurityContextHolderFilter@52237fff, org.springframework.security.web.header.HeaderWriterFilter@72a0c57, org.springframework.security.web.authentication.logout.LogoutFilter@747c35ba, cn.org.alan.exam.filter.VerifyTokenFilter@226a41a3, org.springframework.security.web.savedrequest.RequestCacheAwareFilter@237776cb, org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter@69647284, org.springframework.security.web.authentication.AnonymousAuthenticationFilter@29773bf9, org.springframework.security.web.access.ExceptionTranslationFilter@1e90ecf5, org.springframework.security.web.access.intercept.AuthorizationFilter@7a146011]
+2024-05-06T15:46:22.956+08:00  WARN 8171 --- [restartedMain] o.s.s.c.a.web.builders.WebSecurity       : You are asking Spring Security to ignore Mvc [pattern='/webjars/**']. This is not recommended -- please use permitAll via HttpSecurity#authorizeHttpRequests instead.
+2024-05-06T15:46:22.956+08:00  INFO 8171 --- [restartedMain] o.s.s.web.DefaultSecurityFilterChain     : Will not secure Mvc [pattern='/webjars/**']
+2024-05-06T15:46:22.957+08:00  WARN 8171 --- [restartedMain] o.s.s.c.a.web.builders.WebSecurity       : You are asking Spring Security to ignore Mvc [pattern='/doc.html']. This is not recommended -- please use permitAll via HttpSecurity#authorizeHttpRequests instead.
+2024-05-06T15:46:22.957+08:00  INFO 8171 --- [restartedMain] o.s.s.web.DefaultSecurityFilterChain     : Will not secure Mvc [pattern='/doc.html']
+2024-05-06T15:46:22.957+08:00  WARN 8171 --- [restartedMain] o.s.s.c.a.web.builders.WebSecurity       : You are asking Spring Security to ignore Mvc [pattern='/swagger-resources/**']. This is not recommended -- please use permitAll via HttpSecurity#authorizeHttpRequests instead.
+2024-05-06T15:46:22.957+08:00  INFO 8171 --- [restartedMain] o.s.s.web.DefaultSecurityFilterChain     : Will not secure Mvc [pattern='/swagger-resources/**']
+2024-05-06T15:46:22.957+08:00  WARN 8171 --- [restartedMain] o.s.s.c.a.web.builders.WebSecurity       : You are asking Spring Security to ignore Mvc [pattern='/v3/api-docs/**']. This is not recommended -- please use permitAll via HttpSecurity#authorizeHttpRequests instead.
+2024-05-06T15:46:22.957+08:00  INFO 8171 --- [restartedMain] o.s.s.web.DefaultSecurityFilterChain     : Will not secure Mvc [pattern='/v3/api-docs/**']
+2024-05-06T15:46:22.957+08:00  WARN 8171 --- [restartedMain] o.s.s.c.a.web.builders.WebSecurity       : You are asking Spring Security to ignore Mvc [pattern='/swagger-ui/**']. This is not recommended -- please use permitAll via HttpSecurity#authorizeHttpRequests instead.
+2024-05-06T15:46:22.957+08:00  INFO 8171 --- [restartedMain] o.s.s.web.DefaultSecurityFilterChain     : Will not secure Mvc [pattern='/swagger-ui/**']
+2024-05-06T15:46:22.957+08:00  WARN 8171 --- [restartedMain] o.s.s.c.a.web.builders.WebSecurity       : You are asking Spring Security to ignore Mvc [pattern='/swagger-ui.html']. This is not recommended -- please use permitAll via HttpSecurity#authorizeHttpRequests instead.
+2024-05-06T15:46:22.957+08:00  INFO 8171 --- [restartedMain] o.s.s.web.DefaultSecurityFilterChain     : Will not secure Mvc [pattern='/swagger-ui.html']
+2024-05-06T15:46:22.958+08:00  WARN 8171 --- [restartedMain] o.s.s.c.a.web.builders.WebSecurity       : You are asking Spring Security to ignore Mvc [pattern='/ws/**']. This is not recommended -- please use permitAll via HttpSecurity#authorizeHttpRequests instead.
+2024-05-06T15:46:22.958+08:00  INFO 8171 --- [restartedMain] o.s.s.web.DefaultSecurityFilterChain     : Will not secure Mvc [pattern='/ws/**']
+2024-05-06T15:46:22.958+08:00  WARN 8171 --- [restartedMain] o.s.s.c.a.web.builders.WebSecurity       : You are asking Spring Security to ignore Mvc [pattern='/ws-app/**']. This is not recommended -- please use permitAll via HttpSecurity#authorizeHttpRequests instead.
+2024-05-06T15:46:22.958+08:00  INFO 8171 --- [restartedMain] o.s.s.web.DefaultSecurityFilterChain     : Will not secure Mvc [pattern='/ws-app/**']
+2024-05-06T15:46:23.377+08:00  INFO 8171 --- [restartedMain] o.s.b.d.a.OptionalLiveReloadServer       : LiveReload server is running on port 35729
+2024-05-06T15:46:23.443+08:00  INFO 8171 --- [restartedMain] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port(s): 8080 (http) with context path ''
+2024-05-06T15:46:23.454+08:00  INFO 8171 --- [restartedMain] cn.org.alan.exam.ExamApplication         : Started ExamApplication in 6.116 seconds (process running for 6.727)
+2024-05-06T15:46:31.346+08:00  INFO 8171 --- [http-nio-8080-exec-1] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring DispatcherServlet 'dispatcherServlet'
+2024-05-06T15:46:31.347+08:00  INFO 8171 --- [http-nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Initializing Servlet 'dispatcherServlet'
+2024-05-06T15:46:31.350+08:00  INFO 8171 --- [http-nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Completed initialization in 2 ms
+2024-05-06T15:51:02.296+08:00  INFO 8171 --- [http-nio-8080-exec-4] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:02.296+08:00  INFO 8171 --- [http-nio-8080-exec-5] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:02.296+08:00  INFO 8171 --- [http-nio-8080-exec-3] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:02.300+08:00  INFO 8171 --- [http-nio-8080-exec-4] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:02.300+08:00  INFO 8171 --- [http-nio-8080-exec-3] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:02.300+08:00  INFO 8171 --- [http-nio-8080-exec-5] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:04.602+08:00  INFO 8171 --- [http-nio-8080-exec-6] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:04.602+08:00  INFO 8171 --- [http-nio-8080-exec-7] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:04.603+08:00  INFO 8171 --- [http-nio-8080-exec-6] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:04.603+08:00  INFO 8171 --- [http-nio-8080-exec-7] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:04.607+08:00  INFO 8171 --- [http-nio-8080-exec-8] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:04.608+08:00  INFO 8171 --- [http-nio-8080-exec-8] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:05.136+08:00  INFO 8171 --- [http-nio-8080-exec-9] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:05.137+08:00  INFO 8171 --- [http-nio-8080-exec-9] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:05.138+08:00  INFO 8171 --- [http-nio-8080-exec-10] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:05.138+08:00  INFO 8171 --- [http-nio-8080-exec-10] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:05.140+08:00  INFO 8171 --- [http-nio-8080-exec-1] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:05.140+08:00  INFO 8171 --- [http-nio-8080-exec-1] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:05.155+08:00  INFO 8171 --- [http-nio-8080-exec-2] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:05.155+08:00  INFO 8171 --- [http-nio-8080-exec-2] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:05.157+08:00  INFO 8171 --- [http-nio-8080-exec-5] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:05.157+08:00  INFO 8171 --- [http-nio-8080-exec-5] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:06.117+08:00  INFO 8171 --- [http-nio-8080-exec-3] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:06.117+08:00  INFO 8171 --- [http-nio-8080-exec-4] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:06.118+08:00  INFO 8171 --- [http-nio-8080-exec-3] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:06.118+08:00  INFO 8171 --- [http-nio-8080-exec-4] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:06.121+08:00  INFO 8171 --- [http-nio-8080-exec-7] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:06.121+08:00  INFO 8171 --- [http-nio-8080-exec-7] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:07.590+08:00  INFO 8171 --- [http-nio-8080-exec-8] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:07.591+08:00  INFO 8171 --- [http-nio-8080-exec-8] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:07.596+08:00  INFO 8171 --- [http-nio-8080-exec-6] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:07.596+08:00  INFO 8171 --- [http-nio-8080-exec-6] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:07.599+08:00  INFO 8171 --- [http-nio-8080-exec-10] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:07.599+08:00  INFO 8171 --- [http-nio-8080-exec-10] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:07.601+08:00  INFO 8171 --- [http-nio-8080-exec-1] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:07.601+08:00  INFO 8171 --- [http-nio-8080-exec-1] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:07.607+08:00  INFO 8171 --- [http-nio-8080-exec-9] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:07.608+08:00  INFO 8171 --- [http-nio-8080-exec-9] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:07.746+08:00  INFO 8171 --- [http-nio-8080-exec-2] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:07.746+08:00  INFO 8171 --- [http-nio-8080-exec-2] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:07.754+08:00  INFO 8171 --- [http-nio-8080-exec-5] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:07.754+08:00  INFO 8171 --- [http-nio-8080-exec-5] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:07.756+08:00  INFO 8171 --- [http-nio-8080-exec-7] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:07.756+08:00  INFO 8171 --- [http-nio-8080-exec-7] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:09.355+08:00  INFO 8171 --- [http-nio-8080-exec-3] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:09.356+08:00  INFO 8171 --- [http-nio-8080-exec-3] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:09.357+08:00  INFO 8171 --- [http-nio-8080-exec-4] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:09.357+08:00  INFO 8171 --- [http-nio-8080-exec-4] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:09.359+08:00  INFO 8171 --- [http-nio-8080-exec-8] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:09.359+08:00  INFO 8171 --- [http-nio-8080-exec-8] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:10.042+08:00  INFO 8171 --- [http-nio-8080-exec-10] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:10.042+08:00  INFO 8171 --- [http-nio-8080-exec-6] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:10.043+08:00  INFO 8171 --- [http-nio-8080-exec-6] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:10.043+08:00  INFO 8171 --- [http-nio-8080-exec-10] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:10.043+08:00  INFO 8171 --- [http-nio-8080-exec-2] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:10.043+08:00  INFO 8171 --- [http-nio-8080-exec-2] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:10.043+08:00  INFO 8171 --- [http-nio-8080-exec-9] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:10.044+08:00  INFO 8171 --- [http-nio-8080-exec-9] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:10.044+08:00  INFO 8171 --- [http-nio-8080-exec-1] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:10.044+08:00  INFO 8171 --- [http-nio-8080-exec-1] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:11.072+08:00  INFO 8171 --- [http-nio-8080-exec-7] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:11.072+08:00  INFO 8171 --- [http-nio-8080-exec-7] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:11.074+08:00  INFO 8171 --- [http-nio-8080-exec-5] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:11.074+08:00  INFO 8171 --- [http-nio-8080-exec-5] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:11.079+08:00  INFO 8171 --- [http-nio-8080-exec-4] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:11.079+08:00  INFO 8171 --- [http-nio-8080-exec-4] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:12.439+08:00  INFO 8171 --- [http-nio-8080-exec-3] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:12.440+08:00  INFO 8171 --- [http-nio-8080-exec-3] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:12.441+08:00  INFO 8171 --- [http-nio-8080-exec-8] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:12.441+08:00  INFO 8171 --- [http-nio-8080-exec-8] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:12.442+08:00  INFO 8171 --- [http-nio-8080-exec-6] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:12.442+08:00  INFO 8171 --- [http-nio-8080-exec-6] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:12.445+08:00  INFO 8171 --- [http-nio-8080-exec-2] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:12.445+08:00  INFO 8171 --- [http-nio-8080-exec-2] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:12.445+08:00  INFO 8171 --- [http-nio-8080-exec-10] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:12.445+08:00  INFO 8171 --- [http-nio-8080-exec-10] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:12.673+08:00  INFO 8171 --- [http-nio-8080-exec-9] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:12.673+08:00  INFO 8171 --- [http-nio-8080-exec-9] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:12.678+08:00  INFO 8171 --- [http-nio-8080-exec-7] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:12.679+08:00  INFO 8171 --- [http-nio-8080-exec-1] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:12.679+08:00  INFO 8171 --- [http-nio-8080-exec-7] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:12.679+08:00  INFO 8171 --- [http-nio-8080-exec-1] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:14.447+08:00  INFO 8171 --- [http-nio-8080-exec-5] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:14.447+08:00  INFO 8171 --- [http-nio-8080-exec-5] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:14.455+08:00  INFO 8171 --- [http-nio-8080-exec-4] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:14.455+08:00  INFO 8171 --- [http-nio-8080-exec-4] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:14.462+08:00  INFO 8171 --- [http-nio-8080-exec-3] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:14.462+08:00  INFO 8171 --- [http-nio-8080-exec-3] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:15.015+08:00  INFO 8171 --- [http-nio-8080-exec-2] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:15.015+08:00  INFO 8171 --- [http-nio-8080-exec-2] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:15.021+08:00  INFO 8171 --- [http-nio-8080-exec-10] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:15.021+08:00  INFO 8171 --- [http-nio-8080-exec-10] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:15.024+08:00  INFO 8171 --- [http-nio-8080-exec-8] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:15.025+08:00  INFO 8171 --- [http-nio-8080-exec-8] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:15.026+08:00  INFO 8171 --- [http-nio-8080-exec-6] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:15.027+08:00  INFO 8171 --- [http-nio-8080-exec-6] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:15.031+08:00  INFO 8171 --- [http-nio-8080-exec-7] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:15.031+08:00  INFO 8171 --- [http-nio-8080-exec-7] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:16.548+08:00  INFO 8171 --- [http-nio-8080-exec-9] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:16.548+08:00  INFO 8171 --- [http-nio-8080-exec-5] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:16.548+08:00  INFO 8171 --- [http-nio-8080-exec-1] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:16.549+08:00  INFO 8171 --- [http-nio-8080-exec-9] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:16.549+08:00  INFO 8171 --- [http-nio-8080-exec-5] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:16.549+08:00  INFO 8171 --- [http-nio-8080-exec-1] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:17.556+08:00  INFO 8171 --- [http-nio-8080-exec-4] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:17.557+08:00  INFO 8171 --- [http-nio-8080-exec-4] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:17.557+08:00  INFO 8171 --- [http-nio-8080-exec-3] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:17.557+08:00  INFO 8171 --- [http-nio-8080-exec-3] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:17.558+08:00  INFO 8171 --- [http-nio-8080-exec-10] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:17.558+08:00  INFO 8171 --- [http-nio-8080-exec-10] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:17.563+08:00  INFO 8171 --- [http-nio-8080-exec-2] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:17.564+08:00  INFO 8171 --- [http-nio-8080-exec-2] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:17.564+08:00  INFO 8171 --- [http-nio-8080-exec-6] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:17.564+08:00  INFO 8171 --- [http-nio-8080-exec-6] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:18.426+08:00  INFO 8171 --- [http-nio-8080-exec-7] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:18.427+08:00  INFO 8171 --- [http-nio-8080-exec-7] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:18.431+08:00  INFO 8171 --- [http-nio-8080-exec-8] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:18.431+08:00  INFO 8171 --- [http-nio-8080-exec-8] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:18.444+08:00  INFO 8171 --- [http-nio-8080-exec-5] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:18.445+08:00  INFO 8171 --- [http-nio-8080-exec-5] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:20.209+08:00  INFO 8171 --- [http-nio-8080-exec-1] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:20.209+08:00  INFO 8171 --- [http-nio-8080-exec-1] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:20.215+08:00  INFO 8171 --- [http-nio-8080-exec-9] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:20.216+08:00  INFO 8171 --- [http-nio-8080-exec-9] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:20.216+08:00  INFO 8171 --- [http-nio-8080-exec-10] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:20.216+08:00  INFO 8171 --- [http-nio-8080-exec-10] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:20.582+08:00  INFO 8171 --- [http-nio-8080-exec-3] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:20.582+08:00  INFO 8171 --- [http-nio-8080-exec-3] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:20.583+08:00  INFO 8171 --- [http-nio-8080-exec-6] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:20.583+08:00  INFO 8171 --- [http-nio-8080-exec-2] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:20.583+08:00  INFO 8171 --- [http-nio-8080-exec-6] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:20.583+08:00  INFO 8171 --- [http-nio-8080-exec-2] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:20.584+08:00  INFO 8171 --- [http-nio-8080-exec-4] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:20.584+08:00  INFO 8171 --- [http-nio-8080-exec-4] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:20.585+08:00  INFO 8171 --- [http-nio-8080-exec-8] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:20.585+08:00  INFO 8171 --- [http-nio-8080-exec-8] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:22.049+08:00  INFO 8171 --- [http-nio-8080-exec-7] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:22.049+08:00  INFO 8171 --- [http-nio-8080-exec-7] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:22.051+08:00  INFO 8171 --- [http-nio-8080-exec-5] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:22.052+08:00  INFO 8171 --- [http-nio-8080-exec-5] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:22.056+08:00  INFO 8171 --- [http-nio-8080-exec-1] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:22.056+08:00  INFO 8171 --- [http-nio-8080-exec-1] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:23.344+08:00  INFO 8171 --- [http-nio-8080-exec-3] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:23.345+08:00  INFO 8171 --- [http-nio-8080-exec-3] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:23.346+08:00  INFO 8171 --- [http-nio-8080-exec-9] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:23.346+08:00  INFO 8171 --- [http-nio-8080-exec-9] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:23.348+08:00  INFO 8171 --- [http-nio-8080-exec-10] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:23.348+08:00  INFO 8171 --- [http-nio-8080-exec-10] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:23.351+08:00  INFO 8171 --- [http-nio-8080-exec-8] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:23.351+08:00  INFO 8171 --- [http-nio-8080-exec-8] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:23.351+08:00  INFO 8171 --- [http-nio-8080-exec-2] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:23.351+08:00  INFO 8171 --- [http-nio-8080-exec-2] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:23.752+08:00  INFO 8171 --- [http-nio-8080-exec-6] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:23.753+08:00  INFO 8171 --- [http-nio-8080-exec-6] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:23.757+08:00  INFO 8171 --- [http-nio-8080-exec-1] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:23.758+08:00  INFO 8171 --- [http-nio-8080-exec-1] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:23.758+08:00  INFO 8171 --- [http-nio-8080-exec-4] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:23.758+08:00  INFO 8171 --- [http-nio-8080-exec-4] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:25.440+08:00  INFO 8171 --- [http-nio-8080-exec-3] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:25.440+08:00  INFO 8171 --- [http-nio-8080-exec-3] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:25.441+08:00  INFO 8171 --- [http-nio-8080-exec-5] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:25.441+08:00  INFO 8171 --- [http-nio-8080-exec-5] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:25.441+08:00  INFO 8171 --- [http-nio-8080-exec-7] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:25.441+08:00  INFO 8171 --- [http-nio-8080-exec-7] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:26.383+08:00  INFO 8171 --- [http-nio-8080-exec-8] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:26.384+08:00  INFO 8171 --- [http-nio-8080-exec-8] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:26.386+08:00  INFO 8171 --- [http-nio-8080-exec-9] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:26.386+08:00  INFO 8171 --- [http-nio-8080-exec-2] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:26.386+08:00  INFO 8171 --- [http-nio-8080-exec-2] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:26.386+08:00  INFO 8171 --- [http-nio-8080-exec-9] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:26.394+08:00  INFO 8171 --- [http-nio-8080-exec-10] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:26.394+08:00  INFO 8171 --- [http-nio-8080-exec-6] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:26.394+08:00  INFO 8171 --- [http-nio-8080-exec-6] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:26.394+08:00  INFO 8171 --- [http-nio-8080-exec-10] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:27.226+08:00  INFO 8171 --- [http-nio-8080-exec-1] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:27.226+08:00  INFO 8171 --- [http-nio-8080-exec-1] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:27.227+08:00  INFO 8171 --- [http-nio-8080-exec-4] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:27.228+08:00  INFO 8171 --- [http-nio-8080-exec-4] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:27.231+08:00  INFO 8171 --- [http-nio-8080-exec-3] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:27.231+08:00  INFO 8171 --- [http-nio-8080-exec-3] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:28.919+08:00  INFO 8171 --- [http-nio-8080-exec-5] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:28.920+08:00  INFO 8171 --- [http-nio-8080-exec-5] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:28.920+08:00  INFO 8171 --- [http-nio-8080-exec-7] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:28.920+08:00  INFO 8171 --- [http-nio-8080-exec-7] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:28.920+08:00  INFO 8171 --- [http-nio-8080-exec-9] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:28.920+08:00  INFO 8171 --- [http-nio-8080-exec-9] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:29.276+08:00  INFO 8171 --- [http-nio-8080-exec-4] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:29.276+08:00  INFO 8171 --- [http-nio-8080-exec-4] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:29.282+08:00  INFO 8171 --- [http-nio-8080-exec-8] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:29.282+08:00  INFO 8171 --- [http-nio-8080-exec-6] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:29.283+08:00  INFO 8171 --- [http-nio-8080-exec-8] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:29.283+08:00  INFO 8171 --- [http-nio-8080-exec-6] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:29.301+08:00  INFO 8171 --- [http-nio-8080-exec-10] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:29.301+08:00  INFO 8171 --- [http-nio-8080-exec-2] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:29.302+08:00  INFO 8171 --- [http-nio-8080-exec-10] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:29.302+08:00  INFO 8171 --- [http-nio-8080-exec-2] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:30.849+08:00  INFO 8171 --- [http-nio-8080-exec-1] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:30.849+08:00  INFO 8171 --- [http-nio-8080-exec-1] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:30.855+08:00  INFO 8171 --- [http-nio-8080-exec-3] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:30.855+08:00  INFO 8171 --- [http-nio-8080-exec-3] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:30.864+08:00  INFO 8171 --- [http-nio-8080-exec-7] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:30.865+08:00  INFO 8171 --- [http-nio-8080-exec-7] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:32.628+08:00  INFO 8171 --- [http-nio-8080-exec-5] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:32.628+08:00  INFO 8171 --- [http-nio-8080-exec-5] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:32.629+08:00  INFO 8171 --- [http-nio-8080-exec-9] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:32.629+08:00  INFO 8171 --- [http-nio-8080-exec-9] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:32.630+08:00  INFO 8171 --- [http-nio-8080-exec-6] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:32.630+08:00  INFO 8171 --- [http-nio-8080-exec-6] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:32.748+08:00  INFO 8171 --- [http-nio-8080-exec-4] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:32.748+08:00  INFO 8171 --- [http-nio-8080-exec-4] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:32.749+08:00  INFO 8171 --- [http-nio-8080-exec-8] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:32.750+08:00  INFO 8171 --- [http-nio-8080-exec-8] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:32.750+08:00  INFO 8171 --- [http-nio-8080-exec-2] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:32.750+08:00  INFO 8171 --- [http-nio-8080-exec-2] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:32.758+08:00  INFO 8171 --- [http-nio-8080-exec-10] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:32.758+08:00  INFO 8171 --- [http-nio-8080-exec-10] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:32.759+08:00  INFO 8171 --- [http-nio-8080-exec-1] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:32.759+08:00  INFO 8171 --- [http-nio-8080-exec-1] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:34.428+08:00  INFO 8171 --- [http-nio-8080-exec-3] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:34.429+08:00  INFO 8171 --- [http-nio-8080-exec-3] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:34.447+08:00  INFO 8171 --- [http-nio-8080-exec-7] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:34.447+08:00  INFO 8171 --- [http-nio-8080-exec-7] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:34.447+08:00  INFO 8171 --- [http-nio-8080-exec-5] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:34.447+08:00  INFO 8171 --- [http-nio-8080-exec-5] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:35.819+08:00  INFO 8171 --- [http-nio-8080-exec-6] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:35.820+08:00  INFO 8171 --- [http-nio-8080-exec-6] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:35.820+08:00  INFO 8171 --- [http-nio-8080-exec-9] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:35.820+08:00  INFO 8171 --- [http-nio-8080-exec-9] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:35.821+08:00  INFO 8171 --- [http-nio-8080-exec-2] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:35.821+08:00  INFO 8171 --- [http-nio-8080-exec-2] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:35.822+08:00  INFO 8171 --- [http-nio-8080-exec-8] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:35.822+08:00  INFO 8171 --- [http-nio-8080-exec-8] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:35.822+08:00  INFO 8171 --- [http-nio-8080-exec-4] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:35.822+08:00  INFO 8171 --- [http-nio-8080-exec-4] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:36.214+08:00  INFO 8171 --- [http-nio-8080-exec-10] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:36.215+08:00  INFO 8171 --- [http-nio-8080-exec-10] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:36.219+08:00  INFO 8171 --- [http-nio-8080-exec-1] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:36.219+08:00  INFO 8171 --- [http-nio-8080-exec-1] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:36.221+08:00  INFO 8171 --- [http-nio-8080-exec-3] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:36.221+08:00  INFO 8171 --- [http-nio-8080-exec-3] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:38.090+08:00  INFO 8171 --- [http-nio-8080-exec-7] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:38.090+08:00  INFO 8171 --- [http-nio-8080-exec-5] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:38.090+08:00  INFO 8171 --- [http-nio-8080-exec-7] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:38.090+08:00  INFO 8171 --- [http-nio-8080-exec-5] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:38.099+08:00  INFO 8171 --- [http-nio-8080-exec-6] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:38.099+08:00  INFO 8171 --- [http-nio-8080-exec-6] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:39.146+08:00  INFO 8171 --- [http-nio-8080-exec-8] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:39.146+08:00  INFO 8171 --- [http-nio-8080-exec-8] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:39.150+08:00  INFO 8171 --- [http-nio-8080-exec-2] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:39.151+08:00  INFO 8171 --- [http-nio-8080-exec-2] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:39.151+08:00  INFO 8171 --- [http-nio-8080-exec-9] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:39.151+08:00  INFO 8171 --- [http-nio-8080-exec-4] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:39.151+08:00  INFO 8171 --- [http-nio-8080-exec-9] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:39.151+08:00  INFO 8171 --- [http-nio-8080-exec-4] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:39.154+08:00  INFO 8171 --- [http-nio-8080-exec-1] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:39.154+08:00  INFO 8171 --- [http-nio-8080-exec-1] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:39.812+08:00  INFO 8171 --- [http-nio-8080-exec-10] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:39.812+08:00  INFO 8171 --- [http-nio-8080-exec-10] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:39.813+08:00  INFO 8171 --- [http-nio-8080-exec-3] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:39.813+08:00  INFO 8171 --- [http-nio-8080-exec-3] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:39.814+08:00  INFO 8171 --- [http-nio-8080-exec-5] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:39.815+08:00  INFO 8171 --- [http-nio-8080-exec-5] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:41.677+08:00  INFO 8171 --- [http-nio-8080-exec-6] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:41.677+08:00  INFO 8171 --- [http-nio-8080-exec-6] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:41.682+08:00  INFO 8171 --- [http-nio-8080-exec-7] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:41.683+08:00  INFO 8171 --- [http-nio-8080-exec-7] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:41.684+08:00  INFO 8171 --- [http-nio-8080-exec-2] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:41.685+08:00  INFO 8171 --- [http-nio-8080-exec-2] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:42.433+08:00  INFO 8171 --- [http-nio-8080-exec-8] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:42.433+08:00  INFO 8171 --- [http-nio-8080-exec-8] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:42.441+08:00  INFO 8171 --- [http-nio-8080-exec-1] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:42.441+08:00  INFO 8171 --- [http-nio-8080-exec-1] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:42.445+08:00  INFO 8171 --- [http-nio-8080-exec-4] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:42.445+08:00  INFO 8171 --- [http-nio-8080-exec-4] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:42.457+08:00  INFO 8171 --- [http-nio-8080-exec-9] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:42.457+08:00  INFO 8171 --- [http-nio-8080-exec-9] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:42.465+08:00  INFO 8171 --- [http-nio-8080-exec-5] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:42.465+08:00  INFO 8171 --- [http-nio-8080-exec-5] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:43.331+08:00  INFO 8171 --- [http-nio-8080-exec-10] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:43.332+08:00  INFO 8171 --- [http-nio-8080-exec-3] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:43.332+08:00  INFO 8171 --- [http-nio-8080-exec-10] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:43.332+08:00  INFO 8171 --- [http-nio-8080-exec-3] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:43.335+08:00  INFO 8171 --- [http-nio-8080-exec-6] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:43.335+08:00  INFO 8171 --- [http-nio-8080-exec-6] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:45.101+08:00  INFO 8171 --- [http-nio-8080-exec-2] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:45.101+08:00  INFO 8171 --- [http-nio-8080-exec-2] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:45.106+08:00  INFO 8171 --- [http-nio-8080-exec-7] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:45.106+08:00  INFO 8171 --- [http-nio-8080-exec-7] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:45.110+08:00  INFO 8171 --- [http-nio-8080-exec-8] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:45.110+08:00  INFO 8171 --- [http-nio-8080-exec-8] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:45.551+08:00  INFO 8171 --- [http-nio-8080-exec-5] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:45.551+08:00  INFO 8171 --- [http-nio-8080-exec-5] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:45.554+08:00  INFO 8171 --- [http-nio-8080-exec-4] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:45.555+08:00  INFO 8171 --- [http-nio-8080-exec-4] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:45.556+08:00  INFO 8171 --- [http-nio-8080-exec-1] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:45.556+08:00  INFO 8171 --- [http-nio-8080-exec-1] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:45.557+08:00  INFO 8171 --- [http-nio-8080-exec-9] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:45.557+08:00  INFO 8171 --- [http-nio-8080-exec-10] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:45.557+08:00  INFO 8171 --- [http-nio-8080-exec-9] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:45.557+08:00  INFO 8171 --- [http-nio-8080-exec-10] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:46.820+08:00  INFO 8171 --- [http-nio-8080-exec-3] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:46.821+08:00  INFO 8171 --- [http-nio-8080-exec-3] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:46.823+08:00  INFO 8171 --- [http-nio-8080-exec-2] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:46.823+08:00  INFO 8171 --- [http-nio-8080-exec-2] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:46.823+08:00  INFO 8171 --- [http-nio-8080-exec-6] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:46.824+08:00  INFO 8171 --- [http-nio-8080-exec-6] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:48.646+08:00  INFO 8171 --- [http-nio-8080-exec-8] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:48.647+08:00  INFO 8171 --- [http-nio-8080-exec-8] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:48.647+08:00  INFO 8171 --- [http-nio-8080-exec-7] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:48.647+08:00  INFO 8171 --- [http-nio-8080-exec-7] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:48.649+08:00  INFO 8171 --- [http-nio-8080-exec-5] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:48.650+08:00  INFO 8171 --- [http-nio-8080-exec-5] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:48.910+08:00  INFO 8171 --- [http-nio-8080-exec-10] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:48.910+08:00  INFO 8171 --- [http-nio-8080-exec-10] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:48.910+08:00  INFO 8171 --- [http-nio-8080-exec-4] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:48.910+08:00  INFO 8171 --- [http-nio-8080-exec-4] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:48.911+08:00  INFO 8171 --- [http-nio-8080-exec-9] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:48.911+08:00  INFO 8171 --- [http-nio-8080-exec-9] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:48.914+08:00  INFO 8171 --- [http-nio-8080-exec-1] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:48.914+08:00  INFO 8171 --- [http-nio-8080-exec-1] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:48.914+08:00  INFO 8171 --- [http-nio-8080-exec-2] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:48.914+08:00  INFO 8171 --- [http-nio-8080-exec-2] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:50.425+08:00  INFO 8171 --- [http-nio-8080-exec-6] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:50.425+08:00  INFO 8171 --- [http-nio-8080-exec-3] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:50.425+08:00  INFO 8171 --- [http-nio-8080-exec-6] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:50.425+08:00  INFO 8171 --- [http-nio-8080-exec-3] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:50.426+08:00  INFO 8171 --- [http-nio-8080-exec-7] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:50.426+08:00  INFO 8171 --- [http-nio-8080-exec-7] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:51.942+08:00  INFO 8171 --- [http-nio-8080-exec-5] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:51.942+08:00  INFO 8171 --- [http-nio-8080-exec-5] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:51.943+08:00  INFO 8171 --- [http-nio-8080-exec-10] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:51.943+08:00  INFO 8171 --- [http-nio-8080-exec-10] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:51.944+08:00  INFO 8171 --- [http-nio-8080-exec-9] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:51.944+08:00  INFO 8171 --- [http-nio-8080-exec-9] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:51.944+08:00  INFO 8171 --- [http-nio-8080-exec-8] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:51.944+08:00  INFO 8171 --- [http-nio-8080-exec-2] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:51.944+08:00  INFO 8171 --- [http-nio-8080-exec-8] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:51.945+08:00  INFO 8171 --- [http-nio-8080-exec-2] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:52.211+08:00  INFO 8171 --- [http-nio-8080-exec-1] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:52.211+08:00  INFO 8171 --- [http-nio-8080-exec-1] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:52.219+08:00  INFO 8171 --- [http-nio-8080-exec-4] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:52.219+08:00  INFO 8171 --- [http-nio-8080-exec-4] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:52.227+08:00  INFO 8171 --- [http-nio-8080-exec-7] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:52.227+08:00  INFO 8171 --- [http-nio-8080-exec-7] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:54.038+08:00  INFO 8171 --- [http-nio-8080-exec-6] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:54.038+08:00  INFO 8171 --- [http-nio-8080-exec-6] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:54.039+08:00  INFO 8171 --- [http-nio-8080-exec-5] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:54.039+08:00  INFO 8171 --- [http-nio-8080-exec-3] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:54.039+08:00  INFO 8171 --- [http-nio-8080-exec-5] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:54.039+08:00  INFO 8171 --- [http-nio-8080-exec-3] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:55.375+08:00  INFO 8171 --- [http-nio-8080-exec-9] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:55.375+08:00  INFO 8171 --- [http-nio-8080-exec-2] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:55.375+08:00  INFO 8171 --- [http-nio-8080-exec-9] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:55.376+08:00  INFO 8171 --- [http-nio-8080-exec-2] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:55.383+08:00  INFO 8171 --- [http-nio-8080-exec-10] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:55.383+08:00  INFO 8171 --- [http-nio-8080-exec-10] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:55.388+08:00  INFO 8171 --- [http-nio-8080-exec-8] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:55.388+08:00  INFO 8171 --- [http-nio-8080-exec-1] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:55.388+08:00  INFO 8171 --- [http-nio-8080-exec-8] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:55.388+08:00  INFO 8171 --- [http-nio-8080-exec-1] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:55.849+08:00  INFO 8171 --- [http-nio-8080-exec-4] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:55.849+08:00  INFO 8171 --- [http-nio-8080-exec-4] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:55.868+08:00  INFO 8171 --- [http-nio-8080-exec-7] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:55.868+08:00  INFO 8171 --- [http-nio-8080-exec-7] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:55.870+08:00  INFO 8171 --- [http-nio-8080-exec-6] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:55.870+08:00  INFO 8171 --- [http-nio-8080-exec-6] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:57.680+08:00  INFO 8171 --- [http-nio-8080-exec-5] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:57.680+08:00  INFO 8171 --- [http-nio-8080-exec-5] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:57.682+08:00  INFO 8171 --- [http-nio-8080-exec-3] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:57.682+08:00  INFO 8171 --- [http-nio-8080-exec-3] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:57.686+08:00  INFO 8171 --- [http-nio-8080-exec-2] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:57.686+08:00  INFO 8171 --- [http-nio-8080-exec-2] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:58.582+08:00  INFO 8171 --- [http-nio-8080-exec-10] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:58.582+08:00  INFO 8171 --- [http-nio-8080-exec-10] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:58.586+08:00  INFO 8171 --- [http-nio-8080-exec-9] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:58.586+08:00  INFO 8171 --- [http-nio-8080-exec-8] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:58.586+08:00  INFO 8171 --- [http-nio-8080-exec-8] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:58.586+08:00  INFO 8171 --- [http-nio-8080-exec-9] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:58.588+08:00  INFO 8171 --- [http-nio-8080-exec-1] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:58.588+08:00  INFO 8171 --- [http-nio-8080-exec-1] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:58.589+08:00  INFO 8171 --- [http-nio-8080-exec-4] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:58.589+08:00  INFO 8171 --- [http-nio-8080-exec-4] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:59.373+08:00  INFO 8171 --- [http-nio-8080-exec-7] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:59.373+08:00  INFO 8171 --- [http-nio-8080-exec-7] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:59.376+08:00  INFO 8171 --- [http-nio-8080-exec-6] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:59.376+08:00  INFO 8171 --- [http-nio-8080-exec-6] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:59.378+08:00  INFO 8171 --- [http-nio-8080-exec-3] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
+2024-05-06T15:51:59.378+08:00  INFO 8171 --- [http-nio-8080-exec-3] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
+2024-05-06T15:52:01.274+08:00  INFO 8171 --- [http-nio-8080-exec-2] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
+2024-05-06T15:52:01.274+08:00  INFO 8171 --- [http-nio-8080-exec-2] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
+2024-05-06T15:52:01.275+08:00  INFO 8171 --- [http-nio-8080-exec-9] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
+2024-05-06T15:52:01.275+08:00  INFO 8171 --- [http-nio-8080-exec-9] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
+2024-05-06T15:52:01.275+08:00  INFO 8171 --- [http-nio-8080-exec-5] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
+2024-05-06T15:52:01.275+08:00  INFO 8171 --- [http-nio-8080-exec-5] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
+2024-05-06T15:52:02.106+08:00  INFO 8171 --- [http-nio-8080-exec-8] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
+2024-05-06T15:52:02.106+08:00  INFO 8171 --- [http-nio-8080-exec-8] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
+2024-05-06T15:52:02.106+08:00  INFO 8171 --- [http-nio-8080-exec-1] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
+2024-05-06T15:52:02.106+08:00  INFO 8171 --- [http-nio-8080-exec-1] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
+2024-05-06T15:52:02.106+08:00  INFO 8171 --- [http-nio-8080-exec-10] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
+2024-05-06T15:52:02.106+08:00  INFO 8171 --- [http-nio-8080-exec-10] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
+2024-05-06T15:52:02.108+08:00  INFO 8171 --- [http-nio-8080-exec-4] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
+2024-05-06T15:52:02.108+08:00  INFO 8171 --- [http-nio-8080-exec-4] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
+2024-05-06T15:52:02.109+08:00  INFO 8171 --- [http-nio-8080-exec-7] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
+2024-05-06T15:52:02.109+08:00  INFO 8171 --- [http-nio-8080-exec-7] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
+2024-05-06T15:52:03.001+08:00  INFO 8171 --- [http-nio-8080-exec-3] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
+2024-05-06T15:52:03.001+08:00  INFO 8171 --- [http-nio-8080-exec-3] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
+2024-05-06T15:52:03.002+08:00  INFO 8171 --- [http-nio-8080-exec-9] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
+2024-05-06T15:52:03.002+08:00  INFO 8171 --- [http-nio-8080-exec-9] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
+2024-05-06T15:52:03.003+08:00  INFO 8171 --- [http-nio-8080-exec-6] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
+2024-05-06T15:52:03.003+08:00  INFO 8171 --- [http-nio-8080-exec-6] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
+2024-05-06T15:52:04.974+08:00  INFO 8171 --- [http-nio-8080-exec-5] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
+2024-05-06T15:52:04.974+08:00  INFO 8171 --- [http-nio-8080-exec-5] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
+2024-05-06T15:52:04.980+08:00  INFO 8171 --- [http-nio-8080-exec-8] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
+2024-05-06T15:52:04.980+08:00  INFO 8171 --- [http-nio-8080-exec-8] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
+2024-05-06T15:52:04.981+08:00  INFO 8171 --- [http-nio-8080-exec-2] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
+2024-05-06T15:52:04.981+08:00  INFO 8171 --- [http-nio-8080-exec-2] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
+2024-05-06T15:52:05.225+08:00  INFO 8171 --- [http-nio-8080-exec-4] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
+2024-05-06T15:52:05.225+08:00  INFO 8171 --- [http-nio-8080-exec-4] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
+2024-05-06T15:52:05.229+08:00  INFO 8171 --- [http-nio-8080-exec-7] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
+2024-05-06T15:52:05.229+08:00  INFO 8171 --- [http-nio-8080-exec-7] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
+2024-05-06T15:52:05.230+08:00  INFO 8171 --- [http-nio-8080-exec-1] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
+2024-05-06T15:52:05.230+08:00  INFO 8171 --- [http-nio-8080-exec-1] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
+2024-05-06T15:52:05.230+08:00  INFO 8171 --- [http-nio-8080-exec-10] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
+2024-05-06T15:52:05.230+08:00  INFO 8171 --- [http-nio-8080-exec-10] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
+2024-05-06T15:52:05.231+08:00  INFO 8171 --- [http-nio-8080-exec-9] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
+2024-05-06T15:52:05.231+08:00  INFO 8171 --- [http-nio-8080-exec-9] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
+2024-05-06T15:52:06.720+08:00  INFO 8171 --- [http-nio-8080-exec-3] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
+2024-05-06T15:52:06.720+08:00  INFO 8171 --- [http-nio-8080-exec-3] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
+2024-05-06T15:52:06.728+08:00  INFO 8171 --- [http-nio-8080-exec-6] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
+2024-05-06T15:52:06.728+08:00  INFO 8171 --- [http-nio-8080-exec-6] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
+2024-05-06T15:52:06.733+08:00  INFO 8171 --- [http-nio-8080-exec-5] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
+2024-05-06T15:52:06.733+08:00  INFO 8171 --- [http-nio-8080-exec-5] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
+2024-05-06T15:52:08.585+08:00  INFO 8171 --- [http-nio-8080-exec-8] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
+2024-05-06T15:52:08.586+08:00  INFO 8171 --- [http-nio-8080-exec-8] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
+2024-05-06T15:52:08.586+08:00  INFO 8171 --- [http-nio-8080-exec-2] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
+2024-05-06T15:52:08.586+08:00  INFO 8171 --- [http-nio-8080-exec-2] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
+2024-05-06T15:52:08.590+08:00  INFO 8171 --- [http-nio-8080-exec-7] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
+2024-05-06T15:52:08.590+08:00  INFO 8171 --- [http-nio-8080-exec-7] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
+2024-05-06T15:52:08.675+08:00  INFO 8171 --- [http-nio-8080-exec-10] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
+2024-05-06T15:52:08.676+08:00  INFO 8171 --- [http-nio-8080-exec-10] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
+2024-05-06T15:52:08.688+08:00  INFO 8171 --- [http-nio-8080-exec-1] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
+2024-05-06T15:52:08.689+08:00  INFO 8171 --- [http-nio-8080-exec-1] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
+2024-05-06T15:52:08.689+08:00  INFO 8171 --- [http-nio-8080-exec-9] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
+2024-05-06T15:52:08.689+08:00  INFO 8171 --- [http-nio-8080-exec-9] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
+2024-05-06T15:52:08.689+08:00  INFO 8171 --- [http-nio-8080-exec-4] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
+2024-05-06T15:52:08.689+08:00  INFO 8171 --- [http-nio-8080-exec-4] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
+2024-05-06T15:52:08.690+08:00  INFO 8171 --- [http-nio-8080-exec-3] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
+2024-05-06T15:52:08.690+08:00  INFO 8171 --- [http-nio-8080-exec-3] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
+2024-05-06T15:52:10.348+08:00  INFO 8171 --- [http-nio-8080-exec-6] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
+2024-05-06T15:52:10.348+08:00  INFO 8171 --- [http-nio-8080-exec-6] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
+2024-05-06T15:52:10.350+08:00  INFO 8171 --- [http-nio-8080-exec-5] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
+2024-05-06T15:52:10.350+08:00  INFO 8171 --- [http-nio-8080-exec-5] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
+2024-05-06T15:52:10.350+08:00  INFO 8171 --- [http-nio-8080-exec-2] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
+2024-05-06T15:52:10.350+08:00  INFO 8171 --- [http-nio-8080-exec-2] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
+2024-05-06T15:52:12.135+08:00  INFO 8171 --- [http-nio-8080-exec-8] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
+2024-05-06T15:52:12.135+08:00  INFO 8171 --- [http-nio-8080-exec-8] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
+2024-05-06T15:52:12.138+08:00  INFO 8171 --- [http-nio-8080-exec-10] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
+2024-05-06T15:52:12.138+08:00  INFO 8171 --- [http-nio-8080-exec-10] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
+2024-05-06T15:52:12.139+08:00  INFO 8171 --- [http-nio-8080-exec-7] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
+2024-05-06T15:52:12.139+08:00  INFO 8171 --- [http-nio-8080-exec-7] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
+2024-05-06T15:52:12.139+08:00  INFO 8171 --- [http-nio-8080-exec-9] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
+2024-05-06T15:52:12.139+08:00  INFO 8171 --- [http-nio-8080-exec-9] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
+2024-05-06T15:52:12.144+08:00  INFO 8171 --- [http-nio-8080-exec-3] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
+2024-05-06T15:52:12.145+08:00  INFO 8171 --- [http-nio-8080-exec-3] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
+2024-05-06T15:52:12.218+08:00  INFO 8171 --- [http-nio-8080-exec-1] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
+2024-05-06T15:52:12.218+08:00  INFO 8171 --- [http-nio-8080-exec-1] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
+2024-05-06T15:52:12.229+08:00  INFO 8171 --- [http-nio-8080-exec-4] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
+2024-05-06T15:52:12.229+08:00  INFO 8171 --- [http-nio-8080-exec-2] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
+2024-05-06T15:52:12.229+08:00  INFO 8171 --- [http-nio-8080-exec-4] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
+2024-05-06T15:52:12.229+08:00  INFO 8171 --- [http-nio-8080-exec-2] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
+2024-05-06T15:52:14.300+08:00  INFO 8171 --- [http-nio-8080-exec-5] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
+2024-05-06T15:52:14.300+08:00  INFO 8171 --- [http-nio-8080-exec-5] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
+2024-05-06T15:52:14.302+08:00  INFO 8171 --- [http-nio-8080-exec-6] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
+2024-05-06T15:52:14.302+08:00  INFO 8171 --- [http-nio-8080-exec-6] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
+2024-05-06T15:52:14.303+08:00  INFO 8171 --- [http-nio-8080-exec-8] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
+2024-05-06T15:52:14.303+08:00  INFO 8171 --- [http-nio-8080-exec-8] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
+2024-05-06T15:52:15.711+08:00  INFO 8171 --- [http-nio-8080-exec-10] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
+2024-05-06T15:52:15.711+08:00  INFO 8171 --- [http-nio-8080-exec-10] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
+2024-05-06T15:52:15.724+08:00  INFO 8171 --- [http-nio-8080-exec-7] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
+2024-05-06T15:52:15.724+08:00  INFO 8171 --- [http-nio-8080-exec-9] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
+2024-05-06T15:52:15.724+08:00  INFO 8171 --- [http-nio-8080-exec-7] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
+2024-05-06T15:52:15.724+08:00  INFO 8171 --- [http-nio-8080-exec-9] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
+2024-05-06T15:52:15.726+08:00  INFO 8171 --- [http-nio-8080-exec-3] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
+2024-05-06T15:52:15.726+08:00  INFO 8171 --- [http-nio-8080-exec-3] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
+2024-05-06T15:52:15.728+08:00  INFO 8171 --- [http-nio-8080-exec-2] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
+2024-05-06T15:52:15.728+08:00  INFO 8171 --- [http-nio-8080-exec-2] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
+2024-05-06T15:52:16.113+08:00  INFO 8171 --- [http-nio-8080-exec-4] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
+2024-05-06T15:52:16.113+08:00  INFO 8171 --- [http-nio-8080-exec-4] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
+2024-05-06T15:52:16.113+08:00  INFO 8171 --- [http-nio-8080-exec-1] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
+2024-05-06T15:52:16.113+08:00  INFO 8171 --- [http-nio-8080-exec-1] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
+2024-05-06T15:52:16.118+08:00  INFO 8171 --- [http-nio-8080-exec-6] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
+2024-05-06T15:52:16.118+08:00  INFO 8171 --- [http-nio-8080-exec-6] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
+2024-05-06T15:52:18.095+08:00  INFO 8171 --- [http-nio-8080-exec-5] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
+2024-05-06T15:52:18.095+08:00  INFO 8171 --- [http-nio-8080-exec-5] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
+2024-05-06T15:52:18.098+08:00  INFO 8171 --- [http-nio-8080-exec-8] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
+2024-05-06T15:52:18.098+08:00  INFO 8171 --- [http-nio-8080-exec-8] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
+2024-05-06T15:52:18.100+08:00  INFO 8171 --- [http-nio-8080-exec-10] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
+2024-05-06T15:52:18.100+08:00  INFO 8171 --- [http-nio-8080-exec-10] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
+2024-05-06T15:52:18.797+08:00  INFO 8171 --- [http-nio-8080-exec-7] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
+2024-05-06T15:52:18.797+08:00  INFO 8171 --- [http-nio-8080-exec-7] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
+2024-05-06T15:52:18.803+08:00  INFO 8171 --- [http-nio-8080-exec-2] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
+2024-05-06T15:52:18.803+08:00  INFO 8171 --- [http-nio-8080-exec-3] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
+2024-05-06T15:52:18.803+08:00  INFO 8171 --- [http-nio-8080-exec-2] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
+2024-05-06T15:52:18.803+08:00  INFO 8171 --- [http-nio-8080-exec-3] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
+2024-05-06T15:52:18.817+08:00  INFO 8171 --- [http-nio-8080-exec-9] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
+2024-05-06T15:52:18.818+08:00  INFO 8171 --- [http-nio-8080-exec-9] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
+2024-05-06T15:52:18.818+08:00  INFO 8171 --- [http-nio-8080-exec-4] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
+2024-05-06T15:52:18.822+08:00  INFO 8171 --- [http-nio-8080-exec-4] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
+2024-05-06T15:52:19.833+08:00  INFO 8171 --- [http-nio-8080-exec-1] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
+2024-05-06T15:52:19.833+08:00  INFO 8171 --- [http-nio-8080-exec-1] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
+2024-05-06T15:52:19.835+08:00  INFO 8171 --- [http-nio-8080-exec-5] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
+2024-05-06T15:52:19.835+08:00  INFO 8171 --- [http-nio-8080-exec-5] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
+2024-05-06T15:52:19.836+08:00  INFO 8171 --- [http-nio-8080-exec-6] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
+2024-05-06T15:52:19.836+08:00  INFO 8171 --- [http-nio-8080-exec-6] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
+2024-05-06T15:52:21.796+08:00  INFO 8171 --- [http-nio-8080-exec-8] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
+2024-05-06T15:52:21.796+08:00  INFO 8171 --- [http-nio-8080-exec-8] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
+2024-05-06T15:52:21.796+08:00  INFO 8171 --- [http-nio-8080-exec-10] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
+2024-05-06T15:52:21.796+08:00  INFO 8171 --- [http-nio-8080-exec-10] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
+2024-05-06T15:52:21.797+08:00  INFO 8171 --- [http-nio-8080-exec-2] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
+2024-05-06T15:52:21.797+08:00  INFO 8171 --- [http-nio-8080-exec-2] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
+2024-05-06T15:52:22.373+08:00  INFO 8171 --- [http-nio-8080-exec-4] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
+2024-05-06T15:52:22.373+08:00  INFO 8171 --- [http-nio-8080-exec-7] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
+2024-05-06T15:52:22.373+08:00  INFO 8171 --- [http-nio-8080-exec-4] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
+2024-05-06T15:52:22.373+08:00  INFO 8171 --- [http-nio-8080-exec-7] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
+2024-05-06T15:52:22.374+08:00  INFO 8171 --- [http-nio-8080-exec-9] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
+2024-05-06T15:52:22.374+08:00  INFO 8171 --- [http-nio-8080-exec-9] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
+2024-05-06T15:52:22.374+08:00  INFO 8171 --- [http-nio-8080-exec-3] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
+2024-05-06T15:52:22.374+08:00  INFO 8171 --- [http-nio-8080-exec-3] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
+2024-05-06T15:52:22.375+08:00  INFO 8171 --- [http-nio-8080-exec-5] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
+2024-05-06T15:52:22.375+08:00  INFO 8171 --- [http-nio-8080-exec-5] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
+2024-05-06T15:55:13.103+08:00  INFO 8171 --- [SpringApplicationShutdownHook] com.alibaba.druid.pool.DruidDataSource   : {dataSource-1} closing ...
+2024-05-06T15:55:13.116+08:00  INFO 8171 --- [SpringApplicationShutdownHook] com.alibaba.druid.pool.DruidDataSource   : {dataSource-1} closed
+2024-05-06T16:13:09.071+08:00  INFO 9369 --- [restartedMain] cn.org.alan.exam.ExamApplication         : Starting ExamApplication using Java 17.0.8 with PID 9369 (/Users/alan/Documents/Code/项目开发/学校项目/综合项目实战/考试系统/code/online-exam-system-backend/target/classes started by alan in /Users/alan/Documents/Code/项目开发/学校项目/综合项目实战/考试系统/code/online-exam-system-backend)
+2024-05-06T16:13:09.073+08:00  INFO 9369 --- [restartedMain] cn.org.alan.exam.ExamApplication         : The following 1 profile is active: "dev"
+2024-05-06T16:13:09.106+08:00  INFO 9369 --- [restartedMain] .e.DevToolsPropertyDefaultsPostProcessor : Devtools property defaults active! Set 'spring.devtools.add-properties' to 'false' to disable
+2024-05-06T16:13:09.107+08:00  INFO 9369 --- [restartedMain] .e.DevToolsPropertyDefaultsPostProcessor : For additional web related logging consider setting the 'logging.level.web' property to 'DEBUG'
+2024-05-06T16:13:10.065+08:00  INFO 9369 --- [restartedMain] .s.d.r.c.RepositoryConfigurationDelegate : Multiple Spring Data modules found, entering strict repository configuration mode
+2024-05-06T16:13:10.069+08:00  INFO 9369 --- [restartedMain] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data Redis repositories in DEFAULT mode.
+2024-05-06T16:13:10.131+08:00  INFO 9369 --- [restartedMain] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 36 ms. Found 0 Redis repository interfaces.
+2024-05-06T16:13:10.959+08:00  INFO 9369 --- [restartedMain] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port(s): 8080 (http)
+2024-05-06T16:13:10.970+08:00  INFO 9369 --- [restartedMain] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2024-05-06T16:13:10.971+08:00  INFO 9369 --- [restartedMain] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/10.1.8]
+2024-05-06T16:13:11.028+08:00  INFO 9369 --- [restartedMain] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
+2024-05-06T16:13:11.029+08:00  INFO 9369 --- [restartedMain] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 1922 ms
+2024-05-06T16:13:11.603+08:00  INFO 9369 --- [restartedMain] c.a.d.s.b.a.DruidDataSourceAutoConfigure : Init DruidDataSource
+2024-05-06T16:13:12.878+08:00  INFO 9369 --- [restartedMain] com.alibaba.druid.pool.DruidDataSource   : {dataSource-1} inited
+2024-05-06T16:13:14.314+08:00  INFO 9369 --- [restartedMain] o.s.s.web.DefaultSecurityFilterChain     : Will secure any request with [org.springframework.security.web.session.DisableEncodeUrlFilter@710fe6b7, org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter@519bf67d, org.springframework.security.web.context.SecurityContextHolderFilter@4c217443, org.springframework.security.web.header.HeaderWriterFilter@4874679d, org.springframework.security.web.authentication.logout.LogoutFilter@28e21a84, cn.org.alan.exam.filter.VerifyTokenFilter@4cf34e8f, org.springframework.security.web.savedrequest.RequestCacheAwareFilter@26683e13, org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter@610e90c6, org.springframework.security.web.authentication.AnonymousAuthenticationFilter@574f2881, org.springframework.security.web.access.ExceptionTranslationFilter@1256978f, org.springframework.security.web.access.intercept.AuthorizationFilter@15a6a241]
+2024-05-06T16:13:14.319+08:00  WARN 9369 --- [restartedMain] o.s.s.c.a.web.builders.WebSecurity       : You are asking Spring Security to ignore Mvc [pattern='/webjars/**']. This is not recommended -- please use permitAll via HttpSecurity#authorizeHttpRequests instead.
+2024-05-06T16:13:14.320+08:00  INFO 9369 --- [restartedMain] o.s.s.web.DefaultSecurityFilterChain     : Will not secure Mvc [pattern='/webjars/**']
+2024-05-06T16:13:14.320+08:00  WARN 9369 --- [restartedMain] o.s.s.c.a.web.builders.WebSecurity       : You are asking Spring Security to ignore Mvc [pattern='/doc.html']. This is not recommended -- please use permitAll via HttpSecurity#authorizeHttpRequests instead.
+2024-05-06T16:13:14.320+08:00  INFO 9369 --- [restartedMain] o.s.s.web.DefaultSecurityFilterChain     : Will not secure Mvc [pattern='/doc.html']
+2024-05-06T16:13:14.320+08:00  WARN 9369 --- [restartedMain] o.s.s.c.a.web.builders.WebSecurity       : You are asking Spring Security to ignore Mvc [pattern='/swagger-resources/**']. This is not recommended -- please use permitAll via HttpSecurity#authorizeHttpRequests instead.
+2024-05-06T16:13:14.320+08:00  INFO 9369 --- [restartedMain] o.s.s.web.DefaultSecurityFilterChain     : Will not secure Mvc [pattern='/swagger-resources/**']
+2024-05-06T16:13:14.320+08:00  WARN 9369 --- [restartedMain] o.s.s.c.a.web.builders.WebSecurity       : You are asking Spring Security to ignore Mvc [pattern='/v3/api-docs/**']. This is not recommended -- please use permitAll via HttpSecurity#authorizeHttpRequests instead.
+2024-05-06T16:13:14.321+08:00  INFO 9369 --- [restartedMain] o.s.s.web.DefaultSecurityFilterChain     : Will not secure Mvc [pattern='/v3/api-docs/**']
+2024-05-06T16:13:14.321+08:00  WARN 9369 --- [restartedMain] o.s.s.c.a.web.builders.WebSecurity       : You are asking Spring Security to ignore Mvc [pattern='/swagger-ui/**']. This is not recommended -- please use permitAll via HttpSecurity#authorizeHttpRequests instead.
+2024-05-06T16:13:14.321+08:00  INFO 9369 --- [restartedMain] o.s.s.web.DefaultSecurityFilterChain     : Will not secure Mvc [pattern='/swagger-ui/**']
+2024-05-06T16:13:14.321+08:00  WARN 9369 --- [restartedMain] o.s.s.c.a.web.builders.WebSecurity       : You are asking Spring Security to ignore Mvc [pattern='/swagger-ui.html']. This is not recommended -- please use permitAll via HttpSecurity#authorizeHttpRequests instead.
+2024-05-06T16:13:14.321+08:00  INFO 9369 --- [restartedMain] o.s.s.web.DefaultSecurityFilterChain     : Will not secure Mvc [pattern='/swagger-ui.html']
+2024-05-06T16:13:14.321+08:00  WARN 9369 --- [restartedMain] o.s.s.c.a.web.builders.WebSecurity       : You are asking Spring Security to ignore Mvc [pattern='/ws/**']. This is not recommended -- please use permitAll via HttpSecurity#authorizeHttpRequests instead.
+2024-05-06T16:13:14.321+08:00  INFO 9369 --- [restartedMain] o.s.s.web.DefaultSecurityFilterChain     : Will not secure Mvc [pattern='/ws/**']
+2024-05-06T16:13:14.321+08:00  WARN 9369 --- [restartedMain] o.s.s.c.a.web.builders.WebSecurity       : You are asking Spring Security to ignore Mvc [pattern='/ws-app/**']. This is not recommended -- please use permitAll via HttpSecurity#authorizeHttpRequests instead.
+2024-05-06T16:13:14.321+08:00  INFO 9369 --- [restartedMain] o.s.s.web.DefaultSecurityFilterChain     : Will not secure Mvc [pattern='/ws-app/**']
+2024-05-06T16:13:14.713+08:00  INFO 9369 --- [restartedMain] o.s.b.d.a.OptionalLiveReloadServer       : LiveReload server is running on port 35729
+2024-05-06T16:13:14.783+08:00  INFO 9369 --- [restartedMain] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port(s): 8080 (http) with context path ''
+2024-05-06T16:13:14.792+08:00  INFO 9369 --- [restartedMain] cn.org.alan.exam.ExamApplication         : Started ExamApplication in 6.231 seconds (process running for 6.855)
+2024-05-06T16:13:17.614+08:00  INFO 9369 --- [SpringApplicationShutdownHook] com.alibaba.druid.pool.DruidDataSource   : {dataSource-1} closing ...
+2024-05-06T16:13:17.633+08:00  INFO 9369 --- [SpringApplicationShutdownHook] com.alibaba.druid.pool.DruidDataSource   : {dataSource-1} closed
