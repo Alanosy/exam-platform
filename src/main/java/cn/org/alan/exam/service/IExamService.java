@@ -3,6 +3,7 @@ package cn.org.alan.exam.service;
 import cn.org.alan.exam.common.result.Result;
 import cn.org.alan.exam.model.entity.Exam;
 import cn.org.alan.exam.model.form.exam.ExamAddForm;
+import cn.org.alan.exam.model.form.exam.ExamQuAnswerFrom;
 import cn.org.alan.exam.model.form.exam.ExamUpdateForm;
 import cn.org.alan.exam.model.vo.exam.*;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -86,7 +87,7 @@ public interface IExamService extends IService<Exam> {
      * 填充答案
      * @return
      */
-    Result<String> addAnswer(ExamQuAnswerVO examQuAnswerForm);
+    Result<String> addAnswer(ExamQuAnswerFrom examQuAnswerForm);
 
     /**
      * 根据班级获得考试

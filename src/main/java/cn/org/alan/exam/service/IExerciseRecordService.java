@@ -2,6 +2,8 @@ package cn.org.alan.exam.service;
 
 import cn.org.alan.exam.common.result.Result;
 import cn.org.alan.exam.model.entity.ExerciseRecord;
+import cn.org.alan.exam.model.form.ExerciseFillAnswerFrom;
+import cn.org.alan.exam.model.vo.QuestionVO;
 import cn.org.alan.exam.model.vo.exercise.QuestionSheetVO;
 import cn.org.alan.exam.model.vo.record.ExamRecordDetailVO;
 import cn.org.alan.exam.model.vo.record.ExamRecordVO;
@@ -60,4 +62,11 @@ public interface IExerciseRecordService extends IService<ExerciseRecord> {
      * @return
      */
     Result<List<ExerciseRecordDetailVO>> getExerciseRecordDetail(Integer exerciseId);
+
+    /**
+     * 填充答案，并返回试题信息
+     * @param exerciseFillAnswerFrom 请求参数
+     * @return 响应结果
+     */
+    Result<QuestionVO> fillAnswer(ExerciseFillAnswerFrom exerciseFillAnswerFrom);
 }

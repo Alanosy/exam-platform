@@ -6,9 +6,9 @@ import cn.org.alan.exam.converter.ExamConverter;
 import cn.org.alan.exam.mapper.*;
 import cn.org.alan.exam.model.entity.*;
 import cn.org.alan.exam.model.form.exam.ExamAddForm;
+import cn.org.alan.exam.model.form.exam.ExamQuAnswerFrom;
 import cn.org.alan.exam.model.form.exam.ExamUpdateForm;
 import cn.org.alan.exam.model.vo.exam.*;
-import cn.org.alan.exam.model.vo.userbook.AddBookAnswerVO;
 import cn.org.alan.exam.service.IExamQuAnswerService;
 import cn.org.alan.exam.service.IExamService;
 import cn.org.alan.exam.service.IOptionService;
@@ -23,7 +23,6 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.CollectionUtils;
 
 import java.time.LocalDateTime;
 import java.util.*;
@@ -318,7 +317,7 @@ public class ExamServiceImpl extends ServiceImpl<ExamMapper, Exam> implements IE
     }
 
     @Override
-    public Result<String> addAnswer(ExamQuAnswerVO examQuAnswerForm) {
+    public Result<String> addAnswer(ExamQuAnswerFrom examQuAnswerForm) {
         // 查询试题类型
         LambdaQueryWrapper<Question> QuWrapper = new LambdaQueryWrapper<>();
         QuWrapper.eq(Question::getId, examQuAnswerForm.getQuId());

@@ -19,4 +19,13 @@
             </if>
         </where>
     </select>
+    <!-- 分页获取可刷题库信息 -->
+    <select id="selectRepo" resultType="cn.org.alan.exam.model.vo.exercise.RepoVO">
+        select r.id,r.title from t_repo as r
+        <trim prefix="where ">
+            <if test='title != null and title != ""'>
+                r.title like concat('%',#{title},'%')
+            </if>
+        </trim>
+    </select>
 </mapper>

@@ -20,7 +20,7 @@
         q.content,
         r.title as repoTitle,
         q.create_time
-        from t_question q join t_repo r on q.repo_id = r.id
+        from t_question q  join t_repo r on q.repo_id = r.id
         <trim suffixOverrides="and" prefix="where">
             <if test='content != null and content != ""'>
                 q.content like concat('%',#{content},'%') and

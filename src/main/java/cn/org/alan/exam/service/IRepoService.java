@@ -10,7 +10,7 @@ import java.util.List;
 
 /**
  * <p>
- *  服务类
+ * 服务类
  * </p>
  *
  * @author WeiJin
@@ -20,6 +20,7 @@ public interface IRepoService extends IService<Repo> {
 
     /**
      * 添加题库
+     *
      * @param repo 参数
      * @return 返回
      */
@@ -27,14 +28,16 @@ public interface IRepoService extends IService<Repo> {
 
     /**
      * 修改题库
+     *
      * @param repo 修改内容
-     * @param id 路径参数题库id
+     * @param id   路径参数题库id
      * @return 返回响应结果
      */
     Result<String> updateRepo(Repo repo, Integer id);
 
     /**
      * 根据题库id删除题库 并把试题所属题库清空
+     *
      * @param id 题库id
      * @return 响应返回结果
      */
@@ -42,16 +45,28 @@ public interface IRepoService extends IService<Repo> {
 
     /**
      * 根据用户id获取自己的题库 教师获取自己的，管理员可以获取所有
+     *
      * @return 响应结果
      */
     Result<List<RepoVO>> getRepoList();
 
     /**
      * 分页查询题库
-     * @param pageNum 页码
+     *
+     * @param pageNum  页码
      * @param pageSize 每页记录数
-     * @param title 标题
+     * @param title    标题
      * @return 返回结果响应
      */
     Result<IPage<RepoVO>> pagingRepo(Integer pageNum, Integer pageSize, String title);
+
+    /**
+     * 分页获取可刷题库列表
+     *
+     * @param pageNum  页码
+     * @param pageSize 每页记录数
+     * @param title    题库名
+     * @return 响应结果
+     */
+    Result<IPage<cn.org.alan.exam.model.vo.exercise.RepoVO>> getRepo(Integer pageNum, Integer pageSize, String title);
 }
