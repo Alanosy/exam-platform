@@ -6,6 +6,7 @@ import cn.org.alan.exam.model.form.count.ClassCountResult;
 import cn.org.alan.exam.service.IExamGradeService;
 import cn.org.alan.exam.service.IGradeService;
 import jakarta.annotation.Resource;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -35,6 +36,7 @@ public class StatController {
      * @return
      */
     @GetMapping("/total/grade/count{roleId}")
+    @PreAuthorize("hasAnyAuthority('role_teacher','role_admin')")
     public Result<List<ClassCountResult>> getClassCountByRoleId(@PathVariable int roleId) {
         return Result.success(null,gradeService.countStudentsByRoleId(roleId));
     }
@@ -44,6 +46,7 @@ public class StatController {
      * @return
      */
     @GetMapping("teacher/{roleid}")
+    @PreAuthorize("hasAnyAuthority('role_teacher','role_admin')")
     public Result<List<Exam>> getExamGradeCount(@PathVariable("roleId") int roleId) {
         return Result.success(null,examGradeService.getExamGradeCount(roleId));
     }
@@ -53,6 +56,7 @@ public class StatController {
      * @return 统计结果
      */
     @GetMapping("/allCounts")
+    @PreAuthorize("hasAnyAuthority('role_teacher','role_admin')")
     public Result<ClassCountResult> getAllCounts(){
         return gradeService.getAllCounts();
     }

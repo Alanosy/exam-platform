@@ -19,18 +19,18 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import jakarta.annotation.Resource;
 import lombok.SneakyThrows;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
 /**
- * <p>
  * 服务实现类
- * </p>
  *
  * @author WeiJin
  * @since 2024-03-21
@@ -51,12 +51,11 @@ public class QuestionServiceImpl extends ServiceImpl<QuestionMapper, Question> i
     @Override
     @Transactional
     public Result<String> addSingleQuestion(QuestionFrom questionFrom) {
-
-        //简答题入参校验
-//        if (questionFrom.getQuType() == 4 && StringUtils.isBlank(questionFrom.getAnswer())) {
-//            return Result.failed("简答题答案不能为空");
-//        }
-        //非简答题入参校验
+        // 简答题入参校验
+        if (questionFrom.getQuType() == 4 && StringUtils.isBlank(questionFrom.getAnswer())) {
+            return Result.failed("简答题答案不能为空");
+        }
+        // 非简答题入参校验
         List<Option> options = questionFrom.getOptions();
         if (questionFrom.getQuType() != 4 && (Objects.isNull(options) || options.size() < 2)) {
             return Result.failed("非简答题的试题选项不能少于两个");
@@ -67,14 +66,14 @@ public class QuestionServiceImpl extends ServiceImpl<QuestionMapper, Question> i
         questionMapper.insert(question);
         System.out.println("zhujian:" + question.getId());
         if (question.getQuType() == 4) {
-            //简答题添加选项
+            // 简答题添加选项
             Option option = new Option();
             option.setQuId(question.getId());
             option.setContent(questionFrom.getAnswer());
             optionMapper.insert(option);
         } else {
-            //非简答题添加选项
-            //把新建试题获取的id，填入选项中
+            // 非简答题添加选项
+            // 把新建试题获取的id，填入选项中
             options.forEach(option -> {
                 option.setQuId(question.getId());
             });
@@ -88,9 +87,9 @@ public class QuestionServiceImpl extends ServiceImpl<QuestionMapper, Question> i
     @Transactional
     public Result<String> deleteBatchByIds(String ids) {
         List<Integer> list = Arrays.stream(ids.split(",")).map(Integer::parseInt).toList();
-        //先删除选项
+        // 先删除选项
         optionMapper.deleteBatchByQuIds(list);
-        //再删除试题
+        // 再删除试题
         questionMapper.deleteBatchIds(list);
         return Result.success("删除成功");
     }
@@ -98,7 +97,7 @@ public class QuestionServiceImpl extends ServiceImpl<QuestionMapper, Question> i
     @Override
     public Result<IPage<QuestionVO>> pagingQuestion(Integer pageNum, Integer pageSize, String title, Integer type, Integer repoId) {
         IPage<QuestionVO> page = new Page<>(pageNum, pageSize);
-        //教师只能查看自己创建的试题
+        // 教师只能查看自己创建的试题
 
         if ("role_teacher".equals(SecurityUtil.getRole())) {
             page = questionMapper.pagingQuestion(page, title, repoId, type, SecurityUtil.getUserId());
@@ -117,11 +116,11 @@ public class QuestionServiceImpl extends ServiceImpl<QuestionMapper, Question> i
     @Override
     @Transactional
     public Result<String> updateQuestion(QuestionFrom questionFrom) {
-        //修改试题
+        // 修改试题
 
         Question question = questionConverter.fromToEntity(questionFrom);
         questionMapper.updateById(question);
-        //修改选项
+        // 修改选项
         List<Option> options = questionFrom.getOptions();
         for (Option option : options) {
             optionMapper.updateById(option);
@@ -129,28 +128,29 @@ public class QuestionServiceImpl extends ServiceImpl<QuestionMapper, Question> i
         return Result.success("修改成功");
     }
 
-    @SneakyThrows
+    @SneakyThrows(Exception.class)
     @Override
+    @Async("asyncServiceExecutor")
     @Transactional
     public Result<String> importQuestion(Integer id, MultipartFile file) {
         if (!ExcelUtils.isExcel(Objects.requireNonNull(file.getOriginalFilename()))) {
             return Result.failed("该文件不是一个合法的Excel文件");
         }
         List<QuestionExcelFrom> questionExcelFroms = ExcelUtils.readMultipartFile(file, QuestionExcelFrom.class);
-        //类型转换
+        // 类型转换
         List<QuestionFrom> list = QuestionExcelFrom.converterQuestionFrom(questionExcelFroms);
 
         for (QuestionFrom questionFrom : list) {
             Question question = questionConverter.fromToEntity(questionFrom);
             question.setRepoId(id);
-            //添加单题获取Id
+            // 添加单题获取Id
             questionMapper.insert(question);
-            //批量添加选项
+            // 批量添加选项
             List<Option> options = questionFrom.getOptions();
             final int[] count = {0};
             options.forEach(option -> option.setSort(++count[0]));
             options.forEach(option -> option.setQuId(question.getId()));
-            //避免简答题没有答案
+            // 避免简答题没有答案
             if (!options.isEmpty()) {
                 optionMapper.insertBatch(options);
             }
@@ -160,7 +160,7 @@ public class QuestionServiceImpl extends ServiceImpl<QuestionMapper, Question> i
         return Result.success("导入成功");
     }
 
-    @SneakyThrows
+    @SneakyThrows(IOException.class)
     @Override
     public Result<String> uploadImage(MultipartFile file) {
         if (!aliOSSUtil.isImage(Objects.requireNonNull(file.getOriginalFilename()))) {
@@ -173,6 +173,6 @@ public class QuestionServiceImpl extends ServiceImpl<QuestionMapper, Question> i
         if (StringUtils.isBlank(url)) {
             return Result.failed("图片上传失败");
         }
-        return Result.success("图片上传成功",url);
+        return Result.success("图片上传成功", url);
     }
 }

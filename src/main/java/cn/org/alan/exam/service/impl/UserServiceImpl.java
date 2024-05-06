@@ -174,7 +174,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
         return Result.success("删除成功");
     }
 
-    @SneakyThrows
+    @SneakyThrows(Exception.class)
     @Override
     @Transactional
     public Result<String> importUsers(MultipartFile file) {
@@ -236,7 +236,6 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
         return Result.success(null, page);
     }
 
-    @SneakyThrows
     @Transactional
     @Override
     public Result<String> uploadAvatar(MultipartFile file) {
@@ -244,7 +243,6 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
         if (result.getCode() == 0) {
             return Result.failed("图片上传失败");
         }
-
         String url = result.getData();
         User user = new User();
         user.setId(SecurityUtil.getUserId());

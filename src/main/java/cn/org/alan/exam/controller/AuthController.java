@@ -3,6 +3,7 @@ package cn.org.alan.exam.controller;
 import cn.org.alan.exam.common.group.UserGroup;
 import cn.org.alan.exam.common.result.Result;
 import cn.org.alan.exam.model.entity.User;
+import cn.org.alan.exam.model.form.Auth.LoginForm;
 import cn.org.alan.exam.model.form.UserForm;
 import cn.org.alan.exam.service.IAuthService;
 import jakarta.annotation.Resource;
@@ -34,9 +35,9 @@ public class AuthController {
      */
     @PostMapping("/login")
     public Result<String> login(HttpServletRequest request,
-                                @RequestBody User user) {
+                                @Validated @RequestBody LoginForm loginForm) {
 
-        return iAuthService.login(request,user.getUserName(), user.getPassword());
+        return iAuthService.login(request,loginForm);
     }
 
     /**

@@ -180,6 +180,7 @@ public class ExamController {
      * @return
      */
     @GetMapping(value = "/hand-exam/{examId}")
+    @PreAuthorize("hasAnyAuthority('role_teacher','role_admin','role_student')")
     public Result<ExamQuDetailVO> handleExam(@PathVariable("examId") @NotNull Integer examId) {
         return examService.handExam(examId);
     }

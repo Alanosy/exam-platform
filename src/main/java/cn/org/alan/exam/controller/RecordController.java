@@ -8,6 +8,7 @@ import cn.org.alan.exam.model.vo.record.ExerciseRecordVO;
 import cn.org.alan.exam.service.IExerciseRecordService;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import jakarta.annotation.Resource;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -35,6 +36,7 @@ public class RecordController {
      * @return
      */
     @GetMapping("/exam/paging")
+    @PreAuthorize("hasAnyAuthority('role_teacher','role_admin','role_student')")
     public Result<IPage<ExamRecordVO>> getExamRecordPage(@RequestParam(value = "pageNum",required = false, defaultValue = "1") Integer pageNum,
                                                    @RequestParam(value = "pageSize",required = false, defaultValue = "10") Integer pageSize){
         return exerciseRecordService.getExamRecordPage(pageNum,pageSize);
@@ -46,6 +48,7 @@ public class RecordController {
      * @return
      */
     @GetMapping("/exam/detail")
+    @PreAuthorize("hasAnyAuthority('role_teacher','role_admin','role_student')")
     public Result<List<ExamRecordDetailVO>> getExamRecordDetail(@RequestParam("examId") Integer examId){
         return exerciseRecordService.getExamRecordDetail(examId);
     }
@@ -57,6 +60,7 @@ public class RecordController {
      * @return
      */
     @GetMapping("/exercise/paging")
+    @PreAuthorize("hasAnyAuthority('role_teacher','role_admin','role_student')")
     public Result<IPage<ExerciseRecordVO>> getExerciseRecordPage(@RequestParam(value = "pageNum",required = false, defaultValue = "1") Integer pageNum,
                                                              @RequestParam(value = "pageSize",required = false, defaultValue = "10") Integer pageSize){
         return exerciseRecordService.getExerciseRecordPage(pageNum,pageSize);
@@ -68,6 +72,7 @@ public class RecordController {
      * @return
      */
     @GetMapping("/exercise/detail")
+    @PreAuthorize("hasAnyAuthority('role_teacher','role_admin','role_student')")
     public Result<List<ExerciseRecordDetailVO>> getExerciseRecordDetail(@RequestParam("examId") Integer exerciseId){
         return exerciseRecordService.getExerciseRecordDetail(exerciseId);
     }

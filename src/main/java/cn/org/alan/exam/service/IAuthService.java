@@ -1,6 +1,7 @@
 package cn.org.alan.exam.service;
 
 import cn.org.alan.exam.common.result.Result;
+import cn.org.alan.exam.model.form.Auth.LoginForm;
 import cn.org.alan.exam.model.form.UserForm;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -11,15 +12,14 @@ import jakarta.servlet.http.HttpServletResponse;
  * @Date 2024/3/28 1:33 PM
  */
 public interface IAuthService {
+
     /**
      * 登录
-     *
-     * @param username 用户名
-     * @param request request对象，用户获取sessionId
-     * @param password 密码
-     * @return token
+     * @param request
+     * @param loginForm
+     * @return
      */
-    Result<String> login(HttpServletRequest request,String username, String password);
+    Result<String> login(HttpServletRequest request, LoginForm loginForm);
 
     /**
      * 用户注销

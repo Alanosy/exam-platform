@@ -20,6 +20,7 @@ import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import jakarta.annotation.Resource;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
@@ -83,7 +84,7 @@ public class UserBookServiceImpl extends ServiceImpl<UserBookMapper, UserBook> i
         bookOneQuVO.setAnswerList(list);
         return Result.success("获取成功", bookOneQuVO);
     }
-
+    @Async("asyncServiceExecutor")
     @Override
     public Result<AddBookAnswerVO> addBookAnswer(ReUserBookForm reUserBookForm) {
         // 创建返回视图
