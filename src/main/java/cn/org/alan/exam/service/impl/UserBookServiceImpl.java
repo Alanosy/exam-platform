@@ -84,7 +84,6 @@ public class UserBookServiceImpl extends ServiceImpl<UserBookMapper, UserBook> i
         bookOneQuVO.setAnswerList(list);
         return Result.success("获取成功", bookOneQuVO);
     }
-    @Async("asyncServiceExecutor")
     @Override
     public Result<AddBookAnswerVO> addBookAnswer(ReUserBookForm reUserBookForm) {
         // 创建返回视图

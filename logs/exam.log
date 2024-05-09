@@ -1,749 +1,178 @@
-2024-05-06T14:53:58.027+08:00  INFO 6244 --- [restartedMain] cn.org.alan.exam.ExamApplication         : Starting ExamApplication using Java 17.0.8 with PID 6244 (/Users/alan/Documents/Code/项目开发/学校项目/综合项目实战/考试系统/code/online-exam-system-backend/target/classes started by alan in /Users/alan/Documents/Code/项目开发/学校项目/综合项目实战/考试系统/code/online-exam-system-backend)
-2024-05-06T14:53:58.029+08:00  INFO 6244 --- [restartedMain] cn.org.alan.exam.ExamApplication         : The following 1 profile is active: "dev"
-2024-05-06T14:53:58.072+08:00  INFO 6244 --- [restartedMain] .e.DevToolsPropertyDefaultsPostProcessor : Devtools property defaults active! Set 'spring.devtools.add-properties' to 'false' to disable
-2024-05-06T14:53:58.072+08:00  INFO 6244 --- [restartedMain] .e.DevToolsPropertyDefaultsPostProcessor : For additional web related logging consider setting the 'logging.level.web' property to 'DEBUG'
-2024-05-06T14:53:59.075+08:00  INFO 6244 --- [restartedMain] .s.d.r.c.RepositoryConfigurationDelegate : Multiple Spring Data modules found, entering strict repository configuration mode
-2024-05-06T14:53:59.078+08:00  INFO 6244 --- [restartedMain] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data Redis repositories in DEFAULT mode.
-2024-05-06T14:53:59.183+08:00  INFO 6244 --- [restartedMain] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 72 ms. Found 0 Redis repository interfaces.
-2024-05-06T14:54:00.136+08:00  INFO 6244 --- [restartedMain] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port(s): 8080 (http)
-2024-05-06T14:54:00.147+08:00  INFO 6244 --- [restartedMain] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
-2024-05-06T14:54:00.148+08:00  INFO 6244 --- [restartedMain] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/10.1.8]
-2024-05-06T14:54:00.226+08:00  INFO 6244 --- [restartedMain] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
-2024-05-06T14:54:00.227+08:00  INFO 6244 --- [restartedMain] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 2155 ms
-2024-05-06T14:54:01.018+08:00  INFO 6244 --- [restartedMain] c.a.d.s.b.a.DruidDataSourceAutoConfigure : Init DruidDataSource
-2024-05-06T14:54:02.328+08:00  INFO 6244 --- [restartedMain] com.alibaba.druid.pool.DruidDataSource   : {dataSource-1} inited
-2024-05-06T14:54:03.877+08:00  INFO 6244 --- [restartedMain] o.s.s.web.DefaultSecurityFilterChain     : Will secure any request with [org.springframework.security.web.session.DisableEncodeUrlFilter@31409a63, org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter@167a528b, org.springframework.security.web.context.SecurityContextHolderFilter@4af3672f, org.springframework.security.web.header.HeaderWriterFilter@26739442, org.springframework.security.web.authentication.logout.LogoutFilter@4411719a, cn.org.alan.exam.filter.VerifyTokenFilter@437d645d, org.springframework.security.web.savedrequest.RequestCacheAwareFilter@5f2f5416, org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter@5a505f3, org.springframework.security.web.authentication.AnonymousAuthenticationFilter@56855a45, org.springframework.security.web.access.ExceptionTranslationFilter@4074d00b, org.springframework.security.web.access.intercept.AuthorizationFilter@d454b13]
-2024-05-06T14:54:03.883+08:00  WARN 6244 --- [restartedMain] o.s.s.c.a.web.builders.WebSecurity       : You are asking Spring Security to ignore Mvc [pattern='/webjars/**']. This is not recommended -- please use permitAll via HttpSecurity#authorizeHttpRequests instead.
-2024-05-06T14:54:03.883+08:00  INFO 6244 --- [restartedMain] o.s.s.web.DefaultSecurityFilterChain     : Will not secure Mvc [pattern='/webjars/**']
-2024-05-06T14:54:03.883+08:00  WARN 6244 --- [restartedMain] o.s.s.c.a.web.builders.WebSecurity       : You are asking Spring Security to ignore Mvc [pattern='/doc.html']. This is not recommended -- please use permitAll via HttpSecurity#authorizeHttpRequests instead.
-2024-05-06T14:54:03.883+08:00  INFO 6244 --- [restartedMain] o.s.s.web.DefaultSecurityFilterChain     : Will not secure Mvc [pattern='/doc.html']
-2024-05-06T14:54:03.883+08:00  WARN 6244 --- [restartedMain] o.s.s.c.a.web.builders.WebSecurity       : You are asking Spring Security to ignore Mvc [pattern='/swagger-resources/**']. This is not recommended -- please use permitAll via HttpSecurity#authorizeHttpRequests instead.
-2024-05-06T14:54:03.883+08:00  INFO 6244 --- [restartedMain] o.s.s.web.DefaultSecurityFilterChain     : Will not secure Mvc [pattern='/swagger-resources/**']
-2024-05-06T14:54:03.883+08:00  WARN 6244 --- [restartedMain] o.s.s.c.a.web.builders.WebSecurity       : You are asking Spring Security to ignore Mvc [pattern='/v3/api-docs/**']. This is not recommended -- please use permitAll via HttpSecurity#authorizeHttpRequests instead.
-2024-05-06T14:54:03.883+08:00  INFO 6244 --- [restartedMain] o.s.s.web.DefaultSecurityFilterChain     : Will not secure Mvc [pattern='/v3/api-docs/**']
-2024-05-06T14:54:03.884+08:00  WARN 6244 --- [restartedMain] o.s.s.c.a.web.builders.WebSecurity       : You are asking Spring Security to ignore Mvc [pattern='/swagger-ui/**']. This is not recommended -- please use permitAll via HttpSecurity#authorizeHttpRequests instead.
-2024-05-06T14:54:03.884+08:00  INFO 6244 --- [restartedMain] o.s.s.web.DefaultSecurityFilterChain     : Will not secure Mvc [pattern='/swagger-ui/**']
-2024-05-06T14:54:03.884+08:00  WARN 6244 --- [restartedMain] o.s.s.c.a.web.builders.WebSecurity       : You are asking Spring Security to ignore Mvc [pattern='/swagger-ui.html']. This is not recommended -- please use permitAll via HttpSecurity#authorizeHttpRequests instead.
-2024-05-06T14:54:03.884+08:00  INFO 6244 --- [restartedMain] o.s.s.web.DefaultSecurityFilterChain     : Will not secure Mvc [pattern='/swagger-ui.html']
-2024-05-06T14:54:03.884+08:00  WARN 6244 --- [restartedMain] o.s.s.c.a.web.builders.WebSecurity       : You are asking Spring Security to ignore Mvc [pattern='/ws/**']. This is not recommended -- please use permitAll via HttpSecurity#authorizeHttpRequests instead.
-2024-05-06T14:54:03.884+08:00  INFO 6244 --- [restartedMain] o.s.s.web.DefaultSecurityFilterChain     : Will not secure Mvc [pattern='/ws/**']
-2024-05-06T14:54:03.884+08:00  WARN 6244 --- [restartedMain] o.s.s.c.a.web.builders.WebSecurity       : You are asking Spring Security to ignore Mvc [pattern='/ws-app/**']. This is not recommended -- please use permitAll via HttpSecurity#authorizeHttpRequests instead.
-2024-05-06T14:54:03.884+08:00  INFO 6244 --- [restartedMain] o.s.s.web.DefaultSecurityFilterChain     : Will not secure Mvc [pattern='/ws-app/**']
-2024-05-06T14:54:04.228+08:00  INFO 6244 --- [restartedMain] o.s.b.d.a.OptionalLiveReloadServer       : LiveReload server is running on port 35729
-2024-05-06T14:54:04.317+08:00  INFO 6244 --- [restartedMain] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port(s): 8080 (http) with context path ''
-2024-05-06T14:54:04.329+08:00  INFO 6244 --- [restartedMain] cn.org.alan.exam.ExamApplication         : Started ExamApplication in 6.772 seconds (process running for 7.572)
-2024-05-06T14:54:12.893+08:00  INFO 6244 --- [SpringApplicationShutdownHook] com.alibaba.druid.pool.DruidDataSource   : {dataSource-1} closing ...
-2024-05-06T14:54:12.898+08:00  INFO 6244 --- [SpringApplicationShutdownHook] com.alibaba.druid.pool.DruidDataSource   : {dataSource-1} closed
-2024-05-06T15:14:27.115+08:00  INFO 29884 --- [restartedMain] cn.org.alan.exam.ExamApplication         : Starting ExamApplication using Java 17.0.5 with PID 29884 (D:\develop\idea_workspace\school-projects\online-exam-system-backend\target\classes started by WeiJin in D:\develop\idea_workspace\school-projects\online-exam-system-backend)
-2024-05-06T15:14:27.117+08:00  INFO 29884 --- [restartedMain] cn.org.alan.exam.ExamApplication         : The following 1 profile is active: "dev"
-2024-05-06T15:14:27.144+08:00  INFO 29884 --- [restartedMain] .e.DevToolsPropertyDefaultsPostProcessor : Devtools property defaults active! Set 'spring.devtools.add-properties' to 'false' to disable
-2024-05-06T15:14:27.144+08:00  INFO 29884 --- [restartedMain] .e.DevToolsPropertyDefaultsPostProcessor : For additional web related logging consider setting the 'logging.level.web' property to 'DEBUG'
-2024-05-06T15:14:27.888+08:00  INFO 29884 --- [restartedMain] .s.d.r.c.RepositoryConfigurationDelegate : Multiple Spring Data modules found, entering strict repository configuration mode
-2024-05-06T15:14:27.890+08:00  INFO 29884 --- [restartedMain] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data Redis repositories in DEFAULT mode.
-2024-05-06T15:14:27.923+08:00  INFO 29884 --- [restartedMain] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 23 ms. Found 0 Redis repository interfaces.
-2024-05-06T15:14:28.390+08:00  INFO 29884 --- [restartedMain] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port(s): 8080 (http)
-2024-05-06T15:14:28.396+08:00  INFO 29884 --- [restartedMain] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
-2024-05-06T15:14:28.397+08:00  INFO 29884 --- [restartedMain] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/10.1.8]
-2024-05-06T15:14:28.436+08:00  INFO 29884 --- [restartedMain] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
-2024-05-06T15:14:28.436+08:00  INFO 29884 --- [restartedMain] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 1292 ms
-2024-05-06T15:14:28.800+08:00  INFO 29884 --- [restartedMain] c.a.d.s.b.a.DruidDataSourceAutoConfigure : Init DruidDataSource
-2024-05-06T15:14:29.737+08:00  INFO 29884 --- [restartedMain] com.alibaba.druid.pool.DruidDataSource   : {dataSource-1} inited
-2024-05-06T15:14:30.681+08:00  INFO 29884 --- [restartedMain] o.s.s.web.DefaultSecurityFilterChain     : Will secure any request with [org.springframework.security.web.session.DisableEncodeUrlFilter@3e20c59d, org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter@67820adb, org.springframework.security.web.context.SecurityContextHolderFilter@57abfc9a, org.springframework.security.web.header.HeaderWriterFilter@261fc64b, org.springframework.security.web.authentication.logout.LogoutFilter@5616684c, cn.org.alan.exam.filter.VerifyTokenFilter@49d3d30b, org.springframework.security.web.savedrequest.RequestCacheAwareFilter@605425d7, org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter@3d064102, org.springframework.security.web.authentication.AnonymousAuthenticationFilter@6082200, org.springframework.security.web.access.ExceptionTranslationFilter@2804ff95, org.springframework.security.web.access.intercept.AuthorizationFilter@48a23b31]
-2024-05-06T15:14:30.685+08:00  WARN 29884 --- [restartedMain] o.s.s.c.a.web.builders.WebSecurity       : You are asking Spring Security to ignore Mvc [pattern='/webjars/**']. This is not recommended -- please use permitAll via HttpSecurity#authorizeHttpRequests instead.
-2024-05-06T15:14:30.686+08:00  INFO 29884 --- [restartedMain] o.s.s.web.DefaultSecurityFilterChain     : Will not secure Mvc [pattern='/webjars/**']
-2024-05-06T15:14:30.686+08:00  WARN 29884 --- [restartedMain] o.s.s.c.a.web.builders.WebSecurity       : You are asking Spring Security to ignore Mvc [pattern='/doc.html']. This is not recommended -- please use permitAll via HttpSecurity#authorizeHttpRequests instead.
-2024-05-06T15:14:30.686+08:00  INFO 29884 --- [restartedMain] o.s.s.web.DefaultSecurityFilterChain     : Will not secure Mvc [pattern='/doc.html']
-2024-05-06T15:14:30.686+08:00  WARN 29884 --- [restartedMain] o.s.s.c.a.web.builders.WebSecurity       : You are asking Spring Security to ignore Mvc [pattern='/swagger-resources/**']. This is not recommended -- please use permitAll via HttpSecurity#authorizeHttpRequests instead.
-2024-05-06T15:14:30.686+08:00  INFO 29884 --- [restartedMain] o.s.s.web.DefaultSecurityFilterChain     : Will not secure Mvc [pattern='/swagger-resources/**']
-2024-05-06T15:14:30.686+08:00  WARN 29884 --- [restartedMain] o.s.s.c.a.web.builders.WebSecurity       : You are asking Spring Security to ignore Mvc [pattern='/v3/api-docs/**']. This is not recommended -- please use permitAll via HttpSecurity#authorizeHttpRequests instead.
-2024-05-06T15:14:30.686+08:00  INFO 29884 --- [restartedMain] o.s.s.web.DefaultSecurityFilterChain     : Will not secure Mvc [pattern='/v3/api-docs/**']
-2024-05-06T15:14:30.686+08:00  WARN 29884 --- [restartedMain] o.s.s.c.a.web.builders.WebSecurity       : You are asking Spring Security to ignore Mvc [pattern='/swagger-ui/**']. This is not recommended -- please use permitAll via HttpSecurity#authorizeHttpRequests instead.
-2024-05-06T15:14:30.686+08:00  INFO 29884 --- [restartedMain] o.s.s.web.DefaultSecurityFilterChain     : Will not secure Mvc [pattern='/swagger-ui/**']
-2024-05-06T15:14:30.686+08:00  WARN 29884 --- [restartedMain] o.s.s.c.a.web.builders.WebSecurity       : You are asking Spring Security to ignore Mvc [pattern='/swagger-ui.html']. This is not recommended -- please use permitAll via HttpSecurity#authorizeHttpRequests instead.
-2024-05-06T15:14:30.687+08:00  INFO 29884 --- [restartedMain] o.s.s.web.DefaultSecurityFilterChain     : Will not secure Mvc [pattern='/swagger-ui.html']
-2024-05-06T15:14:30.687+08:00  WARN 29884 --- [restartedMain] o.s.s.c.a.web.builders.WebSecurity       : You are asking Spring Security to ignore Mvc [pattern='/ws/**']. This is not recommended -- please use permitAll via HttpSecurity#authorizeHttpRequests instead.
-2024-05-06T15:14:30.687+08:00  INFO 29884 --- [restartedMain] o.s.s.web.DefaultSecurityFilterChain     : Will not secure Mvc [pattern='/ws/**']
-2024-05-06T15:14:30.687+08:00  WARN 29884 --- [restartedMain] o.s.s.c.a.web.builders.WebSecurity       : You are asking Spring Security to ignore Mvc [pattern='/ws-app/**']. This is not recommended -- please use permitAll via HttpSecurity#authorizeHttpRequests instead.
-2024-05-06T15:14:30.687+08:00  INFO 29884 --- [restartedMain] o.s.s.web.DefaultSecurityFilterChain     : Will not secure Mvc [pattern='/ws-app/**']
-2024-05-06T15:14:30.953+08:00  INFO 29884 --- [restartedMain] o.s.b.d.a.OptionalLiveReloadServer       : LiveReload server is running on port 35729
-2024-05-06T15:14:31.008+08:00  INFO 29884 --- [restartedMain] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port(s): 8080 (http) with context path ''
-2024-05-06T15:14:31.016+08:00  INFO 29884 --- [restartedMain] cn.org.alan.exam.ExamApplication         : Started ExamApplication in 4.22 seconds (process running for 4.778)
-2024-05-06T15:25:38.743+08:00  INFO 25620 --- [restartedMain] cn.org.alan.exam.ExamApplication         : Starting ExamApplication using Java 17.0.10 with PID 25620 (D:\Desktop\online-exam-system-backend\target\classes started by 86158 in D:\Desktop\online-exam-system-backend)
-2024-05-06T15:25:38.745+08:00  INFO 25620 --- [restartedMain] cn.org.alan.exam.ExamApplication         : The following 1 profile is active: "dev"
-2024-05-06T15:25:38.793+08:00  INFO 25620 --- [restartedMain] .e.DevToolsPropertyDefaultsPostProcessor : Devtools property defaults active! Set 'spring.devtools.add-properties' to 'false' to disable
-2024-05-06T15:25:38.793+08:00  INFO 25620 --- [restartedMain] .e.DevToolsPropertyDefaultsPostProcessor : For additional web related logging consider setting the 'logging.level.web' property to 'DEBUG'
-2024-05-06T15:25:41.025+08:00  INFO 25620 --- [restartedMain] .s.d.r.c.RepositoryConfigurationDelegate : Multiple Spring Data modules found, entering strict repository configuration mode
-2024-05-06T15:25:41.028+08:00  INFO 25620 --- [restartedMain] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data Redis repositories in DEFAULT mode.
-2024-05-06T15:25:41.073+08:00  INFO 25620 --- [restartedMain] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 28 ms. Found 0 Redis repository interfaces.
-2024-05-06T15:25:41.534+08:00 ERROR 25620 --- [restartedMain] o.a.catalina.core.AprLifecycleListener   : An incompatible version [1.2.31] of the Apache Tomcat Native library is installed, while Tomcat requires version [1.2.34]
-2024-05-06T15:25:41.776+08:00  INFO 25620 --- [restartedMain] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port(s): 8080 (http)
-2024-05-06T15:25:41.785+08:00  INFO 25620 --- [restartedMain] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
-2024-05-06T15:25:41.785+08:00  INFO 25620 --- [restartedMain] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/10.1.8]
-2024-05-06T15:25:41.844+08:00  INFO 25620 --- [restartedMain] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
-2024-05-06T15:25:41.844+08:00  INFO 25620 --- [restartedMain] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 3050 ms
-2024-05-06T15:25:42.275+08:00  INFO 25620 --- [restartedMain] c.a.d.s.b.a.DruidDataSourceAutoConfigure : Init DruidDataSource
-2024-05-06T15:25:43.390+08:00  INFO 25620 --- [restartedMain] com.alibaba.druid.pool.DruidDataSource   : {dataSource-1} inited
-2024-05-06T15:25:45.027+08:00  INFO 25620 --- [restartedMain] o.s.s.web.DefaultSecurityFilterChain     : Will secure any request with [org.springframework.security.web.session.DisableEncodeUrlFilter@57038fff, org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter@52bc45ff, org.springframework.security.web.context.SecurityContextHolderFilter@4b8bff1c, org.springframework.security.web.header.HeaderWriterFilter@7ced5aa2, org.springframework.security.web.authentication.logout.LogoutFilter@366db6ce, cn.org.alan.exam.filter.VerifyTokenFilter@7c3637e0, org.springframework.security.web.savedrequest.RequestCacheAwareFilter@3f3a52bb, org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter@10d6162, org.springframework.security.web.authentication.AnonymousAuthenticationFilter@186ce592, org.springframework.security.web.access.ExceptionTranslationFilter@603a5aac, org.springframework.security.web.access.intercept.AuthorizationFilter@546a2a1a]
-2024-05-06T15:25:45.033+08:00  WARN 25620 --- [restartedMain] o.s.s.c.a.web.builders.WebSecurity       : You are asking Spring Security to ignore Mvc [pattern='/webjars/**']. This is not recommended -- please use permitAll via HttpSecurity#authorizeHttpRequests instead.
-2024-05-06T15:25:45.033+08:00  INFO 25620 --- [restartedMain] o.s.s.web.DefaultSecurityFilterChain     : Will not secure Mvc [pattern='/webjars/**']
-2024-05-06T15:25:45.033+08:00  WARN 25620 --- [restartedMain] o.s.s.c.a.web.builders.WebSecurity       : You are asking Spring Security to ignore Mvc [pattern='/doc.html']. This is not recommended -- please use permitAll via HttpSecurity#authorizeHttpRequests instead.
-2024-05-06T15:25:45.033+08:00  INFO 25620 --- [restartedMain] o.s.s.web.DefaultSecurityFilterChain     : Will not secure Mvc [pattern='/doc.html']
-2024-05-06T15:25:45.033+08:00  WARN 25620 --- [restartedMain] o.s.s.c.a.web.builders.WebSecurity       : You are asking Spring Security to ignore Mvc [pattern='/swagger-resources/**']. This is not recommended -- please use permitAll via HttpSecurity#authorizeHttpRequests instead.
-2024-05-06T15:25:45.033+08:00  INFO 25620 --- [restartedMain] o.s.s.web.DefaultSecurityFilterChain     : Will not secure Mvc [pattern='/swagger-resources/**']
-2024-05-06T15:25:45.033+08:00  WARN 25620 --- [restartedMain] o.s.s.c.a.web.builders.WebSecurity       : You are asking Spring Security to ignore Mvc [pattern='/v3/api-docs/**']. This is not recommended -- please use permitAll via HttpSecurity#authorizeHttpRequests instead.
-2024-05-06T15:25:45.033+08:00  INFO 25620 --- [restartedMain] o.s.s.web.DefaultSecurityFilterChain     : Will not secure Mvc [pattern='/v3/api-docs/**']
-2024-05-06T15:25:45.033+08:00  WARN 25620 --- [restartedMain] o.s.s.c.a.web.builders.WebSecurity       : You are asking Spring Security to ignore Mvc [pattern='/swagger-ui/**']. This is not recommended -- please use permitAll via HttpSecurity#authorizeHttpRequests instead.
-2024-05-06T15:25:45.033+08:00  INFO 25620 --- [restartedMain] o.s.s.web.DefaultSecurityFilterChain     : Will not secure Mvc [pattern='/swagger-ui/**']
-2024-05-06T15:25:45.033+08:00  WARN 25620 --- [restartedMain] o.s.s.c.a.web.builders.WebSecurity       : You are asking Spring Security to ignore Mvc [pattern='/swagger-ui.html']. This is not recommended -- please use permitAll via HttpSecurity#authorizeHttpRequests instead.
-2024-05-06T15:25:45.033+08:00  INFO 25620 --- [restartedMain] o.s.s.web.DefaultSecurityFilterChain     : Will not secure Mvc [pattern='/swagger-ui.html']
-2024-05-06T15:25:45.033+08:00  WARN 25620 --- [restartedMain] o.s.s.c.a.web.builders.WebSecurity       : You are asking Spring Security to ignore Mvc [pattern='/ws/**']. This is not recommended -- please use permitAll via HttpSecurity#authorizeHttpRequests instead.
-2024-05-06T15:25:45.033+08:00  INFO 25620 --- [restartedMain] o.s.s.web.DefaultSecurityFilterChain     : Will not secure Mvc [pattern='/ws/**']
-2024-05-06T15:25:45.034+08:00  WARN 25620 --- [restartedMain] o.s.s.c.a.web.builders.WebSecurity       : You are asking Spring Security to ignore Mvc [pattern='/ws-app/**']. This is not recommended -- please use permitAll via HttpSecurity#authorizeHttpRequests instead.
-2024-05-06T15:25:45.034+08:00  INFO 25620 --- [restartedMain] o.s.s.web.DefaultSecurityFilterChain     : Will not secure Mvc [pattern='/ws-app/**']
-2024-05-06T15:25:45.410+08:00  INFO 25620 --- [restartedMain] o.s.b.d.a.OptionalLiveReloadServer       : LiveReload server is running on port 35729
-2024-05-06T15:25:45.477+08:00  INFO 25620 --- [restartedMain] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port(s): 8080 (http) with context path ''
-2024-05-06T15:25:45.486+08:00  INFO 25620 --- [restartedMain] cn.org.alan.exam.ExamApplication         : Started ExamApplication in 7.258 seconds (process running for 8.296)
-2024-05-06T15:29:40.189+08:00  INFO 25620 --- [SpringApplicationShutdownHook] com.alibaba.druid.pool.DruidDataSource   : {dataSource-1} closing ...
-2024-05-06T15:29:40.196+08:00  INFO 25620 --- [SpringApplicationShutdownHook] com.alibaba.druid.pool.DruidDataSource   : {dataSource-1} closed
-2024-05-06T15:29:44.509+08:00  INFO 18888 --- [restartedMain] cn.org.alan.exam.ExamApplication         : Starting ExamApplication using Java 17.0.10 with PID 18888 (D:\Desktop\online-exam-system-backend\target\classes started by 86158 in D:\Desktop\online-exam-system-backend)
-2024-05-06T15:29:44.513+08:00  INFO 18888 --- [restartedMain] cn.org.alan.exam.ExamApplication         : The following 1 profile is active: "dev"
-2024-05-06T15:29:44.563+08:00  INFO 18888 --- [restartedMain] .e.DevToolsPropertyDefaultsPostProcessor : Devtools property defaults active! Set 'spring.devtools.add-properties' to 'false' to disable
-2024-05-06T15:29:44.563+08:00  INFO 18888 --- [restartedMain] .e.DevToolsPropertyDefaultsPostProcessor : For additional web related logging consider setting the 'logging.level.web' property to 'DEBUG'
-2024-05-06T15:29:45.356+08:00  INFO 18888 --- [restartedMain] .s.d.r.c.RepositoryConfigurationDelegate : Multiple Spring Data modules found, entering strict repository configuration mode
-2024-05-06T15:29:45.359+08:00  INFO 18888 --- [restartedMain] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data Redis repositories in DEFAULT mode.
-2024-05-06T15:29:45.413+08:00  INFO 18888 --- [restartedMain] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 31 ms. Found 0 Redis repository interfaces.
-2024-05-06T15:29:45.881+08:00 ERROR 18888 --- [restartedMain] o.a.catalina.core.AprLifecycleListener   : An incompatible version [1.2.31] of the Apache Tomcat Native library is installed, while Tomcat requires version [1.2.34]
-2024-05-06T15:29:46.122+08:00  INFO 18888 --- [restartedMain] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port(s): 8080 (http)
-2024-05-06T15:29:46.131+08:00  INFO 18888 --- [restartedMain] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
-2024-05-06T15:29:46.132+08:00  INFO 18888 --- [restartedMain] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/10.1.8]
-2024-05-06T15:29:46.187+08:00  INFO 18888 --- [restartedMain] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
-2024-05-06T15:29:46.188+08:00  INFO 18888 --- [restartedMain] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 1624 ms
-2024-05-06T15:29:46.650+08:00  INFO 18888 --- [restartedMain] c.a.d.s.b.a.DruidDataSourceAutoConfigure : Init DruidDataSource
-2024-05-06T15:29:47.810+08:00  INFO 18888 --- [restartedMain] com.alibaba.druid.pool.DruidDataSource   : {dataSource-1} inited
-2024-05-06T15:29:49.290+08:00  INFO 18888 --- [restartedMain] o.s.s.web.DefaultSecurityFilterChain     : Will secure any request with [org.springframework.security.web.session.DisableEncodeUrlFilter@341c3908, org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter@7eb911, org.springframework.security.web.context.SecurityContextHolderFilter@58bd7397, org.springframework.security.web.header.HeaderWriterFilter@10dc3c21, org.springframework.security.web.authentication.logout.LogoutFilter@7f1cb8b6, cn.org.alan.exam.filter.VerifyTokenFilter@6bcafa57, org.springframework.security.web.savedrequest.RequestCacheAwareFilter@aaa73b9, org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter@4f9ce6f8, org.springframework.security.web.authentication.AnonymousAuthenticationFilter@b3f7b58, org.springframework.security.web.access.ExceptionTranslationFilter@7afc654b, org.springframework.security.web.access.intercept.AuthorizationFilter@14d4105a]
-2024-05-06T15:29:49.304+08:00  WARN 18888 --- [restartedMain] o.s.s.c.a.web.builders.WebSecurity       : You are asking Spring Security to ignore Mvc [pattern='/webjars/**']. This is not recommended -- please use permitAll via HttpSecurity#authorizeHttpRequests instead.
-2024-05-06T15:29:49.304+08:00  INFO 18888 --- [restartedMain] o.s.s.web.DefaultSecurityFilterChain     : Will not secure Mvc [pattern='/webjars/**']
-2024-05-06T15:29:49.304+08:00  WARN 18888 --- [restartedMain] o.s.s.c.a.web.builders.WebSecurity       : You are asking Spring Security to ignore Mvc [pattern='/doc.html']. This is not recommended -- please use permitAll via HttpSecurity#authorizeHttpRequests instead.
-2024-05-06T15:29:49.305+08:00  INFO 18888 --- [restartedMain] o.s.s.web.DefaultSecurityFilterChain     : Will not secure Mvc [pattern='/doc.html']
-2024-05-06T15:29:49.305+08:00  WARN 18888 --- [restartedMain] o.s.s.c.a.web.builders.WebSecurity       : You are asking Spring Security to ignore Mvc [pattern='/swagger-resources/**']. This is not recommended -- please use permitAll via HttpSecurity#authorizeHttpRequests instead.
-2024-05-06T15:29:49.305+08:00  INFO 18888 --- [restartedMain] o.s.s.web.DefaultSecurityFilterChain     : Will not secure Mvc [pattern='/swagger-resources/**']
-2024-05-06T15:29:49.305+08:00  WARN 18888 --- [restartedMain] o.s.s.c.a.web.builders.WebSecurity       : You are asking Spring Security to ignore Mvc [pattern='/v3/api-docs/**']. This is not recommended -- please use permitAll via HttpSecurity#authorizeHttpRequests instead.
-2024-05-06T15:29:49.305+08:00  INFO 18888 --- [restartedMain] o.s.s.web.DefaultSecurityFilterChain     : Will not secure Mvc [pattern='/v3/api-docs/**']
-2024-05-06T15:29:49.305+08:00  WARN 18888 --- [restartedMain] o.s.s.c.a.web.builders.WebSecurity       : You are asking Spring Security to ignore Mvc [pattern='/swagger-ui/**']. This is not recommended -- please use permitAll via HttpSecurity#authorizeHttpRequests instead.
-2024-05-06T15:29:49.305+08:00  INFO 18888 --- [restartedMain] o.s.s.web.DefaultSecurityFilterChain     : Will not secure Mvc [pattern='/swagger-ui/**']
-2024-05-06T15:29:49.305+08:00  WARN 18888 --- [restartedMain] o.s.s.c.a.web.builders.WebSecurity       : You are asking Spring Security to ignore Mvc [pattern='/swagger-ui.html']. This is not recommended -- please use permitAll via HttpSecurity#authorizeHttpRequests instead.
-2024-05-06T15:29:49.306+08:00  INFO 18888 --- [restartedMain] o.s.s.web.DefaultSecurityFilterChain     : Will not secure Mvc [pattern='/swagger-ui.html']
-2024-05-06T15:29:49.306+08:00  WARN 18888 --- [restartedMain] o.s.s.c.a.web.builders.WebSecurity       : You are asking Spring Security to ignore Mvc [pattern='/ws/**']. This is not recommended -- please use permitAll via HttpSecurity#authorizeHttpRequests instead.
-2024-05-06T15:29:49.306+08:00  INFO 18888 --- [restartedMain] o.s.s.web.DefaultSecurityFilterChain     : Will not secure Mvc [pattern='/ws/**']
-2024-05-06T15:29:49.306+08:00  WARN 18888 --- [restartedMain] o.s.s.c.a.web.builders.WebSecurity       : You are asking Spring Security to ignore Mvc [pattern='/ws-app/**']. This is not recommended -- please use permitAll via HttpSecurity#authorizeHttpRequests instead.
-2024-05-06T15:29:49.306+08:00  INFO 18888 --- [restartedMain] o.s.s.web.DefaultSecurityFilterChain     : Will not secure Mvc [pattern='/ws-app/**']
-2024-05-06T15:29:49.675+08:00  INFO 18888 --- [restartedMain] o.s.b.d.a.OptionalLiveReloadServer       : LiveReload server is running on port 35729
-2024-05-06T15:29:49.740+08:00  INFO 18888 --- [restartedMain] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port(s): 8080 (http) with context path ''
-2024-05-06T15:29:49.749+08:00  INFO 18888 --- [restartedMain] cn.org.alan.exam.ExamApplication         : Started ExamApplication in 5.702 seconds (process running for 6.425)
-2024-05-06T15:31:12.720+08:00  INFO 18888 --- [SpringApplicationShutdownHook] com.alibaba.druid.pool.DruidDataSource   : {dataSource-1} closing ...
-2024-05-06T15:31:12.729+08:00  INFO 18888 --- [SpringApplicationShutdownHook] com.alibaba.druid.pool.DruidDataSource   : {dataSource-1} closed
-2024-05-06T15:46:17.824+08:00  INFO 8171 --- [restartedMain] cn.org.alan.exam.ExamApplication         : Starting ExamApplication using Java 17.0.8 with PID 8171 (/Users/alan/Documents/Code/项目开发/学校项目/综合项目实战/考试系统/code/online-exam-system-backend/target/classes started by alan in /Users/alan/Documents/Code/项目开发/学校项目/综合项目实战/考试系统/code/online-exam-system-backend)
-2024-05-06T15:46:17.826+08:00  INFO 8171 --- [restartedMain] cn.org.alan.exam.ExamApplication         : The following 1 profile is active: "dev"
-2024-05-06T15:46:17.877+08:00  INFO 8171 --- [restartedMain] .e.DevToolsPropertyDefaultsPostProcessor : Devtools property defaults active! Set 'spring.devtools.add-properties' to 'false' to disable
-2024-05-06T15:46:17.877+08:00  INFO 8171 --- [restartedMain] .e.DevToolsPropertyDefaultsPostProcessor : For additional web related logging consider setting the 'logging.level.web' property to 'DEBUG'
-2024-05-06T15:46:18.961+08:00  INFO 8171 --- [restartedMain] .s.d.r.c.RepositoryConfigurationDelegate : Multiple Spring Data modules found, entering strict repository configuration mode
-2024-05-06T15:46:18.964+08:00  INFO 8171 --- [restartedMain] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data Redis repositories in DEFAULT mode.
-2024-05-06T15:46:19.022+08:00  INFO 8171 --- [restartedMain] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 42 ms. Found 0 Redis repository interfaces.
-2024-05-06T15:46:19.786+08:00  INFO 8171 --- [restartedMain] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port(s): 8080 (http)
-2024-05-06T15:46:19.796+08:00  INFO 8171 --- [restartedMain] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
-2024-05-06T15:46:19.797+08:00  INFO 8171 --- [restartedMain] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/10.1.8]
-2024-05-06T15:46:19.852+08:00  INFO 8171 --- [restartedMain] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
-2024-05-06T15:46:19.852+08:00  INFO 8171 --- [restartedMain] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 1974 ms
-2024-05-06T15:46:20.364+08:00  INFO 8171 --- [restartedMain] c.a.d.s.b.a.DruidDataSourceAutoConfigure : Init DruidDataSource
-2024-05-06T15:46:21.431+08:00  INFO 8171 --- [restartedMain] com.alibaba.druid.pool.DruidDataSource   : {dataSource-1} inited
-2024-05-06T15:46:22.943+08:00  INFO 8171 --- [restartedMain] o.s.s.web.DefaultSecurityFilterChain     : Will secure any request with [org.springframework.security.web.session.DisableEncodeUrlFilter@4f84a09e, org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter@16494597, org.springframework.security.web.context.SecurityContextHolderFilter@52237fff, org.springframework.security.web.header.HeaderWriterFilter@72a0c57, org.springframework.security.web.authentication.logout.LogoutFilter@747c35ba, cn.org.alan.exam.filter.VerifyTokenFilter@226a41a3, org.springframework.security.web.savedrequest.RequestCacheAwareFilter@237776cb, org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter@69647284, org.springframework.security.web.authentication.AnonymousAuthenticationFilter@29773bf9, org.springframework.security.web.access.ExceptionTranslationFilter@1e90ecf5, org.springframework.security.web.access.intercept.AuthorizationFilter@7a146011]
-2024-05-06T15:46:22.956+08:00  WARN 8171 --- [restartedMain] o.s.s.c.a.web.builders.WebSecurity       : You are asking Spring Security to ignore Mvc [pattern='/webjars/**']. This is not recommended -- please use permitAll via HttpSecurity#authorizeHttpRequests instead.
-2024-05-06T15:46:22.956+08:00  INFO 8171 --- [restartedMain] o.s.s.web.DefaultSecurityFilterChain     : Will not secure Mvc [pattern='/webjars/**']
-2024-05-06T15:46:22.957+08:00  WARN 8171 --- [restartedMain] o.s.s.c.a.web.builders.WebSecurity       : You are asking Spring Security to ignore Mvc [pattern='/doc.html']. This is not recommended -- please use permitAll via HttpSecurity#authorizeHttpRequests instead.
-2024-05-06T15:46:22.957+08:00  INFO 8171 --- [restartedMain] o.s.s.web.DefaultSecurityFilterChain     : Will not secure Mvc [pattern='/doc.html']
-2024-05-06T15:46:22.957+08:00  WARN 8171 --- [restartedMain] o.s.s.c.a.web.builders.WebSecurity       : You are asking Spring Security to ignore Mvc [pattern='/swagger-resources/**']. This is not recommended -- please use permitAll via HttpSecurity#authorizeHttpRequests instead.
-2024-05-06T15:46:22.957+08:00  INFO 8171 --- [restartedMain] o.s.s.web.DefaultSecurityFilterChain     : Will not secure Mvc [pattern='/swagger-resources/**']
-2024-05-06T15:46:22.957+08:00  WARN 8171 --- [restartedMain] o.s.s.c.a.web.builders.WebSecurity       : You are asking Spring Security to ignore Mvc [pattern='/v3/api-docs/**']. This is not recommended -- please use permitAll via HttpSecurity#authorizeHttpRequests instead.
-2024-05-06T15:46:22.957+08:00  INFO 8171 --- [restartedMain] o.s.s.web.DefaultSecurityFilterChain     : Will not secure Mvc [pattern='/v3/api-docs/**']
-2024-05-06T15:46:22.957+08:00  WARN 8171 --- [restartedMain] o.s.s.c.a.web.builders.WebSecurity       : You are asking Spring Security to ignore Mvc [pattern='/swagger-ui/**']. This is not recommended -- please use permitAll via HttpSecurity#authorizeHttpRequests instead.
-2024-05-06T15:46:22.957+08:00  INFO 8171 --- [restartedMain] o.s.s.web.DefaultSecurityFilterChain     : Will not secure Mvc [pattern='/swagger-ui/**']
-2024-05-06T15:46:22.957+08:00  WARN 8171 --- [restartedMain] o.s.s.c.a.web.builders.WebSecurity       : You are asking Spring Security to ignore Mvc [pattern='/swagger-ui.html']. This is not recommended -- please use permitAll via HttpSecurity#authorizeHttpRequests instead.
-2024-05-06T15:46:22.957+08:00  INFO 8171 --- [restartedMain] o.s.s.web.DefaultSecurityFilterChain     : Will not secure Mvc [pattern='/swagger-ui.html']
-2024-05-06T15:46:22.958+08:00  WARN 8171 --- [restartedMain] o.s.s.c.a.web.builders.WebSecurity       : You are asking Spring Security to ignore Mvc [pattern='/ws/**']. This is not recommended -- please use permitAll via HttpSecurity#authorizeHttpRequests instead.
-2024-05-06T15:46:22.958+08:00  INFO 8171 --- [restartedMain] o.s.s.web.DefaultSecurityFilterChain     : Will not secure Mvc [pattern='/ws/**']
-2024-05-06T15:46:22.958+08:00  WARN 8171 --- [restartedMain] o.s.s.c.a.web.builders.WebSecurity       : You are asking Spring Security to ignore Mvc [pattern='/ws-app/**']. This is not recommended -- please use permitAll via HttpSecurity#authorizeHttpRequests instead.
-2024-05-06T15:46:22.958+08:00  INFO 8171 --- [restartedMain] o.s.s.web.DefaultSecurityFilterChain     : Will not secure Mvc [pattern='/ws-app/**']
-2024-05-06T15:46:23.377+08:00  INFO 8171 --- [restartedMain] o.s.b.d.a.OptionalLiveReloadServer       : LiveReload server is running on port 35729
-2024-05-06T15:46:23.443+08:00  INFO 8171 --- [restartedMain] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port(s): 8080 (http) with context path ''
-2024-05-06T15:46:23.454+08:00  INFO 8171 --- [restartedMain] cn.org.alan.exam.ExamApplication         : Started ExamApplication in 6.116 seconds (process running for 6.727)
-2024-05-06T15:46:31.346+08:00  INFO 8171 --- [http-nio-8080-exec-1] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring DispatcherServlet 'dispatcherServlet'
-2024-05-06T15:46:31.347+08:00  INFO 8171 --- [http-nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Initializing Servlet 'dispatcherServlet'
-2024-05-06T15:46:31.350+08:00  INFO 8171 --- [http-nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Completed initialization in 2 ms
-2024-05-06T15:51:02.296+08:00  INFO 8171 --- [http-nio-8080-exec-4] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:02.296+08:00  INFO 8171 --- [http-nio-8080-exec-5] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:02.296+08:00  INFO 8171 --- [http-nio-8080-exec-3] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:02.300+08:00  INFO 8171 --- [http-nio-8080-exec-4] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:02.300+08:00  INFO 8171 --- [http-nio-8080-exec-3] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:02.300+08:00  INFO 8171 --- [http-nio-8080-exec-5] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:04.602+08:00  INFO 8171 --- [http-nio-8080-exec-6] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:04.602+08:00  INFO 8171 --- [http-nio-8080-exec-7] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:04.603+08:00  INFO 8171 --- [http-nio-8080-exec-6] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:04.603+08:00  INFO 8171 --- [http-nio-8080-exec-7] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:04.607+08:00  INFO 8171 --- [http-nio-8080-exec-8] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:04.608+08:00  INFO 8171 --- [http-nio-8080-exec-8] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:05.136+08:00  INFO 8171 --- [http-nio-8080-exec-9] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:05.137+08:00  INFO 8171 --- [http-nio-8080-exec-9] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:05.138+08:00  INFO 8171 --- [http-nio-8080-exec-10] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:05.138+08:00  INFO 8171 --- [http-nio-8080-exec-10] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:05.140+08:00  INFO 8171 --- [http-nio-8080-exec-1] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:05.140+08:00  INFO 8171 --- [http-nio-8080-exec-1] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:05.155+08:00  INFO 8171 --- [http-nio-8080-exec-2] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:05.155+08:00  INFO 8171 --- [http-nio-8080-exec-2] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:05.157+08:00  INFO 8171 --- [http-nio-8080-exec-5] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:05.157+08:00  INFO 8171 --- [http-nio-8080-exec-5] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:06.117+08:00  INFO 8171 --- [http-nio-8080-exec-3] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:06.117+08:00  INFO 8171 --- [http-nio-8080-exec-4] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:06.118+08:00  INFO 8171 --- [http-nio-8080-exec-3] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:06.118+08:00  INFO 8171 --- [http-nio-8080-exec-4] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:06.121+08:00  INFO 8171 --- [http-nio-8080-exec-7] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:06.121+08:00  INFO 8171 --- [http-nio-8080-exec-7] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:07.590+08:00  INFO 8171 --- [http-nio-8080-exec-8] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:07.591+08:00  INFO 8171 --- [http-nio-8080-exec-8] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:07.596+08:00  INFO 8171 --- [http-nio-8080-exec-6] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:07.596+08:00  INFO 8171 --- [http-nio-8080-exec-6] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:07.599+08:00  INFO 8171 --- [http-nio-8080-exec-10] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:07.599+08:00  INFO 8171 --- [http-nio-8080-exec-10] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:07.601+08:00  INFO 8171 --- [http-nio-8080-exec-1] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:07.601+08:00  INFO 8171 --- [http-nio-8080-exec-1] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:07.607+08:00  INFO 8171 --- [http-nio-8080-exec-9] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:07.608+08:00  INFO 8171 --- [http-nio-8080-exec-9] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:07.746+08:00  INFO 8171 --- [http-nio-8080-exec-2] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:07.746+08:00  INFO 8171 --- [http-nio-8080-exec-2] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:07.754+08:00  INFO 8171 --- [http-nio-8080-exec-5] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:07.754+08:00  INFO 8171 --- [http-nio-8080-exec-5] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:07.756+08:00  INFO 8171 --- [http-nio-8080-exec-7] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:07.756+08:00  INFO 8171 --- [http-nio-8080-exec-7] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:09.355+08:00  INFO 8171 --- [http-nio-8080-exec-3] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:09.356+08:00  INFO 8171 --- [http-nio-8080-exec-3] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:09.357+08:00  INFO 8171 --- [http-nio-8080-exec-4] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:09.357+08:00  INFO 8171 --- [http-nio-8080-exec-4] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:09.359+08:00  INFO 8171 --- [http-nio-8080-exec-8] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:09.359+08:00  INFO 8171 --- [http-nio-8080-exec-8] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:10.042+08:00  INFO 8171 --- [http-nio-8080-exec-10] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:10.042+08:00  INFO 8171 --- [http-nio-8080-exec-6] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:10.043+08:00  INFO 8171 --- [http-nio-8080-exec-6] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:10.043+08:00  INFO 8171 --- [http-nio-8080-exec-10] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:10.043+08:00  INFO 8171 --- [http-nio-8080-exec-2] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:10.043+08:00  INFO 8171 --- [http-nio-8080-exec-2] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:10.043+08:00  INFO 8171 --- [http-nio-8080-exec-9] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:10.044+08:00  INFO 8171 --- [http-nio-8080-exec-9] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:10.044+08:00  INFO 8171 --- [http-nio-8080-exec-1] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:10.044+08:00  INFO 8171 --- [http-nio-8080-exec-1] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:11.072+08:00  INFO 8171 --- [http-nio-8080-exec-7] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:11.072+08:00  INFO 8171 --- [http-nio-8080-exec-7] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:11.074+08:00  INFO 8171 --- [http-nio-8080-exec-5] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:11.074+08:00  INFO 8171 --- [http-nio-8080-exec-5] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:11.079+08:00  INFO 8171 --- [http-nio-8080-exec-4] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:11.079+08:00  INFO 8171 --- [http-nio-8080-exec-4] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:12.439+08:00  INFO 8171 --- [http-nio-8080-exec-3] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:12.440+08:00  INFO 8171 --- [http-nio-8080-exec-3] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:12.441+08:00  INFO 8171 --- [http-nio-8080-exec-8] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:12.441+08:00  INFO 8171 --- [http-nio-8080-exec-8] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:12.442+08:00  INFO 8171 --- [http-nio-8080-exec-6] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:12.442+08:00  INFO 8171 --- [http-nio-8080-exec-6] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:12.445+08:00  INFO 8171 --- [http-nio-8080-exec-2] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:12.445+08:00  INFO 8171 --- [http-nio-8080-exec-2] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:12.445+08:00  INFO 8171 --- [http-nio-8080-exec-10] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:12.445+08:00  INFO 8171 --- [http-nio-8080-exec-10] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:12.673+08:00  INFO 8171 --- [http-nio-8080-exec-9] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:12.673+08:00  INFO 8171 --- [http-nio-8080-exec-9] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:12.678+08:00  INFO 8171 --- [http-nio-8080-exec-7] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:12.679+08:00  INFO 8171 --- [http-nio-8080-exec-1] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:12.679+08:00  INFO 8171 --- [http-nio-8080-exec-7] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:12.679+08:00  INFO 8171 --- [http-nio-8080-exec-1] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:14.447+08:00  INFO 8171 --- [http-nio-8080-exec-5] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:14.447+08:00  INFO 8171 --- [http-nio-8080-exec-5] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:14.455+08:00  INFO 8171 --- [http-nio-8080-exec-4] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:14.455+08:00  INFO 8171 --- [http-nio-8080-exec-4] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:14.462+08:00  INFO 8171 --- [http-nio-8080-exec-3] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:14.462+08:00  INFO 8171 --- [http-nio-8080-exec-3] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:15.015+08:00  INFO 8171 --- [http-nio-8080-exec-2] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:15.015+08:00  INFO 8171 --- [http-nio-8080-exec-2] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:15.021+08:00  INFO 8171 --- [http-nio-8080-exec-10] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:15.021+08:00  INFO 8171 --- [http-nio-8080-exec-10] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:15.024+08:00  INFO 8171 --- [http-nio-8080-exec-8] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:15.025+08:00  INFO 8171 --- [http-nio-8080-exec-8] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:15.026+08:00  INFO 8171 --- [http-nio-8080-exec-6] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:15.027+08:00  INFO 8171 --- [http-nio-8080-exec-6] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:15.031+08:00  INFO 8171 --- [http-nio-8080-exec-7] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:15.031+08:00  INFO 8171 --- [http-nio-8080-exec-7] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:16.548+08:00  INFO 8171 --- [http-nio-8080-exec-9] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:16.548+08:00  INFO 8171 --- [http-nio-8080-exec-5] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:16.548+08:00  INFO 8171 --- [http-nio-8080-exec-1] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:16.549+08:00  INFO 8171 --- [http-nio-8080-exec-9] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:16.549+08:00  INFO 8171 --- [http-nio-8080-exec-5] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:16.549+08:00  INFO 8171 --- [http-nio-8080-exec-1] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:17.556+08:00  INFO 8171 --- [http-nio-8080-exec-4] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:17.557+08:00  INFO 8171 --- [http-nio-8080-exec-4] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:17.557+08:00  INFO 8171 --- [http-nio-8080-exec-3] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:17.557+08:00  INFO 8171 --- [http-nio-8080-exec-3] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:17.558+08:00  INFO 8171 --- [http-nio-8080-exec-10] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:17.558+08:00  INFO 8171 --- [http-nio-8080-exec-10] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:17.563+08:00  INFO 8171 --- [http-nio-8080-exec-2] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:17.564+08:00  INFO 8171 --- [http-nio-8080-exec-2] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:17.564+08:00  INFO 8171 --- [http-nio-8080-exec-6] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:17.564+08:00  INFO 8171 --- [http-nio-8080-exec-6] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:18.426+08:00  INFO 8171 --- [http-nio-8080-exec-7] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:18.427+08:00  INFO 8171 --- [http-nio-8080-exec-7] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:18.431+08:00  INFO 8171 --- [http-nio-8080-exec-8] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:18.431+08:00  INFO 8171 --- [http-nio-8080-exec-8] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:18.444+08:00  INFO 8171 --- [http-nio-8080-exec-5] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:18.445+08:00  INFO 8171 --- [http-nio-8080-exec-5] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:20.209+08:00  INFO 8171 --- [http-nio-8080-exec-1] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:20.209+08:00  INFO 8171 --- [http-nio-8080-exec-1] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:20.215+08:00  INFO 8171 --- [http-nio-8080-exec-9] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:20.216+08:00  INFO 8171 --- [http-nio-8080-exec-9] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:20.216+08:00  INFO 8171 --- [http-nio-8080-exec-10] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:20.216+08:00  INFO 8171 --- [http-nio-8080-exec-10] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:20.582+08:00  INFO 8171 --- [http-nio-8080-exec-3] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:20.582+08:00  INFO 8171 --- [http-nio-8080-exec-3] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:20.583+08:00  INFO 8171 --- [http-nio-8080-exec-6] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:20.583+08:00  INFO 8171 --- [http-nio-8080-exec-2] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:20.583+08:00  INFO 8171 --- [http-nio-8080-exec-6] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:20.583+08:00  INFO 8171 --- [http-nio-8080-exec-2] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:20.584+08:00  INFO 8171 --- [http-nio-8080-exec-4] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:20.584+08:00  INFO 8171 --- [http-nio-8080-exec-4] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:20.585+08:00  INFO 8171 --- [http-nio-8080-exec-8] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:20.585+08:00  INFO 8171 --- [http-nio-8080-exec-8] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:22.049+08:00  INFO 8171 --- [http-nio-8080-exec-7] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:22.049+08:00  INFO 8171 --- [http-nio-8080-exec-7] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:22.051+08:00  INFO 8171 --- [http-nio-8080-exec-5] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:22.052+08:00  INFO 8171 --- [http-nio-8080-exec-5] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:22.056+08:00  INFO 8171 --- [http-nio-8080-exec-1] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:22.056+08:00  INFO 8171 --- [http-nio-8080-exec-1] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:23.344+08:00  INFO 8171 --- [http-nio-8080-exec-3] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:23.345+08:00  INFO 8171 --- [http-nio-8080-exec-3] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:23.346+08:00  INFO 8171 --- [http-nio-8080-exec-9] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:23.346+08:00  INFO 8171 --- [http-nio-8080-exec-9] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:23.348+08:00  INFO 8171 --- [http-nio-8080-exec-10] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:23.348+08:00  INFO 8171 --- [http-nio-8080-exec-10] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:23.351+08:00  INFO 8171 --- [http-nio-8080-exec-8] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:23.351+08:00  INFO 8171 --- [http-nio-8080-exec-8] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:23.351+08:00  INFO 8171 --- [http-nio-8080-exec-2] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:23.351+08:00  INFO 8171 --- [http-nio-8080-exec-2] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:23.752+08:00  INFO 8171 --- [http-nio-8080-exec-6] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:23.753+08:00  INFO 8171 --- [http-nio-8080-exec-6] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:23.757+08:00  INFO 8171 --- [http-nio-8080-exec-1] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:23.758+08:00  INFO 8171 --- [http-nio-8080-exec-1] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:23.758+08:00  INFO 8171 --- [http-nio-8080-exec-4] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:23.758+08:00  INFO 8171 --- [http-nio-8080-exec-4] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:25.440+08:00  INFO 8171 --- [http-nio-8080-exec-3] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:25.440+08:00  INFO 8171 --- [http-nio-8080-exec-3] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:25.441+08:00  INFO 8171 --- [http-nio-8080-exec-5] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:25.441+08:00  INFO 8171 --- [http-nio-8080-exec-5] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:25.441+08:00  INFO 8171 --- [http-nio-8080-exec-7] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:25.441+08:00  INFO 8171 --- [http-nio-8080-exec-7] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:26.383+08:00  INFO 8171 --- [http-nio-8080-exec-8] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:26.384+08:00  INFO 8171 --- [http-nio-8080-exec-8] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:26.386+08:00  INFO 8171 --- [http-nio-8080-exec-9] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:26.386+08:00  INFO 8171 --- [http-nio-8080-exec-2] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:26.386+08:00  INFO 8171 --- [http-nio-8080-exec-2] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:26.386+08:00  INFO 8171 --- [http-nio-8080-exec-9] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:26.394+08:00  INFO 8171 --- [http-nio-8080-exec-10] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:26.394+08:00  INFO 8171 --- [http-nio-8080-exec-6] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:26.394+08:00  INFO 8171 --- [http-nio-8080-exec-6] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:26.394+08:00  INFO 8171 --- [http-nio-8080-exec-10] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:27.226+08:00  INFO 8171 --- [http-nio-8080-exec-1] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:27.226+08:00  INFO 8171 --- [http-nio-8080-exec-1] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:27.227+08:00  INFO 8171 --- [http-nio-8080-exec-4] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:27.228+08:00  INFO 8171 --- [http-nio-8080-exec-4] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:27.231+08:00  INFO 8171 --- [http-nio-8080-exec-3] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:27.231+08:00  INFO 8171 --- [http-nio-8080-exec-3] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:28.919+08:00  INFO 8171 --- [http-nio-8080-exec-5] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:28.920+08:00  INFO 8171 --- [http-nio-8080-exec-5] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:28.920+08:00  INFO 8171 --- [http-nio-8080-exec-7] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:28.920+08:00  INFO 8171 --- [http-nio-8080-exec-7] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:28.920+08:00  INFO 8171 --- [http-nio-8080-exec-9] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:28.920+08:00  INFO 8171 --- [http-nio-8080-exec-9] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:29.276+08:00  INFO 8171 --- [http-nio-8080-exec-4] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:29.276+08:00  INFO 8171 --- [http-nio-8080-exec-4] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:29.282+08:00  INFO 8171 --- [http-nio-8080-exec-8] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:29.282+08:00  INFO 8171 --- [http-nio-8080-exec-6] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:29.283+08:00  INFO 8171 --- [http-nio-8080-exec-8] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:29.283+08:00  INFO 8171 --- [http-nio-8080-exec-6] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:29.301+08:00  INFO 8171 --- [http-nio-8080-exec-10] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:29.301+08:00  INFO 8171 --- [http-nio-8080-exec-2] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:29.302+08:00  INFO 8171 --- [http-nio-8080-exec-10] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:29.302+08:00  INFO 8171 --- [http-nio-8080-exec-2] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:30.849+08:00  INFO 8171 --- [http-nio-8080-exec-1] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:30.849+08:00  INFO 8171 --- [http-nio-8080-exec-1] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:30.855+08:00  INFO 8171 --- [http-nio-8080-exec-3] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:30.855+08:00  INFO 8171 --- [http-nio-8080-exec-3] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:30.864+08:00  INFO 8171 --- [http-nio-8080-exec-7] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:30.865+08:00  INFO 8171 --- [http-nio-8080-exec-7] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:32.628+08:00  INFO 8171 --- [http-nio-8080-exec-5] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:32.628+08:00  INFO 8171 --- [http-nio-8080-exec-5] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:32.629+08:00  INFO 8171 --- [http-nio-8080-exec-9] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:32.629+08:00  INFO 8171 --- [http-nio-8080-exec-9] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:32.630+08:00  INFO 8171 --- [http-nio-8080-exec-6] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:32.630+08:00  INFO 8171 --- [http-nio-8080-exec-6] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:32.748+08:00  INFO 8171 --- [http-nio-8080-exec-4] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:32.748+08:00  INFO 8171 --- [http-nio-8080-exec-4] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:32.749+08:00  INFO 8171 --- [http-nio-8080-exec-8] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:32.750+08:00  INFO 8171 --- [http-nio-8080-exec-8] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:32.750+08:00  INFO 8171 --- [http-nio-8080-exec-2] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:32.750+08:00  INFO 8171 --- [http-nio-8080-exec-2] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:32.758+08:00  INFO 8171 --- [http-nio-8080-exec-10] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:32.758+08:00  INFO 8171 --- [http-nio-8080-exec-10] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:32.759+08:00  INFO 8171 --- [http-nio-8080-exec-1] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:32.759+08:00  INFO 8171 --- [http-nio-8080-exec-1] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:34.428+08:00  INFO 8171 --- [http-nio-8080-exec-3] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:34.429+08:00  INFO 8171 --- [http-nio-8080-exec-3] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:34.447+08:00  INFO 8171 --- [http-nio-8080-exec-7] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:34.447+08:00  INFO 8171 --- [http-nio-8080-exec-7] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:34.447+08:00  INFO 8171 --- [http-nio-8080-exec-5] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:34.447+08:00  INFO 8171 --- [http-nio-8080-exec-5] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:35.819+08:00  INFO 8171 --- [http-nio-8080-exec-6] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:35.820+08:00  INFO 8171 --- [http-nio-8080-exec-6] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:35.820+08:00  INFO 8171 --- [http-nio-8080-exec-9] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:35.820+08:00  INFO 8171 --- [http-nio-8080-exec-9] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:35.821+08:00  INFO 8171 --- [http-nio-8080-exec-2] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:35.821+08:00  INFO 8171 --- [http-nio-8080-exec-2] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:35.822+08:00  INFO 8171 --- [http-nio-8080-exec-8] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:35.822+08:00  INFO 8171 --- [http-nio-8080-exec-8] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:35.822+08:00  INFO 8171 --- [http-nio-8080-exec-4] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:35.822+08:00  INFO 8171 --- [http-nio-8080-exec-4] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:36.214+08:00  INFO 8171 --- [http-nio-8080-exec-10] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:36.215+08:00  INFO 8171 --- [http-nio-8080-exec-10] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:36.219+08:00  INFO 8171 --- [http-nio-8080-exec-1] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:36.219+08:00  INFO 8171 --- [http-nio-8080-exec-1] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:36.221+08:00  INFO 8171 --- [http-nio-8080-exec-3] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:36.221+08:00  INFO 8171 --- [http-nio-8080-exec-3] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:38.090+08:00  INFO 8171 --- [http-nio-8080-exec-7] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:38.090+08:00  INFO 8171 --- [http-nio-8080-exec-5] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:38.090+08:00  INFO 8171 --- [http-nio-8080-exec-7] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:38.090+08:00  INFO 8171 --- [http-nio-8080-exec-5] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:38.099+08:00  INFO 8171 --- [http-nio-8080-exec-6] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:38.099+08:00  INFO 8171 --- [http-nio-8080-exec-6] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:39.146+08:00  INFO 8171 --- [http-nio-8080-exec-8] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:39.146+08:00  INFO 8171 --- [http-nio-8080-exec-8] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:39.150+08:00  INFO 8171 --- [http-nio-8080-exec-2] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:39.151+08:00  INFO 8171 --- [http-nio-8080-exec-2] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:39.151+08:00  INFO 8171 --- [http-nio-8080-exec-9] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:39.151+08:00  INFO 8171 --- [http-nio-8080-exec-4] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:39.151+08:00  INFO 8171 --- [http-nio-8080-exec-9] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:39.151+08:00  INFO 8171 --- [http-nio-8080-exec-4] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:39.154+08:00  INFO 8171 --- [http-nio-8080-exec-1] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:39.154+08:00  INFO 8171 --- [http-nio-8080-exec-1] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:39.812+08:00  INFO 8171 --- [http-nio-8080-exec-10] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:39.812+08:00  INFO 8171 --- [http-nio-8080-exec-10] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:39.813+08:00  INFO 8171 --- [http-nio-8080-exec-3] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:39.813+08:00  INFO 8171 --- [http-nio-8080-exec-3] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:39.814+08:00  INFO 8171 --- [http-nio-8080-exec-5] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:39.815+08:00  INFO 8171 --- [http-nio-8080-exec-5] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:41.677+08:00  INFO 8171 --- [http-nio-8080-exec-6] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:41.677+08:00  INFO 8171 --- [http-nio-8080-exec-6] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:41.682+08:00  INFO 8171 --- [http-nio-8080-exec-7] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:41.683+08:00  INFO 8171 --- [http-nio-8080-exec-7] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:41.684+08:00  INFO 8171 --- [http-nio-8080-exec-2] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:41.685+08:00  INFO 8171 --- [http-nio-8080-exec-2] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:42.433+08:00  INFO 8171 --- [http-nio-8080-exec-8] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:42.433+08:00  INFO 8171 --- [http-nio-8080-exec-8] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:42.441+08:00  INFO 8171 --- [http-nio-8080-exec-1] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:42.441+08:00  INFO 8171 --- [http-nio-8080-exec-1] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:42.445+08:00  INFO 8171 --- [http-nio-8080-exec-4] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:42.445+08:00  INFO 8171 --- [http-nio-8080-exec-4] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:42.457+08:00  INFO 8171 --- [http-nio-8080-exec-9] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:42.457+08:00  INFO 8171 --- [http-nio-8080-exec-9] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:42.465+08:00  INFO 8171 --- [http-nio-8080-exec-5] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:42.465+08:00  INFO 8171 --- [http-nio-8080-exec-5] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:43.331+08:00  INFO 8171 --- [http-nio-8080-exec-10] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:43.332+08:00  INFO 8171 --- [http-nio-8080-exec-3] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:43.332+08:00  INFO 8171 --- [http-nio-8080-exec-10] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:43.332+08:00  INFO 8171 --- [http-nio-8080-exec-3] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:43.335+08:00  INFO 8171 --- [http-nio-8080-exec-6] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:43.335+08:00  INFO 8171 --- [http-nio-8080-exec-6] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:45.101+08:00  INFO 8171 --- [http-nio-8080-exec-2] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:45.101+08:00  INFO 8171 --- [http-nio-8080-exec-2] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:45.106+08:00  INFO 8171 --- [http-nio-8080-exec-7] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:45.106+08:00  INFO 8171 --- [http-nio-8080-exec-7] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:45.110+08:00  INFO 8171 --- [http-nio-8080-exec-8] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:45.110+08:00  INFO 8171 --- [http-nio-8080-exec-8] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:45.551+08:00  INFO 8171 --- [http-nio-8080-exec-5] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:45.551+08:00  INFO 8171 --- [http-nio-8080-exec-5] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:45.554+08:00  INFO 8171 --- [http-nio-8080-exec-4] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:45.555+08:00  INFO 8171 --- [http-nio-8080-exec-4] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:45.556+08:00  INFO 8171 --- [http-nio-8080-exec-1] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:45.556+08:00  INFO 8171 --- [http-nio-8080-exec-1] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:45.557+08:00  INFO 8171 --- [http-nio-8080-exec-9] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:45.557+08:00  INFO 8171 --- [http-nio-8080-exec-10] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:45.557+08:00  INFO 8171 --- [http-nio-8080-exec-9] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:45.557+08:00  INFO 8171 --- [http-nio-8080-exec-10] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:46.820+08:00  INFO 8171 --- [http-nio-8080-exec-3] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:46.821+08:00  INFO 8171 --- [http-nio-8080-exec-3] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:46.823+08:00  INFO 8171 --- [http-nio-8080-exec-2] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:46.823+08:00  INFO 8171 --- [http-nio-8080-exec-2] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:46.823+08:00  INFO 8171 --- [http-nio-8080-exec-6] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:46.824+08:00  INFO 8171 --- [http-nio-8080-exec-6] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:48.646+08:00  INFO 8171 --- [http-nio-8080-exec-8] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:48.647+08:00  INFO 8171 --- [http-nio-8080-exec-8] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:48.647+08:00  INFO 8171 --- [http-nio-8080-exec-7] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:48.647+08:00  INFO 8171 --- [http-nio-8080-exec-7] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:48.649+08:00  INFO 8171 --- [http-nio-8080-exec-5] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:48.650+08:00  INFO 8171 --- [http-nio-8080-exec-5] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:48.910+08:00  INFO 8171 --- [http-nio-8080-exec-10] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:48.910+08:00  INFO 8171 --- [http-nio-8080-exec-10] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:48.910+08:00  INFO 8171 --- [http-nio-8080-exec-4] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:48.910+08:00  INFO 8171 --- [http-nio-8080-exec-4] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:48.911+08:00  INFO 8171 --- [http-nio-8080-exec-9] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:48.911+08:00  INFO 8171 --- [http-nio-8080-exec-9] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:48.914+08:00  INFO 8171 --- [http-nio-8080-exec-1] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:48.914+08:00  INFO 8171 --- [http-nio-8080-exec-1] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:48.914+08:00  INFO 8171 --- [http-nio-8080-exec-2] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:48.914+08:00  INFO 8171 --- [http-nio-8080-exec-2] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:50.425+08:00  INFO 8171 --- [http-nio-8080-exec-6] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:50.425+08:00  INFO 8171 --- [http-nio-8080-exec-3] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:50.425+08:00  INFO 8171 --- [http-nio-8080-exec-6] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:50.425+08:00  INFO 8171 --- [http-nio-8080-exec-3] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:50.426+08:00  INFO 8171 --- [http-nio-8080-exec-7] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:50.426+08:00  INFO 8171 --- [http-nio-8080-exec-7] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:51.942+08:00  INFO 8171 --- [http-nio-8080-exec-5] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:51.942+08:00  INFO 8171 --- [http-nio-8080-exec-5] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:51.943+08:00  INFO 8171 --- [http-nio-8080-exec-10] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:51.943+08:00  INFO 8171 --- [http-nio-8080-exec-10] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:51.944+08:00  INFO 8171 --- [http-nio-8080-exec-9] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:51.944+08:00  INFO 8171 --- [http-nio-8080-exec-9] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:51.944+08:00  INFO 8171 --- [http-nio-8080-exec-8] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:51.944+08:00  INFO 8171 --- [http-nio-8080-exec-2] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:51.944+08:00  INFO 8171 --- [http-nio-8080-exec-8] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:51.945+08:00  INFO 8171 --- [http-nio-8080-exec-2] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:52.211+08:00  INFO 8171 --- [http-nio-8080-exec-1] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:52.211+08:00  INFO 8171 --- [http-nio-8080-exec-1] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:52.219+08:00  INFO 8171 --- [http-nio-8080-exec-4] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:52.219+08:00  INFO 8171 --- [http-nio-8080-exec-4] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:52.227+08:00  INFO 8171 --- [http-nio-8080-exec-7] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:52.227+08:00  INFO 8171 --- [http-nio-8080-exec-7] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:54.038+08:00  INFO 8171 --- [http-nio-8080-exec-6] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:54.038+08:00  INFO 8171 --- [http-nio-8080-exec-6] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:54.039+08:00  INFO 8171 --- [http-nio-8080-exec-5] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:54.039+08:00  INFO 8171 --- [http-nio-8080-exec-3] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:54.039+08:00  INFO 8171 --- [http-nio-8080-exec-5] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:54.039+08:00  INFO 8171 --- [http-nio-8080-exec-3] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:55.375+08:00  INFO 8171 --- [http-nio-8080-exec-9] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:55.375+08:00  INFO 8171 --- [http-nio-8080-exec-2] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:55.375+08:00  INFO 8171 --- [http-nio-8080-exec-9] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:55.376+08:00  INFO 8171 --- [http-nio-8080-exec-2] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:55.383+08:00  INFO 8171 --- [http-nio-8080-exec-10] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:55.383+08:00  INFO 8171 --- [http-nio-8080-exec-10] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:55.388+08:00  INFO 8171 --- [http-nio-8080-exec-8] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:55.388+08:00  INFO 8171 --- [http-nio-8080-exec-1] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:55.388+08:00  INFO 8171 --- [http-nio-8080-exec-8] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:55.388+08:00  INFO 8171 --- [http-nio-8080-exec-1] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:55.849+08:00  INFO 8171 --- [http-nio-8080-exec-4] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:55.849+08:00  INFO 8171 --- [http-nio-8080-exec-4] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:55.868+08:00  INFO 8171 --- [http-nio-8080-exec-7] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:55.868+08:00  INFO 8171 --- [http-nio-8080-exec-7] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:55.870+08:00  INFO 8171 --- [http-nio-8080-exec-6] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:55.870+08:00  INFO 8171 --- [http-nio-8080-exec-6] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:57.680+08:00  INFO 8171 --- [http-nio-8080-exec-5] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:57.680+08:00  INFO 8171 --- [http-nio-8080-exec-5] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:57.682+08:00  INFO 8171 --- [http-nio-8080-exec-3] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:57.682+08:00  INFO 8171 --- [http-nio-8080-exec-3] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:57.686+08:00  INFO 8171 --- [http-nio-8080-exec-2] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:57.686+08:00  INFO 8171 --- [http-nio-8080-exec-2] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:58.582+08:00  INFO 8171 --- [http-nio-8080-exec-10] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:58.582+08:00  INFO 8171 --- [http-nio-8080-exec-10] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:58.586+08:00  INFO 8171 --- [http-nio-8080-exec-9] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:58.586+08:00  INFO 8171 --- [http-nio-8080-exec-8] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:58.586+08:00  INFO 8171 --- [http-nio-8080-exec-8] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:58.586+08:00  INFO 8171 --- [http-nio-8080-exec-9] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:58.588+08:00  INFO 8171 --- [http-nio-8080-exec-1] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:58.588+08:00  INFO 8171 --- [http-nio-8080-exec-1] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:58.589+08:00  INFO 8171 --- [http-nio-8080-exec-4] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:58.589+08:00  INFO 8171 --- [http-nio-8080-exec-4] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:59.373+08:00  INFO 8171 --- [http-nio-8080-exec-7] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:59.373+08:00  INFO 8171 --- [http-nio-8080-exec-7] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:59.376+08:00  INFO 8171 --- [http-nio-8080-exec-6] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:59.376+08:00  INFO 8171 --- [http-nio-8080-exec-6] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:59.378+08:00  INFO 8171 --- [http-nio-8080-exec-3] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
-2024-05-06T15:51:59.378+08:00  INFO 8171 --- [http-nio-8080-exec-3] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
-2024-05-06T15:52:01.274+08:00  INFO 8171 --- [http-nio-8080-exec-2] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
-2024-05-06T15:52:01.274+08:00  INFO 8171 --- [http-nio-8080-exec-2] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
-2024-05-06T15:52:01.275+08:00  INFO 8171 --- [http-nio-8080-exec-9] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
-2024-05-06T15:52:01.275+08:00  INFO 8171 --- [http-nio-8080-exec-9] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
-2024-05-06T15:52:01.275+08:00  INFO 8171 --- [http-nio-8080-exec-5] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
-2024-05-06T15:52:01.275+08:00  INFO 8171 --- [http-nio-8080-exec-5] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
-2024-05-06T15:52:02.106+08:00  INFO 8171 --- [http-nio-8080-exec-8] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
-2024-05-06T15:52:02.106+08:00  INFO 8171 --- [http-nio-8080-exec-8] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
-2024-05-06T15:52:02.106+08:00  INFO 8171 --- [http-nio-8080-exec-1] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
-2024-05-06T15:52:02.106+08:00  INFO 8171 --- [http-nio-8080-exec-1] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
-2024-05-06T15:52:02.106+08:00  INFO 8171 --- [http-nio-8080-exec-10] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
-2024-05-06T15:52:02.106+08:00  INFO 8171 --- [http-nio-8080-exec-10] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
-2024-05-06T15:52:02.108+08:00  INFO 8171 --- [http-nio-8080-exec-4] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
-2024-05-06T15:52:02.108+08:00  INFO 8171 --- [http-nio-8080-exec-4] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
-2024-05-06T15:52:02.109+08:00  INFO 8171 --- [http-nio-8080-exec-7] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
-2024-05-06T15:52:02.109+08:00  INFO 8171 --- [http-nio-8080-exec-7] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
-2024-05-06T15:52:03.001+08:00  INFO 8171 --- [http-nio-8080-exec-3] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
-2024-05-06T15:52:03.001+08:00  INFO 8171 --- [http-nio-8080-exec-3] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
-2024-05-06T15:52:03.002+08:00  INFO 8171 --- [http-nio-8080-exec-9] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
-2024-05-06T15:52:03.002+08:00  INFO 8171 --- [http-nio-8080-exec-9] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
-2024-05-06T15:52:03.003+08:00  INFO 8171 --- [http-nio-8080-exec-6] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
-2024-05-06T15:52:03.003+08:00  INFO 8171 --- [http-nio-8080-exec-6] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
-2024-05-06T15:52:04.974+08:00  INFO 8171 --- [http-nio-8080-exec-5] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
-2024-05-06T15:52:04.974+08:00  INFO 8171 --- [http-nio-8080-exec-5] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
-2024-05-06T15:52:04.980+08:00  INFO 8171 --- [http-nio-8080-exec-8] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
-2024-05-06T15:52:04.980+08:00  INFO 8171 --- [http-nio-8080-exec-8] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
-2024-05-06T15:52:04.981+08:00  INFO 8171 --- [http-nio-8080-exec-2] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
-2024-05-06T15:52:04.981+08:00  INFO 8171 --- [http-nio-8080-exec-2] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
-2024-05-06T15:52:05.225+08:00  INFO 8171 --- [http-nio-8080-exec-4] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
-2024-05-06T15:52:05.225+08:00  INFO 8171 --- [http-nio-8080-exec-4] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
-2024-05-06T15:52:05.229+08:00  INFO 8171 --- [http-nio-8080-exec-7] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
-2024-05-06T15:52:05.229+08:00  INFO 8171 --- [http-nio-8080-exec-7] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
-2024-05-06T15:52:05.230+08:00  INFO 8171 --- [http-nio-8080-exec-1] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
-2024-05-06T15:52:05.230+08:00  INFO 8171 --- [http-nio-8080-exec-1] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
-2024-05-06T15:52:05.230+08:00  INFO 8171 --- [http-nio-8080-exec-10] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
-2024-05-06T15:52:05.230+08:00  INFO 8171 --- [http-nio-8080-exec-10] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
-2024-05-06T15:52:05.231+08:00  INFO 8171 --- [http-nio-8080-exec-9] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
-2024-05-06T15:52:05.231+08:00  INFO 8171 --- [http-nio-8080-exec-9] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
-2024-05-06T15:52:06.720+08:00  INFO 8171 --- [http-nio-8080-exec-3] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
-2024-05-06T15:52:06.720+08:00  INFO 8171 --- [http-nio-8080-exec-3] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
-2024-05-06T15:52:06.728+08:00  INFO 8171 --- [http-nio-8080-exec-6] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
-2024-05-06T15:52:06.728+08:00  INFO 8171 --- [http-nio-8080-exec-6] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
-2024-05-06T15:52:06.733+08:00  INFO 8171 --- [http-nio-8080-exec-5] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
-2024-05-06T15:52:06.733+08:00  INFO 8171 --- [http-nio-8080-exec-5] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
-2024-05-06T15:52:08.585+08:00  INFO 8171 --- [http-nio-8080-exec-8] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
-2024-05-06T15:52:08.586+08:00  INFO 8171 --- [http-nio-8080-exec-8] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
-2024-05-06T15:52:08.586+08:00  INFO 8171 --- [http-nio-8080-exec-2] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
-2024-05-06T15:52:08.586+08:00  INFO 8171 --- [http-nio-8080-exec-2] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
-2024-05-06T15:52:08.590+08:00  INFO 8171 --- [http-nio-8080-exec-7] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
-2024-05-06T15:52:08.590+08:00  INFO 8171 --- [http-nio-8080-exec-7] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
-2024-05-06T15:52:08.675+08:00  INFO 8171 --- [http-nio-8080-exec-10] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
-2024-05-06T15:52:08.676+08:00  INFO 8171 --- [http-nio-8080-exec-10] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
-2024-05-06T15:52:08.688+08:00  INFO 8171 --- [http-nio-8080-exec-1] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
-2024-05-06T15:52:08.689+08:00  INFO 8171 --- [http-nio-8080-exec-1] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
-2024-05-06T15:52:08.689+08:00  INFO 8171 --- [http-nio-8080-exec-9] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
-2024-05-06T15:52:08.689+08:00  INFO 8171 --- [http-nio-8080-exec-9] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
-2024-05-06T15:52:08.689+08:00  INFO 8171 --- [http-nio-8080-exec-4] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
-2024-05-06T15:52:08.689+08:00  INFO 8171 --- [http-nio-8080-exec-4] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
-2024-05-06T15:52:08.690+08:00  INFO 8171 --- [http-nio-8080-exec-3] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
-2024-05-06T15:52:08.690+08:00  INFO 8171 --- [http-nio-8080-exec-3] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
-2024-05-06T15:52:10.348+08:00  INFO 8171 --- [http-nio-8080-exec-6] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
-2024-05-06T15:52:10.348+08:00  INFO 8171 --- [http-nio-8080-exec-6] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
-2024-05-06T15:52:10.350+08:00  INFO 8171 --- [http-nio-8080-exec-5] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
-2024-05-06T15:52:10.350+08:00  INFO 8171 --- [http-nio-8080-exec-5] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
-2024-05-06T15:52:10.350+08:00  INFO 8171 --- [http-nio-8080-exec-2] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
-2024-05-06T15:52:10.350+08:00  INFO 8171 --- [http-nio-8080-exec-2] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
-2024-05-06T15:52:12.135+08:00  INFO 8171 --- [http-nio-8080-exec-8] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
-2024-05-06T15:52:12.135+08:00  INFO 8171 --- [http-nio-8080-exec-8] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
-2024-05-06T15:52:12.138+08:00  INFO 8171 --- [http-nio-8080-exec-10] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
-2024-05-06T15:52:12.138+08:00  INFO 8171 --- [http-nio-8080-exec-10] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
-2024-05-06T15:52:12.139+08:00  INFO 8171 --- [http-nio-8080-exec-7] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
-2024-05-06T15:52:12.139+08:00  INFO 8171 --- [http-nio-8080-exec-7] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
-2024-05-06T15:52:12.139+08:00  INFO 8171 --- [http-nio-8080-exec-9] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
-2024-05-06T15:52:12.139+08:00  INFO 8171 --- [http-nio-8080-exec-9] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
-2024-05-06T15:52:12.144+08:00  INFO 8171 --- [http-nio-8080-exec-3] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
-2024-05-06T15:52:12.145+08:00  INFO 8171 --- [http-nio-8080-exec-3] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
-2024-05-06T15:52:12.218+08:00  INFO 8171 --- [http-nio-8080-exec-1] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
-2024-05-06T15:52:12.218+08:00  INFO 8171 --- [http-nio-8080-exec-1] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
-2024-05-06T15:52:12.229+08:00  INFO 8171 --- [http-nio-8080-exec-4] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
-2024-05-06T15:52:12.229+08:00  INFO 8171 --- [http-nio-8080-exec-2] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
-2024-05-06T15:52:12.229+08:00  INFO 8171 --- [http-nio-8080-exec-4] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
-2024-05-06T15:52:12.229+08:00  INFO 8171 --- [http-nio-8080-exec-2] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
-2024-05-06T15:52:14.300+08:00  INFO 8171 --- [http-nio-8080-exec-5] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
-2024-05-06T15:52:14.300+08:00  INFO 8171 --- [http-nio-8080-exec-5] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
-2024-05-06T15:52:14.302+08:00  INFO 8171 --- [http-nio-8080-exec-6] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
-2024-05-06T15:52:14.302+08:00  INFO 8171 --- [http-nio-8080-exec-6] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
-2024-05-06T15:52:14.303+08:00  INFO 8171 --- [http-nio-8080-exec-8] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
-2024-05-06T15:52:14.303+08:00  INFO 8171 --- [http-nio-8080-exec-8] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
-2024-05-06T15:52:15.711+08:00  INFO 8171 --- [http-nio-8080-exec-10] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
-2024-05-06T15:52:15.711+08:00  INFO 8171 --- [http-nio-8080-exec-10] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
-2024-05-06T15:52:15.724+08:00  INFO 8171 --- [http-nio-8080-exec-7] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
-2024-05-06T15:52:15.724+08:00  INFO 8171 --- [http-nio-8080-exec-9] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
-2024-05-06T15:52:15.724+08:00  INFO 8171 --- [http-nio-8080-exec-7] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
-2024-05-06T15:52:15.724+08:00  INFO 8171 --- [http-nio-8080-exec-9] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
-2024-05-06T15:52:15.726+08:00  INFO 8171 --- [http-nio-8080-exec-3] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
-2024-05-06T15:52:15.726+08:00  INFO 8171 --- [http-nio-8080-exec-3] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
-2024-05-06T15:52:15.728+08:00  INFO 8171 --- [http-nio-8080-exec-2] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
-2024-05-06T15:52:15.728+08:00  INFO 8171 --- [http-nio-8080-exec-2] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
-2024-05-06T15:52:16.113+08:00  INFO 8171 --- [http-nio-8080-exec-4] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
-2024-05-06T15:52:16.113+08:00  INFO 8171 --- [http-nio-8080-exec-4] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
-2024-05-06T15:52:16.113+08:00  INFO 8171 --- [http-nio-8080-exec-1] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
-2024-05-06T15:52:16.113+08:00  INFO 8171 --- [http-nio-8080-exec-1] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
-2024-05-06T15:52:16.118+08:00  INFO 8171 --- [http-nio-8080-exec-6] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
-2024-05-06T15:52:16.118+08:00  INFO 8171 --- [http-nio-8080-exec-6] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
-2024-05-06T15:52:18.095+08:00  INFO 8171 --- [http-nio-8080-exec-5] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
-2024-05-06T15:52:18.095+08:00  INFO 8171 --- [http-nio-8080-exec-5] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
-2024-05-06T15:52:18.098+08:00  INFO 8171 --- [http-nio-8080-exec-8] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
-2024-05-06T15:52:18.098+08:00  INFO 8171 --- [http-nio-8080-exec-8] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
-2024-05-06T15:52:18.100+08:00  INFO 8171 --- [http-nio-8080-exec-10] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
-2024-05-06T15:52:18.100+08:00  INFO 8171 --- [http-nio-8080-exec-10] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
-2024-05-06T15:52:18.797+08:00  INFO 8171 --- [http-nio-8080-exec-7] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
-2024-05-06T15:52:18.797+08:00  INFO 8171 --- [http-nio-8080-exec-7] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
-2024-05-06T15:52:18.803+08:00  INFO 8171 --- [http-nio-8080-exec-2] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
-2024-05-06T15:52:18.803+08:00  INFO 8171 --- [http-nio-8080-exec-3] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
-2024-05-06T15:52:18.803+08:00  INFO 8171 --- [http-nio-8080-exec-2] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
-2024-05-06T15:52:18.803+08:00  INFO 8171 --- [http-nio-8080-exec-3] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
-2024-05-06T15:52:18.817+08:00  INFO 8171 --- [http-nio-8080-exec-9] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
-2024-05-06T15:52:18.818+08:00  INFO 8171 --- [http-nio-8080-exec-9] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
-2024-05-06T15:52:18.818+08:00  INFO 8171 --- [http-nio-8080-exec-4] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
-2024-05-06T15:52:18.822+08:00  INFO 8171 --- [http-nio-8080-exec-4] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
-2024-05-06T15:52:19.833+08:00  INFO 8171 --- [http-nio-8080-exec-1] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
-2024-05-06T15:52:19.833+08:00  INFO 8171 --- [http-nio-8080-exec-1] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
-2024-05-06T15:52:19.835+08:00  INFO 8171 --- [http-nio-8080-exec-5] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
-2024-05-06T15:52:19.835+08:00  INFO 8171 --- [http-nio-8080-exec-5] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
-2024-05-06T15:52:19.836+08:00  INFO 8171 --- [http-nio-8080-exec-6] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
-2024-05-06T15:52:19.836+08:00  INFO 8171 --- [http-nio-8080-exec-6] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
-2024-05-06T15:52:21.796+08:00  INFO 8171 --- [http-nio-8080-exec-8] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
-2024-05-06T15:52:21.796+08:00  INFO 8171 --- [http-nio-8080-exec-8] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
-2024-05-06T15:52:21.796+08:00  INFO 8171 --- [http-nio-8080-exec-10] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
-2024-05-06T15:52:21.796+08:00  INFO 8171 --- [http-nio-8080-exec-10] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
-2024-05-06T15:52:21.797+08:00  INFO 8171 --- [http-nio-8080-exec-2] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
-2024-05-06T15:52:21.797+08:00  INFO 8171 --- [http-nio-8080-exec-2] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
-2024-05-06T15:52:22.373+08:00  INFO 8171 --- [http-nio-8080-exec-4] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
-2024-05-06T15:52:22.373+08:00  INFO 8171 --- [http-nio-8080-exec-7] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
-2024-05-06T15:52:22.373+08:00  INFO 8171 --- [http-nio-8080-exec-4] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
-2024-05-06T15:52:22.373+08:00  INFO 8171 --- [http-nio-8080-exec-7] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
-2024-05-06T15:52:22.374+08:00  INFO 8171 --- [http-nio-8080-exec-9] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
-2024-05-06T15:52:22.374+08:00  INFO 8171 --- [http-nio-8080-exec-9] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
-2024-05-06T15:52:22.374+08:00  INFO 8171 --- [http-nio-8080-exec-3] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
-2024-05-06T15:52:22.374+08:00  INFO 8171 --- [http-nio-8080-exec-3] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
-2024-05-06T15:52:22.375+08:00  INFO 8171 --- [http-nio-8080-exec-5] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
-2024-05-06T15:52:22.375+08:00  INFO 8171 --- [http-nio-8080-exec-5] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
-2024-05-06T15:55:13.103+08:00  INFO 8171 --- [SpringApplicationShutdownHook] com.alibaba.druid.pool.DruidDataSource   : {dataSource-1} closing ...
-2024-05-06T15:55:13.116+08:00  INFO 8171 --- [SpringApplicationShutdownHook] com.alibaba.druid.pool.DruidDataSource   : {dataSource-1} closed
-2024-05-06T16:13:09.071+08:00  INFO 9369 --- [restartedMain] cn.org.alan.exam.ExamApplication         : Starting ExamApplication using Java 17.0.8 with PID 9369 (/Users/alan/Documents/Code/项目开发/学校项目/综合项目实战/考试系统/code/online-exam-system-backend/target/classes started by alan in /Users/alan/Documents/Code/项目开发/学校项目/综合项目实战/考试系统/code/online-exam-system-backend)
-2024-05-06T16:13:09.073+08:00  INFO 9369 --- [restartedMain] cn.org.alan.exam.ExamApplication         : The following 1 profile is active: "dev"
-2024-05-06T16:13:09.106+08:00  INFO 9369 --- [restartedMain] .e.DevToolsPropertyDefaultsPostProcessor : Devtools property defaults active! Set 'spring.devtools.add-properties' to 'false' to disable
-2024-05-06T16:13:09.107+08:00  INFO 9369 --- [restartedMain] .e.DevToolsPropertyDefaultsPostProcessor : For additional web related logging consider setting the 'logging.level.web' property to 'DEBUG'
-2024-05-06T16:13:10.065+08:00  INFO 9369 --- [restartedMain] .s.d.r.c.RepositoryConfigurationDelegate : Multiple Spring Data modules found, entering strict repository configuration mode
-2024-05-06T16:13:10.069+08:00  INFO 9369 --- [restartedMain] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data Redis repositories in DEFAULT mode.
-2024-05-06T16:13:10.131+08:00  INFO 9369 --- [restartedMain] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 36 ms. Found 0 Redis repository interfaces.
-2024-05-06T16:13:10.959+08:00  INFO 9369 --- [restartedMain] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port(s): 8080 (http)
-2024-05-06T16:13:10.970+08:00  INFO 9369 --- [restartedMain] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
-2024-05-06T16:13:10.971+08:00  INFO 9369 --- [restartedMain] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/10.1.8]
-2024-05-06T16:13:11.028+08:00  INFO 9369 --- [restartedMain] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
-2024-05-06T16:13:11.029+08:00  INFO 9369 --- [restartedMain] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 1922 ms
-2024-05-06T16:13:11.603+08:00  INFO 9369 --- [restartedMain] c.a.d.s.b.a.DruidDataSourceAutoConfigure : Init DruidDataSource
-2024-05-06T16:13:12.878+08:00  INFO 9369 --- [restartedMain] com.alibaba.druid.pool.DruidDataSource   : {dataSource-1} inited
-2024-05-06T16:13:14.314+08:00  INFO 9369 --- [restartedMain] o.s.s.web.DefaultSecurityFilterChain     : Will secure any request with [org.springframework.security.web.session.DisableEncodeUrlFilter@710fe6b7, org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter@519bf67d, org.springframework.security.web.context.SecurityContextHolderFilter@4c217443, org.springframework.security.web.header.HeaderWriterFilter@4874679d, org.springframework.security.web.authentication.logout.LogoutFilter@28e21a84, cn.org.alan.exam.filter.VerifyTokenFilter@4cf34e8f, org.springframework.security.web.savedrequest.RequestCacheAwareFilter@26683e13, org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter@610e90c6, org.springframework.security.web.authentication.AnonymousAuthenticationFilter@574f2881, org.springframework.security.web.access.ExceptionTranslationFilter@1256978f, org.springframework.security.web.access.intercept.AuthorizationFilter@15a6a241]
-2024-05-06T16:13:14.319+08:00  WARN 9369 --- [restartedMain] o.s.s.c.a.web.builders.WebSecurity       : You are asking Spring Security to ignore Mvc [pattern='/webjars/**']. This is not recommended -- please use permitAll via HttpSecurity#authorizeHttpRequests instead.
-2024-05-06T16:13:14.320+08:00  INFO 9369 --- [restartedMain] o.s.s.web.DefaultSecurityFilterChain     : Will not secure Mvc [pattern='/webjars/**']
-2024-05-06T16:13:14.320+08:00  WARN 9369 --- [restartedMain] o.s.s.c.a.web.builders.WebSecurity       : You are asking Spring Security to ignore Mvc [pattern='/doc.html']. This is not recommended -- please use permitAll via HttpSecurity#authorizeHttpRequests instead.
-2024-05-06T16:13:14.320+08:00  INFO 9369 --- [restartedMain] o.s.s.web.DefaultSecurityFilterChain     : Will not secure Mvc [pattern='/doc.html']
-2024-05-06T16:13:14.320+08:00  WARN 9369 --- [restartedMain] o.s.s.c.a.web.builders.WebSecurity       : You are asking Spring Security to ignore Mvc [pattern='/swagger-resources/**']. This is not recommended -- please use permitAll via HttpSecurity#authorizeHttpRequests instead.
-2024-05-06T16:13:14.320+08:00  INFO 9369 --- [restartedMain] o.s.s.web.DefaultSecurityFilterChain     : Will not secure Mvc [pattern='/swagger-resources/**']
-2024-05-06T16:13:14.320+08:00  WARN 9369 --- [restartedMain] o.s.s.c.a.web.builders.WebSecurity       : You are asking Spring Security to ignore Mvc [pattern='/v3/api-docs/**']. This is not recommended -- please use permitAll via HttpSecurity#authorizeHttpRequests instead.
-2024-05-06T16:13:14.321+08:00  INFO 9369 --- [restartedMain] o.s.s.web.DefaultSecurityFilterChain     : Will not secure Mvc [pattern='/v3/api-docs/**']
-2024-05-06T16:13:14.321+08:00  WARN 9369 --- [restartedMain] o.s.s.c.a.web.builders.WebSecurity       : You are asking Spring Security to ignore Mvc [pattern='/swagger-ui/**']. This is not recommended -- please use permitAll via HttpSecurity#authorizeHttpRequests instead.
-2024-05-06T16:13:14.321+08:00  INFO 9369 --- [restartedMain] o.s.s.web.DefaultSecurityFilterChain     : Will not secure Mvc [pattern='/swagger-ui/**']
-2024-05-06T16:13:14.321+08:00  WARN 9369 --- [restartedMain] o.s.s.c.a.web.builders.WebSecurity       : You are asking Spring Security to ignore Mvc [pattern='/swagger-ui.html']. This is not recommended -- please use permitAll via HttpSecurity#authorizeHttpRequests instead.
-2024-05-06T16:13:14.321+08:00  INFO 9369 --- [restartedMain] o.s.s.web.DefaultSecurityFilterChain     : Will not secure Mvc [pattern='/swagger-ui.html']
-2024-05-06T16:13:14.321+08:00  WARN 9369 --- [restartedMain] o.s.s.c.a.web.builders.WebSecurity       : You are asking Spring Security to ignore Mvc [pattern='/ws/**']. This is not recommended -- please use permitAll via HttpSecurity#authorizeHttpRequests instead.
-2024-05-06T16:13:14.321+08:00  INFO 9369 --- [restartedMain] o.s.s.web.DefaultSecurityFilterChain     : Will not secure Mvc [pattern='/ws/**']
-2024-05-06T16:13:14.321+08:00  WARN 9369 --- [restartedMain] o.s.s.c.a.web.builders.WebSecurity       : You are asking Spring Security to ignore Mvc [pattern='/ws-app/**']. This is not recommended -- please use permitAll via HttpSecurity#authorizeHttpRequests instead.
-2024-05-06T16:13:14.321+08:00  INFO 9369 --- [restartedMain] o.s.s.web.DefaultSecurityFilterChain     : Will not secure Mvc [pattern='/ws-app/**']
-2024-05-06T16:13:14.713+08:00  INFO 9369 --- [restartedMain] o.s.b.d.a.OptionalLiveReloadServer       : LiveReload server is running on port 35729
-2024-05-06T16:13:14.783+08:00  INFO 9369 --- [restartedMain] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port(s): 8080 (http) with context path ''
-2024-05-06T16:13:14.792+08:00  INFO 9369 --- [restartedMain] cn.org.alan.exam.ExamApplication         : Started ExamApplication in 6.231 seconds (process running for 6.855)
-2024-05-06T16:13:17.614+08:00  INFO 9369 --- [SpringApplicationShutdownHook] com.alibaba.druid.pool.DruidDataSource   : {dataSource-1} closing ...
-2024-05-06T16:13:17.633+08:00  INFO 9369 --- [SpringApplicationShutdownHook] com.alibaba.druid.pool.DruidDataSource   : {dataSource-1} closed
+2024-05-07T20:34:25.447+08:00  INFO 18272 --- [restartedMain] cn.org.alan.exam.ExamApplication         : Starting ExamApplication using Java 17.0.8 with PID 18272 (/Users/alan/Documents/Code/项目开发/学校项目/综合项目实战/考试系统/code/online-exam-system-backend/target/classes started by alan in /Users/alan/Documents/Code/项目开发/学校项目/综合项目实战/考试系统/code/online-exam-system-backend)
+2024-05-07T20:34:25.455+08:00  INFO 18272 --- [restartedMain] cn.org.alan.exam.ExamApplication         : The following 1 profile is active: "dev"
+2024-05-07T20:34:25.513+08:00  INFO 18272 --- [restartedMain] .e.DevToolsPropertyDefaultsPostProcessor : Devtools property defaults active! Set 'spring.devtools.add-properties' to 'false' to disable
+2024-05-07T20:34:25.514+08:00  INFO 18272 --- [restartedMain] .e.DevToolsPropertyDefaultsPostProcessor : For additional web related logging consider setting the 'logging.level.web' property to 'DEBUG'
+2024-05-07T20:34:26.421+08:00  INFO 18272 --- [restartedMain] .s.d.r.c.RepositoryConfigurationDelegate : Multiple Spring Data modules found, entering strict repository configuration mode
+2024-05-07T20:34:26.427+08:00  INFO 18272 --- [restartedMain] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data Redis repositories in DEFAULT mode.
+2024-05-07T20:34:26.514+08:00  INFO 18272 --- [restartedMain] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 56 ms. Found 0 Redis repository interfaces.
+2024-05-07T20:34:27.666+08:00  INFO 18272 --- [restartedMain] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port(s): 8080 (http)
+2024-05-07T20:34:27.674+08:00  INFO 18272 --- [restartedMain] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2024-05-07T20:34:27.675+08:00  INFO 18272 --- [restartedMain] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/10.1.8]
+2024-05-07T20:34:27.736+08:00  INFO 18272 --- [restartedMain] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
+2024-05-07T20:34:27.736+08:00  INFO 18272 --- [restartedMain] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 2222 ms
+2024-05-07T20:34:28.496+08:00  INFO 18272 --- [restartedMain] c.a.d.s.b.a.DruidDataSourceAutoConfigure : Init DruidDataSource
+2024-05-07T20:34:30.165+08:00  INFO 18272 --- [restartedMain] com.alibaba.druid.pool.DruidDataSource   : {dataSource-1} inited
+2024-05-07T20:34:33.288+08:00  INFO 18272 --- [restartedMain] o.s.s.web.DefaultSecurityFilterChain     : Will secure any request with [org.springframework.security.web.session.DisableEncodeUrlFilter@17f964b8, org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter@484a5587, org.springframework.security.web.context.SecurityContextHolderFilter@6bef4651, org.springframework.security.web.header.HeaderWriterFilter@3c267d97, org.springframework.security.web.authentication.logout.LogoutFilter@1c3975e3, cn.org.alan.exam.filter.VerifyTokenFilter@4106ff60, org.springframework.security.web.savedrequest.RequestCacheAwareFilter@6659a62d, org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter@2237e8d, org.springframework.security.web.authentication.AnonymousAuthenticationFilter@2ea94d22, org.springframework.security.web.access.ExceptionTranslationFilter@6925e4fd, org.springframework.security.web.access.intercept.AuthorizationFilter@7a54b70f]
+2024-05-07T20:34:33.300+08:00  WARN 18272 --- [restartedMain] o.s.s.c.a.web.builders.WebSecurity       : You are asking Spring Security to ignore Mvc [pattern='/webjars/**']. This is not recommended -- please use permitAll via HttpSecurity#authorizeHttpRequests instead.
+2024-05-07T20:34:33.300+08:00  INFO 18272 --- [restartedMain] o.s.s.web.DefaultSecurityFilterChain     : Will not secure Mvc [pattern='/webjars/**']
+2024-05-07T20:34:33.301+08:00  WARN 18272 --- [restartedMain] o.s.s.c.a.web.builders.WebSecurity       : You are asking Spring Security to ignore Mvc [pattern='/doc.html']. This is not recommended -- please use permitAll via HttpSecurity#authorizeHttpRequests instead.
+2024-05-07T20:34:33.301+08:00  INFO 18272 --- [restartedMain] o.s.s.web.DefaultSecurityFilterChain     : Will not secure Mvc [pattern='/doc.html']
+2024-05-07T20:34:33.301+08:00  WARN 18272 --- [restartedMain] o.s.s.c.a.web.builders.WebSecurity       : You are asking Spring Security to ignore Mvc [pattern='/swagger-resources/**']. This is not recommended -- please use permitAll via HttpSecurity#authorizeHttpRequests instead.
+2024-05-07T20:34:33.301+08:00  INFO 18272 --- [restartedMain] o.s.s.web.DefaultSecurityFilterChain     : Will not secure Mvc [pattern='/swagger-resources/**']
+2024-05-07T20:34:33.301+08:00  WARN 18272 --- [restartedMain] o.s.s.c.a.web.builders.WebSecurity       : You are asking Spring Security to ignore Mvc [pattern='/v3/api-docs/**']. This is not recommended -- please use permitAll via HttpSecurity#authorizeHttpRequests instead.
+2024-05-07T20:34:33.301+08:00  INFO 18272 --- [restartedMain] o.s.s.web.DefaultSecurityFilterChain     : Will not secure Mvc [pattern='/v3/api-docs/**']
+2024-05-07T20:34:33.301+08:00  WARN 18272 --- [restartedMain] o.s.s.c.a.web.builders.WebSecurity       : You are asking Spring Security to ignore Mvc [pattern='/swagger-ui/**']. This is not recommended -- please use permitAll via HttpSecurity#authorizeHttpRequests instead.
+2024-05-07T20:34:33.301+08:00  INFO 18272 --- [restartedMain] o.s.s.web.DefaultSecurityFilterChain     : Will not secure Mvc [pattern='/swagger-ui/**']
+2024-05-07T20:34:33.301+08:00  WARN 18272 --- [restartedMain] o.s.s.c.a.web.builders.WebSecurity       : You are asking Spring Security to ignore Mvc [pattern='/swagger-ui.html']. This is not recommended -- please use permitAll via HttpSecurity#authorizeHttpRequests instead.
+2024-05-07T20:34:33.302+08:00  INFO 18272 --- [restartedMain] o.s.s.web.DefaultSecurityFilterChain     : Will not secure Mvc [pattern='/swagger-ui.html']
+2024-05-07T20:34:33.302+08:00  WARN 18272 --- [restartedMain] o.s.s.c.a.web.builders.WebSecurity       : You are asking Spring Security to ignore Mvc [pattern='/ws/**']. This is not recommended -- please use permitAll via HttpSecurity#authorizeHttpRequests instead.
+2024-05-07T20:34:33.302+08:00  INFO 18272 --- [restartedMain] o.s.s.web.DefaultSecurityFilterChain     : Will not secure Mvc [pattern='/ws/**']
+2024-05-07T20:34:33.302+08:00  WARN 18272 --- [restartedMain] o.s.s.c.a.web.builders.WebSecurity       : You are asking Spring Security to ignore Mvc [pattern='/ws-app/**']. This is not recommended -- please use permitAll via HttpSecurity#authorizeHttpRequests instead.
+2024-05-07T20:34:33.302+08:00  INFO 18272 --- [restartedMain] o.s.s.web.DefaultSecurityFilterChain     : Will not secure Mvc [pattern='/ws-app/**']
+2024-05-07T20:34:34.140+08:00  INFO 18272 --- [restartedMain] o.s.b.d.a.OptionalLiveReloadServer       : LiveReload server is running on port 35729
+2024-05-07T20:34:34.250+08:00  INFO 18272 --- [restartedMain] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port(s): 8080 (http) with context path ''
+2024-05-07T20:34:34.263+08:00  INFO 18272 --- [restartedMain] cn.org.alan.exam.ExamApplication         : Started ExamApplication in 9.458 seconds (process running for 10.369)
+2024-05-07T20:37:56.350+08:00  INFO 18272 --- [http-nio-8080-exec-1] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring DispatcherServlet 'dispatcherServlet'
+2024-05-07T20:37:56.351+08:00  INFO 18272 --- [http-nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Initializing Servlet 'dispatcherServlet'
+2024-05-07T20:37:56.354+08:00  INFO 18272 --- [http-nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Completed initialization in 3 ms
+2024-05-07T20:37:56.612+08:00 ERROR 18272 --- [http-nio-8080-exec-1] c.o.a.e.c.h.GlobalExceptionHandler       : Required request body is missing: public cn.org.alan.exam.common.result.Result<java.lang.String> cn.org.alan.exam.controller.AuthController.login(jakarta.servlet.http.HttpServletRequest,cn.org.alan.exam.model.form.Auth.LoginForm)
+2024-05-07T20:37:56.721+08:00  WARN 18272 --- [http-nio-8080-exec-1] .m.m.a.ExceptionHandlerExceptionResolver : Resolved [org.springframework.http.converter.HttpMessageNotReadableException: Required request body is missing: public cn.org.alan.exam.common.result.Result<java.lang.String> cn.org.alan.exam.controller.AuthController.login(jakarta.servlet.http.HttpServletRequest,cn.org.alan.exam.model.form.Auth.LoginForm)]
+2024-05-07T20:42:25.912+08:00 ERROR 18272 --- [http-nio-8080-exec-1] c.o.a.e.c.h.GlobalExceptionHandler       : No bean named 'asyncServiceExecutor' available: No matching Executor bean found for qualifier 'asyncServiceExecutor' - neither qualifier match nor bean name match!
+2024-05-07T20:42:25.915+08:00  WARN 18272 --- [http-nio-8080-exec-1] .m.m.a.ExceptionHandlerExceptionResolver : Resolved [org.springframework.beans.factory.NoSuchBeanDefinitionException: No bean named 'asyncServiceExecutor' available: No matching Executor bean found for qualifier 'asyncServiceExecutor' - neither qualifier match nor bean name match!]
+2024-05-07T20:43:31.610+08:00  INFO 18272 --- [SpringApplicationShutdownHook] com.alibaba.druid.pool.DruidDataSource   : {dataSource-1} closing ...
+2024-05-07T20:43:31.616+08:00  INFO 18272 --- [SpringApplicationShutdownHook] com.alibaba.druid.pool.DruidDataSource   : {dataSource-1} closed
+2024-05-07T20:43:37.239+08:00  INFO 18728 --- [restartedMain] cn.org.alan.exam.ExamApplication         : Starting ExamApplication using Java 17.0.8 with PID 18728 (/Users/alan/Documents/Code/项目开发/学校项目/综合项目实战/考试系统/code/online-exam-system-backend/target/classes started by alan in /Users/alan/Documents/Code/项目开发/学校项目/综合项目实战/考试系统/code/online-exam-system-backend)
+2024-05-07T20:43:37.242+08:00  INFO 18728 --- [restartedMain] cn.org.alan.exam.ExamApplication         : The following 1 profile is active: "dev"
+2024-05-07T20:43:37.300+08:00  INFO 18728 --- [restartedMain] .e.DevToolsPropertyDefaultsPostProcessor : Devtools property defaults active! Set 'spring.devtools.add-properties' to 'false' to disable
+2024-05-07T20:43:37.300+08:00  INFO 18728 --- [restartedMain] .e.DevToolsPropertyDefaultsPostProcessor : For additional web related logging consider setting the 'logging.level.web' property to 'DEBUG'
+2024-05-07T20:43:38.370+08:00  INFO 18728 --- [restartedMain] .s.d.r.c.RepositoryConfigurationDelegate : Multiple Spring Data modules found, entering strict repository configuration mode
+2024-05-07T20:43:38.373+08:00  INFO 18728 --- [restartedMain] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data Redis repositories in DEFAULT mode.
+2024-05-07T20:43:38.425+08:00  INFO 18728 --- [restartedMain] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 34 ms. Found 0 Redis repository interfaces.
+2024-05-07T20:43:39.346+08:00  INFO 18728 --- [restartedMain] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port(s): 8080 (http)
+2024-05-07T20:43:39.357+08:00  INFO 18728 --- [restartedMain] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2024-05-07T20:43:39.357+08:00  INFO 18728 --- [restartedMain] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/10.1.8]
+2024-05-07T20:43:39.422+08:00  INFO 18728 --- [restartedMain] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
+2024-05-07T20:43:39.423+08:00  INFO 18728 --- [restartedMain] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 2122 ms
+2024-05-07T20:43:40.103+08:00  INFO 18728 --- [restartedMain] c.a.d.s.b.a.DruidDataSourceAutoConfigure : Init DruidDataSource
+2024-05-07T20:43:41.303+08:00  INFO 18728 --- [restartedMain] com.alibaba.druid.pool.DruidDataSource   : {dataSource-1} inited
+2024-05-07T20:44:20.755+08:00  INFO 18728 --- [restartedMain] o.s.s.web.DefaultSecurityFilterChain     : Will secure any request with [org.springframework.security.web.session.DisableEncodeUrlFilter@1464ca29, org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter@3588b876, org.springframework.security.web.context.SecurityContextHolderFilter@687627d2, org.springframework.security.web.header.HeaderWriterFilter@18a70b9f, org.springframework.security.web.authentication.logout.LogoutFilter@3893d148, cn.org.alan.exam.filter.VerifyTokenFilter@582c305a, org.springframework.security.web.savedrequest.RequestCacheAwareFilter@679bbe3a, org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter@50f04138, org.springframework.security.web.authentication.AnonymousAuthenticationFilter@6c488b7b, org.springframework.security.web.access.ExceptionTranslationFilter@7a8be34, org.springframework.security.web.access.intercept.AuthorizationFilter@13265d7e]
+2024-05-07T20:44:20.938+08:00  WARN 18728 --- [restartedMain] o.s.s.c.a.web.builders.WebSecurity       : You are asking Spring Security to ignore Mvc [pattern='/webjars/**']. This is not recommended -- please use permitAll via HttpSecurity#authorizeHttpRequests instead.
+2024-05-07T20:44:20.939+08:00  INFO 18728 --- [restartedMain] o.s.s.web.DefaultSecurityFilterChain     : Will not secure Mvc [pattern='/webjars/**']
+2024-05-07T20:44:20.941+08:00  WARN 18728 --- [restartedMain] o.s.s.c.a.web.builders.WebSecurity       : You are asking Spring Security to ignore Mvc [pattern='/doc.html']. This is not recommended -- please use permitAll via HttpSecurity#authorizeHttpRequests instead.
+2024-05-07T20:44:20.942+08:00  INFO 18728 --- [restartedMain] o.s.s.web.DefaultSecurityFilterChain     : Will not secure Mvc [pattern='/doc.html']
+2024-05-07T20:44:20.943+08:00  WARN 18728 --- [restartedMain] o.s.s.c.a.web.builders.WebSecurity       : You are asking Spring Security to ignore Mvc [pattern='/swagger-resources/**']. This is not recommended -- please use permitAll via HttpSecurity#authorizeHttpRequests instead.
+2024-05-07T20:44:20.944+08:00  INFO 18728 --- [restartedMain] o.s.s.web.DefaultSecurityFilterChain     : Will not secure Mvc [pattern='/swagger-resources/**']
+2024-05-07T20:44:20.944+08:00  WARN 18728 --- [restartedMain] o.s.s.c.a.web.builders.WebSecurity       : You are asking Spring Security to ignore Mvc [pattern='/v3/api-docs/**']. This is not recommended -- please use permitAll via HttpSecurity#authorizeHttpRequests instead.
+2024-05-07T20:44:20.945+08:00  INFO 18728 --- [restartedMain] o.s.s.web.DefaultSecurityFilterChain     : Will not secure Mvc [pattern='/v3/api-docs/**']
+2024-05-07T20:44:20.946+08:00  WARN 18728 --- [restartedMain] o.s.s.c.a.web.builders.WebSecurity       : You are asking Spring Security to ignore Mvc [pattern='/swagger-ui/**']. This is not recommended -- please use permitAll via HttpSecurity#authorizeHttpRequests instead.
+2024-05-07T20:44:20.947+08:00  INFO 18728 --- [restartedMain] o.s.s.web.DefaultSecurityFilterChain     : Will not secure Mvc [pattern='/swagger-ui/**']
+2024-05-07T20:44:20.947+08:00  WARN 18728 --- [restartedMain] o.s.s.c.a.web.builders.WebSecurity       : You are asking Spring Security to ignore Mvc [pattern='/swagger-ui.html']. This is not recommended -- please use permitAll via HttpSecurity#authorizeHttpRequests instead.
+2024-05-07T20:44:20.948+08:00  INFO 18728 --- [restartedMain] o.s.s.web.DefaultSecurityFilterChain     : Will not secure Mvc [pattern='/swagger-ui.html']
+2024-05-07T20:44:20.949+08:00  WARN 18728 --- [restartedMain] o.s.s.c.a.web.builders.WebSecurity       : You are asking Spring Security to ignore Mvc [pattern='/ws/**']. This is not recommended -- please use permitAll via HttpSecurity#authorizeHttpRequests instead.
+2024-05-07T20:44:20.950+08:00  INFO 18728 --- [restartedMain] o.s.s.web.DefaultSecurityFilterChain     : Will not secure Mvc [pattern='/ws/**']
+2024-05-07T20:44:20.950+08:00  WARN 18728 --- [restartedMain] o.s.s.c.a.web.builders.WebSecurity       : You are asking Spring Security to ignore Mvc [pattern='/ws-app/**']. This is not recommended -- please use permitAll via HttpSecurity#authorizeHttpRequests instead.
+2024-05-07T20:44:20.951+08:00  INFO 18728 --- [restartedMain] o.s.s.web.DefaultSecurityFilterChain     : Will not secure Mvc [pattern='/ws-app/**']
+2024-05-07T20:44:27.762+08:00  INFO 18728 --- [restartedMain] o.s.b.d.a.OptionalLiveReloadServer       : LiveReload server is running on port 35729
+2024-05-07T20:44:30.121+08:00  INFO 18728 --- [restartedMain] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port(s): 8080 (http) with context path ''
+2024-05-07T20:44:30.278+08:00  INFO 18728 --- [restartedMain] cn.org.alan.exam.ExamApplication         : Started ExamApplication in 53.856 seconds (process running for 55.302)
+2024-05-07T20:44:47.319+08:00  INFO 18728 --- [http-nio-8080-exec-1] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring DispatcherServlet 'dispatcherServlet'
+2024-05-07T20:44:47.322+08:00  INFO 18728 --- [http-nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Initializing Servlet 'dispatcherServlet'
+2024-05-07T20:44:47.383+08:00  INFO 18728 --- [http-nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Completed initialization in 59 ms
+2024-05-07T20:45:33.305+08:00 ERROR 18728 --- [http-nio-8080-exec-4] c.o.a.e.c.h.GlobalExceptionHandler       : No bean named 'asyncServiceExecutor' available: No matching Executor bean found for qualifier 'asyncServiceExecutor' - neither qualifier match nor bean name match!
+2024-05-07T20:45:33.332+08:00  WARN 18728 --- [http-nio-8080-exec-4] .m.m.a.ExceptionHandlerExceptionResolver : Resolved [org.springframework.beans.factory.NoSuchBeanDefinitionException: No bean named 'asyncServiceExecutor' available: No matching Executor bean found for qualifier 'asyncServiceExecutor' - neither qualifier match nor bean name match!]
+2024-05-07T20:46:55.357+08:00  INFO 18728 --- [SpringApplicationShutdownHook] com.alibaba.druid.pool.DruidDataSource   : {dataSource-1} closing ...
+2024-05-07T20:46:55.363+08:00  INFO 18728 --- [SpringApplicationShutdownHook] com.alibaba.druid.pool.DruidDataSource   : {dataSource-1} closed
+2024-05-07T20:47:00.853+08:00  INFO 18847 --- [restartedMain] cn.org.alan.exam.ExamApplication         : Starting ExamApplication using Java 17.0.8 with PID 18847 (/Users/alan/Documents/Code/项目开发/学校项目/综合项目实战/考试系统/code/online-exam-system-backend/target/classes started by alan in /Users/alan/Documents/Code/项目开发/学校项目/综合项目实战/考试系统/code/online-exam-system-backend)
+2024-05-07T20:47:00.854+08:00  INFO 18847 --- [restartedMain] cn.org.alan.exam.ExamApplication         : The following 1 profile is active: "dev"
+2024-05-07T20:47:00.887+08:00  INFO 18847 --- [restartedMain] .e.DevToolsPropertyDefaultsPostProcessor : Devtools property defaults active! Set 'spring.devtools.add-properties' to 'false' to disable
+2024-05-07T20:47:00.887+08:00  INFO 18847 --- [restartedMain] .e.DevToolsPropertyDefaultsPostProcessor : For additional web related logging consider setting the 'logging.level.web' property to 'DEBUG'
+2024-05-07T20:47:01.738+08:00  INFO 18847 --- [restartedMain] .s.d.r.c.RepositoryConfigurationDelegate : Multiple Spring Data modules found, entering strict repository configuration mode
+2024-05-07T20:47:01.741+08:00  INFO 18847 --- [restartedMain] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data Redis repositories in DEFAULT mode.
+2024-05-07T20:47:01.790+08:00  INFO 18847 --- [restartedMain] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 32 ms. Found 0 Redis repository interfaces.
+2024-05-07T20:47:02.565+08:00  INFO 18847 --- [restartedMain] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port(s): 8080 (http)
+2024-05-07T20:47:02.579+08:00  INFO 18847 --- [restartedMain] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2024-05-07T20:47:02.579+08:00  INFO 18847 --- [restartedMain] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/10.1.8]
+2024-05-07T20:47:02.636+08:00  INFO 18847 --- [restartedMain] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
+2024-05-07T20:47:02.637+08:00  INFO 18847 --- [restartedMain] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 1749 ms
+2024-05-07T20:47:03.165+08:00  INFO 18847 --- [restartedMain] c.a.d.s.b.a.DruidDataSourceAutoConfigure : Init DruidDataSource
+2024-05-07T20:47:04.258+08:00  INFO 18847 --- [restartedMain] com.alibaba.druid.pool.DruidDataSource   : {dataSource-1} inited
+2024-05-07T20:47:39.185+08:00  INFO 18847 --- [restartedMain] o.s.s.web.DefaultSecurityFilterChain     : Will secure any request with [org.springframework.security.web.session.DisableEncodeUrlFilter@2065424f, org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter@27665f87, org.springframework.security.web.context.SecurityContextHolderFilter@38c7b64f, org.springframework.security.web.header.HeaderWriterFilter@456751a5, org.springframework.security.web.authentication.logout.LogoutFilter@6768c1be, cn.org.alan.exam.filter.VerifyTokenFilter@5121f2df, org.springframework.security.web.savedrequest.RequestCacheAwareFilter@2be03b8, org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter@137ff5a, org.springframework.security.web.authentication.AnonymousAuthenticationFilter@678260ca, org.springframework.security.web.access.ExceptionTranslationFilter@7e24bd9a, org.springframework.security.web.access.intercept.AuthorizationFilter@71aec549]
+2024-05-07T20:47:39.403+08:00  WARN 18847 --- [restartedMain] o.s.s.c.a.web.builders.WebSecurity       : You are asking Spring Security to ignore Mvc [pattern='/webjars/**']. This is not recommended -- please use permitAll via HttpSecurity#authorizeHttpRequests instead.
+2024-05-07T20:47:39.404+08:00  INFO 18847 --- [restartedMain] o.s.s.web.DefaultSecurityFilterChain     : Will not secure Mvc [pattern='/webjars/**']
+2024-05-07T20:47:39.407+08:00  WARN 18847 --- [restartedMain] o.s.s.c.a.web.builders.WebSecurity       : You are asking Spring Security to ignore Mvc [pattern='/doc.html']. This is not recommended -- please use permitAll via HttpSecurity#authorizeHttpRequests instead.
+2024-05-07T20:47:39.409+08:00  INFO 18847 --- [restartedMain] o.s.s.web.DefaultSecurityFilterChain     : Will not secure Mvc [pattern='/doc.html']
+2024-05-07T20:47:39.410+08:00  WARN 18847 --- [restartedMain] o.s.s.c.a.web.builders.WebSecurity       : You are asking Spring Security to ignore Mvc [pattern='/swagger-resources/**']. This is not recommended -- please use permitAll via HttpSecurity#authorizeHttpRequests instead.
+2024-05-07T20:47:39.412+08:00  INFO 18847 --- [restartedMain] o.s.s.web.DefaultSecurityFilterChain     : Will not secure Mvc [pattern='/swagger-resources/**']
+2024-05-07T20:47:39.413+08:00  WARN 18847 --- [restartedMain] o.s.s.c.a.web.builders.WebSecurity       : You are asking Spring Security to ignore Mvc [pattern='/v3/api-docs/**']. This is not recommended -- please use permitAll via HttpSecurity#authorizeHttpRequests instead.
+2024-05-07T20:47:39.414+08:00  INFO 18847 --- [restartedMain] o.s.s.web.DefaultSecurityFilterChain     : Will not secure Mvc [pattern='/v3/api-docs/**']
+2024-05-07T20:47:39.415+08:00  WARN 18847 --- [restartedMain] o.s.s.c.a.web.builders.WebSecurity       : You are asking Spring Security to ignore Mvc [pattern='/swagger-ui/**']. This is not recommended -- please use permitAll via HttpSecurity#authorizeHttpRequests instead.
+2024-05-07T20:47:39.416+08:00  INFO 18847 --- [restartedMain] o.s.s.web.DefaultSecurityFilterChain     : Will not secure Mvc [pattern='/swagger-ui/**']
+2024-05-07T20:47:39.418+08:00  WARN 18847 --- [restartedMain] o.s.s.c.a.web.builders.WebSecurity       : You are asking Spring Security to ignore Mvc [pattern='/swagger-ui.html']. This is not recommended -- please use permitAll via HttpSecurity#authorizeHttpRequests instead.
+2024-05-07T20:47:39.419+08:00  INFO 18847 --- [restartedMain] o.s.s.web.DefaultSecurityFilterChain     : Will not secure Mvc [pattern='/swagger-ui.html']
+2024-05-07T20:47:39.420+08:00  WARN 18847 --- [restartedMain] o.s.s.c.a.web.builders.WebSecurity       : You are asking Spring Security to ignore Mvc [pattern='/ws/**']. This is not recommended -- please use permitAll via HttpSecurity#authorizeHttpRequests instead.
+2024-05-07T20:47:39.421+08:00  INFO 18847 --- [restartedMain] o.s.s.web.DefaultSecurityFilterChain     : Will not secure Mvc [pattern='/ws/**']
+2024-05-07T20:47:39.422+08:00  WARN 18847 --- [restartedMain] o.s.s.c.a.web.builders.WebSecurity       : You are asking Spring Security to ignore Mvc [pattern='/ws-app/**']. This is not recommended -- please use permitAll via HttpSecurity#authorizeHttpRequests instead.
+2024-05-07T20:47:39.423+08:00  INFO 18847 --- [restartedMain] o.s.s.web.DefaultSecurityFilterChain     : Will not secure Mvc [pattern='/ws-app/**']
+2024-05-07T20:47:46.570+08:00  INFO 18847 --- [restartedMain] o.s.b.d.a.OptionalLiveReloadServer       : LiveReload server is running on port 35729
+2024-05-07T20:47:48.957+08:00  INFO 18847 --- [restartedMain] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port(s): 8080 (http) with context path ''
+2024-05-07T20:47:49.108+08:00  INFO 18847 --- [restartedMain] cn.org.alan.exam.ExamApplication         : Started ExamApplication in 48.637 seconds (process running for 49.774)
+2024-05-07T20:48:05.765+08:00  INFO 18847 --- [http-nio-8080-exec-1] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring DispatcherServlet 'dispatcherServlet'
+2024-05-07T20:48:05.771+08:00  INFO 18847 --- [http-nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Initializing Servlet 'dispatcherServlet'
+2024-05-07T20:48:05.897+08:00  INFO 18847 --- [http-nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Completed initialization in 121 ms
+2024-05-07T20:48:18.010+08:00 ERROR 18847 --- [http-nio-8080-exec-1] c.o.a.e.c.h.GlobalExceptionHandler       : Invalid return type for async method (only Future and void supported): class cn.org.alan.exam.common.result.Result
+2024-05-07T20:48:18.217+08:00  WARN 18847 --- [http-nio-8080-exec-1] .m.m.a.ExceptionHandlerExceptionResolver : Resolved [java.lang.IllegalArgumentException: Invalid return type for async method (only Future and void supported): class cn.org.alan.exam.common.result.Result]
+2024-05-07T20:50:05.464+08:00  INFO 18847 --- [SpringApplicationShutdownHook] com.alibaba.druid.pool.DruidDataSource   : {dataSource-1} closing ...
+2024-05-07T20:50:05.471+08:00  INFO 18847 --- [SpringApplicationShutdownHook] com.alibaba.druid.pool.DruidDataSource   : {dataSource-1} closed
+2024-05-07T20:50:12.888+08:00  INFO 18998 --- [restartedMain] cn.org.alan.exam.ExamApplication         : Starting ExamApplication using Java 17.0.8 with PID 18998 (/Users/alan/Documents/Code/项目开发/学校项目/综合项目实战/考试系统/code/online-exam-system-backend/target/classes started by alan in /Users/alan/Documents/Code/项目开发/学校项目/综合项目实战/考试系统/code/online-exam-system-backend)
+2024-05-07T20:50:12.890+08:00  INFO 18998 --- [restartedMain] cn.org.alan.exam.ExamApplication         : The following 1 profile is active: "dev"
+2024-05-07T20:50:12.923+08:00  INFO 18998 --- [restartedMain] .e.DevToolsPropertyDefaultsPostProcessor : Devtools property defaults active! Set 'spring.devtools.add-properties' to 'false' to disable
+2024-05-07T20:50:12.923+08:00  INFO 18998 --- [restartedMain] .e.DevToolsPropertyDefaultsPostProcessor : For additional web related logging consider setting the 'logging.level.web' property to 'DEBUG'
+2024-05-07T20:50:13.805+08:00  INFO 18998 --- [restartedMain] .s.d.r.c.RepositoryConfigurationDelegate : Multiple Spring Data modules found, entering strict repository configuration mode
+2024-05-07T20:50:13.807+08:00  INFO 18998 --- [restartedMain] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data Redis repositories in DEFAULT mode.
+2024-05-07T20:50:13.853+08:00  INFO 18998 --- [restartedMain] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 29 ms. Found 0 Redis repository interfaces.
+2024-05-07T20:50:14.587+08:00  INFO 18998 --- [restartedMain] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port(s): 8080 (http)
+2024-05-07T20:50:14.595+08:00  INFO 18998 --- [restartedMain] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2024-05-07T20:50:14.595+08:00  INFO 18998 --- [restartedMain] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/10.1.8]
+2024-05-07T20:50:14.647+08:00  INFO 18998 --- [restartedMain] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
+2024-05-07T20:50:14.647+08:00  INFO 18998 --- [restartedMain] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 1724 ms
+2024-05-07T20:50:15.113+08:00  INFO 18998 --- [restartedMain] c.a.d.s.b.a.DruidDataSourceAutoConfigure : Init DruidDataSource
+2024-05-07T20:50:16.241+08:00  INFO 18998 --- [restartedMain] com.alibaba.druid.pool.DruidDataSource   : {dataSource-1} inited
+2024-05-07T20:50:45.731+08:00  INFO 18998 --- [restartedMain] o.s.s.web.DefaultSecurityFilterChain     : Will secure any request with [org.springframework.security.web.session.DisableEncodeUrlFilter@3258d25b, org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter@f86a84d, org.springframework.security.web.context.SecurityContextHolderFilter@7fdcb517, org.springframework.security.web.header.HeaderWriterFilter@7637226d, org.springframework.security.web.authentication.logout.LogoutFilter@7d6c7ab4, cn.org.alan.exam.filter.VerifyTokenFilter@5658278b, org.springframework.security.web.savedrequest.RequestCacheAwareFilter@754101e3, org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter@5b006eab, org.springframework.security.web.authentication.AnonymousAuthenticationFilter@2cea9b80, org.springframework.security.web.access.ExceptionTranslationFilter@55fe2e68, org.springframework.security.web.access.intercept.AuthorizationFilter@551d1fd2]
+2024-05-07T20:50:45.921+08:00  WARN 18998 --- [restartedMain] o.s.s.c.a.web.builders.WebSecurity       : You are asking Spring Security to ignore Mvc [pattern='/webjars/**']. This is not recommended -- please use permitAll via HttpSecurity#authorizeHttpRequests instead.
+2024-05-07T20:50:45.922+08:00  INFO 18998 --- [restartedMain] o.s.s.web.DefaultSecurityFilterChain     : Will not secure Mvc [pattern='/webjars/**']
+2024-05-07T20:50:45.924+08:00  WARN 18998 --- [restartedMain] o.s.s.c.a.web.builders.WebSecurity       : You are asking Spring Security to ignore Mvc [pattern='/doc.html']. This is not recommended -- please use permitAll via HttpSecurity#authorizeHttpRequests instead.
+2024-05-07T20:50:45.925+08:00  INFO 18998 --- [restartedMain] o.s.s.web.DefaultSecurityFilterChain     : Will not secure Mvc [pattern='/doc.html']
+2024-05-07T20:50:45.926+08:00  WARN 18998 --- [restartedMain] o.s.s.c.a.web.builders.WebSecurity       : You are asking Spring Security to ignore Mvc [pattern='/swagger-resources/**']. This is not recommended -- please use permitAll via HttpSecurity#authorizeHttpRequests instead.
+2024-05-07T20:50:45.927+08:00  INFO 18998 --- [restartedMain] o.s.s.web.DefaultSecurityFilterChain     : Will not secure Mvc [pattern='/swagger-resources/**']
+2024-05-07T20:50:45.928+08:00  WARN 18998 --- [restartedMain] o.s.s.c.a.web.builders.WebSecurity       : You are asking Spring Security to ignore Mvc [pattern='/v3/api-docs/**']. This is not recommended -- please use permitAll via HttpSecurity#authorizeHttpRequests instead.
+2024-05-07T20:50:45.928+08:00  INFO 18998 --- [restartedMain] o.s.s.web.DefaultSecurityFilterChain     : Will not secure Mvc [pattern='/v3/api-docs/**']
+2024-05-07T20:50:45.929+08:00  WARN 18998 --- [restartedMain] o.s.s.c.a.web.builders.WebSecurity       : You are asking Spring Security to ignore Mvc [pattern='/swagger-ui/**']. This is not recommended -- please use permitAll via HttpSecurity#authorizeHttpRequests instead.
+2024-05-07T20:50:45.930+08:00  INFO 18998 --- [restartedMain] o.s.s.web.DefaultSecurityFilterChain     : Will not secure Mvc [pattern='/swagger-ui/**']
+2024-05-07T20:50:45.931+08:00  WARN 18998 --- [restartedMain] o.s.s.c.a.web.builders.WebSecurity       : You are asking Spring Security to ignore Mvc [pattern='/swagger-ui.html']. This is not recommended -- please use permitAll via HttpSecurity#authorizeHttpRequests instead.
+2024-05-07T20:50:45.932+08:00  INFO 18998 --- [restartedMain] o.s.s.web.DefaultSecurityFilterChain     : Will not secure Mvc [pattern='/swagger-ui.html']
+2024-05-07T20:50:45.932+08:00  WARN 18998 --- [restartedMain] o.s.s.c.a.web.builders.WebSecurity       : You are asking Spring Security to ignore Mvc [pattern='/ws/**']. This is not recommended -- please use permitAll via HttpSecurity#authorizeHttpRequests instead.
+2024-05-07T20:50:45.933+08:00  INFO 18998 --- [restartedMain] o.s.s.web.DefaultSecurityFilterChain     : Will not secure Mvc [pattern='/ws/**']
+2024-05-07T20:50:45.934+08:00  WARN 18998 --- [restartedMain] o.s.s.c.a.web.builders.WebSecurity       : You are asking Spring Security to ignore Mvc [pattern='/ws-app/**']. This is not recommended -- please use permitAll via HttpSecurity#authorizeHttpRequests instead.
+2024-05-07T20:50:45.935+08:00  INFO 18998 --- [restartedMain] o.s.s.web.DefaultSecurityFilterChain     : Will not secure Mvc [pattern='/ws-app/**']
+2024-05-07T20:50:54.568+08:00  INFO 18998 --- [restartedMain] o.s.b.d.a.OptionalLiveReloadServer       : LiveReload server is running on port 35729
+2024-05-07T20:50:57.671+08:00  INFO 18998 --- [restartedMain] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port(s): 8080 (http) with context path ''
+2024-05-07T20:50:57.823+08:00  INFO 18998 --- [restartedMain] cn.org.alan.exam.ExamApplication         : Started ExamApplication in 45.322 seconds (process running for 46.379)
+2024-05-07T20:51:01.891+08:00  INFO 18998 --- [http-nio-8080-exec-1] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring DispatcherServlet 'dispatcherServlet'
+2024-05-07T20:51:01.893+08:00  INFO 18998 --- [http-nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Initializing Servlet 'dispatcherServlet'
+2024-05-07T20:51:01.951+08:00  INFO 18998 --- [http-nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Completed initialization in 55 ms
+2024-05-07T20:51:17.842+08:00  INFO 18998 --- [http-nio-8080-exec-1] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
+2024-05-07T20:51:17.882+08:00  INFO 18998 --- [http-nio-8080-exec-1] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
+2024-05-07T20:51:20.553+08:00 ERROR 18998 --- [http-nio-8080-exec-1] c.o.a.e.c.h.GlobalExceptionHandler       : 题库中类型为2的题目数量不足10个！
+2024-05-07T20:51:21.169+08:00  WARN 18998 --- [http-nio-8080-exec-1] .m.m.a.ExceptionHandlerExceptionResolver : Resolved [cn.org.alan.exam.common.exception.AppException: 题库中类型为2的题目数量不足10个！]
+2024-05-07T20:51:50.191+08:00  INFO 18998 --- [http-nio-8080-exec-2] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
+2024-05-07T20:51:50.194+08:00  INFO 18998 --- [http-nio-8080-exec-2] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
+2024-05-07T20:51:50.776+08:00 ERROR 18998 --- [http-nio-8080-exec-2] c.o.a.e.c.h.GlobalExceptionHandler       : 题库中类型为2的题目数量不足10个！
+2024-05-07T20:51:50.784+08:00  WARN 18998 --- [http-nio-8080-exec-2] .m.m.a.ExceptionHandlerExceptionResolver : Resolved [cn.org.alan.exam.common.exception.AppException: 题库中类型为2的题目数量不足10个！]
+2024-05-07T20:52:08.744+08:00  INFO 18998 --- [http-nio-8080-exec-3] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
+2024-05-07T20:52:08.747+08:00  INFO 18998 --- [http-nio-8080-exec-3] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
+2024-05-07T20:52:09.350+08:00 ERROR 18998 --- [http-nio-8080-exec-3] c.o.a.e.c.h.GlobalExceptionHandler       : 题库中类型为2的题目数量不足3个！
+2024-05-07T20:52:09.359+08:00  WARN 18998 --- [http-nio-8080-exec-3] .m.m.a.ExceptionHandlerExceptionResolver : Resolved [cn.org.alan.exam.common.exception.AppException: 题库中类型为2的题目数量不足3个！]
+2024-05-07T20:52:30.503+08:00  INFO 18998 --- [http-nio-8080-exec-4] c.o.a.e.common.handler.FiledFullHandler  : user_id字段满足公共字段自动填充规则，已填充
+2024-05-07T20:52:30.508+08:00  INFO 18998 --- [http-nio-8080-exec-4] c.o.a.e.common.handler.FiledFullHandler  : create_time字段满足公共字段自动填充规则，已填充
+2024-05-07T20:53:27.797+08:00  INFO 18998 --- [SpringApplicationShutdownHook] com.alibaba.druid.pool.DruidDataSource   : {dataSource-1} closing ...
+2024-05-07T20:53:27.803+08:00  INFO 18998 --- [SpringApplicationShutdownHook] com.alibaba.druid.pool.DruidDataSource   : {dataSource-1} closed

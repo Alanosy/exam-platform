@@ -130,7 +130,6 @@ public class QuestionServiceImpl extends ServiceImpl<QuestionMapper, Question> i
 
     @SneakyThrows(Exception.class)
     @Override
-    @Async("asyncServiceExecutor")
     @Transactional
     public Result<String> importQuestion(Integer id, MultipartFile file) {
         if (!ExcelUtils.isExcel(Objects.requireNonNull(file.getOriginalFilename()))) {

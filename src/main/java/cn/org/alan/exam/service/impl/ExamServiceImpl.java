@@ -71,7 +71,6 @@ public class ExamServiceImpl extends ServiceImpl<ExamMapper, Exam> implements IE
     private ExamQuAnswerConverter examQuAnswerConverter;
 
     @Override
-    @Async("asyncServiceExecutor")
     @Transactional
     public Result<String> createExam(ExamAddForm examAddForm) {
         // 将关于考试相关的实体转换为Exam
@@ -340,7 +339,6 @@ public class ExamServiceImpl extends ServiceImpl<ExamMapper, Exam> implements IE
     }
 
     @Override
-    @Async("asyncServiceExecutor")
     public Result<String> addAnswer(ExamQuAnswerAddForm examQuAnswerForm) {
         // 检查是否正在考试
         if(!isUserTakingExam(examQuAnswerForm.getExamId())){

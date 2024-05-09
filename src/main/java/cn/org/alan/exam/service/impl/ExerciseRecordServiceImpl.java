@@ -392,7 +392,6 @@ public class ExerciseRecordServiceImpl extends ServiceImpl<ExerciseRecordMapper,
     }
 
     @Override
-    @Async("asyncServiceExecutor")
     @Transactional
     public Result<QuestionVO> fillAnswer(ExerciseFillAnswerFrom exerciseFillAnswerFrom) {
         ExerciseRecord exerciseRecord = exerciseConverter.fromToEntity(exerciseFillAnswerFrom);
