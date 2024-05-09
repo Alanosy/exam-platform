@@ -246,7 +246,7 @@ export const delegateTask = (data: any) => {
  */
 export const getTaskUserIdsByAddMultiInstance = (taskId: string) => {
   return request({
-    url: '/workflow/user/getTaskUserIdsByAddMultiInstance/' + taskId,
+    url: '/workflow/task/getTaskUserIdsByAddMultiInstance/' + taskId,
     method: 'get'
   });
 };
