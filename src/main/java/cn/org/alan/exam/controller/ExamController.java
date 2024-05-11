@@ -49,7 +49,7 @@ public class ExamController {
      */
     @GetMapping("/start")
     @PreAuthorize("hasAnyAuthority('role_teacher','role_admin','role_student')")
-    public Result<String> startExam(@RequestParam("exam_id") @NotNull Integer examId) {
+    public Result<String> startExam(@RequestParam("examId") @NotNull Integer examId) {
         return examService.startExam(examId);
     }
 
@@ -98,7 +98,7 @@ public class ExamController {
      */
     @GetMapping("/question/list/{examId}")
     @PreAuthorize("hasAnyAuthority('role_teacher','role_admin','role_student')")
-    public Result<List<ExamDetailRespVO>> getQuestionList(@PathVariable("examId") @NotBlank Integer examId) {
+    public Result<ExamQuestionListVO> getQuestionList(@PathVariable("examId") @NotBlank Integer examId) {
         return examService.getQuestionList(examId);
     }
 
@@ -139,17 +139,15 @@ public class ExamController {
 
     /**
      * 根据班级获得考试
-     * @param gradeId
      * @param pageNum
      * @param pageSize
      * @return
      */
-    @GetMapping("/{id}")
+    @GetMapping("/grade")
     @PreAuthorize("hasAnyAuthority('role_teacher','role_admin','role_student')")
-    public Result<IPage<ExamVO>> getGradeExamList(@PathVariable("id") Integer gradeId,
-                                                       @RequestParam(value = "pageNum", required = false, defaultValue = "1") Integer pageNum,
+    public Result<List<ExamGradeListVO>> getGradeExamList(@RequestParam(value = "pageNum", required = false, defaultValue = "1") Integer pageNum,
                                                        @RequestParam(value = "pageSize", required = false, defaultValue = "10") Integer pageSize) {
-        return examService.getGradeExamList(gradeId,pageNum,pageSize);
+        return examService.getGradeExamList(pageNum,pageSize);
     }
 
     /**

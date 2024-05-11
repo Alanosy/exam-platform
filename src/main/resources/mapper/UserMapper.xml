@@ -61,21 +61,26 @@
         u.create_time,
         g.grade_name
         from t_user as u
-        join t_grade as g on u.grade_id = g.id
+        left join t_grade as g on u.grade_id = g.id
         <trim prefixOverrides="and" prefix="where">
-            <if test="id != null">
-                u.grade = #{id}
+            <if test="gradeId != null and gradeId != 0">
+                u.gradeId = #{gradeId}
             </if>
             <if test='realName != null and realName !=""'>
                 and u.real_name like concat('%',#{realName},'%')
             </if>
-            <if test="id != null and id != 0">
-                and u.role_id = 1
+            <if test="roleId != null and roleId == 1">
+                and u.role_id in(1)
             </if>
+            <if test="roleId == null ">
+                and u.role_id in(1,2)
+            </if>
+
+
         </trim>
     </select>
     <select id="stuExamPage">
-
+laz
         SELECT * FROM t_user WHERE id in (SELECT grade_id FROM t_exam_grade WHERE exam_id= #{exam_id})
     </select>
 

@@ -30,4 +30,6 @@ public interface ExamConverter {
 
     ExamDetailVO examToExamDetailVO(Exam exam);
 
+    ExamGradeListVO entityToExamGradeListVO(Exam exam);
+
 }
