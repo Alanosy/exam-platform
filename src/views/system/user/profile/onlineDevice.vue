@@ -1,6 +1,6 @@
 <template>
   <div>
-    <el-table :data="devices" style="width: 100%; height: 100%; font-size: 10px">
+    <el-table :data="devices" style="width: 100%; height: 100%; font-size: 14px">
       <el-table-column label="设备类型" align="center">
         <template #default="scope">
           <dict-tag :options="sys_device_type" :value="scope.row.deviceType" />
