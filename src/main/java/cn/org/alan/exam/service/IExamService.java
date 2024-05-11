@@ -60,7 +60,7 @@ public interface IExamService extends IService<Exam> {
      * @param examId
      * @return
      */
-    Result<List<ExamDetailRespVO>> getQuestionList(Integer examId);
+    Result<ExamQuestionListVO> getQuestionList(Integer examId);
 
     /**
      * 获取单题信息
@@ -104,10 +104,9 @@ public interface IExamService extends IService<Exam> {
     /**
      * 根据班级获得考试
      *
-     * @param gradeId
      * @return
      */
-    Result<IPage<ExamVO>> getGradeExamList(Integer gradeId, Integer pageNum, Integer pageSize);
+    Result<List<ExamGradeListVO>> getGradeExamList(Integer pageNum, Integer pageSize);
 
     /**
      * 交卷操作

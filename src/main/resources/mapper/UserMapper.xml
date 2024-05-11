@@ -61,7 +61,7 @@
         u.create_time,
         g.grade_name
         from t_user as u
-        join t_grade as g on u.grade_id = g.id
+        left join t_grade as g on u.grade_id = g.id
         <trim prefixOverrides="and" prefix="where">
             <if test="gradeId != null and gradeId != 0">
                 u.gradeId = #{gradeId}
@@ -69,12 +69,14 @@
             <if test='realName != null and realName !=""'>
                 and u.real_name like concat('%',#{realName},'%')
             </if>
-            <if test="roleId != null and roleId != 0">
-                and u.role_id = #{roleId}
+            <if test="roleId != null and roleId == 1">
+                and u.role_id in(1)
             </if>
-            <if test="roleId == null or roleId == 0">
-                and u.role_id = 1
+            <if test="roleId == null ">
+                and u.role_id in(1,2)
             </if>
+
+
         </trim>
     </select>
     <select id="stuExamPage">
