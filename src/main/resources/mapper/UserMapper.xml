@@ -75,7 +75,7 @@
         </trim>
     </select>
     <select id="stuExamPage">
-
+laz
         SELECT * FROM t_user WHERE id in (SELECT grade_id FROM t_exam_grade WHERE exam_id= #{exam_id})
     </select>
 
