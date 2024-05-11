@@ -1,12 +1,15 @@
 package cn.org.alan.exam.service.impl;
 
 import cn.org.alan.exam.common.result.Result;
+import cn.org.alan.exam.converter.CertificateConverter;
 import cn.org.alan.exam.mapper.CertificateMapper;
 import cn.org.alan.exam.model.entity.Certificate;
 import cn.org.alan.exam.model.form.CertificateForm;
 import cn.org.alan.exam.service.ICertificateService;
 import cn.org.alan.exam.util.DateTimeUtil;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import jakarta.annotation.Resource;
@@ -29,16 +32,16 @@ public class CertificateServiceImpl extends ServiceImpl<CertificateMapper, Certi
 
     @Resource
     private CertificateMapper certificateMapper;
+    @Resource
+    private CertificateConverter certificateConverter;
 
     //新增证书
     @Override
     public Result<String> addCertificate(CertificateForm certificateForm) {
-        if (certificateForm == null) {
-            return Result.failed("证书信息不能为空");
-        }
 
-        certificateForm.setCreateTime(DateTimeUtil.getDateTime());  //自动生成时间
-        int insertRows = certificateMapper.insertCertificate(certificateForm);
+        Certificate certificate = certificateConverter.fromToEntity(certificateForm);
+        //自动生成时间
+        int insertRows = certificateMapper.insert(certificate);
 
         if (insertRows > 0) {
             return Result.success("添加证书成功");
@@ -51,12 +54,14 @@ public class CertificateServiceImpl extends ServiceImpl<CertificateMapper, Certi
     @Override
     public Result<IPage<Certificate>> pagingCertificate(Integer pageNum, Integer pageSize, String certificateName,
                                                         String certificationUnit, String image) {
-        if (pageNum == null || pageSize == null) {
-            return Result.failed("分页参数不能为空");
-        }
+
         Page<Certificate> page = new Page<>(pageNum, pageSize);
-        IPage<Certificate> certificatePage = certificateMapper
-                .pagingCertificate(page, certificateName, certificationUnit, image);
+        LambdaQueryWrapper<Certificate> wrapper = new LambdaQueryWrapper<Certificate>()
+                .like(StringUtils.isNotBlank(certificateName), Certificate::getCertificateName, certificateName)
+                .like(StringUtils.isNotBlank(certificationUnit), Certificate::getCertificationNuit, certificationUnit)
+                .eq(StringUtils.isNotBlank(image), Certificate::getImage, image);
+
+        Page<Certificate> certificatePage = certificateMapper.selectPage(page, wrapper);
 
         return Result.success("查询成功", certificatePage);
 
@@ -67,16 +72,12 @@ public class CertificateServiceImpl extends ServiceImpl<CertificateMapper, Certi
     @Override
     @Transactional
     public Result<String> updateCertificate(CertificateForm certificateForm) {
-        if (certificateForm == null || certificateForm.getId() == null) {
-            return Result.failed("证书ID不能为空");
-        }
 
-        Certificate toUpdate = new Certificate();
-        toUpdate.setCertificateName(Objects.toString(certificateForm.getCertificateName(), null));
-        toUpdate.setCertificationNuit(Objects.toString(certificateForm.getCertificationNuit(), null));
+
+        Certificate certificate = certificateConverter.fromToEntity(certificateForm);
 
         // 调用mapper方法更新证书
-        int affectedRows = certificateMapper.updateById(toUpdate);
+        int affectedRows = certificateMapper.updateById(certificate);
 
         if (affectedRows > 0) {
             return Result.success("修改证书成功");
@@ -118,10 +119,8 @@ public class CertificateServiceImpl extends ServiceImpl<CertificateMapper, Certi
 
     @Override
     public Result<String> deleteCertificate(Integer id) {
-        if (id == null) {
-            return Result.failed("证书ID不能为空");
-        }
         int affectedRows = certificateMapper.deleteById(id);
+
 
         if (affectedRows > 0) {
             return Result.success("删除证书成功");
