@@ -63,13 +63,16 @@
         from t_user as u
         join t_grade as g on u.grade_id = g.id
         <trim prefixOverrides="and" prefix="where">
-            <if test="id != null">
-                u.grade = #{id}
+            <if test="gradeId != null and gradeId != 0">
+                u.gradeId = #{gradeId}
             </if>
             <if test='realName != null and realName !=""'>
                 and u.real_name like concat('%',#{realName},'%')
             </if>
-            <if test="id != null and id != 0">
+            <if test="roleId != null and roleId != 0">
+                and u.role_id = #{roleId}
+            </if>
+            <if test="roleId == null or roleId == 0">
                 and u.role_id = 1
             </if>
         </trim>
