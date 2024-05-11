@@ -27,5 +27,6 @@ public class ExamQuDetailVO {
      * 答案内容
      */
     private List<Option> answerList;
+    private Integer quType;
 
 }
