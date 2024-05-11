@@ -1,5 +1,6 @@
 package cn.org.alan.exam.util;
 
+import cn.hutool.extra.spring.SpringUtil;
 import cn.org.alan.exam.model.entity.User;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
@@ -13,6 +14,8 @@ import jakarta.servlet.http.HttpServletRequest;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.stereotype.Component;
 
 import java.util.Date;
@@ -45,7 +48,7 @@ public class JwtUtil {
      */
     public String createJwt(String userInfo, List<String> authList) {
         Date issDate = new Date();//签发时间
-        Date expireDate = new Date(issDate.getTime() + 1000 * 60 * 60 * 2);
+//        Date expireDate = new Date(issDate.getTime() + 1000 * 60 * 60 * 2);
         //定义头部信息
         Map<String, Object> headerClaims = new HashMap<>();
         headerClaims.put("alg", "HS256");//算法
@@ -53,11 +56,13 @@ public class JwtUtil {
         return JWT.create().withHeader(headerClaims)
                 .withIssuer("wj")//签发人
                 .withIssuedAt(issDate)//签发时间
-                .withExpiresAt(expireDate)//过期时间
+//                .withExpiresAt(expireDate)//过期时间
                 .withClaim("userInfo", userInfo)//自定义声明
                 .withClaim("authList", authList)
                 .sign(Algorithm.HMAC256(secret));//使用HS256作为签名，SECRET作为密钥
     }
+
+
 
     /**
      * 校验token
