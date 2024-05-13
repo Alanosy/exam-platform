@@ -61,10 +61,9 @@ public class AuthServiceImpl implements IAuthService {
 
     /**
      * 登录
-     *
-     * @param username 用户名
-     * @param password 密码
-     * @return 登录结果
+     * @param request
+     * @param loginForm 入参
+     * @return 响应
      */
     @SneakyThrows(JsonProcessingException.class)
     @Override

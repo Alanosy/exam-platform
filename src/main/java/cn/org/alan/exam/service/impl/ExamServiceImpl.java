@@ -226,34 +226,34 @@ public class ExamServiceImpl extends ServiceImpl<ExamMapper, Exam> implements IE
     public Result<ExamQuestionListVO> getQuestionList(Integer examId) {
         // 检查是否正在考试
         if(!isUserTakingExam(examId)){
-            return Result.failed("没有考试在进行");
+            return Result.failed("考试在进行");
         }
         ExamQuestionListVO examQuestionListVO = new ExamQuestionListVO();
+        // 设置倒计时
+        Exam byId = this.getById(examId);
+        examQuestionListVO.setExamDuration(byId.getExamDuration());
+        LambdaQueryWrapper<UserExamsScore> userExamsScoreLambdaQueryWrapper = new LambdaQueryWrapper<>();
+        userExamsScoreLambdaQueryWrapper.eq(UserExamsScore::getUserId,SecurityUtil.getUserId())
+                .eq(UserExamsScore::getExamId,examId)
+                .eq(UserExamsScore::getState,0);
+        UserExamsScore userExamsScore = userExamsScoreMapper.selectOne(userExamsScoreLambdaQueryWrapper);
+        Calendar cl = Calendar.getInstance();
+        LocalDateTime createTime = userExamsScore.getCreateTime();
+        if (createTime != null) {
+            Date date = Date.from(createTime.atZone(ZoneId.systemDefault()).toInstant());
+            cl.setTime(date);
+        } else {
+            return Result.failed("错误");
+        }
+        cl.add(Calendar.MINUTE, byId.getExamDuration());
+        examQuestionListVO.setLeftSeconds((cl.getTimeInMillis() - System.currentTimeMillis()) / 1000);
+        // 添加不同类型的试题列表
         for (int i = 1;i<4;i++){
             // 根据考试id查询考试试题表
             LambdaQueryWrapper<ExamQuestion> examQuestionLambdaQueryWrapper = new LambdaQueryWrapper<>();
             examQuestionLambdaQueryWrapper.eq(ExamQuestion::getExamId, examId)
                     .eq(ExamQuestion::getType,1);
             List<ExamQuestion> examQuestions = examQuestionMapper.selectList(examQuestionLambdaQueryWrapper);
-            Exam byId = this.getById(examId);
-            examQuestionListVO.setExamDuration(byId.getExamDuration());
-            // 结束时间
-            LambdaQueryWrapper<UserExamsScore> userExamsScoreLambdaQueryWrapper = new LambdaQueryWrapper<>();
-            userExamsScoreLambdaQueryWrapper.eq(UserExamsScore::getUserId,SecurityUtil.getUserId())
-                    .eq(UserExamsScore::getExamId,examId)
-                    .eq(UserExamsScore::getState,0);
-            UserExamsScore userExamsScore = userExamsScoreMapper.selectOne(userExamsScoreLambdaQueryWrapper);
-            Calendar cl = Calendar.getInstance();
-            LocalDateTime createTime = userExamsScore.getCreateTime();
-            if (createTime != null) {
-                Date date = Date.from(createTime.atZone(ZoneId.systemDefault()).toInstant());
-                cl.setTime(date);
-            } else {
-                return Result.failed("错误");
-            }
-            cl.add(Calendar.MINUTE, byId.getExamDuration());
-
-            examQuestionListVO.setLeftSeconds((cl.getTimeInMillis() - System.currentTimeMillis()) / 1000);
             if(examQuestions.isEmpty()){
                 continue;
             }
@@ -286,6 +286,11 @@ public class ExamServiceImpl extends ServiceImpl<ExamMapper, Exam> implements IE
             return Result.failed("没有考试在进行");
         }
         ExamQuDetailVO examQuDetailVO = new ExamQuDetailVO();
+        LambdaQueryWrapper<ExamQuestion> examQuestionLambdaQueryWrapper = new LambdaQueryWrapper<>();
+        examQuestionLambdaQueryWrapper.eq(ExamQuestion::getQuestionId,questionId)
+                .eq(ExamQuestion::getExamId,examId);
+        ExamQuestion examQuestion = examQuestionMapper.selectOne(examQuestionLambdaQueryWrapper);
+        examQuDetailVO.setSort(examQuestion.getSort());
         // 问题
         Question quById = questionService.getById(questionId);
         // 基本信息
@@ -303,7 +308,7 @@ public class ExamServiceImpl extends ServiceImpl<ExamMapper, Exam> implements IE
     @Override
     public Result<List<ExamQuCollectVO>> getCollect(Integer examId) {
         // 检查是否正在考试
-        if(!isUserTakingExam(examId)){
+        if(isUserTakingExam(examId)){
             return Result.failed("没有考试在进行");
         }
         List<ExamQuCollectVO> examQuDetailVOS = new ArrayList<>();
@@ -350,7 +355,7 @@ public class ExamServiceImpl extends ServiceImpl<ExamMapper, Exam> implements IE
     public Result<ExamDetailVO> getDetail(Integer examId) {
         // 检查是否正在考试
         try {
-            if(!isUserTakingExam(examId)){
+            if(isUserTakingExam(examId)){
                 return Result.failed("没有考试在进行");
             }
         }catch (Exception e){
@@ -366,7 +371,7 @@ public class ExamServiceImpl extends ServiceImpl<ExamMapper, Exam> implements IE
     @Override
     public Result<String> addCheat(Integer examId) {
         // 检查是否正在考试
-        if(!isUserTakingExam(examId)){
+        if(isUserTakingExam(examId)){
             return Result.failed("没有考试在进行");
         }
         LambdaQueryWrapper<UserExamsScore> userExamsScoreLambdaQuery = new LambdaQueryWrapper<>();
@@ -636,6 +641,8 @@ public class ExamServiceImpl extends ServiceImpl<ExamMapper, Exam> implements IE
         // 设置考试状态
         UserExamsScore userExamsScore = new UserExamsScore();
         userExamsScore.setState(1);
+        //
+
         // 查询用户答题记录
         LambdaQueryWrapper<ExamQuAnswer> examQuAnswerLambdaQuery = new LambdaQueryWrapper<>();
         examQuAnswerLambdaQuery.eq(ExamQuAnswer::getUserId, SecurityUtil.getUserId())
@@ -644,13 +651,18 @@ public class ExamServiceImpl extends ServiceImpl<ExamMapper, Exam> implements IE
         // 客观分
         List<UserBook> userBookArrayList = new ArrayList<>();
         for (ExamQuAnswer temp : examQuAnswer) {
+            LambdaQueryWrapper<UserExamsScore> userExamsScoreLambdaQueryWrapper = new LambdaQueryWrapper<>();
+            userExamsScoreLambdaQueryWrapper.eq(UserExamsScore::getExamId,examId)
+                    .eq(UserExamsScore::getUserId,SecurityUtil.getUserId())
+                    .eq(UserExamsScore::getState,0);
+            UserExamsScore userExamsScore1 = userExamsScoreMapper.selectOne(userExamsScoreLambdaQueryWrapper);
             if (temp.getIsRight() == 1) {
                 if (temp.getQuestionType() == 1) {
-                    userExamsScore.setUserScore(userExamsScore.getUserScore() + examOne.getRadioScore());
+                    userExamsScore.setUserScore(userExamsScore1.getUserScore() + examOne.getRadioScore());
                 } else if (temp.getQuestionType() == 2) {
-                    userExamsScore.setUserScore(userExamsScore.getUserScore() + examOne.getMultiScore());
+                    userExamsScore.setUserScore(userExamsScore1.getUserScore() + examOne.getMultiScore());
                 } else if (temp.getQuestionType() == 3) {
-                    userExamsScore.setUserScore(userExamsScore.getUserScore() + examOne.getJudgeScore());
+                    userExamsScore.setUserScore(userExamsScore1.getUserScore() + examOne.getJudgeScore());
                 }
             } else if (temp.getIsRight() == 0) {
                 UserBook userBook = new UserBook();

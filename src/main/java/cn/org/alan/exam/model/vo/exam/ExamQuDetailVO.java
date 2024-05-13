@@ -28,5 +28,6 @@ public class ExamQuDetailVO {
      */
     private List<Option> answerList;
     private Integer quType;
+    private Integer sort;
 
 }
