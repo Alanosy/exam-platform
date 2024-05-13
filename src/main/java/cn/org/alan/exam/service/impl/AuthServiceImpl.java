@@ -25,6 +25,7 @@ import jakarta.servlet.http.HttpSession;
 import lombok.SneakyThrows;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -33,6 +34,8 @@ import org.springframework.security.web.authentication.WebAuthenticationDetailsS
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
+import java.security.Principal;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
@@ -107,14 +110,17 @@ public class AuthServiceImpl implements IAuthService {
         stringRedisTemplate.opsForValue().set("token" + request.getSession().getId(), token, 2, TimeUnit.HOURS);
 
         // 封装用户的身份信息，为后续的身份验证和授权操作提供必要的输入
-        // 创建UsernamePasswordAuthenticationToken  参数：用户名，密码，权限列表
+        // 创建UsernamePasswordAuthenticationToken  参数：用户信息，密码，权限列表
         UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken =
-                new UsernamePasswordAuthenticationToken(user.getUserName(), user.getPassword(), userPermissions);
+                new UsernamePasswordAuthenticationToken(sysUserDetails, user.getPassword(), userPermissions);
 
-        usernamePasswordAuthenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request)); // 可选，添加Web认证细节
+        // 可选，添加Web认证细节
+        usernamePasswordAuthenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
 
         // 用户信息存放进上下文
         SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
+        //用户信息放入
+
         // 清除redis通过校验表示
         stringRedisTemplate.delete("isVerifyCode" + request.getSession().getId());
         return Result.success("登录成功", token);

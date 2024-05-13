@@ -28,6 +28,7 @@ public class RepoController {
 
     /**
      * 添加题库，只有教师和管理员可以添加题库
+     *
      * @param repo 添加题库的参数
      * @return 返回响应结果
      */
@@ -41,6 +42,7 @@ public class RepoController {
 
     /**
      * 修改题库
+     *
      * @param repo 传递参数
      * @return 返回响应
      */
@@ -52,6 +54,7 @@ public class RepoController {
 
     /**
      * 根据题库id删除题库
+     *
      * @param id 题库id
      * @return 返回响应结果
      */
@@ -63,16 +66,18 @@ public class RepoController {
 
     /**
      * 获取题库id和题库名，教师获取自己的题库，管理员获取所有题库
+     * @param repoTitle 题库名称
      * @return 响应结果
      */
     @GetMapping("/list")
     @PreAuthorize("hasAnyAuthority('role_teacher','role_admin')")
-    public Result<List<RepoVO>> getRepoList() {
-        return iRepoService.getRepoList();
+    public Result<List<RepoVO>> getRepoList(@RequestParam(value = "repoTitle",required = false) String repoTitle) {
+        return iRepoService.getRepoList(repoTitle);
     }
 
     /**
      * 分页查询题库
+     *
      * @param pageNum  页码
      * @param pageSize 每页记录数
      * @param title    题库名
