@@ -95,7 +95,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
 
         User user = userConverter.fromToEntity(userForm);
         userMapper.insert(user);
-        return Result.failed("用户创建成功");
+        return Result.success("用户创建成功");
 
     }
 
