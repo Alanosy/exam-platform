@@ -46,10 +46,10 @@ public interface IRepoService extends IService<Repo> {
 
     /**
      * 根据用户id获取自己的题库 教师获取自己的，管理员可以获取所有
-     *
+     * @param repoTitle 题库名称
      * @return 响应结果
      */
-    Result<List<RepoVO>> getRepoList();
+    Result<List<RepoVO>> getRepoList(String repoTitle);
 
     /**
      * 分页查询题库

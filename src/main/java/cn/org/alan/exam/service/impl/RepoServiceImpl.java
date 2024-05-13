@@ -15,6 +15,7 @@ import cn.org.alan.exam.util.SecurityUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import jakarta.annotation.Resource;
@@ -74,8 +75,10 @@ public class RepoServiceImpl extends ServiceImpl<RepoMapper, Repo> implements IR
     }
 
     @Override
-    public Result<List<RepoVO>> getRepoList() {
-        LambdaQueryWrapper<Repo> wrapper = new LambdaQueryWrapper<Repo>().select(Repo::getId, Repo::getTitle);
+    public Result<List<RepoVO>> getRepoList(String repoTitle) {
+        LambdaQueryWrapper<Repo> wrapper = new LambdaQueryWrapper<Repo>()
+                .like(StringUtils.isNotBlank(repoTitle), Repo::getTitle, repoTitle)
+                .select(Repo::getId, Repo::getTitle);
         if ("role_teacher".equals(SecurityUtil.getRole())) {
             wrapper.eq(Repo::getUserId, SecurityUtil.getUserId());
         }
@@ -114,12 +117,12 @@ public class RepoServiceImpl extends ServiceImpl<RepoMapper, Repo> implements IR
                     .select(UserExerciseRecord::getExerciseCount)
                     .eq(UserExerciseRecord::getUserId, SecurityUtil.getUserId());
             UserExerciseRecord userExerciseRecord = userExerciseRecordMapper.selectOne(wrapper);
-            if (userExerciseRecord.getExerciseCount() != null && userExerciseRecord.getExerciseCount() != 0){
+            if (userExerciseRecord.getExerciseCount() != null && userExerciseRecord.getExerciseCount() != 0) {
                 repoVO.setExerciseCount(userExerciseRecord.getExerciseCount());
-            }else {
+            } else {
                 repoVO.setExerciseCount(0);
             }
         });
-        return Result.success(null,page);
+        return Result.success(null, page);
     }
 }
