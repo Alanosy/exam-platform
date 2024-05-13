@@ -4,6 +4,7 @@ import cn.org.alan.exam.model.entity.Exam;
 import cn.org.alan.exam.model.vo.answer.AnswerExamVO;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -40,5 +41,5 @@ public interface ExamMapper extends BaseMapper<Exam> {
      * @param userId
      * @return
      */
-    IPage<AnswerExamVO> selectMarkedList(IPage<AnswerExamVO> page,Integer userId);
+    IPage<AnswerExamVO> selectMarkedList(@Param("page") IPage<AnswerExamVO> page, @Param("userId") Integer userId);
 }

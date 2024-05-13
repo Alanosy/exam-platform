@@ -4,7 +4,7 @@ import cn.org.alan.exam.common.result.Result;
 import cn.org.alan.exam.model.vo.score.GradeScoreVO;
 import cn.org.alan.exam.model.vo.score.QuestionAnalyseVO;
 import cn.org.alan.exam.model.vo.score.UserScoreVO;
-import cn.org.alan.exam.service.IExamGradeService;
+import cn.org.alan.exam.service.IStatService;
 import cn.org.alan.exam.service.IExamQuAnswerService;
 import cn.org.alan.exam.service.IUserExamsScoreService;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -25,23 +25,13 @@ import org.springframework.web.bind.annotation.*;
 public class ScoreController {
 
     @Resource
-    private IExamGradeService iExamGradeService;
+    private IStatService iStatService;
     @Resource
     private IUserExamsScoreService iUserExamsScoreService;
     @Resource
     private IExamQuAnswerService iExamQuAnswerService;
 
-    /**
-     * 根据班级Id和考试Id获取该班级的平均分、最高分、最低分以及及格率
-     * @param examId  考试Id
-     * @param classId 班级Id
-     * @return 响应结果
-     */
-    @GetMapping("/class/{examId}/{classId}")
-    @PreAuthorize("hasAnyAuthority('role_teacher','role_admin')")
-    public Result<GradeScoreVO> gradeExamScore(@PathVariable("examId") Integer examId, @PathVariable("classId") Integer classId) {
-        return iExamGradeService.gradeExamScore(examId, classId);
-    }
+
 
     /**
      * 分页获取成绩信息

@@ -3,7 +3,6 @@ package cn.org.alan.exam.controller;
 
 import cn.org.alan.exam.common.result.Result;
 import cn.org.alan.exam.model.form.GradeForm;
-import cn.org.alan.exam.model.form.count.ClassCountResult;
 import cn.org.alan.exam.model.vo.GradeVO;
 import cn.org.alan.exam.service.IGradeService;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -89,13 +88,13 @@ public class GradeController {
         return gradeService.removeUserGrade(ids);
     }
 
-    /**
-     * 获取所有班级列表
-     * @return
-     */
-    @GetMapping("/list")
-    @PreAuthorize("hasAnyAuthority('role_teacher','role_admin')")
-    public Result<List<GradeVO>> getAllGrade(){
-        return gradeService.getAllGrade();
-    }
+//    /**
+//     * 获取所有班级列表
+//     * @return
+//     */
+//    @GetMapping("/list")
+//    @PreAuthorize("hasAnyAuthority('role_teacher','role_admin')")
+//    public Result<List<GradeVO>> getAllGrade(){
+//        return gradeService.getAllGrade();
+//    }
 }

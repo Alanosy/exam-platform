@@ -1,6 +1,7 @@
 package cn.org.alan.exam.controller;
 
 
+import cn.org.alan.exam.common.group.CertificateGroup;
 import cn.org.alan.exam.common.result.Result;
 import cn.org.alan.exam.model.entity.Certificate;
 import cn.org.alan.exam.model.form.CertificateForm;
@@ -8,6 +9,7 @@ import cn.org.alan.exam.service.ICertificateService;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import jakarta.annotation.Resource;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 /**
@@ -30,7 +32,8 @@ public class CertificateController {
      */
     @PostMapping
     @PreAuthorize("hasAnyAuthority('role_teacher','role_admin')")
-    public Result<String> addCertificate(@RequestBody CertificateForm certificateForm) {
+    public Result<String> addCertificate(@RequestBody @Validated(CertificateGroup.CertificateInsertGroup.class)
+                                             CertificateForm certificateForm) {
         //从token获取用户id，放入创建人id属性
         return iCertificateService.addCertificate(certificateForm);
     }
@@ -50,7 +53,7 @@ public class CertificateController {
                                                         @RequestParam(value = "pageSize", required = false, defaultValue = "10") Integer pageSize,
                                                         @RequestParam(value = "certificateName", required = false) String certificateName,
                                                         @RequestParam(value = "certificationUnit", required = false) String certificationUnit,
-                                                        @RequestParam(value = "certificateName", required = false) String image) {
+                                                        @RequestParam(value = "image", required = false) String image) {
         return iCertificateService.pagingCertificate(pageNum, pageSize, certificateName, certificationUnit, image);
     }
 

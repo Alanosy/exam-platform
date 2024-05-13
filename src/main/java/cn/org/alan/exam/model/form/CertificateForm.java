@@ -1,11 +1,8 @@
 package cn.org.alan.exam.model.form;
 
-import com.baomidou.mybatisplus.annotation.FieldFill;
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableField;
-import com.baomidou.mybatisplus.annotation.TableId;
 
-import java.time.LocalDateTime;
+import cn.org.alan.exam.common.group.CertificateGroup;
+import jakarta.validation.constraints.NotBlank;
 
 /**
  * @ Author JinXi
@@ -13,13 +10,13 @@ import java.time.LocalDateTime;
  * @ Date 2024/4/11 15:15
  */
 public class CertificateForm {
-    private static final long serialVersionUID = 1L;
+
 
     /**
      * ID   证书
      */
-    @TableId(value = "id", type = IdType.AUTO)
     private Integer id;
+    @NotBlank(message = "证书名称不能为空",groups = CertificateGroup.CertificateInsertGroup.class)
     private String certificateName;
 
     /**
@@ -30,13 +27,10 @@ public class CertificateForm {
     /**
      * 认证单位
      */
+    @NotBlank(message = "发证单位不能为空",groups = CertificateGroup.CertificateInsertGroup.class)
     private String certificationNuit;
 
-    /**
-     * 创建时间
-     */
-    @TableField(fill = FieldFill.INSERT)
-    private LocalDateTime createTime;
+
 
 
 
@@ -72,11 +66,4 @@ public class CertificateForm {
         this.certificationNuit = certificationNuit;
     }
 
-    public LocalDateTime getCreateTime() {
-        return createTime;
-    }
-
-    public void setCreateTime(LocalDateTime createTime) {
-        this.createTime = createTime;
-    }
 }

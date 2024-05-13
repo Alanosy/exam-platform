@@ -9,7 +9,9 @@
             (#{id},#{gId})
         </foreach>
     </insert>
-    <update id="ExamGradeCount"></update>
+
+
+
     <delete id="delExamGrade">
         delete from t_exam_grade
         where
@@ -23,6 +25,5 @@
                  left join t_user as u on g.id = u.grade_id
         where eg.exam_id = #{id}
     </select>
-
 
 </mapper>

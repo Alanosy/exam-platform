@@ -7,30 +7,22 @@ import cn.org.alan.exam.mapper.GradeMapper;
 import cn.org.alan.exam.mapper.QuestionMapper;
 import cn.org.alan.exam.mapper.UserMapper;
 import cn.org.alan.exam.model.entity.Grade;
-import cn.org.alan.exam.model.entity.User;
 import cn.org.alan.exam.model.form.GradeForm;
-import cn.org.alan.exam.model.form.count.ClassCountResult;
 import cn.org.alan.exam.model.vo.GradeVO;
 import cn.org.alan.exam.service.IGradeService;
 import cn.org.alan.exam.util.ClassTokenGenerator;
 import cn.org.alan.exam.util.SecurityUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import jakarta.annotation.Resource;
-import org.springframework.data.annotation.Id;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 
 /**
  * 班级服务实现类
@@ -119,31 +111,5 @@ public class GradeServiceImpl extends ServiceImpl<GradeMapper, Grade> implements
         return Result.success("移除成功");
     }
 
-    @Override
-    public Result<List<GradeVO>> getAllGrade() {
-        // 创建查询条件
-        LambdaQueryWrapper<Grade> gradeWrapper = new LambdaQueryWrapper<>();
-        gradeWrapper.eq(Grade::getUserId,SecurityUtil.getUserId());
-        // 查询当前用户所创建的所有班级
-        List<Grade> grades = gradeMapper.selectList(gradeWrapper);
-        return Result.success("查询成功",gradeConverter.listEntityToVo(grades));
-    }
-
-    @Override
-    public List<ClassCountResult> countStudentsByRoleId(int roleId) {
-        return userMapper.countAndGroupByGradeAndRoleId(roleId);
-    }
-
-    @Override
-    public Result getAllCounts() {
-        long gradeCount = gradeMapper.selectCount(null);
-        long examCount = examMapper.selectCount(null);
-        long questionCount = questionMapper.selectCount(null);
-        ClassCountResult result = new ClassCountResult();
-        result.setGradeCount((int) gradeCount);
-        result.setExamCount((int) examCount);
-        result.setQuestionCount((int) questionCount);
-        return Result.success(null,result);
-    }
 }
 

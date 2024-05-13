@@ -9,7 +9,6 @@ import org.springframework.stereotype.Repository;
 
 
 import java.util.List;
-import java.util.Map;
 
 /**
  * <p>
@@ -69,6 +68,7 @@ public interface UserMapper extends BaseMapper<User> {
      */
     Integer removeGradeIdByGradeIds(List<Integer> gradeIds);
 
+    List<ClassCountResult> countAndGroupByGradeAndRoleId(Integer roleId);
 
-    List<ClassCountResult> countAndGroupByGradeAndRoleId(int roleId);
+
 }
