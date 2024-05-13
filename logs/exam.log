@@ -11,3 +11,101 @@
 2024-05-13T11:14:34.134+08:00  INFO 18928 --- [restartedMain] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
 2024-05-13T11:14:34.134+08:00  INFO 18928 --- [restartedMain] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 1354 ms
 2024-05-13T11:14:34.496+08:00  INFO 18928 --- [restartedMain] c.a.d.s.b.a.DruidDataSourceAutoConfigure : Init DruidDataSource
+2024-05-13T11:14:36.421+08:00  INFO 18928 --- [restartedMain] com.alibaba.druid.pool.DruidDataSource   : {dataSource-1} inited
+2024-05-13T11:14:37.508+08:00  INFO 18928 --- [restartedMain] o.s.s.web.DefaultSecurityFilterChain     : Will secure any request with [org.springframework.security.web.session.DisableEncodeUrlFilter@42bb33b1, org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter@26c14d6b, org.springframework.security.web.context.SecurityContextHolderFilter@3624061a, org.springframework.security.web.header.HeaderWriterFilter@24f7309d, org.springframework.security.web.authentication.logout.LogoutFilter@10eb785, cn.org.alan.exam.filter.VerifyTokenFilter@2e6f5f47, org.springframework.security.web.savedrequest.RequestCacheAwareFilter@117b4c28, org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter@3e30fcb9, org.springframework.security.web.authentication.AnonymousAuthenticationFilter@4b1bd496, org.springframework.security.web.access.ExceptionTranslationFilter@3aa009e2, org.springframework.security.web.access.intercept.AuthorizationFilter@2e1940e5]
+2024-05-13T11:14:37.511+08:00  WARN 18928 --- [restartedMain] o.s.s.c.a.web.builders.WebSecurity       : You are asking Spring Security to ignore Mvc [pattern='/webjars/**']. This is not recommended -- please use permitAll via HttpSecurity#authorizeHttpRequests instead.
+2024-05-13T11:14:37.511+08:00  INFO 18928 --- [restartedMain] o.s.s.web.DefaultSecurityFilterChain     : Will not secure Mvc [pattern='/webjars/**']
+2024-05-13T11:14:37.511+08:00  WARN 18928 --- [restartedMain] o.s.s.c.a.web.builders.WebSecurity       : You are asking Spring Security to ignore Mvc [pattern='/doc.html']. This is not recommended -- please use permitAll via HttpSecurity#authorizeHttpRequests instead.
+2024-05-13T11:14:37.512+08:00  INFO 18928 --- [restartedMain] o.s.s.web.DefaultSecurityFilterChain     : Will not secure Mvc [pattern='/doc.html']
+2024-05-13T11:14:37.512+08:00  WARN 18928 --- [restartedMain] o.s.s.c.a.web.builders.WebSecurity       : You are asking Spring Security to ignore Mvc [pattern='/swagger-resources/**']. This is not recommended -- please use permitAll via HttpSecurity#authorizeHttpRequests instead.
+2024-05-13T11:14:37.512+08:00  INFO 18928 --- [restartedMain] o.s.s.web.DefaultSecurityFilterChain     : Will not secure Mvc [pattern='/swagger-resources/**']
+2024-05-13T11:14:37.512+08:00  WARN 18928 --- [restartedMain] o.s.s.c.a.web.builders.WebSecurity       : You are asking Spring Security to ignore Mvc [pattern='/v3/api-docs/**']. This is not recommended -- please use permitAll via HttpSecurity#authorizeHttpRequests instead.
+2024-05-13T11:14:37.512+08:00  INFO 18928 --- [restartedMain] o.s.s.web.DefaultSecurityFilterChain     : Will not secure Mvc [pattern='/v3/api-docs/**']
+2024-05-13T11:14:37.512+08:00  WARN 18928 --- [restartedMain] o.s.s.c.a.web.builders.WebSecurity       : You are asking Spring Security to ignore Mvc [pattern='/swagger-ui/**']. This is not recommended -- please use permitAll via HttpSecurity#authorizeHttpRequests instead.
+2024-05-13T11:14:37.512+08:00  INFO 18928 --- [restartedMain] o.s.s.web.DefaultSecurityFilterChain     : Will not secure Mvc [pattern='/swagger-ui/**']
+2024-05-13T11:14:37.512+08:00  WARN 18928 --- [restartedMain] o.s.s.c.a.web.builders.WebSecurity       : You are asking Spring Security to ignore Mvc [pattern='/swagger-ui.html']. This is not recommended -- please use permitAll via HttpSecurity#authorizeHttpRequests instead.
+2024-05-13T11:14:37.512+08:00  INFO 18928 --- [restartedMain] o.s.s.web.DefaultSecurityFilterChain     : Will not secure Mvc [pattern='/swagger-ui.html']
+2024-05-13T11:14:37.512+08:00  WARN 18928 --- [restartedMain] o.s.s.c.a.web.builders.WebSecurity       : You are asking Spring Security to ignore Mvc [pattern='/ws/**']. This is not recommended -- please use permitAll via HttpSecurity#authorizeHttpRequests instead.
+2024-05-13T11:14:37.512+08:00  INFO 18928 --- [restartedMain] o.s.s.web.DefaultSecurityFilterChain     : Will not secure Mvc [pattern='/ws/**']
+2024-05-13T11:14:37.512+08:00  WARN 18928 --- [restartedMain] o.s.s.c.a.web.builders.WebSecurity       : You are asking Spring Security to ignore Mvc [pattern='/ws-app/**']. This is not recommended -- please use permitAll via HttpSecurity#authorizeHttpRequests instead.
+2024-05-13T11:14:37.512+08:00  INFO 18928 --- [restartedMain] o.s.s.web.DefaultSecurityFilterChain     : Will not secure Mvc [pattern='/ws-app/**']
+2024-05-13T11:14:37.759+08:00  INFO 18928 --- [restartedMain] o.s.b.d.a.OptionalLiveReloadServer       : LiveReload server is running on port 35729
+2024-05-13T11:14:37.815+08:00  INFO 18928 --- [restartedMain] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port(s): 8080 (http) with context path ''
+2024-05-13T11:14:37.822+08:00  INFO 18928 --- [restartedMain] cn.org.alan.exam.ExamApplication         : Started ExamApplication in 5.461 seconds (process running for 6.153)
+2024-05-13T11:27:07.577+08:00  INFO 18928 --- [File Watcher] rtingClassPathChangeChangedEventListener : Restarting due to 1 class path change (0 additions, 1 deletion, 0 modifications)
+2024-05-13T11:27:07.596+08:00  INFO 18928 --- [Thread-5] o.apache.catalina.core.StandardService   : Stopping service [Tomcat]
+2024-05-13T11:27:07.605+08:00  WARN 18928 --- [Thread-5] o.a.c.loader.WebappClassLoaderBase       : The web application [ROOT] appears to have started a thread named [lettuce-timer-3-1] but has failed to stop it. This is very likely to create a memory leak. Stack trace of thread:
+ java.base@17.0.5/java.lang.Thread.sleep(Native Method)
+ app//io.netty.util.HashedWheelTimer$Worker.waitForNextTick(HashedWheelTimer.java:600)
+ app//io.netty.util.HashedWheelTimer$Worker.run(HashedWheelTimer.java:496)
+ app//io.netty.util.concurrent.FastThreadLocalRunnable.run(FastThreadLocalRunnable.java:30)
+ java.base@17.0.5/java.lang.Thread.run(Thread.java:833)
+2024-05-13T11:27:07.614+08:00  INFO 18928 --- [Thread-5] com.alibaba.druid.pool.DruidDataSource   : {dataSource-1} closing ...
+2024-05-13T11:27:07.622+08:00  INFO 18928 --- [Thread-5] com.alibaba.druid.pool.DruidDataSource   : {dataSource-1} closed
+2024-05-13T11:27:07.735+08:00  INFO 18928 --- [restartedMain] cn.org.alan.exam.ExamApplication         : Starting ExamApplication using Java 17.0.5 with PID 18928 (D:\develop\idea_workspace\school-projects\online-exam-system-backend\target\classes started by WeiJin in D:\develop\idea_workspace\school-projects\online-exam-system-backend)
+2024-05-13T11:27:07.736+08:00  INFO 18928 --- [restartedMain] cn.org.alan.exam.ExamApplication         : The following 1 profile is active: "dev"
+2024-05-13T11:27:08.069+08:00  INFO 18928 --- [restartedMain] .s.d.r.c.RepositoryConfigurationDelegate : Multiple Spring Data modules found, entering strict repository configuration mode
+2024-05-13T11:27:08.069+08:00  INFO 18928 --- [restartedMain] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data Redis repositories in DEFAULT mode.
+2024-05-13T11:27:08.088+08:00  INFO 18928 --- [restartedMain] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 18 ms. Found 0 Redis repository interfaces.
+2024-05-13T11:27:08.211+08:00  INFO 18928 --- [restartedMain] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port(s): 8080 (http)
+2024-05-13T11:27:08.212+08:00  INFO 18928 --- [restartedMain] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2024-05-13T11:27:08.213+08:00  INFO 18928 --- [restartedMain] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/10.1.8]
+2024-05-13T11:27:08.230+08:00  INFO 18928 --- [restartedMain] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
+2024-05-13T11:27:08.230+08:00  INFO 18928 --- [restartedMain] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 492 ms
+2024-05-13T11:27:08.315+08:00  INFO 18928 --- [restartedMain] c.a.d.s.b.a.DruidDataSourceAutoConfigure : Init DruidDataSource
+2024-05-13T11:27:08.893+08:00  INFO 18928 --- [restartedMain] com.alibaba.druid.pool.DruidDataSource   : {dataSource-2} inited
+2024-05-13T11:27:09.414+08:00  WARN 18928 --- [restartedMain] ConfigServletWebServerApplicationContext : Exception encountered during context initialization - cancelling refresh attempt: org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'userController': Injection of resource dependencies failed
+2024-05-13T11:27:09.415+08:00  INFO 18928 --- [restartedMain] com.alibaba.druid.pool.DruidDataSource   : {dataSource-2} closing ...
+2024-05-13T11:27:09.417+08:00  INFO 18928 --- [restartedMain] com.alibaba.druid.pool.DruidDataSource   : {dataSource-2} closed
+2024-05-13T11:27:09.420+08:00  INFO 18928 --- [restartedMain] o.apache.catalina.core.StandardService   : Stopping service [Tomcat]
+2024-05-13T11:27:09.427+08:00  INFO 18928 --- [restartedMain] .s.b.a.l.ConditionEvaluationReportLogger : 
+
+Error starting ApplicationContext. To display the condition evaluation report re-run your application with 'debug' enabled.
+2024-05-13T11:27:09.447+08:00 ERROR 18928 --- [restartedMain] o.s.b.d.LoggingFailureAnalysisReporter   : 
+
+***************************
+APPLICATION FAILED TO START
+***************************
+
+Description:
+
+A component required a bean of type 'cn.org.alan.exam.service.IUserService' that could not be found.
+
+
+Action:
+
+Consider defining a bean of type 'cn.org.alan.exam.service.IUserService' in your configuration.
+
+2024-05-13T11:27:10.927+08:00  INFO 18928 --- [restartedMain] cn.org.alan.exam.ExamApplication         : Starting ExamApplication using Java 17.0.5 with PID 18928 (D:\develop\idea_workspace\school-projects\online-exam-system-backend\target\classes started by WeiJin in D:\develop\idea_workspace\school-projects\online-exam-system-backend)
+2024-05-13T11:27:10.927+08:00  INFO 18928 --- [restartedMain] cn.org.alan.exam.ExamApplication         : The following 1 profile is active: "dev"
+2024-05-13T11:27:11.094+08:00  INFO 18928 --- [restartedMain] .s.d.r.c.RepositoryConfigurationDelegate : Multiple Spring Data modules found, entering strict repository configuration mode
+2024-05-13T11:27:11.094+08:00  INFO 18928 --- [restartedMain] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data Redis repositories in DEFAULT mode.
+2024-05-13T11:27:11.110+08:00  INFO 18928 --- [restartedMain] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 13 ms. Found 0 Redis repository interfaces.
+2024-05-13T11:27:11.177+08:00  INFO 18928 --- [restartedMain] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port(s): 8080 (http)
+2024-05-13T11:27:11.193+08:00  INFO 18928 --- [restartedMain] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2024-05-13T11:27:11.193+08:00  INFO 18928 --- [restartedMain] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/10.1.8]
+2024-05-13T11:27:11.193+08:00  INFO 18928 --- [restartedMain] o.a.c.c.C.[Tomcat-1].[localhost].[/]     : Initializing Spring embedded WebApplicationContext
+2024-05-13T11:27:11.193+08:00  INFO 18928 --- [restartedMain] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 266 ms
+2024-05-13T11:27:11.260+08:00  INFO 18928 --- [restartedMain] c.a.d.s.b.a.DruidDataSourceAutoConfigure : Init DruidDataSource
+2024-05-13T11:27:12.015+08:00  INFO 18928 --- [restartedMain] com.alibaba.druid.pool.DruidDataSource   : {dataSource-3} inited
+2024-05-13T11:27:12.559+08:00  INFO 18928 --- [restartedMain] o.s.s.web.DefaultSecurityFilterChain     : Will secure any request with [org.springframework.security.web.session.DisableEncodeUrlFilter@2c2c63f7, org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter@4cca6626, org.springframework.security.web.context.SecurityContextHolderFilter@5f469115, org.springframework.security.web.header.HeaderWriterFilter@2f34420a, org.springframework.security.web.authentication.logout.LogoutFilter@6d09258a, cn.org.alan.exam.filter.VerifyTokenFilter@4869f7a3, org.springframework.security.web.savedrequest.RequestCacheAwareFilter@1886b363, org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter@b05e51b, org.springframework.security.web.authentication.AnonymousAuthenticationFilter@3325f845, org.springframework.security.web.access.ExceptionTranslationFilter@5a792d2d, org.springframework.security.web.access.intercept.AuthorizationFilter@206e2f9f]
+2024-05-13T11:27:12.559+08:00  WARN 18928 --- [restartedMain] o.s.s.c.a.web.builders.WebSecurity       : You are asking Spring Security to ignore Mvc [pattern='/webjars/**']. This is not recommended -- please use permitAll via HttpSecurity#authorizeHttpRequests instead.
+2024-05-13T11:27:12.559+08:00  INFO 18928 --- [restartedMain] o.s.s.web.DefaultSecurityFilterChain     : Will not secure Mvc [pattern='/webjars/**']
+2024-05-13T11:27:12.559+08:00  WARN 18928 --- [restartedMain] o.s.s.c.a.web.builders.WebSecurity       : You are asking Spring Security to ignore Mvc [pattern='/doc.html']. This is not recommended -- please use permitAll via HttpSecurity#authorizeHttpRequests instead.
+2024-05-13T11:27:12.559+08:00  INFO 18928 --- [restartedMain] o.s.s.web.DefaultSecurityFilterChain     : Will not secure Mvc [pattern='/doc.html']
+2024-05-13T11:27:12.559+08:00  WARN 18928 --- [restartedMain] o.s.s.c.a.web.builders.WebSecurity       : You are asking Spring Security to ignore Mvc [pattern='/swagger-resources/**']. This is not recommended -- please use permitAll via HttpSecurity#authorizeHttpRequests instead.
+2024-05-13T11:27:12.559+08:00  INFO 18928 --- [restartedMain] o.s.s.web.DefaultSecurityFilterChain     : Will not secure Mvc [pattern='/swagger-resources/**']
+2024-05-13T11:27:12.559+08:00  WARN 18928 --- [restartedMain] o.s.s.c.a.web.builders.WebSecurity       : You are asking Spring Security to ignore Mvc [pattern='/v3/api-docs/**']. This is not recommended -- please use permitAll via HttpSecurity#authorizeHttpRequests instead.
+2024-05-13T11:27:12.559+08:00  INFO 18928 --- [restartedMain] o.s.s.web.DefaultSecurityFilterChain     : Will not secure Mvc [pattern='/v3/api-docs/**']
+2024-05-13T11:27:12.559+08:00  WARN 18928 --- [restartedMain] o.s.s.c.a.web.builders.WebSecurity       : You are asking Spring Security to ignore Mvc [pattern='/swagger-ui/**']. This is not recommended -- please use permitAll via HttpSecurity#authorizeHttpRequests instead.
+2024-05-13T11:27:12.559+08:00  INFO 18928 --- [restartedMain] o.s.s.web.DefaultSecurityFilterChain     : Will not secure Mvc [pattern='/swagger-ui/**']
+2024-05-13T11:27:12.559+08:00  WARN 18928 --- [restartedMain] o.s.s.c.a.web.builders.WebSecurity       : You are asking Spring Security to ignore Mvc [pattern='/swagger-ui.html']. This is not recommended -- please use permitAll via HttpSecurity#authorizeHttpRequests instead.
+2024-05-13T11:27:12.559+08:00  INFO 18928 --- [restartedMain] o.s.s.web.DefaultSecurityFilterChain     : Will not secure Mvc [pattern='/swagger-ui.html']
+2024-05-13T11:27:12.559+08:00  WARN 18928 --- [restartedMain] o.s.s.c.a.web.builders.WebSecurity       : You are asking Spring Security to ignore Mvc [pattern='/ws/**']. This is not recommended -- please use permitAll via HttpSecurity#authorizeHttpRequests instead.
+2024-05-13T11:27:12.559+08:00  INFO 18928 --- [restartedMain] o.s.s.web.DefaultSecurityFilterChain     : Will not secure Mvc [pattern='/ws/**']
+2024-05-13T11:27:12.559+08:00  WARN 18928 --- [restartedMain] o.s.s.c.a.web.builders.WebSecurity       : You are asking Spring Security to ignore Mvc [pattern='/ws-app/**']. This is not recommended -- please use permitAll via HttpSecurity#authorizeHttpRequests instead.
+2024-05-13T11:27:12.559+08:00  INFO 18928 --- [restartedMain] o.s.s.web.DefaultSecurityFilterChain     : Will not secure Mvc [pattern='/ws-app/**']
+2024-05-13T11:27:12.643+08:00  INFO 18928 --- [restartedMain] o.s.b.d.a.OptionalLiveReloadServer       : LiveReload server is running on port 35729
+2024-05-13T11:27:12.677+08:00  INFO 18928 --- [restartedMain] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port(s): 8080 (http) with context path ''
+2024-05-13T11:27:12.677+08:00  INFO 18928 --- [restartedMain] cn.org.alan.exam.ExamApplication         : Started ExamApplication in 1.77 seconds (process running for 761.015)
+2024-05-13T11:27:12.677+08:00  INFO 18928 --- [restartedMain] .ConditionEvaluationDeltaLoggingListener : Condition evaluation unchanged
