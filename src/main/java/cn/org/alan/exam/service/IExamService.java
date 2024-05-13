@@ -106,7 +106,7 @@ public interface IExamService extends IService<Exam> {
      *
      * @return
      */
-    Result<List<ExamGradeListVO>> getGradeExamList(Integer pageNum, Integer pageSize);
+    Result<List<ExamGradeListVO>> getGradeExamList(Integer pageNum, Integer pageSize,String title);
 
     /**
      * 交卷操作

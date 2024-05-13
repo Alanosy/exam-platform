@@ -15,14 +15,15 @@ import java.time.LocalDateTime;
  */
 @Data
 public class ExamDetailVO {
-    private static final long serialVersionUID = 1L;
 
     /**
      * id    考试表
      */
-    @TableId(value = "id", type = IdType.AUTO)
     private Integer id;
-
+    /**
+     * 发布人
+     */
+    private String username;
     /**
      * 考试名称
      */
@@ -51,7 +52,6 @@ public class ExamDetailVO {
     /**
      * 创建者id
      */
-    @TableField(fill = FieldFill.INSERT)
     private Integer userId;
 
     /**
