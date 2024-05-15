@@ -25,7 +25,8 @@ export function addTenant(data: TenantForm) {
     url: '/system/tenant',
     method: 'post',
     headers: {
-      isEncrypt: true
+      isEncrypt: true,
+      repeatSubmit: false
     },
     data: data
   });

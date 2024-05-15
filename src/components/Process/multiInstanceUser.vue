@@ -81,9 +81,13 @@
 </template>
 
 <script setup name="User" lang="ts">
-import { deptTreeSelect } from '@/api/system/user';
-import { getPageByAddMultiInstance, getListByDeleteMultiInstance, getUserListByIds } from '@/api/workflow/workflowUser';
-import { addMultiInstanceExecution, deleteMultiInstanceExecution } from '@/api/workflow/task';
+import { deptTreeSelect, listUser, optionSelect } from '@/api/system/user';
+import {
+  addMultiInstanceExecution,
+  deleteMultiInstanceExecution,
+  getTaskUserIdsByAddMultiInstance,
+  getListByDeleteMultiInstance
+} from '@/api/workflow/task';
 import { UserVO } from '@/api/system/user/types';
 import { DeptVO } from '@/api/system/dept/types';
 import { ComponentInternalInstance } from 'vue';
@@ -149,12 +153,14 @@ const getAddMultiInstanceList = async (taskId: string, userIdList: Array<number 
   visible.value = true;
   queryParams.value.taskId = taskId;
   loading.value = true;
-  const res = await getPageByAddMultiInstance(queryParams.value);
+  const res1 = await getTaskUserIdsByAddMultiInstance(taskId);
+  queryParams.value.excludeUserIds = res1.data;
+  const res = await listUser(queryParams.value);
   loading.value = false;
   userList.value = res.rows;
   total.value = res.total;
   if (userList.value && userIds.value.length > 0) {
-    const data = await getUserListByIds(userIds.value);
+    const data = await optionSelect(userIds.value);
     if (data.data && data.data.length > 0) {
       chooseUserList.value = data.data;
       data.data.forEach((user: UserVO) => {
@@ -171,12 +177,14 @@ const getAddMultiInstanceList = async (taskId: string, userIdList: Array<number 
 
 const getList = async () => {
   loading.value = true;
-  const res = await getPageByAddMultiInstance(queryParams.value);
+  const res1 = await getTaskUserIdsByAddMultiInstance(queryParams.value.taskId);
+  queryParams.value.excludeUserIds = res1.data;
+  const res = await listUser(queryParams.value);
   loading.value = false;
   userList.value = res.rows;
   total.value = res.total;
   if (userList.value && userIds.value.length > 0) {
-    const data = await getUserListByIds(userIds.value);
+    const data = await optionSelect(userIds.value);
     if (data.data && data.data.length > 0) {
       chooseUserList.value = data.data;
       data.data.forEach((user: UserVO) => {

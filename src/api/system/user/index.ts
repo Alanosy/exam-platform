@@ -86,7 +86,8 @@ export const resetUserPwd = (userId: string | number, password: string) => {
     url: '/system/user/resetPwd',
     method: 'put',
     headers: {
-      isEncrypt: true
+      isEncrypt: true,
+      repeatSubmit: false
     },
     data: data
   });
@@ -145,7 +146,8 @@ export const updateUserPwd = (oldPassword: string, newPassword: string) => {
     url: '/system/user/profile/updatePwd',
     method: 'put',
     headers: {
-      isEncrypt: true
+      isEncrypt: true,
+      repeatSubmit: false
     },
     data: data
   });

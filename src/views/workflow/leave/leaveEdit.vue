@@ -228,8 +228,8 @@ const handleStartWorkFlow = async (data: LeaveVO) => {
     taskVariables.value = {
       entity: data,
       leaveDays: data.leaveDays,
-      userList: [1, 2],
-      userList2: [1, 2]
+      userList: [1, 3],
+      userList2: [1, 3]
     };
     submitFormData.value.variables = taskVariables.value;
     const resp = await startWorkFlow(submitFormData.value);

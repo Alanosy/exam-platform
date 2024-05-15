@@ -1,7 +1,7 @@
 <template>
   <div>
-    <el-table :data="auths" style="width: 100%; height: 100%; font-size: 10px">
-      <el-table-column label="序号" width="50" type="index"></el-table-column>
+    <el-table :data="auths" style="width: 100%; height: 100%; font-size: 14px">
+      <el-table-column label="序号" width="50" type="index" />
       <el-table-column label="绑定账号平台" width="140" align="center" prop="source" show-overflow-tooltip />
       <el-table-column label="头像" width="120" align="center" prop="avatar">
         <template #default="scope">

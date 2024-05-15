@@ -238,3 +238,27 @@ export const delegateTask = (data: any) => {
     data: data
   });
 };
+
+/**
+ * 查询工作流任务用户选择加签人员
+ * @param taskId
+ * @returns {*}
+ */
+export const getTaskUserIdsByAddMultiInstance = (taskId: string) => {
+  return request({
+    url: '/workflow/task/getTaskUserIdsByAddMultiInstance/' + taskId,
+    method: 'get'
+  });
+};
+
+/**
+ * 查询工作流选择减签人员
+ * @param taskId
+ * @returns {*}
+ */
+export const getListByDeleteMultiInstance = (taskId: string) => {
+  return request({
+    url: '/workflow/task/getListByDeleteMultiInstance/' + taskId,
+    method: 'get'
+  });
+};

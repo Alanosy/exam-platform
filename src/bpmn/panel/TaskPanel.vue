@@ -50,7 +50,7 @@
             <el-tabs tab-position="left" class="demo-tabs">
               <el-tab-pane label="身份存储">
                 <el-form-item label="分配人员">
-                  <el-input v-model="formData.assignee">
+                  <el-input v-model="formData.assignee" @blur="blurAssignee(formData.assignee)">
                     <template #append>
                       <el-button icon="Search" type="primary" @click="openSingleUserSelect" />
                     </template>
@@ -283,24 +283,23 @@ const dueDateRef = ref<InstanceType<typeof DueDate>>();
 
 const isMultiple = ref(true);
 const openUserSelect = () => {
-  if (!formData.value.candidateUsers) {
-    formData.value.candidateUsers = '-1';
-  }
   userSelectRef.value.open();
 };
 const openSingleUserSelect = () => {
+  if (formData.value.assignee.includes('$')) {
+    formData.value.assignee = '';
+  }
   singleUserSelectRef.value.open();
 };
 const openRoleSelect = () => {
-  if (!formData.value.candidateGroups) {
-    formData.value.candidateGroups = '-1';
-  }
   roleSelectRef.value.open();
 };
 const openDueDate = (e) => {
   dueDateRef.value.openDialog();
 };
-
+const blurAssignee = (assignee) => {
+  updateProperties({ 'flowable:assignee': assignee ? assignee : undefined });
+};
 const singleUserSelectCallBack = (data: UserVO[]) => {
   const user: UserVO = data.length !== 0 ? data[0] : undefined;
   updateProperties({ 'flowable:assignee': user?.userId });
