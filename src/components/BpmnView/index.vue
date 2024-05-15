@@ -76,6 +76,28 @@ const init = (instanceId) => {
   });
 };
 
+const initXml = (xmlStr: string) => {
+  loading.value = true;
+  bpmnVisible.value = true;
+  nextTick(async () => {
+    if (modeler.value) modeler.value.destroy();
+    modeler.value = new BpmnViewer({
+      container: canvas.value,
+      additionalModules: [
+        {
+          //禁止滚轮滚动
+          zoomScroll: ['value', '']
+        },
+        ZoomScrollModule,
+        MoveCanvasModule
+      ] as ModuleDeclaration[]
+    });
+    xml.value = xmlStr;
+    await createDiagram(xml.value);
+    loading.value = false;
+  });
+};
+
 const createDiagram = async (data) => {
   try {
     await modeler.value.importXML(data);
@@ -238,7 +260,8 @@ const gateway = (id, targetRefType, targetRefId, canvas, completed) => {
   }
 };
 defineExpose({
-  init
+  init,
+  initXml
 });
 </script>
 

@@ -403,10 +403,10 @@ const getProcessDefinitionHitoryList = async (id: string, key: string) => {
 //预览图片
 const clickPreviewImg = async (id: string) => {
   loading.value = true;
-  const resp = await definitionImage(id);
+  const resp = await definitionXml(id);
   if (previewRef.value) {
     url.value = [];
-    url.value.push('data:image/png;base64,' + resp.data);
+    url.value = resp.data.xml;
     loading.value = false;
     previewRef.value.openDialog(url.value, 'png');
   }
