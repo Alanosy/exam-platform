@@ -61,12 +61,12 @@
             </el-table-column>
             <el-table-column align="center" prop="resourceName" label="流程XML" width="100" :show-overflow-tooltip="true">
               <template #default="scope">
-                <el-link type="primary" @click="clickPreviewXML(scope.row.id)">{{ scope.row.resourceName }}</el-link>
+                <el-link type="primary" @click="clickPreview(scope.row.id, 'xml')">{{ scope.row.resourceName }}</el-link>
               </template>
             </el-table-column>
             <el-table-column align="center" prop="diagramResourceName" label="流程图片" width="100" :show-overflow-tooltip="true">
               <template #default="scope">
-                <el-link type="primary" @click="clickPreviewImg(scope.row.id)">{{ scope.row.diagramResourceName }}</el-link>
+                <el-link type="primary" @click="clickPreview(scope.row.id, 'bpmn')">{{ scope.row.diagramResourceName }}</el-link>
               </template>
             </el-table-column>
             <el-table-column align="center" prop="suspensionState" label="状态" width="80">
@@ -293,7 +293,6 @@ const total = ref(0);
 const uploadDialogLoading = ref(false);
 const processDefinitionList = ref<ProcessDefinitionVO[]>([]);
 const processDefinitionHistoryList = ref<ProcessDefinitionVO[]>([]);
-const url = ref<string[]>([]);
 const categoryOptions = ref<CategoryOption[]>([]);
 const categoryName = ref('');
 /** 部署文件分类选择 */
@@ -400,28 +399,18 @@ const getProcessDefinitionHitoryList = async (id: string, key: string) => {
   loading.value = false;
 };
 
-//预览图片
-const clickPreviewImg = async (id: string) => {
+type PreviewType = 'xml' | 'bpmn';
+//预览 公共方法
+const clickPreview = async (id: string, type: PreviewType) => {
   loading.value = true;
   const resp = await definitionXml(id);
   if (previewRef.value) {
-    url.value = [];
-    url.value = resp.data.xml;
+    const xmlStr = resp.data.xmlStr;
     loading.value = false;
-    previewRef.value.openDialog(url.value, 'png');
+    previewRef.value.openDialog(xmlStr, type);
   }
 };
-//预览xml
-const clickPreviewXML = async (id: string) => {
-  loading.value = true;
-  const resp = await definitionXml(id);
-  if (previewRef.value) {
-    url.value = [];
-    url.value = resp.data.xml;
-    loading.value = false;
-    previewRef.value.openDialog(url.value, 'xml');
-  }
-};
+
 /** 删除按钮操作 */
 const handleDelete = async (row?: ProcessDefinitionVO) => {
   const id = row?.id || ids.value;
