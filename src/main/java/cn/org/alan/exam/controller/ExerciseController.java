@@ -73,7 +73,7 @@ public class ExerciseController {
      * @param title    题库名
      * @return 响应结果
      */
-    @GetMapping("getRepo")
+    @GetMapping("/getRepo")
     @PreAuthorize("hasAnyAuthority('role_student','role_teacher','role_admin')")
     public Result<IPage<ExerciseRepoVO>> getRepo(
             @RequestParam(value = "pageNum", required = false, defaultValue = "1") Integer pageNum,

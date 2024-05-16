@@ -24,4 +24,7 @@ public interface QuestionConverter {
 
     List<QuestionSheetVO> listEntityToVO(List<Question> questions);
 
+    @Mapping(target = "quId",source = "id")
+    QuestionSheetVO entityToVO(Question question);
+
 }
