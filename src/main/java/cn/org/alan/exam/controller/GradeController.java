@@ -88,13 +88,13 @@ public class GradeController {
         return gradeService.removeUserGrade(ids);
     }
 
-//    /**
-//     * 获取所有班级列表
-//     * @return
-//     */
-//    @GetMapping("/list")
-//    @PreAuthorize("hasAnyAuthority('role_teacher','role_admin')")
-//    public Result<List<GradeVO>> getAllGrade(){
-//        return gradeService.getAllGrade();
-//    }
+   /**
+    * 获取所有班级列表
+    * @return
+    */
+   @GetMapping("/list")
+   @PreAuthorize("hasAnyAuthority('role_teacher','role_admin')")
+   public Result<List<GradeVO>> getAllGrade(){
+       return gradeService.getAllGrade();
+   }
 }

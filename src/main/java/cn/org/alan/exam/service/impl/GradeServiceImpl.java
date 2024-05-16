@@ -111,5 +111,14 @@ public class GradeServiceImpl extends ServiceImpl<GradeMapper, Grade> implements
         return Result.success("移除成功");
     }
 
+    @Override
+    public Result<List<GradeVO>> getAllGrade() {
+        LambdaQueryWrapper<Grade> gradeLambdaQueryWrapper = new LambdaQueryWrapper<>();
+        gradeLambdaQueryWrapper.eq(Grade::getUserId,SecurityUtil.getUserId());
+        List<Grade> grades = gradeMapper.selectList(gradeLambdaQueryWrapper);
+        List<GradeVO> gradeVOS = gradeConverter.listEntityToVo(grades);
+        return Result.success("查询成功",gradeVOS);
+    }
+
 }
 

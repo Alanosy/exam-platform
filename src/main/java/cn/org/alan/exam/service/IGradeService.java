@@ -59,7 +59,8 @@ public interface IGradeService extends IService<Grade> {
      * @return
      */
     Result<String> removeUserGrade(String ids);
-
+    // 获取所有班级列表
+    Result<List<GradeVO>> getAllGrade();
 }
 
 
