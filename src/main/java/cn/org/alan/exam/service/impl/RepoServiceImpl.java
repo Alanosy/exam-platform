@@ -117,7 +117,7 @@ public class RepoServiceImpl extends ServiceImpl<RepoMapper, Repo> implements IR
                     .select(UserExerciseRecord::getExerciseCount)
                     .eq(UserExerciseRecord::getUserId, SecurityUtil.getUserId());
             UserExerciseRecord userExerciseRecord = userExerciseRecordMapper.selectOne(wrapper);
-            if (userExerciseRecord.getExerciseCount() != null && userExerciseRecord.getExerciseCount() != 0) {
+            if (userExerciseRecord != null && userExerciseRecord.getExerciseCount() != 0) {
                 repoVO.setExerciseCount(userExerciseRecord.getExerciseCount());
             } else {
                 repoVO.setExerciseCount(0);

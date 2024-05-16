@@ -9,7 +9,7 @@ import lombok.Data;
  */
 @Data
 public class QuestionSheetVO {
-    private Integer questionId;
+    private Integer quId;
     private Integer quType;
     private Integer repoId;
 }
