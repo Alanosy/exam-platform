@@ -64,7 +64,7 @@
         left join t_grade as g on u.grade_id = g.id
         <trim prefixOverrides="and" prefix="where">
             <if test="gradeId != null and gradeId != 0">
-                u.gradeId = #{gradeId}
+                u.grade_id = #{gradeId}
             </if>
             <if test='realName != null and realName !=""'>
                 and u.real_name like concat('%',#{realName},'%')
