@@ -14,29 +14,6 @@
           <el-header>
             <div class="process-toolbar">
               <el-space wrap :size="10">
-                <el-button size="small" type="primary" @click="saveXml">保 存</el-button>
-                <el-dropdown size="small">
-                  <el-button size="small" type="primary"> 预 览 </el-button>
-                  <template #dropdown>
-                    <el-dropdown-menu>
-                      <el-dropdown-item icon="Document" @click="previewXML">XML预览</el-dropdown-item>
-                      <el-dropdown-item icon="View" @click="previewSVG"> SVG预览</el-dropdown-item>
-                    </el-dropdown-menu>
-                  </template>
-                </el-dropdown>
-
-                <el-dropdown size="small">
-                  <el-button size="small" type="primary"> 下 载 </el-button>
-                  <template #dropdown>
-                    <el-dropdown-menu>
-                      <el-dropdown-item icon="Download" @click="downloadXML">下载XML</el-dropdown-item>
-                      <el-dropdown-item icon="Download" @click="downloadSVG"> 下载SVG</el-dropdown-item>
-                    </el-dropdown-menu>
-                  </template>
-                </el-dropdown>
-                <el-tooltip effect="dark" content="新建" placement="bottom">
-                  <el-button size="small" icon="CirclePlus" @click="newDiagram" />
-                </el-tooltip>
                 <el-tooltip effect="dark" content="自适应屏幕" placement="bottom">
                   <el-button size="small" icon="Rank" @click="fitViewport" />
                 </el-tooltip>
@@ -52,6 +29,27 @@
                 <el-tooltip effect="dark" content="前进" placement="bottom">
                   <el-button size="small" icon="Right" @click="bpmnModeler.get('commandStack').redo()" />
                 </el-tooltip>
+              </el-space>
+              <el-space wrap :size="10" style="float: right; padding-right: 10px">
+                <el-button size="small" type="primary" @click="saveXml">保 存</el-button>
+                <el-dropdown size="small">
+                  <el-button size="small" type="primary"> 预 览 </el-button>
+                  <template #dropdown>
+                    <el-dropdown-menu>
+                      <el-dropdown-item icon="Document" @click="previewXML">XML预览</el-dropdown-item>
+                      <el-dropdown-item icon="View" @click="previewSVG"> SVG预览</el-dropdown-item>
+                    </el-dropdown-menu>
+                  </template>
+                </el-dropdown>
+                <el-dropdown size="small">
+                  <el-button size="small" type="primary"> 下 载 </el-button>
+                  <template #dropdown>
+                    <el-dropdown-menu>
+                      <el-dropdown-item icon="Download" @click="downloadXML">下载XML</el-dropdown-item>
+                      <el-dropdown-item icon="Download" @click="downloadSVG"> 下载SVG</el-dropdown-item>
+                    </el-dropdown-menu>
+                  </template>
+                </el-dropdown>
               </el-space>
             </div>
           </el-header>

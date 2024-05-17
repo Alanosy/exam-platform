@@ -81,7 +81,7 @@
             </el-table-column>
             <el-table-column align="center" prop="startTime" label="启动时间" width="160"></el-table-column>
             <el-table-column v-if="tab === 'finish'" align="center" prop="endTime" label="结束时间" width="160"></el-table-column>
-            <el-table-column label="操作" align="center" :width="tab === 'finish' ? '130' : '160'">
+            <el-table-column label="操作" align="center" :width="130">
               <template #default="scope">
                 <el-row v-if="tab === 'running'" :gutter="10" class="mb8">
                   <el-col :span="1.5">
@@ -97,22 +97,12 @@
                     </el-popover>
                   </el-col>
                   <el-col :span="1.5">
-                    <el-button
-                      link
-                      type="primary"
-                      size="small"
-                      icon="Sort"
-                      @click="getProcessDefinitionHitoryList(scope.row.processDefinitionId, scope.row.processDefinitionKey)"
-                      >切换版本</el-button
-                    >
+                    <el-button link type="primary" size="small" icon="Delete" @click="handleDelete(scope.row)">删除</el-button>
                   </el-col>
                 </el-row>
                 <el-row :gutter="10" class="mb8">
                   <el-col :span="1.5">
                     <el-button link type="primary" size="small" icon="View" @click="handleView(scope.row)">查看</el-button>
-                  </el-col>
-                  <el-col :span="1.5">
-                    <el-button link type="primary" size="small" icon="Delete" @click="handleDelete(scope.row)">删除</el-button>
                   </el-col>
                 </el-row>
               </template>

@@ -62,7 +62,6 @@ const props = defineProps({
 const loading = ref(false);
 const visible = ref(false);
 const historyList = ref<Array<any>>([]);
-const deleteReason = ref<string>('');
 const tabActiveName = ref('bpmn');
 
 const bpmnViewRef = ref<BpmnView>();
@@ -74,8 +73,7 @@ const init = async (instanceId: string) => {
   tabActiveName.value = 'bpmn';
   historyList.value = [];
   processApi.getHistoryRecord(instanceId).then((resp) => {
-    historyList.value = resp.data.historyRecordList;
-    deleteReason.value = resp.data.deleteReason;
+    historyList.value = resp.data;
     loading.value = false;
   });
   await nextTick(() => {

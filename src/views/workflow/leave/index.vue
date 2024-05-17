@@ -58,34 +58,44 @@
         </el-table-column>
         <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
           <template #default="scope">
-            <el-tooltip
+            <el-button
               v-if="
                 scope.row.processInstanceVo.businessStatus === 'draft' ||
                 scope.row.processInstanceVo.businessStatus === 'cancel' ||
                 scope.row.processInstanceVo.businessStatus === 'back'
               "
-              content="修改"
-              placement="top"
+              v-hasPermi="['demo:leave:edit']"
+              size="small"
+              link
+              type="primary"
+              icon="Edit"
+              @click="handleUpdate(scope.row)"
+              >修改</el-button
             >
-              <el-button v-hasPermi="['demo:leave:edit']" link type="primary" icon="Edit" @click="handleUpdate(scope.row)"></el-button>
-            </el-tooltip>
-            <el-tooltip
+            <el-button
               v-if="
                 scope.row.processInstanceVo.businessStatus === 'draft' ||
                 scope.row.processInstanceVo.businessStatus === 'cancel' ||
                 scope.row.processInstanceVo.businessStatus === 'back'
               "
-              content="删除"
-              placement="top"
+              v-hasPermi="['demo:leave:remove']"
+              size="small"
+              link
+              type="primary"
+              icon="Delete"
+              @click="handleDelete(scope.row)"
+              >删除</el-button
             >
-              <el-button v-hasPermi="['demo:leave:remove']" link type="primary" icon="Delete" @click="handleDelete(scope.row)"></el-button>
-            </el-tooltip>
-            <el-tooltip placement="top" content="查看">
-              <el-button link type="primary" icon="View" @click="handleView(scope.row)"></el-button>
-            </el-tooltip>
-            <el-tooltip v-if="scope.row.processInstanceVo.businessStatus === 'waiting'" content="撤销" placement="top">
-              <el-button link type="primary" icon="Notification" @click="handleCancelProcessApply(scope.row.processInstanceVo.id)"></el-button>
-            </el-tooltip>
+            <el-button link type="primary" size="small" icon="View" @click="handleView(scope.row)">查看</el-button>
+            <el-button
+              v-if="scope.row.processInstanceVo.businessStatus === 'waiting'"
+              link
+              size="small"
+              type="primary"
+              icon="Notification"
+              @click="handleCancelProcessApply(scope.row.processInstanceVo.id)"
+              >撤销</el-button
+            >
           </template>
         </el-table-column>
       </el-table>
