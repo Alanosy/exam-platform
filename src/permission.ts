@@ -52,7 +52,8 @@ router.beforeEach(async (to, from, next) => {
       // 在免登录白名单，直接进入
       next();
     } else {
-      next(`/login?redirect=${to.fullPath}`); // 否则全部重定向到登录页
+      const redirect = encodeURIComponent(to.fullPath || '/');
+      next(`/login?redirect=${redirect}`) // 否则全部重定向到登录页
       NProgress.done();
     }
   }

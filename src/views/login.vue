@@ -130,7 +130,8 @@ const handleLogin = () => {
       // 调用action的登录方法
       const [err] = await to(userStore.login(loginForm.value));
       if (!err) {
-        await router.push({ path: redirect.value || '/' });
+        const redirectUrl = redirect.value || '/';
+        await router.push(redirectUrl);
         loading.value = false;
       } else {
         loading.value = false;
