@@ -252,7 +252,7 @@ public class ExamServiceImpl extends ServiceImpl<ExamMapper, Exam> implements IE
             // 根据考试id查询考试试题表
             LambdaQueryWrapper<ExamQuestion> examQuestionLambdaQueryWrapper = new LambdaQueryWrapper<>();
             examQuestionLambdaQueryWrapper.eq(ExamQuestion::getExamId, examId)
-                    .eq(ExamQuestion::getType,1);
+                    .eq(ExamQuestion::getType,i);
             List<ExamQuestion> examQuestions = examQuestionMapper.selectList(examQuestionLambdaQueryWrapper);
             if(examQuestions.isEmpty()){
                 continue;
@@ -388,9 +388,9 @@ public class ExamServiceImpl extends ServiceImpl<ExamMapper, Exam> implements IE
     @Override
     public Result<String> addAnswer(ExamQuAnswerAddForm examQuAnswerForm) {
         // 检查是否正在考试
-        if(!isUserTakingExam(examQuAnswerForm.getExamId())){
-            return Result.failed("没有考试在进行");
-        }
+        // if(isUserTakingExam(examQuAnswerForm.getExamId())){
+        //     return Result.failed("没有考试在进行");
+        // }
         // 查询试题类型
         LambdaQueryWrapper<Question> QuWrapper = new LambdaQueryWrapper<>();
         QuWrapper.eq(Question::getId, examQuAnswerForm.getQuId());
