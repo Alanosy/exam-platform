@@ -8,6 +8,6 @@
 const url = ref('https://plus-doc.dromara.org/');
 
 function goto() {
-  window.open(url.value)
+  window.open(url.value);
 }
 </script>

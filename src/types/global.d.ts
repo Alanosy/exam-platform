@@ -1,4 +1,5 @@
-import type { ComponentInternalInstance as ComponentInstance, PropType as VuePropType } from 'vue';
+import type { PropType as VuePropType, ComponentInternalInstance as ComponentInstance } from 'vue';
+import { LanguageEnum } from '@/enums/LanguageEnum';
 
 declare global {
   /** vue Instance */
@@ -49,6 +50,8 @@ declare global {
     /** 是否禁用上传 */
     isUploading: boolean;
 
+    updateSupport: number;
+
     /** 其他参数 */
     [key: string]: any;
   }
@@ -86,6 +89,78 @@ declare global {
   declare interface PageQuery {
     pageNum: number;
     pageSize: number;
+  }
+  declare interface LayoutSetting {
+    /**
+     * 是否显示顶部导航
+     */
+    topNav: boolean;
+
+    /**
+     * 是否显示多标签导航
+     */
+    tagsView: boolean;
+    /**
+     * 是否固定头部
+     */
+    fixedHeader: boolean;
+    /**
+     * 是否显示侧边栏Logo
+     */
+    sidebarLogo: boolean;
+    /**
+     * 是否显示动态标题
+     */
+    dynamicTitle: boolean;
+    /**
+     * 侧边栏主题 theme-dark | theme-light
+     */
+    sideTheme: string;
+    /**
+     * 主题模式
+     */
+    theme: string;
+  }
+
+  declare interface DefaultSettings extends LayoutSetting {
+    /**
+     * 网页标题
+     */
+    title: string;
+
+    /**
+     * 是否显示系统布局设置
+     */
+    showSettings: boolean;
+
+    /**
+     * 导航栏布局
+     */
+    layout: string;
+
+    /**
+     * 布局大小
+     */
+    size: 'large' | 'default' | 'small';
+
+    /**
+     * 语言
+     */
+    language: LanguageEnum;
+
+    /**
+     * 是否启用动画效果
+     */
+    animationEnable: boolean;
+    /**
+     *  是否启用暗黑模式
+     *
+     * true:暗黑模式
+     * false: 明亮模式
+     */
+    dark: boolean;
+
+    errorLog: string;
   }
 }
 export {};

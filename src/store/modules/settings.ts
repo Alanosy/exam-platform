@@ -1,35 +1,29 @@
 import { defineStore } from 'pinia';
 import defaultSettings from '@/settings';
-import { SettingTypeEnum } from '@/enums/SettingTypeEnum';
 import { useDynamicTitle } from '@/utils/dynamicTitle';
-import { Ref } from 'vue';
 
 export const useSettingsStore = defineStore('setting', () => {
-  const storageSetting = JSON.parse(localStorage.getItem('layout-setting') || '{}');
+  const storageSetting = useStorage<LayoutSetting>('layout-setting', {
+    topNav: defaultSettings.topNav,
+    tagsView: defaultSettings.tagsView,
+    fixedHeader: defaultSettings.fixedHeader,
+    sidebarLogo: defaultSettings.sidebarLogo,
+    dynamicTitle: defaultSettings.dynamicTitle,
+    sideTheme: defaultSettings.sideTheme,
+    theme: defaultSettings.theme
+  });
+  const title = ref<string>(defaultSettings.title);
+  const theme = ref<string>(storageSetting.value.theme);
+  const sideTheme = ref<string>(storageSetting.value.sideTheme);
+  const showSettings = ref<boolean>(defaultSettings.showSettings);
+  const topNav = ref<boolean>(storageSetting.value.topNav);
+  const tagsView = ref<boolean>(storageSetting.value.tagsView);
+  const fixedHeader = ref<boolean>(storageSetting.value.fixedHeader);
+  const sidebarLogo = ref<boolean>(storageSetting.value.sidebarLogo);
+  const dynamicTitle = ref<boolean>(storageSetting.value.dynamicTitle);
+  const animationEnable = ref<boolean>(defaultSettings.animationEnable);
+  const dark = ref<boolean>(defaultSettings.dark);
 
-  const prop: { [key: string]: Ref<any> } = {
-    title: ref<string>(''),
-    theme: ref<string>(storageSetting.theme || defaultSettings.theme),
-    sideTheme: ref<string>(storageSetting.sideTheme || defaultSettings.sideTheme),
-    showSettings: ref<boolean>(storageSetting.showSettings || defaultSettings.showSettings),
-    topNav: ref<boolean>(storageSetting.topNav === undefined ? defaultSettings.topNav : storageSetting.topNav),
-    tagsView: ref<boolean>(storageSetting.tagsView === undefined ? defaultSettings.tagsView : storageSetting.tagsView),
-    fixedHeader: ref<boolean>(storageSetting.fixedHeader === undefined ? defaultSettings.fixedHeader : storageSetting.fixedHeader),
-    sidebarLogo: ref<boolean>(storageSetting.sidebarLogo === undefined ? defaultSettings.sidebarLogo : storageSetting.sidebarLogo),
-    dynamicTitle: ref<boolean>(storageSetting.dynamicTitle === undefined ? defaultSettings.dynamicTitle : storageSetting.dynamicTitle),
-    animationEnable: ref<boolean>(storageSetting.animationEnable === undefined ? defaultSettings.animationEnable : storageSetting.animationEnable),
-    dark: ref<boolean>(storageSetting.dark || defaultSettings.dark)
-  };
-
-  const { title, theme, sideTheme, showSettings, topNav, tagsView, fixedHeader, sidebarLogo, dynamicTitle, animationEnable, dark } = prop;
-
-  // actions
-  const changeSetting = (param: { key: SettingTypeEnum; value: any }) => {
-    const { key, value } = param;
-    if (key in prop) {
-      prop[key].value = value;
-    }
-  };
   const setTitle = (value: string) => {
     title.value = value;
     useDynamicTitle();
@@ -46,7 +40,6 @@ export const useSettingsStore = defineStore('setting', () => {
     dynamicTitle,
     animationEnable,
     dark,
-    changeSetting,
     setTitle
   };
 });

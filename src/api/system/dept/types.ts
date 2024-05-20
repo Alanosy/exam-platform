@@ -3,6 +3,7 @@
  */
 export interface DeptQuery extends PageQuery {
   deptName?: string;
+  deptCategory?: string;
   status?: number;
 }
 
@@ -16,6 +17,7 @@ export interface DeptVO extends BaseEntity {
   children: DeptVO[];
   deptId: number | string;
   deptName: string;
+  deptCategory: string;
   orderNum: number;
   leader: string;
   phone: string;
@@ -35,6 +37,7 @@ export interface DeptForm {
   children?: DeptForm[];
   deptId?: number | string;
   deptName?: string;
+  deptCategory?: string;
   orderNum?: number;
   leader?: string;
   phone?: string;

@@ -1,3 +1,5 @@
+import { LanguageEnum } from '@/enums/LanguageEnum';
+
 const setting: DefaultSettings = {
   /**
    * 网页标题
@@ -50,6 +52,11 @@ const setting: DefaultSettings = {
 
   animationEnable: false,
 
-  dark: false
+  dark: false,
+  language: LanguageEnum.zh_CN,
+
+  size: 'default',
+
+  layout: ''
 };
 export default setting;

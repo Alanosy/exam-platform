@@ -28,7 +28,7 @@ export const getGenTable = (tableId: string | number): AxiosPromise<GenTableVO> 
 };
 
 // 修改代码生成信息
-export const updateGenTable = (data: DbTableForm) => {
+export const updateGenTable = (data: DbTableForm): AxiosPromise<GenTableVO> => {
   return request({
     url: '/tool/gen',
     method: 'put',
@@ -37,7 +37,7 @@ export const updateGenTable = (data: DbTableForm) => {
 };
 
 // 导入表
-export const importTable = (data: { tables: string; dataName: string }) => {
+export const importTable = (data: { tables: string; dataName: string }): AxiosPromise<GenTableVO> => {
   return request({
     url: '/tool/gen/importTable',
     method: 'post',

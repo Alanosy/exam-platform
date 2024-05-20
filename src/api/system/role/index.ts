@@ -13,6 +13,17 @@ export const listRole = (query: RoleQuery): AxiosPromise<RoleVO[]> => {
 };
 
 /**
+ * 通过roleIds查询角色
+ * @param roleIds
+ */
+export const optionSelect = (roleIds: (number | string)[]): AxiosPromise<RoleVO[]> => {
+  return request({
+    url: '/system/role/optionselect?roleIds=' + roleIds,
+    method: 'get'
+  });
+};
+
+/**
  * 查询角色详细
  */
 export const getRole = (roleId: string | number): AxiosPromise<RoleVO> => {
@@ -141,4 +152,9 @@ export const deptTreeSelect = (roleId: string | number): AxiosPromise<RoleDeptTr
     url: '/system/role/deptTree/' + roleId,
     method: 'get'
   });
+};
+
+export default {
+  optionSelect,
+  listRole
 };

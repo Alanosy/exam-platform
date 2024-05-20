@@ -18,6 +18,17 @@ export const listUser = (query: UserQuery): AxiosPromise<UserVO[]> => {
 };
 
 /**
+ * 通过用户ids查询用户
+ * @param userIds
+ */
+export const optionSelect = (userIds: (number | string)[]): AxiosPromise<UserVO[]> => {
+  return request({
+    url: '/system/user/optionselect?userIds=' + userIds,
+    method: 'get'
+  });
+};
+
+/**
  * 获取用户详情
  * @param userId
  */
@@ -75,7 +86,8 @@ export const resetUserPwd = (userId: string | number, password: string) => {
     url: '/system/user/resetPwd',
     method: 'put',
     headers: {
-      isEncrypt: true
+      isEncrypt: true,
+      repeatSubmit: false
     },
     data: data
   });
@@ -134,7 +146,8 @@ export const updateUserPwd = (oldPassword: string, newPassword: string) => {
     url: '/system/user/profile/updatePwd',
     method: 'put',
     headers: {
-      isEncrypt: true
+      isEncrypt: true,
+      repeatSubmit: false
     },
     data: data
   });
@@ -199,6 +212,7 @@ export const deptTreeSelect = (): AxiosPromise<DeptVO[]> => {
 export default {
   listUser,
   getUser,
+  optionSelect,
   addUser,
   updateUser,
   delUser,

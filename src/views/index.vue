@@ -21,7 +21,7 @@
           * 分布式锁 Lock4j 注解锁、工具锁 多种多样<br />
           * 分布式幂等 Lock4j 基于分布式锁实现<br />
           * 分布式链路追踪 SkyWalking 支持链路追踪、网格分析、度量聚合、可视化<br />
-          * 分布式任务调度 PowerJob 高性能 高可靠 易扩展<br />
+          * 分布式任务调度 SnailJob 高性能 高可靠 易扩展<br />
           * 文件存储 Minio 本地存储<br />
           * 文件存储 七牛、阿里、腾讯 云存储<br />
           * 监控框架 SpringBoot-Admin 全方位服务监控<br />
@@ -33,7 +33,7 @@
           * 部署方式 Docker 容器编排 一键部署业务集群<br />
           * 国际化 SpringMessage Spring标准国际化方案<br />
         </p>
-        <p><b>当前版本:</b> <span>v5.1.2</span></p>
+        <p><b>当前版本:</b> <span>v5.2.0-BETA</span></p>
         <p>
           <el-tag type="danger">&yen;免费开源</el-tag>
         </p>
@@ -78,7 +78,7 @@
           * 分布式监控 Prometheus、Grafana 全方位性能监控<br />
           * 其余与 Vue 版本一致<br />
         </p>
-        <p><b>当前版本:</b> <span>v2.1.2</span></p>
+        <p><b>当前版本:</b> <span>v2.2.0-BETA</span></p>
         <p>
           <el-tag type="danger">&yen;免费开源</el-tag>
         </p>
@@ -96,16 +96,9 @@
 </template>
 
 <script setup name="Index" lang="ts">
-import { initWebSocket } from '@/utils/websocket';
-
-onMounted(() => {
-  let protocol = window.location.protocol === 'https:' ? 'wss://' : 'ws://'
-  initWebSocket(protocol + window.location.host + import.meta.env.VITE_APP_BASE_API + "/resource/websocket");
-});
-
-const goTarget = (url:string) => {
-  window.open(url, '__blank')
-}
+const goTarget = (url: string) => {
+  window.open(url, '__blank');
+};
 </script>
 
 <style scoped lang="scss">
@@ -131,7 +124,7 @@ const goTarget = (url:string) => {
     margin: 0;
   }
 
-  font-family: "open sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-family: 'open sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;
   font-size: 13px;
   color: #676a6c;
   overflow-x: hidden;

@@ -11,7 +11,7 @@ dist
 .husky
 .local
 /bin
-.eslintrc.js
+.eslintrc.cjs
 prettier.config.js
 src/assets
 tailwind.config.js

@@ -35,22 +35,22 @@
 
           <el-table-column label="插入" min-width="5%">
             <template #default="scope">
-              <el-checkbox true-label="1" false-label="0" v-model="scope.row.isInsert"></el-checkbox>
+              <el-checkbox v-model="scope.row.isInsert" true-value="1" false-value="0"></el-checkbox>
             </template>
           </el-table-column>
           <el-table-column label="编辑" min-width="5%">
             <template #default="scope">
-              <el-checkbox true-label="1" false-label="0" v-model="scope.row.isEdit"></el-checkbox>
+              <el-checkbox v-model="scope.row.isEdit" true-value="1" false-value="0"></el-checkbox>
             </template>
           </el-table-column>
           <el-table-column label="列表" min-width="5%">
             <template #default="scope">
-              <el-checkbox true-label="1" false-label="0" v-model="scope.row.isList"></el-checkbox>
+              <el-checkbox v-model="scope.row.isList" true-value="1" false-value="0"></el-checkbox>
             </template>
           </el-table-column>
           <el-table-column label="查询" min-width="5%">
             <template #default="scope">
-              <el-checkbox true-label="1" false-label="0" v-model="scope.row.isQuery"></el-checkbox>
+              <el-checkbox v-model="scope.row.isQuery" true-value="1" false-value="0"></el-checkbox>
             </template>
           </el-table-column>
           <el-table-column label="查询方式" min-width="10%">
@@ -69,7 +69,7 @@
           </el-table-column>
           <el-table-column label="必填" min-width="5%">
             <template #default="scope">
-              <el-checkbox true-label="1" false-label="0" v-model="scope.row.isRequired"></el-checkbox>
+              <el-checkbox v-model="scope.row.isRequired" true-value="1" false-value="0"></el-checkbox>
             </template>
           </el-table-column>
           <el-table-column label="显示类型" min-width="12%">
@@ -104,7 +104,7 @@
       </el-tab-pane>
     </el-tabs>
     <el-form label-width="100px">
-      <div style="text-align: center;margin-left:-100px;margin-top:10px;">
+      <div style="text-align: center; margin-left: -100px; margin-top: 10px">
         <el-button type="primary" @click="submitForm()">提交</el-button>
         <el-button @click="close()">返回</el-button>
       </div>
@@ -118,7 +118,8 @@ import { DbColumnVO, DbTableVO } from '@/api/tool/gen/types';
 import { optionselect as getDictOptionselect } from '@/api/system/dict/type';
 import { DictTypeVO } from '@/api/system/dict/type/types';
 import BasicInfoForm from './basicInfoForm.vue';
-import GenInfoForm from "./genInfoForm.vue";
+import GenInfoForm from './genInfoForm.vue';
+import { RouteLocationNormalized } from 'vue-router';
 
 const route = useRoute();
 const { proxy } = getCurrentInstance() as ComponentInternalInstance;
@@ -138,8 +139,8 @@ const submitForm = () => {
   const basicForm = basicInfo.value?.$refs.basicInfoForm;
   const genForm = genInfo.value?.$refs.genInfoForm;
 
-  Promise.all([basicForm, genForm].map(getFormPromise)).then(async res => {
-    const validateResult = res.every(item => !!item);
+  Promise.all([basicForm, genForm].map(getFormPromise)).then(async (res) => {
+    const validateResult = res.every((item) => !!item);
     if (validateResult) {
       const genTable: any = Object.assign({}, info.value);
       genTable.columns = columns.value;
@@ -155,24 +156,34 @@ const submitForm = () => {
         close();
       }
     } else {
-      proxy?.$modal.msgError("表单校验未通过，请重新检查提交内容");
+      proxy?.$modal.msgError('表单校验未通过，请重新检查提交内容');
     }
   });
-}
+};
 const getFormPromise = (form: any) => {
-  return new Promise(resolve => {
+  return new Promise((resolve) => {
     form.validate((res: any) => {
       resolve(res);
     });
   });
-}
+};
 const close = () => {
-  const obj = { path: "/tool/gen", query: { t: Date.now(), pageNum: route.query.pageNum } };
+  const obj: RouteLocationNormalized = {
+    path: '/tool/gen',
+    fullPath: '',
+    hash: '',
+    matched: [],
+    meta: undefined,
+    name: undefined,
+    params: undefined,
+    redirectedFrom: undefined,
+    query: { t: Date.now().toString(), pageNum: route.query.pageNum }
+  };
   proxy?.$tab.closeOpenPage(obj);
-}
+};
 
 (async () => {
-  const tableId = route.params && route.params.tableId as string;
+  const tableId = route.params && (route.params.tableId as string);
   if (tableId) {
     // 获取表详细信息
     const res = await getGenTable(tableId);

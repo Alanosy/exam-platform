@@ -1,20 +1,20 @@
 <template>
   <div class="user-info-head" @click="editCropper()">
     <img :src="options.img" title="点击上传头像" class="img-circle img-lg" />
-    <el-dialog :title="title" v-model="open" width="800px" append-to-body @opened="modalOpened" @close="closeDialog">
+    <el-dialog v-model="open" :title="title" width="800px" append-to-body @opened="modalOpened" @close="closeDialog">
       <el-row>
         <el-col :xs="24" :md="12" :style="{ height: '350px' }">
           <vue-cropper
+            v-if="visible"
             ref="cropper"
             :img="options.img"
             :info="true"
-            :autoCrop="options.autoCrop"
-            :autoCropWidth="options.autoCropWidth"
-            :autoCropHeight="options.autoCropHeight"
-            :fixedBox="options.fixedBox"
-            :outputType="options.outputType"
-            @realTime="realTime"
-            v-if="visible"
+            :auto-crop="options.autoCrop"
+            :auto-crop-width="options.autoCropWidth"
+            :auto-crop-height="options.autoCropHeight"
+            :fixed-box="options.fixedBox"
+            :output-type="options.outputType"
+            @real-time="realTime"
           />
         </el-col>
         <el-col :xs="24" :md="12" :style="{ height: '350px' }">
@@ -56,10 +56,11 @@
 </template>
 
 <script setup lang="ts">
-import "vue-cropper/dist/index.css";
-import { VueCropper } from "vue-cropper";
-import { uploadAvatar } from "@/api/system/user";
-import useUserStore from "@/store/modules/user";
+import 'vue-cropper/dist/index.css';
+import { VueCropper } from 'vue-cropper';
+import { uploadAvatar } from '@/api/system/user';
+import useUserStore from '@/store/modules/user';
+import { UploadRawFile } from 'element-plus';
 
 interface Options {
   img: string | any; // 裁剪图片的地址
@@ -73,13 +74,12 @@ interface Options {
   visible: boolean;
 }
 
-
 const userStore = useUserStore();
 const { proxy } = getCurrentInstance() as ComponentInternalInstance;
 
 const open = ref(false);
 const visible = ref(false);
-const title = ref("修改头像");
+const title = ref('修改头像');
 
 const cropper = ref<any>({});
 //图片裁剪数据
@@ -89,8 +89,8 @@ const options = reactive<Options>({
   autoCropWidth: 200,
   autoCropHeight: 200,
   fixedBox: true,
-  outputType: "png",
-  fileName: "",
+  outputType: 'png',
+  fileName: '',
   previews: {},
   visible: false
 });
@@ -104,8 +104,7 @@ const modalOpened = () => {
   visible.value = true;
 };
 /** 覆盖默认上传行为 */
-const requestUpload = (): any => {
-};
+const requestUpload = (): any => {};
 /** 向左旋转 */
 const rotateLeft = () => {
   cropper.value.rotateLeft();
@@ -120,9 +119,9 @@ const changeScale = (num: number) => {
   cropper.value.changeScale(num);
 };
 /** 上传预处理 */
-const beforeUpload = (file: any) => {
-  if (file.type.indexOf("image/") == -1) {
-    proxy?.$modal.msgError("文件格式错误，请上传图片类型,如：JPG，PNG后缀的文件。");
+const beforeUpload = (file: UploadRawFile): any => {
+  if (file.type.indexOf('image/') == -1) {
+    proxy?.$modal.msgError('文件格式错误，请上传图片类型,如：JPG，PNG后缀的文件。');
   } else {
     const reader = new FileReader();
     reader.readAsDataURL(file);
@@ -136,12 +135,12 @@ const beforeUpload = (file: any) => {
 const uploadImg = async () => {
   cropper.value.getCropBlob(async (data: any) => {
     let formData = new FormData();
-    formData.append("avatarfile", data, options.fileName);
+    formData.append('avatarfile', data, options.fileName);
     const res = await uploadAvatar(formData);
     open.value = false;
     options.img = res.data.imgUrl;
-    userStore.setAvatar(options.img as string)
-    proxy?.$modal.msgSuccess("修改成功");
+    userStore.setAvatar(options.img);
+    proxy?.$modal.msgSuccess('修改成功');
     visible.value = false;
   });
 };
@@ -164,7 +163,7 @@ const closeDialog = () => {
 }
 
 .user-info-head:hover:after {
-  content: "+";
+  content: '+';
   position: absolute;
   left: 0;
   right: 0;

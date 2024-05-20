@@ -89,7 +89,7 @@ export const byteLength = (str: string) => {
  * @returns {Array}
  */
 export const cleanArray = (actual: Array<any>) => {
-  const newArray = [];
+  const newArray: any[] = [];
   for (let i = 0; i < actual.length; i++) {
     if (actual[i]) {
       newArray.push(actual[i]);

@@ -1,7 +1,7 @@
 <template>
   <div
     class="sidebar-logo-container"
-    :class="{ 'collapse': collapse }"
+    :class="{ collapse: collapse }"
     :style="{ backgroundColor: sideTheme === 'theme-dark' ? variables.menuBackground : variables.menuLightBackground }"
   >
     <transition :enter-active-class="proxy?.animate.logoAnimate.enter" mode="out-in">
@@ -22,18 +22,17 @@
 </template>
 
 <script setup lang="ts">
-import variables from '@/assets/styles/variables.module.scss'
-import logo from '@/assets/logo/logo.png'
-import useSettingsStore from '@/store/modules/settings'
-import { ComponentInternalInstance } from "vue";
+import variables from '@/assets/styles/variables.module.scss';
+import logo from '@/assets/logo/logo.png';
+import useSettingsStore from '@/store/modules/settings';
 const { proxy } = getCurrentInstance() as ComponentInternalInstance;
 
 defineProps({
-    collapse: {
-        type: Boolean,
-        required: true
-    }
-})
+  collapse: {
+    type: Boolean,
+    required: true
+  }
+});
 
 const title = ref('RuoYi-Vue-Plus');
 const settingsStore = useSettingsStore();
@@ -77,7 +76,12 @@ const sideTheme = computed(() => settingsStore.sideTheme);
       font-weight: 600;
       line-height: 50px;
       font-size: 14px;
-      font-family: Avenir, Helvetica Neue, Arial, Helvetica, sans-serif;
+      font-family:
+        Avenir,
+        Helvetica Neue,
+        Arial,
+        Helvetica,
+        sans-serif;
       vertical-align: middle;
     }
   }

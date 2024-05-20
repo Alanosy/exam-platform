@@ -1,4 +1,4 @@
-import { createWebHistory, createRouter, RouteOption } from 'vue-router';
+import { createWebHistory, createRouter, RouteRecordRaw } from 'vue-router';
 /* Layout */
 import Layout from '@/layout/index.vue';
 
@@ -25,7 +25,7 @@ import Layout from '@/layout/index.vue';
  */
 
 // 公共路由
-export const constantRoutes: RouteOption[] = [
+export const constantRoutes: RouteRecordRaw[] = [
   {
     path: '/redirect',
     component: Layout,
@@ -92,7 +92,7 @@ export const constantRoutes: RouteOption[] = [
 ];
 
 // 动态路由，基于用户权限动态去加载
-export const dynamicRoutes: RouteOption[] = [
+export const dynamicRoutes: RouteRecordRaw[] = [
   {
     path: '/system/user-auth',
     component: Layout,
@@ -160,6 +160,20 @@ export const dynamicRoutes: RouteOption[] = [
         component: () => import('@/views/tool/gen/editTable.vue'),
         name: 'GenEdit',
         meta: { title: '修改生成配置', activeMenu: '/tool/gen', icon: '' }
+      }
+    ]
+  },
+  {
+    path: '/demo/leaveEdit',
+    component: Layout,
+    hidden: true,
+    permissions: ['demo:leave:edit'],
+    children: [
+      {
+        path: 'index',
+        component: () => import('@/views/workflow/leave/leaveEdit.vue'),
+        name: 'leaveEdit',
+        meta: { title: '请假申请', activeMenu: '/demo/leave', noCache: true }
       }
     ]
   }

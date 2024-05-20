@@ -1,26 +1,34 @@
 {
   "compilerOptions": {
-    "target": "es2022",
-    "useDefineForClassFields": true,
+    "target": "esnext",
     "module": "esnext",
-    "moduleResolution": "node",
+//    "useDefineForClassFields": true,
+    "moduleResolution": "bundler",
     "strict": true,
     "jsx": "preserve",
+    "strictNullChecks": false,
     "sourceMap": true,
     "resolveJsonModule": true,
     "esModuleInterop": true,
+    "strictFunctionTypes": false,
     "lib": ["esnext", "dom"],
+    "noImplicitAny": false,
     "baseUrl": ".",
     "allowJs": true,
+    "experimentalDecorators": true,
     "paths": {
       "@/*": ["src/*"]
     },
+    "compilerOptions": {
+      "types": ["element-plus/global"]
+    },
     "types": ["vite/client"],
     "skipLibCheck": true,
+    "removeComments": true,
     // 允许默认导入
     "allowSyntheticDefaultImports": true,
     "forceConsistentCasingInFileNames": true
   },
-  "include": ["src/**/*.ts", "src/**/*.vue", "src/types/**/*.d.ts"],
-  "exclude": ["node_modules", "dist", "**/*.js"]
+  "include": ["src/**/*.ts", "src/**/*.vue", "src/types/**/*.d.ts", "vite.config.ts"],
+  "exclude": ["node_modules", "dist", "**/*.js", "**/*.md", "src/**/*.md"]
 }

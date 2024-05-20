@@ -1,14 +1,14 @@
 <template>
   <div class="el-tree-select">
     <el-select
-      style="width: 100%"
-      v-model="valueId"
       ref="treeSelect"
+      v-model="valueId"
+      style="width: 100%"
       :filterable="true"
       :clearable="true"
-      @clear="clearHandle"
       :filter-method="selectFilterData"
       :placeholder="placeholder"
+      @clear="clearHandle"
     >
       <el-option :value="valueId" :label="valueTitle">
         <el-tree
@@ -29,43 +29,32 @@
 </template>
 
 <script setup lang="ts">
+interface ObjMap {
+  value: string;
+  label: string;
+  children: string;
+}
+interface Props {
+  objMap: ObjMap;
+  accordion: boolean;
+  value: string | number;
+  options: any[];
+  placeholder: string;
+}
 
-const props = defineProps({
-  /* 配置项 */
-  objMap: {
-    type: Object,
-    default: () => {
-      return {
-        value: 'id', // ID字段名
-        label: 'label', // 显示名称
-        children: 'children' // 子级字段名
-      }
-    }
+const props = withDefaults(defineProps<Props>(), {
+  objMap: () => {
+    return {
+      value: 'id',
+      label: 'label',
+      children: 'children'
+    };
   },
-  /* 自动收起 */
-  accordion: {
-    type: Boolean,
-    default: () => {
-      return false
-    }
-  },
-  /**当前双向数据绑定的值 */
-  value: {
-    type: [String, Number],
-    default: ''
-  },
-  /**当前的数据 */
-  options: {
-    type: Array,
-    default: () => []
-  },
-  /**输入框内部的文字 */
-  placeholder: {
-    type: String,
-    default: ''
-  }
-})
-
+  accordion: false,
+  value: '',
+  options: () => [],
+  placeholder: ''
+});
 
 const selectTree = ref<ElTreeSelectInstance>();
 
@@ -74,7 +63,7 @@ const emit = defineEmits(['update:value']);
 const valueId = computed({
   get: () => props.value,
   set: (val) => {
-    emit('update:value', val)
+    emit('update:value', val);
   }
 });
 const valueTitle = ref('');
@@ -83,54 +72,54 @@ const defaultExpandedKey = ref<any[]>([]);
 const initHandle = () => {
   nextTick(() => {
     const selectedValue = valueId.value;
-    if (selectedValue !== null && typeof (selectedValue) !== 'undefined') {
-      const node = selectTree.value?.getNode(selectedValue)
+    if (selectedValue !== null && typeof selectedValue !== 'undefined') {
+      const node = selectTree.value?.getNode(selectedValue);
       if (node) {
-        valueTitle.value = node.data[props.objMap.label]
-        selectTree.value?.setCurrentKey(selectedValue) // 设置默认选中
-        defaultExpandedKey.value = [selectedValue] // 设置默认展开
+        valueTitle.value = node.data[props.objMap.label];
+        selectTree.value?.setCurrentKey(selectedValue); // 设置默认选中
+        defaultExpandedKey.value = [selectedValue]; // 设置默认展开
       }
     } else {
-      clearHandle()
+      clearHandle();
     }
-  })
-}
+  });
+};
 const handleNodeClick = (node: any) => {
-  valueTitle.value = node[props.objMap.label]
+  valueTitle.value = node[props.objMap.label];
   valueId.value = node[props.objMap.value];
   defaultExpandedKey.value = [];
-  selectTree.value?.blur()
-  selectFilterData('')
-}
+  selectTree.value?.blur();
+  selectFilterData('');
+};
 const selectFilterData = (val: any) => {
-  selectTree.value?.filter(val)
-}
+  selectTree.value?.filter(val);
+};
 const filterNode = (value: any, data: any) => {
-  if (!value) return true
-  return data[props.objMap['label']].indexOf(value) !== -1
-}
+  if (!value) return true;
+  return data[props.objMap['label']].indexOf(value) !== -1;
+};
 const clearHandle = () => {
-  valueTitle.value = ''
-  valueId.value = ''
+  valueTitle.value = '';
+  valueId.value = '';
   defaultExpandedKey.value = [];
-  clearSelected()
-}
+  clearSelected();
+};
 const clearSelected = () => {
-  const allNode = document.querySelectorAll('#tree-option .el-tree-node')
-  allNode.forEach((element) => element.classList.remove('is-current'))
-}
+  const allNode = document.querySelectorAll('#tree-option .el-tree-node');
+  allNode.forEach((element) => element.classList.remove('is-current'));
+};
 
 onMounted(() => {
-  initHandle()
-})
+  initHandle();
+});
 
 watch(valueId, () => {
   initHandle();
-})
+});
 </script>
 
 <style lang="scss" scoped>
-@import "@/assets/styles/variables.module.scss";
+@import '@/assets/styles/variables.module.scss';
 
 .el-scrollbar .el-scrollbar__view .el-select-dropdown__item {
   padding: 0;

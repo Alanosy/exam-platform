@@ -2,9 +2,10 @@
  * v-copyText 复制文本内容
  * Copyright (c) 2022 ruoyi
  */
+import { DirectiveBinding } from 'vue';
 
 export default {
-  beforeMount(el: any, { value, arg }: any) {
+  beforeMount(el: any, { value, arg }: DirectiveBinding) {
     if (arg === 'callback') {
       el.$copyCallback = value;
     } else {

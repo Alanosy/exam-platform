@@ -3,6 +3,7 @@ import VueTypes, { createTypes, toValidableType, VueTypeValidableDef, VueTypesIn
 
 type PropTypes = VueTypesInterface & {
   readonly style: VueTypeValidableDef<CSSProperties>;
+  readonly fieldOption: VueTypeValidableDef<Array<FieldOption>>;
 };
 
 const propTypes = createTypes({

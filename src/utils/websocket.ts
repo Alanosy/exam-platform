@@ -19,10 +19,8 @@
  */
 
 import { getToken } from '@/utils/auth';
+import { ElNotification } from 'element-plus';
 import useNoticeStore from '@/store/modules/notice';
-import { ElNotification } from "element-plus";
-
-const { addNotice } = useNoticeStore();
 
 let socketUrl: any = ''; // socket地址
 let websocket: any = null; // websocket 实例
@@ -125,7 +123,7 @@ export const websocketonmessage = () => {
     if (e.data.indexOf('ping') > 0) {
       return;
     }
-    addNotice({
+    useNoticeStore().addNotice({
       message: e.data,
       read: false,
       time: new Date().toLocaleString()
@@ -135,7 +133,7 @@ export const websocketonmessage = () => {
       message: e.data,
       type: 'success',
       duration: 3000
-    })
+    });
     return e.data;
   };
 };

@@ -36,11 +36,12 @@ service.interceptors.request.use(
     // 对应国际化资源文件后缀
     config.headers['Content-Language'] = getLanguage();
 
-    const isToken = (config.headers || {}).isToken === false;
+    const isToken = config.headers?.isToken === false;
     // 是否需要防止数据重复提交
-    const isRepeatSubmit = (config.headers || {}).repeatSubmit === false;
+    const isRepeatSubmit = config.headers?.repeatSubmit === false;
     // 是否需要加密
-    const isEncrypt = (config.headers || {}).isEncrypt === 'true';
+    const isEncrypt = config.headers?.isEncrypt === 'true';
+
     if (getToken() && !isToken) {
       config.headers['Authorization'] = 'Bearer ' + getToken(); // 让每个请求携带自定义token 请根据实际情况自行修改
     }
@@ -75,12 +76,14 @@ service.interceptors.request.use(
         }
       }
     }
-    // 当开启参数加密
-    if (isEncrypt && (config.method === 'post' || config.method === 'put')) {
-      // 生成一个 AES 密钥
-      const aesKey = generateAesKey();
-      config.headers[encryptHeader] = encrypt(encryptBase64(aesKey));
-      config.data = typeof config.data === 'object' ? encryptWithAes(JSON.stringify(config.data), aesKey) : encryptWithAes(config.data, aesKey);
+    if (import.meta.env.VITE_APP_ENCRYPT === 'true') {
+      // 当开启参数加密
+      if (isEncrypt && (config.method === 'post' || config.method === 'put')) {
+        // 生成一个 AES 密钥
+        const aesKey = generateAesKey();
+        config.headers[encryptHeader] = encrypt(encryptBase64(aesKey));
+        config.data = typeof config.data === 'object' ? encryptWithAes(JSON.stringify(config.data), aesKey) : encryptWithAes(config.data, aesKey);
+      }
     }
     // FormData数据去请求头Content-Type
     if (config.data instanceof FormData) {
@@ -89,7 +92,6 @@ service.interceptors.request.use(
     return config;
   },
   (error: any) => {
-    console.log(error);
     return Promise.reject(error);
   }
 );
@@ -97,19 +99,21 @@ service.interceptors.request.use(
 // 响应拦截器
 service.interceptors.response.use(
   (res: AxiosResponse) => {
-    // 加密后的 AES 秘钥
-    const keyStr = res.headers[encryptHeader];
-    // 加密
-    if (keyStr != null && keyStr != '') {
-      const data = res.data;
-      // 请求体 AES 解密
-      const base64Str = decrypt(keyStr);
-      // base64 解码 得到请求头的 AES 秘钥
-      const aesKey = decryptBase64(base64Str.toString());
-      // aesKey 解码 data
-      const decryptData = decryptWithAes(data, aesKey);
-      // 将结果 (得到的是 JSON 字符串) 转为 JSON
-      res.data = JSON.parse(decryptData);
+    if (import.meta.env.VITE_APP_ENCRYPT === 'true') {
+      // 加密后的 AES 秘钥
+      const keyStr = res.headers[encryptHeader];
+      // 加密
+      if (keyStr != null && keyStr != '') {
+        const data = res.data;
+        // 请求体 AES 解密
+        const base64Str = decrypt(keyStr);
+        // base64 解码 得到请求头的 AES 秘钥
+        const aesKey = decryptBase64(base64Str.toString());
+        // aesKey 解码 data
+        const decryptData = decryptWithAes(data, aesKey);
+        // 将结果 (得到的是 JSON 字符串) 转为 JSON
+        res.data = JSON.parse(decryptData);
+      }
     }
     // 未设置状态码则默认成功状态
     const code = res.data.code || HttpStatus.SUCCESS;
@@ -138,7 +142,6 @@ service.interceptors.response.use(
       }
       return Promise.reject('无效的会话，或者会话已过期，请重新登录。');
     } else if (code === HttpStatus.SERVER_ERROR) {
-      console.log(msg);
       ElMessage({ message: msg, type: 'error' });
       return Promise.reject(new Error(msg));
     } else if (code === HttpStatus.WARN) {

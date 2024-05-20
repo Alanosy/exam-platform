@@ -1,0 +1,284 @@
+.djs-palette {
+  width: 300px;
+
+  .bpmn-icon-hand-tool:hover {
+    &:after {
+      content: '启动手动工具';
+      position: absolute;
+      left: 45px;
+      width: 120px;
+      font-size: 15px;
+      font-weight: bold;
+      color: #3a84de;
+      border-radius: 2px;
+      border: 1px solid #cccccc;
+      background-color: #fafafa;
+      opacity: 0.8;
+    }
+  }
+  .bpmn-icon-lasso-tool:hover {
+    &:after {
+      content: '启动套索工具';
+      position: absolute;
+      left: 100px;
+      width: 120px;
+      font-size: 15px;
+      font-weight: bold;
+      color: #3a84de;
+      border-radius: 2px;
+      border: 1px solid #cccccc;
+      background-color: #fafafa;
+      opacity: 0.8;
+    }
+  }
+  .bpmn-icon-space-tool:hover {
+    &:after {
+      content: '启动创建/删除空间工具';
+      position: absolute;
+      left: 45px;
+      width: 170px;
+      font-size: 15px;
+      font-weight: bold;
+      color: #3a84de;
+      border-radius: 2px;
+      border: 1px solid #cccccc;
+      background-color: #fafafa;
+      opacity: 0.8;
+    }
+  }
+  .bpmn-icon-connection-multi:hover {
+    &:after {
+      content: '启动全局连接工具';
+      position: absolute;
+      left: 100px;
+      width: 140px;
+      font-size: 15px;
+      font-weight: bold;
+      color: #3a84de;
+      border-radius: 2px;
+      border: 1px solid #cccccc;
+      background-color: #fafafa;
+      opacity: 0.8;
+    }
+  }
+  .bpmn-icon-start-event-none:hover {
+    &:after {
+      content: '创建开始事件';
+      position: absolute;
+      left: 45px;
+      width: 120px;
+      font-size: 15px;
+      font-weight: bold;
+      color: #3a84de;
+      border-radius: 2px;
+      border: 1px solid #cccccc;
+      background-color: #fafafa;
+      opacity: 0.8;
+    }
+  }
+  .bpmn-icon-intermediate-event-none:hover {
+    &:after {
+      content: '创建中间/边界事件';
+      position: absolute;
+      left: 100px;
+      width: 140px;
+      font-size: 15px;
+      font-weight: bold;
+      color: #3a84de;
+      border-radius: 2px;
+      border: 1px solid #cccccc;
+      background-color: #fafafa;
+      opacity: 0.8;
+    }
+  }
+  .bpmn-icon-end-event-none:hover {
+    &:after {
+      content: '创建结束事件';
+      position: absolute;
+      left: 45px;
+      width: 120px;
+      font-size: 15px;
+      font-weight: bold;
+      color: #3a84de;
+      border-radius: 2px;
+      border: 1px solid #cccccc;
+      background-color: #fafafa;
+      opacity: 0.8;
+    }
+  }
+  .bpmn-icon-gateway-none:hover {
+    &:after {
+      content: '创建网关';
+      position: absolute;
+      left: 100px;
+      width: 90px;
+      font-size: 15px;
+      font-weight: bold;
+      color: #3a84de;
+      border-radius: 2px;
+      border: 1px solid #cccccc;
+      background-color: #fafafa;
+      opacity: 0.8;
+    }
+  }
+  .bpmn-icon-gateway-parallel:hover {
+    &:after {
+      content: '创建并行网关';
+      position: absolute;
+      left: 45px;
+      width: 120px;
+      font-size: 15px;
+      font-weight: bold;
+      color: #3a84de;
+      border-radius: 2px;
+      border: 1px solid #cccccc;
+      background-color: #fafafa;
+      opacity: 0.8;
+    }
+  }
+  .bpmn-icon-gateway-eventbased:hover {
+    &:after {
+      content: '创建事件网关';
+      position: absolute;
+      left: 100px;
+      width: 120px;
+      font-size: 15px;
+      font-weight: bold;
+      color: #3a84de;
+      border-radius: 2px;
+      border: 1px solid #cccccc;
+      background-color: #fafafa;
+      opacity: 0.8;
+    }
+  }
+  .bpmn-icon-task:hover {
+    &:after {
+      content: '创建任务';
+      position: absolute;
+      left: 45px;
+      width: 80px;
+      font-size: 15px;
+      font-weight: bold;
+      color: #3a84de;
+      border-radius: 2px;
+      border: 1px solid #cccccc;
+      background-color: #fafafa;
+      opacity: 0.8;
+    }
+  }
+  .bpmn-icon-subprocess-expanded:hover {
+    &:after {
+      content: '创建可折叠子流程';
+      position: absolute;
+      left: 100px;
+      width: 140px;
+      font-size: 15px;
+      font-weight: bold;
+      color: #3a84de;
+      border-radius: 2px;
+      border: 1px solid #cccccc;
+      background-color: #fafafa;
+      opacity: 0.8;
+    }
+  }
+  .bpmn-icon-user-task:hover {
+    &:after {
+      content: '创建用户任务';
+      position: absolute;
+      left: 45px;
+      width: 120px;
+      font-size: 15px;
+      font-weight: bold;
+      color: #3a84de;
+      border-radius: 2px;
+      border: 1px solid #cccccc;
+      background-color: #fafafa;
+      opacity: 0.8;
+    }
+  }
+
+  .task-multi-instance:hover {
+    &:after {
+      content: '创建多实例用户任务';
+      position: absolute;
+      left: 100px;
+      width: 160px;
+      font-size: 15px;
+      font-weight: bold;
+      color: #3a84de;
+      border-radius: 2px;
+      border: 1px solid #cccccc;
+      background-color: #fafafa;
+      opacity: 0.8;
+    }
+  }
+  .bpmn-icon-participant:hover {
+    &:after {
+      content: '创建泳池/泳道';
+      position: absolute;
+      left: 45px;
+      width: 120px;
+      font-size: 15px;
+      font-weight: bold;
+      color: #3a84de;
+      border-radius: 2px;
+      border: 1px solid #cccccc;
+      background-color: #fafafa;
+      opacity: 0.8;
+    }
+  }
+  .bpmn-icon-data-object {
+    display: none;
+    &:hover {
+      &:after {
+        content: '创建数据对象';
+        position: absolute;
+        left: 45px;
+        width: 120px;
+        font-size: 15px;
+        font-weight: bold;
+        color: #3a84de;
+        border-radius: 2px;
+        border: 1px solid #cccccc;
+        background-color: #fafafa;
+        opacity: 0.8;
+      }
+    }
+  }
+  .bpmn-icon-data-store {
+    display: none;
+    &:hover {
+      &:after {
+        content: '创建数据存储';
+        position: absolute;
+        left: 100px;
+        width: 120px;
+        font-size: 15px;
+        font-weight: bold;
+        color: #3a84de;
+        border-radius: 2px;
+        border: 1px solid #cccccc;
+        background-color: #fafafa;
+        opacity: 0.8;
+      }
+    }
+  }
+  .bpmn-icon-group {
+    display: none;
+    &:hover {
+      &:after {
+        content: '创建分组';
+        position: absolute;
+        left: 100px;
+        width: 100px;
+        font-size: 15px;
+        font-weight: bold;
+        color: #3a84de;
+        border-radius: 2px;
+        border: 1px solid #cccccc;
+        background-color: #fafafa;
+        opacity: 0.8;
+      }
+    }
+  }
+}

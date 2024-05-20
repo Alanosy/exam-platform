@@ -13,6 +13,14 @@
   --fixedHeaderBg: #ffffff;
   --tableHeaderBg: #f8f8f9;
   --tableHeaderTextColor: #515a6e;
+
+  // 工作流
+  --bpmn-panel-border: #eeeeee;
+  --bpmn-panel-box-shadow: #cccccc;
+  --bpmn-panel-bar-background-color: #f5f7fa;
+
+  // ele
+  --brder-color: #e8e8e8
 }
 html.dark {
   --menuBg: #1d1e1f;
@@ -33,6 +41,26 @@ html.dark {
   .el-tree-node__content {
     --el-color-primary-light-9: #262727;
   }
+  // vxe-table 主题
+  --vxe-font-color: #98989E;
+  --vxe-primary-color: #2C7ECF;
+  --vxe-icon-background-color: #98989E;
+  --vxe-table-font-color: #98989E;
+  --vxe-table-resizable-color: #95969a;
+  --vxe-table-header-background-color: #28282A;
+  --vxe-table-body-background-color: #151518;
+  --vxe-table-background-color: #4a5663;
+  --vxe-table-border-width: 1px;
+  --vxe-table-border-color: #37373A;
+  --vxe-toolbar-background-color: #37373A;
+
+  // 工作流
+  --bpmn-panel-border: #37373A;
+  --bpmn-panel-box-shadow: #37373A;
+  --bpmn-panel-bar-background-color: #37373A;
+
+  // ele
+  --brder-color: #37373A
 }
 
 // base color

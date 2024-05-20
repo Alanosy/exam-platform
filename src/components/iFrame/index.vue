@@ -9,18 +9,18 @@ import { propTypes } from '@/utils/propTypes';
 
 const props = defineProps({
   src: propTypes.string.isRequired
-})
+});
 
-const height = ref(document.documentElement.clientHeight - 94.5 + "px;")
-const loading = ref(true)
-const url = computed(() => props.src)
+const height = ref(document.documentElement.clientHeight - 94.5 + 'px;');
+const loading = ref(true);
+const url = computed(() => props.src);
 
 onMounted(() => {
   setTimeout(() => {
     loading.value = false;
   }, 300);
   window.onresize = function temp() {
-    height.value = document.documentElement.clientHeight - 94.5 + "px;";
+    height.value = document.documentElement.clientHeight - 94.5 + 'px;';
   };
-})
+});
 </script>

@@ -2,19 +2,31 @@
   <div>
     <template v-for="(item, index) in options">
       <template v-if="values.includes(item.value)">
-        <span v-if="(item.elTagType === 'default' || item.elTagType === '') && (item.elTagClass === '' || item.elTagClass == null)"
-              :key="item.value" :index="index" :class="item.elTagClass">
-          {{ item.label + " " }}
+        <span
+          v-if="(item.elTagType === 'default' || item.elTagType === '') && (item.elTagClass === '' || item.elTagClass == null)"
+          :key="item.value"
+          :index="index"
+          :class="item.elTagClass"
+        >
+          {{ item.label + ' ' }}
         </span>
         <el-tag
           v-else
-          :disable-transitions="true"
           :key="item.value + ''"
+          :disable-transitions="true"
           :index="index"
-          :type="(item.elTagType === 'primary' || item.elTagType === 'default')? '' : item.elTagType"
+          :type="
+            item.elTagType === 'primary' ||
+            item.elTagType === 'success' ||
+            item.elTagType === 'info' ||
+            item.elTagType === 'warning' ||
+            item.elTagType === 'danger'
+              ? item.elTagType
+              : 'primary'
+          "
           :class="item.elTagClass"
         >
-          {{ item.label + " " }}
+          {{ item.label + ' ' }}
         </el-tag>
       </template>
     </template>
@@ -25,57 +37,54 @@
 </template>
 
 <script setup lang="ts">
-import { propTypes } from '@/utils/propTypes';
-
-
-const props = defineProps({
-  // 数据
-  options: {
-    type: Array as PropType<DictDataOption[]>,
-    default: null,
-  },
-  // 当前的值
-  value: [Number, String, Array] as PropType<number | string | Array<number | string>>,
-  // 当未找到匹配的数据时，显示value
-  showValue: propTypes.bool.def(true),
-  separator: propTypes.string.def(","),
+interface Props {
+  options: Array<DictDataOption>;
+  value: number | string | Array<number | string>;
+  showValue?: boolean;
+  separator?: string;
+}
+const props = withDefaults(defineProps<Props>(), {
+  showValue: true,
+  separator: ','
 });
+
 const values = computed(() => {
-  if (props.value === '' || props.value === null || typeof props.value === "undefined") return []
-  return Array.isArray(props.value) ? props.value.map(item => '' + item) : String(props.value).split(props.separator);
+  if (props.value === '' || props.value === null || typeof props.value === 'undefined') return [];
+  return Array.isArray(props.value) ? props.value.map((item) => '' + item) : String(props.value).split(props.separator);
 });
 
 const unmatch = computed(() => {
-  if (props.options?.length == 0 || props.value === '' || props.value === null || typeof props.value === "undefined") return false
+  if (props.options?.length == 0 || props.value === '' || props.value === null || typeof props.value === 'undefined') return false;
   // 传入值为非数组
-  values.value.forEach(item => {
-    if (!props.options.some(v => v.value === item)) {
-      return true // 如果有未匹配项，将标志设置为true
+  let unmatch = false; // 添加一个标志来判断是否有未匹配项
+  values.value.forEach((item) => {
+    if (!props.options.some((v) => v.value === item)) {
+      unmatch = true; // 如果有未匹配项，将标志设置为true
     }
-  })
-  return false // 返回标志的值
+  });
+  return unmatch; // 返回标志的值
 });
 
 const unmatchArray = computed(() => {
-// 记录未匹配的项
+  // 记录未匹配的项
   const itemUnmatchArray: Array<string | number> = [];
-  if (props.value !== '' && props.value !== null && typeof props.value !== "undefined") {
-    values.value.forEach(item => {
-      if (!props.options.some(v => v.value === item)) {
+  if (props.value !== '' && props.value !== null && typeof props.value !== 'undefined') {
+    values.value.forEach((item) => {
+      if (!props.options.some((v) => v.value === item)) {
         itemUnmatchArray.push(item);
       }
-    })
+    });
   }
   // 没有value不显示
   return handleArray(itemUnmatchArray);
 });
 
 const handleArray = (array: Array<string | number>) => {
-  if (array.length === 0) return "";
+  if (array.length === 0) return '';
   return array.reduce((pre, cur) => {
-    return pre + " " + cur;
+    return pre + ' ' + cur;
   });
-}
+};
 </script>
 
 <style scoped>
