@@ -111,8 +111,8 @@
 import ExecutionListener from './property/ExecutionListener.vue';
 import useParseElement from '../hooks/useParseElement';
 import usePanel from '../hooks/usePanel';
-import { ModdleElement } from 'bpmn';
-import { SubProcessPanel } from 'bpmnDesign';
+import type { ModdleElement } from 'bpmn';
+import type { SubProcessPanel } from 'bpmnDesign';
 import { MultiInstanceTypeEnum } from '@/enums/bpmn/IndexEnums';
 
 interface PropType {

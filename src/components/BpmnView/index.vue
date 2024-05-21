@@ -37,7 +37,7 @@ import BpmnViewer from 'bpmn-js/lib/Viewer';
 import MoveCanvasModule from 'diagram-js/lib/navigation/movecanvas';
 import ZoomScrollModule from 'diagram-js/lib/navigation/zoomscroll';
 import { ModuleDeclaration } from 'didi';
-import { Canvas, ModdleElement } from 'bpmn';
+import type { Canvas, ModdleElement } from 'bpmn';
 import EventBus from 'diagram-js/lib/core/EventBus';
 import Overlays from 'diagram-js/lib/features/overlays/Overlays';
 import processApi from '@/api/workflow/processInstance/index';

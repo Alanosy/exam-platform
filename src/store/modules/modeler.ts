@@ -1,4 +1,4 @@
-import { Modeler, Modeling, Canvas, ElementRegistry, Moddle, BpmnFactory } from 'bpmn';
+import type { Modeler, Modeling, Canvas, ElementRegistry, Moddle, BpmnFactory } from 'bpmn';
 
 type ModelerStore = {
   modeler: Modeler | undefined;

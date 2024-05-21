@@ -42,8 +42,8 @@
 import ExecutionListener from './property/ExecutionListener.vue';
 import useParseElement from '../hooks/useParseElement';
 import usePanel from '../hooks/usePanel';
-import { Modeler, ModdleElement } from 'bpmn';
-import { StartEndPanel } from 'bpmnDesign';
+import type { Modeler, ModdleElement } from 'bpmn';
+import type { StartEndPanel } from 'bpmnDesign';
 
 interface PropType {
   element: ModdleElement;

@@ -90,8 +90,8 @@
 <script setup lang="ts">
 import ListenerParam from './ListenerParam.vue';
 import { VxeTableEvents, VxeTableInstance, VxeTablePropTypes } from 'vxe-table';
-import { ExecutionListenerVO } from 'bpmnDesign';
-import { Moddle, Modeler, ModdleElement } from 'bpmn';
+import type { ExecutionListenerVO } from 'bpmnDesign';
+import type { Moddle, Modeler, ModdleElement } from 'bpmn';
 
 import usePanel from '../../hooks/usePanel';
 import useDialog from '@/hooks/useDialog';

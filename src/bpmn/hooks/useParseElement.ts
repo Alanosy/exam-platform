@@ -1,4 +1,4 @@
-import { ModdleElement } from 'bpmn';
+import type { ModdleElement } from 'bpmn';
 
 interface Options {
   element: ModdleElement;

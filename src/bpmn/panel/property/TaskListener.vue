@@ -91,8 +91,8 @@
 <script setup lang="ts">
 import ListenerParam from './ListenerParam.vue';
 import { VxeTableEvents, VxeTableInstance, VxeTablePropTypes } from 'vxe-table';
-import { TaskListenerVO } from 'bpmnDesign';
-import { ModdleElement } from 'bpmn';
+import type { TaskListenerVO } from 'bpmnDesign';
+import type { ModdleElement } from 'bpmn';
 
 import usePanel from '../../hooks/usePanel';
 import useDialog from '@/hooks/useDialog';

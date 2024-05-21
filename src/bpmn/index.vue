@@ -90,7 +90,7 @@ import 'bpmn-js/dist/assets/bpmn-font/css/bpmn.css';
 import 'bpmn-js/dist/assets/bpmn-font/css/bpmn-codes.css';
 import 'bpmn-js/dist/assets/bpmn-font/css/bpmn-embedded.css';
 import './assets/style/index.scss';
-import { Canvas, Modeler } from 'bpmn';
+import type { Canvas, Modeler } from 'bpmn';
 import PropertyPanel from './panel/index.vue';
 import BpmnModeler from 'bpmn-js/lib/Modeler.js';
 import defaultXML from './assets/defaultXML';
