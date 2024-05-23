@@ -26,8 +26,12 @@ public class ExamQuDetailVO {
     /**
      * 答案内容
      */
-    private List<Option> answerList;
+    private List<OptionVO> answerList;
+    // 试题类型
     private Integer quType;
+    /**
+     * 排序
+     */
     private Integer sort;
 
 }
