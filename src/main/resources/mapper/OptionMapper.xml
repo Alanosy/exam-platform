@@ -28,10 +28,15 @@
     </select>
     <!--根据试题Id获取正确个数-->
     <select id="selectRightCountByIds" resultType="java.lang.Integer">
-        select count(*) from t_option in
+        select count(*) from t_option where id in
         <foreach collection="optionIds" item="optionId" separator="," open="(" close=")">
             #{optionId}
         </foreach>
         and is_right = 1
+    </select>
+    <select id="selectByQuestionId" resultType="cn.org.alan.exam.model.entity.Option">
+        select id, qu_id, image, content, sort
+        from t_option
+        where qu_id = #{id}
     </select>
 </mapper>

@@ -17,5 +17,7 @@ public class UserAnswerDetailVO {
     private String quTitle;
     private String quImg;
     private String answer;
+    private String refAnswer;
+    private Integer totalScore;
 
 }

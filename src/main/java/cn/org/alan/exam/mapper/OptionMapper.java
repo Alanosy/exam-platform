@@ -36,6 +36,12 @@ public interface OptionMapper extends BaseMapper<Option> {
      * @return 结果集
      */
     List<Option> selectAllByQuestionId(Integer id);
+/**
+     * 根据试题id获取所有选项，不包含是否正确
+     * @param id 试题id
+     * @return 结果集
+     */
+    List<Option> selectByQuestionId(Integer id);
 
     /**
      * 根据试题Id获取正确个数
