@@ -2,6 +2,7 @@ package cn.org.alan.exam.mapper;
 
 import cn.org.alan.exam.model.entity.Question;
 import cn.org.alan.exam.model.vo.QuestionVO;
+import cn.org.alan.exam.model.vo.exercise.QuestionSheetVO;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 
@@ -51,4 +52,15 @@ public interface QuestionMapper extends BaseMapper<Question> {
      * @return 查询结果
      */
     List<Integer> selectIdsByUserIds(List<Integer> userIds);
+
+    /**
+     * 获取试题Id并判断用户是否做过该题
+     * @param repoId 题库Id
+     * @param quType 试题类型
+     * @param userId 用户Id
+     * @return 查询结果
+     */
+    List<QuestionSheetVO> selectQuestionSheet(Integer repoId, Integer quType, Integer userId);
+
+    QuestionVO selectDetail(Integer id);
 }

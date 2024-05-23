@@ -115,7 +115,9 @@ public class RepoServiceImpl extends ServiceImpl<RepoMapper, Repo> implements IR
             //填充以刷题数
             LambdaQueryWrapper<UserExerciseRecord> wrapper = new LambdaQueryWrapper<UserExerciseRecord>()
                     .select(UserExerciseRecord::getExerciseCount)
-                    .eq(UserExerciseRecord::getUserId, SecurityUtil.getUserId());
+                    .eq(UserExerciseRecord::getUserId, SecurityUtil.getUserId())
+                    .eq(UserExerciseRecord::getRepoId,repoVO.getId());
+
             UserExerciseRecord userExerciseRecord = userExerciseRecordMapper.selectOne(wrapper);
             if (userExerciseRecord != null && userExerciseRecord.getExerciseCount() != 0) {
                 repoVO.setExerciseCount(userExerciseRecord.getExerciseCount());

@@ -69,4 +69,11 @@ public interface IExerciseRecordService extends IService<ExerciseRecord> {
      * @return 响应结果
      */
     Result<QuestionVO> fillAnswer(ExerciseFillAnswerFrom exerciseFillAnswerFrom);
+
+    /**
+     * 获取单题，没有选项
+     * @param id
+     * @return
+     */
+    Result<QuestionVO> getSingle(Integer id);
 }

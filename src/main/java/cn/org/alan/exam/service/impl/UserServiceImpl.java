@@ -105,7 +105,8 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
             return Result.failed("两次密码不一致");
         }
         Integer userId = SecurityUtil.getUserId();
-        if (!userMapper.selectById(userId).getPassword().equals(userForm.getOriginPassword())) {
+        if (!new BCryptPasswordEncoder().matches(userForm.getOriginPassword(),
+                userMapper.selectById(userId).getPassword())) {
             return Result.failed("旧密码错误");
         }
         //密码加密

@@ -20,7 +20,7 @@
         q.content,
         r.title as repoTitle,
         q.create_time
-        from t_question q  join t_repo r on q.repo_id = r.id
+        from t_question q join t_repo r on q.repo_id = r.id
         <trim suffixOverrides="and" prefix="where">
             <if test='content != null and content != ""'>
                 q.content like concat('%',#{content},'%') and
@@ -44,20 +44,26 @@
         <collection property="options" autoMapping="true" column="id" ofType="cn.org.alan.exam.model.entity.Option"
                     select="cn.org.alan.exam.mapper.OptionMapper.selectAllByQuestionId"/>
     </resultMap>
+
+    <resultMap id="singleExercise" autoMapping="true" type="cn.org.alan.exam.model.vo.QuestionVO">
+        <id column="id" property="id"/>
+        <collection property="options" autoMapping="true" column="id" ofType="cn.org.alan.exam.model.entity.Option"
+                    select="cn.org.alan.exam.mapper.OptionMapper.selectByQuestionId"/>
+    </resultMap>
     <!--    根据试题id获取单题详情 一对多查询-->
     <select id="selectSingle" resultMap="singleQuestion">
         select q.id,
-               q.content,
-               q.image,
-               q.analysis,
-               case q.qu_type
-                   when 1 then '单选题'
-                   when 2 then '多选题'
-                   when 3 then '判断题'
-                   when 4 then '简答题' end as quType,
-               r.title                      as repoTitle
+        q.content,
+        q.image,
+        q.analysis,
+        case q.qu_type
+        when 1 then '单选题'
+        when 2 then '多选题'
+        when 3 then '判断题'
+        when 4 then '简答题' end as quType,
+        r.title as repoTitle
         from t_question as q
-                 join t_repo as r on q.repo_id = r.id
+        join t_repo as r on q.repo_id = r.id
         where q.id = #{id}
     </select>
     <select id="selectIdsByUserIds" resultType="java.lang.Integer">
@@ -65,5 +71,28 @@
         <foreach collection="userIds" item="userId" open="(" close=")" separator=",">
             #{userId}
         </foreach>
+    </select>
+    <select id="selectQuestionSheet" resultType="cn.org.alan.exam.model.vo.exercise.QuestionSheetVO">
+        select q.id as quId,q.qu_type,q.repo_id,IF(er.id IS NULL, 0, 1) AS exercised,
+        er.is_right AS isRight from t_question as q left join
+        t_exercise_record as er on er.repo_id = q.repo_id and er.question_id = q.id and er.user_id = #{userId}
+        <trim prefix="where">
+            q.repo_id = #{repoId}
+            <if test="quType != null and quType != 0">
+                and q.qu_type = #{quType}
+            </if>
+        </trim>
+    </select>
+
+
+    <select id="selectDetail" resultMap="singleExercise">
+        select q.id,
+        q.content,
+        q.image,
+         q.qu_type,
+        r.title as repoTitle
+        from t_question as q
+        join t_repo as r on q.repo_id = r.id
+        where q.id = #{id}
     </select>
 </mapper>

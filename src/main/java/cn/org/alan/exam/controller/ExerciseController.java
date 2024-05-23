@@ -81,4 +81,10 @@ public class ExerciseController {
             @RequestParam(value = "title", required = false) String title) {
         return iRepoService.getRepo(pageNum, pageSize, title);
     }
+
+    @GetMapping("/question/{id}")
+    @PreAuthorize("hasAnyAuthority('role_student','role_teacher','role_admin')")
+    public Result<QuestionVO> getSingle(@PathVariable("id")Integer id){
+        return iExerciseRecordService.getSingle(id);
+    }
 }
