@@ -68,7 +68,7 @@ public class RecordController {
 
     /**
      * 查询刷题详情
-     * @param examId
+     * @param exerciseId
      * @return
      */
     @GetMapping("/exercise/detail")

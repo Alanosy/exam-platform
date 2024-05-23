@@ -13,10 +13,10 @@ import java.util.List;
  */
 @Data
 public class ExamQuestionListVO {
-    private List<ExamQuestion> radioList;
-    private List<ExamQuestion> multiList;
-    private List<ExamQuestion> judgeList;
-    private List<ExamQuestion> saqList;
+    private List<ExamQuestionVO> radioList;
+    private List<ExamQuestionVO> multiList;
+    private List<ExamQuestionVO> judgeList;
+    private List<ExamQuestionVO> saqList;
     private Integer examDuration;
     public Long leftSeconds;
 }

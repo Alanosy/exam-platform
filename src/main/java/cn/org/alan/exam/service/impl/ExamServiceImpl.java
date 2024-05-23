@@ -253,22 +253,35 @@ public class ExamServiceImpl extends ServiceImpl<ExamMapper, Exam> implements IE
             LambdaQueryWrapper<ExamQuestion> examQuestionLambdaQueryWrapper = new LambdaQueryWrapper<>();
             examQuestionLambdaQueryWrapper.eq(ExamQuestion::getExamId, examId)
                     .eq(ExamQuestion::getType,i);
-            List<ExamQuestion> examQuestions = examQuestionMapper.selectList(examQuestionLambdaQueryWrapper);
-            if(examQuestions.isEmpty()){
+            List<ExamQuestion> examQuestionList = examQuestionMapper.selectList(examQuestionLambdaQueryWrapper);
+            List<ExamQuestionVO> examQuestionVOS = examConverter.examQuestionListEntityToVO(examQuestionList);
+            for(ExamQuestionVO temp : examQuestionVOS){
+                LambdaQueryWrapper<ExamQuAnswer> examQuAnswerLambdaQueryWrapper = new LambdaQueryWrapper<>();
+                examQuAnswerLambdaQueryWrapper.eq(ExamQuAnswer::getQuestionId,temp.getQuestionId())
+                        .eq(ExamQuAnswer::getExamId,examId)
+                        .eq(ExamQuAnswer::getUserId,SecurityUtil.getUserId());
+                List<ExamQuAnswer> examQuAnswers = examQuAnswerMapper.selectList(examQuAnswerLambdaQueryWrapper);
+                if(examQuAnswers.size()>0){
+                    temp.setCheckout(true);
+                }else {
+                    temp.setCheckout(false);
+                }
+            }
+            if(examQuestionVOS.isEmpty()){
                 continue;
             }
             switch (i){
                 case 1->{
-                    examQuestionListVO.setRadioList(examQuestions);
+                    examQuestionListVO.setRadioList(examQuestionVOS);
                 }
                 case 2->{
-                    examQuestionListVO.setMultiList(examQuestions);
+                    examQuestionListVO.setMultiList(examQuestionVOS);
                 }
                 case 3->{
-                    examQuestionListVO.setJudgeList(examQuestions);
+                    examQuestionListVO.setJudgeList(examQuestionVOS);
                 }
                 case 4->{
-                    examQuestionListVO.setSaqList(examQuestions);
+                    examQuestionListVO.setSaqList(examQuestionVOS);
                 }
                 default -> {
 
@@ -301,7 +314,47 @@ public class ExamServiceImpl extends ServiceImpl<ExamMapper, Exam> implements IE
         LambdaQueryWrapper<Option> optionLambdaQuery = new LambdaQueryWrapper<>();
         optionLambdaQuery.eq(Option::getQuId, questionId);
         List<Option> list = optionMapper.selectList(optionLambdaQuery);
-        examQuDetailVO.setAnswerList(list);
+        List<OptionVO> optionVOS = examConverter.opListEntityToVO(list);
+        for(OptionVO temp :optionVOS){
+
+            LambdaQueryWrapper<ExamQuAnswer> examQuAnswerLambdaQueryWrapper = new LambdaQueryWrapper<>();
+            examQuAnswerLambdaQueryWrapper.eq(ExamQuAnswer::getQuestionId,temp.getQuId())
+                    .eq(ExamQuAnswer::getExamId,examId)
+                    .eq(ExamQuAnswer::getUserId,SecurityUtil.getUserId());
+            List<ExamQuAnswer> examQuAnswers = examQuAnswerMapper.selectList(examQuAnswerLambdaQueryWrapper);
+
+            if(examQuAnswers.size()>0){
+                for(ExamQuAnswer temp1 :examQuAnswers){
+                    Integer questionType = temp1.getQuestionType();
+                    String answerId = temp1.getAnswerId();
+                    String idstr = temp.getId().toString();
+                    switch (questionType){
+                        case 1,3->{
+                            if(answerId.equals(idstr)){
+                                temp.setCheckout(true);
+                            }else{
+                                temp.setCheckout(false);
+                            }
+                        }
+                        case 2->{
+                            // 解析用户作答
+                            List<Integer> quIds = Arrays.stream(temp1.getAnswerId().split(","))
+                                    .map(Integer::parseInt)
+                                    .toList();
+                            if(quIds.contains(temp.getId())){
+                                temp.setCheckout(true);
+                            }else{
+                                temp.setCheckout(false);
+                            }
+
+                        }
+                    }
+                    };
+                }
+
+        }
+
+        examQuDetailVO.setAnswerList(optionVOS);
         return Result.success("获取成功", examQuDetailVO);
     }
 
@@ -464,6 +517,15 @@ public class ExamServiceImpl extends ServiceImpl<ExamMapper, Exam> implements IE
                 }
             }
             case 3 -> {
+                LambdaQueryWrapper<Option> optionLambdaQueryWrapper = new LambdaQueryWrapper<>();
+                optionLambdaQueryWrapper.eq(Option::getId,examQuAnswerForm.getAnswer())
+                                .eq(Option::getQuId,examQuAnswerForm.getQuId());
+                Option option = optionMapper.selectOne(optionLambdaQueryWrapper);
+                if(option.getIsRight()==1){
+                    examQuAnswer.setIsRight(1);
+                }else{
+                    examQuAnswer.setIsRight(0);
+                }
                 examQuAnswerMapper.insert(examQuAnswer);
                 yield Result.success("请求成功");
             }
@@ -569,7 +631,7 @@ public class ExamServiceImpl extends ServiceImpl<ExamMapper, Exam> implements IE
                 examQuAnswerLambdaUpdateWrapper.eq(ExamQuAnswer::getUserId, SecurityUtil.getUserId())
                         .eq(ExamQuAnswer::getExamId, examQuAnswerForm.getExamId())
                         .eq(ExamQuAnswer::getQuestionId, examQuAnswerForm.getQuId())
-                        .set(ExamQuAnswer::getAnswerContent, examQuAnswerForm.getAnswer());
+                        .set(ExamQuAnswer::getAnswerId, examQuAnswerForm.getAnswer());
                 examQuAnswerMapper.update(examQuAnswerLambdaUpdateWrapper);
                 yield Result.success("请求成功");
             }
@@ -583,6 +645,7 @@ public class ExamServiceImpl extends ServiceImpl<ExamMapper, Exam> implements IE
     public ExamQuAnswer prepareExamQuAnswer(ExamQuAnswerAddForm form, Integer quType) {
         // 表单转换实体
         ExamQuAnswer examQuAnswer = examQuAnswerConverter.formToEntity(form);
+        examQuAnswer.setAnswerId(form.getAnswer());
         examQuAnswer.setUserId(SecurityUtil.getUserId());
         examQuAnswer.setQuestionType(quType);
         return examQuAnswer;

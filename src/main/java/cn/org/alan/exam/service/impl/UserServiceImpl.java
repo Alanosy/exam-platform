@@ -105,13 +105,13 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
             return Result.failed("两次密码不一致");
         }
         Integer userId = SecurityUtil.getUserId();
-        if (!new BCryptPasswordEncoder().matches(userForm.getOriginPassword(),
-                userMapper.selectById(userId).getPassword())) {
+        if (!new BCryptPasswordEncoder()
+                .matches(userForm.getOriginPassword(),userMapper.selectById(userId).getPassword())) {
             return Result.failed("旧密码错误");
         }
         //密码加密
         userForm.setPassword(new BCryptPasswordEncoder().encode(userForm.getNewPassword()));
-
+        userForm.setId(userId);
         int updated = userMapper.updateById(userConverter.fromToEntity(userForm));
         //密码修改成功清除redis的token，让用户重新登录
         if (updated > 0) {
