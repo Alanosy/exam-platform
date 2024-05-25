@@ -64,7 +64,9 @@ public class RepoServiceImpl extends ServiceImpl<RepoMapper, Repo> implements IR
     public Result<String> deleteRepoById(Integer id) {
 
         //题库内试题清空所属题库id
-        LambdaUpdateWrapper<Question> wrapper = new LambdaUpdateWrapper<Question>().set(Question::getRepoId, id);
+        LambdaUpdateWrapper<Question> wrapper = new LambdaUpdateWrapper<Question>()
+                .eq(Question::getRepoId, id)
+                .set(Question::getRepoId, null);
         questionMapper.update(wrapper);
         //删除题库
         int result = repoMapper.deleteById(id);
@@ -116,7 +118,7 @@ public class RepoServiceImpl extends ServiceImpl<RepoMapper, Repo> implements IR
             LambdaQueryWrapper<UserExerciseRecord> wrapper = new LambdaQueryWrapper<UserExerciseRecord>()
                     .select(UserExerciseRecord::getExerciseCount)
                     .eq(UserExerciseRecord::getUserId, SecurityUtil.getUserId())
-                    .eq(UserExerciseRecord::getRepoId,repoVO.getId());
+                    .eq(UserExerciseRecord::getRepoId, repoVO.getId());
 
             UserExerciseRecord userExerciseRecord = userExerciseRecordMapper.selectOne(wrapper);
             if (userExerciseRecord != null && userExerciseRecord.getExerciseCount() != 0) {
