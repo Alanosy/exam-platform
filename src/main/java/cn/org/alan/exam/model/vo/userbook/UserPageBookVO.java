@@ -13,6 +13,7 @@ import java.time.LocalDateTime;
  */
 @Data
 public class UserPageBookVO {
+    private String id;
     /**
      * 考试标题
      */

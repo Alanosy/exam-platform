@@ -115,7 +115,7 @@ public class UserBookServiceImpl extends ServiceImpl<UserBookMapper, UserBook> i
         addBookAnswerVO.setRightAnswers(result);
         // 判断是否正确并移除正确试题
         return switch (quType) {
-            case 0 -> {
+            case 1 -> {
                 Option byId = optionService.getById(reUserBookForm.getAnswer());
                 if (byId.getIsRight() == 1) {
                     LambdaQueryWrapper<UserBook> userBookLambdaQueryWrapper = new LambdaQueryWrapper<>();
@@ -131,7 +131,7 @@ public class UserBookServiceImpl extends ServiceImpl<UserBookMapper, UserBook> i
                 }
 
             }
-            case 1 -> {
+            case 2 -> {
                 // 查找正确答案
                 LambdaQueryWrapper<Option> optionWrapper = new LambdaQueryWrapper<>();
                 optionWrapper.eq(Option::getIsRight, 1)
@@ -155,7 +155,7 @@ public class UserBookServiceImpl extends ServiceImpl<UserBookMapper, UserBook> i
                 userBookMapper.delete(userBookWrapper);
                 yield Result.success("回答正确");
             }
-            case 2 -> {
+            case 3 -> {
                 Option byId = optionService.getById(reUserBookForm.getAnswer());
                 if (byId.getIsRight() == 1) {
                     LambdaQueryWrapper<UserBook> userBookLambdaQueryWrapper = new LambdaQueryWrapper<>();
@@ -170,7 +170,7 @@ public class UserBookServiceImpl extends ServiceImpl<UserBookMapper, UserBook> i
                     yield Result.success("回答错误", addBookAnswerVO);
                 }
             }
-            case 3 -> {
+            case 4 -> {
                 if("1".equals(reUserBookForm.getAnswer())){
                     LambdaQueryWrapper<UserBook> userBookLambdaQueryWrapper = new LambdaQueryWrapper<>();
                     userBookLambdaQueryWrapper.eq(UserBook::getUserId, SecurityUtil.getUserId())

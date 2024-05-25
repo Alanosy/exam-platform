@@ -22,7 +22,7 @@ import java.util.List;
  * @Date 2024/3/25 11:22 AM
  */
 @RestController
-@RequestMapping("/stat")
+@RequestMapping("/api/stat")
 public class StatController {
 
     @Resource

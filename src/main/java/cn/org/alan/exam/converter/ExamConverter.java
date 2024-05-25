@@ -2,6 +2,7 @@ package cn.org.alan.exam.converter;
 
 import cn.org.alan.exam.model.entity.Exam;
 import cn.org.alan.exam.model.entity.ExamQuestion;
+import cn.org.alan.exam.model.entity.Option;
 import cn.org.alan.exam.model.form.exam.ExamAddForm;
 import cn.org.alan.exam.model.form.exam.ExamUpdateForm;
 import cn.org.alan.exam.model.vo.exam.*;
@@ -32,4 +33,9 @@ public interface ExamConverter {
 
     ExamGradeListVO entityToExamGradeListVO(Exam exam);
 
+    ExamQuestionVO examQuestionEntityToVO(ExamQuestion examQuestion);
+
+    List<ExamQuestionVO> examQuestionListEntityToVO(List<ExamQuestion> examQuestion);
+
+    List<OptionVO> opListEntityToVO(List<Option> examQuestion);
 }
