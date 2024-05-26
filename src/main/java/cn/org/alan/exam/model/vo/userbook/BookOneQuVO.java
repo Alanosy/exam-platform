@@ -23,6 +23,12 @@ public class BookOneQuVO {
      * 题目内容
      */
     private String content;
+
+    /**
+     * 试题类型
+     */
+    private Integer quType;
+
     /**
      * 答案内容
      */

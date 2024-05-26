@@ -132,6 +132,7 @@ public class ExerciseRecordServiceImpl extends ServiceImpl<ExerciseRecordMapper,
             ExamRecordDetailVO examRecordDetailVO = new ExamRecordDetailVO();
             // 设置标题
             examRecordDetailVO.setTitle(temp.getContent());
+            examRecordDetailVO.setQuType(temp.getQuType());
             // 设置分析
             examRecordDetailVO.setAnalyse(temp.getAnalysis());
             // 查询试题选项

@@ -248,7 +248,7 @@ public class ExamServiceImpl extends ServiceImpl<ExamMapper, Exam> implements IE
         cl.add(Calendar.MINUTE, byId.getExamDuration());
         examQuestionListVO.setLeftSeconds((cl.getTimeInMillis() - System.currentTimeMillis()) / 1000);
         // 添加不同类型的试题列表
-        for (int i = 1;i<4;i++){
+        for (int i = 1;i<=4;i++){
             // 根据考试id查询考试试题表
             LambdaQueryWrapper<ExamQuestion> examQuestionLambdaQueryWrapper = new LambdaQueryWrapper<>();
             examQuestionLambdaQueryWrapper.eq(ExamQuestion::getExamId, examId)

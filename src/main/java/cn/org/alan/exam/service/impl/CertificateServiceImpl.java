@@ -5,8 +5,10 @@ import cn.org.alan.exam.converter.CertificateConverter;
 import cn.org.alan.exam.mapper.CertificateMapper;
 import cn.org.alan.exam.model.entity.Certificate;
 import cn.org.alan.exam.model.form.CertificateForm;
+import cn.org.alan.exam.model.vo.certificate.MyCertificateVO;
 import cn.org.alan.exam.service.ICertificateService;
 import cn.org.alan.exam.util.DateTimeUtil;
+import cn.org.alan.exam.util.SecurityUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.StringUtils;
@@ -127,6 +129,13 @@ public class CertificateServiceImpl extends ServiceImpl<CertificateMapper, Certi
         } else {
             return Result.failed("删除证书失败");
         }
+    }
+
+    @Override
+    public Result<IPage<MyCertificateVO>> getMyCertificatePaging(Integer pageNum, Integer pageSize) {
+        Page<MyCertificateVO> myCertificateVOPage = new Page<>();
+        myCertificateVOPage = certificateMapper.selectMyCertificate(myCertificateVOPage,pageNum,pageSize, SecurityUtil.getUserId());
+        return Result.success("查询成功",myCertificateVOPage);
     }
 
 }

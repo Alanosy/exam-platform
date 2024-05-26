@@ -5,6 +5,7 @@ import cn.org.alan.exam.common.group.CertificateGroup;
 import cn.org.alan.exam.common.result.Result;
 import cn.org.alan.exam.model.entity.Certificate;
 import cn.org.alan.exam.model.form.CertificateForm;
+import cn.org.alan.exam.model.vo.certificate.MyCertificateVO;
 import cn.org.alan.exam.service.ICertificateService;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import jakarta.annotation.Resource;
@@ -80,5 +81,18 @@ public class CertificateController {
     @PreAuthorize("hasAnyAuthority('role_teacher','role_admin')")
     public Result<String> deleteCertificate(@PathVariable("id") Integer id) {
         return iCertificateService.deleteCertificate(id);
+    }
+
+    /**
+     * 分页查已获证书
+     * @param pageNum
+     * @param pageSize
+     * @return
+     */
+    @GetMapping("/paging/my")
+    @PreAuthorize("hasAnyAuthority('role_teacher','role_admin','role_student')")
+    public Result<IPage<MyCertificateVO>>  getMyCertificate(@RequestParam(value = "pageNum",required = false, defaultValue = "1") Integer pageNum,
+                                                            @RequestParam(value = "pageSize",required = false, defaultValue = "10") Integer pageSize){
+        return iCertificateService.getMyCertificatePaging(pageNum, pageSize);
     }
 }
