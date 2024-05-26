@@ -21,8 +21,8 @@
         join t_user as u on ues.user_id = u.id
         join t_exam as e on ues.exam_id = e.id
         <trim prefix="where" prefixOverrides="and">
-            <if test="id != null">
-                u.grade_id = #{id}
+            <if test="gradeId != null">
+                u.grade_id = #{gradeId}
             </if>
             <if test="examId != null">
                 and ues.exam_id = #{examId}

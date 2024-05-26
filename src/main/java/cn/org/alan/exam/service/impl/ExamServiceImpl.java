@@ -666,28 +666,12 @@ public class ExamServiceImpl extends ServiceImpl<ExamMapper, Exam> implements IE
     }
 
     @Override
-    public Result<List<ExamGradeListVO>> getGradeExamList(Integer pageNum, Integer pageSize,String title) {
-        // 创建VO
-        List<ExamGradeListVO> examGradeListVOS = new ArrayList<>();
-        // 查找该用户的班级
-        LambdaQueryWrapper<User> userLambdaQueryWrapper = new LambdaQueryWrapper<>();
-        userLambdaQueryWrapper.eq(User::getId,SecurityUtil.getUserId());
-        User user = userMapper.selectOne(userLambdaQueryWrapper);
+    public Result<IPage<ExamGradeListVO>> getGradeExamList(Integer pageNum, Integer pageSize,String title) {
+        IPage<ExamGradeListVO> examPage = new Page<>(pageNum, pageSize);
         // 根据班级查找考试ID
-        LambdaQueryWrapper<ExamGrade> examLambda = new LambdaQueryWrapper<>();
-        examLambda.eq(ExamGrade::getGradeId, user.getGradeId());
-        List<ExamGrade> examGrades = examGradeMapper.selectList(examLambda);
+        examPage = examGradeMapper.selectClassExam(examPage,SecurityUtil.getGradeId(),title);
         //根据考试id查找考试
-        for(ExamGrade temp:examGrades){
-            LambdaQueryWrapper<Exam> examLambdaQueryWrapper = new LambdaQueryWrapper<>();
-            examLambdaQueryWrapper.eq(Exam::getId,temp.getExamId())
-                            .like(StringUtils.isNotBlank(title),Exam::getTitle,title);
-            Exam exam = examMapper.selectOne(examLambdaQueryWrapper);
-            if(exam!=null){
-                examGradeListVOS.add(examConverter.entityToExamGradeListVO(exam));
-            }
-        }
-        return Result.success("查询成功", examGradeListVOS);
+        return Result.success("查询成功", examPage);
     }
 
     @Override

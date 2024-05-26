@@ -25,5 +25,14 @@
                  left join t_user as u on g.id = u.grade_id
         where eg.exam_id = #{id}
     </select>
+    <select id="selectClassExam" resultType="cn.org.alan.exam.model.vo.exam.ExamGradeListVO">
+        select * from t_exam where
+        id in (select exam_id from t_exam_grade where grade_id = #{gradeId})
+        <if test="title != null">
+            and title like concat('%',#{title},'%')
+        </if>
+
+    </select>
+
 
 </mapper>

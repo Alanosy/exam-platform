@@ -11,8 +11,17 @@ import lombok.Data;
 public class AnswerExamVO {
     private Integer examId;
     private String examTitle;
+    /**
+     * 待阅卷数量
+     */
     private Integer neededMark;
+    /**
+     * 班级总人数
+     */
     private Integer classSize;
+    /**
+     * 已阅人数
+     */
     private Integer numberOfApplicants;
     private Integer correctedPaper;
 }

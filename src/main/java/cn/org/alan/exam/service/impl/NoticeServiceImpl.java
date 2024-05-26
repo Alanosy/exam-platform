@@ -4,6 +4,7 @@ import cn.org.alan.exam.common.result.Result;
 import cn.org.alan.exam.converter.NoticeConverter;
 import cn.org.alan.exam.mapper.NoticeMapper;
 import cn.org.alan.exam.model.entity.Notice;
+import cn.org.alan.exam.model.entity.User;
 import cn.org.alan.exam.model.form.NoticeForm;
 import cn.org.alan.exam.model.vo.NoticeVO;
 import cn.org.alan.exam.service.INoticeService;
@@ -91,9 +92,10 @@ public class NoticeServiceImpl extends ServiceImpl<NoticeMapper, Notice> impleme
         // 创建分页对象
         Page<Notice> page = new Page<>(pageNum, pageSize);
         // 创建查询条件
+        // LambdaQueryWrapper<User> userLambdaQueryWrapper = new LambdaQueryWrapper<>();
+
         LambdaQueryWrapper<Notice> noticeQueryWrapper = new LambdaQueryWrapper<>();
-        noticeQueryWrapper.eq(Notice::getUserId, SecurityUtil.getUserId())
-                .orderByDesc(Notice::getCreateTime);
+        noticeQueryWrapper.orderByDesc(Notice::getCreateTime);
         // 学生分页查询公告
         Page<Notice> gradePage = noticeMapper.selectPage(page, noticeQueryWrapper);
         return Result.success("查询成功", noticeConverter.pageEntityToVo(gradePage));

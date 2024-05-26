@@ -172,7 +172,7 @@ public class ExerciseRecordServiceImpl extends ServiceImpl<ExerciseRecordMapper,
                 continue;
             }
             switch (quType) {
-                case 0 -> {
+                case 1 -> {
                     // 设置自己的选项
                     LambdaQueryWrapper<Option> optionLambdaQueryWrapper = new LambdaQueryWrapper<>();
                     optionLambdaQueryWrapper.eq(Option::getId, examQuAnswer.getAnswerId());
@@ -186,7 +186,7 @@ public class ExerciseRecordServiceImpl extends ServiceImpl<ExerciseRecordMapper,
                         examRecordDetailVO.setIsRight(0);
                     }
                 }
-                case 1 -> {
+                case 2 -> {
                     // 将回答id解析为列表
                     String answerId = examQuAnswer.getAnswerId();
                     List<Integer> opIds = Arrays.stream(answerId.split(","))
@@ -219,7 +219,7 @@ public class ExerciseRecordServiceImpl extends ServiceImpl<ExerciseRecordMapper,
                         }
                     }
                 }
-                case 2 -> {
+                case 3 -> {
                     // 查询自己的的选项
                     LambdaQueryWrapper<Option> optionLambdaQueryWrapper = new LambdaQueryWrapper<>();
                     optionLambdaQueryWrapper.eq(Option::getId, examQuAnswer.getAnswerId());
@@ -233,7 +233,7 @@ public class ExerciseRecordServiceImpl extends ServiceImpl<ExerciseRecordMapper,
                         examRecordDetailVO.setIsRight(0);
                     }
                 }
-                case 3 -> {
+                case 4 -> {
                     examRecordDetailVO.setMyOption(examQuAnswer.getAnswerContent());
                     if ("1".equals(examQuAnswer.getAnswerId())) {
                         examRecordDetailVO.setIsRight(1);

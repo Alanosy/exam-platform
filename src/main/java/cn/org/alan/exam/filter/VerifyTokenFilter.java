@@ -60,7 +60,7 @@ public class VerifyTokenFilter extends OncePerRequestFilter {
             return;
         }
         // 校验jwt是否过期
-//        boolean verify = jwtUtil.verifyToken(authorization);
+       // boolean verify = jwtUtil.verifyToken(authorization);
 //        if (!verify) {
 //            responseUtil.response(response, Result.failed("token已过期，请重新登录"));
 //            return;
