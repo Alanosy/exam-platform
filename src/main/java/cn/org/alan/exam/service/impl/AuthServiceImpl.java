@@ -193,6 +193,7 @@ public class AuthServiceImpl implements IAuthService {
         User user = userConverter.fromToEntity(userForm);
 
         user.setPassword(new BCryptPasswordEncoder().encode(user.getPassword()));
+        user.setRoleId(1);
         userMapper.insert(user);
         // 注册成功把redis的是否通过校验验证码删除，防止用户注册后立马登录，还可以使用
         stringRedisTemplate.delete("isVerifyCode" + request.getSession().getId());
