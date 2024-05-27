@@ -89,6 +89,7 @@
         select q.id,
         q.content,
         q.image,
+        q.repo_id,
          q.qu_type,
         r.title as repoTitle
         from t_question as q
