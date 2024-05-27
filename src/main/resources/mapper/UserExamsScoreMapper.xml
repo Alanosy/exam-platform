@@ -60,6 +60,7 @@
         u.user_name,
         e.title as examTitle,
         ues.limit_time,
+        ues.exam_id,
         case ues.whether_mark
         when 1 then '是'
         when 0 then '否'
