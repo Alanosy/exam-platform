@@ -147,8 +147,15 @@ public class QuestionServiceImpl extends ServiceImpl<QuestionMapper, Question> i
             // 批量添加选项
             List<Option> options = questionFrom.getOptions();
             final int[] count = {0};
-            options.forEach(option -> option.setSort(++count[0]));
-            options.forEach(option -> option.setQuId(question.getId()));
+            options.forEach(option -> {
+                //简答题答案默认给正确
+                if(question.getQuType() == 4){
+                    option.setIsRight(1);
+                }
+                option.setSort(++count[0]);
+                option.setQuId(question.getId());
+            });
+
             // 避免简答题没有答案
             if (!options.isEmpty()) {
                 optionMapper.insertBatch(options);

@@ -205,6 +205,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
     @Override
     public Result<UserVO> info() {
         UserVO userVo = userMapper.info(SecurityUtil.getUserId());
+        userVo.setPassword(null);
         return Result.success(null, userVo);
     }
 
@@ -217,6 +218,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
             return Result.failed("班级口令不存在");
         }
         User user = new User();
+        user.setId(SecurityUtil.getUserId());
         user.setGradeId(grade.getId());
         int updated = userMapper.updateById(user);
         if (updated > 0) {

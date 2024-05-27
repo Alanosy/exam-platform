@@ -89,7 +89,7 @@ public class AuthServiceImpl implements IAuthService {
         if (!encoder.matches(loginForm.getPassword(), user.getPassword())) {
             return Result.failed("密码错误");
         }
-
+        user.setPassword(null);
         // 根据用户Id获取权限
         List<String> permissions = roleMapper.selectCodeById(user.getRoleId());
 

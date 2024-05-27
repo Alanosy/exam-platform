@@ -66,12 +66,12 @@ public class VerifyTokenFilter extends OncePerRequestFilter {
 //            return;
 //        }
         // 验证token在redis中是否存在，key使用sessionId
-        if (Boolean.FALSE.equals(stringRedisTemplate.hasKey("token" + request.getSession().getId()))) {
+         if (Boolean.FALSE.equals(stringRedisTemplate.hasKey("token" + request.getSession().getId()))) {
             responseUtil.response(response, Result.failed("token无效，请重新登录"));
             return;
         }
         //自动续期
-        stringRedisTemplate.expire("token" + request.getSession().getId(),2, TimeUnit.HOURS);
+        stringRedisTemplate.expire("token" + request.getSession().getId(), 2, TimeUnit.HOURS);
         // 从jwt 获取用户信息和权限
         String userInfo = jwtUtil.getUser(authorization);
         List<String> authList = jwtUtil.getAuthList(authorization);

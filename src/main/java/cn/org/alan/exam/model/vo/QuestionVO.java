@@ -16,6 +16,7 @@ import java.util.List;
 public class QuestionVO {
     private Integer id;
     private String content;
+    private Integer repoId;
     private  String image;
     private String repoTitle;
     private String quType;

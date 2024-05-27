@@ -425,53 +425,63 @@ public class ExerciseRecordServiceImpl extends ServiceImpl<ExerciseRecordMapper,
             });
 
 
-            for (Integer option : options) {
-                if (!rightOptions.contains(option)) {
-                    flag = false;
-                    exerciseRecord.setIsRight(0);
-                    break;
-                }
-            }
-
-                //对是否第一次该题判断
-                LambdaQueryWrapper<ExerciseRecord> exerciseRecordLambdaQueryWrapper = new LambdaQueryWrapper<ExerciseRecord>()
-                        .eq(ExerciseRecord::getUserId, SecurityUtil.getUserId())
-                        .eq(ExerciseRecord::getRepoId, exerciseRecord.getRepoId())
-                        .eq(ExerciseRecord::getQuestionId, exerciseRecord.getQuestionId());
-                ExerciseRecord databaseExerciseRecord = exerciseRecordMapper.selectOne(exerciseRecordLambdaQueryWrapper);
-                boolean exercised = Optional.ofNullable(databaseExerciseRecord).isEmpty();
-                if (exercised) {
-                    //未做过该题，新增记录
-                    exerciseRecordMapper.insert(exerciseRecord);
-                    //获取该题库填作答记录
-                    LambdaQueryWrapper<UserExerciseRecord> exerciseRecordWrapper = new LambdaQueryWrapper<UserExerciseRecord>()
-                            .eq(UserExerciseRecord::getUserId, SecurityUtil.getUserId())
-                            .eq(UserExerciseRecord::getRepoId, exerciseRecord.getRepoId());
-                    UserExerciseRecord userExerciseRecord = userExerciseRecordMapper.selectOne(exerciseRecordWrapper);
-
-                    if (Optional.ofNullable(userExerciseRecord).isEmpty()) {
-                        //该题库用户首次刷题，添加一条记录
-                        LambdaQueryWrapper<Question> questionWrapper = new LambdaQueryWrapper<Question>()
-                                .eq(Question::getRepoId, exerciseRecord.getRepoId());
-                        int totalCount = questionMapper.selectCount(questionWrapper).intValue();
-                        UserExerciseRecord insertUserExerciseRecord = new UserExerciseRecord();
-                        insertUserExerciseRecord.setExerciseCount(1);
-                        insertUserExerciseRecord.setRepoId(exerciseRecord.getRepoId());
-                        insertUserExerciseRecord.setTotalCount(totalCount);
-                        userExerciseRecordMapper.insert(insertUserExerciseRecord);
-                    } else {
-                        //该题库非首次刷题，修改刷题数
-                        UserExerciseRecord updateUserExerciseRecord = new UserExerciseRecord();
-                        updateUserExerciseRecord.setId(userExerciseRecord.getId());
-                        updateUserExerciseRecord.setExerciseCount(userExerciseRecord.getExerciseCount() + 1);
-                        userExerciseRecordMapper.updateById(updateUserExerciseRecord);
+            if (options.size() != rightOptions.size()) {
+                flag = false;
+            } else {
+                for (Integer option : options) {
+                    if (!rightOptions.contains(option)) {
+                        flag = false;
+                        exerciseRecord.setIsRight(0);
+                        break;
                     }
-                } else {
-                    //已做过，修改答案
-                    exerciseRecord.setId(databaseExerciseRecord.getId());
-                    exerciseRecordMapper.updateById(exerciseRecord);
                 }
             }
+
+
+        }
+        if(flag){
+            exerciseRecord.setIsRight(1);
+        }else {
+            exerciseRecord.setIsRight(0);
+        }
+        //对是否第一次该题判断
+        LambdaQueryWrapper<ExerciseRecord> exerciseRecordLambdaQueryWrapper = new LambdaQueryWrapper<ExerciseRecord>()
+                .eq(ExerciseRecord::getUserId, SecurityUtil.getUserId())
+                .eq(ExerciseRecord::getRepoId, exerciseRecord.getRepoId())
+                .eq(ExerciseRecord::getQuestionId, exerciseRecord.getQuestionId());
+        ExerciseRecord databaseExerciseRecord = exerciseRecordMapper.selectOne(exerciseRecordLambdaQueryWrapper);
+        boolean exercised = Optional.ofNullable(databaseExerciseRecord).isEmpty();
+        if (exercised) {
+            //未做过该题，新增记录
+            exerciseRecordMapper.insert(exerciseRecord);
+            //获取该题库填作答记录
+            LambdaQueryWrapper<UserExerciseRecord> exerciseRecordWrapper = new LambdaQueryWrapper<UserExerciseRecord>()
+                    .eq(UserExerciseRecord::getUserId, SecurityUtil.getUserId())
+                    .eq(UserExerciseRecord::getRepoId, exerciseRecord.getRepoId());
+            UserExerciseRecord userExerciseRecord = userExerciseRecordMapper.selectOne(exerciseRecordWrapper);
+
+            if (Optional.ofNullable(userExerciseRecord).isEmpty()) {
+                //该题库用户首次刷题，添加一条记录
+                LambdaQueryWrapper<Question> questionWrapper = new LambdaQueryWrapper<Question>()
+                        .eq(Question::getRepoId, exerciseRecord.getRepoId());
+                int totalCount = questionMapper.selectCount(questionWrapper).intValue();
+                UserExerciseRecord insertUserExerciseRecord = new UserExerciseRecord();
+                insertUserExerciseRecord.setExerciseCount(1);
+                insertUserExerciseRecord.setRepoId(exerciseRecord.getRepoId());
+                insertUserExerciseRecord.setTotalCount(totalCount);
+                userExerciseRecordMapper.insert(insertUserExerciseRecord);
+            } else {
+                //该题库非首次刷题，修改刷题数
+                UserExerciseRecord updateUserExerciseRecord = new UserExerciseRecord();
+                updateUserExerciseRecord.setId(userExerciseRecord.getId());
+                updateUserExerciseRecord.setExerciseCount(userExerciseRecord.getExerciseCount() + 1);
+                userExerciseRecordMapper.updateById(updateUserExerciseRecord);
+            }
+        } else {
+            //已做过，修改答案
+            exerciseRecord.setId(databaseExerciseRecord.getId());
+            exerciseRecordMapper.updateById(exerciseRecord);
+        }
 
         //获取试题信息，返回给用户
         QuestionVO questionVO = questionMapper.selectSingle(exerciseRecord.getQuestionId());
