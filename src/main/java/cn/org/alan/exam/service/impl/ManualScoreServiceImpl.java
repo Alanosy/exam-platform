@@ -8,6 +8,7 @@ import cn.org.alan.exam.model.vo.answer.AnswerExamVO;
 import cn.org.alan.exam.model.vo.answer.UncorrectedUserVO;
 import cn.org.alan.exam.model.vo.answer.UserAnswerDetailVO;
 import cn.org.alan.exam.service.IManualScoreService;
+import cn.org.alan.exam.util.ClassTokenGenerator;
 import cn.org.alan.exam.util.SecurityUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
@@ -44,6 +45,8 @@ public class ManualScoreServiceImpl extends ServiceImpl<ManualScoreMapper, Manua
     private ExamQuAnswerMapper examQuAnswerMapper;
     @Resource
     private ManualScoreMapper manualScoreMapper;
+    @Resource
+    private CertificateUserMapper certificateUserMapper;
 
 
     @Override
@@ -83,6 +86,33 @@ public class ManualScoreServiceImpl extends ServiceImpl<ManualScoreMapper, Manua
                 .set(UserExamsScore::getWhetherMark, 1)
                 .setSql("user_score = user_score + " + manualTotalScore.get());
         userExamsScoreMapper.update(userExamsScoreLambdaUpdateWrapper);
+
+        //根据该考试是否有证书来给用户颁发对应证书
+        //判断该考试是否有证书
+        LambdaQueryWrapper<Exam> examWrapper = new LambdaQueryWrapper<Exam>()
+                .select(Exam::getId, Exam::getCertificateId, Exam::getPassedScore)
+                .eq(Exam::getId, correctAnswerFrom.getExamId());
+        Exam exam = examMapper.selectOne(examWrapper);
+        //不必对exam做非空验证，这里一定不为null
+        if (exam.getCertificateId() != null && exam.getCertificateId() > 0) {
+            //有证书 获取用户得分
+            LambdaQueryWrapper<UserExamsScore> examsScoreWrapper = new LambdaQueryWrapper<UserExamsScore>()
+                    .select(UserExamsScore::getId, UserExamsScore::getUserScore)
+                    .eq(UserExamsScore::getExamId, correctAnswerFrom.getExamId())
+                    .eq(UserExamsScore::getUserId, correctAnswerFrom.getUserId());
+            UserExamsScore userExamsScore = userExamsScoreMapper.selectOne(examsScoreWrapper);
+            //不必对userExamsScore做非空验证，这里一定不为null
+            if (userExamsScore.getUserScore() >= exam.getPassedScore()) {
+                //分数合格，判罚证书
+                CertificateUser certificateUser = new CertificateUser();
+                certificateUser.setUserId(correctAnswerFrom.getUserId());
+                certificateUser.setExamId(correctAnswerFrom.getExamId());
+                certificateUser.setCode(ClassTokenGenerator.generateClassToken(18));
+                certificateUser.setCertificateId(exam.getCertificateId());
+                certificateUserMapper.insert(certificateUser);
+            }
+
+        }
         return Result.success("批改成功");
     }
 
