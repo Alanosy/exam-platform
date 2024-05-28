@@ -57,24 +57,9 @@ public class QuestionFrom {
 //    @Valid
     private List<Option> options;
 
-    /**
-     * 简答题答案内容
-     */
-//    @NotBlank(message = "简答题答案不能为空", groups = QuestionGroup.QuestionAddGroup.class)
-    private String answer;
 
 
-    /**
-     * 校验简答题
-     *
-     * @return 是否通过检验
-     */
-//    @AssertTrue(message = "简答题答案不能为空，或题目类型不为简答题的试题选项不能少于两个",
-//            groups = QuestionGroup.QuestionAddGroup.class)
-//    public boolean judgeQuType() {
-//        return (quType == 4 && StringUtils.isNotBlank(answer)) ||
-//                (quType != 4 && Objects.nonNull(options) && options.size() > 2);
-//    }
+
 
 
 }
