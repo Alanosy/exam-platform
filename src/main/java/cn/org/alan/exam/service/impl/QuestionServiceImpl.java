@@ -51,11 +51,11 @@ public class QuestionServiceImpl extends ServiceImpl<QuestionMapper, Question> i
     @Override
     @Transactional
     public Result<String> addSingleQuestion(QuestionFrom questionFrom) {
-        // 简答题入参校验
-        if (questionFrom.getQuType() == 4 && StringUtils.isBlank(questionFrom.getAnswer())) {
-            return Result.failed("简答题答案不能为空");
-        }
-        // 非简答题入参校验
+        System.out.println("----------------");
+        System.out.println(questionFrom);
+
+
+        // 入参校验
         List<Option> options = questionFrom.getOptions();
         if (questionFrom.getQuType() != 4 && (Objects.isNull(options) || options.size() < 2)) {
             return Result.failed("非简答题的试题选项不能少于两个");
@@ -67,9 +67,9 @@ public class QuestionServiceImpl extends ServiceImpl<QuestionMapper, Question> i
         System.out.println("zhujian:" + question.getId());
         if (question.getQuType() == 4) {
             // 简答题添加选项
-            Option option = new Option();
+
+            Option option = questionFrom.getOptions().get(0);
             option.setQuId(question.getId());
-            option.setContent(questionFrom.getAnswer());
             optionMapper.insert(option);
         } else {
             // 非简答题添加选项
