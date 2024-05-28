@@ -5,13 +5,17 @@ import cn.hutool.captcha.LineCaptcha;
 import cn.org.alan.exam.common.result.Result;
 import cn.org.alan.exam.converter.UserConverter;
 import cn.org.alan.exam.mapper.RoleMapper;
+import cn.org.alan.exam.mapper.UserDailyLoginDurationMapper;
 import cn.org.alan.exam.mapper.UserMapper;
 import cn.org.alan.exam.model.entity.User;
+import cn.org.alan.exam.model.entity.UserDailyLoginDuration;
 import cn.org.alan.exam.model.form.Auth.LoginForm;
 import cn.org.alan.exam.model.form.UserForm;
 import cn.org.alan.exam.security.SysUserDetails;
 import cn.org.alan.exam.service.IAuthService;
+import cn.org.alan.exam.util.DateTimeUtil;
 import cn.org.alan.exam.util.JwtUtil;
+import cn.org.alan.exam.util.SecurityUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -32,6 +36,11 @@ import org.springframework.security.web.authentication.WebAuthenticationDetailsS
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
+import java.time.Duration;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
@@ -44,6 +53,8 @@ import java.util.concurrent.TimeUnit;
  */
 @Service
 public class AuthServiceImpl implements IAuthService {
+    private static final String HEARTBEAT_KEY_PREFIX = "user:heartbeat:";
+    private static final long HEARTBEAT_INTERVAL_MILLIS = 10 * 60 * 1000; // 10分钟
 
     @Resource
     private StringRedisTemplate stringRedisTemplate;
@@ -57,6 +68,8 @@ public class AuthServiceImpl implements IAuthService {
     private ObjectMapper objectMapper;
     @Resource
     private JwtUtil jwtUtil;
+    @Resource
+    private UserDailyLoginDurationMapper userDailyLoginDurationMapper;
 
     /**
      * 登录
@@ -103,7 +116,7 @@ public class AuthServiceImpl implements IAuthService {
 
         String token = jwtUtil.createJwt(userInfo, userPermissions.stream().map(String::valueOf).toList());
         // 把token放到redis中
-        stringRedisTemplate.opsForValue().set("token" + request.getSession().getId(), token, 2, TimeUnit.HOURS);
+        stringRedisTemplate.opsForValue().set("token" + request.getSession().getId(), token, 30, TimeUnit.SECONDS);
 
         // 封装用户的身份信息，为后续的身份验证和授权操作提供必要的输入
         // 创建UsernamePasswordAuthenticationToken  参数：用户信息，密码，权限列表
@@ -197,4 +210,51 @@ public class AuthServiceImpl implements IAuthService {
     }
 
 
+
+    /**
+     * 用户发送心跳，更新最后活跃时间。
+     *
+     * @return
+     */
+    @Override
+    @SneakyThrows(value = JsonProcessingException.class)
+    public Result<String> sendHeartbeat(HttpServletRequest request) {
+
+        String key = HEARTBEAT_KEY_PREFIX + SecurityUtil.getUserId();
+        String lastHeartbeatStr = stringRedisTemplate.opsForValue().getAndDelete(key);
+        LocalDateTime now = LocalDateTime.now(ZoneOffset.UTC);
+        stringRedisTemplate.opsForValue().set(key, now.toString());
+        if (lastHeartbeatStr != null) {
+            LocalDateTime lastHeartbeat = LocalDateTime.parse(lastHeartbeatStr);
+            Duration durationSinceLastHeartbeat = Duration.between(lastHeartbeat, LocalDateTime.now(ZoneOffset.UTC));
+            LocalDate date = DateTimeUtil.getDate();
+            // 实现累加逻辑，比如更新数据库中的记录
+            LambdaQueryWrapper<UserDailyLoginDuration> userDailyLoginDurationLambdaQueryWrapper = new LambdaQueryWrapper<>();
+            userDailyLoginDurationLambdaQueryWrapper.eq(UserDailyLoginDuration::getUserId,SecurityUtil.getUserId())
+                    .eq(UserDailyLoginDuration::getLoginDate, date);
+            List<UserDailyLoginDuration> userDailyLoginDurations =
+                    userDailyLoginDurationMapper.selectList(userDailyLoginDurationLambdaQueryWrapper);
+            if(userDailyLoginDurations.isEmpty()){
+                UserDailyLoginDuration userDailyLoginDuration = new UserDailyLoginDuration();
+                userDailyLoginDuration.setUserId(SecurityUtil.getUserId());
+                userDailyLoginDuration.setLoginDate(date);
+                userDailyLoginDuration.setTotalSeconds(0);
+                userDailyLoginDurationMapper.insert(userDailyLoginDuration);
+            }else {
+                UserDailyLoginDuration userDailyLoginDuration = new UserDailyLoginDuration();
+                userDailyLoginDuration.setTotalSeconds(userDailyLoginDurations.get(0)
+                        .getTotalSeconds()+(int)durationSinceLastHeartbeat.getSeconds());
+                userDailyLoginDuration.setId(userDailyLoginDurations.get(0).getId());
+                userDailyLoginDurationMapper.updateById(userDailyLoginDuration);
+            }
+        }
+        ArrayList<String> permissions = new ArrayList<>();
+        permissions.add(SecurityUtil.getRole());
+        SysUserDetails principal = (SysUserDetails) (SecurityContextHolder.getContext().getAuthentication().getPrincipal());
+        User user = principal.getUser();
+        String string = objectMapper.writeValueAsString(user);
+        String jwt = jwtUtil.createJwt(string, permissions);
+        stringRedisTemplate.opsForValue().set("token" + request.getSession().getId(), jwt, 30, TimeUnit.SECONDS);
+        return Result.success("请求成功",jwt);
+    }
 }

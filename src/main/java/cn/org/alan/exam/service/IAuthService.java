@@ -53,4 +53,6 @@ public interface IAuthService {
      * @return 响应结果
      */
     Result<String> register(HttpServletRequest request, UserForm userForm);
+
+    Result<String> sendHeartbeat(HttpServletRequest request);
 }

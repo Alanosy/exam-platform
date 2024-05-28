@@ -8,8 +8,13 @@ import cn.org.alan.exam.service.IAuthService;
 import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+
+import java.time.Duration;
+import java.time.LocalDateTime;
+import java.util.Map;
 
 /**
  * 权限管理
@@ -81,6 +86,9 @@ public class AuthController {
     public Result<String> verifyCode(HttpServletRequest request, @PathVariable("code") String code) {
         return iAuthService.verifyCode(request, code);
     }
-
+    @PostMapping("/track-presence")
+    public Result<String> trackPresence(HttpServletRequest request) {
+        return iAuthService.sendHeartbeat(request);
+    }
 
 }
