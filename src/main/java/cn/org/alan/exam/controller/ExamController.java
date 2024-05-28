@@ -158,7 +158,7 @@ public class ExamController {
      */
     @PutMapping("/cheat/{examId}")
     @PreAuthorize("hasAnyAuthority('role_teacher','role_admin','role_student')")
-    public Result<String> addCheat(@PathVariable("examId") @NotNull Integer examId) {
+    public Result<Integer> addCheat(@PathVariable("examId") @NotNull Integer examId) {
         return examService.addCheat(examId);
     }
 

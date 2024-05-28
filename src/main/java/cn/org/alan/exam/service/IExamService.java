@@ -92,7 +92,7 @@ public interface IExamService extends IService<Exam> {
      *
      * @return
      */
-    Result<String> addCheat(Integer examId);
+    Result<Integer> addCheat(Integer examId);
 
     /**
      * 填充答案

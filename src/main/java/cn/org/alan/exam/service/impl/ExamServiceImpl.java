@@ -14,6 +14,7 @@ import cn.org.alan.exam.service.IExamQuAnswerService;
 import cn.org.alan.exam.service.IExamService;
 import cn.org.alan.exam.service.IOptionService;
 import cn.org.alan.exam.service.IQuestionService;
+import cn.org.alan.exam.util.ClassTokenGenerator;
 import cn.org.alan.exam.util.SecurityUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
@@ -22,9 +23,11 @@ import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import jakarta.annotation.Resource;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.*;
@@ -69,6 +72,8 @@ public class ExamServiceImpl extends ServiceImpl<ExamMapper, Exam> implements IE
     private ExamQuAnswerConverter examQuAnswerConverter;
     @Resource
     private UserMapper userMapper;
+    @Resource
+    private CertificateUserMapper certificateUserMapper;
     @Override
     @Transactional
     public Result<String> createExam(ExamAddForm examAddForm) {
@@ -115,7 +120,9 @@ public class ExamServiceImpl extends ServiceImpl<ExamMapper, Exam> implements IE
         quTypeToScore.put(2, exam.getMultiScore());
         quTypeToScore.put(3, exam.getJudgeScore());
         quTypeToScore.put(4, exam.getSaqScore());
+        int sortCounter = 0;
         for (Map.Entry<Integer, Integer> entry : quTypeToCount.entrySet()) {
+            Map<Integer, Integer> questionSortMap = new HashMap<>();
             // 获取当前试题类型、试题数量、考试id、试题分数
             Integer quType = entry.getKey();
             Integer count = entry.getValue();
@@ -134,13 +141,26 @@ public class ExamServiceImpl extends ServiceImpl<ExamMapper, Exam> implements IE
             Collections.shuffle(typeQuestionIds);
             List<Integer> sampledIds = typeQuestionIds.subList(0, count);
             // 插入试题
-            if (sampledIds.isEmpty()) {
-                continue;
+            if (!sampledIds.isEmpty()) {
+                for (Integer qId : sampledIds) {
+                    questionSortMap.put(qId, sortCounter); // 为每个问题ID分配sort值
+                    sortCounter++; // 每插入一题，sort计数器增加
+                }
+                // 准备数据结构以符合Mapper方法的输入要求
+                List<Map<String, Object>> questionDetails = new ArrayList<>();
+                for (Map.Entry<Integer, Integer> sortEntry : questionSortMap.entrySet()) {
+                    Map<String, Object> detail = new HashMap<>();
+                    detail.put("questionId", sortEntry.getKey());
+                    detail.put("sort", sortEntry.getValue());
+                    questionDetails.add(detail);
+                }
+                // 调整Mapper方法以接受新的参数结构
+                int examQueRows = examQuestionMapper.insertQuestion(examId, quType, quScore, questionDetails);
+                if (examQueRows == 0) {
+                    return Result.failed("创建失败");
+                }
             }
-            int examQueRows = examQuestionMapper.insertQuestion(examId, quType, quScore, sampledIds);
-            if (examQueRows == 0) {
-                return Result.failed("创建失败");
-            }
+
         }
         return Result.success("创建成功");
     }
@@ -252,7 +272,8 @@ public class ExamServiceImpl extends ServiceImpl<ExamMapper, Exam> implements IE
             // 根据考试id查询考试试题表
             LambdaQueryWrapper<ExamQuestion> examQuestionLambdaQueryWrapper = new LambdaQueryWrapper<>();
             examQuestionLambdaQueryWrapper.eq(ExamQuestion::getExamId, examId)
-                    .eq(ExamQuestion::getType,i);
+                    .eq(ExamQuestion::getType,i)
+                    .orderByAsc(ExamQuestion::getSort);
             List<ExamQuestion> examQuestionList = examQuestionMapper.selectList(examQuestionLambdaQueryWrapper);
             List<ExamQuestionVO> examQuestionVOS = examConverter.examQuestionListEntityToVO(examQuestionList);
             for(ExamQuestionVO temp : examQuestionVOS){
@@ -327,6 +348,7 @@ public class ExamServiceImpl extends ServiceImpl<ExamMapper, Exam> implements IE
                 for(ExamQuAnswer temp1 :examQuAnswers){
                     Integer questionType = temp1.getQuestionType();
                     String answerId = temp1.getAnswerId();
+                    String answerContent = temp1.getAnswerContent();
                     String idstr = temp.getId().toString();
                     switch (questionType){
                         case 1,3->{
@@ -348,13 +370,22 @@ public class ExamServiceImpl extends ServiceImpl<ExamMapper, Exam> implements IE
                             }
 
                         }
+                        case 4->{
+                            temp.setContent(answerContent);
+                            examQuDetailVO.setAnswerList(optionVOS);
+                        }
+                        default -> {
+
+                        }
                     }
                     };
                 }
 
         }
+        if(quById.getQuType()!=4){
+            examQuDetailVO.setAnswerList(optionVOS);
+        }
 
-        examQuDetailVO.setAnswerList(optionVOS);
         return Result.success("获取成功", examQuDetailVO);
     }
 
@@ -418,11 +449,11 @@ public class ExamServiceImpl extends ServiceImpl<ExamMapper, Exam> implements IE
     }
 
     @Override
-    public Result<String> addCheat(Integer examId) {
+    public Result<Integer> addCheat(Integer examId) {
         // 检查是否正在考试
-        if(isUserTakingExam(examId)){
-            return Result.failed("没有考试在进行");
-        }
+        // if(isUserTakingExam(examId)){
+        //     return Result.failed("没有考试在进行");
+        // }
         LambdaQueryWrapper<UserExamsScore> userExamsScoreLambdaQuery = new LambdaQueryWrapper<>();
         userExamsScoreLambdaQuery.eq(UserExamsScore::getExamId, examId)
                 .eq(UserExamsScore::getUserId, SecurityUtil.getUserId());
@@ -431,11 +462,14 @@ public class ExamServiceImpl extends ServiceImpl<ExamMapper, Exam> implements IE
         // 操作次数，自动交卷
         if (userExamsScore.getCount() >= exam.getMaxCount()) {
             this.handExam(examId);
-            return Result.success("已超过最大切屏次数，已自动交卷");
+            return Result.success("已超过最大切屏次数，已自动交卷",1);
         }
-        userExamsScore.setCount(userExamsScore.getCount() + 1);
-        int insert = userExamsScoreMapper.insert(userExamsScore);
-        return Result.success("请勿切屏，最大切屏次数：" + exam.getMaxCount() + ",已切屏次数:" + userExamsScore.getCount());
+        LambdaUpdateWrapper<UserExamsScore> userExamsScoreLambdaUpdateWrapper = new LambdaUpdateWrapper<>();
+        userExamsScoreLambdaUpdateWrapper.eq(UserExamsScore::getExamId, examId)
+                .eq(UserExamsScore::getUserId, SecurityUtil.getUserId())
+                        .set(UserExamsScore::getCount,userExamsScore.getCount() + 1);
+        int insert = userExamsScoreMapper.update(userExamsScoreLambdaUpdateWrapper);
+        return Result.success("请勿切屏，最大切屏次数：" + exam.getMaxCount() + ",已切屏次数:" + (userExamsScore.getCount()+1),0);
     }
 
     @Override
@@ -469,7 +503,7 @@ public class ExamServiceImpl extends ServiceImpl<ExamMapper, Exam> implements IE
         // 根据试题类型进行修改
         ExamQuAnswer examQuAnswer = prepareExamQuAnswer(examQuAnswerForm, quType);
         return switch (quType) {
-            case 0 -> {
+            case 1 -> {
                 Option byId = optionService.getById(examQuAnswerForm.getAnswer());
                 if (byId.getIsRight() == 1) {
                     examQuAnswer.setIsRight(1);
@@ -481,7 +515,7 @@ public class ExamServiceImpl extends ServiceImpl<ExamMapper, Exam> implements IE
                     yield Result.success("请求成功");
                 }
             }
-            case 1 -> {
+            case 2 -> {
                 // 查找正确答案
                 LambdaQueryWrapper<Option> optionWrapper = new LambdaQueryWrapper<>();
                 optionWrapper.eq(Option::getIsRight, 1)
@@ -493,8 +527,7 @@ public class ExamServiceImpl extends ServiceImpl<ExamMapper, Exam> implements IE
                         .toList();
                 // 判读啊是否正确
                 for (Option temp : examQuAnswers) {
-                    boolean containsBanana = quIds.contains(temp.getId());
-                    if (containsBanana) {
+                    if (!quIds.contains(temp.getId())) {
                         examQuAnswer.setIsRight(0);
                         examQuAnswerMapper.insert(examQuAnswer);
                         yield Result.success("回答错误");
@@ -504,7 +537,7 @@ public class ExamServiceImpl extends ServiceImpl<ExamMapper, Exam> implements IE
                 examQuAnswerMapper.insert(examQuAnswer);
                 yield Result.success("回答正确");
             }
-            case 2 -> {
+            case 3 -> {
                 Option byId = optionService.getById(examQuAnswerForm.getAnswer());
                 if (byId.getIsRight() == 1) {
                     examQuAnswer.setIsRight(1);
@@ -516,12 +549,11 @@ public class ExamServiceImpl extends ServiceImpl<ExamMapper, Exam> implements IE
                     yield Result.success("请求成功");
                 }
             }
-            case 3 -> {
+            case 4 -> {
                 LambdaQueryWrapper<Option> optionLambdaQueryWrapper = new LambdaQueryWrapper<>();
-                optionLambdaQueryWrapper.eq(Option::getId,examQuAnswerForm.getAnswer())
-                                .eq(Option::getQuId,examQuAnswerForm.getQuId());
+                optionLambdaQueryWrapper.eq(Option::getQuId,examQuAnswerForm.getQuId());
                 Option option = optionMapper.selectOne(optionLambdaQueryWrapper);
-                if(option.getIsRight()==1){
+                if(option.getContent().equals(examQuAnswerForm.getAnswer())){
                     examQuAnswer.setIsRight(1);
                 }else{
                     examQuAnswer.setIsRight(0);
@@ -539,7 +571,7 @@ public class ExamServiceImpl extends ServiceImpl<ExamMapper, Exam> implements IE
     public Result<String> updateAnswerIfExists(ExamQuAnswerAddForm examQuAnswerForm, Integer quType) {
         // 根据试题类型进行修改
         return switch (quType) {
-            case 0 -> {
+            case 1 -> {
                 Option byId = optionService.getById(examQuAnswerForm.getAnswer());
                 if(byId == null){
                     yield Result.failed("数据库中不存在该试题，请联系管理员解决");
@@ -565,7 +597,7 @@ public class ExamServiceImpl extends ServiceImpl<ExamMapper, Exam> implements IE
                 }
 
             }
-            case 1 -> {
+            case 2 -> {
                 // 查找正确答案
                 LambdaQueryWrapper<Option> optionWrapper = new LambdaQueryWrapper<>();
                 optionWrapper.eq(Option::getIsRight, 1)
@@ -580,8 +612,7 @@ public class ExamServiceImpl extends ServiceImpl<ExamMapper, Exam> implements IE
                         .toList();
                 // 判读啊是否正确
                 for (Option temp : examQuAnswers) {
-                    boolean containsBanana = quIds.contains(temp.getId());
-                    if (containsBanana) {
+                    if (!quIds.contains(temp.getId())) {
                         LambdaUpdateWrapper<ExamQuAnswer> examQuAnswerWrapper = new LambdaUpdateWrapper<>();
                         examQuAnswerWrapper.eq(ExamQuAnswer::getUserId, SecurityUtil.getUserId())
                                 .eq(ExamQuAnswer::getExamId, examQuAnswerForm.getExamId())
@@ -601,7 +632,7 @@ public class ExamServiceImpl extends ServiceImpl<ExamMapper, Exam> implements IE
                 examQuAnswerMapper.update(examQuAnswerWrapper);
                 yield Result.success("回答正确");
             }
-            case 2 -> {
+            case 3 -> {
                 Option byId = optionService.getById(examQuAnswerForm.getAnswer());
                 if(byId == null){
                     yield Result.failed("数据库中不存在该试题，请联系管理员解决");
@@ -626,18 +657,16 @@ public class ExamServiceImpl extends ServiceImpl<ExamMapper, Exam> implements IE
                     yield Result.success("请求成功");
                 }
             }
-            case 3 -> {
+            case 4 -> {
                 LambdaUpdateWrapper<ExamQuAnswer> examQuAnswerLambdaUpdateWrapper = new LambdaUpdateWrapper<>();
                 examQuAnswerLambdaUpdateWrapper.eq(ExamQuAnswer::getUserId, SecurityUtil.getUserId())
                         .eq(ExamQuAnswer::getExamId, examQuAnswerForm.getExamId())
                         .eq(ExamQuAnswer::getQuestionId, examQuAnswerForm.getQuId())
-                        .set(ExamQuAnswer::getAnswerId, examQuAnswerForm.getAnswer());
+                        .set(ExamQuAnswer::getAnswerContent, examQuAnswerForm.getAnswer());
                 examQuAnswerMapper.update(examQuAnswerLambdaUpdateWrapper);
                 yield Result.success("请求成功");
             }
-            default -> {
-                yield Result.failed("请求错误，请联系管理员解决");
-            }
+            default -> Result.failed("请求错误，请联系管理员解决");
         };
     }
 
@@ -645,7 +674,12 @@ public class ExamServiceImpl extends ServiceImpl<ExamMapper, Exam> implements IE
     public ExamQuAnswer prepareExamQuAnswer(ExamQuAnswerAddForm form, Integer quType) {
         // 表单转换实体
         ExamQuAnswer examQuAnswer = examQuAnswerConverter.formToEntity(form);
-        examQuAnswer.setAnswerId(form.getAnswer());
+        if(quType==4) {
+            examQuAnswer.setAnswerContent(form.getAnswer());
+        }else{
+            examQuAnswer.setAnswerId(form.getAnswer());
+        }
+
         examQuAnswer.setUserId(SecurityUtil.getUserId());
         examQuAnswer.setQuestionType(quType);
         return examQuAnswer;
@@ -692,8 +726,8 @@ public class ExamServiceImpl extends ServiceImpl<ExamMapper, Exam> implements IE
         }
         // 设置考试状态
         UserExamsScore userExamsScore = new UserExamsScore();
+        userExamsScore.setUserScore(0);
         userExamsScore.setState(1);
-        //
 
         // 查询用户答题记录
         LambdaQueryWrapper<ExamQuAnswer> examQuAnswerLambdaQuery = new LambdaQueryWrapper<>();
@@ -703,18 +737,13 @@ public class ExamServiceImpl extends ServiceImpl<ExamMapper, Exam> implements IE
         // 客观分
         List<UserBook> userBookArrayList = new ArrayList<>();
         for (ExamQuAnswer temp : examQuAnswer) {
-            LambdaQueryWrapper<UserExamsScore> userExamsScoreLambdaQueryWrapper = new LambdaQueryWrapper<>();
-            userExamsScoreLambdaQueryWrapper.eq(UserExamsScore::getExamId,examId)
-                    .eq(UserExamsScore::getUserId,SecurityUtil.getUserId())
-                    .eq(UserExamsScore::getState,0);
-            UserExamsScore userExamsScore1 = userExamsScoreMapper.selectOne(userExamsScoreLambdaQueryWrapper);
             if (temp.getIsRight() == 1) {
                 if (temp.getQuestionType() == 1) {
-                    userExamsScore.setUserScore(userExamsScore1.getUserScore() + examOne.getRadioScore());
+                    userExamsScore.setUserScore(userExamsScore.getUserScore() + examOne.getRadioScore());
                 } else if (temp.getQuestionType() == 2) {
-                    userExamsScore.setUserScore(userExamsScore1.getUserScore() + examOne.getMultiScore());
+                    userExamsScore.setUserScore(userExamsScore.getUserScore() + examOne.getMultiScore());
                 } else if (temp.getQuestionType() == 3) {
-                    userExamsScore.setUserScore(userExamsScore1.getUserScore() + examOne.getJudgeScore());
+                    userExamsScore.setUserScore(userExamsScore.getUserScore() + examOne.getJudgeScore());
                 }
             } else if (temp.getIsRight() == 0) {
                 UserBook userBook = new UserBook();
@@ -729,6 +758,19 @@ public class ExamServiceImpl extends ServiceImpl<ExamMapper, Exam> implements IE
             // 把打错的问题加入错题本
             userBookMapper.addUserBookList(userBookArrayList);
         }
+        // 设置用户用时和提交试卷
+        userExamsScore.setLimitTime(nowTime);
+        // 开始时间
+        LambdaQueryWrapper<UserExamsScore> userExamsScoreLambdaQueryWrapper = new LambdaQueryWrapper<>();
+        userExamsScoreLambdaQueryWrapper.eq(UserExamsScore::getUserId,SecurityUtil.getUserId())
+                .eq(UserExamsScore::getExamId,examId);
+        UserExamsScore userExamsScore1 = userExamsScoreMapper.selectOne(userExamsScoreLambdaQueryWrapper);
+        LocalDateTime createTime = userExamsScore1.getCreateTime();
+        long secondsDifference =Duration.between(createTime, nowTime).getSeconds();
+        int differenceAsInteger = (int) secondsDifference;
+        // 检查是否在Integer范围内
+        // if (secondsDifference <= Integer.MAX_VALUE && secondsDifference >= Integer.MIN_VALUE)
+        userExamsScore.setUserTime(differenceAsInteger);
         // 添加总分和状态
         LambdaUpdateWrapper<UserExamsScore> userExamsScoreLambdaUpdate = new LambdaUpdateWrapper<>();
         userExamsScoreLambdaUpdate.eq(UserExamsScore::getUserId, SecurityUtil.getUserId())
@@ -742,6 +784,14 @@ public class ExamServiceImpl extends ServiceImpl<ExamMapper, Exam> implements IE
                     .eq(UserExamsScore::getUserId, SecurityUtil.getUserId());
             userExamsScoreMapper.update(userExamsScoreLambdaUpdateWrapper);
             return Result.success("提交成功，待老师阅卷");
+        }
+        if(userExamsScore.getUserScore()>=examOne.getPassedScore()){
+            CertificateUser certificateUser = new CertificateUser();
+            certificateUser.setCertificateId(examOne.getCertificateId());
+            certificateUser.setUserId(SecurityUtil.getUserId());
+            certificateUser.setExamId(examId);
+            certificateUser.setCode(ClassTokenGenerator.generateClassToken(18));
+            certificateUserMapper.insert(certificateUser);
         }
         LambdaUpdateWrapper<UserExamsScore> userExamsScoreLambdaUpdateWrapper = new LambdaUpdateWrapper<>();
         userExamsScoreLambdaUpdateWrapper.set(UserExamsScore::getWhetherMark, -1)
@@ -759,7 +809,13 @@ public class ExamServiceImpl extends ServiceImpl<ExamMapper, Exam> implements IE
         if(isUserTakingExam(examId)){
             return Result.failed("已经有考试正在进行");
         }
-
+        LambdaQueryWrapper<UserExamsScore> userExamsScoreLambdaQueryWrapper = new LambdaQueryWrapper<>();
+        userExamsScoreLambdaQueryWrapper.eq(UserExamsScore::getUserId,SecurityUtil.getUserId())
+                .eq(UserExamsScore::getExamId,examId);
+        List<UserExamsScore> userExamsScores = userExamsScoreMapper.selectList(userExamsScoreLambdaQueryWrapper);
+        if(!userExamsScores.isEmpty()){
+            return Result.failed("这场考试已考不能第二次考试");
+        }
         Exam exam = this.getById(examId);
         // 添加用户考试记录
         UserExamsScore userExamsScore = new UserExamsScore();
