@@ -41,5 +41,5 @@ public interface ExamMapper extends BaseMapper<Exam> {
      * @param userId
      * @return
      */
-    IPage<AnswerExamVO> selectMarkedList(@Param("page") IPage<AnswerExamVO> page, @Param("userId") Integer userId);
+    IPage<AnswerExamVO> selectMarkedList(@Param("page") IPage<AnswerExamVO> page, @Param("userId") Integer userId,String role);
 }

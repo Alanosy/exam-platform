@@ -12,16 +12,17 @@ public class AnswerExamVO {
     private Integer examId;
     private String examTitle;
     /**
-     * 待阅卷数量
+     * 是否需要阅卷
      */
     private Integer neededMark;
     /**
      * 班级总人数
      */
     private Integer classSize;
+
+    private Integer numberOfApplicants;
     /**
      * 已阅人数
      */
-    private Integer numberOfApplicants;
     private Integer correctedPaper;
 }

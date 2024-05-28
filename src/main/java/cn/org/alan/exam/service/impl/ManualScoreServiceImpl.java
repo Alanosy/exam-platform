@@ -10,6 +10,7 @@ import cn.org.alan.exam.model.vo.answer.UserAnswerDetailVO;
 import cn.org.alan.exam.service.IManualScoreService;
 import cn.org.alan.exam.util.SecurityUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -19,6 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
 
 /**
@@ -44,7 +46,6 @@ public class ManualScoreServiceImpl extends ServiceImpl<ManualScoreMapper, Manua
     private ManualScoreMapper manualScoreMapper;
 
 
-
     @Override
     public Result<List<UserAnswerDetailVO>> getDetail(Integer userId, Integer examId) {
         List<UserAnswerDetailVO> list = examQuAnswerMapper.selectUserAnswer(userId, examId);
@@ -56,6 +57,7 @@ public class ManualScoreServiceImpl extends ServiceImpl<ManualScoreMapper, Manua
     @Transactional
     public Result<String> correct(List<CorrectAnswerFrom> correctAnswerFroms) {
         List<ManualScore> list = new ArrayList<>(correctAnswerFroms.size());
+        AtomicInteger manualTotalScore = new AtomicInteger();
         correctAnswerFroms.forEach(correctAnswerFrom -> {
 
             //获取用户作答信息id
@@ -66,11 +68,21 @@ public class ManualScoreServiceImpl extends ServiceImpl<ManualScoreMapper, Manua
                     .eq(ExamQuAnswer::getQuestionId, correctAnswerFrom.getQuestionId());
 
             ManualScore manualScore = new ManualScore();
-            manualScore.setId(examQuAnswerMapper.selectOne(wrapper).getId());
+            manualScore.setExamQuAnswerId(examQuAnswerMapper.selectOne(wrapper).getId());
             manualScore.setScore(correctAnswerFrom.getScore());
             list.add(manualScore);
+            manualTotalScore.addAndGet(correctAnswerFrom.getScore());
         });
         manualScoreMapper.insertList(list);
+
+        //把用户考试记录修改为已批改，并把简答题分数添加进去
+        CorrectAnswerFrom correctAnswerFrom = correctAnswerFroms.get(0);
+        LambdaUpdateWrapper<UserExamsScore> userExamsScoreLambdaUpdateWrapper = new LambdaUpdateWrapper<UserExamsScore>()
+                .eq(UserExamsScore::getExamId, correctAnswerFrom.getExamId())
+                .eq(UserExamsScore::getUserId, correctAnswerFrom.getUserId())
+                .set(UserExamsScore::getWhetherMark, 1)
+                .setSql("user_score = user_score + " + manualTotalScore.get());
+        userExamsScoreMapper.update(userExamsScoreLambdaUpdateWrapper);
         return Result.success("批改成功");
     }
 
@@ -79,7 +91,8 @@ public class ManualScoreServiceImpl extends ServiceImpl<ManualScoreMapper, Manua
 
         Page<AnswerExamVO> page = new Page<>(pageNum, pageSize);
         //获取自己创建的考试
-        List<AnswerExamVO> list = examMapper.selectMarkedList(page, SecurityUtil.getUserId()).getRecords();
+        List<AnswerExamVO> list = examMapper.selectMarkedList(page, SecurityUtil.getUserId(), SecurityUtil.getRole()).getRecords();
+
         //获取相关信息
         list.forEach(answerExamVO -> {
             //需要参加考试人数
@@ -93,6 +106,10 @@ public class ManualScoreServiceImpl extends ServiceImpl<ManualScoreMapper, Manua
                     .eq(UserExamsScore::getWhetherMark, 1);
             answerExamVO.setCorrectedPaper(userExamsScoreMapper.selectCount(correctedWrapper).intValue());
         });
+        //移除不需要批改的试卷
+        page.setRecords(list.stream()
+                .filter(answerExamVO -> answerExamVO.getNeededMark() == 1)
+                .toList());
 
         return Result.success(null, page);
 

@@ -18,6 +18,7 @@ public class UserAnswerDetailVO {
     private String quImg;
     private String answer;
     private String refAnswer;
+    private Integer correctScore;
     private Integer totalScore;
 
 }
