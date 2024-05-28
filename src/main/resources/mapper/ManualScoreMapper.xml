@@ -3,7 +3,7 @@
 <mapper namespace="cn.org.alan.exam.mapper.ManualScoreMapper">
     <!--批量新增主观题分数-->
     <insert id="insertList">
-        insert into t_manuak_score(id, exam_qu_answer_id, user_id, score, create_time)
+        insert into t_manual_score(id, exam_qu_answer_id, user_id, score, create_time)
         values
         <foreach collection="manualScores" item="manualScore" separator=",">
             (null,#{manualScore.examQuAnswerId},#{manualScore.userId},#{manualScore.score},#{manualScore.createTime})
