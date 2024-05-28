@@ -48,7 +48,7 @@ public class JwtUtil {
      */
     public String createJwt(String userInfo, List<String> authList) {
         Date issDate = new Date();//签发时间
-       Date expireDate = new Date(issDate.getTime() + 1000 * 30);
+       Date expireDate = new Date(issDate.getTime() + 1000 * 60 *30);
         //定义头部信息
         Map<String, Object> headerClaims = new HashMap<>();
         headerClaims.put("alg", "HS256");//算法
