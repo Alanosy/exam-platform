@@ -469,8 +469,13 @@ public class ExerciseRecordServiceImpl extends ServiceImpl<ExerciseRecordMapper,
                 insertUserExerciseRecord.setTotalCount(totalCount);
                 userExerciseRecordMapper.insert(insertUserExerciseRecord);
             } else {
+                //修改题库总数，避免后续新增试题
+                LambdaQueryWrapper<Question> wrapper = new LambdaQueryWrapper<Question>()
+                        .eq(Question::getId, exerciseRecord.getRepoId());
+
                 //该题库非首次刷题，修改刷题数
                 UserExerciseRecord updateUserExerciseRecord = new UserExerciseRecord();
+                updateUserExerciseRecord.setTotalCount( questionMapper.selectCount(wrapper).intValue());
                 updateUserExerciseRecord.setId(userExerciseRecord.getId());
                 updateUserExerciseRecord.setExerciseCount(userExerciseRecord.getExerciseCount() + 1);
                 userExerciseRecordMapper.updateById(updateUserExerciseRecord);
