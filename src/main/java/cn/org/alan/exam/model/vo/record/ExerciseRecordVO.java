@@ -40,4 +40,5 @@ public class ExerciseRecordVO {
     @TableField(fill = FieldFill.INSERT)
     private LocalDateTime createTime;
 
+
 }

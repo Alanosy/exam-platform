@@ -19,4 +19,8 @@ public class ExerciseRecordDetailVO {
     private String rightOption;
     private Integer isRight;
     private String analyse;
+    /**
+     * 试题类型
+     */
+    private Integer quType;
 }

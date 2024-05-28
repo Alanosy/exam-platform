@@ -73,7 +73,7 @@ public class RecordController {
      */
     @GetMapping("/exercise/detail")
     @PreAuthorize("hasAnyAuthority('role_teacher','role_admin','role_student')")
-    public Result<List<ExerciseRecordDetailVO>> getExerciseRecordDetail(@RequestParam("examId") Integer exerciseId){
+    public Result<List<ExerciseRecordDetailVO>> getExerciseRecordDetail(@RequestParam("repoId") Integer exerciseId){
         return exerciseRecordService.getExerciseRecordDetail(exerciseId);
     }
 }
