@@ -2,7 +2,6 @@ package cn.org.alan.exam.controller;
 
 import cn.org.alan.exam.common.group.UserGroup;
 import cn.org.alan.exam.common.result.Result;
-import cn.org.alan.exam.model.entity.User;
 import cn.org.alan.exam.model.form.Auth.LoginForm;
 import cn.org.alan.exam.model.form.UserForm;
 import cn.org.alan.exam.service.IAuthService;
@@ -82,4 +81,6 @@ public class AuthController {
     public Result<String> verifyCode(HttpServletRequest request, @PathVariable("code") String code) {
         return iAuthService.verifyCode(request, code);
     }
+
+
 }

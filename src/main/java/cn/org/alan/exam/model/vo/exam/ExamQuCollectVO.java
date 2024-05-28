@@ -13,23 +13,26 @@ import java.util.List;
  */
 @Data
 public class ExamQuCollectVO {
-    private static final long serialVersionUID = 1L;
 
     /**
      * 图片
      */
     private String image;
+    /**
+     * 题干
+     */
+    private String title;
+    /**
+     * 选项
+     */
+    private List<Option> option;
+    /**
+     * 我的答案
+     */
+    private String myOption;
 
     /**
-     * 题目内容
+     * 试题类型
      */
-    private String content;
-    /**
-     * 答案内容
-     */
-    private List<Option> answerList;
-    /**
-     * 回答内容
-     */
-    private ExamQuAnswer examQuAnswer;
+    private Integer quType;
 }

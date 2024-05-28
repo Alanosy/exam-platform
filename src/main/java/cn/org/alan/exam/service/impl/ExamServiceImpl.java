@@ -10,6 +10,7 @@ import cn.org.alan.exam.model.form.exam.ExamAddForm;
 import cn.org.alan.exam.model.form.exam.ExamUpdateForm;
 import cn.org.alan.exam.model.form.examquanswer.ExamQuAnswerAddForm;
 import cn.org.alan.exam.model.vo.exam.*;
+import cn.org.alan.exam.model.vo.record.ExamRecordDetailVO;
 import cn.org.alan.exam.service.IExamQuAnswerService;
 import cn.org.alan.exam.service.IExamService;
 import cn.org.alan.exam.service.IOptionService;
@@ -392,47 +393,96 @@ public class ExamServiceImpl extends ServiceImpl<ExamMapper, Exam> implements IE
     @Override
     public Result<List<ExamQuCollectVO>> getCollect(Integer examId) {
         // 检查是否正在考试
-        if(isUserTakingExam(examId)){
+        if(!isUserTakingExam(examId)){
             return Result.failed("没有考试在进行");
         }
-        List<ExamQuCollectVO> examQuDetailVOS = new ArrayList<>();
-        // 获取考试题目的id
-        LambdaQueryWrapper<ExamQuestion> examQuLambdaQuery = new LambdaQueryWrapper<>();
-        examQuLambdaQuery.eq(ExamQuestion::getExamId, examId);
-        List<ExamQuestion> examQue = examQuestionMapper.selectList(examQuLambdaQuery);
-        for (ExamQuestion temp : examQue) {
+
+        List<ExamQuCollectVO> examQuCollectVOS = new ArrayList<>();
+        // 查询该考试的试题
+        LambdaQueryWrapper<ExamQuestion> examQuestionWrapper = new LambdaQueryWrapper<>();
+        examQuestionWrapper.eq(ExamQuestion::getExamId, examId);
+        List<ExamQuestion> examQuestions = examQuestionMapper.selectList(examQuestionWrapper);
+        List<Integer> quIds = examQuestions.stream()
+                .map(ExamQuestion::getQuestionId)
+                .collect(Collectors.toList());
+        // 查询题干列表
+        List<Question> questions = questionMapper.selectBatchIds(quIds);
+        for (Question temp : questions) {
+            // 创建返回对象
             ExamQuCollectVO examQuCollectVO = new ExamQuCollectVO();
-            // 问题
-            Question quById = questionService.getById(temp.getQuestionId());
-            // 基本信息
-            examQuCollectVO.setImage(quById.getImage());
-            examQuCollectVO.setContent(quById.getContent());
-            // 答案列表
-            LambdaQueryWrapper<Option> optionLambdaQuery = new LambdaQueryWrapper<>();
-            optionLambdaQuery.eq(Option::getQuId, temp.getQuestionId())
-                    .select(Option::getContent)
-                    .select(Option::getId)
-                    .select(Option::getSort)
-                    .select(Option::getImage)
-                    .select(Option::getQuId);
-            List<Option> list = optionMapper.selectList(optionLambdaQuery);
-            examQuCollectVO.setAnswerList(list);
-            // 回答内容
-            LambdaQueryWrapper<ExamQuAnswer> examQuAnswerLambdaQuery = new LambdaQueryWrapper<>();
-            examQuAnswerLambdaQuery.eq(ExamQuAnswer::getExamId, examId)
-                    .eq(ExamQuAnswer::getUserId, SecurityUtil.getUserId())
-                    .select(ExamQuAnswer::getId)
-                    .select(ExamQuAnswer::getQuestionId)
-                    .select(ExamQuAnswer::getCheckout)
-                    .select(ExamQuAnswer::getExamId)
-                    .select(ExamQuAnswer::getAnswerId)
-                    .select(ExamQuAnswer::getAnswerContent);
-            ExamQuAnswer examQuAnswer = examQuAnswerMapper.selectOne(examQuAnswerLambdaQuery);
-            examQuCollectVO.setExamQuAnswer(examQuAnswer);
-            // 添加到List
-            examQuDetailVOS.add(examQuCollectVO);
+            // 设置标题
+            examQuCollectVO.setTitle(temp.getContent());
+            examQuCollectVO.setQuType(temp.getQuType());
+
+            // 查询试题选项
+            LambdaQueryWrapper<Option> optionWrapper = new LambdaQueryWrapper<>();
+            optionWrapper.eq(Option::getQuId, temp.getId());
+            List<Option> options = optionMapper.selectList(optionWrapper);
+            if(temp.getQuType() ==4){
+                examQuCollectVO.setOption(null);
+            }else{
+                examQuCollectVO.setOption(options);
+            }
+
+
+            // 设置是否正确
+            LambdaQueryWrapper<ExamQuAnswer> examQuAnswerWrapper = new LambdaQueryWrapper<>();
+            examQuAnswerWrapper.eq(ExamQuAnswer::getUserId, SecurityUtil.getUserId())
+                    .eq(ExamQuAnswer::getExamId, examId)
+                    .eq(ExamQuAnswer::getQuestionId, temp.getId());
+            ExamQuAnswer examQuAnswer = examQuAnswerMapper.selectOne(examQuAnswerWrapper);
+            // 如果某题没有作答
+            if (examQuAnswer == null) {
+                examQuCollectVO.setMyOption(null);
+                examQuCollectVOS.add(examQuCollectVO);
+                continue;
+            }
+            switch (temp.getQuType()) {
+                case 1 -> {
+                    // 设置自己的选项
+                    LambdaQueryWrapper<Option> optionLambdaQueryWrapper = new LambdaQueryWrapper<>();
+                    optionLambdaQueryWrapper.eq(Option::getId, examQuAnswer.getAnswerId());
+                    Option op1 = optionMapper.selectOne(optionLambdaQueryWrapper);
+                    examQuCollectVO.setMyOption(Integer.toString(op1.getSort()));
+
+                }
+                case 2 -> {
+                    // 将回答id解析为列表
+                    String answerId = examQuAnswer.getAnswerId();
+                    List<Integer> opIds = Arrays.stream(answerId.split(","))
+                            .map(Integer::parseInt)
+                            .toList();
+                    // 添加选项顺序
+                    List<Integer> sorts = new ArrayList<>();
+                    for (Integer opId : opIds) {
+                        LambdaQueryWrapper<Option> optionLambdaQueryWrapper = new LambdaQueryWrapper<>();
+                        optionLambdaQueryWrapper.eq(Option::getId, opId);
+                        Option option = optionMapper.selectOne(optionLambdaQueryWrapper);
+                        sorts.add(option.getSort());
+                    }
+                    // 设置自己选的选项，选项为顺序 1为A，2为B...
+                    List<String> shortList = sorts.stream().map(String::valueOf).collect(Collectors.toList());
+                    String myOption = String.join(",", shortList);
+                    examQuCollectVO.setMyOption(myOption);
+                }
+                case 3 -> {
+                    // 查询自己的的选项
+                    LambdaQueryWrapper<Option> optionLambdaQueryWrapper = new LambdaQueryWrapper<>();
+                    optionLambdaQueryWrapper.eq(Option::getId, examQuAnswer.getAnswerId());
+                    Option op1 = optionMapper.selectOne(optionLambdaQueryWrapper);
+                    examQuCollectVO.setMyOption(Integer.toString(op1.getSort()));
+
+                }
+                case 4 -> {
+                    examQuCollectVO.setMyOption(examQuAnswer.getAnswerContent());
+                }
+                default -> {
+                }
+            }
+            ;
+            examQuCollectVOS.add(examQuCollectVO);
         }
-        return Result.success("查询成功", examQuDetailVOS);
+        return Result.success("查询成功", examQuCollectVOS);
     }
 
     @Override
