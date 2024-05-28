@@ -185,18 +185,18 @@ public class ExamServiceImpl extends ServiceImpl<ExamMapper, Exam> implements IE
             throw new AppException("修改失败");
         }
         // 修改考试班级
-        String gradeIdsStr = examUpdateForm.getGradeIds();
-        List<Integer> gradeIds = Arrays.stream(gradeIdsStr.split(","))
-                .map(Integer::parseInt)
-                .toList();
-        int examGradeRows = examGradeMapper.delExamGrade(examId);
-        if (examGradeRows == 0) {
-            throw new AppException("修改失败");
-        }
-        Integer gradeRows = examGradeMapper.addExamGrade(examId, gradeIds);
-        if (gradeRows == 0) {
-            throw new AppException("修改失败");
-        }
+        // String gradeIdsStr = examUpdateForm.getGradeIds();
+        // List<Integer> gradeIds = Arrays.stream(gradeIdsStr.split(","))
+        //         .map(Integer::parseInt)
+        //         .toList();
+        // int examGradeRows = examGradeMapper.delExamGrade(examId);
+        // if (examGradeRows == 0) {
+        //     throw new AppException("修改失败");
+        // }
+        // Integer gradeRows = examGradeMapper.addExamGrade(examId, gradeIds);
+        // if (gradeRows == 0) {
+        //     throw new AppException("修改失败");
+        // }
         return Result.success("修改成功");
     }
 
@@ -843,6 +843,32 @@ public class ExamServiceImpl extends ServiceImpl<ExamMapper, Exam> implements IE
             certificateUser.setCode(ClassTokenGenerator.generateClassToken(18));
             certificateUserMapper.insert(certificateUser);
         }
+        // 查询有简答题是否回答
+        Exam byId = this.getById(examId);
+        if(byId.getSaqCount()>0){
+            LambdaQueryWrapper<ExamQuAnswer> examQuAnswerLambdaQueryWrapper = new LambdaQueryWrapper<>();
+            examQuAnswerLambdaQueryWrapper.eq(ExamQuAnswer::getUserId,SecurityUtil.getUserId())
+                    .eq(ExamQuAnswer::getExamId,examId)
+                    .eq(ExamQuAnswer::getQuestionType,4);
+            List<ExamQuAnswer> examQuAnswers = examQuAnswerMapper.selectList(examQuAnswerLambdaQueryWrapper);
+            if(examQuAnswers.isEmpty()){
+                LambdaQueryWrapper<ExamQuestion> examQuestionLambdaQueryWrapper = new LambdaQueryWrapper<>();
+                examQuestionLambdaQueryWrapper.eq(ExamQuestion::getExamId,examId)
+                        .eq(ExamQuestion::getType,4);
+                List<ExamQuestion> examQuestions = examQuestionMapper.selectList(examQuestionLambdaQueryWrapper);
+                examQuestions.forEach(temp->{
+                    ExamQuAnswer examQuAnswer1 = new ExamQuAnswer();
+                    examQuAnswer1.setExamId(examId);
+                    examQuAnswer1.setUserId(SecurityUtil.getUserId());
+                    examQuAnswer1.setQuestionId(temp.getQuestionId());
+                    examQuAnswer1.setQuestionType(temp.getType());
+                    examQuAnswer1.setIsRight(-1);
+                    examQuAnswerMapper.insert(examQuAnswer1);
+                });
+            }
+
+        }
+
         LambdaUpdateWrapper<UserExamsScore> userExamsScoreLambdaUpdateWrapper = new LambdaUpdateWrapper<>();
         userExamsScoreLambdaUpdateWrapper.set(UserExamsScore::getWhetherMark, -1)
                 .eq(UserExamsScore::getExamId, examId)

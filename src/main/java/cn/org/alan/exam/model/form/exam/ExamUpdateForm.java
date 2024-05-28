@@ -54,8 +54,8 @@ public class ExamUpdateForm {
     /**
      * 考试班级
      */
-    @NotBlank(message = "班级不能为空")
-    @Pattern(regexp = "^\\d+(,\\d+)*$|^\\d+$", message = "班级参数错误，请将传输格式改为 1,2,3,4...且至少包含一个班级ID")
+    // @NotBlank(message = "班级不能为空")
+    // @Pattern(regexp = "^\\d+(,\\d+)*$|^\\d+$", message = "班级参数错误，请将传输格式改为 1,2,3,4...且至少包含一个班级ID")
     private String gradeIds;
 
     /**
@@ -76,9 +76,7 @@ public class ExamUpdateForm {
     @NotNull(message = "多选题分数不能为空")
     @Min(value = 0)
     private Integer multiScore;
-    /**
-     * 判断题数量
-     */
+
 
     /**
      * 判断题分数

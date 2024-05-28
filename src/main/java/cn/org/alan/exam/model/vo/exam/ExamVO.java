@@ -46,7 +46,7 @@ public class ExamVO {
     /**
      * 创建者id
      */
-    @TableField(fill = FieldFill.INSERT)
+
     private Integer userId;
 
     /**
@@ -72,7 +72,7 @@ public class ExamVO {
     /**
      * 多选题成绩     数据库存储*100，前端正常输入和展示/100
      */
-    private Integer multilScore;
+    private Integer multiScore;
 
     /**
      * 判断题数量
