@@ -2,6 +2,7 @@ package cn.org.alan.exam.controller;
 
 import cn.org.alan.exam.common.result.Result;
 import cn.org.alan.exam.model.vo.stat.AllStatsVO;
+import cn.org.alan.exam.model.vo.stat.DailyVO;
 import cn.org.alan.exam.model.vo.stat.GradeExamVO;
 import cn.org.alan.exam.model.vo.stat.GradeStudentVO;
 import cn.org.alan.exam.service.IStatService;
@@ -57,6 +58,13 @@ public class StatController {
     public Result<AllStatsVO> getAllCount(){
         return statService.getAllCount();
     }
+
+    @GetMapping("/daily")
+    @PreAuthorize("hasAnyAuthority('role_teacher','role_admin','role_student')")
+    public Result<List<DailyVO>> getDaily(){
+        return statService.getDaily();
+    }
+
 
 
 

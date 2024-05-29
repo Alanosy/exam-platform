@@ -5,7 +5,9 @@ import cn.org.alan.exam.common.result.Result;
 import cn.org.alan.exam.mapper.*;
 import cn.org.alan.exam.model.entity.ExamGrade;
 import cn.org.alan.exam.model.entity.Grade;
+import cn.org.alan.exam.model.entity.UserDailyLoginDuration;
 import cn.org.alan.exam.model.vo.stat.AllStatsVO;
+import cn.org.alan.exam.model.vo.stat.DailyVO;
 import cn.org.alan.exam.model.vo.stat.GradeExamVO;
 import cn.org.alan.exam.model.vo.stat.GradeStudentVO;
 import cn.org.alan.exam.service.IStatService;
@@ -16,6 +18,8 @@ import jakarta.annotation.Resource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -37,15 +41,9 @@ public class StatServiceImpl extends ServiceImpl<ExamGradeMapper, ExamGrade> imp
     private ExamMapper examMapper;
     @Resource
     private QuestionMapper questionMapper;
+    @Resource
+    private UserDailyLoginDurationMapper userDailyLoginDurationMapper;
 
-
-    @Autowired
-    public StatServiceImpl(StatMapper statMapper,GradeMapper gradeMapper, ExamMapper examMapper, QuestionMapper questionMapper) {
-        this.statMapper = statMapper;
-        this.gradeMapper = gradeMapper;
-        this.examMapper = examMapper;
-        this.questionMapper = questionMapper;
-    }
 
     /**
      * 各班人数统计信息
@@ -95,6 +93,12 @@ public class StatServiceImpl extends ServiceImpl<ExamGradeMapper, ExamGrade> imp
         allStatsVO.setExamCount(examMapper.selectCount(null).intValue());
         allStatsVO.setQuestionCount(questionMapper.selectCount(null).intValue());
         return Result.success("查询成功", allStatsVO);
+    }
+
+    @Override
+    public Result<List<DailyVO>> getDaily() {
+        List<DailyVO> daily = userDailyLoginDurationMapper.getDaily(SecurityUtil.getUserId());
+        return Result.success("请求成功",daily);
     }
 }
 
