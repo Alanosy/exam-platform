@@ -1,6 +1,9 @@
 package cn.org.alan.exam.model.vo.score;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
+
+import java.time.LocalDateTime;
 
 /**
  * @Author WeiJin
@@ -9,6 +12,14 @@ import lombok.Data;
  */
 @Data
 public class GradeScoreVO {
+    private Integer id;
+    private Integer examId;
+    private Integer gradeId;
+    private Integer passedScore;
+    private String examTitle;
+    private String gradeName;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
+    private LocalDateTime createTime;
     /**
      * 平均分
      */

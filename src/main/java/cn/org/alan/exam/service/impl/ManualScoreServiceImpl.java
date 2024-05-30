@@ -133,7 +133,8 @@ public class ManualScoreServiceImpl extends ServiceImpl<ManualScoreMapper, Manua
             answerExamVO.setNumberOfApplicants(userExamsScoreMapper.selectCount(numberWrapper).intValue());
             //已阅人数
             LambdaQueryWrapper<UserExamsScore> correctedWrapper = new LambdaQueryWrapper<UserExamsScore>()
-                    .eq(UserExamsScore::getWhetherMark, 1);
+                    .eq(UserExamsScore::getWhetherMark, 1)
+                    .eq(UserExamsScore::getExamId,answerExamVO.getExamId());
             answerExamVO.setCorrectedPaper(userExamsScoreMapper.selectCount(correctedWrapper).intValue());
         });
         //移除不需要批改的试卷

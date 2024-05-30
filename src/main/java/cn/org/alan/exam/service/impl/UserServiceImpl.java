@@ -80,19 +80,15 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
 
     @Override
     public Result<String> createUser(UserForm userForm) {
-
         userForm.setPassword(new BCryptPasswordEncoder().encode("123456"));
-
         //教师只能创建学生
         if ("role_teacher".equals(SecurityUtil.getRole())) {
             userForm.setRoleId(1);
         }
-
         //避免管理员创建用户不传递角色
         if (userForm.getRoleId() == null || userForm.getRoleId() == 0) {
             return Result.failed("请选择用户角色");
         }
-
         User user = userConverter.fromToEntity(userForm);
         userMapper.insert(user);
         return Result.success("用户创建成功");

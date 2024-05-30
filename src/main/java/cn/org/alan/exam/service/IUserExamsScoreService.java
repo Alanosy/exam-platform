@@ -2,6 +2,7 @@ package cn.org.alan.exam.service;
 
 import cn.org.alan.exam.common.result.Result;
 import cn.org.alan.exam.model.entity.UserExamsScore;
+import cn.org.alan.exam.model.vo.score.GradeScoreVO;
 import cn.org.alan.exam.model.vo.score.UserScoreVO;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.IService;
@@ -35,4 +36,13 @@ public interface IUserExamsScoreService extends IService<UserExamsScore> {
      * @param gradeId 班级id
      */
     void exportScores(HttpServletResponse response,Integer examId, Integer gradeId);
+
+    /**
+     * 根据班级分析考试情况
+     * @param pageNum 页码
+     * @param pageSize 每页记录数
+     * @param examTitle 考试名称
+     * @return 响应结果
+     */
+    Result<IPage<GradeScoreVO>> getExamScoreInfo(Integer pageNum, Integer pageSize, String examTitle,Integer gradeId);
 }

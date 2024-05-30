@@ -3,6 +3,7 @@ package cn.org.alan.exam.mapper;
 import cn.org.alan.exam.model.entity.Exam;
 import cn.org.alan.exam.model.entity.ExamGrade;
 import cn.org.alan.exam.model.vo.exam.ExamGradeListVO;
+import cn.org.alan.exam.model.vo.score.GradeScoreVO;
 import cn.org.alan.exam.model.vo.stat.GradeExamVO;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -25,10 +26,13 @@ public interface ExamGradeMapper extends BaseMapper<ExamGrade> {
 
     Integer delExamGrade(Integer id);
 
-
-
-
-
+    /**
+     * 分页获取考试班级用户信息
+     * @param page
+     * @param roleId
+     * @return
+     */
+    IPage<GradeScoreVO> getExamGrade(IPage<GradeScoreVO> page,String examTitle,Integer userId,Integer gradeId,Integer roleId);
 
 
     /**

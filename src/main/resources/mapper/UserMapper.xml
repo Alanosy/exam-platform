@@ -82,9 +82,8 @@
             <if test="roleId == null ">
                 and u.role_id in(1,2)
             </if>
-
-
         </trim>
+        order by u.create_time desc
     </select>
     <select id="stuExamPage">
         SELECT * FROM t_user WHERE id in (SELECT grade_id FROM t_exam_grade WHERE exam_id= #{exam_id})

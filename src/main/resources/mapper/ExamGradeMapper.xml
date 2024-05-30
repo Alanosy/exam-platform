@@ -11,7 +11,6 @@
     </insert>
 
 
-
     <delete id="delExamGrade">
         delete from t_exam_grade
         where
@@ -21,8 +20,8 @@
     <select id="selectClassSize" resultType="java.lang.Integer">
         select count(*)
         from t_exam_grade as eg
-                 left join t_grade as g on eg.grade_id = g.id
-                 left join t_user as u on g.id = u.grade_id
+        left join t_grade as g on eg.grade_id = g.id
+        left join t_user as u on g.id = u.grade_id
         where eg.exam_id = #{id}
     </select>
     <select id="selectClassExam" resultType="cn.org.alan.exam.model.vo.exam.ExamGradeListVO">
@@ -32,6 +31,31 @@
         <if test="title != null">
             and title like concat('%',#{title},'%')
         </if>
+
+    </select>
+    <resultMap id="examGrade" type="cn.org.alan.exam.model.vo.score.GradeScoreVO">
+        <id column="id" property="id"/>
+        <result column="passed_score" property="passedScore"/>
+    </resultMap>
+    <select id="getExamGrade" resultMap="examGrade">
+        select eg.id, eg.exam_id,eg.grade_id,e.create_time, e.title as examTitle,e.passed_score as passedScore
+        ,g.grade_name
+        from t_exam as e
+        left join t_exam_grade as eg on eg.exam_id = e.id
+        join t_grade as g on eg.grade_id = g.id
+        <trim prefix="where" prefixOverrides="and">
+            <if test='examTitle != null and examTitle != ""'>
+                e.title like concat('%',#{examTitle},'%')
+            </if>
+            <if test="roleId == 2">
+                and e.user_id = #{userId}
+            </if>
+            <if test="gradeId != null and gradeId != 0">
+                and eg.grade_id = #{gradeId}
+            </if>
+        </trim>
+        order by e.create_time desc
+
 
     </select>
 
