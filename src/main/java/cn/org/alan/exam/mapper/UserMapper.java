@@ -57,7 +57,7 @@ public interface UserMapper extends BaseMapper<User> {
      * @param roleId   角色Id
      * @return 查询结果集
      */
-    IPage<UserVO> pagingUser(IPage<UserVO> page, Integer gradeId, String realName, Integer roleId);
+    IPage<UserVO> pagingUser(IPage<UserVO> page, Integer gradeId, String realName,Integer userId, Integer roleId);
 
 
 

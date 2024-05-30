@@ -62,7 +62,7 @@ public class AnswerController {
     }
 
     /**
-     * 查询考试的用户
+     * 查询待批阅的用户
      * @param pageNum
      * @param pageSize
      * @param examId
