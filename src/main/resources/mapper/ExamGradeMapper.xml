@@ -26,8 +26,9 @@
         where eg.exam_id = #{id}
     </select>
     <select id="selectClassExam" resultType="cn.org.alan.exam.model.vo.exam.ExamGradeListVO">
-        select * from t_exam where
-        id in (select exam_id from t_exam_grade where grade_id = #{gradeId})
+        select *
+        from t_exam
+        where id in (select exam_id from t_exam_grade where grade_id in (select id from t_grade where user_id = #{userId}))
         <if test="title != null">
             and title like concat('%',#{title},'%')
         </if>

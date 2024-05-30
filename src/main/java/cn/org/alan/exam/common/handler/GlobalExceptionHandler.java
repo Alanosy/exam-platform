@@ -100,7 +100,7 @@ public class GlobalExceptionHandler {
     public Result<String> handleDuplicateKeyException(DuplicateKeyException e) {
         String name = e.getMessage().split(":")[2].split(" ")[3];
         log.error(e.getMessage(), e.getClass());
-        return Result.failed(name + "已存在");
+        return Result.failed("主键冲突" + name + "已存在");
     }
 
     /**

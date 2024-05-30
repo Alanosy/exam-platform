@@ -753,7 +753,7 @@ public class ExamServiceImpl extends ServiceImpl<ExamMapper, Exam> implements IE
     public Result<IPage<ExamGradeListVO>> getGradeExamList(Integer pageNum, Integer pageSize,String title) {
         IPage<ExamGradeListVO> examPage = new Page<>(pageNum, pageSize);
         // 根据班级查找考试ID
-        examPage = examGradeMapper.selectClassExam(examPage,SecurityUtil.getGradeId(),title);
+        examPage = examGradeMapper.selectClassExam(examPage,SecurityUtil.getUserId(),title);
         //根据考试id查找考试
         return Result.success("查询成功", examPage);
     }
