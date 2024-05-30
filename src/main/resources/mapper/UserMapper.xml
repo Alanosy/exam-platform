@@ -59,9 +59,16 @@
         when 1 then '学生'
         when 2 then '教师' end roleName,
         u.create_time,
-        g.grade_name
+        g.grade_name,
+        g.user_id
         from t_user as u
-        left join t_grade as g on u.grade_id = g.id
+        <if test="roleId == null || roleId == 0">
+            left join t_grade as g on u.grade_id = g.id
+        </if>
+
+        <if test="roleId != null and roleId == 1">
+            join t_grade as g on u.grade_id = g.id and g.user_id = #{userId}
+        </if>
         <trim prefixOverrides="and" prefix="where">
             <if test="gradeId != null and gradeId != 0">
                 u.grade_id = #{gradeId}

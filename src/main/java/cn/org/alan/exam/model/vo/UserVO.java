@@ -20,6 +20,10 @@ public class UserVO {
     private String password;
     private String avatar;
     private String gradeName;
+    /**
+     * 班级创建人Id
+     */
+    private Integer userId;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime createTime;
     private String status;

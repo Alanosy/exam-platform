@@ -231,9 +231,9 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
     public Result<IPage<UserVO>> pagingUser(Integer pageNum, Integer pageSize, Integer gradeId, String realName) {
         IPage<UserVO> page = new Page<>(pageNum, pageSize);
         if ("role_teacher".equals(SecurityUtil.getRole())) {
-            page = userMapper.pagingUser(page, gradeId, realName, 1);
+            page = userMapper.pagingUser(page, gradeId, realName, SecurityUtil.getUserId(),1);
         } else {
-            page = userMapper.pagingUser(page, gradeId, realName, null);
+            page = userMapper.pagingUser(page, gradeId, realName, SecurityUtil.getUserId(),null);
         }
 
         return Result.success(null, page);
