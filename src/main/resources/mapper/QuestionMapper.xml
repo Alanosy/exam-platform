@@ -12,11 +12,7 @@
     <!--    分页获取试题信息-->
     <select id="pagingQuestion" resultType="cn.org.alan.exam.model.vo.QuestionVO">
         select q.id,
-        case q.qu_type
-        when 1 then '单选题'
-        when 2 then '多选题'
-        when 3 then '判断题'
-        when 4 then '简答题' end as quType,
+        q.qu_type ,
         q.content,
         r.title as repoTitle,
         q.create_time
@@ -56,11 +52,7 @@
         q.content,
         q.image,
         q.analysis,
-        case q.qu_type
-        when 1 then '单选题'
-        when 2 then '多选题'
-        when 3 then '判断题'
-        when 4 then '简答题' end as quType,
+         q.qu_type,
         r.title as repoTitle
         from t_question as q
         join t_repo as r on q.repo_id = r.id

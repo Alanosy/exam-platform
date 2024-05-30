@@ -4,14 +4,26 @@
 
     <!--    根据用户Id列表，考试Id获取该考试的最高分、最低分、平均分、参考人数、及格人数-->
     <select id="scoreStatistics" resultType="cn.org.alan.exam.model.vo.score.GradeScoreVO">
-        select max(user_score) as maxScore, min(user_score) as minScore, avg(user_score) as avgScore,
-        count(user_score) as attendNum,count(case where user_score >= #{passedScore} then 1 end) as passedNum
-        from t_user_exam_score
-        where exam_id = #{examId}
-        and user_id in
-        <foreach collection="userIds" item="userId" separator="," open="(" close=")">
-            #{userId}
-        </foreach>
+        select ues.id,eg.grade_id,eg.exam_id, e.title as examTitle,g.grade_name,max(ues.user_score) as maxScore,
+        min(ues.user_score) as minScore,
+        avg(ues.user_score) as avgScore, count(ues.user_score) as attendNum
+        from t_exam_grade as eg
+        join t_user_exams_score as ues on eg.exam_id = ues.exam_id and (ues.whether_mark = -1 or ues.whether_mark = 1)
+        join t_user as u on ues.user_id = u.id and u.role_id = 1
+        join t_exam as e on eg.exam_id = e.id
+        join t_grade as g on eg.grade_id = g.id
+        <trim prefixOverrides="and" prefix="where">
+            <if test="gradeId != null and gradeId != 0">
+                eg.grade_id = #{gradeId}
+            </if>
+            <if test='examTitle != null and examTitle != ""'>
+                and e.title like concat('%',#{examTitle},'%')
+            </if>
+            <if test="roleId == 2">
+                g.user_id = #{userId}
+            </if>
+        </trim>
+
     </select>
 
     <!--    成绩分页查询-->
@@ -21,12 +33,7 @@
         join t_user as u on ues.user_id = u.id
         join t_exam as e on ues.exam_id = e.id
         <trim prefix="where" prefixOverrides="and">
-            <if test="gradeId != null">
-                u.grade_id = #{gradeId}
-            </if>
-            <if test="examId != null">
-                and ues.exam_id = #{examId}
-            </if>
+            u.grade_id = #{gradeId} and ues.exam_id = #{examId}
             <if test='realName != null and realName != ""'>
                 and u.real_name like concat('%',#{realName},'%')
             </if>

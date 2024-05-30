@@ -46,8 +46,8 @@ public class ScoreController {
     @PreAuthorize("hasAnyAuthority('role_teacher','role_admin')")
     public Result<IPage<UserScoreVO>> pagingScore(@RequestParam(value = "pageNum", required = false, defaultValue = "1") Integer pageNum,
                                                   @RequestParam(value = "pageSize", required = false, defaultValue = "10") Integer pageSize,
-                                                  @RequestParam(value = "gradeId", required = false) Integer gradeId,
-                                                  @RequestParam(value = "examId", required = false) Integer examId,
+                                                  @RequestParam(value = "gradeId") Integer gradeId,
+                                                  @RequestParam(value = "examId") Integer examId,
                                                   @RequestParam(value = "realName", required = false) String realName) {
         return iUserExamsScoreService.pagingScore(pageNum, pageSize, gradeId, examId, realName);
     }
@@ -61,8 +61,27 @@ public class ScoreController {
      */
     @GetMapping("/question/{examId}/{questionId}")
     @PreAuthorize("hasAnyAuthority('role_teacher','role_admin')")
-    public Result<QuestionAnalyseVO> questionAnalyse(@PathVariable("examId") Integer examId, @PathVariable("questionId") Integer questionId) {
+    public Result<QuestionAnalyseVO> questionAnalyse(@PathVariable("examId") Integer examId,
+                                                     @PathVariable("questionId") Integer questionId) {
         return iExamQuAnswerService.questionAnalyse(examId, questionId);
+    }
+
+
+    /**
+     * 根据班级分析考试情况
+     * @param pageNum 页码
+     * @param pageSize 每页记录数
+     * @param examTitle 考试名称
+     * @return 响应结果
+     */
+    @GetMapping("/getExamScore")
+    @PreAuthorize("hasAnyAuthority('role_teacher','role_admin')")
+    public Result<IPage<GradeScoreVO>> getExamScoreInfo(
+            @RequestParam(value = "pageNum",required = false,defaultValue = "1") Integer pageNum,
+            @RequestParam(value = "pageSize",required = false,defaultValue = "10") Integer pageSize,
+            @RequestParam(value = "examTitle",required = false) String examTitle,
+            @RequestParam(value = "gradeId" ,required = false) Integer gradeId){
+        return iUserExamsScoreService.getExamScoreInfo(pageNum,pageSize,examTitle,gradeId);
     }
 
     /**

@@ -21,14 +21,15 @@ import java.util.List;
 public interface UserExamsScoreMapper extends BaseMapper<UserExamsScore> {
 
     /**
-     * 根据用户Id列表，考试Id获取该考试的最高分、最低分、平均分
-     *
-     * @param userIds     用户Id列表
-     * @param examId      考试Id
-     * @param passedScore 及格分
+     * 考试班级用户成绩分析
+     * @param page 分页信息
+     * @param gradeId 班级Id
+     * @param examTitle 考试名称
+     * @param userId 用户Id
+     * @param roleId 角色Id
      * @return 结果
      */
-    GradeScoreVO scoreStatistics(List<Integer> userIds, Integer examId, Integer passedScore);
+    IPage<GradeScoreVO> scoreStatistics(IPage<GradeScoreVO> page ,Integer gradeId, String examTitle,Integer userId,Integer roleId);
 
     /**
      * 成绩分页查询
@@ -56,7 +57,8 @@ public interface UserExamsScoreMapper extends BaseMapper<UserExamsScore> {
 
     /**
      * 根据考试id获取未考试用户
-     * @param page 分页信息
+     *
+     * @param page   分页信息
      * @param examId 考试id
      * @return 查询结果
      */
