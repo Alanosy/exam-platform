@@ -113,7 +113,12 @@ public class UserBookServiceImpl extends ServiceImpl<UserBookMapper, UserBook> i
         }
         List<String> stringList = strings.stream().map(String::valueOf).collect(Collectors.toList());
         String result = String.join(",", stringList);
-        addBookAnswerVO.setRightAnswers(result);
+        if(quType ==4){
+            addBookAnswerVO.setRightAnswers(options.get(0).getContent());
+        }else{
+            addBookAnswerVO.setRightAnswers(result);
+        }
+
         // 判断是否正确并移除正确试题
         return switch (quType) {
             case 1 -> {

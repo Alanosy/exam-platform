@@ -2,9 +2,11 @@ package cn.org.alan.exam.mapper;
 
 import cn.org.alan.exam.model.entity.Grade;
 import cn.org.alan.exam.model.entity.User;
+import cn.org.alan.exam.model.vo.GradeVO;
 import cn.org.alan.exam.model.vo.stat.GradeExamVO;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
@@ -25,7 +27,5 @@ public interface GradeMapper extends BaseMapper<Grade> {
 
     Integer deleteByUserId(List<Integer> userIds);
 
-
-
-
+    Page<GradeVO> selectGradePage(Page<GradeVO> page, Integer userId , String gradeName, Integer role);
 }

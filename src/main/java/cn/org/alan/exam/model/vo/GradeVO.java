@@ -28,6 +28,11 @@ public class GradeVO {
     private Integer userId;
 
     /**
+     * 创建人名称
+     */
+    private String userName;
+
+    /**
      * 班级口令
      */
     private String code;

@@ -185,19 +185,6 @@ public class ExamServiceImpl extends ServiceImpl<ExamMapper, Exam> implements IE
         if (examRows == 0) {
             throw new AppException("修改失败");
         }
-        // 修改考试班级
-        // String gradeIdsStr = examUpdateForm.getGradeIds();
-        // List<Integer> gradeIds = Arrays.stream(gradeIdsStr.split(","))
-        //         .map(Integer::parseInt)
-        //         .toList();
-        // int examGradeRows = examGradeMapper.delExamGrade(examId);
-        // if (examGradeRows == 0) {
-        //     throw new AppException("修改失败");
-        // }
-        // Integer gradeRows = examGradeMapper.addExamGrade(examId, gradeIds);
-        // if (gradeRows == 0) {
-        //     throw new AppException("修改失败");
-        // }
         return Result.success("修改成功");
     }
 
@@ -208,22 +195,22 @@ public class ExamServiceImpl extends ServiceImpl<ExamMapper, Exam> implements IE
         List<Integer> examIds = Arrays.stream(ids.split(","))
                 .map(Integer::parseInt)
                 .toList();
-        int examRows = examMapper.delExam(examIds);
+        int examRows = examMapper.deleteExams(examIds);
         if (examRows == 0) {
             throw new AppException("删除失败，删除考试表时失败");
         }
         // 删除考试班级记录
-        int examGradeRows = examMapper.delExamGrade(examIds);
+        int examGradeRows = examMapper.deleteExamGrades(examIds);
         if (examGradeRows == 0) {
             throw new AppException("删除失败，删除考试班级表时失败");
         }
         // 删除考试题库记录
-        int examRepoRows = examMapper.delExamRepo(examIds);
+        int examRepoRows = examMapper.deleteExamRepos(examIds);
         if (examRepoRows == 0) {
             throw new AppException("删除失败，删除考试题库表时失败");
         }
         // 删除考试试题记录
-        int examQueRows = examMapper.delExamQue(examIds);
+        int examQueRows = examMapper.deleteExamQuestions(examIds);
         if (examQueRows == 0) {
             throw new AppException("删除失败，删除考试试题表时失败");
         }

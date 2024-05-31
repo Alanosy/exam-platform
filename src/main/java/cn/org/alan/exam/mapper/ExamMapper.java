@@ -20,13 +20,13 @@ import java.util.List;
 
 public interface ExamMapper extends BaseMapper<Exam> {
 
-    int delExam(List<Integer> examIds);
+    int deleteExams(List<Integer> examIds);
 
-    int delExamGrade(List<Integer> examIds);
+    int deleteExamGrades(List<Integer> examIds);
 
-    int delExamRepo(List<Integer> examIds);
+    int deleteExamRepos(List<Integer> examIds);
 
-    int delExamQue(List<Integer> examIds);
+    int deleteExamQuestions(List<Integer> examIds);
 
     /**
      * 删除用户创建的考试

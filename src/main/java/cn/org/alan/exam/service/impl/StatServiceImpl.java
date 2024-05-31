@@ -3,9 +3,7 @@ package cn.org.alan.exam.service.impl;
 import cn.org.alan.exam.mapper.ExamGradeMapper;
 import cn.org.alan.exam.common.result.Result;
 import cn.org.alan.exam.mapper.*;
-import cn.org.alan.exam.model.entity.ExamGrade;
-import cn.org.alan.exam.model.entity.Grade;
-import cn.org.alan.exam.model.entity.UserDailyLoginDuration;
+import cn.org.alan.exam.model.entity.*;
 import cn.org.alan.exam.model.vo.stat.AllStatsVO;
 import cn.org.alan.exam.model.vo.stat.DailyVO;
 import cn.org.alan.exam.model.vo.stat.GradeExamVO;
@@ -54,10 +52,10 @@ public class StatServiceImpl extends ServiceImpl<ExamGradeMapper, ExamGrade> imp
     public Result<List<GradeStudentVO>> getStudentGradeCount() {
         //获取班级
         List<GradeStudentVO> gradeStudentVOs;
-        if (SecurityUtil.getRole().equals("role_teacher")) {
+        if ("role_teacher".equals(SecurityUtil.getRole())) {
             gradeStudentVOs = statMapper.StudentGradeCount(2, SecurityUtil.getUserId());
         } else {
-            gradeStudentVOs = statMapper.StudentGradeCount(0, SecurityUtil.getUserId());
+            gradeStudentVOs = statMapper.StudentGradeCount(3, SecurityUtil.getUserId());
         }
 
         return Result.success("查询成功", gradeStudentVOs);
@@ -72,10 +70,10 @@ public class StatServiceImpl extends ServiceImpl<ExamGradeMapper, ExamGrade> imp
     public Result<List<GradeExamVO>> getExamGradeCount() {
         //获取班级
         List<GradeExamVO> gradeExamVOs;
-        if (SecurityUtil.getRole().equals("role_teacher")) {
+        if ("role_teacher".equals(SecurityUtil.getRole())) {
             gradeExamVOs = statMapper.ExamGradeCount(2, SecurityUtil.getUserId());
         } else {
-            gradeExamVOs = statMapper.ExamGradeCount(0, SecurityUtil.getUserId());
+            gradeExamVOs = statMapper.ExamGradeCount(3, SecurityUtil.getUserId());
         }
 
         return Result.success("查询成功", gradeExamVOs);
@@ -89,9 +87,19 @@ public class StatServiceImpl extends ServiceImpl<ExamGradeMapper, ExamGrade> imp
     @Override
     public Result<AllStatsVO> getAllCount() {
         AllStatsVO allStatsVO = new AllStatsVO();
-        allStatsVO.setClassCount(gradeMapper.selectCount(null).intValue());
-        allStatsVO.setExamCount(examMapper.selectCount(null).intValue());
-        allStatsVO.setQuestionCount(questionMapper.selectCount(null).intValue());
+        String role = SecurityUtil.getRole();
+        if("role_admin".equals(role)){
+            allStatsVO.setClassCount(gradeMapper.selectCount(null).intValue());
+            allStatsVO.setExamCount(examMapper.selectCount(null).intValue());
+            allStatsVO.setQuestionCount(questionMapper.selectCount(null).intValue());
+        }else if("role_teacher".equals(role)){
+            allStatsVO.setClassCount(gradeMapper.selectCount(new LambdaQueryWrapper<Grade>().eq(Grade::getUserId,
+                    SecurityUtil.getUserId())).intValue());
+            allStatsVO.setExamCount(examMapper.selectCount(
+                    new LambdaQueryWrapper<Exam>().eq(Exam::getUserId,SecurityUtil.getUserId())).intValue());
+            allStatsVO.setQuestionCount(questionMapper.selectCount(
+                    new LambdaQueryWrapper<Question>().eq(Question::getUserId,SecurityUtil.getUserId())).intValue());
+        }
         return Result.success("查询成功", allStatsVO);
     }
 

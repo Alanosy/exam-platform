@@ -53,7 +53,7 @@ public class GradeServiceImpl extends ServiceImpl<GradeMapper, Grade> implements
         Grade grade = gradeConverter.formToEntity(gradeForm);
         // 添加数据
         int rows = gradeMapper.insert(grade);
-        if (rows== 0) {
+        if (rows == 0) {
             return Result.failed("添加失败");
         }
         return Result.success("添加成功");
@@ -87,14 +87,19 @@ public class GradeServiceImpl extends ServiceImpl<GradeMapper, Grade> implements
     @Override
     public Result<IPage<GradeVO>> getPaging(Integer pageNum, Integer pageSize, String gradeName) {
         // 创建分页对象
-        Page<Grade> page = new Page<>(pageNum, pageSize);
+        Page<GradeVO> page = new Page<>(pageNum, pageSize);
         // 查询自己创建的班级
-        LambdaQueryWrapper<Grade> gradeQueryWrapper = new LambdaQueryWrapper<>();
-        gradeQueryWrapper.like(StringUtils.isNotBlank(gradeName), Grade::getGradeName, gradeName)
-                .eq(Grade::getUserId, SecurityUtil.getUserId());
-        // 实体转换
-        Page<Grade> gradePage = gradeMapper.selectPage(page, gradeQueryWrapper);
-        return Result.success("查询成功", gradeConverter.pageEntityToVo(gradePage));
+        Integer role= null;
+        if("role_teacher".equals(SecurityUtil.getRole())){
+            role = 2;
+        }else if("role_admin".equals(SecurityUtil.getRole())){
+            role = 3;
+        }else if("role_student".equals(SecurityUtil.getRole())){
+            role = 1;
+        }
+        page = gradeMapper.selectGradePage(page, SecurityUtil.getUserId(),gradeName,role);
+
+        return Result.success("查询成功",page);
     }
 
     @Override
@@ -114,10 +119,10 @@ public class GradeServiceImpl extends ServiceImpl<GradeMapper, Grade> implements
     @Override
     public Result<List<GradeVO>> getAllGrade() {
         LambdaQueryWrapper<Grade> gradeLambdaQueryWrapper = new LambdaQueryWrapper<>();
-        gradeLambdaQueryWrapper.eq(Grade::getUserId,SecurityUtil.getUserId());
+        gradeLambdaQueryWrapper.eq(Grade::getUserId, SecurityUtil.getUserId());
         List<Grade> grades = gradeMapper.selectList(gradeLambdaQueryWrapper);
         List<GradeVO> gradeVOS = gradeConverter.listEntityToVo(grades);
-        return Result.success("查询成功",gradeVOS);
+        return Result.success("查询成功", gradeVOS);
     }
 
 }

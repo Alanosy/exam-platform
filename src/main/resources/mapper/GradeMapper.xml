@@ -24,15 +24,19 @@
             #{userId}
         </foreach>
     </select>
+    <select id="selectGradePage" resultType="cn.org.alan.exam.model.vo.GradeVO">
+        select g.id as id,g.grade_name as gradeName, g.user_id as userId,u.user_name as userName,
+        g.code as code
+        from t_grade g
+        join t_user u on g.user_id = u.id
+        <where>
+            <if test="role==2">
+                g.user_id = #{userId}
+            </if>
 
-<!--    各班试卷统计-->
-<!--    <select id="ExamGradeCount" resultType="cn.org.alan.exam.model.vo.stat.GradeExamVO">-->
-<!--        select eg.grade_id as id ,g.grade_name ,count(*) as total from t_exam_grade as eg right join t_grade as g on eg.grade_id = g.id-->
-<!--        <trim prefix="where"  >-->
-<!--            <if test="roleId = 2">-->
-<!--                g.user_id = #{id}-->
-<!--            </if>-->
-<!--        </trim>-->
-<!--        group by eg.grade_id-->
-<!--    </select>-->
+            <if test="gradeName!=null">
+                and g.grade_name like concat('%',#{gradeName},'%')
+            </if>
+        </where>
+    </select>
 </mapper>
