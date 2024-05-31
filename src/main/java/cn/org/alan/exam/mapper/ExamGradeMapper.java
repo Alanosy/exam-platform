@@ -44,4 +44,7 @@ public interface ExamGradeMapper extends BaseMapper<ExamGrade> {
 
 
     IPage<ExamGradeListVO> selectClassExam(IPage<ExamGradeListVO> examPage, Integer userId,String title);
+
+    IPage<ExamGradeListVO> selectAdminClassExam(IPage<ExamGradeListVO> examPage, String title);
+
 }

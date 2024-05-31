@@ -43,10 +43,6 @@ public class ExerciseRecordServiceImpl extends ServiceImpl<ExerciseRecordMapper,
     @Resource
     private QuestionMapper questionMapper;
     @Resource
-    private QuestionConverter questionConverter;
-    @Resource
-    private UserExamsScoreMapper userExamsScoreMapper;
-    @Resource
     private ExamMapper examMapper;
     @Resource
     private RecordConverter recordConverter;
@@ -96,22 +92,10 @@ public class ExerciseRecordServiceImpl extends ServiceImpl<ExerciseRecordMapper,
     @Override
     public Result<IPage<ExamRecordVO>> getExamRecordPage(Integer pageNum, Integer pageSize) {
         // 创建page对象
-        Page<Exam> examPage = new Page<>(pageNum, pageSize);
-        // 查询该用户已考试的考试id
-        LambdaQueryWrapper<UserExamsScore> userExamsScoreWrapper = new LambdaQueryWrapper<>();
-        userExamsScoreWrapper.eq(UserExamsScore::getUserId, SecurityUtil.getUserId())
-                .select(UserExamsScore::getExamId);
-        List<UserExamsScore> userExamsScores = userExamsScoreMapper.selectList(userExamsScoreWrapper);
-        List<Integer> examIds = userExamsScores.stream()
-                .map(UserExamsScore::getExamId)
-                .collect(Collectors.toList());
-        // 查询考试表的考试信息
-        LambdaQueryWrapper<Exam> examWrapper = new LambdaQueryWrapper<>();
-        examWrapper.in(Exam::getId, examIds);
-        Page<Exam> examPageResult = examMapper.selectPage(examPage, examWrapper);
-        // 实体转换
-        Page<ExamRecordVO> examRecordVOPage = recordConverter.pageEntityToVo(examPageResult);
-        return Result.success("查询成功", examRecordVOPage);
+        Page<ExamRecordVO> examPage = new Page<>(pageNum, pageSize);
+        // 查询该用户已考试的考试
+        examPage = examMapper.getExamRecordPage(examPage, SecurityUtil.getUserId());
+        return Result.success("查询成功", examPage);
     }
 
     @Override

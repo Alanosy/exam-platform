@@ -19,8 +19,6 @@ import org.springframework.stereotype.Component;
 @Mapper(componentModel = "spring")
 public interface RecordConverter {
 
-    Page<ExamRecordVO> pageEntityToVo(Page<Exam> page);
-
     Page<ExerciseRecordVO> pageRepoEntityToVo(Page<Repo> page);
 
 }

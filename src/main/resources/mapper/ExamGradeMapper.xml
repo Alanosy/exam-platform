@@ -27,7 +27,7 @@
     <select id="selectClassExam" resultType="cn.org.alan.exam.model.vo.exam.ExamGradeListVO">
         select *
         from t_exam
-        where id in (select exam_id from t_exam_grade where grade_id in (select id from t_grade where user_id = #{userId}))
+        where id in (select exam_id from t_exam_grade where grade_id in (select grade_id from t_user where id = #{userId}))
         <if test="title != null">
             and title like concat('%',#{title},'%')
         </if>
@@ -55,6 +55,17 @@
             </if>
         </trim>
         order by e.create_time desc
+
+
+    </select>
+    <select id="selectAdminClassExam" resultType="cn.org.alan.exam.model.vo.exam.ExamGradeListVO">
+        select *
+        from t_exam
+        <where>
+        <if test="title != null">
+            and title like concat('%',#{title},'%')
+        </if>
+        </where>
 
 
     </select>

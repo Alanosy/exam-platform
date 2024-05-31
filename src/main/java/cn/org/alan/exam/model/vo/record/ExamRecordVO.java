@@ -116,6 +116,21 @@ public class ExamRecordVO {
     @TableField(fill = FieldFill.INSERT)
     private LocalDateTime createTime;
 
+    /**
+     * 用户用时  YYYY-MM-DD hh:mm:ss
+     */
+    private Integer userTime;
+
+    /**
+     * 用户得分
+     */
+    private Integer userScore;
+
+    /**
+     * 交卷时间  YYYY-MM-DD hh:mm:ss
+     */
+    private LocalDateTime limitTime;
+
 
 
 }
