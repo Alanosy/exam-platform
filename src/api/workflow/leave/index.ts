@@ -10,7 +10,7 @@ import { LeaveVO, LeaveQuery, LeaveForm } from '@/api/workflow/leave/types';
 
 export const listLeave = (query?: LeaveQuery): AxiosPromise<LeaveVO[]> => {
   return request({
-    url: '/demo/leave/list',
+    url: '/workflow/leave/list',
     method: 'get',
     params: query
   });
@@ -22,7 +22,7 @@ export const listLeave = (query?: LeaveQuery): AxiosPromise<LeaveVO[]> => {
  */
 export const getLeave = (id: string | number): AxiosPromise<LeaveVO> => {
   return request({
-    url: '/demo/leave/' + id,
+    url: '/workflow/leave/' + id,
     method: 'get'
   });
 };
@@ -33,7 +33,7 @@ export const getLeave = (id: string | number): AxiosPromise<LeaveVO> => {
  */
 export const addLeave = (data: LeaveForm): AxiosPromise<LeaveVO> => {
   return request({
-    url: '/demo/leave',
+    url: '/workflow/leave',
     method: 'post',
     data: data
   });
@@ -45,7 +45,7 @@ export const addLeave = (data: LeaveForm): AxiosPromise<LeaveVO> => {
  */
 export const updateLeave = (data: LeaveForm): AxiosPromise<LeaveVO> => {
   return request({
-    url: '/demo/leave',
+    url: '/workflow/leave',
     method: 'put',
     data: data
   });
@@ -57,7 +57,7 @@ export const updateLeave = (data: LeaveForm): AxiosPromise<LeaveVO> => {
  */
 export const delLeave = (id: string | number | Array<string | number>) => {
   return request({
-    url: '/demo/leave/' + id,
+    url: '/workflow/leave/' + id,
     method: 'delete'
   });
 };
