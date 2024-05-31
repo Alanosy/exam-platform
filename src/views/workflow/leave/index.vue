@@ -93,7 +93,7 @@
               size="small"
               type="primary"
               icon="Notification"
-              @click="handleCancelProcessApply(scope.row.processInstanceVo.id)"
+              @click="handleCancelProcessApply(scope.row.id)"
               >撤销</el-button
             >
           </template>

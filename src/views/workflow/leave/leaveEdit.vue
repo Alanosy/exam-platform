@@ -243,7 +243,7 @@ const handleStartWorkFlow = async (data: LeaveVO) => {
 };
 //审批记录
 const handleApprovalRecord = () => {
-  approvalRecordRef.value.init(processInstanceId.value);
+  approvalRecordRef.value.init(form.value.id);
 };
 //提交回调
 const submitCallback = async () => {

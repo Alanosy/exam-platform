@@ -67,17 +67,17 @@ const tabActiveName = ref('bpmn');
 const bpmnViewRef = ref<BpmnView>();
 
 //初始化查询审批记录
-const init = async (instanceId: string) => {
+const init = async (businessKey: string) => {
   visible.value = true;
   loading.value = true;
   tabActiveName.value = 'bpmn';
   historyList.value = [];
-  processApi.getHistoryRecord(instanceId).then((resp) => {
+  processApi.getHistoryRecord(businessKey).then((resp) => {
     historyList.value = resp.data;
     loading.value = false;
   });
   await nextTick(() => {
-    bpmnViewRef.value.init(instanceId);
+    bpmnViewRef.value.init(businessKey);
   });
 };
 

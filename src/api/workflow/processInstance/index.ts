@@ -29,33 +29,33 @@ export const getPageByFinish = (query: ProcessInstanceQuery): AxiosPromise<Proce
 };
 
 /**
- * 通过流程实例id获取历史流程图
+ * 通过业务id获取历史流程图
  */
-export const getHistoryImage = (processInstanceId: string) => {
+export const getHistoryImage = (businessKey: string) => {
   return request({
-    url: `/workflow/processInstance/getHistoryImage/${processInstanceId}` + '?t' + Math.random(),
+    url: `/workflow/processInstance/getHistoryImage/${businessKey}` + '?t' + Math.random(),
     method: 'get'
   });
 };
 
 /**
- * 通过流程实例id获取历史流程图运行中，历史等节点
+ * 通过业务id获取历史流程图运行中，历史等节点
  */
-export const getHistoryList = (instanceId: string): AxiosPromise<Record<string, any>> => {
+export const getHistoryList = (businessKey: string): AxiosPromise<Record<string, any>> => {
   return request({
-    url: `/workflow/processInstance/getHistoryList/${instanceId}` + '?t' + Math.random(),
+    url: `/workflow/processInstance/getHistoryList/${businessKey}` + '?t' + Math.random(),
     method: 'get'
   });
 };
 
 /**
  * 获取审批记录
- * @param processInstanceId 流程实例id
+ * @param businessKey 业务id
  * @returns
  */
-export const getHistoryRecord = (processInstanceId: string) => {
+export const getHistoryRecord = (businessKey: string) => {
   return request({
-    url: `/workflow/processInstance/getHistoryRecord/${processInstanceId}`,
+    url: `/workflow/processInstance/getHistoryRecord/${businessKey}`,
     method: 'get'
   });
 };
@@ -75,24 +75,24 @@ export const deleteRunInstance = (data: object) => {
 
 /**
  * 运行中的实例 删除程实例，删除历史记录，删除业务与流程关联信息
- * @param processInstanceId 流程实例id
+ * @param businessKey 业务id
  * @returns
  */
-export const deleteRunAndHisInstance = (processInstanceId: string | string[]) => {
+export const deleteRunAndHisInstance = (businessKey: string | string[]) => {
   return request({
-    url: `/workflow/processInstance/deleteRunAndHisInstance/${processInstanceId}`,
+    url: `/workflow/processInstance/deleteRunAndHisInstance/${businessKey}`,
     method: 'delete'
   });
 };
 
 /**
  * 已完成的实例 删除程实例，删除历史记录，删除业务与流程关联信息
- * @param processInstanceId 流程实例id
+ * @param businessKey 业务id
  * @returns
  */
-export const deleteFinishAndHisInstance = (processInstanceId: string | string[]) => {
+export const deleteFinishAndHisInstance = (businessKey: string | string[]) => {
   return request({
-    url: `/workflow/processInstance/deleteFinishAndHisInstance/${processInstanceId}`,
+    url: `/workflow/processInstance/deleteFinishAndHisInstance/${businessKey}`,
     method: 'delete'
   });
 };
@@ -112,12 +112,12 @@ export const getPageByCurrent = (query: ProcessInstanceQuery): AxiosPromise<Proc
 
 /**
  * 撤销流程
- * @param processInstanceId 流程实例id
+ * @param businessKey 业务id
  * @returns
  */
-export const cancelProcessApply = (processInstanceId: string) => {
+export const cancelProcessApply = (businessKey: string) => {
   return request({
-    url: `/workflow/processInstance/cancelProcessApply/${processInstanceId}`,
+    url: `/workflow/processInstance/cancelProcessApply/${businessKey}`,
     method: 'post'
   });
 };

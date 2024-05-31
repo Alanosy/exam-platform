@@ -51,7 +51,7 @@ const loading = ref(false);
 const bpmnVisible = ref(true);
 const historyList = ref([]);
 
-const init = (instanceId) => {
+const init = (businessKey) => {
   loading.value = true;
   bpmnVisible.value = true;
   nextTick(async () => {
@@ -67,7 +67,7 @@ const init = (instanceId) => {
         MoveCanvasModule
       ] as ModuleDeclaration[]
     });
-    const resp = await processApi.getHistoryList(instanceId);
+    const resp = await processApi.getHistoryList(businessKey);
     xml.value = resp.data.xml;
     taskList.value = resp.data.taskList;
     historyList.value = resp.data.historyList;
