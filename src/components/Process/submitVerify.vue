@@ -77,8 +77,8 @@
       </el-form>
       <template #footer>
         <div class="dialog-footer" style="float: right; padding-bottom: 20px">
-          <el-button v-loading="backLoading" type="primary" @click="handleBackProcess">确认</el-button>
-          <el-button v-loading="backLoading" @click="backVisible = false">取消</el-button>
+          <el-button :disabled="backButtonDisabled" type="primary" @click="handleBackProcess">确认</el-button>
+          <el-button :disabled="backButtonDisabled" @click="backVisible = false">取消</el-button>
         </div>
       </template>
     </el-dialog>
@@ -122,6 +122,7 @@ const selectCopyUserIds = ref<string>(undefined);
 // 驳回是否显示
 const backVisible = ref(false);
 const backLoading = ref(true);
+const backButtonDisabled = ref(true);
 // 可驳回得任务节点
 const taskNodeList = ref([]);
 //任务
@@ -234,9 +235,11 @@ const handleBackProcessOpen = async () => {
   backForm.value.messageType = ['1'];
   backVisible.value = true;
   backLoading.value = true;
+  backButtonDisabled.value = true;
   let data = await getTaskNodeList(task.value.processInstanceId);
   taskNodeList.value = data.data;
   backLoading.value = false;
+  backButtonDisabled.value = false;
   backForm.value.targetActivityId = taskNodeList.value[0].nodeId;
 };
 /** 驳回流程 */
@@ -245,9 +248,11 @@ const handleBackProcess = async () => {
   await proxy?.$modal.confirm('是否确认驳回到申请人？');
   loading.value = true;
   backLoading.value = true;
+  backButtonDisabled.value = true;
   await backProcess(backForm.value).finally(() => (loading.value = false));
   dialog.visible = false;
   backLoading.value = false;
+  backButtonDisabled.value = false;
   emits('submitCallback');
   proxy?.$modal.msgSuccess('操作成功');
 };
