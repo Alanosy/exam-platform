@@ -184,9 +184,9 @@ const handleSelectionChange = (selection: LeaveVO[]) => {
 /** 新增按钮操作 */
 const handleAdd = () => {
   proxy.$tab.closePage(proxy.$route);
-  proxy.$router.push(`/demo/leaveEdit/index/add/add`);
+  proxy.$router.push(`/workflow/leaveEdit/index/add/add`);
   proxy.$router.push({
-    path: `/demo/leaveEdit/index`,
+    path: `/workflow/leaveEdit/index`,
     query: {
       type: 'add'
     }
@@ -197,7 +197,7 @@ const handleAdd = () => {
 const handleUpdate = (row?: LeaveVO) => {
   proxy.$tab.closePage(proxy.$route);
   proxy.$router.push({
-    path: `/demo/leaveEdit/index`,
+    path: `/workflow/leaveEdit/index`,
     query: {
       id: row.id,
       type: 'update'
@@ -209,7 +209,7 @@ const handleUpdate = (row?: LeaveVO) => {
 const handleView = (row?: LeaveVO) => {
   proxy.$tab.closePage(proxy.$route);
   proxy.$router.push({
-    path: `/demo/leaveEdit/index`,
+    path: `/workflow/leaveEdit/index`,
     query: {
       id: row.id,
       type: 'view'
@@ -229,7 +229,7 @@ const handleDelete = async (row?: LeaveVO) => {
 /** 导出按钮操作 */
 const handleExport = () => {
   proxy?.download(
-    'demo/leave/export',
+    'workflow/leave/export',
     {
       ...queryParams.value
     },
