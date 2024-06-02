@@ -304,7 +304,7 @@ const submitForm = () => {
 const handleDownload = (row: OssVO) => {
   proxy?.$download.oss(row.ossId);
 };
-/** 用户状态修改  */
+/** 预览开关按钮  */
 const handlePreviewListResource = async (preview: boolean) => {
   let text = preview ? '启用' : '停用';
   try {
