@@ -53,17 +53,13 @@
         <el-table-column label="请假原因" align="center" prop="remark" />
         <el-table-column align="center" label="流程状态" min-width="70">
           <template #default="scope">
-            <dict-tag :options="wf_business_status" :value="scope.row.processInstanceVo.businessStatus"></dict-tag>
+            <dict-tag :options="wf_business_status" :value="scope.row.status"></dict-tag>
           </template>
         </el-table-column>
         <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
           <template #default="scope">
             <el-button
-              v-if="
-                scope.row.processInstanceVo.businessStatus === 'draft' ||
-                scope.row.processInstanceVo.businessStatus === 'cancel' ||
-                scope.row.processInstanceVo.businessStatus === 'back'
-              "
+              v-if="scope.row.status === 'draft' || scope.row.status === 'cancel' || scope.row.status === 'back'"
               v-hasPermi="['demo:leave:edit']"
               size="small"
               link
@@ -73,11 +69,7 @@
               >修改</el-button
             >
             <el-button
-              v-if="
-                scope.row.processInstanceVo.businessStatus === 'draft' ||
-                scope.row.processInstanceVo.businessStatus === 'cancel' ||
-                scope.row.processInstanceVo.businessStatus === 'back'
-              "
+              v-if="scope.row.status === 'draft' || scope.row.status === 'cancel' || scope.row.status === 'back'"
               v-hasPermi="['demo:leave:remove']"
               size="small"
               link
@@ -88,7 +80,7 @@
             >
             <el-button link type="primary" size="small" icon="View" @click="handleView(scope.row)">查看</el-button>
             <el-button
-              v-if="scope.row.processInstanceVo.businessStatus === 'waiting'"
+              v-if="scope.row.status === 'waiting'"
               link
               size="small"
               type="primary"
