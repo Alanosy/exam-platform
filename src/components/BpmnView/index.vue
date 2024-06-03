@@ -133,6 +133,7 @@ const genNodeDetailBox = (e, overlays, data) => {
                     <p>开始时间：${data.startTime || ''}</p>
                     <p>结束时间：${data.endTime || ''}</p>
                     <p>审批耗时：${data.runDuration || ''}</p>
+                    <p>流程版本：v${data.version || ''}</p>
                    </div>`
   });
 };
