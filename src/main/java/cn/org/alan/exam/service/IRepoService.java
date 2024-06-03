@@ -2,7 +2,8 @@ package cn.org.alan.exam.service;
 
 import cn.org.alan.exam.common.result.Result;
 import cn.org.alan.exam.model.entity.Repo;
-import cn.org.alan.exam.model.vo.RepoVO;
+import cn.org.alan.exam.model.vo.repo.RepoListVO;
+import cn.org.alan.exam.model.vo.repo.RepoVO;
 import cn.org.alan.exam.model.vo.exercise.ExerciseRepoVO;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.IService;
@@ -49,7 +50,7 @@ public interface IRepoService extends IService<Repo> {
      * @param repoTitle 题库名称
      * @return 响应结果
      */
-    Result<List<RepoVO>> getRepoList(String repoTitle);
+    Result<List<RepoListVO>> getRepoList(String repoTitle);
 
     /**
      * 分页查询题库

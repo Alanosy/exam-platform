@@ -58,6 +58,7 @@ public class UserExamsScoreServiceImpl extends ServiceImpl<UserExamsScoreMapper,
         Exam exam = examMapper.selectOne(wrapper);
         //生成表格并响应
         ExcelUtils.export(response, exam.getTitle(), scores, ExportScoreVO.class);
+
     }
 
     @Override

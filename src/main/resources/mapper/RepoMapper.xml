@@ -8,14 +8,14 @@
         </foreach>
     </delete>
 
-    <select id="pagingRepo" resultType="RepoVO">
+    <select id="pagingRepo" resultType="cn.org.alan.exam.model.vo.repo.RepoVO">
         select r.id,u.real_name,r.title,r.create_time from t_repo r join t_user u on r.user_id = u.id
         <where>
             <if test='title != null and title != ""'>
                 r.title like concat('%',#{title},'%')
             </if>
-            <if test='userId > 0'>
-                r.id = #{userId}
+            <if test='userId != 0'>
+                r.user_id = #{userId}
             </if>
         </where>
     </select>
@@ -25,6 +25,20 @@
         <trim prefix="where ">
             <if test='title != null and title != ""'>
                 r.title like concat('%',#{title},'%')
+            </if>
+        </trim>
+    </select>
+    <select id="selectRepoList" resultType="cn.org.alan.exam.model.vo.repo.RepoListVO">
+        select r.id,r.user_id,r.title, sum(case when q.qu_type = 1 then 1 else 0 end) as radioNum,
+        sum(case when q.qu_type = 2 then 1 else 0 end) as multiNum,
+        sum(case when q.qu_type = 3 then 1 else 0 end) as judgeNum,sum(case when q.qu_type = 4 then 1 else 0 end) as saqNum
+        from t_repo as r join t_question as q on r.id = q.repo_id group by r.id,r.title
+        <trim prefix="where" prefixOverrides="and">
+            <if test='repoTitle != null and repoTitle != ""'>
+                r.title like concat('%',#{repoTitle},'%')
+            </if>
+            <if test="userId != 0">
+                r.user_id = #{userId}
             </if>
         </trim>
     </select>

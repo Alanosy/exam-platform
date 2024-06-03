@@ -8,7 +8,8 @@ import cn.org.alan.exam.mapper.UserExerciseRecordMapper;
 import cn.org.alan.exam.model.entity.Question;
 import cn.org.alan.exam.model.entity.Repo;
 import cn.org.alan.exam.model.entity.UserExerciseRecord;
-import cn.org.alan.exam.model.vo.RepoVO;
+import cn.org.alan.exam.model.vo.repo.RepoListVO;
+import cn.org.alan.exam.model.vo.repo.RepoVO;
 import cn.org.alan.exam.model.vo.exercise.ExerciseRepoVO;
 import cn.org.alan.exam.service.IRepoService;
 import cn.org.alan.exam.util.SecurityUtil;
@@ -77,15 +78,14 @@ public class RepoServiceImpl extends ServiceImpl<RepoMapper, Repo> implements IR
     }
 
     @Override
-    public Result<List<RepoVO>> getRepoList(String repoTitle) {
-        LambdaQueryWrapper<Repo> wrapper = new LambdaQueryWrapper<Repo>()
-                .like(StringUtils.isNotBlank(repoTitle), Repo::getTitle, repoTitle)
-                .select(Repo::getId, Repo::getTitle);
+    public Result<List<RepoListVO>> getRepoList(String repoTitle) {
+        List<RepoListVO> list;
         if ("role_teacher".equals(SecurityUtil.getRole())) {
-            wrapper.eq(Repo::getUserId, SecurityUtil.getUserId());
+            list = repoMapper.selectRepoList(repoTitle, SecurityUtil.getUserId());
+        }else {
+           list =  repoMapper.selectRepoList(repoTitle, 0);
         }
-        List<Repo> repos = repoMapper.selectList(wrapper);
-        return Result.success(null, repoConverter.listEntityToVo(repos));
+        return Result.success("获取成功", list);
     }
 
     @Override
