@@ -4,36 +4,25 @@
       <div style="display: flex; justify-content: space-between">
         <div>
           <el-button
-            v-if="
-              routeParams.type === 'add' ||
-              (routeParams.type === 'update' &&
-                form.processInstanceVo &&
-                form.processInstanceVo.businessStatus &&
-                (form.processInstanceVo.businessStatus === 'draft' ||
-                  form.processInstanceVo.businessStatus === 'cancel' ||
-                  form.processInstanceVo.businessStatus === 'back'))
-            "
+            v-if="routeParams.type === 'add' ||
+                (routeParams.type === 'update' &&form.status &&
+                (form.status === 'draft' || form.status === 'cancel' || form.status === 'back'))"
             :loading="buttonLoading"
             type="info"
             @click="submitForm('draft')"
             >暂存</el-button
           >
           <el-button
-            v-if="
-              routeParams.type === 'add' ||
-              (routeParams.type === 'update' &&
-                form.processInstanceVo &&
-                (form.processInstanceVo.businessStatus === 'draft' ||
-                  form.processInstanceVo.businessStatus === 'cancel' ||
-                  form.processInstanceVo.businessStatus === 'back'))
-            "
+            v-if="routeParams.type === 'add' ||
+                (routeParams.type === 'update' && form.status &&
+                (form.status === 'draft' || form.status === 'cancel' || form.status === 'back'))"
             :loading="buttonLoading"
             type="primary"
             @click="submitForm('submit')"
             >提 交</el-button
           >
           <el-button
-            v-if="routeParams.type === 'approval' && form.processInstanceVo && form.processInstanceVo.businessStatus === 'waiting'"
+            v-if="routeParams.type === 'approval' && form.status && form.status === 'waiting'"
             :loading="buttonLoading"
             type="primary"
             @click="approvalVerifyOpen"
