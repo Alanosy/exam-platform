@@ -30,7 +30,7 @@
             @click="approvalVerifyOpen"
             >审批</el-button
           >
-          <el-button v-if="form.processInstanceId" type="primary" @click="handleApprovalRecord">流程进度</el-button>
+          <el-button v-if="form.status !== 'draft'" type="primary" @click="handleApprovalRecord">流程进度</el-button>
         </div>
         <div>
           <el-button style="float: right" @click="goBack()">返回</el-button>
@@ -82,8 +82,6 @@ const { proxy } = getCurrentInstance() as ComponentInternalInstance;
 const buttonLoading = ref(false);
 const loading = ref(true);
 const leaveTime = ref<Array<string>>([]);
-//流程实例id
-const processInstanceId = ref('');
 //路由参数
 const routeParams = ref<Record<string, any>>({});
 const options = [
@@ -125,8 +123,7 @@ const initFormData: LeaveForm = {
   endDate: undefined,
   leaveDays: undefined,
   remark: undefined,
-  status: undefined,
-  processInstanceId: undefined
+  status: undefined
 };
 const data = reactive<PageData<LeaveForm, LeaveQuery>>({
   form: { ...initFormData },

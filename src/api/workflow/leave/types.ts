@@ -6,7 +6,6 @@ export interface LeaveVO {
   leaveDays: number;
   remark: string;
   status?: string;
-  processInstanceId?: string;
 }
 
 export interface LeaveForm extends BaseEntity {
@@ -17,7 +16,6 @@ export interface LeaveForm extends BaseEntity {
   leaveDays?: number;
   remark?: string;
   status?: string;
-  processInstanceId?: string;
 }
 
 export interface LeaveQuery extends PageQuery {
