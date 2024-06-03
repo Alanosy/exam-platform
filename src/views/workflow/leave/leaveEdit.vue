@@ -4,18 +4,20 @@
       <div style="display: flex; justify-content: space-between">
         <div>
           <el-button
-            v-if="routeParams.type === 'add' ||
-                (routeParams.type === 'update' &&form.status &&
-                (form.status === 'draft' || form.status === 'cancel' || form.status === 'back'))"
+            v-if="
+              routeParams.type === 'add' ||
+              (routeParams.type === 'update' && form.status && (form.status === 'draft' || form.status === 'cancel' || form.status === 'back'))
+            "
             :loading="buttonLoading"
             type="info"
             @click="submitForm('draft')"
             >暂存</el-button
           >
           <el-button
-            v-if="routeParams.type === 'add' ||
-                (routeParams.type === 'update' && form.status &&
-                (form.status === 'draft' || form.status === 'cancel' || form.status === 'back'))"
+            v-if="
+              routeParams.type === 'add' ||
+              (routeParams.type === 'update' && form.status && (form.status === 'draft' || form.status === 'cancel' || form.status === 'back'))
+            "
             :loading="buttonLoading"
             type="primary"
             @click="submitForm('submit')"
@@ -28,7 +30,7 @@
             @click="approvalVerifyOpen"
             >审批</el-button
           >
-          <el-button v-if="processInstanceId" type="primary" @click="handleApprovalRecord">流程进度</el-button>
+          <el-button v-if="form.processInstanceId" type="primary" @click="handleApprovalRecord">流程进度</el-button>
         </div>
         <div>
           <el-button style="float: right" @click="goBack()">返回</el-button>
@@ -123,7 +125,8 @@ const initFormData: LeaveForm = {
   endDate: undefined,
   leaveDays: undefined,
   remark: undefined,
-  processInstanceVo: {}
+  status: undefined,
+  processInstanceId: undefined
 };
 const data = reactive<PageData<LeaveForm, LeaveQuery>>({
   form: { ...initFormData },
@@ -166,9 +169,6 @@ const getInfo = () => {
     leaveTime.value = [];
     leaveTime.value.push(form.value.startDate);
     leaveTime.value.push(form.value.endDate);
-    if (form.value.processInstanceVo) {
-      processInstanceId.value = form.value.processInstanceVo.id;
-    }
     loading.value = false;
     buttonLoading.value = false;
   });
