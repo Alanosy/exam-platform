@@ -1,7 +1,8 @@
 package cn.org.alan.exam.mapper;
 
 import cn.org.alan.exam.model.entity.Repo;
-import cn.org.alan.exam.model.vo.RepoVO;
+import cn.org.alan.exam.model.vo.repo.RepoListVO;
+import cn.org.alan.exam.model.vo.repo.RepoVO;
 import cn.org.alan.exam.model.vo.exercise.ExerciseRepoVO;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -45,4 +46,6 @@ public interface RepoMapper extends BaseMapper<Repo> {
      */
     IPage<ExerciseRepoVO> selectRepo(IPage<ExerciseRepoVO> page,
                                      String title);
+
+    List<RepoListVO> selectRepoList(String repoTitle, int userId);
 }

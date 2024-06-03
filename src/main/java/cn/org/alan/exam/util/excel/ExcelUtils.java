@@ -23,6 +23,7 @@ import java.lang.reflect.Field;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.net.URL;
+import java.net.URLEncoder;
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -864,7 +865,8 @@ public class ExcelUtils {
     private static void write(HttpServletResponse response, SXSSFWorkbook book, String fileName) throws IOException {
         response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
         response.setCharacterEncoding("utf-8");
-        String name = new String(fileName.getBytes("GBK"), "ISO8859_1") + XLSX;
+
+        String name = URLEncoder.encode(fileName, "UTF-8")+ XLSX ;
         response.addHeader("Content-Disposition", "attachment;filename=" + name);
         ServletOutputStream out = response.getOutputStream();
         book.write(out);

@@ -3,7 +3,8 @@ package cn.org.alan.exam.controller;
 
 import cn.org.alan.exam.common.result.Result;
 import cn.org.alan.exam.model.entity.Repo;
-import cn.org.alan.exam.model.vo.RepoVO;
+import cn.org.alan.exam.model.vo.repo.RepoListVO;
+import cn.org.alan.exam.model.vo.repo.RepoVO;
 import cn.org.alan.exam.service.IRepoService;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import jakarta.annotation.Resource;
@@ -71,7 +72,7 @@ public class RepoController {
      */
     @GetMapping("/list")
     @PreAuthorize("hasAnyAuthority('role_teacher','role_admin')")
-    public Result<List<RepoVO>> getRepoList(@RequestParam(value = "repoTitle",required = false) String repoTitle) {
+    public Result<List<RepoListVO>> getRepoList(@RequestParam(value = "repoTitle",required = false) String repoTitle) {
         return iRepoService.getRepoList(repoTitle);
     }
 
