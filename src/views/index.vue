@@ -68,7 +68,6 @@
           * RPC远程调用 Apache Dubbo 原生态使用体验、高性能<br />
           * 分布式限流熔断 Alibaba Sentinel 无侵入、高扩展<br />
           * 分布式事务 Alibaba Seata 无侵入、高扩展 支持 四种模式<br />
-          * 分布式消息队列 Spring Cloud Stream 门面框架兼容各种MQ集成<br />
           * 分布式消息队列 Apache Kafka 高性能高速度<br />
           * 分布式消息队列 Apache RocketMQ 高可用功能多样<br />
           * 分布式消息队列 RabbitMQ 支持各种扩展插件功能多样性<br />
