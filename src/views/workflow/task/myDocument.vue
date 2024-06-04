@@ -88,7 +88,7 @@
                   <el-button link type="primary" icon="View" @click="handleOpen(scope.row, 'view')"></el-button>
                 </el-tooltip>
                 <el-tooltip v-if="scope.row.businessStatus === 'waiting'" content="撤销" placement="top">
-                  <el-button link type="primary" icon="Notification" @click="handleCancelProcessApply(scope.row.id)"></el-button>
+                  <el-button link type="primary" icon="Notification" @click="handleCancelProcessApply(scope.row.businessKey)"></el-button>
                 </el-tooltip>
               </template>
             </el-table-column>
@@ -123,7 +123,7 @@ const categoryTreeRef = ref<ElTreeInstance>();
 // 遮罩层
 const loading = ref(true);
 // 选中数组
-const ids = ref<Array<any>>([]);
+const businessKeys = ref<Array<any>>([]);
 // 非单个禁用
 const single = ref(true);
 // 非多个禁用
@@ -190,12 +190,6 @@ const getTreeselect = async () => {
   categoryOptions.value.push(data);
 };
 
-//审批记录
-const handleApprovalRecord = (processInstanceId: string) => {
-  if (approvalRecordRef.value) {
-    approvalRecordRef.value.init(processInstanceId);
-  }
-};
 /** 搜索按钮操作 */
 const handleQuery = () => {
   getList();
@@ -210,7 +204,7 @@ const resetQuery = () => {
 };
 // 多选框选中数据
 const handleSelectionChange = (selection: ProcessInstanceVO[]) => {
-  ids.value = selection.map((item: any) => item.id);
+  businessKeys.value = selection.map((item: any) => item.businessKey);
   single.value = selection.length !== 1;
   multiple.value = !selection.length;
 };
@@ -226,22 +220,22 @@ const getList = () => {
 
 /** 删除按钮操作 */
 const handleDelete = async (row: ProcessInstanceVO) => {
-  const id = row.id || ids.value;
-  await proxy?.$modal.confirm('是否确认删除id为【' + id + '】的数据项？');
+  const businessKey = row.businessKey || businessKeys.value;
+  await proxy?.$modal.confirm('是否确认删除业务id为【' + businessKey + '】的数据项？');
   loading.value = true;
   if ('running' === tab.value) {
-    await deleteRunAndHisInstance(id).finally(() => (loading.value = false));
+    await deleteRunAndHisInstance(businessKey).finally(() => (loading.value = false));
     getList();
   }
   proxy?.$modal.msgSuccess('删除成功');
 };
 
 /** 撤销按钮操作 */
-const handleCancelProcessApply = async (processInstanceId: string) => {
+const handleCancelProcessApply = async (businessKey: string) => {
   await proxy?.$modal.confirm('是否确认撤销当前单据？');
   loading.value = true;
   if ('running' === tab.value) {
-    await cancelProcessApply(processInstanceId).finally(() => (loading.value = false));
+    await cancelProcessApply(businessKey).finally(() => (loading.value = false));
     getList();
   }
   proxy?.$modal.msgSuccess('撤销成功');
