@@ -2,9 +2,11 @@ package cn.org.alan.exam.service.impl;
 
 import cn.org.alan.exam.common.result.Result;
 import cn.org.alan.exam.converter.RepoConverter;
+import cn.org.alan.exam.mapper.ExerciseRecordMapper;
 import cn.org.alan.exam.mapper.QuestionMapper;
 import cn.org.alan.exam.mapper.RepoMapper;
 import cn.org.alan.exam.mapper.UserExerciseRecordMapper;
+import cn.org.alan.exam.model.entity.ExerciseRecord;
 import cn.org.alan.exam.model.entity.Question;
 import cn.org.alan.exam.model.entity.Repo;
 import cn.org.alan.exam.model.entity.UserExerciseRecord;
@@ -39,9 +41,7 @@ public class RepoServiceImpl extends ServiceImpl<RepoMapper, Repo> implements IR
     private QuestionMapper questionMapper;
 
     @Resource
-    private RepoConverter repoConverter;
-    @Resource
-    private UserExerciseRecordMapper userExerciseRecordMapper;
+    private ExerciseRecordMapper exerciseRecordMapper;
 
 
     @Override
@@ -82,8 +82,8 @@ public class RepoServiceImpl extends ServiceImpl<RepoMapper, Repo> implements IR
         List<RepoListVO> list;
         if ("role_teacher".equals(SecurityUtil.getRole())) {
             list = repoMapper.selectRepoList(repoTitle, SecurityUtil.getUserId());
-        }else {
-           list =  repoMapper.selectRepoList(repoTitle, 0);
+        } else {
+            list = repoMapper.selectRepoList(repoTitle, 0);
         }
         return Result.success("获取成功", list);
     }
@@ -108,25 +108,14 @@ public class RepoServiceImpl extends ServiceImpl<RepoMapper, Repo> implements IR
     public Result<IPage<ExerciseRepoVO>> getRepo(Integer pageNum, Integer pageSize, String title) {
         IPage<ExerciseRepoVO> page = new Page<>(pageNum, pageSize);
         page = repoMapper.selectRepo(page, title);
-        page.getRecords().forEach(repoVO -> {
-            //填充总题数
-            int totalCount = questionMapper
-                    .selectCount(new LambdaQueryWrapper<Question>().eq(Question::getRepoId, repoVO.getId()))
-                    .intValue();
-            repoVO.setTotalCount(totalCount);
-            //填充以刷题数
-            LambdaQueryWrapper<UserExerciseRecord> wrapper = new LambdaQueryWrapper<UserExerciseRecord>()
-                    .select(UserExerciseRecord::getExerciseCount)
-                    .eq(UserExerciseRecord::getUserId, SecurityUtil.getUserId())
-                    .eq(UserExerciseRecord::getRepoId, repoVO.getId());
+//        page.getRecords().forEach(repoVO -> {
+//            //填充以刷题数
+//            LambdaQueryWrapper<ExerciseRecord> wrapper = new LambdaQueryWrapper<ExerciseRecord>().eq(ExerciseRecord::getRepoId, repoVO.getId())
+//                    .eq(ExerciseRecord::getUserId, SecurityUtil.getUserId());
+//
+//            repoVO.setExerciseCount(exerciseRecordMapper.selectCount(wrapper).intValue());
 
-            UserExerciseRecord userExerciseRecord = userExerciseRecordMapper.selectOne(wrapper);
-            if (userExerciseRecord != null && userExerciseRecord.getExerciseCount() != 0) {
-                repoVO.setExerciseCount(userExerciseRecord.getExerciseCount());
-            } else {
-                repoVO.setExerciseCount(0);
-            }
-        });
+//        });
         return Result.success(null, page);
     }
 }

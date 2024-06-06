@@ -3,6 +3,7 @@ package cn.org.alan.exam.controller;
 import cn.org.alan.exam.common.result.Result;
 import cn.org.alan.exam.model.form.ExerciseFillAnswerFrom;
 import cn.org.alan.exam.model.vo.QuestionVO;
+import cn.org.alan.exam.model.vo.exercise.AnswerInfoVO;
 import cn.org.alan.exam.model.vo.exercise.ExerciseRepoVO;
 import cn.org.alan.exam.model.vo.exercise.QuestionSheetVO;
 import cn.org.alan.exam.service.IExerciseRecordService;
@@ -82,9 +83,25 @@ public class ExerciseController {
         return iRepoService.getRepo(pageNum, pageSize, title);
     }
 
+    /**
+     * 获取单题详情，没有答案
+     * @param id 试题id
+     * @return
+     */
     @GetMapping("/question/{id}")
     @PreAuthorize("hasAnyAuthority('role_student','role_teacher','role_admin')")
     public Result<QuestionVO> getSingle(@PathVariable("id")Integer id){
         return iExerciseRecordService.getSingle(id);
+    }
+
+    /**
+     * 获取用户回答详情
+     * @param
+     * @return
+     */
+    @GetMapping("/answerInfo/{repoId}/{quId}")
+    @PreAuthorize("hasAnyAuthority('role_student','role_teacher','role_admin')")
+    public Result<AnswerInfoVO> getAnswerInfo(@PathVariable("repoId")Integer repoId, @PathVariable("quId")Integer quId){
+        return iExerciseRecordService.getAnswerInfo(repoId,quId);
     }
 }
