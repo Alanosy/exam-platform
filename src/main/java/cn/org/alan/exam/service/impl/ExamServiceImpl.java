@@ -134,6 +134,7 @@ public class ExamServiceImpl extends ServiceImpl<ExamMapper, Exam> implements IE
             LambdaQueryWrapper<Question> typeQueryWrapper = new LambdaQueryWrapper<>();
             typeQueryWrapper.select(Question::getId)
                     .eq(Question::getQuType, quType)
+                    .eq(Question::getIsDeleted,0)
                     .eq(Question::getRepoId, examAddForm.getRepoId());
             List<Question> questionsByType = questionMapper.selectList(typeQueryWrapper);
             if (questionsByType.size() < count) {
@@ -199,21 +200,21 @@ public class ExamServiceImpl extends ServiceImpl<ExamMapper, Exam> implements IE
         if (examRows == 0) {
             throw new AppException("删除失败，删除考试表时失败");
         }
-        // 删除考试班级记录
-        int examGradeRows = examMapper.deleteExamGrades(examIds);
-        if (examGradeRows == 0) {
-            throw new AppException("删除失败，删除考试班级表时失败");
-        }
-        // 删除考试题库记录
-        int examRepoRows = examMapper.deleteExamRepos(examIds);
-        if (examRepoRows == 0) {
-            throw new AppException("删除失败，删除考试题库表时失败");
-        }
-        // 删除考试试题记录
-        int examQueRows = examMapper.deleteExamQuestions(examIds);
-        if (examQueRows == 0) {
-            throw new AppException("删除失败，删除考试试题表时失败");
-        }
+        // // 删除考试班级记录
+        // int examGradeRows = examMapper.deleteExamGrades(examIds);
+        // if (examGradeRows == 0) {
+        //     throw new AppException("删除失败，删除考试班级表时失败");
+        // }
+        // // 删除考试题库记录
+        // int examRepoRows = examMapper.deleteExamRepos(examIds);
+        // if (examRepoRows == 0) {
+        //     throw new AppException("删除失败，删除考试题库表时失败");
+        // }
+        // // 删除考试试题记录
+        // int examQueRows = examMapper.deleteExamQuestions(examIds);
+        // if (examQueRows == 0) {
+        //     throw new AppException("删除失败，删除考试试题表时失败");
+        // }
         return Result.success("删除成功");
     }
 
@@ -224,6 +225,7 @@ public class ExamServiceImpl extends ServiceImpl<ExamMapper, Exam> implements IE
         // 开始查询
         LambdaQueryWrapper<Exam> examQuery = new LambdaQueryWrapper<>();
         examQuery.like(StringUtils.isNotBlank(title), Exam::getTitle, title)
+                .eq(Exam::getIsDeleted,0)
                 .eq(Exam::getUserId, SecurityUtil.getUserId());
         Page<Exam> examPage = examMapper.selectPage(page, examQuery);
         // 实体转换

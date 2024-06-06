@@ -2,7 +2,8 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="cn.org.alan.exam.mapper.ExamMapper">
     <delete id="deleteExams">
-        delete from t_exam
+        update  t_exam
+        set is_deleted = 1
         WHERE id IN
         <foreach item="examId" collection="examIds" open="(" separator="," close=")">
             #{examId}
@@ -53,10 +54,6 @@
         u.limit_time as limitTime
         from t_exam e
         join t_user_exams_score as u on u.exam_id = e.id
-        where u.user_id = #{userId}
-
-
-
-
+        where u.user_id = #{userId} and u.whether_mark in (-1,1)
     </select>
 </mapper>

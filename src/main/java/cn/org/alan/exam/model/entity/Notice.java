@@ -51,6 +51,19 @@ public class Notice implements Serializable {
     @TableField(fill = FieldFill.INSERT)
     private LocalDateTime createTime;
 
+    /**
+     * 逻辑删除字段
+     */
+    private Integer isDeleted;
+
+    public Integer getIsDeleted() {
+        return isDeleted;
+    }
+
+    public void setIsDeleted(Integer isDeleted) {
+        this.isDeleted = isDeleted;
+    }
+
     public Integer getId() {
         return id;
     }
@@ -103,11 +116,12 @@ public class Notice implements Serializable {
     public String toString() {
         return "Notice{" +
                 "id=" + id +
-                ", title=" + title +
-                ", image=" + image +
-                ", content=" + content +
+                ", title='" + title + '\'' +
+                ", image='" + image + '\'' +
+                ", content='" + content + '\'' +
                 ", userId=" + userId +
                 ", createTime=" + createTime +
-                "}";
+                ", isDeleted=" + isDeleted +
+                '}';
     }
 }

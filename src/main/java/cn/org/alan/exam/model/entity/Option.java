@@ -55,6 +55,21 @@ public class Option implements Serializable {
      */
     private Integer sort;
 
+    /**
+     * 逻辑删除字段
+     */
+    private Integer isDeleted;
+
+
+
+    public Integer getIsDeleted() {
+        return isDeleted;
+    }
+
+    public void setIsDeleted(Integer isDeleted) {
+        this.isDeleted = isDeleted;
+    }
+
     public Integer getId() {
         return id;
     }
@@ -101,12 +116,13 @@ public class Option implements Serializable {
     @Override
     public String toString() {
         return "Option{" +
-            "id=" + id +
-            ", quId=" + quId +
-            ", isRight=" + isRight +
-            ", image=" + image +
-            ", content=" + content +
-            ", sort=" + sort +
-        "}";
+                "id=" + id +
+                ", quId=" + quId +
+                ", isRight=" + isRight +
+                ", image='" + image + '\'' +
+                ", content='" + content + '\'' +
+                ", sort=" + sort +
+                ", isDeleted=" + isDeleted +
+                '}';
     }
 }

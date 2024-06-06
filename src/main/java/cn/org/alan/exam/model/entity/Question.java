@@ -60,6 +60,19 @@ public class Question implements Serializable {
     @TableField(fill = FieldFill.INSERT)
     private Integer userId;
 
+    /**
+     * 逻辑删除字段
+     */
+    private Integer isDeleted;
+
+    public Integer getIsDeleted() {
+        return isDeleted;
+    }
+
+    public void setIsDeleted(Integer isDeleted) {
+        this.isDeleted = isDeleted;
+    }
+
     public Integer getUserId() {
         return userId;
     }
@@ -135,6 +148,7 @@ public class Question implements Serializable {
                 ", analysis='" + analysis + '\'' +
                 ", repoId=" + repoId +
                 ", userId=" + userId +
+                ", isDeleted=" + isDeleted +
                 '}';
     }
 }

@@ -1,7 +1,9 @@
 package cn.org.alan.exam.mapper;
 
 import cn.org.alan.exam.model.entity.Notice;
+import cn.org.alan.exam.model.vo.NoticeVO;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 
 import java.util.List;
 
@@ -30,4 +32,6 @@ public interface NoticeMapper extends BaseMapper<Notice> {
      * @return 查询结果
      */
     List<Integer> selectIdsByUserIds(List<Integer> userIds);
+
+    Page<NoticeVO> selectNewNoticePage(Page<NoticeVO> page, Integer gradeId);
 }

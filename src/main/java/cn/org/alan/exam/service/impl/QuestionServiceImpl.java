@@ -96,7 +96,7 @@ public class QuestionServiceImpl extends ServiceImpl<QuestionMapper, Question> i
         // 先删除选项
         optionMapper.deleteBatchByQuIds(list);
         // 再删除试题
-        questionMapper.deleteBatchIds(list);
+        questionMapper.deleteBatchIdsQu(list);
         return Result.success("删除成功");
     }
 

@@ -7,6 +7,14 @@
             #{userId}
         </foreach>
     </delete>
+    <delete id="deleteBatchIdsQu">
+        update t_question
+        set is_deleted = 1
+        where id in
+        <foreach collection="list" item="quId" separator="," open="(" close=")">
+            #{quId}
+        </foreach>
+    </delete>
 
 
     <!--    分页获取试题信息-->
@@ -30,7 +38,9 @@
             <if test='userId != null and userId != 0'>
                 q.user_id = #{userId}
             </if>
-
+            <if test='true'>
+                q.is_deleted = 0
+            </if>
         </trim>
     </select>
 

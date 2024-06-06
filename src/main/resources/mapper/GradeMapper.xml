@@ -29,7 +29,7 @@
         g.code as code
         from t_grade g
         join t_user u on g.user_id = u.id
-        <where>
+        <trim suffixOverrides="and" prefix="where">
             <if test="role==2">
                 g.user_id = #{userId}
             </if>
@@ -37,6 +37,9 @@
             <if test="gradeName!=null">
                 and g.grade_name like concat('%',#{gradeName},'%')
             </if>
-        </where>
+            <if test='true'>
+                q.is_deleted = 0
+            </if>
+        </trim>
     </select>
 </mapper>

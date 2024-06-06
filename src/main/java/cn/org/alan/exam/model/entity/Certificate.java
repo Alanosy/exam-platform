@@ -1,6 +1,7 @@
 package cn.org.alan.exam.model.entity;
 
 import com.baomidou.mybatisplus.annotation.*;
+import com.fasterxml.jackson.annotation.JsonFormat;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
@@ -39,9 +40,21 @@ public class Certificate implements Serializable {
      * 创建时间
      */
     @TableField(fill = FieldFill.INSERT)
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime createTime;
 
+    /**
+     * 逻辑删除字段
+     */
+    private Integer isDeleted;
 
+    public Integer getIsDeleted() {
+        return isDeleted;
+    }
+
+    public void setIsDeleted(Integer isDeleted) {
+        this.isDeleted = isDeleted;
+    }
 
     public Integer getId(){
         return id;
@@ -83,12 +96,11 @@ public class Certificate implements Serializable {
     public String toString() {
         return "Certificate{" +
                 "id=" + id +
-                ", certificateName=" + certificateName +
-                ", image=" + image +
-                ", certificationNuit=" + certificationNuit +
+                ", certificateName='" + certificateName + '\'' +
+                ", image='" + image + '\'' +
+                ", certificationNuit='" + certificationNuit + '\'' +
                 ", createTime=" + createTime +
-                "}";
-
+                ", isDeleted=" + isDeleted +
+                '}';
     }
-
 }

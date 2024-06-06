@@ -63,4 +63,6 @@ public interface QuestionMapper extends BaseMapper<Question> {
     List<QuestionSheetVO> selectQuestionSheet(Integer repoId, Integer quType, Integer userId);
 
     QuestionVO selectDetail(Integer id);
+
+    void deleteBatchIdsQu(List<Integer> list);
 }

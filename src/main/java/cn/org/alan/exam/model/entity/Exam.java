@@ -116,6 +116,19 @@ public class Exam implements Serializable {
     @TableField(fill = FieldFill.INSERT)
     private LocalDateTime createTime;
 
+    /**
+     * 逻辑删除字段
+     */
+    private Integer isDeleted;
+
+    public Integer getIsDeleted() {
+        return isDeleted;
+    }
+
+    public void setIsDeleted(Integer isDeleted) {
+        this.isDeleted = isDeleted;
+    }
+
     public Integer getId() {
         return id;
     }
@@ -253,25 +266,26 @@ public class Exam implements Serializable {
     @Override
     public String toString() {
         return "Exam{" +
-            "id=" + id +
-            ", title=" + title +
-            ", examDuration=" + examDuration +
-            ", passedScore=" + passedScore +
-            ", grossScore=" + grossScore +
-            ", maxCount=" + maxCount +
-            ", userId=" + userId +
-            ", certificateId=" + certificateId +
-            ", radioCount=" + radioCount +
-            ", radioScore=" + radioScore +
-            ", multiCount=" + multiCount +
-            ", multiScore=" + multiScore +
-            ", judgeCount=" + judgeCount +
-            ", judgeScore=" + judgeScore +
-            ", saqCount=" + saqCount +
-            ", saqScore=" + saqScore +
-            ", startTime=" + startTime +
-            ", endTime=" + endTime +
-            ", createTime=" + createTime +
-        "}";
+                "id=" + id +
+                ", title='" + title + '\'' +
+                ", examDuration=" + examDuration +
+                ", passedScore=" + passedScore +
+                ", grossScore=" + grossScore +
+                ", maxCount=" + maxCount +
+                ", userId=" + userId +
+                ", certificateId=" + certificateId +
+                ", radioCount=" + radioCount +
+                ", radioScore=" + radioScore +
+                ", multiCount=" + multiCount +
+                ", multiScore=" + multiScore +
+                ", judgeCount=" + judgeCount +
+                ", judgeScore=" + judgeScore +
+                ", saqCount=" + saqCount +
+                ", saqScore=" + saqScore +
+                ", startTime=" + startTime +
+                ", endTime=" + endTime +
+                ", createTime=" + createTime +
+                ", isDeleted=" + isDeleted +
+                '}';
     }
 }

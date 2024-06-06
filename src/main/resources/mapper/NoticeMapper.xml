@@ -3,8 +3,8 @@
 <mapper namespace="cn.org.alan.exam.mapper.NoticeMapper">
 
     <delete id="removeNotice">
-        delete
-        from t_notice
+        update t_notice
+        set is_deleted = 1
         where id IN
         <foreach item="noticeId" collection="noticeIds" open="(" separator="," close=")">
             #{noticeId}
@@ -21,5 +21,13 @@
         <foreach collection="userIds" item="userId" open="(" close=")" separator=",">
             #{userId}
         </foreach>
+    </select>
+    <select id="selectNewNoticePage" resultType="cn.org.alan.exam.model.vo.NoticeVO">
+        select *
+        from t_notice
+        WHERE
+        id in (select notice_id from t_notice_grade where grade_id=#{gradeId})
+        ORDER BY  create_time DESC
+
     </select>
 </mapper>

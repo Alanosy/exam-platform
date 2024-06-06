@@ -12,8 +12,8 @@
 
     <!--    根据试题id列表删除所有试题的选项-->
     <delete id="deleteBatchByQuIds">
-        delete
-        from t_option
+        update t_option
+        set is_deleted = 1
         where qu_id in
         <foreach collection="quIdList" item="quId" separator="," open="(" close=")">
             #{quId}

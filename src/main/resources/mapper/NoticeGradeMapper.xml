@@ -1,6 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="cn.org.alan.exam.mapper.NoticeGradeMapper">
+    <insert id="addNoticeGrade">
+        insert into t_notice_grade
+        values
+        (id,notice_id,grade_id)
+        VALUES
+        <foreach collection="grades" item="item" separator="," index="sort">
+            (null,#{noticeId},#{item})
+        </foreach>
+    </insert>
 
     <delete id="deleteByNoticeIds">
         delete from t_notice_grade where notice_id in

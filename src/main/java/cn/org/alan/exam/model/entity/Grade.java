@@ -40,6 +40,19 @@ public class Grade implements Serializable {
      */
     private String code;
 
+    /**
+     * 逻辑删除字段
+     */
+    private Integer isDeleted;
+
+    public Integer getIsDeleted() {
+        return isDeleted;
+    }
+
+    public void setIsDeleted(Integer isDeleted) {
+        this.isDeleted = isDeleted;
+    }
+
     public Integer getId() {
         return id;
     }
@@ -72,10 +85,11 @@ public class Grade implements Serializable {
     @Override
     public String toString() {
         return "Grade{" +
-            "id=" + id +
-            ", gradeName=" + gradeName +
-            ", userId=" + userId +
-            ", code=" + code +
-        "}";
+                "id=" + id +
+                ", gradeName='" + gradeName + '\'' +
+                ", userId=" + userId +
+                ", code='" + code + '\'' +
+                ", isDeleted=" + isDeleted +
+                '}';
     }
 }

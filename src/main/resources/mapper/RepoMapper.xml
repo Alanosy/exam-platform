@@ -11,6 +11,9 @@
     <select id="pagingRepo" resultType="cn.org.alan.exam.model.vo.repo.RepoVO">
         select r.id,u.real_name,r.title,r.create_time from t_repo r join t_user u on r.user_id = u.id
         <where>
+            <if test='true'>
+                r.is_deleted = 0
+            </if>
             <if test='title != null and title != ""'>
                 r.title like concat('%',#{title},'%')
             </if>
@@ -26,6 +29,9 @@
         <trim prefix="where ">
             <if test='title != null and title != ""'>
                 and r.title like concat('%',#{title},'%')
+            </if>
+            <if test='true'>
+                and is_deleted = 0
             </if>
         </trim>
         group by r.id

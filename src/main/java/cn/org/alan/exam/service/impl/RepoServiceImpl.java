@@ -70,7 +70,10 @@ public class RepoServiceImpl extends ServiceImpl<RepoMapper, Repo> implements IR
                 .set(Question::getRepoId, null);
         questionMapper.update(wrapper);
         //删除题库
-        int result = repoMapper.deleteById(id);
+        LambdaUpdateWrapper<Repo> repoLambdaUpdateWrapper = new LambdaUpdateWrapper<>();
+        repoLambdaUpdateWrapper.eq(Repo::getId,id)
+                .set(Repo::getIsDeleted,1);
+        int result = repoMapper.update(repoLambdaUpdateWrapper);
         if (result > 0) {
             return Result.success("删除成功");
         }

@@ -44,6 +44,19 @@ public class Repo implements Serializable {
     @TableField(fill = FieldFill.INSERT)
     private LocalDateTime createTime;
 
+    /**
+     * 逻辑删除字段
+     */
+    private Integer isDeleted;
+
+    public Integer getIsDeleted() {
+        return isDeleted;
+    }
+
+    public void setIsDeleted(Integer isDeleted) {
+        this.isDeleted = isDeleted;
+    }
+
     public Integer getId() {
         return id;
     }
@@ -76,10 +89,11 @@ public class Repo implements Serializable {
     @Override
     public String toString() {
         return "Repo{" +
-            "id=" + id +
-            ", userId=" + userId +
-            ", title=" + title +
-            ", createTime=" + createTime +
-        "}";
+                "id=" + id +
+                ", userId=" + userId +
+                ", title='" + title + '\'' +
+                ", createTime=" + createTime +
+                ", isDeleted=" + isDeleted +
+                '}';
     }
 }

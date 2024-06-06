@@ -2,8 +2,12 @@ package cn.org.alan.exam.service.impl;
 
 import cn.org.alan.exam.common.result.Result;
 import cn.org.alan.exam.converter.NoticeConverter;
+import cn.org.alan.exam.mapper.GradeMapper;
+import cn.org.alan.exam.mapper.NoticeGradeMapper;
 import cn.org.alan.exam.mapper.NoticeMapper;
+import cn.org.alan.exam.model.entity.Grade;
 import cn.org.alan.exam.model.entity.Notice;
+import cn.org.alan.exam.model.entity.NoticeGrade;
 import cn.org.alan.exam.model.entity.User;
 import cn.org.alan.exam.model.form.NoticeForm;
 import cn.org.alan.exam.model.vo.NoticeVO;
@@ -33,14 +37,28 @@ public class NoticeServiceImpl extends ServiceImpl<NoticeMapper, Notice> impleme
     private NoticeMapper noticeMapper;
     @Resource
     private NoticeConverter noticeConverter;
+    @Resource
+    private NoticeGradeMapper noticeGradeMapper;
+    @Resource
+    private GradeMapper gradeMapper;
 
     @Override
     public Result<String> addNotice(NoticeForm noticeForm) {
         // 设置创建人
         noticeForm.setUserId(SecurityUtil.getUserId());
         // 添加公告
-        int rowsAffected = noticeMapper.insert(noticeConverter.formToEntity(noticeForm));
+        Notice notice = noticeConverter.formToEntity(noticeForm);
+        int rowsAffected = noticeMapper.insert(notice);
+
         if (rowsAffected == 0) {
+            return Result.failed("添加失败");
+        }
+        LambdaQueryWrapper<Grade> gradeLambdaQueryWrapper = new LambdaQueryWrapper<>();
+        gradeLambdaQueryWrapper.eq(Grade::getUserId,SecurityUtil.getUserId());
+        List<Grade> grades = gradeMapper.selectList(gradeLambdaQueryWrapper);
+        Integer noticeId = notice.getId();
+        int addNoticeGradeRow = noticeGradeMapper.addNoticeGrade(noticeId,grades);
+        if (addNoticeGradeRow == 0) {
             return Result.failed("添加失败");
         }
         return Result.success("添加成功");
@@ -65,6 +83,7 @@ public class NoticeServiceImpl extends ServiceImpl<NoticeMapper, Notice> impleme
         // 创建更新条件
         LambdaUpdateWrapper<Notice> noticeWrapper = new LambdaUpdateWrapper<>();
         noticeWrapper.eq(Notice::getId, id)
+                .eq(Notice::getIsDeleted,0)
                 .set(Notice::getContent, noticeForm.getContent());
         // 更新公告
         int rowsAffected = noticeMapper.update(noticeWrapper);
@@ -81,7 +100,8 @@ public class NoticeServiceImpl extends ServiceImpl<NoticeMapper, Notice> impleme
         // 创建查询条件
         LambdaQueryWrapper<Notice> noticeQueryWrapper = new LambdaQueryWrapper<>();
         noticeQueryWrapper.like(StringUtils.isNotBlank(title), Notice::getTitle, title)
-                .eq(Notice::getUserId, SecurityUtil.getUserId());
+                .eq(Notice::getUserId, SecurityUtil.getUserId())
+                .eq(Notice::getIsDeleted,0);
         // 教师分页查询公告
         Page<Notice> gradePage = noticeMapper.selectPage(page, noticeQueryWrapper);
         return Result.success("查询成功", noticeConverter.pageEntityToVo(gradePage));
@@ -90,14 +110,9 @@ public class NoticeServiceImpl extends ServiceImpl<NoticeMapper, Notice> impleme
     @Override
     public Result<IPage<NoticeVO>> getNewNotice(Integer pageNum, Integer pageSize) {
         // 创建分页对象
-        Page<Notice> page = new Page<>(pageNum, pageSize);
-        // 创建查询条件
-        // LambdaQueryWrapper<User> userLambdaQueryWrapper = new LambdaQueryWrapper<>();
-
-        LambdaQueryWrapper<Notice> noticeQueryWrapper = new LambdaQueryWrapper<>();
-        noticeQueryWrapper.orderByDesc(Notice::getCreateTime);
+        Page<NoticeVO> page = new Page<>(pageNum, pageSize);
         // 学生分页查询公告
-        Page<Notice> gradePage = noticeMapper.selectPage(page, noticeQueryWrapper);
-        return Result.success("查询成功", noticeConverter.pageEntityToVo(gradePage));
+         page = noticeMapper.selectNewNoticePage(page,SecurityUtil.getGradeId());
+        return Result.success("查询成功", page);
     }
 }

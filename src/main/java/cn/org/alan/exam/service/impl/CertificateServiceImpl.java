@@ -10,6 +10,7 @@ import cn.org.alan.exam.service.ICertificateService;
 import cn.org.alan.exam.util.DateTimeUtil;
 import cn.org.alan.exam.util.SecurityUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -61,7 +62,8 @@ public class CertificateServiceImpl extends ServiceImpl<CertificateMapper, Certi
         LambdaQueryWrapper<Certificate> wrapper = new LambdaQueryWrapper<Certificate>()
                 .like(StringUtils.isNotBlank(certificateName), Certificate::getCertificateName, certificateName)
                 .like(StringUtils.isNotBlank(certificationUnit), Certificate::getCertificationNuit, certificationUnit)
-                .eq(StringUtils.isNotBlank(image), Certificate::getImage, image);
+                .eq(StringUtils.isNotBlank(image), Certificate::getImage, image)
+                .eq(Certificate::getIsDeleted,0);
 
         Page<Certificate> certificatePage = certificateMapper.selectPage(page, wrapper);
 
@@ -121,7 +123,10 @@ public class CertificateServiceImpl extends ServiceImpl<CertificateMapper, Certi
 
     @Override
     public Result<String> deleteCertificate(Integer id) {
-        int affectedRows = certificateMapper.deleteById(id);
+        LambdaUpdateWrapper<Certificate> certificateLambdaUpdateWrapper = new LambdaUpdateWrapper<>();
+        certificateLambdaUpdateWrapper.eq(Certificate::getId,id)
+                .set(Certificate::getIsDeleted,1);
+        int affectedRows = certificateMapper.update(certificateLambdaUpdateWrapper);
 
 
         if (affectedRows > 0) {

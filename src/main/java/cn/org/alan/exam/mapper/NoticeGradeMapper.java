@@ -1,5 +1,6 @@
 package cn.org.alan.exam.mapper;
 
+import cn.org.alan.exam.model.entity.Grade;
 import cn.org.alan.exam.model.entity.NoticeGrade;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 
@@ -21,4 +22,6 @@ public interface NoticeGradeMapper extends BaseMapper<NoticeGrade> {
      * @return 影响数据库记录数
      */
     Integer deleteByNoticeIds(List<Integer> noticeIds);
+
+    int addNoticeGrade(Integer noticeId, List<Grade> grades);
 }
