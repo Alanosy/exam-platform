@@ -6,12 +6,7 @@
           <el-button
             v-if="
               routeParams.type === 'add' ||
-              (routeParams.type === 'update' &&
-                form.processInstanceVo &&
-                form.processInstanceVo.businessStatus &&
-                (form.processInstanceVo.businessStatus === 'draft' ||
-                  form.processInstanceVo.businessStatus === 'cancel' ||
-                  form.processInstanceVo.businessStatus === 'back'))
+              (routeParams.type === 'update' && form.status && (form.status === 'draft' || form.status === 'cancel' || form.status === 'back'))
             "
             :loading="buttonLoading"
             type="info"
@@ -21,11 +16,7 @@
           <el-button
             v-if="
               routeParams.type === 'add' ||
-              (routeParams.type === 'update' &&
-                form.processInstanceVo &&
-                (form.processInstanceVo.businessStatus === 'draft' ||
-                  form.processInstanceVo.businessStatus === 'cancel' ||
-                  form.processInstanceVo.businessStatus === 'back'))
+              (routeParams.type === 'update' && form.status && (form.status === 'draft' || form.status === 'cancel' || form.status === 'back'))
             "
             :loading="buttonLoading"
             type="primary"
@@ -33,13 +24,13 @@
             >提 交</el-button
           >
           <el-button
-            v-if="routeParams.type === 'approval' && form.processInstanceVo && form.processInstanceVo.businessStatus === 'waiting'"
+            v-if="routeParams.type === 'approval' && form.status && form.status === 'waiting'"
             :loading="buttonLoading"
             type="primary"
             @click="approvalVerifyOpen"
             >审批</el-button
           >
-          <el-button v-if="processInstanceId" type="primary" @click="handleApprovalRecord">流程进度</el-button>
+          <el-button v-if="form.status !== 'draft'" type="primary" @click="handleApprovalRecord">流程进度</el-button>
         </div>
         <div>
           <el-button style="float: right" @click="goBack()">返回</el-button>
@@ -91,8 +82,6 @@ const { proxy } = getCurrentInstance() as ComponentInternalInstance;
 const buttonLoading = ref(false);
 const loading = ref(true);
 const leaveTime = ref<Array<string>>([]);
-//流程实例id
-const processInstanceId = ref('');
 //路由参数
 const routeParams = ref<Record<string, any>>({});
 const options = [
@@ -134,7 +123,7 @@ const initFormData: LeaveForm = {
   endDate: undefined,
   leaveDays: undefined,
   remark: undefined,
-  processInstanceVo: {}
+  status: undefined
 };
 const data = reactive<PageData<LeaveForm, LeaveQuery>>({
   form: { ...initFormData },
@@ -177,9 +166,6 @@ const getInfo = () => {
     leaveTime.value = [];
     leaveTime.value.push(form.value.startDate);
     leaveTime.value.push(form.value.endDate);
-    if (form.value.processInstanceVo) {
-      processInstanceId.value = form.value.processInstanceVo.id;
-    }
     loading.value = false;
     buttonLoading.value = false;
   });
@@ -243,7 +229,7 @@ const handleStartWorkFlow = async (data: LeaveVO) => {
 };
 //审批记录
 const handleApprovalRecord = () => {
-  approvalRecordRef.value.init(processInstanceId.value);
+  approvalRecordRef.value.init(form.value.id);
 };
 //提交回调
 const submitCallback = async () => {

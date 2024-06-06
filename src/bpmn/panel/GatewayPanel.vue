@@ -41,8 +41,8 @@
 <script setup lang="ts">
 import useParseElement from '../hooks/useParseElement';
 import usePanel from '../hooks/usePanel';
-import { Modeler, ModdleElement } from 'bpmn';
-import { GatewayPanel } from 'bpmnDesign';
+import type { Modeler, ModdleElement } from 'bpmn';
+import type { GatewayPanel } from 'bpmnDesign';
 import ExecutionListener from './property/ExecutionListener.vue';
 
 interface PropType {

@@ -49,8 +49,8 @@ import useParseElement from '../hooks/useParseElement';
 import useModelerStore from '@/store/modules/modeler';
 import usePanel from '../hooks/usePanel';
 import ExecutionListener from './property/ExecutionListener.vue';
-import { Modeler, ModdleElement } from 'bpmn';
-import { SequenceFlowPanel } from 'bpmnDesign';
+import type { Modeler, ModdleElement } from 'bpmn';
+import type { SequenceFlowPanel } from 'bpmnDesign';
 
 interface PropType {
   element: ModdleElement;

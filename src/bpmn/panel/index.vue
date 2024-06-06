@@ -13,7 +13,7 @@ import GatewayPanel from './GatewayPanel.vue';
 import SequenceFlowPanel from './SequenceFlowPanel.vue';
 import ParticipantPanel from './ParticipantPanel.vue';
 import SubProcessPanel from './SubProcessPanel.vue';
-import { Modeler, ModdleElement } from 'bpmn';
+import type { Modeler, ModdleElement } from 'bpmn';
 const { proxy } = getCurrentInstance() as ComponentInternalInstance;
 interface propsType {
   modeler: Modeler;

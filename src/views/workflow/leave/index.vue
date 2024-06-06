@@ -22,10 +22,10 @@
       <template #header>
         <el-row :gutter="10" class="mb8">
           <el-col :span="1.5">
-            <el-button v-hasPermi="['demo:leave:add']" type="primary" plain icon="Plus" @click="handleAdd">新增</el-button>
+            <el-button v-hasPermi="['workflow:leave:add']" type="primary" plain icon="Plus" @click="handleAdd">新增</el-button>
           </el-col>
           <el-col :span="1.5">
-            <el-button v-hasPermi="['demo:leave:export']" type="warning" plain icon="Download" @click="handleExport">导出</el-button>
+            <el-button v-hasPermi="['workflow:leave:export']" type="warning" plain icon="Download" @click="handleExport">导出</el-button>
           </el-col>
           <right-toolbar v-model:showSearch="showSearch" @query-table="getList"></right-toolbar>
         </el-row>
@@ -53,18 +53,14 @@
         <el-table-column label="请假原因" align="center" prop="remark" />
         <el-table-column align="center" label="流程状态" min-width="70">
           <template #default="scope">
-            <dict-tag :options="wf_business_status" :value="scope.row.processInstanceVo.businessStatus"></dict-tag>
+            <dict-tag :options="wf_business_status" :value="scope.row.status"></dict-tag>
           </template>
         </el-table-column>
         <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
           <template #default="scope">
             <el-button
-              v-if="
-                scope.row.processInstanceVo.businessStatus === 'draft' ||
-                scope.row.processInstanceVo.businessStatus === 'cancel' ||
-                scope.row.processInstanceVo.businessStatus === 'back'
-              "
-              v-hasPermi="['demo:leave:edit']"
+              v-if="scope.row.status === 'draft' || scope.row.status === 'cancel' || scope.row.status === 'back'"
+              v-hasPermi="['workflow:leave:edit']"
               size="small"
               link
               type="primary"
@@ -73,12 +69,8 @@
               >修改</el-button
             >
             <el-button
-              v-if="
-                scope.row.processInstanceVo.businessStatus === 'draft' ||
-                scope.row.processInstanceVo.businessStatus === 'cancel' ||
-                scope.row.processInstanceVo.businessStatus === 'back'
-              "
-              v-hasPermi="['demo:leave:remove']"
+              v-if="scope.row.status === 'draft' || scope.row.status === 'cancel' || scope.row.status === 'back'"
+              v-hasPermi="['workflow:leave:remove']"
               size="small"
               link
               type="primary"
@@ -88,12 +80,12 @@
             >
             <el-button link type="primary" size="small" icon="View" @click="handleView(scope.row)">查看</el-button>
             <el-button
-              v-if="scope.row.processInstanceVo.businessStatus === 'waiting'"
+              v-if="scope.row.status === 'waiting'"
               link
               size="small"
               type="primary"
               icon="Notification"
-              @click="handleCancelProcessApply(scope.row.processInstanceVo.id)"
+              @click="handleCancelProcessApply(scope.row.id)"
               >撤销</el-button
             >
           </template>
@@ -184,9 +176,9 @@ const handleSelectionChange = (selection: LeaveVO[]) => {
 /** 新增按钮操作 */
 const handleAdd = () => {
   proxy.$tab.closePage(proxy.$route);
-  proxy.$router.push(`/demo/leaveEdit/index/add/add`);
+  proxy.$router.push(`/workflow/leaveEdit/index/add/add`);
   proxy.$router.push({
-    path: `/demo/leaveEdit/index`,
+    path: `/workflow/leaveEdit/index`,
     query: {
       type: 'add'
     }
@@ -197,7 +189,7 @@ const handleAdd = () => {
 const handleUpdate = (row?: LeaveVO) => {
   proxy.$tab.closePage(proxy.$route);
   proxy.$router.push({
-    path: `/demo/leaveEdit/index`,
+    path: `/workflow/leaveEdit/index`,
     query: {
       id: row.id,
       type: 'update'
@@ -209,7 +201,7 @@ const handleUpdate = (row?: LeaveVO) => {
 const handleView = (row?: LeaveVO) => {
   proxy.$tab.closePage(proxy.$route);
   proxy.$router.push({
-    path: `/demo/leaveEdit/index`,
+    path: `/workflow/leaveEdit/index`,
     query: {
       id: row.id,
       type: 'view'
@@ -229,7 +221,7 @@ const handleDelete = async (row?: LeaveVO) => {
 /** 导出按钮操作 */
 const handleExport = () => {
   proxy?.download(
-    'demo/leave/export',
+    'workflow/leave/export',
     {
       ...queryParams.value
     },

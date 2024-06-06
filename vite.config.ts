@@ -61,7 +61,6 @@ export default defineConfig(({ mode, command }: ConfigEnv): UserConfig => {
         'pinia',
         'axios',
         '@vueuse/core',
-        'path-to-regexp',
         'echarts',
         'vue-i18n',
         '@vueup/vue-quill',

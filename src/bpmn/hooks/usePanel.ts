@@ -1,5 +1,5 @@
 import showConfig from '../assets/showConfig';
-import { ModdleElement } from 'bpmn';
+import type { ModdleElement } from 'bpmn';
 import useModelerStore from '@/store/modules/modeler';
 import { MultiInstanceTypeEnum } from '@/enums/bpmn/IndexEnums';
 interface Options {

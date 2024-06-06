@@ -167,6 +167,8 @@ const categoryTreeRef = ref<ElTreeInstance>();
 const loading = ref(true);
 // 选中数组
 const ids = ref<Array<any>>([]);
+// 选中业务id数组
+const businessKeys = ref<Array<any>>([]);
 // 非单个禁用
 const single = ref(true);
 // 非多个禁用
@@ -257,6 +259,7 @@ const resetQuery = () => {
 // 多选框选中数据
 const handleSelectionChange = (selection: ProcessInstanceVO[]) => {
   ids.value = selection.map((item: any) => item.id);
+  businessKeys.value = selection.map((item: any) => item.businessKey);
   single.value = selection.length !== 1;
   multiple.value = !selection.length;
 };
@@ -281,14 +284,14 @@ const getProcessInstanceFinishList = () => {
 
 /** 删除按钮操作 */
 const handleDelete = async (row: any) => {
-  const id = row.id || ids.value;
-  await proxy?.$modal.confirm('是否确认删除id为【' + id + '】的数据项？');
+  const businessKey = row.businessKey || businessKeys.value;
+  await proxy?.$modal.confirm('是否确认删除业务id为【' + businessKey + '】的数据项？');
   loading.value = true;
   if ('running' === tab.value) {
-    await deleteRunAndHisInstance(id).finally(() => (loading.value = false));
+    await deleteRunAndHisInstance(businessKey).finally(() => (loading.value = false));
     getProcessInstanceRunningList();
   } else {
-    await deleteFinishAndHisInstance(id).finally(() => (loading.value = false));
+    await deleteFinishAndHisInstance(businessKey).finally(() => (loading.value = false));
     getProcessInstanceFinishList();
   }
   proxy?.$modal.msgSuccess('删除成功');
@@ -308,7 +311,7 @@ const handleInvalid = async (row: ProcessInstanceVO) => {
   loading.value = true;
   if ('running' === tab.value) {
     let param = {
-      processInstanceId: row.id,
+      businessKey: row.businessKey,
       deleteReason: deleteReason.value
     };
     await deleteRunInstance(param).finally(() => (loading.value = false));

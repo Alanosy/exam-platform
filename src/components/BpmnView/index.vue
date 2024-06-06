@@ -37,7 +37,7 @@ import BpmnViewer from 'bpmn-js/lib/Viewer';
 import MoveCanvasModule from 'diagram-js/lib/navigation/movecanvas';
 import ZoomScrollModule from 'diagram-js/lib/navigation/zoomscroll';
 import { ModuleDeclaration } from 'didi';
-import { Canvas, ModdleElement } from 'bpmn';
+import type { Canvas, ModdleElement } from 'bpmn';
 import EventBus from 'diagram-js/lib/core/EventBus';
 import Overlays from 'diagram-js/lib/features/overlays/Overlays';
 import processApi from '@/api/workflow/processInstance/index';
@@ -51,7 +51,7 @@ const loading = ref(false);
 const bpmnVisible = ref(true);
 const historyList = ref([]);
 
-const init = (instanceId) => {
+const init = (businessKey) => {
   loading.value = true;
   bpmnVisible.value = true;
   nextTick(async () => {
@@ -67,7 +67,7 @@ const init = (instanceId) => {
         MoveCanvasModule
       ] as ModuleDeclaration[]
     });
-    const resp = await processApi.getHistoryList(instanceId);
+    const resp = await processApi.getHistoryList(businessKey);
     xml.value = resp.data.xml;
     taskList.value = resp.data.taskList;
     historyList.value = resp.data.historyList;
@@ -133,6 +133,7 @@ const genNodeDetailBox = (e, overlays, data) => {
                     <p>开始时间：${data.startTime || ''}</p>
                     <p>结束时间：${data.endTime || ''}</p>
                     <p>审批耗时：${data.runDuration || ''}</p>
+                    <p>流程版本：v${data.version || ''}</p>
                    </div>`
   });
 };

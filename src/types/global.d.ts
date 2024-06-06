@@ -4,8 +4,6 @@ import { LanguageEnum } from '@/enums/LanguageEnum';
 declare global {
   /** vue Instance */
   declare type ComponentInternalInstance = ComponentInstance;
-  /**vue */
-  declare type PropType<T> = VuePropType<T>;
 
   /**
    * 界面字段隐藏属性
