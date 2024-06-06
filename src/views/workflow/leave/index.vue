@@ -22,10 +22,10 @@
       <template #header>
         <el-row :gutter="10" class="mb8">
           <el-col :span="1.5">
-            <el-button v-hasPermi="['demo:leave:add']" type="primary" plain icon="Plus" @click="handleAdd">新增</el-button>
+            <el-button v-hasPermi="['workflow:leave:add']" type="primary" plain icon="Plus" @click="handleAdd">新增</el-button>
           </el-col>
           <el-col :span="1.5">
-            <el-button v-hasPermi="['demo:leave:export']" type="warning" plain icon="Download" @click="handleExport">导出</el-button>
+            <el-button v-hasPermi="['workflow:leave:export']" type="warning" plain icon="Download" @click="handleExport">导出</el-button>
           </el-col>
           <right-toolbar v-model:showSearch="showSearch" @query-table="getList"></right-toolbar>
         </el-row>
@@ -60,7 +60,7 @@
           <template #default="scope">
             <el-button
               v-if="scope.row.status === 'draft' || scope.row.status === 'cancel' || scope.row.status === 'back'"
-              v-hasPermi="['demo:leave:edit']"
+              v-hasPermi="['workflow:leave:edit']"
               size="small"
               link
               type="primary"
@@ -70,7 +70,7 @@
             >
             <el-button
               v-if="scope.row.status === 'draft' || scope.row.status === 'cancel' || scope.row.status === 'back'"
-              v-hasPermi="['demo:leave:remove']"
+              v-hasPermi="['workflow:leave:remove']"
               size="small"
               link
               type="primary"

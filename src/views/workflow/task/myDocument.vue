@@ -75,14 +75,14 @@
                   content="修改"
                   placement="top"
                 >
-                  <el-button v-hasPermi="['demo:leave:edit']" link type="primary" icon="Edit" @click="handleOpen(scope.row, 'update')"></el-button>
+                  <el-button link type="primary" icon="Edit" @click="handleOpen(scope.row, 'update')"></el-button>
                 </el-tooltip>
                 <el-tooltip
                   v-if="scope.row.businessStatus === 'draft' || scope.row.businessStatus === 'cancel' || scope.row.businessStatus === 'back'"
                   content="删除"
                   placement="top"
                 >
-                  <el-button v-hasPermi="['demo:leave:remove']" link type="primary" icon="Delete" @click="handleDelete(scope.row)"></el-button>
+                  <el-button link type="primary" icon="Delete" @click="handleDelete(scope.row)"></el-button>
                 </el-tooltip>
                 <el-tooltip placement="top" content="查看">
                   <el-button link type="primary" icon="View" @click="handleOpen(scope.row, 'view')"></el-button>

@@ -167,7 +167,7 @@ export const dynamicRoutes: RouteRecordRaw[] = [
     path: '/workflow/leaveEdit',
     component: Layout,
     hidden: true,
-    permissions: ['demo:leave:edit'],
+    permissions: ['workflow:leave:edit'],
     children: [
       {
         path: 'index',
