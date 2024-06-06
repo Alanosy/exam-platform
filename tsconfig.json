@@ -19,9 +19,6 @@
     "paths": {
       "@/*": ["src/*"]
     },
-    "compilerOptions": {
-      "types": ["element-plus/global"]
-    },
     "types": ["vite/client"],
     "skipLibCheck": true,
     "removeComments": true,
