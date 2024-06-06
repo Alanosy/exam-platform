@@ -2,6 +2,8 @@ package cn.org.alan.exam.converter;
 
 import cn.org.alan.exam.model.entity.ExerciseRecord;
 import cn.org.alan.exam.model.form.ExerciseFillAnswerFrom;
+import cn.org.alan.exam.model.vo.QuestionVO;
+import cn.org.alan.exam.model.vo.exercise.AnswerInfoVO;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Mappings;
@@ -20,4 +22,6 @@ public interface ExerciseConverter {
             @Mapping(source = "quType",target = "questionType")
     })
     ExerciseRecord fromToEntity(ExerciseFillAnswerFrom exerciseFillAnswerFrom);
+
+    AnswerInfoVO quVOToAnswerInfoVO(QuestionVO questionVO);
 }

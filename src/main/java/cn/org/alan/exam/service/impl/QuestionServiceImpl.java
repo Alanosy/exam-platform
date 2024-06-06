@@ -2,10 +2,13 @@ package cn.org.alan.exam.service.impl;
 
 import cn.org.alan.exam.common.result.Result;
 import cn.org.alan.exam.converter.QuestionConverter;
+import cn.org.alan.exam.mapper.ExerciseRecordMapper;
 import cn.org.alan.exam.mapper.OptionMapper;
 import cn.org.alan.exam.mapper.QuestionMapper;
+import cn.org.alan.exam.model.entity.ExerciseRecord;
 import cn.org.alan.exam.model.entity.Option;
 import cn.org.alan.exam.model.entity.Question;
+import cn.org.alan.exam.model.entity.UserExerciseRecord;
 import cn.org.alan.exam.model.form.question.QuestionExcelFrom;
 import cn.org.alan.exam.model.form.question.QuestionFrom;
 import cn.org.alan.exam.model.vo.QuestionVO;
@@ -13,6 +16,7 @@ import cn.org.alan.exam.service.IQuestionService;
 import cn.org.alan.exam.util.AliOSSUtil;
 import cn.org.alan.exam.util.SecurityUtil;
 import cn.org.alan.exam.util.excel.ExcelUtils;
+import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -46,15 +50,13 @@ public class QuestionServiceImpl extends ServiceImpl<QuestionMapper, Question> i
     private OptionMapper optionMapper;
     @Resource
     private AliOSSUtil aliOSSUtil;
+    @Resource
+    private ExerciseRecordMapper exerciseRecordMapper;
 
 
     @Override
     @Transactional
     public Result<String> addSingleQuestion(QuestionFrom questionFrom) {
-        System.out.println("----------------");
-        System.out.println(questionFrom);
-
-
         // 入参校验
         List<Option> options = questionFrom.getOptions();
         if (questionFrom.getQuType() != 4 && (Objects.isNull(options) || options.size() < 2)) {
@@ -64,7 +66,6 @@ public class QuestionServiceImpl extends ServiceImpl<QuestionMapper, Question> i
         Question question = questionConverter.fromToEntity(questionFrom);
 
         questionMapper.insert(question);
-        System.out.println("zhujian:" + question.getId());
         if (question.getQuType() == 4) {
             // 简答题添加选项
 
@@ -87,6 +88,11 @@ public class QuestionServiceImpl extends ServiceImpl<QuestionMapper, Question> i
     @Transactional
     public Result<String> deleteBatchByIds(String ids) {
         List<Integer> list = Arrays.stream(ids.split(",")).map(Integer::parseInt).toList();
+
+        //删除用户刷题记录表
+        LambdaUpdateWrapper<ExerciseRecord> updateWrapper =
+                new LambdaUpdateWrapper<ExerciseRecord>().in(ExerciseRecord::getQuestionId, list);
+        int delete = exerciseRecordMapper.delete(updateWrapper);
         // 先删除选项
         optionMapper.deleteBatchByQuIds(list);
         // 再删除试题
@@ -149,7 +155,7 @@ public class QuestionServiceImpl extends ServiceImpl<QuestionMapper, Question> i
             final int[] count = {0};
             options.forEach(option -> {
                 //简答题答案默认给正确
-                if(question.getQuType() == 4){
+                if (question.getQuType() == 4) {
                     option.setIsRight(1);
                 }
                 option.setSort(++count[0]);

@@ -8,6 +8,7 @@ import cn.org.alan.exam.mapper.*;
 import cn.org.alan.exam.model.entity.*;
 import cn.org.alan.exam.model.form.ExerciseFillAnswerFrom;
 import cn.org.alan.exam.model.vo.QuestionVO;
+import cn.org.alan.exam.model.vo.exercise.AnswerInfoVO;
 import cn.org.alan.exam.model.vo.exercise.QuestionSheetVO;
 import cn.org.alan.exam.model.vo.record.ExamRecordDetailVO;
 import cn.org.alan.exam.model.vo.record.ExamRecordVO;
@@ -123,9 +124,9 @@ public class ExerciseRecordServiceImpl extends ServiceImpl<ExerciseRecordMapper,
             LambdaQueryWrapper<Option> optionWrapper = new LambdaQueryWrapper<>();
             optionWrapper.eq(Option::getQuId, temp.getId());
             List<Option> options = optionMapper.selectList(optionWrapper);
-            if(temp.getQuType() ==4){
+            if (temp.getQuType() == 4) {
                 examRecordDetailVO.setOption(null);
-            }else{
+            } else {
                 examRecordDetailVO.setOption(options);
             }
 
@@ -139,9 +140,9 @@ public class ExerciseRecordServiceImpl extends ServiceImpl<ExerciseRecordMapper,
             opWrapper.eq(Option::getQuId, temp.getId());
             List<Option> opList = optionMapper.selectList(opWrapper);
 
-            if(temp.getQuType() ==4 && opList.size()>0){
+            if (temp.getQuType() == 4 && opList.size() > 0) {
                 examRecordDetailVO.setRightOption(opList.get(0).getContent());
-            }else{
+            } else {
                 String current = "";
                 ArrayList<Integer> strings = new ArrayList<>();
                 for (Option temp1 : options) {
@@ -268,9 +269,9 @@ public class ExerciseRecordServiceImpl extends ServiceImpl<ExerciseRecordMapper,
         List<ExerciseRecordDetailVO> exerciseRecordDetailVOS = new ArrayList<>();
         // 查询该考试的试题
         LambdaQueryWrapper<Question> questionLambdaQueryWrapper = new LambdaQueryWrapper<>();
-        questionLambdaQueryWrapper.eq(Question::getRepoId,exerciseId);
+        questionLambdaQueryWrapper.eq(Question::getRepoId, exerciseId);
         List<Question> questions1 = questionMapper.selectList(questionLambdaQueryWrapper);
-        for(Question temp:questions1){
+        for (Question temp : questions1) {
             ExerciseRecordDetailVO exerciseRecordDetailVO = new ExerciseRecordDetailVO();
             exerciseRecordDetailVO.setTitle(temp.getContent());
             exerciseRecordDetailVO.setAnalyse(temp.getAnalysis());
@@ -279,15 +280,15 @@ public class ExerciseRecordServiceImpl extends ServiceImpl<ExerciseRecordMapper,
             LambdaQueryWrapper<Option> optionWrapper = new LambdaQueryWrapper<>();
             optionWrapper.eq(Option::getQuId, temp.getId());
             List<Option> options = optionMapper.selectList(optionWrapper);
-            if(temp.getQuType() ==4){
+            if (temp.getQuType() == 4) {
                 exerciseRecordDetailVO.setOption(null);
-            }else{
+            } else {
                 exerciseRecordDetailVO.setOption(options);
             }
 
-            if(temp.getQuType() ==4 && options.size()>0){
+            if (temp.getQuType() == 4 && options.size() > 0) {
                 exerciseRecordDetailVO.setRightOption(options.get(0).getContent());
-            }else{
+            } else {
                 String current = "";
                 ArrayList<Integer> strings = new ArrayList<>();
                 for (Option temp1 : options) {
@@ -421,9 +422,9 @@ public class ExerciseRecordServiceImpl extends ServiceImpl<ExerciseRecordMapper,
 
 
         }
-        if(flag){
+        if (flag) {
             exerciseRecord.setIsRight(1);
-        }else {
+        } else {
             exerciseRecord.setIsRight(0);
         }
         //对是否第一次该题判断
@@ -459,7 +460,7 @@ public class ExerciseRecordServiceImpl extends ServiceImpl<ExerciseRecordMapper,
 
                 //该题库非首次刷题，修改刷题数
                 UserExerciseRecord updateUserExerciseRecord = new UserExerciseRecord();
-                updateUserExerciseRecord.setTotalCount( questionMapper.selectCount(wrapper).intValue());
+                updateUserExerciseRecord.setTotalCount(questionMapper.selectCount(wrapper).intValue());
                 updateUserExerciseRecord.setId(userExerciseRecord.getId());
                 updateUserExerciseRecord.setExerciseCount(userExerciseRecord.getExerciseCount() + 1);
                 userExerciseRecordMapper.updateById(updateUserExerciseRecord);
@@ -479,15 +480,28 @@ public class ExerciseRecordServiceImpl extends ServiceImpl<ExerciseRecordMapper,
             return Result.success(null, questionVO);
         }
 
-        if (flag) {
-            return Result.success("回答正确", questionVO);
-        }
-        return Result.success("回答错误", questionVO);
+        return flag ? Result.success("回答正确", questionVO) : Result.success("回答错误", questionVO);
     }
 
     @Override
     public Result<QuestionVO> getSingle(Integer id) {
         QuestionVO questionVO = questionMapper.selectDetail(id);
         return Result.success("查询成功", questionVO);
+    }
+
+    @Override
+    public Result<AnswerInfoVO> getAnswerInfo(Integer repoId, Integer quId) {
+        QuestionVO questionVO = questionMapper.selectSingle(quId);
+        AnswerInfoVO answerInfoVO = exerciseConverter.quVOToAnswerInfoVO(questionVO);
+        LambdaQueryWrapper<ExerciseRecord> exerciseRecordLambdaQueryWrapper = new LambdaQueryWrapper<ExerciseRecord>()
+                .eq(ExerciseRecord::getRepoId, repoId)
+                .eq(ExerciseRecord::getQuestionId, quId)
+                .eq(ExerciseRecord::getUserId, SecurityUtil.getUserId());
+        ExerciseRecord exerciseRecord = exerciseRecordMapper.selectOne(exerciseRecordLambdaQueryWrapper);
+
+        answerInfoVO.setAnswerContent(exerciseRecord.getAnswer());
+        return exerciseRecord.getIsRight() == 1 ?
+                Result.success("回答正确", answerInfoVO) : Result.success("回答错误", answerInfoVO);
+
     }
 }

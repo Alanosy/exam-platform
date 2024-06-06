@@ -21,12 +21,14 @@
     </select>
     <!-- 分页获取可刷题库信息 -->
     <select id="selectRepo" resultType="cn.org.alan.exam.model.vo.exercise.ExerciseRepoVO">
-        select r.id,r.title as repoTitle from t_repo as r
+        select r.id,r.title as repoTitle,count(q.id) as totalCount from t_repo as r
+         join t_question as q on q.repo_id = r.id
         <trim prefix="where ">
             <if test='title != null and title != ""'>
-                r.title like concat('%',#{title},'%')
+                and r.title like concat('%',#{title},'%')
             </if>
         </trim>
+        group by r.id
     </select>
     <select id="selectRepoList" resultType="cn.org.alan.exam.model.vo.repo.RepoListVO">
         select r.id,r.user_id,r.title, sum(case when q.qu_type = 1 then 1 else 0 end) as radioNum,

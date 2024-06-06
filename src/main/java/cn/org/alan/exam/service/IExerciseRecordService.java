@@ -4,6 +4,7 @@ import cn.org.alan.exam.common.result.Result;
 import cn.org.alan.exam.model.entity.ExerciseRecord;
 import cn.org.alan.exam.model.form.ExerciseFillAnswerFrom;
 import cn.org.alan.exam.model.vo.QuestionVO;
+import cn.org.alan.exam.model.vo.exercise.AnswerInfoVO;
 import cn.org.alan.exam.model.vo.exercise.QuestionSheetVO;
 import cn.org.alan.exam.model.vo.record.ExamRecordDetailVO;
 import cn.org.alan.exam.model.vo.record.ExamRecordVO;
@@ -76,4 +77,6 @@ public interface IExerciseRecordService extends IService<ExerciseRecord> {
      * @return
      */
     Result<QuestionVO> getSingle(Integer id);
+
+    Result<AnswerInfoVO> getAnswerInfo(Integer repoId, Integer quId);
 }
