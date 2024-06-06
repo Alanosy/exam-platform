@@ -154,7 +154,7 @@ const changeLeaveTime = () => {
   const startDate = new Date(leaveTime.value[0]).getTime();
   const endDate = new Date(leaveTime.value[1]).getTime();
   const diffInMilliseconds = endDate - startDate;
-  form.value.leaveDays = Math.floor(diffInMilliseconds / (1000 * 60 * 60 * 24));
+  form.value.leaveDays = Math.floor(diffInMilliseconds / (1000 * 60 * 60 * 24)) + 1;
 };
 /** 获取详情 */
 const getInfo = () => {
