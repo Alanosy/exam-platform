@@ -67,7 +67,7 @@ const tabActiveName = ref('bpmn');
 const bpmnViewRef = ref<BpmnView>();
 
 //初始化查询审批记录
-const init = async (businessKey: string) => {
+const init = async (businessKey: string | number) => {
   visible.value = true;
   loading.value = true;
   tabActiveName.value = 'bpmn';

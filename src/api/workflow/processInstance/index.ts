@@ -53,7 +53,7 @@ export const getHistoryList = (businessKey: string): AxiosPromise<Record<string,
  * @param businessKey 业务id
  * @returns
  */
-export const getHistoryRecord = (businessKey: string) => {
+export const getHistoryRecord = (businessKey: string | number) => {
   return request({
     url: `/workflow/processInstance/getHistoryRecord/${businessKey}`,
     method: 'get'
