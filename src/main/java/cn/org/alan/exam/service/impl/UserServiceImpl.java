@@ -239,10 +239,12 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
     @Override
     public Result<String> uploadAvatar(MultipartFile file) {
         Result<String> result = iQuestionService.uploadImage(file);
+        System.out.println(result);
         if (result.getCode() == 0) {
             return Result.failed("图片上传失败");
         }
         String url = result.getData();
+        System.out.println(url);
         User user = new User();
         user.setId(SecurityUtil.getUserId());
         user.setAvatar(url);

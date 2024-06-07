@@ -1,14 +1,46 @@
-# online-exam-system-frontend
+# online-exam-system-backend
 
 #### 友情提示
 
 > 1. **在线后端接口地址**：47.109.94.143。
 > 2. **接口文档**：[在线接口文档](https://apifox.com/apidoc/shared-a61e857a-187a-4b5f-972e-f0f0f6b89a7f) 。
-> 3. **配套前端项目**：[前端项目地址](https://gitee.com/muanananan/com-project.git)
+> 3. **配套前端项目**：[前端项目地址](https://github.com/Alanosy/online-exam-system-frontend)
+> 4. **在线演示网址**：[在线体验网站点击这](https://alan.org.cn)
 
 #### 介绍
 
-online-exam-system-frontend致力于打造一款通用的校园在线考试系统，此项目为后端项目
+本项目致力于打造一款通用的校园在线考试系统，此项目为后端项目，还有配套前端，在上面有可以点击跳转过去
+
+由大学生开发，本项目还在初期开发中，欢迎小伙伴一起开发一起进步,具体可以参考下方参与贡献，有问题的话可以在issue中提问，会仔细回答各位
+
+#### 系统架构
+
+##### 功能结构图
+
+![功能结构图](https://alantypora.oss-cn-chengdu.aliyuncs.com/%E5%8A%9F%E8%83%BD%E7%BB%93%E6%9E%84%E5%9B%BE.png)
+
+##### ER图
+
+![ER图](https://alantypora.oss-cn-chengdu.aliyuncs.com/ER%E5%9B%BE.png)
+
+#### 功能介绍
+
+* 用户管理
+* 班级管理
+* 试卷中心
+* 刷题中心
+* 考试记录
+* 错题本
+* 考试管理
+* 题库管理
+* 试题管理
+* 证书管理
+* 我的证书
+* 成绩分析
+* 阅卷管理
+* 公告管理
+* 切屏检测
+* 证书生成
 
 ### 技术选型
 
@@ -50,6 +82,14 @@ online-exam-system-frontend致力于打造一款通用的校园在线考试系�
 | Redis | 7.0    | https://redis.io/download                                    |
 | Nginx | 1.22   | http://nginx.org/en/download.html                            |
 
+#### 项目展示![截屏2024-06-01 下午7.59.40](https://alantypora.oss-cn-chengdu.aliyuncs.com/%E6%88%AA%E5%B1%8F2024-06-01%20%E4%B8%8B%E5%8D%887.59.40.png)
+
+![截屏2024-06-01 下午7.59.28](https://alantypora.oss-cn-chengdu.aliyuncs.com/%E6%88%AA%E5%B1%8F2024-06-01%20%E4%B8%8B%E5%8D%887.59.28.png)
+
+![截屏2024-06-01 下午7.57.15](https://alantypora.oss-cn-chengdu.aliyuncs.com/%E6%88%AA%E5%B1%8F2024-06-01%20%E4%B8%8B%E5%8D%887.59.14.png)
+
+
+
 #### 参与贡献
 
 1.  Fork 本仓库
@@ -57,18 +97,30 @@ online-exam-system-frontend致力于打造一款通用的校园在线考试系�
 3.  提交代码
 4.  新建 Pull Request
 
-
-#### 特技
-
-1.  使用 Readme\_XXX.md 来支持不同的语言，例如 Readme\_en.md, Readme\_zh.md
-2.  Gitee 官方博客 [blog.gitee.com](https://blog.gitee.com)
-3.  你可以 [https://gitee.com/explore](https://gitee.com/explore) 这个地址来了解 Gitee 上的优秀开源项目
-4.  [GVP](https://gitee.com/gvp) 全称是 Gitee 最有价值开源项目，是综合评定出的优秀开源项目
-5.  Gitee 官方提供的使用手册 [https://gitee.com/help](https://gitee.com/help)
-6.  Gitee 封面人物是一档用来展示 Gitee 会员风采的栏目 [https://gitee.com/gitee-stars/](https://gitee.com/gitee-stars/)
-
 ## 许可证
 
 [Apache License 2.0](https://github.com/macrozheng/mall/blob/master/LICENSE)
 
 Copyright (c) 2018-2024 macrozheng
+
+
+
+<picture>
+  <source
+    media="(prefers-color-scheme: dark)"
+    srcset="
+      https://api.star-history.com/svg?repos=Alanosy/online-exam-system-backend&type=Date&theme=dark
+    "
+  />
+  <source
+    media="(prefers-color-scheme: light)"
+    srcset="
+      https://api.star-history.com/svg?repos=Alanosy/online-exam-system-backend&type=Date
+    "
+  />
+  <img
+    alt="Star History Chart"
+    src="https://api.star-history.com/svg?repos=Alanosy/online-exam-system-backend&type=Date"
+  />
+</picture>
+
