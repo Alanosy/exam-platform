@@ -38,7 +38,7 @@
                 and g.grade_name like concat('%',#{gradeName},'%')
             </if>
             <if test='true'>
-                q.is_deleted = 0
+                g.is_deleted = 0
             </if>
         </trim>
     </select>
