@@ -122,52 +122,52 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
     @Transactional
     public Result<String> deleteBatchByIds(String ids) {
         List<Integer> userIds = Arrays.stream(ids.split(",")).map(Integer::parseInt).toList();
-        //删除用户证书
-        certificateUserMapper.deleteByUserIds(userIds);
-        //删除用户创建的考试
-        examMapper.deleteByUserIds(userIds);
-        //删除用户考试作答记录
-        examQuAnswerMapper.deleteByUserIds(userIds);
-        //删除用户练习记录
-        exerciseRecordMapper.deleteByUserIds(userIds);
-        //清除用户表中的班级id
-        List<Integer> gradeIds = gradeMapper.selectIdsByUserIds(userIds);
-        if (!gradeIds.isEmpty()) {
-            userMapper.removeGradeIdByGradeIds(gradeIds);
-        }
-
-        //删除用户创建的班级
-        gradeMapper.deleteByUserId(userIds);
-        //删除用户创建的可供学生练习的题库关联表
-        gradeExerciseMapper.deleteByUserIds(userIds);
-        //删除用户批改的主观题分数
-        manualScoreMapper.deleteByUserIds(userIds);
-        //删除公告与班级关联表
-        //1.获取公告id
-        List<Integer> noticeIds = noticeMapper.selectIdsByUserIds(userIds);
-        //2.删除公告与班级关联
-        if (!noticeIds.isEmpty()) {
-            noticeGradeMapper.deleteByNoticeIds(noticeIds);
-        }
-        //删除用户创建的公告
-        noticeMapper.deleteByUserIds(userIds);
-
-        //删除试题选项
-        //1.获取用户创建的试题id
-        List<Integer> quIds = questionMapper.selectIdsByUserIds(userIds);
-        //2.根据试题id列表删除选项
-        if (!quIds.isEmpty()) {
-            optionMapper.deleteBatchByQuIds(quIds);
-        }
-        //删除用户创建的试题
-        questionMapper.deleteByUserIds(userIds);
-        //删除用户创建的题库
-        repoMapper.deleteByUserIds(userIds);
-        //删除用户的错题本
-        userBookMapper.deleteByUserIds(userIds);
-        //删除用户
-        userMapper.deleteBatchIds(userIds);
+        // //删除用户证书
+        // certificateUserMapper.deleteByUserIds(userIds);
+        // //删除用户创建的考试
+        // examMapper.deleteByUserIds(userIds);
+        // //删除用户考试作答记录
+        // examQuAnswerMapper.deleteByUserIds(userIds);
+        // //删除用户练习记录
+        // exerciseRecordMapper.deleteByUserIds(userIds);
+        // //清除用户表中的班级id
+        // List<Integer> gradeIds = gradeMapper.selectIdsByUserIds(userIds);
+        // if (!gradeIds.isEmpty()) {
+        //     userMapper.removeGradeIdByGradeIds(gradeIds);
+        // }
         //
+        // //删除用户创建的班级
+        // gradeMapper.deleteByUserId(userIds);
+        // //删除用户创建的可供学生练习的题库关联表
+        // gradeExerciseMapper.deleteByUserIds(userIds);
+        // //删除用户批改的主观题分数
+        // manualScoreMapper.deleteByUserIds(userIds);
+        // //删除公告与班级关联表
+        // //1.获取公告id
+        // List<Integer> noticeIds = noticeMapper.selectIdsByUserIds(userIds);
+        // //2.删除公告与班级关联
+        // if (!noticeIds.isEmpty()) {
+        //     noticeGradeMapper.deleteByNoticeIds(noticeIds);
+        // }
+        // //删除用户创建的公告
+        // noticeMapper.deleteByUserIds(userIds);
+        //
+        // //删除试题选项
+        // //1.获取用户创建的试题id
+        // List<Integer> quIds = questionMapper.selectIdsByUserIds(userIds);
+        // //2.根据试题id列表删除选项
+        // if (!quIds.isEmpty()) {
+        //     optionMapper.deleteBatchByQuIds(quIds);
+        // }
+        // //删除用户创建的试题
+        // questionMapper.deleteByUserIds(userIds);
+        // //删除用户创建的题库
+        // repoMapper.deleteByUserIds(userIds);
+        // //删除用户的错题本
+        // userBookMapper.deleteByUserIds(userIds);
+        // //删除用户
+        Integer row = userMapper.deleteByUserIds(userIds);
+        // //
         return Result.success("删除成功");
     }
 

@@ -33,5 +33,5 @@ public interface NoticeMapper extends BaseMapper<Notice> {
      */
     List<Integer> selectIdsByUserIds(List<Integer> userIds);
 
-    Page<NoticeVO> selectNewNoticePage(Page<NoticeVO> page, Integer gradeId);
+    Page<NoticeVO> selectNewNoticePage(Page<NoticeVO> page, Integer userId);
 }

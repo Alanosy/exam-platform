@@ -26,20 +26,20 @@
     </select>
     <select id="selectGradePage" resultType="cn.org.alan.exam.model.vo.GradeVO">
         select g.id as id,g.grade_name as gradeName, g.user_id as userId,u.user_name as userName,
-        g.code as code
+        g.code as code,(SELECT count(*) FROM t_user k WHERE k.grade_id = g.id and k.is_deleted=0 ) as gradeCount
         from t_grade g
         join t_user u on g.user_id = u.id
         <trim suffixOverrides="and" prefix="where">
             <if test="role==2">
-                g.user_id = #{userId}
+                g.user_id = #{userId} and
             </if>
 
             <if test="gradeName!=null">
-                and g.grade_name like concat('%',#{gradeName},'%')
+                 g.grade_name like concat('%',#{gradeName},'%')  and
             </if>
-            <if test='true'>
-                g.is_deleted = 0
-            </if>
+
+            g.is_deleted = 0
+
         </trim>
     </select>
 </mapper>

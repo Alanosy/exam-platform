@@ -21,6 +21,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Arrays;
 import java.util.List;
@@ -43,6 +44,7 @@ public class NoticeServiceImpl extends ServiceImpl<NoticeMapper, Notice> impleme
     private GradeMapper gradeMapper;
 
     @Override
+    @Transactional
     public Result<String> addNotice(NoticeForm noticeForm) {
         // 设置创建人
         noticeForm.setUserId(SecurityUtil.getUserId());
@@ -57,6 +59,10 @@ public class NoticeServiceImpl extends ServiceImpl<NoticeMapper, Notice> impleme
         gradeLambdaQueryWrapper.eq(Grade::getUserId,SecurityUtil.getUserId());
         List<Grade> grades = gradeMapper.selectList(gradeLambdaQueryWrapper);
         Integer noticeId = notice.getId();
+        // grades.forEach(r->{
+        //     System.out.println(r);
+        // });
+        System.out.println(noticeId);
         int addNoticeGradeRow = noticeGradeMapper.addNoticeGrade(noticeId,grades);
         if (addNoticeGradeRow == 0) {
             return Result.failed("添加失败");
@@ -112,7 +118,7 @@ public class NoticeServiceImpl extends ServiceImpl<NoticeMapper, Notice> impleme
         // 创建分页对象
         Page<NoticeVO> page = new Page<>(pageNum, pageSize);
         // 学生分页查询公告
-         page = noticeMapper.selectNewNoticePage(page,SecurityUtil.getGradeId());
+         page = noticeMapper.selectNewNoticePage(page,SecurityUtil.getUserId());
         return Result.success("查询成功", page);
     }
 }

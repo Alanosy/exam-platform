@@ -10,44 +10,47 @@
 
     <select id="pagingRepo" resultType="cn.org.alan.exam.model.vo.repo.RepoVO">
         select r.id,u.real_name,r.title,r.create_time from t_repo r join t_user u on r.user_id = u.id
-        <where>
-            <if test='true'>
-                r.is_deleted = 0
-            </if>
+        <trim prefix="where" prefixOverrides=" and ">
+
+            r.is_deleted = 0
+
             <if test='title != null and title != ""'>
-                r.title like concat('%',#{title},'%')
+               and  r.title like concat('%',#{title},'%')
             </if>
             <if test='userId != 0'>
-                r.user_id = #{userId}
+               and  r.user_id = #{userId}
             </if>
-        </where>
+        </trim>
     </select>
     <!-- 分页获取可刷题库信息 -->
     <select id="selectRepo" resultType="cn.org.alan.exam.model.vo.exercise.ExerciseRepoVO">
         select r.id,r.title as repoTitle,count(q.id) as totalCount from t_repo as r
-         join t_question as q on q.repo_id = r.id
-        <trim prefix="where ">
+        join t_question as q on q.repo_id = r.id
+        <trim prefix="where" prefixOverrides="and">
             <if test='title != null and title != ""'>
-                and r.title like concat('%',#{title},'%')
+                r.title like concat('%',#{title},'%')
             </if>
             <if test='true'>
-                and is_deleted = 0
+                r.is_deleted = 0
             </if>
         </trim>
         group by r.id
     </select>
     <select id="selectRepoList" resultType="cn.org.alan.exam.model.vo.repo.RepoListVO">
-        select r.id,r.user_id,r.title, sum(case when q.qu_type = 1 then 1 else 0 end) as radioNum,
-        sum(case when q.qu_type = 2 then 1 else 0 end) as multiNum,
-        sum(case when q.qu_type = 3 then 1 else 0 end) as judgeNum,sum(case when q.qu_type = 4 then 1 else 0 end) as saqNum
-        from t_repo as r join t_question as q on r.id = q.repo_id group by r.id,r.title
+        select r.id,r.user_id,r.title, sum(case when q.qu_type = 1 and q.is_deleted = 0 then 1 else 0 end) as radioNum,
+        sum(case when q.qu_type = 2 and q.is_deleted = 0 then 1 else 0 end) as multiNum,
+        sum(case when q.qu_type = 3 and q.is_deleted = 0 then 1 else 0 end) as judgeNum,sum(case when q.qu_type = 4 and q.is_deleted = 0 then 1 else 0 end) as saqNum
+        from t_repo as r left join t_question as q on r.id = q.repo_id
         <trim prefix="where" prefixOverrides="and">
+            r.is_deleted = 0
             <if test='repoTitle != null and repoTitle != ""'>
-                r.title like concat('%',#{repoTitle},'%')
+                and r.title like concat('%',#{repoTitle},'%')
             </if>
             <if test="userId != 0">
-                r.user_id = #{userId}
+                and r.user_id = #{userId}
             </if>
         </trim>
+        group by r.id,r.title
+
     </select>
 </mapper>

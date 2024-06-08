@@ -122,7 +122,8 @@ public class GradeServiceImpl extends ServiceImpl<GradeMapper, Grade> implements
     @Override
     public Result<List<GradeVO>> getAllGrade() {
         LambdaQueryWrapper<Grade> gradeLambdaQueryWrapper = new LambdaQueryWrapper<>();
-        gradeLambdaQueryWrapper.eq(Grade::getUserId, SecurityUtil.getUserId());
+        gradeLambdaQueryWrapper.eq(Grade::getUserId, SecurityUtil.getUserId())
+                .eq(Grade::getIsDeleted,0);
         List<Grade> grades = gradeMapper.selectList(gradeLambdaQueryWrapper);
         List<GradeVO> gradeVOS = gradeConverter.listEntityToVo(grades);
         return Result.success("查询成功", gradeVOS);

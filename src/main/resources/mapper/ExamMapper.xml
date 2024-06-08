@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="cn.org.alan.exam.mapper.ExamMapper">
-    <delete id="deleteExams">
+    <update id="deleteExams">
         update  t_exam
         set is_deleted = 1
         WHERE id IN
         <foreach item="examId" collection="examIds" open="(" separator="," close=")">
             #{examId}
         </foreach>
-    </delete>
+    </update>
     <delete id="deleteExamGrades">
         delete from t_exam_grade
         WHERE exam_id IN

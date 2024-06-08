@@ -2,14 +2,14 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="cn.org.alan.exam.mapper.NoticeMapper">
 
-    <delete id="removeNotice">
+    <update id="removeNotice">
         update t_notice
         set is_deleted = 1
         where id IN
         <foreach item="noticeId" collection="noticeIds" open="(" separator="," close=")">
             #{noticeId}
         </foreach>
-    </delete>
+    </update>
     <delete id="deleteByUserIds">
         delete from t_notice where user_id in
         <foreach collection="userIds" item="userId" open="(" close=")" separator=",">
@@ -23,11 +23,13 @@
         </foreach>
     </select>
     <select id="selectNewNoticePage" resultType="cn.org.alan.exam.model.vo.NoticeVO">
-        select *
-        from t_notice
+        select n.id as id ,n.title as title,n.image as image,n.content as content,n.user_id as userId,
+        n.create_time as createTime,u.real_name as realName
+        from t_notice as n
+        join t_user as u on n.user_id=u.id
         WHERE
-        id in (select notice_id from t_notice_grade where grade_id=#{gradeId})
-        ORDER BY  create_time DESC
-
+        n.id in (select notice_id from t_notice_grade where grade_id=(select grade_id from t_user where id = #{userId}))
+        or n.user_id = 1
+        ORDER BY  n.create_time DESC
     </select>
 </mapper>

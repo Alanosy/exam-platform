@@ -126,6 +126,7 @@ public class ExamController {
         return examService.getCollect(examId);
     }
 
+
     /**
      * 获取考试详情信息
      * @param examId

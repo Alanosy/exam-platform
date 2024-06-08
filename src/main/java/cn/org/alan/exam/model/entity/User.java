@@ -68,6 +68,19 @@ public class User implements Serializable {
      */
     private Integer status;
 
+    /**
+     * 逻辑删除字段
+     */
+    private Integer isDeleted;
+
+    public Integer getIsDeleted() {
+        return isDeleted;
+    }
+
+    public void setIsDeleted(Integer isDeleted) {
+        this.isDeleted = isDeleted;
+    }
+
     public Integer getId() {
         return id;
     }
@@ -136,14 +149,15 @@ public class User implements Serializable {
     public String toString() {
         return "User{" +
                 "id=" + id +
-                ", userName=" + userName +
-                ", realName=" + realName +
-                ", password=" + password +
-                ", avatar=" + avatar +
+                ", userName='" + userName + '\'' +
+                ", realName='" + realName + '\'' +
+                ", password='" + password + '\'' +
+                ", avatar='" + avatar + '\'' +
                 ", roleId=" + roleId +
                 ", gradeId=" + gradeId +
                 ", createTime=" + createTime +
                 ", status=" + status +
-                "}";
+                ", isDeleted=" + isDeleted +
+                '}';
     }
 }

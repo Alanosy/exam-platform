@@ -130,7 +130,7 @@ public class UserBookServiceImpl extends ServiceImpl<UserBookMapper, UserBook> i
                             .eq(UserBook::getQuId, reUserBookForm.getQuId());
                     int row = userBookMapper.delete(userBookLambdaQueryWrapper);
                     addBookAnswerVO.setCorrect(1);
-                    yield Result.success("回答正确，已移除错题本", addBookAnswerVO);
+                    yield Result.success("回答正确，已移出错题本", addBookAnswerVO);
                 } else {
                     addBookAnswerVO.setCorrect(0);
                     yield Result.success("回答错误", addBookAnswerVO);

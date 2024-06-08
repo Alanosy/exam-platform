@@ -6,19 +6,19 @@
         insert into t_option
         values
         <foreach collection="options" item="option" separator="," index="i">
-            (null,#{option.quId},#{option.isRight},#{option.image},#{option.content},#{i})
+            (null,#{option.quId},#{option.isRight},#{option.image},#{option.content},#{i},0)
         </foreach>
     </insert>
 
     <!--    根据试题id列表删除所有试题的选项-->
-    <delete id="deleteBatchByQuIds">
+    <update id="deleteBatchByQuIds">
         update t_option
         set is_deleted = 1
         where qu_id in
         <foreach collection="quIdList" item="quId" separator="," open="(" close=")">
             #{quId}
         </foreach>
-    </delete>
+    </update>
 
     <!--    根据试题id获取所有选项-->
     <select id="selectAllByQuestionId" resultType="cn.org.alan.exam.model.entity.Option">

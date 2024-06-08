@@ -9,12 +9,14 @@
             (#{userBook.examId},#{userBook.userId},#{userBook.quId},#{userBook.createTime})
         </foreach>
     </insert>
-    <delete id="deleteByUserIds">
-        delete from t_user_book where user_id in
+    <update id="deleteByUserIds">
+        update  t_user
+        set real_name = "该用户已注销", is_deleted = 1
+        where user_id in
         <foreach collection="userIds" item="userId" open="(" close=")" separator=",">
             #{userId}
         </foreach>
-    </delete>
+    </update>
 
     <select id="selectPageVo" resultType="cn.org.alan.exam.model.vo.userbook.UserPageBookVO">
         SELECt a.id,b.title as title, a.exam_id as examId,count(*) as numberOfErrors , a.create_time as createTime

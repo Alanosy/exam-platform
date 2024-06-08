@@ -15,6 +15,7 @@ import cn.org.alan.exam.security.SysUserDetails;
 import cn.org.alan.exam.service.IAuthService;
 import cn.org.alan.exam.util.DateTimeUtil;
 import cn.org.alan.exam.util.JwtUtil;
+import cn.org.alan.exam.util.SecretUtils;
 import cn.org.alan.exam.util.SecurityUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.StringUtils;
@@ -87,7 +88,8 @@ public class AuthServiceImpl implements IAuthService {
         }
         // 根据用户名获取用户信息
         LambdaQueryWrapper<User> wrapper = new LambdaQueryWrapper<>();
-        wrapper.eq(User::getUserName, loginForm.getUsername());
+        wrapper.eq(User::getUserName, loginForm.getUsername())
+                .eq(User::getIsDeleted,0);
         User user = userMapper.selectOne(wrapper);
 
         // 判读用户名是否存在
@@ -95,7 +97,7 @@ public class AuthServiceImpl implements IAuthService {
             throw new UsernameNotFoundException("该用户不存在");
         }
         BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
-        if (!encoder.matches(loginForm.getPassword(), user.getPassword())) {
+        if (!encoder.matches(SecretUtils.desEncrypt(loginForm.getPassword()), user.getPassword())) {
             return Result.failed("密码错误");
         }
         user.setPassword(null);
@@ -195,13 +197,13 @@ public class AuthServiceImpl implements IAuthService {
         if (StringUtils.isBlank(s)) {
             return Result.failed("请先验证验证码");
         }
-        if (!userForm.getPassword().equals(userForm.getCheckedPassword())) {
+        if (!SecretUtils.desEncrypt(userForm.getPassword()).equals(SecretUtils.desEncrypt(userForm.getCheckedPassword()))) {
             return Result.failed("两次密码不一致");
         }
 
         User user = userConverter.fromToEntity(userForm);
 
-        user.setPassword(new BCryptPasswordEncoder().encode(user.getPassword()));
+        user.setPassword(new BCryptPasswordEncoder().encode(SecretUtils.desEncrypt(user.getPassword())));
         user.setRoleId(1);
         userMapper.insert(user);
         // 注册成功把redis的是否通过校验验证码删除，防止用户注册后立马登录，还可以使用

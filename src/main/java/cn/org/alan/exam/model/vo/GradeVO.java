@@ -37,4 +37,8 @@ public class GradeVO {
      */
     private String code;
 
+    /**
+     * 班级人数
+     */
+    private Integer gradeCount;
 }

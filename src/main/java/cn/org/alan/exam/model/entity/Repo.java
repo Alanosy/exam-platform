@@ -1,6 +1,7 @@
 package cn.org.alan.exam.model.entity;
 
 import com.baomidou.mybatisplus.annotation.*;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import net.sf.jsqlparser.expression.MySQLGroupConcat;
 
@@ -35,7 +36,7 @@ public class Repo implements Serializable {
     /**
      * 题库标题
      */
-    @NotNull(message = "题库名不能为空")
+    @NotBlank(message = "题库名不能为空")
     private String title;
 
     /**

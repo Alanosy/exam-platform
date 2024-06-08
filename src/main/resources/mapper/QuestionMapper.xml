@@ -7,14 +7,14 @@
             #{userId}
         </foreach>
     </delete>
-    <delete id="deleteBatchIdsQu">
+    <update id="deleteBatchIdsQu">
         update t_question
         set is_deleted = 1
         where id in
         <foreach collection="list" item="quId" separator="," open="(" close=")">
             #{quId}
         </foreach>
-    </delete>
+    </update>
 
 
     <!--    分页获取试题信息-->
@@ -26,6 +26,7 @@
         q.create_time
         from t_question q join t_repo r on q.repo_id = r.id
         <trim suffixOverrides="and" prefix="where">
+
             <if test='content != null and content != ""'>
                 q.content like concat('%',#{content},'%') and
             </if>
@@ -36,11 +37,9 @@
                 q.qu_type = #{type} and
             </if>
             <if test='userId != null and userId != 0'>
-                q.user_id = #{userId}
+                q.user_id = #{userId} and
             </if>
-            <if test='true'>
-                q.is_deleted = 0
-            </if>
+            q.is_deleted = 0
         </trim>
     </select>
 
@@ -63,6 +62,7 @@
         q.image,
         q.analysis,
          q.qu_type,
+        q.repo_id,
         r.title as repoTitle
         from t_question as q
         join t_repo as r on q.repo_id = r.id
@@ -82,6 +82,9 @@
             q.repo_id = #{repoId}
             <if test="quType != null and quType != 0">
                 and q.qu_type = #{quType}
+            </if>
+            <if test="true">
+                and q.is_deleted = 0
             </if>
         </trim>
     </select>

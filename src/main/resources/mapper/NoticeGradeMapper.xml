@@ -3,11 +3,10 @@
 <mapper namespace="cn.org.alan.exam.mapper.NoticeGradeMapper">
     <insert id="addNoticeGrade">
         insert into t_notice_grade
-        values
         (id,notice_id,grade_id)
         VALUES
         <foreach collection="grades" item="item" separator="," index="sort">
-            (null,#{noticeId},#{item})
+            (null,#{noticeId},#{item.id})
         </foreach>
     </insert>
 

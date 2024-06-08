@@ -34,7 +34,7 @@ import org.springframework.web.multipart.MultipartFile;
 public class LogAsPect {
 
     private final static Logger LOG = LoggerFactory.getLogger(LogAsPect.class);
-
+    // @Around("execution(* cn.org.alan.exam.controller..*.*(..))")
     @Pointcut("execution(public * cn.org.alan.exam.controller..*Controller.*(..))")
     public void controllerPointcut() {}
 

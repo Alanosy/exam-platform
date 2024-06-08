@@ -71,6 +71,6 @@ public class AliOSSUtil {
      * @return 结果
      */
     public boolean isOverSize(MultipartFile file) {
-        return file.getSize() > 50 * 1024;
+        return file.getSize() > 20 * 1024 * 1024;
     }
 }

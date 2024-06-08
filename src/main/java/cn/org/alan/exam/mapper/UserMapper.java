@@ -71,4 +71,5 @@ public interface UserMapper extends BaseMapper<User> {
     List<ClassCountResult> countAndGroupByGradeAndRoleId(Integer roleId);
 
 
+    Integer deleteByUserIds(List<Integer> userIds);
 }
