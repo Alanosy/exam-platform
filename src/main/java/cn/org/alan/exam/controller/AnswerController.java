@@ -57,8 +57,9 @@ public class AnswerController {
     @GetMapping("/exam/page")
     @PreAuthorize("hasAnyAuthority('role_teacher','role_admin')")
     public Result<IPage<AnswerExamVO>> examPage(@RequestParam(value = "pageNum", required = false, defaultValue = "1") Integer pageNum,
-                                                @RequestParam(value = "pageSize", required = false, defaultValue = "10") Integer pageSize) {
-        return manualScoreService.examPage(pageNum, pageSize);
+                                                @RequestParam(value = "pageSize", required = false, defaultValue = "10") Integer pageSize,
+                                                @RequestParam(value = "examName", required = false) String examName) {
+        return manualScoreService.examPage(pageNum, pageSize, examName);
     }
 
     /**
@@ -72,7 +73,8 @@ public class AnswerController {
     @PreAuthorize("hasAnyAuthority('role_teacher','role_admin')")
     public Result<IPage<UncorrectedUserVO>> stuExamPage(@RequestParam(value = "pageNum", required = false, defaultValue = "1") Integer pageNum,
                                                         @RequestParam(value = "pageSize", required = false, defaultValue = "10") Integer pageSize,
-                                                        @RequestParam(value = "examId") Integer examId) {
-        return manualScoreService.stuExamPage(pageNum, pageSize, examId);
+                                                        @RequestParam(value = "examId") Integer examId,
+                                                        @RequestParam(value = "realName", required = false) String realName) {
+        return manualScoreService.stuExamPage(pageNum, pageSize, examId,realName);
     }
 }

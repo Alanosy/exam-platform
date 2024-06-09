@@ -40,9 +40,16 @@
     <select id="selectMarkedList" resultType="cn.org.alan.exam.model.vo.answer.AnswerExamVO">
         select id as examId, title as examTitle, case when saq_count > 0 then 1 else 0 end as neededMark
         from t_exam
-        <if test="role == 'role_teacher'">
-            where user_id = #{userId}
-        </if>
+        <trim prefix="where"  prefixOverrides="and">
+            <if test="role == 'role_teacher'">
+                user_id = #{userId}
+            </if>
+            <if test="examName != null">
+                and title like concat('%',#{examName},'%')
+            </if>
+        </trim>
+
+
 
     </select>
     <select id="getExamRecordPage" resultType="cn.org.alan.exam.model.vo.record.ExamRecordVO">
@@ -55,5 +62,8 @@
         from t_exam e
         join t_user_exams_score as u on u.exam_id = e.id
         where u.user_id = #{userId} and u.whether_mark in (-1,1)
+        <if test='examName!=null and examName!=""'>
+            and e.title like concat('%',#{examName},'%')
+        </if>
     </select>
 </mapper>

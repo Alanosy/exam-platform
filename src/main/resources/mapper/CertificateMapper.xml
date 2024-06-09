@@ -8,7 +8,11 @@
         FROM t_certificate_user tcu
         LEFT JOIN t_certificate tc ON tc.id = tcu.certificate_id
         LEFT JOIN t_exam te ON tcu.exam_id = te.id
-        WHERE tcu.user_id = #{userId}
+        WHERE
+        tcu.user_id = #{userId}
+        <if test='examName!=null and examName!=""'>
+            and te.title like concat('%',#{examName},'%')
+        </if>
         ORDER BY tcu.create_time ASC
     </select>
 </mapper>

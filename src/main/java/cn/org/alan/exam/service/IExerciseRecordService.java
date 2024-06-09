@@ -40,7 +40,7 @@ public interface IExerciseRecordService extends IService<ExerciseRecord> {
      * @param pageSize
      * @return
      */
-    Result<IPage<ExamRecordVO>> getExamRecordPage(Integer pageNum, Integer pageSize);
+    Result<IPage<ExamRecordVO>> getExamRecordPage(Integer pageNum, Integer pageSize,String examName);
 
     /**
      * 查询某场考试的信息
@@ -55,7 +55,7 @@ public interface IExerciseRecordService extends IService<ExerciseRecord> {
      * @param pageSize
      * @return
      */
-    Result<IPage<ExerciseRecordVO>> getExerciseRecordPage(Integer pageNum, Integer pageSize);
+    Result<IPage<ExerciseRecordVO>> getExerciseRecordPage(Integer pageNum, Integer pageSize,String repoName);
 
     /**
      * 查询刷题详情

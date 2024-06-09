@@ -19,6 +19,7 @@ import cn.org.alan.exam.service.IOptionService;
 import cn.org.alan.exam.util.SecurityUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import jakarta.annotation.Resource;
@@ -91,11 +92,11 @@ public class ExerciseRecordServiceImpl extends ServiceImpl<ExerciseRecordMapper,
     }
 
     @Override
-    public Result<IPage<ExamRecordVO>> getExamRecordPage(Integer pageNum, Integer pageSize) {
+    public Result<IPage<ExamRecordVO>> getExamRecordPage(Integer pageNum, Integer pageSize,String examName) {
         // 创建page对象
         Page<ExamRecordVO> examPage = new Page<>(pageNum, pageSize);
         // 查询该用户已考试的考试
-        examPage = examMapper.getExamRecordPage(examPage, SecurityUtil.getUserId());
+        examPage = examMapper.getExamRecordPage(examPage, SecurityUtil.getUserId(),examName);
         return Result.success("查询成功", examPage);
     }
 
@@ -116,6 +117,7 @@ public class ExerciseRecordServiceImpl extends ServiceImpl<ExerciseRecordMapper,
             // 创建返回对象
             ExamRecordDetailVO examRecordDetailVO = new ExamRecordDetailVO();
             // 设置标题
+            examRecordDetailVO.setImage(temp.getImage());
             examRecordDetailVO.setTitle(temp.getContent());
             examRecordDetailVO.setQuType(temp.getQuType());
             // 设置分析
@@ -244,7 +246,7 @@ public class ExerciseRecordServiceImpl extends ServiceImpl<ExerciseRecordMapper,
     }
 
     @Override
-    public Result<IPage<ExerciseRecordVO>> getExerciseRecordPage(Integer pageNum, Integer pageSize) {
+    public Result<IPage<ExerciseRecordVO>> getExerciseRecordPage(Integer pageNum, Integer pageSize ,String repoName) {
         // 创建page对象
         Page<Repo> repoPage = new Page<>(pageNum, pageSize);
         // 查询该用户已考试的考试id
@@ -256,7 +258,8 @@ public class ExerciseRecordServiceImpl extends ServiceImpl<ExerciseRecordMapper,
                 .collect(Collectors.toList());
         // 查询考试表的考试信息
         LambdaQueryWrapper<Repo> examWrapper = new LambdaQueryWrapper<>();
-        examWrapper.in(Repo::getId, repoIds);
+        examWrapper.in(Repo::getId, repoIds)
+                .like(StringUtils.isNotBlank(repoName),Repo::getTitle,repoName);
         Page<Repo> exercisePageResult = repoMapper.selectPage(repoPage, examWrapper);
         // 实体转换
         Page<ExerciseRecordVO> exerciseRecordVOPage = recordConverter.pageRepoEntityToVo(exercisePageResult);
@@ -273,6 +276,7 @@ public class ExerciseRecordServiceImpl extends ServiceImpl<ExerciseRecordMapper,
         List<Question> questions1 = questionMapper.selectList(questionLambdaQueryWrapper);
         for (Question temp : questions1) {
             ExerciseRecordDetailVO exerciseRecordDetailVO = new ExerciseRecordDetailVO();
+            exerciseRecordDetailVO.setImage(temp.getImage());
             exerciseRecordDetailVO.setTitle(temp.getContent());
             exerciseRecordDetailVO.setAnalyse(temp.getAnalysis());
             exerciseRecordDetailVO.setQuType(temp.getQuType());

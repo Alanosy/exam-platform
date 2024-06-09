@@ -137,9 +137,9 @@ public class CertificateServiceImpl extends ServiceImpl<CertificateMapper, Certi
     }
 
     @Override
-    public Result<IPage<MyCertificateVO>> getMyCertificatePaging(Integer pageNum, Integer pageSize) {
+    public Result<IPage<MyCertificateVO>> getMyCertificatePaging(Integer pageNum, Integer pageSize,String examName) {
         Page<MyCertificateVO> myCertificateVOPage = new Page<>();
-        myCertificateVOPage = certificateMapper.selectMyCertificate(myCertificateVOPage,pageNum,pageSize, SecurityUtil.getUserId());
+        myCertificateVOPage = certificateMapper.selectMyCertificate(myCertificateVOPage,pageNum,pageSize, SecurityUtil.getUserId(),examName);
         return Result.success("查询成功",myCertificateVOPage);
     }
 

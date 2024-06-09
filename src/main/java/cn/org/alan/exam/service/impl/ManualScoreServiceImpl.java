@@ -117,11 +117,11 @@ public class ManualScoreServiceImpl extends ServiceImpl<ManualScoreMapper, Manua
     }
 
     @Override
-    public Result<IPage<AnswerExamVO>> examPage(Integer pageNum, Integer pageSize) {
+    public Result<IPage<AnswerExamVO>> examPage(Integer pageNum, Integer pageSize,String examName) {
 
         Page<AnswerExamVO> page = new Page<>(pageNum, pageSize);
         //获取自己创建的考试
-        List<AnswerExamVO> list = examMapper.selectMarkedList(page, SecurityUtil.getUserId(), SecurityUtil.getRole()).getRecords();
+        List<AnswerExamVO> list = examMapper.selectMarkedList(page, SecurityUtil.getUserId(), SecurityUtil.getRole(),examName).getRecords();
 
         //获取相关信息
         list.forEach(answerExamVO -> {
@@ -148,9 +148,9 @@ public class ManualScoreServiceImpl extends ServiceImpl<ManualScoreMapper, Manua
 
     @Override
 
-    public Result<IPage<UncorrectedUserVO>> stuExamPage(Integer pageNum, Integer pageSize, Integer examId) {
+    public Result<IPage<UncorrectedUserVO>> stuExamPage(Integer pageNum, Integer pageSize, Integer examId,String realName) {
         IPage<UncorrectedUserVO> page = new Page<>(pageNum, pageSize);
-        page = userExamsScoreMapper.uncorrectedUser(page, examId);
+        page = userExamsScoreMapper.uncorrectedUser(page, examId,realName);
         return Result.success(null, page);
     }
 }

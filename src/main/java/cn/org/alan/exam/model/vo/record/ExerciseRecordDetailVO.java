@@ -20,6 +20,10 @@ public class ExerciseRecordDetailVO {
     private Integer isRight;
     private String analyse;
     /**
+     * 题干图片
+     */
+    private String image;
+    /**
      * 试题类型
      */
     private Integer quType;

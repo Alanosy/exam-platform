@@ -38,8 +38,9 @@ public class RecordController {
     @GetMapping("/exam/paging")
     @PreAuthorize("hasAnyAuthority('role_teacher','role_admin','role_student')")
     public Result<IPage<ExamRecordVO>> getExamRecordPage(@RequestParam(value = "pageNum",required = false, defaultValue = "1") Integer pageNum,
-                                                   @RequestParam(value = "pageSize",required = false, defaultValue = "10") Integer pageSize){
-        return exerciseRecordService.getExamRecordPage(pageNum,pageSize);
+                                                   @RequestParam(value = "pageSize",required = false, defaultValue = "10") Integer pageSize,
+                                                         @RequestParam(value = "examName", required = false) String examName){
+        return exerciseRecordService.getExamRecordPage(pageNum,pageSize,examName);
     }
 
     /**
@@ -62,8 +63,9 @@ public class RecordController {
     @GetMapping("/exercise/paging")
     @PreAuthorize("hasAnyAuthority('role_teacher','role_admin','role_student')")
     public Result<IPage<ExerciseRecordVO>> getExerciseRecordPage(@RequestParam(value = "pageNum",required = false, defaultValue = "1") Integer pageNum,
-                                                             @RequestParam(value = "pageSize",required = false, defaultValue = "10") Integer pageSize){
-        return exerciseRecordService.getExerciseRecordPage(pageNum,pageSize);
+                                                             @RequestParam(value = "pageSize",required = false, defaultValue = "10") Integer pageSize,
+                                                                 @RequestParam(value = "repoName", required = false) String repoName){
+        return exerciseRecordService.getExerciseRecordPage(pageNum,pageSize,repoName);
     }
 
     /**

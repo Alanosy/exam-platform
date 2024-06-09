@@ -62,5 +62,5 @@ public interface UserExamsScoreMapper extends BaseMapper<UserExamsScore> {
      * @param examId 考试id
      * @return 查询结果
      */
-    IPage<UncorrectedUserVO> uncorrectedUser(IPage<UncorrectedUserVO> page, Integer examId);
+    IPage<UncorrectedUserVO> uncorrectedUser(IPage<UncorrectedUserVO> page, Integer examId,String realName);
 }

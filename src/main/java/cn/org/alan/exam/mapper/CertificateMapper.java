@@ -21,5 +21,5 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface CertificateMapper extends BaseMapper<Certificate> {
 
-    Page<MyCertificateVO> selectMyCertificate(Page<MyCertificateVO> myCertificateVOPage, Integer pageNum, Integer pageSize, Integer userId);
+    Page<MyCertificateVO> selectMyCertificate(Page<MyCertificateVO> myCertificateVOPage, Integer pageNum, Integer pageSize, Integer userId,String examName);
 }

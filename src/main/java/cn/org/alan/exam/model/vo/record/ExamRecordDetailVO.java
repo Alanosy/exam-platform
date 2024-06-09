@@ -18,6 +18,10 @@ public class ExamRecordDetailVO {
      */
     private String title;
     /**
+     * 题干图片
+     */
+    private String image;
+    /**
      * 选项
      */
     private List<Option> option;

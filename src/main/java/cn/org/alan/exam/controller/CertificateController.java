@@ -92,7 +92,8 @@ public class CertificateController {
     @GetMapping("/paging/my")
     @PreAuthorize("hasAnyAuthority('role_teacher','role_admin','role_student')")
     public Result<IPage<MyCertificateVO>>  getMyCertificate(@RequestParam(value = "pageNum",required = false, defaultValue = "1") Integer pageNum,
-                                                            @RequestParam(value = "pageSize",required = false, defaultValue = "10") Integer pageSize){
-        return iCertificateService.getMyCertificatePaging(pageNum, pageSize);
+                                                            @RequestParam(value = "pageSize",required = false, defaultValue = "10") Integer pageSize,
+                                                            @RequestParam(value = "examName", required = false) String examName){
+        return iCertificateService.getMyCertificatePaging(pageNum, pageSize,examName);
     }
 }
