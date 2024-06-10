@@ -32,14 +32,14 @@
             #{gradeId}
         </foreach>
     </update>
-    <delete id="deleteByUserIds">
-
-
-            delete from t_user_book where user_id in
+    <update id="deleteByUserIds">
+            update  t_user
+            set is_deleted = 1
+            where id in
             <foreach collection="userIds" item="userId" open="(" close=")" separator=",">
                 #{userId}
             </foreach>
-    </delete>
+    </update>
 
     <!--获取用户信息-->
     <select id="info" resultType="cn.org.alan.exam.model.vo.UserVO">
