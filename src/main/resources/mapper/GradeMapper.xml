@@ -42,4 +42,34 @@
 
         </trim>
     </select>
+    <select id="selectGradeIdsPage" resultType="java.lang.Integer">
+        SELECT id
+        FROM t_grade
+        WHERE user_id = #{userId} and is_deleted = 0
+        <if test='gradeName!=null and gradeName!=""'>
+            AND grade_name LIKE CONCAT('%', #{gradeName}, '%')
+        </if>
+        ORDER BY id
+        LIMIT #{offset}, #{pageSize}
+    </select>
+    <select id="batchSelectByIds" resultType="cn.org.alan.exam.model.vo.GradeVO">
+        SELECT * FROM t_grade WHERE is_deleted = 0 and id IN
+        <foreach item="id" index="index" collection="list" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+
+    </select>
+    <select id="countByCondition" resultType="java.lang.Integer">
+        select count(*)
+        from t_grade
+        <trim prefix="where" prefixOverrides="and">
+            is_deleted = 0
+            <if test="userId!=1">
+                and user_id = #{userId}
+            </if>
+            <if test='gradeName!=null and gradeName!=""'>
+                and grade_name like concat('%',#{gradeName},'%')
+            </if>
+        </trim>
+    </select>
 </mapper>

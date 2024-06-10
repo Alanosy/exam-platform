@@ -23,5 +23,6 @@ public interface GradeConverter {
     Grade formToEntity(GradeForm gradeForm);
 
     List<GradeVO> listEntityToVo(List<Grade> page);
+    GradeVO  GradeToGradeVO(Grade grade);
 
 }

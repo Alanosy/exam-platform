@@ -5,20 +5,23 @@ import cn.hutool.core.util.StrUtil;
 import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
 import cn.org.alan.exam.model.entity.RedisData;
+import cn.org.alan.exam.model.vo.GradeVO;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.catalina.Pipeline;
+import org.apache.catalina.connector.Response;
 import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.data.redis.core.script.DefaultRedisScript;
+import org.springframework.data.redis.core.script.RedisScript;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Random;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
+import java.util.*;
+import java.util.concurrent.*;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 /**
  * @Author Alan
@@ -202,5 +205,80 @@ public class CacheClient {
     }
 
 
+    // public Map<Integer, GradeVO> batchGet(List<Integer> gradeIds, Class<GradeVO> gradeVOClass) {
+    //
+    // }
+
+    /**
+     * 批量从Redis获取缓存对象
+     * @param keys 缓存键列表（注意这里的key类型为Integer，实际Redis中key为String，因此在使用时需要转换）
+     * @param clazz 缓存对象的类型
+     * @return 包含键值对的Map，未找到的键不会包含在内
+     */
+    public <T> Map<Integer, T> batchGet(String prefix, List<Integer> keys, Class<T> clazz) {
+        try {
+            // 将Integer类型的keys转换为String类型，并加上前缀，因为Redis的key是字符串
+            List<String> stringKeys = keys.stream()
+                    .map(key -> prefix + key.toString())
+                    .collect(Collectors.toList());
+
+            // 执行批量获取操作
+            List<String> values = stringRedisTemplate.opsForValue().multiGet(stringKeys);
+
+            Map<Integer, T> resultMap = new HashMap<>();
+            for (int i = 0; i < stringKeys.size(); i++) {
+                String value = values.get(i);
+                if (value != null) {
+                    // 反序列化字符串为对象
+                    T deserializedObject = deserialize(value, clazz);
+                    resultMap.put(keys.get(i), deserializedObject);
+                }
+            }
+            return resultMap;
+        } catch (Exception e) {
+            // 异常处理逻辑，根据需要进行日志记录或抛出异常
+            throw new RuntimeException("Failed to batch get from Redis", e);
+        }
+    }
+
+    /**
+     * 简化的对象反序列化示例，根据实际情况调整
+     */
+    private static <T> T deserialize(String value, Class<T> clazz) {
+        // 这里需要根据您的序列化方式来实现，例如使用JSON库如Jackson、Gson等
+        // 以下仅为示意，实际请使用正确的反序列化逻辑
+        return JSONUtil.toBean(value, clazz); // 假设使用了fastjson库
+    }
+
+    /**
+     * 批量放入缓存的方法，支持泛型键值类型
+     * @param data 待放入缓存的键值对映射
+     * @param <K> 键的类型，需要可转换为String
+     * @param <V> 值的类型，需要可转换为String
+     */
+    // public <K, V> void batchPut(Map<K, V> data) {
+    //     List<String> allArgs = new ArrayList<>();
+    //     for (Map.Entry<K, V> entry : data.entrySet()) {
+    //         allArgs.add(entry.getKey().toString());
+    //         allArgs.add(JSONUtil.toJsonStr(entry.getValue()));
+    //     }
+    //
+    //     // 使用MSET命令进行批量插入
+    //     RedisScript<Void> script = new DefaultRedisScript<>("return redis.call('MSET', unpack(ARGV));", Void.class);
+    //     // 将所有参数整合为一个String数组传递给execute方法
+    //     stringRedisTemplate.execute(script, Arrays.asList(""), allArgs.toArray(new String[0]));
+    // }
+
+    public <K, V> void batchPut(String prefix, Map<K, V> data, long expireTime, TimeUnit timeUnit) {
+        List<String> allArgs = new ArrayList<>();
+        for (Map.Entry<K, V> entry : data.entrySet()) {
+            String prefixedKey = prefix + entry.getKey().toString();
+            allArgs.add(prefixedKey);
+            allArgs.add(JSONUtil.toJsonStr(entry.getValue()));
+
+            // 在放置每个值之后立即设置过期时间
+            stringRedisTemplate.opsForValue().set(prefixedKey, JSONUtil.toJsonStr(entry.getValue()), expireTime+(1L+random.nextInt(20)), timeUnit);
+        }
+    }
 
 }

@@ -28,4 +28,10 @@ public interface GradeMapper extends BaseMapper<Grade> {
     Integer deleteByUserId(List<Integer> userIds);
 
     Page<GradeVO> selectGradePage(Page<GradeVO> page, Integer userId , String gradeName, Integer role);
+
+    List<Integer> selectGradeIdsPage(Integer userId, String gradeName, int offset, Integer pageSize);
+
+    List<GradeVO> batchSelectByIds(List<Integer> missIds);
+
+    int countByCondition(Integer userId, String gradeName);
 }
