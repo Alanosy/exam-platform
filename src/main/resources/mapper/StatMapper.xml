@@ -19,6 +19,7 @@
     <select id="ExamGradeCount" resultType="cn.org.alan.exam.model.vo.stat.GradeExamVO">
         select eg.grade_id as id ,g.grade_name ,count(*) as total
         from t_exam_grade as eg
+        <!--join t_grade as g on eg.grade_id = g.id-->
         right join t_grade as g on eg.grade_id = g.id
         <trim prefix="where"  >
             <if test="roleId = 2">

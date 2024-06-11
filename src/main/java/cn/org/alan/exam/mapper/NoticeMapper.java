@@ -34,4 +34,12 @@ public interface NoticeMapper extends BaseMapper<Notice> {
     List<Integer> selectIdsByUserIds(List<Integer> userIds);
 
     Page<NoticeVO> selectNewNoticePage(Page<NoticeVO> page, Integer userId);
+
+    int countByCondition(Integer userId, String title);
+
+    List<Integer> selectNoticeIdsPage(Integer userId, String title, int offset, Integer pageSize);
+
+    List<NoticeVO> batchSelectByIds(List<Integer> missIds);
+
+    List<Integer> selectNewNoticeIdsPage(Integer userId, int offset, Integer pageSize);
 }

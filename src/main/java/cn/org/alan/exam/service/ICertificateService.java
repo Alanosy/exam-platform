@@ -43,7 +43,7 @@ public interface ICertificateService extends IService<Certificate> {
      * @return 返回结果响应  包含分页后的证书列表信息
      */
     //获取后台分页证书 实现类
-    Result<IPage<Certificate>> pagingCertificate(Integer pageNum, Integer pageSize, String certificateName, String certificationUnit, String image);
+    Result<IPage<Certificate>> pagingCertificate(Integer pageNum, Integer pageSize, String certificateName, String certificationUnit);
 
 
     /**

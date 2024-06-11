@@ -53,9 +53,8 @@ public class CertificateController {
     public Result<IPage<Certificate>> pagingCertificate(@RequestParam(value = "pageNum", required = false, defaultValue = "1") Integer pageNum,
                                                         @RequestParam(value = "pageSize", required = false, defaultValue = "10") Integer pageSize,
                                                         @RequestParam(value = "certificateName", required = false) String certificateName,
-                                                        @RequestParam(value = "certificationUnit", required = false) String certificationUnit,
-                                                        @RequestParam(value = "image", required = false) String image) {
-        return iCertificateService.pagingCertificate(pageNum, pageSize, certificateName, certificationUnit, image);
+                                                        @RequestParam(value = "certificationUnit", required = false) String certificationUnit) {
+        return iCertificateService.pagingCertificate(pageNum, pageSize, certificateName, certificationUnit);
     }
 
     /**

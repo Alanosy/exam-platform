@@ -32,4 +32,42 @@
         or n.user_id = 1
         ORDER BY  n.create_time DESC
     </select>
+    <select id="countByCondition" resultType="java.lang.Integer">
+        select count(*)
+        from t_notice
+        <trim prefix="where" prefixOverrides="and">
+            is_deleted = 0
+            and user_id = #{userId}
+            <if test='title!=null and title!=""'>
+                and title like concat('%',#{title},'%')
+            </if>
+        </trim>
+    </select>
+    <select id="selectNoticeIdsPage" resultType="java.lang.Integer">
+
+
+        SELECT id
+        FROM t_notice
+        WHERE user_id = #{userId} and is_deleted = 0
+        <if test='title!=null and title!=""'>
+            AND title LIKE CONCAT('%', #{title}, '%')
+        </if>
+        ORDER BY id
+        LIMIT #{offset}, #{pageSize}
+    </select>
+    <select id="batchSelectByIds" resultType="cn.org.alan.exam.model.vo.NoticeVO">
+        SELECT * FROM t_notice WHERE is_deleted = 0 and id IN
+        <foreach item="id" index="index" collection="list" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </select>
+    <select id="selectNewNoticeIdsPage" resultType="java.lang.Integer">
+        select n.id
+        from t_notice as n
+        join t_user as u on n.user_id=u.id
+        WHERE
+        n.id in (select notice_id from t_notice_grade where grade_id=(select grade_id from t_user where id = #{userId}))
+        or n.user_id = 1
+        ORDER BY  n.create_time DESC
+    </select>
 </mapper>

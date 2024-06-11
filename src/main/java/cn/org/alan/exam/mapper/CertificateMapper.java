@@ -9,6 +9,8 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 
 /**
  * <p>
@@ -22,4 +24,10 @@ import org.springframework.stereotype.Repository;
 public interface CertificateMapper extends BaseMapper<Certificate> {
 
     Page<MyCertificateVO> selectMyCertificate(Page<MyCertificateVO> myCertificateVOPage, Integer pageNum, Integer pageSize, Integer userId,String examName);
+
+    int countByCondition(Integer userId, String certificateName, String certificationUnit);
+
+    List<Integer> selectCertificateIdsPage(Integer userId, String certificateName, String certificationUnit, Integer offset,Integer pageSize);
+
+    List<Certificate> batchSelectByIds(List<Integer> missIds);
 }

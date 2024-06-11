@@ -71,10 +71,10 @@ public class GradeServiceImpl extends ServiceImpl<GradeMapper, Grade> implements
         // 更新缓存
         if (grade.getId() != null) { // 确保ID有效
             // 如果是更新操作，先从缓存中移除旧数据，然后重新放入最新的数据
-            stringRedisTemplate.delete(grade.getId().toString()); // 删除旧缓存
+            stringRedisTemplate.delete("cache:grade:getPaging:"+grade.getId().toString()); // 删除旧缓存
             GradeVO updatedGradeVO = gradeConverter.GradeToGradeVO(grade); // 转换为视图对象
             Map<Integer, GradeVO> map = Map.of(updatedGradeVO.getId(), updatedGradeVO);
-            cacheClient.batchPut("cache:grade:getPaging",map,10L,TimeUnit.MINUTES); // 存储新数据
+            cacheClient.batchPut("cache:grade:getPaging:",map,10L,TimeUnit.MINUTES); // 存储新数据
         }
         stringRedisTemplate.delete("cache:grade:getAllGrade:"+SecurityUtil.getUserId());
         return Result.success("添加成功");
@@ -96,10 +96,10 @@ public class GradeServiceImpl extends ServiceImpl<GradeMapper, Grade> implements
         // 更新缓存
         if (byId.getId() != null) { // 确保ID有效
             // 如果是更新操作，先从缓存中移除旧数据，然后重新放入最新的数据
-            stringRedisTemplate.delete(byId.getId().toString()); // 删除旧缓存
+            stringRedisTemplate.delete("cache:grade:getPaging:"+byId.getId().toString()); // 删除旧缓存
             GradeVO updatedGradeVO = gradeConverter.GradeToGradeVO(byId); // 转换为视图对象
             Map<Integer, GradeVO> map = Map.of(updatedGradeVO.getId(), updatedGradeVO);
-            cacheClient.batchPut("cache:grade:getPaging",map,10L,TimeUnit.MINUTES); // 存储新数据
+            cacheClient.batchPut("cache:grade:getPaging:",map,10L,TimeUnit.MINUTES); // 存储新数据
         }
         stringRedisTemplate.delete("cache:grade:getAllGrade:"+SecurityUtil.getUserId());
         return Result.success("修改成功");
@@ -117,7 +117,7 @@ public class GradeServiceImpl extends ServiceImpl<GradeMapper, Grade> implements
             return Result.failed("删除失败");
         }
         // 删除缓存
-        stringRedisTemplate.delete(id.toString());
+        stringRedisTemplate.delete("cache:grade:getPaging:"+id.toString());
         stringRedisTemplate.delete("cache:grade:getAllGrade:"+SecurityUtil.getUserId());
         return Result.success("删除成功");
     }
@@ -133,7 +133,7 @@ public class GradeServiceImpl extends ServiceImpl<GradeMapper, Grade> implements
         List<Integer> gradeIds = gradeMapper.selectGradeIdsPage(SecurityUtil.getUserId(), gradeName, offset, pageSize);
 
         // 批量从缓存中获取GradeVO对象
-        Map<Integer, GradeVO> cachedGradesMap = cacheClient.batchGet("cache:grade:getPaging",gradeIds, GradeVO.class);
+        Map<Integer, GradeVO> cachedGradesMap = cacheClient.batchGet("cache:grade:getPaging:",gradeIds, GradeVO.class);
 
         // 确定未命中的ID列表
         List<Integer> missIds = new ArrayList<>();
@@ -150,7 +150,7 @@ public class GradeServiceImpl extends ServiceImpl<GradeMapper, Grade> implements
             Map<Integer, GradeVO> missedGradesMap = missedGrades.stream()
                     .collect(Collectors.toMap(GradeVO::getId, Function.identity()));
             // 更新缓存
-            cacheClient.batchPut("cache:grade:getPaging",missedGradesMap,10L,TimeUnit.MINUTES);
+            cacheClient.batchPut("cache:grade:getPaging:",missedGradesMap,10L,TimeUnit.MINUTES);
             // 合并缓存结果
             cachedGradesMap.putAll(missedGradesMap);
         }

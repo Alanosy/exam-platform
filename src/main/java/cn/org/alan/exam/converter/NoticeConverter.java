@@ -2,6 +2,7 @@ package cn.org.alan.exam.converter;
 
 import cn.org.alan.exam.model.entity.Notice;
 import cn.org.alan.exam.model.form.NoticeForm;
+import cn.org.alan.exam.model.vo.GradeVO;
 import cn.org.alan.exam.model.vo.NoticeVO;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.mapstruct.Mapper;
@@ -20,4 +21,5 @@ public interface NoticeConverter {
 
     Page<NoticeVO> pageEntityToVo(Page<Notice> noticePage);
 
+    NoticeVO NoticeToNoticeVO(Notice notice);
 }

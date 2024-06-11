@@ -23,7 +23,7 @@
         from t_user_book as a
         LEFT JOIN t_exam as b on a.exam_id = b.id
         WHERE a.user_id = #{userId}
-        <if test="examName != null">
+        <if test='examName != null and examName!=""'>
             and b.title like concat('%',#{examName},'%')
         </if>
         GROUP BY exam_id

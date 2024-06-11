@@ -100,13 +100,12 @@ mybatis-plus:
   type-aliases-package: cn.org.alan.exam.model
 
 jwt:
-  secret: darfhiogtiasjtgaiosethaosifhbnsakltghweaoirthaoirhnaslgnvaekltgase
-
+  secret: ${jwt.secret}
 oss:
-  endpoint: https://oss-cn-beijing.aliyuncs.com
-  access-key-id: LTAI5tRujixW58vPbobeq1KL
-  access-key-secret: agE5YTmSo9qryOXQXanh1IOZgay0x4
-  bucket-name: online-exam-system-backend
+  endpoint: ${oss.endpoint}
+  access-key-id: ${AccessKey.ID}
+  access-key-secret: ${AccessKey.Secret}
+  bucket-name: ${oss.bucket-name}
 
 logging:
   level:

@@ -15,4 +15,38 @@
         </if>
         ORDER BY tcu.create_time ASC
     </select>
+    <select id="countByCondition" resultType="java.lang.Integer">
+        select count(*)
+        from t_certificate
+        <trim prefix="where" prefixOverrides="and">
+            is_deleted = 0
+            <if test='certificateName!=null and certificateName!=""'>
+                and certificate_name like concat('%',#{certificateName},'%')
+            </if>
+            <if test='certificationUnit!=null and certificationUnit!=""'>
+                and certification_nuit like concat('%',#{certificationUnit},'%')
+            </if>
+        </trim>
+
+    </select>
+    <select id="selectCertificateIdsPage" resultType="java.lang.Integer">
+
+        SELECT id
+        FROM t_certificate
+        WHERE  is_deleted = 0
+        <if test='certificateName!=null and certificateName!=""'>
+            and certificate_name like concat('%',#{certificateName},'%')
+        </if>
+        <if test='certificationUnit!=null and certificationUnit!=""'>
+            and certification_nuit like concat('%',#{certificationUnit},'%')
+        </if>
+        ORDER BY id
+        LIMIT #{offset}, #{pageSize}
+    </select>
+    <select id="batchSelectByIds" resultType="cn.org.alan.exam.model.entity.Certificate">
+        SELECT * FROM t_certificate WHERE is_deleted = 0 and id IN
+        <foreach item="id" index="index" collection="list" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </select>
 </mapper>
