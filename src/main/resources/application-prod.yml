@@ -14,10 +14,12 @@ spring:
     # druid 连接池管理
   data:
     redis:
-      database: 0
-      host: 172.18.0.4
-      port: 6379
-      password: 8IApxf6i3K4oPnt6zOUXyR4hiN24YpNPXWD3
+      nodes: 172.18.0.9:6381,172.18.0.10:6382, 172.18.0.11:6383, 172.18.0.12:6384, 172.18.0.13:6385, 172.18.0.14:6386
+      max-redirects: 3
+#      database: 0
+#      host: 172.18.0.4
+#      port: 6379
+#      password: 8IApxf6i3K4oPnt6zOUXyR4hiN24YpNPXWD3
       timeout: 10s
       lettuce:
         pool:
