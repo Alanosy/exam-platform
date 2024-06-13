@@ -14,14 +14,15 @@ spring:
     # druid 连接池管理
   data:
     redis:
-      cluster:
-        nodes:
-        max-redirects: 3
-#      database: 0
-#      host: ${redishost}
-#      port: 6379
-#      password: ${redispassword}
-#      timeout: 10s
+#      cluster:
+#        nodes: 127.0.0.1:6381,127.0.0.1:6382, 127.0.0.1:6383, 127.0.0.1:6384, 127.0.0.1:6385, 127.0.0.1:6386
+#        max-redirects: 3
+#      password: 123456
+      database: 0
+      host: ${redishost}
+      port: 6379
+      password: ${redispassword}
+      timeout: 10s
       lettuce:
         pool:
           # 连接池最大连接数 默认8 ，负数表示没有限制
@@ -32,6 +33,7 @@ spring:
           max-idle: 8
           # 连接池中的最小空闲连接 默认0
           min-idle: 0
+
 
   servlet:
     multipart:
