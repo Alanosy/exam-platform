@@ -170,11 +170,6 @@
             <version>3.12.0</version> <!-- 请检查最新版本并替换 -->
         </dependency>
         <!-- sharding-jdbc -->
-        <!--<dependency>-->
-        <!--    <groupId>org.apache.shardingsphere</groupId>-->
-        <!--    <artifactId>sharding-jdbc-spring-boot-starter</artifactId>-->
-        <!--    <version>4.1.1</version>-->
-        <!--</dependency>-->
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
             <artifactId>shardingsphere-jdbc</artifactId>
@@ -186,31 +181,12 @@
                 </exclusion>
             </exclusions>
         </dependency>
+        <!-- Spring Session Redis 依赖-->
+        <dependency>
+            <groupId>org.springframework.session</groupId>
+            <artifactId>spring-session-data-redis</artifactId>
+        </dependency>
 
-        <!--<dependency>-->
-        <!--    <groupId>org.apache.shardingsphere</groupId>-->
-        <!--    <artifactId>shardingsphere-jdbc</artifactId>-->
-        <!--    <version>5.5.0</version>-->
-        <!--    <exclusions>-->
-        <!--        <exclusion>-->
-        <!--            <groupId>org.apache.shardingsphere</groupId>-->
-        <!--            <artifactId>shardingsphere-test-util</artifactId>-->
-        <!--        </exclusion>-->
-        <!--    </exclusions>-->
-        <!--</dependency>-->
-        <!--<dependency>-->
-        <!--    <groupId>org.springframework.boot</groupId>-->
-        <!--    <artifactId>spring-boot-starter-data-jpa</artifactId>-->
-        <!--</dependency>-->
-        <!--<dependency>-->
-        <!--    <groupId>org.springframework.boot</groupId>-->
-        <!--    <artifactId>spring-boot-amqp</artifactId>-->
-        <!--</dependency>-->
-        <!--<dependency>-->
-        <!--    <groupId>org.apache.shardingsphere</groupId>-->
-        <!--    <artifactId>sharding-core-api</artifactId>-->
-        <!--    <version>4.1.1</version>-->
-        <!--</dependency>-->
         <!--<dependency>-->
         <!--    <groupId>org.apache.shardingsphere</groupId>-->
         <!--    <artifactId>sharding-jdbc-spring-boot-starter</artifactId>-->
@@ -223,7 +199,6 @@
         <!--    </exclusions>-->
         <!--</dependency>-->
        </dependencies>
-
     <build>
         <plugins>
             <plugin>

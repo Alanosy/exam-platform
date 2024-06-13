@@ -45,7 +45,10 @@
     <select id="selectGradeIdsPage" resultType="java.lang.Integer">
         SELECT id
         FROM t_grade
-        WHERE user_id = #{userId} and is_deleted = 0
+        WHERE  is_deleted = 0
+        <if test="userId!=1">
+            and user_id = #{userId}
+        </if>
         <if test='gradeName!=null and gradeName!=""'>
             AND grade_name LIKE CONCAT('%', #{gradeName}, '%')
         </if>

@@ -54,6 +54,7 @@ public class CertificateServiceImpl extends ServiceImpl<CertificateMapper, Certi
 
     //新增证书
     @Override
+    @Transactional
     public Result<String> addCertificate(CertificateForm certificateForm) {
 
         Certificate certificate = certificateConverter.fromToEntity(certificateForm);
@@ -144,12 +145,12 @@ public class CertificateServiceImpl extends ServiceImpl<CertificateMapper, Certi
     }
 
     @Override
+    @Transactional
     public Result<String> deleteCertificate(Integer id) {
         LambdaUpdateWrapper<Certificate> certificateLambdaUpdateWrapper = new LambdaUpdateWrapper<>();
         certificateLambdaUpdateWrapper.eq(Certificate::getId,id)
                 .set(Certificate::getIsDeleted,1);
         int affectedRows = certificateMapper.update(certificateLambdaUpdateWrapper);
-
 
         if (affectedRows > 0) {
             stringRedisTemplate.delete("cache:certificate:pagingCertificate:"+id);

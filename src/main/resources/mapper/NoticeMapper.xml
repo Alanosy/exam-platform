@@ -37,7 +37,9 @@
         from t_notice
         <trim prefix="where" prefixOverrides="and">
             is_deleted = 0
-            and user_id = #{userId}
+            <if test="userId!=1">
+                and user_id = #{userId}
+            </if>
             <if test='title!=null and title!=""'>
                 and title like concat('%',#{title},'%')
             </if>

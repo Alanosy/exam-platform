@@ -101,4 +101,59 @@
         join t_repo as r on q.repo_id = r.id
         where q.id = #{id}
     </select>
+    <select id="countByCondition" resultType="java.lang.Integer">
+        select count(*)
+        from t_question q join t_repo r on q.repo_id = r.id
+        <trim suffixOverrides="and" prefix="where">
+            <if test='title != null and title != ""'>
+                q.content like concat('%',#{title},'%') and
+            </if>
+            <if test='repoId != null and repoId != 0'>
+                q.repo_id = #{repoId} and
+            </if>
+            <if test='type != null and type != 0'>
+                q.qu_type = #{type} and
+            </if>
+            <if test='userId != null and userId != 0'>
+                q.user_id = #{userId} and
+            </if>
+            q.is_deleted = 0
+        </trim>
+
+
+
+
+    </select>
+    <select id="selectQuestionIdsPage" resultType="java.lang.Integer">
+        select q.id
+        from t_question q join t_repo r on q.repo_id = r.id
+        <trim suffixOverrides="and" prefix="where">
+
+            <if test='title != null and title != ""'>
+                q.content like concat('%',#{title},'%') and
+            </if>
+            <if test='repoId != null and repoId != 0'>
+                q.repo_id = #{repoId} and
+            </if>
+            <if test='type != null and type != 0'>
+                q.qu_type = #{type} and
+            </if>
+            <if test='userId != null and userId != 0'>
+                q.user_id = #{userId} and
+            </if>
+            q.is_deleted = 0
+        </trim>
+    </select>
+    <select id="batchSelectByIds" resultType="cn.org.alan.exam.model.vo.QuestionVO">
+        select q.id,
+        q.qu_type ,
+        q.content,
+        r.title as repoTitle,
+        q.create_time
+        from t_question q join t_repo r on q.repo_id = r.id
+        WHERE q.is_deleted = 0 and q.id IN
+        <foreach item="id" index="index" collection="list" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </select>
 </mapper>

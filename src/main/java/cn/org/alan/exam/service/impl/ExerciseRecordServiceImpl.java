@@ -115,7 +115,8 @@ public class ExerciseRecordServiceImpl extends ServiceImpl<ExerciseRecordMapper,
                 List<ExamRecordDetailVO> examRecordDetailVOS = new ArrayList<>();
                 // 查询该考试的试题
                 LambdaQueryWrapper<ExamQuestion> examQuestionWrapper = new LambdaQueryWrapper<>();
-                examQuestionWrapper.eq(ExamQuestion::getExamId, examId);
+                examQuestionWrapper.eq(ExamQuestion::getExamId, examId)
+                        .orderByAsc(ExamQuestion::getSort);
                 List<ExamQuestion> examQuestions = examQuestionMapper.selectList(examQuestionWrapper);
                 List<Integer> quIds = examQuestions.stream()
                         .map(ExamQuestion::getQuestionId)

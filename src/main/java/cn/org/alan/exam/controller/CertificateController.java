@@ -32,7 +32,7 @@ public class CertificateController {
      * @return 返回响应结果
      */
     @PostMapping
-    @PreAuthorize("hasAnyAuthority('role_teacher','role_admin')")
+    @PreAuthorize("hasAnyAuthority('role_admin')")
     public Result<String> addCertificate(@RequestBody @Validated(CertificateGroup.CertificateInsertGroup.class)
                                              CertificateForm certificateForm) {
         //从token获取用户id，放入创建人id属性
@@ -45,7 +45,6 @@ public class CertificateController {
      * @param pageSize          每页记录数
      * @param certificateName   证书名
      * @param certificationUnit 认证单位
-     * @param image             证书背景图片
      * @return 响应结果
      */
     @GetMapping("/paging")
@@ -64,7 +63,7 @@ public class CertificateController {
      * @return 返回响应结果
      */
     @PutMapping("/{id}")
-    @PreAuthorize("hasAnyAuthority('role_teacher','role_admin')")
+    @PreAuthorize("hasAnyAuthority('role_admin')")
     public Result<String> updateCertificate(@PathVariable("id") Integer id,
                                             @RequestBody CertificateForm certificateForm) {
         certificateForm.setId(id);
@@ -77,7 +76,7 @@ public class CertificateController {
      * @return 返回响应结果
      */
     @DeleteMapping("/delete/{id}")
-    @PreAuthorize("hasAnyAuthority('role_teacher','role_admin')")
+    @PreAuthorize("hasAnyAuthority(role_admin')")
     public Result<String> deleteCertificate(@PathVariable("id") Integer id) {
         return iCertificateService.deleteCertificate(id);
     }

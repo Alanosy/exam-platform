@@ -65,4 +65,10 @@ public interface QuestionMapper extends BaseMapper<Question> {
     QuestionVO selectDetail(Integer id);
 
     void deleteBatchIdsQu(List<Integer> list);
+
+    int countByCondition(Integer userId, String title, Integer type, Integer repoId);
+
+    List<Integer> selectQuestionIdsPage(Integer userId, String title, Integer type, Integer repoId, int offset, Integer pageSize);
+
+    List<QuestionVO> batchSelectByIds(List<Integer> missIds);
 }

@@ -90,6 +90,7 @@ public class NoticeServiceImpl extends ServiceImpl<NoticeMapper, Notice> impleme
     }
 
     @Override
+    @Transactional
     public Result<String> deleteNotice(String ids) {
         // 转换为集合
         List<Integer> noticeIds = Arrays.stream(ids.split(","))
@@ -109,6 +110,7 @@ public class NoticeServiceImpl extends ServiceImpl<NoticeMapper, Notice> impleme
     }
 
     @Override
+    @Transactional
     public Result<String> updateNotice(String id, NoticeForm noticeForm) {
         // 创建更新条件
         LambdaUpdateWrapper<Notice> noticeWrapper = new LambdaUpdateWrapper<>();

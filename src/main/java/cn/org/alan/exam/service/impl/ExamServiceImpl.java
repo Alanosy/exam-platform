@@ -15,6 +15,7 @@ import cn.org.alan.exam.service.IExamQuAnswerService;
 import cn.org.alan.exam.service.IExamService;
 import cn.org.alan.exam.service.IOptionService;
 import cn.org.alan.exam.service.IQuestionService;
+import cn.org.alan.exam.util.CacheClient;
 import cn.org.alan.exam.util.ClassTokenGenerator;
 import cn.org.alan.exam.util.SecurityUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
@@ -24,6 +25,7 @@ import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import jakarta.annotation.Resource;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -32,6 +34,8 @@ import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
@@ -75,6 +79,10 @@ public class ExamServiceImpl extends ServiceImpl<ExamMapper, Exam> implements IE
     private UserMapper userMapper;
     @Resource
     private CertificateUserMapper certificateUserMapper;
+    @Resource
+    private CacheClient cacheClient;
+    @Resource
+    private StringRedisTemplate stringRedisTemplate;
 
     @Override
     @Transactional
@@ -165,6 +173,7 @@ public class ExamServiceImpl extends ServiceImpl<ExamMapper, Exam> implements IE
             }
 
         }
+        
         return Result.success("创建成功");
     }
 
@@ -172,7 +181,7 @@ public class ExamServiceImpl extends ServiceImpl<ExamMapper, Exam> implements IE
     @Transactional
     public Result<String> updateExam(ExamUpdateForm examUpdateForm, Integer examId) {
         // 修改考试表记录
-        Exam examTemp = this.getById(examId);
+        Exam examTemp = this.getExamById(examId);
         int grossScore = examTemp.getRadioCount() * examUpdateForm.getRadioScore()
                 + examTemp.getMultiCount() * examUpdateForm.getMultiScore()
                 + examTemp.getJudgeCount() * examUpdateForm.getJudgeScore()
@@ -186,6 +195,7 @@ public class ExamServiceImpl extends ServiceImpl<ExamMapper, Exam> implements IE
         if (examRows == 0) {
             throw new AppException("修改失败");
         }
+        stringRedisTemplate.delete("cache:exam:getExamById:"+examId);
         return Result.success("修改成功");
     }
 
@@ -215,6 +225,10 @@ public class ExamServiceImpl extends ServiceImpl<ExamMapper, Exam> implements IE
         // if (examQueRows == 0) {
         //     throw new AppException("删除失败，删除考试试题表时失败");
         // }
+        examIds.forEach(id->{
+            stringRedisTemplate.delete("cache:exam:getExamById:"+id);
+        });
+        
         return Result.success("删除成功");
     }
 
@@ -232,7 +246,46 @@ public class ExamServiceImpl extends ServiceImpl<ExamMapper, Exam> implements IE
         Page<ExamVO> examVOPage = examConverter.pageEntityToVo(examPage);
         return Result.success("查询成功", examVOPage);
     }
-
+    private Exam getExamById(Integer examId){
+        Function<Integer, Exam> integerExamFunction = new Function<>() {
+            @Override
+            public Exam apply(Integer integer) {
+                return getExamById(examId);
+            }
+        };
+        Exam exam = cacheClient.queryWithPassThrough("cache:exam:getExamById:", examId, Exam.class, integerExamFunction, null, 10L, TimeUnit.MINUTES);
+        return exam;
+    }
+    private LocalDateTime getUserStarExamTime(Integer examId,Integer userId){
+        Function<Integer, LocalDateTime> integerExamFunction = new Function<>() {
+            @Override
+            public LocalDateTime apply(Integer examId) {
+                LambdaQueryWrapper<UserExamsScore> userExamsScoreLambdaQueryWrapper = new LambdaQueryWrapper<>();
+                userExamsScoreLambdaQueryWrapper.eq(UserExamsScore::getUserId, userId)
+                        .eq(UserExamsScore::getExamId, examId)
+                        .eq(UserExamsScore::getState, 0);
+                UserExamsScore userExamsScore = userExamsScoreMapper.selectOne(userExamsScoreLambdaQueryWrapper);
+                return userExamsScore.getCreateTime();
+            }
+        };
+        LocalDateTime exam = cacheClient.queryWithPassThrough("cache:exam:getUserStarExamTime:"+userId+":", examId, LocalDateTime.class, integerExamFunction, null, 10L, TimeUnit.MINUTES);
+        return exam;
+    }
+    private List<ExamQuestion> getExamQuById(Integer examId,Integer type){
+        Function<Integer, List> integerExamFunction = new Function<>() {
+            @Override
+            public List apply(Integer examId) {
+                LambdaQueryWrapper<ExamQuestion> examQuestionLambdaQueryWrapper = new LambdaQueryWrapper<>();
+                examQuestionLambdaQueryWrapper.eq(ExamQuestion::getExamId, examId)
+                        .eq(ExamQuestion::getType, type)
+                        .orderByAsc(ExamQuestion::getSort);
+                List<ExamQuestion> examQuestionList = examQuestionMapper.selectList(examQuestionLambdaQueryWrapper);
+                return examQuestionList;
+            }
+        };
+        List<ExamQuestion> examQuList = cacheClient.queryWithPassThrough("cache:exam:getExamQuById:"+type+":", examId, List.class, integerExamFunction, null, 10L, TimeUnit.MINUTES);
+        return examQuList;
+    }
     @Override
     public Result<ExamQuestionListVO> getQuestionList(Integer examId) {
         // 检查是否正在考试
@@ -241,15 +294,10 @@ public class ExamServiceImpl extends ServiceImpl<ExamMapper, Exam> implements IE
         }
         ExamQuestionListVO examQuestionListVO = new ExamQuestionListVO();
         // 设置倒计时
-        Exam byId = this.getById(examId);
+        Exam byId = this.getExamById(examId);
         examQuestionListVO.setExamDuration(byId.getExamDuration());
-        LambdaQueryWrapper<UserExamsScore> userExamsScoreLambdaQueryWrapper = new LambdaQueryWrapper<>();
-        userExamsScoreLambdaQueryWrapper.eq(UserExamsScore::getUserId, SecurityUtil.getUserId())
-                .eq(UserExamsScore::getExamId, examId)
-                .eq(UserExamsScore::getState, 0);
-        UserExamsScore userExamsScore = userExamsScoreMapper.selectOne(userExamsScoreLambdaQueryWrapper);
         Calendar cl = Calendar.getInstance();
-        LocalDateTime createTime = userExamsScore.getCreateTime();
+        LocalDateTime createTime = getUserStarExamTime(examId,SecurityUtil.getUserId());
         if (createTime != null) {
             Date date = Date.from(createTime.atZone(ZoneId.systemDefault()).toInstant());
             cl.setTime(date);
@@ -261,11 +309,12 @@ public class ExamServiceImpl extends ServiceImpl<ExamMapper, Exam> implements IE
         // 添加不同类型的试题列表
         for (int i = 1; i <= 4; i++) {
             // 根据考试id查询考试试题表
-            LambdaQueryWrapper<ExamQuestion> examQuestionLambdaQueryWrapper = new LambdaQueryWrapper<>();
-            examQuestionLambdaQueryWrapper.eq(ExamQuestion::getExamId, examId)
-                    .eq(ExamQuestion::getType, i)
-                    .orderByAsc(ExamQuestion::getSort);
-            List<ExamQuestion> examQuestionList = examQuestionMapper.selectList(examQuestionLambdaQueryWrapper);
+            // LambdaQueryWrapper<ExamQuestion> examQuestionLambdaQueryWrapper = new LambdaQueryWrapper<>();
+            // examQuestionLambdaQueryWrapper.eq(ExamQuestion::getExamId, examId)
+            //         .eq(ExamQuestion::getType, i)
+            //         .orderByAsc(ExamQuestion::getSort);
+            List<ExamQuestion> examQuestionList = getExamQuById(examId,i);
+            // examQuestionMapper.selectList(examQuestionLambdaQueryWrapper);
             List<ExamQuestionVO> examQuestionVOS = examConverter.examQuestionListEntityToVO(examQuestionList);
             for (ExamQuestionVO temp : examQuestionVOS) {
                 LambdaQueryWrapper<ExamQuAnswer> examQuAnswerLambdaQueryWrapper = new LambdaQueryWrapper<>();
@@ -391,7 +440,8 @@ public class ExamServiceImpl extends ServiceImpl<ExamMapper, Exam> implements IE
         List<ExamQuCollectVO> examQuCollectVOS = new ArrayList<>();
         // 查询该考试的试题
         LambdaQueryWrapper<ExamQuestion> examQuestionWrapper = new LambdaQueryWrapper<>();
-        examQuestionWrapper.eq(ExamQuestion::getExamId, examId);
+        examQuestionWrapper.eq(ExamQuestion::getExamId, examId)
+                .orderByAsc(ExamQuestion::getSort);
         List<ExamQuestion> examQuestions = examQuestionMapper.selectList(examQuestionWrapper);
         List<Integer> quIds = examQuestions.stream()
                 .map(ExamQuestion::getQuestionId)
@@ -479,7 +529,7 @@ public class ExamServiceImpl extends ServiceImpl<ExamMapper, Exam> implements IE
     @Override
     public Result<ExamDetailVO> getDetail(Integer examId) {
         // 查询考试详情信息
-        Exam exam = this.getById(examId);
+        Exam exam = this.getExamById(examId);
         // 实体转换
         ExamDetailVO examDetailVO = examConverter.examToExamDetailVO(exam);
         LambdaQueryWrapper<User> userLambdaQueryWrapper = new LambdaQueryWrapper<>();
@@ -499,7 +549,7 @@ public class ExamServiceImpl extends ServiceImpl<ExamMapper, Exam> implements IE
         userExamsScoreLambdaQuery.eq(UserExamsScore::getExamId, examId)
                 .eq(UserExamsScore::getUserId, SecurityUtil.getUserId());
         UserExamsScore userExamsScore = userExamsScoreMapper.selectOne(userExamsScoreLambdaQuery);
-        Exam exam = this.getById(examId);
+        Exam exam = this.getExamById(examId);
         // 操作次数，自动交卷
         if (userExamsScore.getCount() >= exam.getMaxCount()) {
             this.handExam(examId);
@@ -763,7 +813,7 @@ public class ExamServiceImpl extends ServiceImpl<ExamMapper, Exam> implements IE
         // 获取当前时间
         LocalDateTime nowTime = LocalDateTime.now();
         // 查询考试表记录
-        Exam examOne = this.getById(examId);
+        Exam examOne = this.getExamById(examId);
         // 判断交卷是否超时
         LocalDateTime endTime = examOne.getEndTime();
         if (endTime.isBefore(nowTime)) {
@@ -839,7 +889,7 @@ public class ExamServiceImpl extends ServiceImpl<ExamMapper, Exam> implements IE
             certificateUserMapper.insert(certificateUser);
         }
         // 查询有简答题是否回答
-        Exam byId = this.getById(examId);
+        Exam byId = this.getExamById(examId);
         if (byId.getSaqCount() > 0) {
             LambdaQueryWrapper<ExamQuAnswer> examQuAnswerLambdaQueryWrapper = new LambdaQueryWrapper<>();
             examQuAnswerLambdaQueryWrapper.eq(ExamQuAnswer::getUserId, SecurityUtil.getUserId())
@@ -876,7 +926,6 @@ public class ExamServiceImpl extends ServiceImpl<ExamMapper, Exam> implements IE
     public Result<String> startExam(Integer examId) {
 
         // 检查是否正在考试
-
         if (isUserTakingExam(examId)) {
             return Result.failed("已经有考试正在进行");
         }
@@ -887,7 +936,7 @@ public class ExamServiceImpl extends ServiceImpl<ExamMapper, Exam> implements IE
         if (!userExamsScores.isEmpty()) {
             return Result.failed("这场考试已考不能第二次考试");
         }
-        Exam exam = this.getById(examId);
+        Exam exam = this.getExamById(examId);
         // 添加用户考试记录
         UserExamsScore userExamsScore = new UserExamsScore();
         userExamsScore.setExamId(examId);

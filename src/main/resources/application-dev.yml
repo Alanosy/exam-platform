@@ -9,16 +9,19 @@ spring:
     allow-circular-references: true
   datasource:
     driver-class-name: org.apache.shardingsphere.driver.ShardingSphereDriver
-    url: jdbc:shardingsphere:classpath:sharding.yaml
+    url: jdbc:shardingsphere:classpath:sharding-dev.yaml
     type: com.alibaba.druid.pool.DruidDataSource
     # druid 连接池管理
   data:
     redis:
-      database: 0
-      host: ${redishost}
-      port: 6379
-      password: ${redispassword}
-      timeout: 10s
+      cluster:
+        nodes:
+        max-redirects: 3
+#      database: 0
+#      host: ${redishost}
+#      port: 6379
+#      password: ${redispassword}
+#      timeout: 10s
       lettuce:
         pool:
           # 连接池最大连接数 默认8 ，负数表示没有限制

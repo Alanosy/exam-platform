@@ -2,6 +2,8 @@ package cn.org.alan.exam.converter;
 
 import cn.org.alan.exam.model.entity.Question;
 import cn.org.alan.exam.model.form.question.QuestionFrom;
+import cn.org.alan.exam.model.vo.GradeVO;
+import cn.org.alan.exam.model.vo.QuestionVO;
 import cn.org.alan.exam.model.vo.exercise.QuestionSheetVO;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -27,4 +29,5 @@ public interface QuestionConverter {
     @Mapping(target = "quId",source = "id")
     QuestionSheetVO entityToVO(Question question);
 
+    QuestionVO QuestionToQuestionVO(Question question);
 }

@@ -58,6 +58,7 @@ public class GradeServiceImpl extends ServiceImpl<GradeMapper, Grade> implements
     private CacheClient cacheClient;
 
     @Override
+    @Transactional
     public Result<String> addGrade(GradeForm gradeForm) {
         // 生成班级口令
         gradeForm.setCode(ClassTokenGenerator.generateClassToken(18));
@@ -81,6 +82,7 @@ public class GradeServiceImpl extends ServiceImpl<GradeMapper, Grade> implements
     }
 
     @Override
+    @Transactional
     public Result<String> updateGrade(Integer id, GradeForm gradeForm) {
         // 建立更新条件
         LambdaUpdateWrapper<Grade> gradeUpdateWrapper = new LambdaUpdateWrapper<>();
