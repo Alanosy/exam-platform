@@ -29,7 +29,8 @@ const processResponse = async (res: any) => {
   ElMessage.success(res.msg);
   setTimeout(() => {
     if (res.data !== null  && res.data.domain !== null) {
-      location.href = res.data.domain + import.meta.env.VITE_APP_CONTEXT_PATH + 'index';
+      let protocol = window.location.protocol === 'https:' ? 'https://' : 'http://';
+      location.href = protocol + res.data.domain + import.meta.env.VITE_APP_CONTEXT_PATH + 'index';
     } else {
       location.href = import.meta.env.VITE_APP_CONTEXT_PATH + 'index';
     }
