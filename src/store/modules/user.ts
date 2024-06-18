@@ -71,6 +71,7 @@ export const useUserStore = defineStore('user', () => {
 
   return {
     userId,
+    tenantId,
     token,
     nickname,
     avatar,
