@@ -186,14 +186,6 @@ const initTenantList = async () => {
   }
 };
 
-//检测租户选择框的变化
-watch(
-  () => loginForm.value.tenantId,
-  () => {
-    localStorage.setItem('tenantId', String(loginForm.value.tenantId));
-  }
-);
-
 /**
  * 第三方登录
  * @param type
@@ -202,7 +194,7 @@ const doSocialLogin = (type: string) => {
   authBinding(type).then((res: any) => {
     if (res.code === HttpStatus.SUCCESS) {
       // 获取授权地址跳转
-      window.location.href = res.data;
+      window.location.href = res.data + '&tenantId=' + loginForm.value.tenantId;
     } else {
       ElMessage.error(res.msg);
     }
