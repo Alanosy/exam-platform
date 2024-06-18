@@ -58,6 +58,7 @@
 <script lang="ts" setup>
 import { authUnlock, authBinding } from '@/api/system/social/auth';
 import { propTypes } from '@/utils/propTypes';
+import useUserStore from "@/store/modules/user";
 
 const { proxy } = getCurrentInstance() as ComponentInternalInstance;
 
@@ -85,7 +86,7 @@ const unlockAuth = (row: any) => {
 const authUrl = (source: string) => {
   authBinding(source).then((res: any) => {
     if (res.code === 200) {
-      window.location.href = res.data;
+      window.location.href = res.data + '&tenantId=' + useUserStore().tenantId;
     } else {
       proxy?.$modal.msgError(res.msg);
     }
