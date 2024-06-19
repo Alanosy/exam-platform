@@ -18,22 +18,18 @@ const code = route.query.code as string;
 const state = route.query.state as string;
 const source = route.query.source as string;
 const tenantId = route.query.tenantId as string ? route.query.tenantId as string : '000000';
+const domain = route.query.domain as string;
 
 const processResponse = async (res: any) => {
   if (res.code !== 200) {
     throw new Error(res.msg);
   }
-  if (res.data !== null && res.data.access_token !== null) {
+  if (res.data !== null) {
     setToken(res.data.access_token);
   }
   ElMessage.success(res.msg);
   setTimeout(() => {
-    if (res.data !== null  && res.data.domain !== null) {
-      let protocol = window.location.protocol === 'https:' ? 'https://' : 'http://';
-      location.href = protocol + res.data.domain + import.meta.env.VITE_APP_CONTEXT_PATH + 'index';
-    } else {
-      location.href = import.meta.env.VITE_APP_CONTEXT_PATH + 'index';
-    }
+    location.href = import.meta.env.VITE_APP_CONTEXT_PATH + 'index';
   }, 2000);
 };
 
@@ -65,6 +61,14 @@ const loginByCode = async (data: LoginData) => {
 };
 
 const init = async () => {
+  // 如果域名不相等 则重定向处理
+  let host = window.location.host;
+  if (domain !== host) {
+    let urlFull = new URL(window.location.href);
+    urlFull.hostname = domain;
+    window.location.href = urlFull.toString();
+  }
+
   const data: LoginData = {
     socialCode: code,
     socialState: state,

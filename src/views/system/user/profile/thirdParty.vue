@@ -86,7 +86,7 @@ const unlockAuth = (row: any) => {
 const authUrl = (source: string) => {
   authBinding(source).then((res: any) => {
     if (res.code === 200) {
-      window.location.href = res.data + '&tenantId=' + useUserStore().tenantId;
+      window.location.href = res.data + '&tenantId=' + useUserStore().tenantId + '&domain=' + window.location.host;
     } else {
       proxy?.$modal.msgError(res.msg);
     }

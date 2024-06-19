@@ -194,7 +194,7 @@ const doSocialLogin = (type: string) => {
   authBinding(type).then((res: any) => {
     if (res.code === HttpStatus.SUCCESS) {
       // 获取授权地址跳转
-      window.location.href = res.data + '&tenantId=' + loginForm.value.tenantId;
+      window.location.href = res.data + '&tenantId=' + loginForm.value.tenantId + '&domain=' + window.location.host;
     } else {
       ElMessage.error(res.msg);
     }
