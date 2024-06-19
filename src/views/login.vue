@@ -191,10 +191,10 @@ const initTenantList = async () => {
  * @param type
  */
 const doSocialLogin = (type: string) => {
-  authBinding(type).then((res: any) => {
+  authBinding(type, loginForm.value.tenantId).then((res: any) => {
     if (res.code === HttpStatus.SUCCESS) {
       // 获取授权地址跳转
-      window.location.href = res.data + '&tenantId=' + loginForm.value.tenantId + '&domain=' + window.location.host;
+      window.location.href = res.data;
     } else {
       ElMessage.error(res.msg);
     }
