@@ -65,7 +65,7 @@ const init = async () => {
   let host = window.location.host;
   if (domain !== host) {
     let urlFull = new URL(window.location.href);
-    urlFull.hostname = domain;
+    urlFull.host = domain;
     window.location.href = urlFull.toString();
   }
 
