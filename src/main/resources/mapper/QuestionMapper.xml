@@ -128,7 +128,6 @@
         select q.id
         from t_question q join t_repo r on q.repo_id = r.id
         <trim suffixOverrides="and" prefix="where">
-
             <if test='title != null and title != ""'>
                 q.content like concat('%',#{title},'%') and
             </if>
@@ -142,6 +141,8 @@
                 q.user_id = #{userId} and
             </if>
             q.is_deleted = 0
+            ORDER BY q.id
+            LIMIT #{offset}, #{pageSize}
         </trim>
     </select>
     <select id="batchSelectByIds" resultType="cn.org.alan.exam.model.vo.QuestionVO">

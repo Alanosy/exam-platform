@@ -249,8 +249,10 @@ public class ExamServiceImpl extends ServiceImpl<ExamMapper, Exam> implements IE
     private Exam getExamById(Integer examId){
         Function<Integer, Exam> integerExamFunction = new Function<>() {
             @Override
-            public Exam apply(Integer integer) {
-                return getExamById(examId);
+            public Exam apply(Integer examId) {
+                LambdaQueryWrapper<Exam> examLambdaQueryWrapper = new LambdaQueryWrapper<>();
+                examLambdaQueryWrapper.eq(Exam::getId,examId);
+                return examMapper.selectOne(examLambdaQueryWrapper);
             }
         };
         Exam exam = cacheClient.queryWithPassThrough("cache:exam:getExamById:", examId, Exam.class, integerExamFunction, null, 10L, TimeUnit.MINUTES);
@@ -283,7 +285,7 @@ public class ExamServiceImpl extends ServiceImpl<ExamMapper, Exam> implements IE
                 return examQuestionList;
             }
         };
-        List<ExamQuestion> examQuList = cacheClient.queryWithPassThrough("cache:exam:getExamQuById:"+type+":", examId, List.class, integerExamFunction, null, 10L, TimeUnit.MINUTES);
+        List<ExamQuestion> examQuList = cacheClient.queryWithPassThrough("cache:exam:getExamQuById:"+type+":", examId, List.class, integerExamFunction, ExamQuestion.class, 10L, TimeUnit.MINUTES);
         return examQuList;
     }
     @Override

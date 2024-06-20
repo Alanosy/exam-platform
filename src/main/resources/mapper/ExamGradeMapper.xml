@@ -63,13 +63,10 @@
     <select id="selectAdminClassExam" resultType="cn.org.alan.exam.model.vo.exam.ExamGradeListVO">
         select *
         from t_exam
-        <where>
+        where id not in (select exam_id from t_user_exams_score where user_id = #{userId})
         <if test="title != null">
             and title like concat('%',#{title},'%')
         </if>
-        </where>
-
-
     </select>
 
 

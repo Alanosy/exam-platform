@@ -2,9 +2,9 @@ dataSources:
   ds_1:
     driverClassName: com.mysql.cj.jdbc.Driver
     dataSourceClassName: com.zaxxer.hikari.HikariDataSource
-    jdbcUrl: jdbc:mysql://172.18.0.2:3306/db_exam
+    jdbcUrl: jdbc:mysql://172.20.0.4:3306/db_exam
     username: root
-    password: pPvjFma5RLxEcZqSydIEmCpbpRqO6nZLNe5R0
+    password: root
     druid:
       # 初始化时建立物理连接的个数
       initial-size: 5
@@ -65,9 +65,72 @@ dataSources:
   ds_2:
     driverClassName: com.mysql.cj.jdbc.Driver
     dataSourceClassName: com.zaxxer.hikari.HikariDataSource
-    jdbcUrl: jdbc:mysql://172.18.0.3:3306/db_exam
+    jdbcUrl: jdbc:mysql://172.20.0.3:3306/db_exam
     username: root
-    password: pPvjFma5RLxEcZqSydIEmCpbpRqO6nZLNe5R0
+    password: root
+    druid:
+      # 初始化时建立物理连接的个数
+      initial-size: 5
+      # 连接池的最小空闲数量
+      min-idle: 5
+      # 连接池最大连接数量
+      max-active: 20
+      # 获取连接时最大等待时间，单位毫秒
+      max-wait: 60000
+      # 申请连接的时候检测，如果空闲时间大于timeBetweenEvictionRunsMillis，执行validationQuery检测连接是否有效。
+      test-while-idle: true
+      # 既作为检测的间隔时间又作为testWhileIdel执行的依据
+      time-between-eviction-runs-millis: 60000
+      # 销毁线程时检测当前连接的最后活动时间和当前时间差大于该值时，关闭当前连接(配置连接在池中的最小生存时间)
+      min-evictable-idle-time-millis: 30000
+      # 用来检测数据库连接是否有效的sql 必须是一个查询语句(oracle中为 select 1 from dual)
+      validation-query: select 'x'
+      # 申请连接时会执行validationQuery检测连接是否有效,开启会降低性能,默认为true
+      test-on-borrow: false
+      # 归还连接时会执行validationQuery检测连接是否有效,开启会降低性能,默认为true
+      test-on-return: false
+      # 是否缓存preparedStatement, 也就是PSCache,PSCache对支持游标的数据库性能提升巨大，比如说oracle,在mysql下建议关闭。
+      pool-prepared-statements: false
+      # 置监控统计拦截的filters，去掉后监控界面sql无法统计，stat: 监控统计、Slf4j:日志记录、waLL: 防御sqL注入
+      filters: stat,wall,slf4j
+      # 要启用PSCache，必须配置大于0，当大于0时，poolPreparedStatements自动触发修改为true。在Druid中，不会存在Oracle下PSCache占用内存过多的问题，可以把这个数值配置大一些，比如说100
+      max-pool-prepared-statement-per-connection-size: -1
+      # 合并多个DruidDataSource的监控数据
+      use-global-data-source-stat: true
+      # 通过connectProperties属性来打开mergeSql功能；慢SQL记录
+      # connect-properties: druid.stat.mergeSql=true;druid.stat.slowSqlMillis=5000
+
+      web-stat-filter:
+        # 是否启用StatFilter默认值true
+        enabled: true
+        # 添加过滤规则
+        url-pattern: /*
+        # 忽略过滤的格式
+        exclusions: /druid/*,*.js,*.gif,*.jpg,*.png,*.css,*.ico
+
+      stat-view-servlet:
+        login-url: /druid/login
+        # 是否启用StatViewServlet默认值true
+        enabled: false
+        # 是否能够重置数据
+        reset-enable: false
+        # 访问路径为/druid时，跳转到StatViewServlet
+        url-pattern: /druid/*
+
+        # 需要账号密码才能访问控制台，默认为root
+        login-username: druid
+        login-password: druid
+
+        # IP白名单
+        allow: 127.0.0.1
+        # IP黑名单（共同存在时，deny优先于allow）
+        deny:
+  ds_3:
+    driverClassName: com.mysql.cj.jdbc.Driver
+    dataSourceClassName: com.zaxxer.hikari.HikariDataSource
+    jdbcUrl: jdbc:mysql://172.20.0.2:3306/db_exam
+    username: root
+    password: root
     druid:
       # 初始化时建立物理连接的个数
       initial-size: 5
@@ -136,6 +199,7 @@ rules:
         writeDataSourceName: ds_1
         readDataSourceNames:
           - ds_2
+          - ds_3
         transactionalReadQueryStrategy: PRIMARY
         loadBalancerName: random
     loadBalancers:

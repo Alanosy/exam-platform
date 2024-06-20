@@ -50,7 +50,10 @@
 
         SELECT id
         FROM t_notice
-        WHERE user_id = #{userId} and is_deleted = 0
+        WHERE is_deleted = 0
+        <if test="userId!=1">
+            and user_id = #{userId}
+        </if>
         <if test='title!=null and title!=""'>
             AND title LIKE CONCAT('%', #{title}, '%')
         </if>
@@ -58,7 +61,11 @@
         LIMIT #{offset}, #{pageSize}
     </select>
     <select id="batchSelectByIds" resultType="cn.org.alan.exam.model.vo.NoticeVO">
-        SELECT * FROM t_notice WHERE is_deleted = 0 and id IN
+        SELECT n.id as id ,n.title as title,n.image as image,n.content as content,n.user_id as userId,
+        n.create_time as createTime,u.real_name as realName
+        FROM t_notice as n
+        join t_user as u on n.user_id=u.id
+        WHERE n.is_deleted = 0 and n.id IN
         <foreach item="id" index="index" collection="list" open="(" separator="," close=")">
             #{id}
         </foreach>
