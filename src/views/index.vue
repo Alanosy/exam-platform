@@ -33,7 +33,7 @@
           * 部署方式 Docker 容器编排 一键部署业务集群<br />
           * 国际化 SpringMessage Spring标准国际化方案<br />
         </p>
-        <p><b>当前版本:</b> <span>v5.2.0-BETA</span></p>
+        <p><b>当前版本:</b> <span>v5.2.0</span></p>
         <p>
           <el-tag type="danger">&yen;免费开源</el-tag>
         </p>
@@ -77,7 +77,7 @@
           * 分布式监控 Prometheus、Grafana 全方位性能监控<br />
           * 其余与 Vue 版本一致<br />
         </p>
-        <p><b>当前版本:</b> <span>v2.2.0-BETA</span></p>
+        <p><b>当前版本:</b> <span>v2.2.0</span></p>
         <p>
           <el-tag type="danger">&yen;免费开源</el-tag>
         </p>
