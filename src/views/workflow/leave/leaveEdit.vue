@@ -3,34 +3,10 @@
     <el-card shadow="never">
       <div style="display: flex; justify-content: space-between">
         <div>
-          <el-button
-            v-if="
-              routeParams.type === 'add' ||
-              (routeParams.type === 'update' && form.status && (form.status === 'draft' || form.status === 'cancel' || form.status === 'back'))
-            "
-            :loading="buttonLoading"
-            type="info"
-            @click="submitForm('draft')"
-            >暂存</el-button
-          >
-          <el-button
-            v-if="
-              routeParams.type === 'add' ||
-              (routeParams.type === 'update' && form.status && (form.status === 'draft' || form.status === 'cancel' || form.status === 'back'))
-            "
-            :loading="buttonLoading"
-            type="primary"
-            @click="submitForm('submit')"
-            >提 交</el-button
-          >
-          <el-button
-            v-if="routeParams.type === 'approval' && form.status && form.status === 'waiting'"
-            :loading="buttonLoading"
-            type="primary"
-            @click="approvalVerifyOpen"
-            >审批</el-button
-          >
-          <el-button v-if="form.status !== 'draft'" type="primary" @click="handleApprovalRecord">流程进度</el-button>
+          <el-button v-if="submitButtonShow" :loading="buttonLoading" type="info" @click="submitForm('draft')">暂存</el-button>
+          <el-button v-if="submitButtonShow" :loading="buttonLoading" type="primary" @click="submitForm('submit')">提 交</el-button>
+          <el-button v-if="approvalButtonShow" :loading="buttonLoading" type="primary" @click="approvalVerifyOpen">审批</el-button>
+          <el-button v-if="form && form.id && form.status !== 'draft'" type="primary" @click="handleApprovalRecord">流程进度</el-button>
         </div>
         <div>
           <el-button style="float: right" @click="goBack()">返回</el-button>
@@ -154,7 +130,7 @@ const changeLeaveTime = () => {
   const startDate = new Date(leaveTime.value[0]).getTime();
   const endDate = new Date(leaveTime.value[1]).getTime();
   const diffInMilliseconds = endDate - startDate;
-  form.value.leaveDays = Math.floor(diffInMilliseconds / (1000 * 60 * 60 * 24));
+  form.value.leaveDays = Math.floor(diffInMilliseconds / (1000 * 60 * 60 * 24)) + 1;
 };
 /** 获取详情 */
 const getInfo = () => {
@@ -246,6 +222,21 @@ const goBack = () => {
 const approvalVerifyOpen = async () => {
   submitVerifyRef.value.openDialog(routeParams.value.taskId);
 };
+//校验提交按钮是否显示
+const submitButtonShow = computed(() => {
+  return (
+    routeParams.value.type === 'add' ||
+    (routeParams.value.type === 'update' &&
+      form.value.status &&
+      (form.value.status === 'draft' || form.value.status === 'cancel' || form.value.status === 'back'))
+  );
+});
+
+//校验审批按钮是否显示
+const approvalButtonShow = computed(() => {
+  return routeParams.value.type === 'approval' && form.value.status && form.value.status === 'waiting';
+});
+
 onMounted(() => {
   nextTick(async () => {
     routeParams.value = proxy.$route.query;

@@ -17,7 +17,9 @@ const loading = ref(true);
 const code = route.query.code as string;
 const state = route.query.state as string;
 const source = route.query.source as string;
-const tenantId = localStorage.getItem('tenantId') ? (localStorage.getItem('tenantId') as string) : '000000';
+const stateJson = JSON.parse(atob(state));
+const tenantId = stateJson.tenantId as string ? stateJson.tenantId as string : '000000';
+const domain = stateJson.domain as string;
 
 const processResponse = async (res: any) => {
   if (res.code !== 200) {
@@ -60,12 +62,21 @@ const loginByCode = async (data: LoginData) => {
 };
 
 const init = async () => {
+  // 如果域名不相等 则重定向处理
+  let host = window.location.host;
+  if (domain !== host) {
+    let urlFull = new URL(window.location.href);
+    urlFull.host = domain;
+    window.location.href = urlFull.toString();
+    return;
+  }
+
   const data: LoginData = {
     socialCode: code,
     socialState: state,
     tenantId: tenantId,
     source: source,
-    clientId: 'e5cd7e4891bf95d1d19206ce24a7b32e',
+    clientId: import.meta.env.VITE_APP_CLIENT_ID,
     grantType: 'social'
   };
 

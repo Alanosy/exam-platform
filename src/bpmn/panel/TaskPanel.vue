@@ -281,12 +281,11 @@ const singleUserSelectRef = ref<InstanceType<typeof UserSelect>>();
 const roleSelectRef = ref<InstanceType<typeof RoleSelect>>();
 const dueDateRef = ref<InstanceType<typeof DueDate>>();
 
-const isMultiple = ref(true);
 const openUserSelect = () => {
   userSelectRef.value.open();
 };
 const openSingleUserSelect = () => {
-  if (formData.value.assignee.includes('$')) {
+  if (formData.value.assignee?.includes('$')) {
     formData.value.assignee = '';
   }
   singleUserSelectRef.value.open();
