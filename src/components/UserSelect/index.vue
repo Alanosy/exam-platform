@@ -29,16 +29,11 @@
                     <el-input v-model="queryParams.userName" placeholder="请输入用户名称" clearable @keyup.enter="handleQuery" />
                   </el-form-item>
                   <el-form-item label="手机号码" prop="phonenumber">
-                    <el-input
-                      v-model="queryParams.phonenumber"
-                      placeholder="请输入手机号码"
-                      clearable
-                      @keyup.enter="handleQuery"
-                    />
+                    <el-input v-model="queryParams.phonenumber" placeholder="请输入手机号码" clearable @keyup.enter="handleQuery" />
                   </el-form-item>
                   <el-form-item>
                     <el-button type="primary" icon="Search" @click="handleQuery">搜索</el-button>
-                    <el-button icon="Refresh" @click="resetQuery">重置</el-button>
+                    <el-button icon="Refresh" @click="() => resetQuery()">重置</el-button>
                   </el-form-item>
                 </el-form>
               </el-card>
@@ -223,13 +218,13 @@ const handleQuery = () => {
   getList();
 };
 /** 重置按钮操作 */
-const resetQuery = () => {
+const resetQuery = (refresh = true) => {
   dateRange.value = ['', ''];
   queryFormRef.value?.resetFields();
   queryParams.value.pageNum = 1;
   queryParams.value.deptId = undefined;
   deptTreeRef.value?.setCurrentKey(undefined);
-  handleQuery();
+  refresh && handleQuery();
 };
 
 const handleCheckboxChange = (checked) => {
@@ -290,20 +285,17 @@ watch(
   () => userDialog.visible.value,
   (newValue: boolean) => {
     if (newValue) {
+      getTreeSelect(); // 初始化部门数据
+      getList(); // 初始化列表数据
       initSelectUser();
     } else {
       tableRef.value.clearCheckboxReserve();
       tableRef.value.clearCheckboxRow();
-      resetQuery();
+      resetQuery(false);
       selectUserList.value = [];
     }
   }
 );
-
-onMounted(() => {
-  getTreeSelect(); // 初始化部门数据
-  getList(); // 初始化列表数据
-});
 
 defineExpose({
   open: userDialog.openDialog,
