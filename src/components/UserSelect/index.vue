@@ -283,11 +283,11 @@ const close = () => {
 
 watch(
   () => userDialog.visible.value,
-  (newValue: boolean) => {
+  async (newValue: boolean) => {
     if (newValue) {
-      getTreeSelect(); // 初始化部门数据
-      getList(); // 初始化列表数据
-      initSelectUser();
+      await getTreeSelect(); // 初始化部门数据
+      await getList(); // 初始化列表数据
+      await initSelectUser();
     } else {
       tableRef.value.clearCheckboxReserve();
       tableRef.value.clearCheckboxRow();
