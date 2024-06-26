@@ -58,6 +58,8 @@ export const usePermissionStore = defineStore('permission', () => {
     setSidebarRouters(constantRoutes.concat(sidebarRoutes));
     setDefaultRoutes(sidebarRoutes);
     setTopbarRoutes(defaultRoutes);
+    // 路由name重复检查
+    duplicateRouteChecker(asyncRoutes, sidebarRoutes);
     return new Promise<RouteRecordRaw[]>((resolve) => resolve(rewriteRoutes));
   };
 
@@ -166,5 +168,43 @@ export const loadView = (view: any) => {
 export const usePermissionStoreHook = () => {
   return usePermissionStore(store);
 };
+
+interface Route {
+  name?: string | symbol;
+  path: string;
+  children?: Route[];
+}
+
+/**
+ * 检查路由name是否重复
+ * @param localRoutes 本地路由
+ * @param routes 动态路由
+ */
+function duplicateRouteChecker(localRoutes: Route[], routes: Route[]) {
+  // 展平
+  function flatRoutes(routes: Route[]) {
+    const res: Route[] = [];
+    routes.forEach((route) => {
+      if (route.children) {
+        res.push(...flatRoutes(route.children));
+      } else {
+        res.push(route);
+      }
+    });
+    return res;
+  }
+
+  const allRoutes = flatRoutes([...localRoutes, ...routes]);
+
+  const nameList: string[] = [];
+  allRoutes.forEach((route) => {
+    const name = route.name.toString();
+    if (name && nameList.includes(name)) {
+      console.error(`路由名称: [${name}] 重复, 会造成 404`);
+      return;
+    }
+    nameList.push(route.name.toString());
+  });
+}
 
 export default usePermissionStore;
