@@ -200,7 +200,13 @@ function duplicateRouteChecker(localRoutes: Route[], routes: Route[]) {
   allRoutes.forEach((route) => {
     const name = route.name.toString();
     if (name && nameList.includes(name)) {
-      console.error(`路由名称: [${name}] 重复, 会造成 404`);
+      const message = `路由名称: [${name}] 重复, 会造成 404`;
+      console.error(message);
+      ElNotification({
+        title: '路由名称重复',
+        message,
+        type: 'error'
+      });
       return;
     }
     nameList.push(route.name.toString());
