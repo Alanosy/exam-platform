@@ -11,7 +11,7 @@
               <el-input v-model="queryParams.deptCategory" placeholder="请输入类别编码" clearable style="width: 240px" @keyup.enter="handleQuery" />
             </el-form-item>
             <el-form-item label="状态" prop="status">
-              <el-select v-model="queryParams.status" placeholder="部门状态" clearable >
+              <el-select v-model="queryParams.status" placeholder="部门状态" clearable>
                 <el-option v-for="dict in sys_normal_disable" :key="dict.value" :label="dict.label" :value="dict.value" />
               </el-select>
             </el-form-item>

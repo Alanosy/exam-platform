@@ -14,12 +14,12 @@
               <el-input v-model="queryParams.operName" placeholder="请输入操作人员" clearable @keyup.enter="handleQuery" />
             </el-form-item>
             <el-form-item label="类型" prop="businessType">
-              <el-select v-model="queryParams.businessType" placeholder="操作类型" clearable >
+              <el-select v-model="queryParams.businessType" placeholder="操作类型" clearable>
                 <el-option v-for="dict in sys_oper_type" :key="dict.value" :label="dict.label" :value="dict.value" />
               </el-select>
             </el-form-item>
             <el-form-item label="状态" prop="status">
-              <el-select v-model="queryParams.status" placeholder="操作状态" clearable >
+              <el-select v-model="queryParams.status" placeholder="操作状态" clearable>
                 <el-option v-for="dict in sys_common_status" :key="dict.value" :label="dict.label" :value="dict.value" />
               </el-select>
             </el-form-item>

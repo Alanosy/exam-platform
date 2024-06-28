@@ -35,9 +35,4 @@ export interface NodeConfigVO {
    * 表单管理
    */
   wfFormManageVo: FormManageVO;
-
 }
-
-
-
-

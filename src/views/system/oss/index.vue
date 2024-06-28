@@ -13,7 +13,7 @@
             <el-form-item label="文件后缀" prop="fileSuffix">
               <el-input v-model="queryParams.fileSuffix" placeholder="请输入文件后缀" clearable @keyup.enter="handleQuery" />
             </el-form-item>
-            <el-form-item label="创建时间" style="width: 308px;">
+            <el-form-item label="创建时间" style="width: 308px">
               <el-date-picker
                 v-model="dateRangeCreateTime"
                 value-format="YYYY-MM-DD HH:mm:ss"
@@ -198,9 +198,9 @@ const getList = async () => {
   showTable.value = true;
 };
 function checkFileSuffix(fileSuffix: string | string[]) {
-  const arr = [".png", ".jpg", ".jpeg"];
+  const arr = ['.png', '.jpg', '.jpeg'];
   const suffixArray = Array.isArray(fileSuffix) ? fileSuffix : [fileSuffix];
-  return suffixArray.some(suffix => arr.includes(suffix.toLowerCase()));
+  return suffixArray.some((suffix) => arr.includes(suffix.toLowerCase()));
 }
 /** 取消按钮 */
 function cancel() {
