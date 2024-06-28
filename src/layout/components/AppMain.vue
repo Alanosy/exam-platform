@@ -1,13 +1,13 @@
 <template>
   <section class="app-main">
     <router-view v-slot="{ Component, route }">
-      <transition :enter-active-class="animante" mode="out-in">
-        <div>
-          <keep-alive v-if="!route.meta.noCache" :include="tagsViewStore.cachedViews">
-            <component :is="Component" v-if="!route.meta.link" :key="route.path" />
-          </keep-alive>
-          <component :is="Component" v-if="!route.meta.link && route.meta.noCache" :key="route.path" />
-        </div>
+      <transition v-if="!route.meta.noCache" :enter-active-class="animante" mode="out-in">
+        <keep-alive v-if="!route.meta.noCache" :include="tagsViewStore.cachedViews">
+          <component :is="Component" v-if="!route.meta.link" :key="route.path" />
+        </keep-alive>
+      </transition>
+      <transition v-if="route.meta.noCache" :enter-active-class="animante" mode="out-in">
+        <component :is="Component" v-if="!route.meta.link && route.meta.noCache" :key="route.path" />
       </transition>
     </router-view>
     <iframe-toggle />

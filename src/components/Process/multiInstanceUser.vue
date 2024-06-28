@@ -128,7 +128,7 @@ const props = defineProps({
   //回显用户id
   userIdList: {
     type: Array,
-    default: []
+    default: () => []
   }
 });
 const deptTreeRef = ref(ElTree);
