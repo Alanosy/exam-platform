@@ -71,6 +71,10 @@ public class NoticeServiceImpl extends ServiceImpl<NoticeMapper, Notice> impleme
         gradeLambdaQueryWrapper.eq(Grade::getUserId,SecurityUtil.getUserId());
         List<Grade> grades = gradeMapper.selectList(gradeLambdaQueryWrapper);
         Integer noticeId = notice.getId();
+        if(grades.isEmpty()){
+            return  Result.failed("您还没有创建班级，请先创建班级后再添加公告尝试");
+        }
+
         int addNoticeGradeRow = noticeGradeMapper.addNoticeGrade(noticeId,grades);
         if (addNoticeGradeRow == 0) {
             return Result.failed("添加失败");
@@ -80,10 +84,10 @@ public class NoticeServiceImpl extends ServiceImpl<NoticeMapper, Notice> impleme
             // 如果是更新操作，先从缓存中移除旧数据，然后重新放入最新的数据
             stringRedisTemplate.delete("cache:notice:getNotice:"+notice.getId().toString()); // 删除旧缓存
             stringRedisTemplate.delete("cache:notice:getNewNotice:"+notice.getId().toString());
-            NoticeVO updatedNoticeVO = noticeConverter.NoticeToNoticeVO(notice); // 转换为视图对象
-            Map<Integer, NoticeVO> map = Map.of(updatedNoticeVO.getId(), updatedNoticeVO);
-            cacheClient.batchPut("cache:notice:getNotice:",map,10L,TimeUnit.MINUTES); // 存储新数据
-            cacheClient.batchPut("cache:notice:getNewNotice:",map,10L,TimeUnit.MINUTES); // 存储新数据
+            // NoticeVO updatedNoticeVO = noticeConverter.NoticeToNoticeVO(notice); // 转换为视图对象
+            // Map<Integer, NoticeVO> map = Map.of(updatedNoticeVO.getId(), updatedNoticeVO);
+            // cacheClient.batchPut("cache:notice:getNotice:",map,10L,TimeUnit.MINUTES); // 存储新数据
+            // cacheClient.batchPut("cache:notice:getNewNotice:",map,10L,TimeUnit.MINUTES); // 存储新数据
 
         }
         return Result.success("添加成功");
@@ -127,10 +131,10 @@ public class NoticeServiceImpl extends ServiceImpl<NoticeMapper, Notice> impleme
             // 如果是更新操作，先从缓存中移除旧数据，然后重新放入最新的数据
             stringRedisTemplate.delete("cache:notice:getNotice:"+byId.getId().toString()); // 删除旧缓存
             stringRedisTemplate.delete("cache:notice:getNewNotice:"+byId.getId().toString()); // 删除旧缓存
-            NoticeVO updatedNoticeVO = noticeConverter.NoticeToNoticeVO(byId); // 转换为视图对象
-            Map<Integer, NoticeVO> map = Map.of(updatedNoticeVO.getId(), updatedNoticeVO);
-            cacheClient.batchPut("cache:notice:getNotice:",map,10L,TimeUnit.MINUTES); // 存储新数据
-            cacheClient.batchPut("cache:notice:getNewNotice:",map,10L,TimeUnit.MINUTES); // 存储新数据
+            // NoticeVO updatedNoticeVO = noticeConverter.NoticeToNoticeVO(byId); // 转换为视图对象
+            // Map<Integer, NoticeVO> map = Map.of(updatedNoticeVO.getId(), updatedNoticeVO);
+            // cacheClient.batchPut("cache:notice:getNotice:",map,10L,TimeUnit.MINUTES); // 存储新数据
+            // cacheClient.batchPut("cache:notice:getNewNotice:",map,10L,TimeUnit.MINUTES); // 存储新数据
         }
         return Result.success("修改成功");
     }

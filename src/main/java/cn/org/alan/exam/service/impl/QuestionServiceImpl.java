@@ -90,9 +90,10 @@ public class QuestionServiceImpl extends ServiceImpl<QuestionMapper, Question> i
         if (question.getId() != null) { // 确保ID有效
             // 如果是更新操作，先从缓存中移除旧数据，然后重新放入最新的数据
             stringRedisTemplate.delete("cache:question:pagingQuestion:"+question.getId().toString()); // 删除旧缓存
-            QuestionVO questionVO = questionConverter.QuestionToQuestionVO(question); // 转换为视图对象
-            Map<Integer, QuestionVO> map = Map.of(questionVO.getId(), questionVO);
-            cacheClient.batchPut("cache:question:pagingQuestion:",map,10L,TimeUnit.MINUTES); // 存储新数据
+            //
+            // QuestionVO questionVO = questionConverter.QuestionToQuestionVO(question); // 转换为视图对象
+            // Map<Integer, QuestionVO> map = Map.of(questionVO.getId(), questionVO);
+            // cacheClient.batchPut("cache:question:pagingQuestion:",map,10L,TimeUnit.MINUTES); // 存储新数据
         }
         return Result.success("添加成功");
 
@@ -190,9 +191,9 @@ public class QuestionServiceImpl extends ServiceImpl<QuestionMapper, Question> i
         if (question.getId() != null) { // 确保ID有效
             // 如果是更新操作，先从缓存中移除旧数据，然后重新放入最新的数据
             stringRedisTemplate.delete("cache:question:pagingQuestion:"+question.getId().toString()); // 删除旧缓存
-            QuestionVO questionVO = questionConverter.QuestionToQuestionVO(question); // 转换为视图对象
-            Map<Integer, QuestionVO> map = Map.of(questionVO.getId(), questionVO);
-            cacheClient.batchPut("cache:question:pagingQuestion:",map,10L,TimeUnit.MINUTES); // 存储新数据
+            // QuestionVO questionVO = questionConverter.QuestionToQuestionVO(question); // 转换为视图对象
+            // Map<Integer, QuestionVO> map = Map.of(questionVO.getId(), questionVO);
+            // cacheClient.batchPut("cache:question:pagingQuestion:",map,10L,TimeUnit.MINUTES); // 存储新数据
         }
         return Result.success("修改成功");
     }
@@ -232,9 +233,9 @@ public class QuestionServiceImpl extends ServiceImpl<QuestionMapper, Question> i
             if (question.getId() != null) { // 确保ID有效
                 // 如果是更新操作，先从缓存中移除旧数据，然后重新放入最新的数据
                 stringRedisTemplate.delete("cache:question:pagingQuestion:"+question.getId().toString()); // 删除旧缓存
-                QuestionVO questionVO = questionConverter.QuestionToQuestionVO(question); // 转换为视图对象
-                Map<Integer, QuestionVO> map = Map.of(questionVO.getId(), questionVO);
-                cacheClient.batchPut("cache:question:pagingQuestion:",map,10L,TimeUnit.MINUTES); // 存储新数据
+                // QuestionVO questionVO = questionConverter.QuestionToQuestionVO(question); // 转换为视图对象
+                // Map<Integer, QuestionVO> map = Map.of(questionVO.getId(), questionVO);
+                // cacheClient.batchPut("cache:question:pagingQuestion:",map,10L,TimeUnit.MINUTES); // 存储新数据
             }
 
         }

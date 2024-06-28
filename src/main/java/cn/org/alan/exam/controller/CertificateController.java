@@ -76,7 +76,7 @@ public class CertificateController {
      * @return 返回响应结果
      */
     @DeleteMapping("/delete/{id}")
-    @PreAuthorize("hasAnyAuthority(role_admin')")
+    @PreAuthorize("hasAnyAuthority('role_admin')")
     public Result<String> deleteCertificate(@PathVariable("id") Integer id) {
         return iCertificateService.deleteCertificate(id);
     }

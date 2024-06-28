@@ -65,8 +65,8 @@ public class CertificateServiceImpl extends ServiceImpl<CertificateMapper, Certi
             if (certificate.getId() != null) { // 确保ID有效
                 // 如果是更新操作，先从缓存中移除旧数据，然后重新放入最新的数据
                 stringRedisTemplate.delete("cache:certificate:pagingCertificate:"+certificate.getId().toString()); // 删除旧缓存
-                Map<Integer, Certificate> map = Map.of(certificate.getId(), certificate);
-                cacheClient.batchPut("cache:certificate:pagingCertificate:",map,10L,TimeUnit.MINUTES); // 存储新数据
+                // Map<Integer, Certificate> map = Map.of(certificate.getId(), certificate);
+                // cacheClient.batchPut("cache:certificate:pagingCertificate:",map,10L,TimeUnit.MINUTES); // 存储新数据
             }
             return Result.success("添加证书成功");
         } else {
@@ -135,8 +135,8 @@ public class CertificateServiceImpl extends ServiceImpl<CertificateMapper, Certi
             if (certificate.getId() != null) { // 确保ID有效
                 // 如果是更新操作，先从缓存中移除旧数据，然后重新放入最新的数据
                 stringRedisTemplate.delete("cache:certificate:pagingCertificate:"+certificate.getId().toString()); // 删除旧缓存
-                Map<Integer, Certificate> map = Map.of(certificate.getId(), certificate);
-                cacheClient.batchPut("cache:certificate:pagingCertificate:",map,10L,TimeUnit.MINUTES); // 存储新数据
+                // Map<Integer, Certificate> map = Map.of(certificate.getId(), certificate);
+                // cacheClient.batchPut("cache:certificate:pagingCertificate:",map,10L,TimeUnit.MINUTES); // 存储新数据
             }
             return Result.success("修改证书成功");
         } else {

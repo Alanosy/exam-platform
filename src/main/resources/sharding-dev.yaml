@@ -2,9 +2,9 @@ dataSources:
   ds_1:
     driverClassName: com.mysql.cj.jdbc.Driver
     dataSourceClassName: com.zaxxer.hikari.HikariDataSource
-    jdbcUrl: jdbc:mysql://127.0.0.1:9506/db_exam
+    jdbcUrl: jdbc:mysql://127.0.0.1:9601/db_exam
     username: root
-    password: pPvjFma5RLxEcZqSydIEmCpbpRqO6nZLNe5R0
+    password: root
     druid:
       # 初始化时建立物理连接的个数
       initial-size: 5
@@ -65,9 +65,9 @@ dataSources:
   ds_2:
     driverClassName: com.mysql.cj.jdbc.Driver
     dataSourceClassName: com.zaxxer.hikari.HikariDataSource
-    jdbcUrl: jdbc:mysql://127.0.0.1:9507/db_exam
+    jdbcUrl: jdbc:mysql://127.0.0.1:9601/db_exam
     username: root
-    password: pPvjFma5RLxEcZqSydIEmCpbpRqO6nZLNe5R0
+    password: root
     druid:
       # 初始化时建立物理连接的个数
       initial-size: 5

@@ -19,9 +19,9 @@ spring:
 #        max-redirects: 3
 #      password: 123456
       database: 0
-      host: ${redishost}
+      host: 127.0.0.1
       port: 6379
-      password: ${redispassword}
+#      password: ${redispassword}
       timeout: 10s
       lettuce:
         pool:
@@ -49,13 +49,13 @@ mybatis-plus:
   type-aliases-package: cn.org.alan.exam.model
 
 jwt:
-  secret: ${jwtsecret}
+  secret: 47EQ7VKDBvOufw5PWhtTaOTORKrzaUVAitduSVFvK862kkx2TIHH4xNtVih8SH0V56fS4S7ff0VfqVZPaonWdR3N1t8eE2f2CPeL
 
 oss:
-  endpoint: ${ossendpoint}
-  access-key-id: ${AccessKeyID}
-  access-key-secret: ${AccessKeySecret}
-  bucket-name: ${ossbucketname}
+  endpoint: https://oss-cn-beijing.aliyuncs.com
+  access-key-id: LTAI5tGaZUEhWr9Jg3EUC9FQ
+  access-key-secret: 4hFcObCh2ArA0wZZYbBP9mRy4BD2NO
+  bucket-name: online-exam-system-backend
 
 logging:
   level:

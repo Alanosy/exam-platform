@@ -179,7 +179,6 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
         if (!ExcelUtils.isExcel(Objects.requireNonNull(file.getOriginalFilename()))) {
             return Result.failed("文件类型必须是xls或xlsx");
         }
-
         //读取文件
         List<UserForm> list = ExcelUtils.readMultipartFile(file, UserForm.class);
         //参数补充
@@ -218,6 +217,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
         user.setGradeId(grade.getId());
         int updated = userMapper.updateById(user);
         if (updated > 0) {
+            stringRedisTemplate.delete("cache:grade:getPaging:"+SecurityUtil.getUserId().toString());
             return Result.success("加入班级：" + grade.getGradeName() + "成功");
         }
         return Result.failed("加入失败");

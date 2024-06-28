@@ -46,7 +46,10 @@
         SELECT id
         FROM t_grade
         WHERE  is_deleted = 0
-        <if test="userId!=1">
+        <!--<if test="userId!=1">-->
+        <!--    and user_id = #{userId}-->
+        <!--</if>-->
+        <if test="role==2">
             and user_id = #{userId}
         </if>
         <if test='gradeName!=null and gradeName!=""'>
@@ -56,10 +59,17 @@
         LIMIT #{offset}, #{pageSize}
     </select>
     <select id="batchSelectByIds" resultType="cn.org.alan.exam.model.vo.GradeVO">
-        SELECT * FROM t_grade WHERE is_deleted = 0 and id IN
-        <foreach item="id" index="index" collection="list" open="(" separator="," close=")">
-            #{id}
-        </foreach>
+        select g.id as id,g.grade_name as gradeName, g.user_id as userId,u.user_name as userName,
+        g.code as code,(SELECT count(*) FROM t_user k WHERE k.grade_id = g.id and k.is_deleted=0 ) as gradeCount
+        from t_grade g
+        join t_user u on g.user_id = u.id
+        <trim  prefixOverrides="and" prefix="where">
+            g.id IN
+            <foreach item="id" index="index" collection="missIds" open="(" separator="," close=")">
+                #{id}
+            </foreach>
+            and g.is_deleted = 0
+        </trim>
 
     </select>
     <select id="countByCondition" resultType="java.lang.Integer">
@@ -68,6 +78,9 @@
         <trim prefix="where" prefixOverrides="and">
             is_deleted = 0
             <if test="userId!=1">
+                and user_id = #{userId}
+            </if>
+            <if test="role==2">
                 and user_id = #{userId}
             </if>
             <if test='gradeName!=null and gradeName!=""'>

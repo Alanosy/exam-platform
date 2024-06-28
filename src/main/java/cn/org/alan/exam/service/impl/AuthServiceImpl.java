@@ -88,13 +88,15 @@ public class AuthServiceImpl implements IAuthService {
         }
         // 根据用户名获取用户信息
         LambdaQueryWrapper<User> wrapper = new LambdaQueryWrapper<>();
-        wrapper.eq(User::getUserName, loginForm.getUsername())
-                .eq(User::getIsDeleted,0);
+        wrapper.eq(User::getUserName, loginForm.getUsername());
         User user = userMapper.selectOne(wrapper);
 
         // 判读用户名是否存在
         if (Objects.isNull(user)) {
             throw new UsernameNotFoundException("该用户不存在");
+        }
+        if(user.getIsDeleted() == 1){
+            return Result.failed("该用户已注销");
         }
         BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
         if (!encoder.matches(SecretUtils.desEncrypt(loginForm.getPassword()), user.getPassword())) {
@@ -159,7 +161,7 @@ public class AuthServiceImpl implements IAuthService {
     public void getCaptcha(HttpServletRequest request, HttpServletResponse response) {
         // 生成线性图形验证码的静态方法，参数：图片宽，图片高，验证码字符个数 干扰个数
         LineCaptcha captcha = CaptchaUtil
-                .createLineCaptcha(200, 100, 4, 500);
+                .createLineCaptcha(200, 100, 4, 300);
 
         // 把验证码存放进redis
         // 获取验证码

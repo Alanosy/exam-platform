@@ -53,7 +53,16 @@ public class UserBookServiceImpl extends ServiceImpl<UserBookMapper, UserBook> i
     @Override
     public Result<IPage<UserPageBookVO>> getPage(Integer pageNum, Integer pageSize, String examName) {
         Page<UserPageBookVO> page = new Page<>(pageNum, pageSize);
-        Page<UserPageBookVO> userPageBookVOPage = userBookMapper.selectPageVo(page, examName, SecurityUtil.getUserId());
+        String role = SecurityUtil.getRole();
+        int roleId = 0;
+        if("role_admin".equals(role)){
+            roleId =3;
+        }else if ("role_teacher".equals(role)){
+            roleId = 2;
+        }else {
+            roleId = 1;
+        }
+        Page<UserPageBookVO> userPageBookVOPage = userBookMapper.selectPageVo(page, examName, SecurityUtil.getUserId(),roleId);
         return Result.success("查询成功", userPageBookVOPage);
     }
 
@@ -74,6 +83,10 @@ public class UserBookServiceImpl extends ServiceImpl<UserBookMapper, UserBook> i
         BookOneQuVO bookOneQuVO = new BookOneQuVO();
         // 问题
         Question quById = questionService.getById(quId);
+        if( quById==null){
+            return Result.failed("该题不存在");
+        }
+
         // 基本信息
         bookOneQuVO.setImage(quById.getImage());
         bookOneQuVO.setContent(quById.getContent());

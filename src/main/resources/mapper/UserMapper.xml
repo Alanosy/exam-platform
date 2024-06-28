@@ -12,7 +12,7 @@
         values
         <foreach collection="list" item="user" separator=",">
             (null,#{user.userName},#{user.realName},#{user.password},
-            null,#{user.id},null,#{user.createTime},1)
+            null,#{user.id},null,#{user.createTime},1,0)
         </foreach>
     </insert>
 
@@ -80,7 +80,7 @@
         <trim prefixOverrides="and" prefix="where">
             u.is_deleted = 0
             <if test="gradeId != null and gradeId != 0">
-                u.grade_id = #{gradeId}
+                and u.grade_id = #{gradeId}
             </if>
             <if test='realName != null and realName !=""'>
                 and u.real_name like concat('%',#{realName},'%')

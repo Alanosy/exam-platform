@@ -799,7 +799,7 @@ public class ExamServiceImpl extends ServiceImpl<ExamMapper, Exam> implements IE
         if ("role_student".equals(SecurityUtil.getRole())) {
             examPage = examGradeMapper.selectClassExam(examPage, SecurityUtil.getUserId(), title);
         } else if ("role_admin".equals(SecurityUtil.getRole())) {
-            examPage = examGradeMapper.selectAdminClassExam(examPage, title);
+            examPage = examGradeMapper.selectAdminClassExam(examPage, SecurityUtil.getUserId(),title);
         }
         // 根据考试id查找考试
         return Result.success("查询成功", examPage);

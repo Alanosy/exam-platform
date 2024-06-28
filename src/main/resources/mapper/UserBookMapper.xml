@@ -19,16 +19,21 @@
     </update>
 
     <select id="selectPageVo" resultType="cn.org.alan.exam.model.vo.userbook.UserPageBookVO">
-        SELECt a.id,b.title as title, a.exam_id as examId,count(*) as numberOfErrors , a.create_time as createTime
+        SELECT a.id,b.title as title, a.exam_id as examId,count(*) as numberOfErrors , a.create_time as createTime
         from t_user_book as a
         LEFT JOIN t_exam as b on a.exam_id = b.id
-        WHERE
-        <if test="userId!=1">
-            and user_id = #{userId}
-        </if>
-        <if test='examName != null and examName!=""'>
-            and b.title like concat('%',#{examName},'%')
-        </if>
+        <trim prefix="where" prefixOverrides="and">
+            <!--<if test="userId!=1">-->
+            <!--    and a.user_id = #{userId}-->
+            <!--</if>-->
+            <if test='examName != null and examName!=""'>
+                and b.title like concat('%',#{examName},'%')
+            </if>
+            <if test='role == 1'>
+                and a.user_id = #{userId}
+            </if>
+
+        </trim>
         GROUP BY exam_id
     </select>
 </mapper>
