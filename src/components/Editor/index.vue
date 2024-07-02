@@ -110,7 +110,7 @@ watch(
   () => props.modelValue,
   (v: string) => {
     if (v !== content.value) {
-      content.value = v === undefined ? '<p></p>' : v;
+      content.value = v || '<p></p>';
     }
   },
   { immediate: true }
