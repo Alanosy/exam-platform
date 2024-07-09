@@ -25,7 +25,7 @@ export const listFormManage = (query?: FormManageQuery): AxiosPromise<FormManage
 export const selectListFormManage = (): AxiosPromise<FormManageVO[]> => {
   return request({
     url: '/workflow/formManage/list/selectList',
-    method: 'get',
+    method: 'get'
   });
 };
 

@@ -106,7 +106,7 @@ const multiInstanceUserRef = ref<InstanceType<typeof MultiInstanceUser>>();
 const props = defineProps({
   taskVariables: {
     type: Object as () => Record<string, any>,
-    default: {}
+    default: () => {}
   }
 });
 //遮罩层

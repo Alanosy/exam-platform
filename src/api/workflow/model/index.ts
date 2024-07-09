@@ -22,7 +22,7 @@ export const listModel = (query: ModelQuery): AxiosPromise<ModelVO[]> => {
  */
 export const getInfo = (id: string): AxiosPromise<ModelForm> => {
   return request({
-    url: '/workflow/model/getInfo/'+id,
+    url: '/workflow/model/getInfo/' + id,
     method: 'get'
   });
 };

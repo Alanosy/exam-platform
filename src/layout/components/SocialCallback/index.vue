@@ -18,7 +18,7 @@ const code = route.query.code as string;
 const state = route.query.state as string;
 const source = route.query.source as string;
 const stateJson = JSON.parse(atob(state));
-const tenantId = stateJson.tenantId as string ? stateJson.tenantId as string : '000000';
+const tenantId = (stateJson.tenantId as string) ? (stateJson.tenantId as string) : '000000';
 const domain = stateJson.domain as string;
 
 const processResponse = async (res: any) => {

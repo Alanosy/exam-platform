@@ -40,7 +40,7 @@ class CustomContextPadProvider extends ContextPadProvider {
     rules: Rules,
     translate
   ) {
-    // @ts-ignore
+    // @ts-expect-error 忽略异常
     super(config, injector, eventBus, contextPad, modeling, elementFactory, connect, create, popupMenu, canvas, rules, translate);
 
     this._contextPad = contextPad;

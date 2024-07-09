@@ -53,7 +53,7 @@ router.beforeEach(async (to, from, next) => {
       next();
     } else {
       const redirect = encodeURIComponent(to.fullPath || '/');
-      next(`/login?redirect=${redirect}`) // 否则全部重定向到登录页
+      next(`/login?redirect=${redirect}`); // 否则全部重定向到登录页
       NProgress.done();
     }
   }

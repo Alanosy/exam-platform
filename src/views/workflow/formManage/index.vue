@@ -46,7 +46,7 @@
           </template>
         </el-table-column>
         <el-table-column label="地址" align="center" prop="router" />
-        <el-table-column label="备注" align="center" prop="remork" />
+        <el-table-column label="备注" align="center" prop="remark" />
         <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
           <template #default="scope">
             <el-tooltip content="修改" placement="top">
@@ -82,8 +82,8 @@
             </template>
           </el-input>
         </el-form-item>
-        <el-form-item label="备注" prop="remork">
-          <el-input v-model="form.remork" type="textarea" placeholder="请输入内容" />
+        <el-form-item label="备注" prop="remark">
+          <el-input v-model="form.remark" type="textarea" placeholder="请输入内容" />
         </el-form-item>
       </el-form>
       <template #footer>
@@ -123,7 +123,7 @@ const initFormData: FormManageForm = {
   id: undefined,
   formName: undefined,
   formType: 'static',
-  remork: undefined
+  remark: undefined
 };
 const data = reactive<PageData<FormManageForm, FormManageQuery>>({
   form: { ...initFormData },

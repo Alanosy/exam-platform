@@ -58,7 +58,7 @@
 <script lang="ts" setup>
 import { authUnlock, authBinding } from '@/api/system/social/auth';
 import { propTypes } from '@/utils/propTypes';
-import useUserStore from "@/store/modules/user";
+import useUserStore from '@/store/modules/user';
 
 const { proxy } = getCurrentInstance() as ComponentInternalInstance;
 

@@ -9,6 +9,8 @@ import Layout from '@/layout/index.vue';
 import ParentView from '@/components/ParentView/index.vue';
 import InnerLink from '@/layout/components/InnerLink/index.vue';
 
+import { createCustomNameComponent } from '@/utils/createCustomNameComponent';
+
 // 匹配views里面所有的.vue文件
 const modules = import.meta.glob('./../../views/**/*.vue');
 export const usePermissionStore = defineStore('permission', () => {
@@ -58,6 +60,8 @@ export const usePermissionStore = defineStore('permission', () => {
     setSidebarRouters(constantRoutes.concat(sidebarRoutes));
     setDefaultRoutes(sidebarRoutes);
     setTopbarRoutes(defaultRoutes);
+    // 路由name重复检查
+    duplicateRouteChecker(asyncRoutes, sidebarRoutes);
     return new Promise<RouteRecordRaw[]>((resolve) => resolve(rewriteRoutes));
   };
 
@@ -80,7 +84,7 @@ export const usePermissionStore = defineStore('permission', () => {
       } else if (route.component?.toString() === 'InnerLink') {
         route.component = InnerLink;
       } else {
-        route.component = loadView(route.component);
+        route.component = loadView(route.component, route.name as string);
       }
       if (route.children != null && route.children && route.children.length) {
         route.children = filterAsyncRouter(route.children, route, type);
@@ -151,12 +155,12 @@ export const filterDynamicRoutes = (routes: RouteRecordRaw[]) => {
   return res;
 };
 
-export const loadView = (view: any) => {
+export const loadView = (view: any, name: string) => {
   let res;
   for (const path in modules) {
     const dir = path.split('views/')[1].split('.vue')[0];
     if (dir === view) {
-      res = () => modules[path]();
+      res = createCustomNameComponent(modules[path], { name });
     }
   }
   return res;
@@ -166,5 +170,49 @@ export const loadView = (view: any) => {
 export const usePermissionStoreHook = () => {
   return usePermissionStore(store);
 };
+
+interface Route {
+  name?: string | symbol;
+  path: string;
+  children?: Route[];
+}
+
+/**
+ * 检查路由name是否重复
+ * @param localRoutes 本地路由
+ * @param routes 动态路由
+ */
+function duplicateRouteChecker(localRoutes: Route[], routes: Route[]) {
+  // 展平
+  function flatRoutes(routes: Route[]) {
+    const res: Route[] = [];
+    routes.forEach((route) => {
+      if (route.children) {
+        res.push(...flatRoutes(route.children));
+      } else {
+        res.push(route);
+      }
+    });
+    return res;
+  }
+
+  const allRoutes = flatRoutes([...localRoutes, ...routes]);
+
+  const nameList: string[] = [];
+  allRoutes.forEach((route) => {
+    const name = route.name.toString();
+    if (name && nameList.includes(name)) {
+      const message = `路由名称: [${name}] 重复, 会造成 404`;
+      console.error(message);
+      ElNotification({
+        title: '路由名称重复',
+        message,
+        type: 'error'
+      });
+      return;
+    }
+    nameList.push(route.name.toString());
+  });
+}
 
 export default usePermissionStore;

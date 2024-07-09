@@ -1,10 +1,10 @@
 export interface ModelForm {
-  id: string,
+  id: string;
   name: string;
   key: string;
   categoryCode: string;
-  xml:string,
-  svg:string,
+  xml: string;
+  svg: string;
   description: string;
 }
 

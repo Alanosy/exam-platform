@@ -38,7 +38,7 @@ const realSrcList = computed(() => {
   let real_src_list = props.src.split(',');
   let srcList: string[] = [];
   real_src_list.forEach((item: string) => {
-    if(item.trim() === '') {
+    if (item.trim() === '') {
       return;
     }
     return srcList.push(item);

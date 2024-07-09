@@ -26,7 +26,7 @@ export interface FormManageVO {
   /**
    * 备注
    */
-  remork: string;
+  remark: string;
 }
 
 export interface FormManageForm extends BaseEntity {
@@ -53,7 +53,7 @@ export interface FormManageForm extends BaseEntity {
   /**
    * 备注
    */
-  remork?: string;
+  remark?: string;
 }
 
 export interface FormManageQuery extends PageQuery {
