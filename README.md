@@ -2,26 +2,14 @@
 
 #### 友情提示
 
-> 1. **在线后端接口地址**：47.109.94.143。
-> 2. **接口文档**：[在线接口文档](https://apifox.com/apidoc/shared-a61e857a-187a-4b5f-972e-f0f0f6b89a7f) 。
-> 3. **配套前端项目**：[前端项目地址](https://github.com/Alanosy/online-exam-system-frontend)
-> 4. **在线演示网址**：[在线体验网站点击这](https://alan.org.cn)
+> 1. **接口文档**：[在线接口文档](https://apifox.com/apidoc/shared-a61e857a-187a-4b5f-972e-f0f0f6b89a7f) 。
+> 2. **配套前端项目**：[前端项目地址](https://github.com/Alanosy/online-exam-system-frontend)
 
 #### 介绍
 
 本项目致力于打造一款通用的校园在线考试系统，此项目为后端项目，还有配套前端，在上面有可以点击跳转过去
 
 由大学生开发，本项目还在初期开发中，欢迎小伙伴一起开发一起进步,具体可以参考下方参与贡献，有问题的话可以在issue中提问，会仔细回答各位
-
-#### 系统架构
-
-##### 功能结构图
-
-![功能结构图](https://alantypora.oss-cn-chengdu.aliyuncs.com/%E5%8A%9F%E8%83%BD%E7%BB%93%E6%9E%84%E5%9B%BE.png)
-
-##### ER图
-
-![ER图](https://alantypora.oss-cn-chengdu.aliyuncs.com/ER%E5%9B%BE.png)
 
 #### 功能介绍
 
@@ -82,6 +70,52 @@
 | Redis | 7.0    | https://redis.io/download                                    |
 | Nginx | 1.22   | http://nginx.org/en/download.html                            |
 
+
+
+#### 系统架构
+
+##### 功能结构图
+
+![image-20240722113039659](https://alantypora.oss-cn-chengdu.aliyuncs.com/image-20240722113039659.png)
+
+##### ER图
+
+![ER图](https://alantypora.oss-cn-chengdu.aliyuncs.com/ER%E5%9B%BE.png)
+
+#### 架构图
+
+![架构图](https://alantypora.oss-cn-chengdu.aliyuncs.com/%E6%9E%B6%E6%9E%84%E5%9B%BE.png)
+
+#### 缓存
+
+![缓存作用模型.drawio](https://alantypora.oss-cn-chengdu.aliyuncs.com/%E7%BC%93%E5%AD%98%E4%BD%9C%E7%94%A8%E6%A8%A1%E5%9E%8B.drawio.png)
+
+
+
+![分页缓存.drawio](https://alantypora.oss-cn-chengdu.aliyuncs.com/%E5%8D%95%E6%9D%A1%E8%AE%B0%E5%BD%95%E7%BC%93%E5%AD%98.drawio.png)
+
+
+
+
+
+![redis分片集群.drawio](https://alantypora.oss-cn-chengdu.aliyuncs.com/redis%E5%88%86%E7%89%87%E9%9B%86%E7%BE%A4.drawio.png)
+
+#### 主从分离
+
+![主从分离.drawio](https://alantypora.oss-cn-chengdu.aliyuncs.com/%E4%B8%BB%E4%BB%8E%E5%88%86%E7%A6%BB.drawio.png)
+
+
+
+#### 连接池
+
+![连接池](https://alantypora.oss-cn-chengdu.aliyuncs.com/%E8%BF%9E%E6%8E%A5%E6%B1%A0.png)
+
+#### 技术栈
+
+![技术栈](https://alantypora.oss-cn-chengdu.aliyuncs.com/%E6%8A%80%E6%9C%AF%E6%A0%88.png)
+
+
+
 #### 项目展示![截屏2024-06-01 下午7.59.40](https://alantypora.oss-cn-chengdu.aliyuncs.com/%E6%88%AA%E5%B1%8F2024-06-01%20%E4%B8%8B%E5%8D%887.59.40.png)
 
 ![截屏2024-06-01 下午7.59.28](https://alantypora.oss-cn-chengdu.aliyuncs.com/%E6%88%AA%E5%B1%8F2024-06-01%20%E4%B8%8B%E5%8D%887.59.28.png)
@@ -123,4 +157,3 @@ Copyright (c) 2018-2024 macrozheng
     src="https://api.star-history.com/svg?repos=Alanosy/online-exam-system-backend&type=Date"
   />
 </picture>
-
