@@ -70,7 +70,10 @@ onMounted(() => {
 onMounted(() => {
   let protocol = window.location.protocol === 'https:' ? 'wss://' : 'ws://';
   initWebSocket(protocol + window.location.host + import.meta.env.VITE_APP_BASE_API + '/resource/websocket');
-  initSSE(import.meta.env.VITE_APP_BASE_API + '/sse')
+});
+
+onMounted(() => {
+  initSSE(import.meta.env.VITE_APP_BASE_API + '/resource/sse')
 });
 
 const handleClickOutside = () => {

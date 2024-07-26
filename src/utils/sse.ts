@@ -6,9 +6,6 @@ let message = '';
 
 // 初始化
 export const initSSE = (url: any) => {
-  if (import.meta.env.VITE_APP_WEBSOCKET === 'false') {
-    return;
-  }
   url = url + '?Authorization=Bearer ' + getToken() + '&clientid=' + import.meta.env.VITE_APP_CLIENT_ID
   const {
     data,
