@@ -159,7 +159,7 @@ export const dynamicRoutes: RouteRecordRaw[] = [
         path: 'index/:tableId(\\d+)',
         component: () => import('@/views/tool/gen/editTable.vue'),
         name: 'GenEdit',
-        meta: { title: '修改生成配置', activeMenu: '/tool/gen', icon: '' }
+        meta: { title: '修改生成配置', activeMenu: '/tool/gen', icon: '', noCache: true }
       }
     ]
   },
