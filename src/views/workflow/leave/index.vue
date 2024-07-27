@@ -176,7 +176,6 @@ const handleSelectionChange = (selection: LeaveVO[]) => {
 /** 新增按钮操作 */
 const handleAdd = () => {
   proxy.$tab.closePage(proxy.$route);
-  proxy.$router.push(`/workflow/leaveEdit/index/add/add`);
   proxy.$router.push({
     path: `/workflow/leaveEdit/index`,
     query: {
