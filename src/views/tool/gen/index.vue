@@ -202,7 +202,7 @@ const handleGenTable = async (row?: TableVO) => {
 /** 同步数据库操作 */
 const handleSynchDb = async (row: TableVO) => {
   const tableId = row.tableId;
-  await proxy?.$modal.confirm('确认要强制同步"' + row.tableName + '"表结构吗？');
+  await proxy?.$modal.confirm('确认要强制同步"' + row.tableName + '"表结构吗？').catch(() => {});
   await synchDb(tableId);
   proxy?.$modal.msgSuccess('同步成功');
 };
