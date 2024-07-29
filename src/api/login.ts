@@ -51,6 +51,10 @@ export function register(data: any) {
  * 注销
  */
 export function logout() {
+  request({
+    url: '/resource/sse/close',
+    method: 'get'
+  });
   return request({
     url: '/auth/logout',
     method: 'post'
