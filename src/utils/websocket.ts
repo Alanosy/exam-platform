@@ -1,23 +1,3 @@
-/**
- * @module initWebSocket 初始化
- * @module websocketonopen 连接成功
- * @module websocketonerror 连接失败
- * @module websocketclose 断开连接
- * @module resetHeart 重置心跳
- * @module sendSocketHeart 心跳发送
- * @module reconnect 重连
- * @module sendMsg 发送数据
- * @module websocketonmessage 接收数据
- * @module test 测试收到消息传递
- * @description socket 通信
- * @param {any} url socket地址
- * @param {any} websocket websocket 实例
- * @param {any} heartTime 心跳定时器实例
- * @param {number} socketHeart 心跳次数
- * @param {number} HeartTimeOut 心跳超时时间
- * @param {number} socketError 错误次数
- */
-
 import { getToken } from '@/utils/auth';
 import { ElNotification } from 'element-plus';
 import useNoticeStore from '@/store/modules/notice';
