@@ -321,7 +321,7 @@ const handleDelete = async (row?: TenantPkgVO) => {
 /** 导出按钮操作 */
 const handleExport = () => {
   proxy?.download(
-    'system/package/export',
+    'system/tenant/package/export',
     {
       ...queryParams.value
     },
