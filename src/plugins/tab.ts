@@ -1,5 +1,5 @@
 import router from '@/router';
-import { RouteLocationMatched, RouteLocationNormalized } from 'vue-router';
+import {RouteLocationMatched, RouteLocationNormalized, RouteLocationRaw} from 'vue-router';
 import useTagsViewStore from '@/store/modules/tagsView';
 
 export default {
@@ -41,7 +41,7 @@ export default {
     });
   },
   // 关闭当前tab页签，打开新页签
-  closeOpenPage(obj: RouteLocationNormalized): void {
+  closeOpenPage(obj: RouteLocationRaw): void {
     useTagsViewStore().delView(router.currentRoute.value);
     if (obj !== undefined) {
       router.push(obj);

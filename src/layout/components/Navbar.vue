@@ -128,6 +128,7 @@ const dynamicTenantEvent = async (tenantId: string) => {
     dynamic.value = true;
     proxy?.$tab.closeAllPage();
     proxy?.$router.push('/');
+    proxy?.$tab.refreshPage();
   }
 };
 
@@ -136,6 +137,7 @@ const dynamicClearEvent = async () => {
   dynamic.value = false;
   proxy?.$tab.closeAllPage();
   proxy?.$router.push('/');
+  proxy?.$tab.refreshPage();
 };
 
 /** 租户列表 */
