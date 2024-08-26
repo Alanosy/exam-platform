@@ -49,6 +49,9 @@
           <el-col :span="1.5">
             <el-button v-hasPermi="['system:dict:remove']" type="danger" plain icon="Refresh" @click="handleRefreshCache">刷新缓存</el-button>
           </el-col>
+          <el-col :span="1.5">
+            <el-button v-if="userId === 1" type="success" plain icon="Refresh" @click="handleSyncTenantDict">同步租户字典</el-button>
+          </el-col>
           <right-toolbar v-model:showSearch="showSearch" @query-table="getList"></right-toolbar>
         </el-row>
       </template>
@@ -109,11 +112,15 @@
 
 <script setup name="Dict" lang="ts">
 import useDictStore from '@/store/modules/dict';
+import useUserStore from "@/store/modules/user";
 import { listType, getType, delType, addType, updateType, refreshCache } from '@/api/system/dict/type';
 import { DictTypeForm, DictTypeQuery, DictTypeVO } from '@/api/system/dict/type/types';
+import { syncTenantDict } from "@/api/system/tenant";
 
 const { proxy } = getCurrentInstance() as ComponentInternalInstance;
 
+const userStore = useUserStore();
+const userId = ref(userStore.userId);
 const typeList = ref<DictTypeVO[]>([]);
 const loading = ref(true);
 const showSearch = ref(true);
@@ -238,6 +245,12 @@ const handleRefreshCache = async () => {
   await refreshCache();
   proxy?.$modal.msgSuccess('刷新成功');
   useDictStore().cleanDict();
+};
+/**同步租户字典*/
+const handleSyncTenantDict = async () => {
+  await proxy?.$modal.confirm('确认要同步所有租户字典吗？');
+  let res = await syncTenantDict();
+  proxy?.$modal.msgSuccess(res.msg);
 };
 
 onMounted(() => {
