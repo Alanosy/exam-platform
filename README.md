@@ -3,7 +3,8 @@
 #### 友情提示
 
 > 1. **接口文档**：[在线接口文档](https://apifox.com/apidoc/shared-a61e857a-187a-4b5f-972e-f0f0f6b89a7f) 。
-> 2. **配套前端项目**：[前端项目地址](https://github.com/Alanosy/online-exam-system-frontend)
+> 2. **体验地址**：[点击此处跳转体验网站](http://47.109.94.143/#/login) 。 账号:admin 密码:123456
+> 3. **配套前端项目**：[前端项目地址](https://github.com/Alanosy/online-exam-system-frontend)
 
 #### 介绍
 
