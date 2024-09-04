@@ -274,7 +274,6 @@ const setSubTableColumns = (value: string) => {
 /** 查询菜单下拉树结构 */
 const getMenuTreeselect = async () => {
   const res = await listMenu();
-  res.data.forEach((m) => (m.menuId = m.menuId.toString()));
   const data = proxy?.handleTree<MenuOptionsType>(res.data, 'menuId');
 
   if (data) {
