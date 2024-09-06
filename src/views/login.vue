@@ -97,7 +97,7 @@ const tenantEnabled = ref(true);
 
 // 注册开关
 const register = ref(false);
-const redirect = ref(undefined);
+const redirect = ref('');
 const loginRef = ref<ElFormInstance>();
 // 租户列表
 const tenantList = ref<TenantVO[]>([]);
@@ -105,7 +105,7 @@ const tenantList = ref<TenantVO[]>([]);
 watch(
   () => router.currentRoute.value,
   (newRoute: any) => {
-    redirect.value = newRoute.query && newRoute.query.redirect;
+    redirect.value = newRoute.query && decodeURIComponent(newRoute.query.redirect);
   },
   { immediate: true }
 );

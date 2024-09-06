@@ -10,6 +10,7 @@ import FileSaver from 'file-saver';
 import { getLanguage } from '@/lang';
 import { encryptBase64, encryptWithAes, generateAesKey, decryptWithAes, decryptBase64 } from '@/utils/crypto';
 import { encrypt, decrypt } from '@/utils/jsencrypt';
+import router from "@/router";
 
 const encryptHeader = 'encrypt-key';
 let downloadLoadingInstance: LoadingInstance;
@@ -134,8 +135,13 @@ service.interceptors.response.use(
         }).then(() => {
           isRelogin.show = false;
           useUserStore().logout().then(() => {
-              location.href = import.meta.env.VITE_APP_CONTEXT_PATH + 'index';
-            });
+            router.replace({
+              path: '/login',
+              query: {
+                redirect: encodeURIComponent(router.currentRoute.value.fullPath || '/')
+              }
+            })
+          });
         }).catch(() => {
           isRelogin.show = false;
         });
