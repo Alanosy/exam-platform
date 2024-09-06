@@ -97,7 +97,7 @@ const tenantEnabled = ref(true);
 
 // 注册开关
 const register = ref(false);
-const redirect = ref('');
+const redirect = ref('/');
 const loginRef = ref<ElFormInstance>();
 // 租户列表
 const tenantList = ref<TenantVO[]>([]);
