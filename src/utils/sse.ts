@@ -2,8 +2,6 @@ import { getToken } from '@/utils/auth';
 import { ElNotification } from 'element-plus';
 import useNoticeStore from '@/store/modules/notice';
 
-let message = '';
-
 // 初始化
 export const initSSE = (url: any) => {
   url = url + '?Authorization=Bearer ' + getToken() + '&clientid=' + import.meta.env.VITE_APP_CLIENT_ID
@@ -15,13 +13,13 @@ export const initSSE = (url: any) => {
       retries: 10,
       delay: 3000,
       onFailed() {
-        console.log('Failed to connect after 10 retries')
-      },
+        console.log('Failed to connect after 10 retries');
+      }
     }
   });
 
   watch(error, () => {
-    console.log('SSE connection error:', error.value)
+    console.log('SSE connection error:', error.value);
     error.value = null;
   });
 
@@ -41,5 +39,3 @@ export const initSSE = (url: any) => {
     data.value = null;
   });
 };
-
-
