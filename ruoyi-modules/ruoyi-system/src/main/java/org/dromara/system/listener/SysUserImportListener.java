@@ -3,10 +3,15 @@ package org.dromara.system.listener;
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.crypto.digest.BCrypt;
+import cn.hutool.http.HtmlUtil;
 import com.alibaba.excel.context.AnalysisContext;
 import com.alibaba.excel.event.AnalysisEventListener;
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.ConstraintViolationException;
+import lombok.extern.slf4j.Slf4j;
 import org.dromara.common.core.exception.ServiceException;
 import org.dromara.common.core.utils.SpringUtils;
+import org.dromara.common.core.utils.StreamUtils;
 import org.dromara.common.core.utils.ValidatorUtils;
 import org.dromara.common.excel.core.ExcelListener;
 import org.dromara.common.excel.core.ExcelResult;
@@ -16,7 +21,6 @@ import org.dromara.system.domain.vo.SysUserImportVo;
 import org.dromara.system.domain.vo.SysUserVo;
 import org.dromara.system.service.ISysConfigService;
 import org.dromara.system.service.ISysUserService;
-import lombok.extern.slf4j.Slf4j;
 
 import java.util.List;
 
@@ -79,8 +83,12 @@ public class SysUserImportListener extends AnalysisEventListener<SysUserImportVo
             }
         } catch (Exception e) {
             failureNum++;
-            String msg = "<br/>" + failureNum + "、账号 " + userVo.getUserName() + " 导入失败：";
-            failureMsg.append(msg).append(e.getMessage());
+            String msg = "<br/>" + failureNum + "、账号 " + HtmlUtil.cleanHtmlTag(userVo.getUserName()) + " 导入失败：";
+            String message = e.getMessage();
+            if (e instanceof ConstraintViolationException cvException) {
+                message = StreamUtils.join(cvException.getConstraintViolations(), ConstraintViolation::getMessage, ", ");
+            }
+            failureMsg.append(msg).append(message);
             log.error(msg, e);
         }
     }

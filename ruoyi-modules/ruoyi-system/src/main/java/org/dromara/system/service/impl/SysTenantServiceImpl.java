@@ -1,6 +1,8 @@
 package org.dromara.system.service.impl;
 
 import cn.dev33.satoken.secure.BCrypt;
+import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.convert.Convert;
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.RandomUtil;
@@ -14,9 +16,13 @@ import org.dromara.common.core.constant.TenantConstants;
 import org.dromara.common.core.exception.ServiceException;
 import org.dromara.common.core.utils.MapstructUtils;
 import org.dromara.common.core.utils.SpringUtils;
+import org.dromara.common.core.utils.StreamUtils;
 import org.dromara.common.core.utils.StringUtils;
 import org.dromara.common.mybatis.core.page.PageQuery;
 import org.dromara.common.mybatis.core.page.TableDataInfo;
+import org.dromara.common.redis.utils.CacheUtils;
+import org.dromara.common.tenant.core.TenantEntity;
+import org.dromara.common.tenant.helper.TenantHelper;
 import org.dromara.system.domain.*;
 import org.dromara.system.domain.bo.SysTenantBo;
 import org.dromara.system.domain.vo.SysTenantVo;
@@ -27,10 +33,7 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 /**
  * 租户Service业务层处理
@@ -201,7 +204,7 @@ public class SysTenantServiceImpl implements ISysTenantService {
         String numbers = RandomUtil.randomNumbers(6);
         // 判断是否存在，如果存在则重新生成
         if (tenantIds.contains(numbers)) {
-            generateTenantId(tenantIds);
+            return generateTenantId(tenantIds);
         }
         return numbers;
     }
@@ -266,7 +269,9 @@ public class SysTenantServiceImpl implements ISysTenantService {
     @CacheEvict(cacheNames = CacheNames.SYS_TENANT, key = "#bo.tenantId")
     @Override
     public int updateTenantStatus(SysTenantBo bo) {
-        SysTenant tenant = MapstructUtils.convert(bo, SysTenant.class);
+        SysTenant tenant = new SysTenant();
+        tenant.setId(bo.getId());
+        tenant.setStatus(bo.getStatus());
         return baseMapper.updateById(tenant);
     }
 
@@ -369,4 +374,91 @@ public class SysTenantServiceImpl implements ISysTenantService {
         }
         return true;
     }
+
+    /**
+     * 同步租户字典
+     */
+    @Transactional(rollbackFor = Exception.class)
+    @Override
+    public void syncTenantDict() {
+        // 查询超管 所有字典数据
+        List<SysDictType> dictTypeList = new ArrayList<>();
+        List<SysDictData> dictDataList = new ArrayList<>();
+        TenantHelper.ignore(() -> {
+            dictTypeList.addAll(dictTypeMapper.selectList());
+            dictDataList.addAll(dictDataMapper.selectList());
+        });
+        Map<String, List<SysDictType>> typeMap = StreamUtils.groupByKey(dictTypeList, TenantEntity::getTenantId);
+        Map<String, Map<String, List<SysDictData>>> typeDataMap = StreamUtils.groupBy2Key(
+            dictDataList, TenantEntity::getTenantId, SysDictData::getDictType);
+        // 管理租户字典数据
+        List<SysDictType> defaultTypeMap = typeMap.get(TenantConstants.DEFAULT_TENANT_ID);
+        Map<String, List<SysDictData>> defaultTypeDataMap = typeDataMap.get(TenantConstants.DEFAULT_TENANT_ID);
+
+        // 获取所有租户编号
+        List<String> tenantIds = baseMapper.selectObjs(
+            new LambdaQueryWrapper<SysTenant>().select(SysTenant::getTenantId)
+                .eq(SysTenant::getStatus, TenantConstants.NORMAL), x -> {return Convert.toStr(x);});
+        List<SysDictType> saveTypeList = new ArrayList<>();
+        List<SysDictData> saveDataList = new ArrayList<>();
+        Set<String> set = new HashSet<>();
+        for (String tenantId : tenantIds) {
+            if (TenantConstants.DEFAULT_TENANT_ID.equals(tenantId)) {
+                continue;
+            }
+            for (SysDictType dictType : defaultTypeMap) {
+                List<String> typeList = StreamUtils.toList(typeMap.get(tenantId), SysDictType::getDictType);
+                List<SysDictData> dataList = defaultTypeDataMap.get(dictType.getDictType());
+                if (typeList.contains(dictType.getDictType())) {
+                    List<SysDictData> dataListTenant = typeDataMap.get(tenantId).get(dictType.getDictType());
+                    Map<String, SysDictData> map = StreamUtils.toIdentityMap(dataListTenant, SysDictData::getDictValue);
+                    for (SysDictData dictData : dataList) {
+                        if (!map.containsKey(dictData.getDictValue())) {
+                            SysDictData data = BeanUtil.toBean(dictData, SysDictData.class);
+                            // 设置字典编码为 null
+                            data.setDictCode(null);
+                            data.setTenantId(tenantId);
+                            data.setCreateTime(null);
+                            data.setUpdateTime(null);
+                            set.add(tenantId);
+                            saveDataList.add(data);
+                        }
+                    }
+                } else {
+                    SysDictType type = BeanUtil.toBean(dictType, SysDictType.class);
+                    type.setDictId(null);
+                    type.setTenantId(tenantId);
+                    type.setCreateTime(null);
+                    type.setUpdateTime(null);
+                    set.add(tenantId);
+                    saveTypeList.add(type);
+                    if (CollUtil.isNotEmpty(dataList)) {
+                        // 筛选出 dictType 对应的 data
+                        for (SysDictData dictData : dataList) {
+                            SysDictData data = BeanUtil.toBean(dictData, SysDictData.class);
+                            // 设置字典编码为 null
+                            data.setDictCode(null);
+                            data.setTenantId(tenantId);
+                            data.setCreateTime(null);
+                            data.setUpdateTime(null);
+                            set.add(tenantId);
+                            saveDataList.add(data);
+                        }
+                    }
+                }
+            }
+        }
+        TenantHelper.ignore(() -> {
+            if (CollUtil.isNotEmpty(saveTypeList)) {
+                dictTypeMapper.insertBatch(saveTypeList);
+            }
+            if (CollUtil.isNotEmpty(saveDataList)) {
+                dictDataMapper.insertBatch(saveDataList);
+            }
+        });
+        for (String tenantId : set) {
+            TenantHelper.dynamic(tenantId, () -> CacheUtils.clear(CacheNames.SYS_DICT));
+        }
+    }
+
 }

@@ -173,7 +173,7 @@ public class SysOssServiceImpl implements ISysOssService {
         OssClient storage = OssFactory.instance();
         UploadResult uploadResult;
         try {
-            uploadResult = storage.uploadSuffix(file.getBytes(), suffix);
+            uploadResult = storage.uploadSuffix(file.getBytes(), suffix, file.getContentType());
         } catch (IOException e) {
             throw new ServiceException(e.getMessage());
         }
@@ -237,7 +237,7 @@ public class SysOssServiceImpl implements ISysOssService {
         if (isValid) {
             // 做一些业务上的校验,判断是否需要校验
         }
-        List<SysOss> list = baseMapper.selectBatchIds(ids);
+        List<SysOss> list = baseMapper.selectByIds(ids);
         for (SysOss sysOss : list) {
             OssClient storage = OssFactory.instance(sysOss.getService());
             storage.delete(sysOss.getUrl());
