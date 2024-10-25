@@ -91,3 +91,11 @@ export function syncTenantPackage(tenantId: string | number, packageId: string |
     params: data
   });
 }
+
+// 同步租户字典
+export function syncTenantDict() {
+  return request({
+    url: '/system/tenant/syncTenantDict',
+    method: 'get',
+  });
+}

@@ -23,10 +23,12 @@
         <el-form-item label="请假时间">
           <el-date-picker
             v-model="leaveTime"
+            value-format="YYYY-MM-DD HH:mm:ss"
             type="daterange"
             range-separator="To"
             start-placeholder="开始时间"
             end-placeholder="结束时间"
+            :default-time="[new Date(2000, 1, 1, 0, 0, 0), new Date(2000, 1, 1, 23, 59, 59)]"
             @change="changeLeaveTime()"
           />
         </el-form-item>
@@ -190,8 +192,8 @@ const handleStartWorkFlow = async (data: LeaveVO) => {
     taskVariables.value = {
       entity: data,
       leaveDays: data.leaveDays,
-      userList: [1, 3],
-      userList2: [1, 3]
+      userList: ["1", "3"],
+      userList2: ["1", "3"]
     };
     submitFormData.value.variables = taskVariables.value;
     const resp = await startWorkFlow(submitFormData.value);
