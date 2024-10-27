@@ -10,6 +10,7 @@ import com.baomidou.mybatisplus.extension.plugins.inner.PaginationInnerIntercept
 import com.baomidou.mybatisplus.extension.plugins.inner.TenantLineInnerInterceptor;
 import org.dromara.common.core.factory.YmlPropertySourceFactory;
 import org.dromara.common.core.utils.SpringUtils;
+import org.dromara.common.mybatis.aspect.DataPermissionAspect;
 import org.dromara.common.mybatis.handler.InjectionMetaObjectHandler;
 import org.dromara.common.mybatis.handler.MybatisExceptionHandler;
 import org.dromara.common.mybatis.interceptor.PlusDataPermissionInterceptor;
@@ -54,7 +55,15 @@ public class MybatisPlusConfiguration {
      * 数据权限拦截器
      */
     public PlusDataPermissionInterceptor dataPermissionInterceptor() {
-        return new PlusDataPermissionInterceptor(SpringUtils.getProperty("mybatis-plus.mapperPackage"));
+        return new PlusDataPermissionInterceptor();
+    }
+
+    /**
+     * 数据权限切面处理器
+     */
+    @Bean
+    public DataPermissionAspect dataPermissionAspect() {
+        return new DataPermissionAspect();
     }
 
     /**
