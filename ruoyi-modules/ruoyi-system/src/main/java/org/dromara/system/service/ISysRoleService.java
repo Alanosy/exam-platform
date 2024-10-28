@@ -197,4 +197,6 @@ public interface ISysRoleService {
 
     void cleanOnlineUserByRole(Long roleId);
 
+    void cleanOnlineUser(List<Long> userIds);
+
 }

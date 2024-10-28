@@ -435,7 +435,7 @@ public class SysRoleServiceImpl implements ISysRoleService {
             .eq(SysUserRole::getRoleId, userRole.getRoleId())
             .eq(SysUserRole::getUserId, userRole.getUserId()));
         if (rows > 0) {
-            cleanOnlineUserByRole(userRole.getRoleId());
+            cleanOnlineUser(List.of(userRole.getUserId()));
         }
         return rows;
     }
@@ -449,11 +449,12 @@ public class SysRoleServiceImpl implements ISysRoleService {
      */
     @Override
     public int deleteAuthUsers(Long roleId, Long[] userIds) {
+        List<Long> ids = List.of(userIds);
         int rows = userRoleMapper.delete(new LambdaQueryWrapper<SysUserRole>()
             .eq(SysUserRole::getRoleId, roleId)
-            .in(SysUserRole::getUserId, Arrays.asList(userIds)));
+            .in(SysUserRole::getUserId, ids));
         if (rows > 0) {
-            cleanOnlineUserByRole(roleId);
+            cleanOnlineUser(ids);
         }
         return rows;
     }
@@ -469,7 +470,8 @@ public class SysRoleServiceImpl implements ISysRoleService {
     public int insertAuthUsers(Long roleId, Long[] userIds) {
         // 新增用户与角色管理
         int rows = 1;
-        List<SysUserRole> list = StreamUtils.toList(List.of(userIds), userId -> {
+        List<Long> ids = List.of(userIds);
+        List<SysUserRole> list = StreamUtils.toList(ids, userId -> {
             SysUserRole ur = new SysUserRole();
             ur.setUserId(userId);
             ur.setRoleId(roleId);
@@ -479,7 +481,7 @@ public class SysRoleServiceImpl implements ISysRoleService {
             rows = userRoleMapper.insertBatch(list) ? list.size() : 0;
         }
         if (rows > 0) {
-            cleanOnlineUserByRole(roleId);
+            cleanOnlineUser(ids);
         }
         return rows;
     }
@@ -503,7 +505,36 @@ public class SysRoleServiceImpl implements ISysRoleService {
                 return;
             }
             LoginUser loginUser = LoginHelper.getLoginUser(token);
+            if (ObjectUtil.isNull(loginUser) || CollUtil.isEmpty(loginUser.getRoles())) {
+                return;
+            }
             if (loginUser.getRoles().stream().anyMatch(r -> r.getRoleId().equals(roleId))) {
+                try {
+                    StpUtil.logoutByTokenValue(token);
+                } catch (NotLoginException ignored) {
+                }
+            }
+        });
+    }
+
+    @Override
+    public void cleanOnlineUser(List<Long> userIds) {
+        List<String> keys = StpUtil.searchTokenValue("", 0, -1, false);
+        if (CollUtil.isEmpty(keys)) {
+            return;
+        }
+        // 角色关联的在线用户量过大会导致redis阻塞卡顿 谨慎操作
+        keys.parallelStream().forEach(key -> {
+            String token = StringUtils.substringAfterLast(key, ":");
+            // 如果已经过期则跳过
+            if (StpUtil.stpLogic.getTokenActiveTimeoutByToken(token) < -1) {
+                return;
+            }
+            LoginUser loginUser = LoginHelper.getLoginUser(token);
+            if (ObjectUtil.isNull(loginUser)) {
+                return;
+            }
+            if (userIds.contains(loginUser.getUserId())) {
                 try {
                     StpUtil.logoutByTokenValue(token);
                 } catch (NotLoginException ignored) {
