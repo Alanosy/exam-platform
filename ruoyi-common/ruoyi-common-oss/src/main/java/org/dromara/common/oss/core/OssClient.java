@@ -9,7 +9,6 @@ import org.dromara.common.core.utils.file.FileUtils;
 import org.dromara.common.oss.constant.OssConstant;
 import org.dromara.common.oss.entity.UploadResult;
 import org.dromara.common.oss.enumd.AccessPolicyType;
-import org.dromara.common.oss.enumd.PolicyType;
 import org.dromara.common.oss.exception.OssException;
 import org.dromara.common.oss.properties.OssProperties;
 import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
@@ -23,7 +22,6 @@ import software.amazon.awssdk.services.s3.S3Configuration;
 import software.amazon.awssdk.services.s3.crt.S3CrtHttpConfiguration;
 import software.amazon.awssdk.services.s3.model.GetObjectResponse;
 import software.amazon.awssdk.services.s3.model.NoSuchBucketException;
-import software.amazon.awssdk.services.s3.model.S3Exception;
 import software.amazon.awssdk.services.s3.presigner.S3Presigner;
 import software.amazon.awssdk.transfer.s3.S3TransferManager;
 import software.amazon.awssdk.transfer.s3.model.*;
@@ -115,8 +113,7 @@ public class OssClient {
                 .serviceConfiguration(config)
                 .build();
 
-            // 创建存储桶
-            createBucket();
+            checkBucket();
         } catch (Exception e) {
             if (e instanceof OssException) {
                 throw e;
@@ -126,36 +123,18 @@ public class OssClient {
     }
 
     /**
-     * 同步创建存储桶
-     * 如果存储桶不存在，会进行创建；如果存储桶存在，不执行任何操作
+     * 检查桶是否存在
      *
      * @throws OssException 当创建存储桶时发生异常时抛出
      */
-    public void createBucket() {
+    public void checkBucket() {
         String bucketName = properties.getBucketName();
         try {
             // 尝试获取存储桶的信息
-            client.headBucket(
-                    x -> x.bucket(bucketName)
-                        .build())
-                .join();
+            client.headBucket(x -> x.bucket(bucketName).build()).join();
         } catch (Exception ex) {
             if (ex.getCause() instanceof NoSuchBucketException) {
-                try {
-                    // 存储桶不存在，尝试创建存储桶
-                    client.createBucket(
-                            x -> x.bucket(bucketName))
-                        .join();
-
-                    // 设置存储桶的访问策略（Bucket Policy）
-                    client.putBucketPolicy(
-                            x -> x.bucket(bucketName)
-                                .policy(getPolicy(bucketName, getAccessPolicy().getPolicyType())))
-                        .join();
-                } catch (S3Exception e) {
-                    // 存储桶创建或策略设置失败
-                    throw new OssException("创建Bucket失败, 请核对配置信息:[" + e.getMessage() + "]");
-                }
+                throw new OssException("Bucket桶是不存在的，请核对配置信息:[" + ex.getMessage() + "]");
             } else {
                 throw new OssException("判断Bucket是否存在失败，请核对配置信息:[" + ex.getMessage() + "]");
             }
@@ -527,79 +506,6 @@ public class OssClient {
      */
     public AccessPolicyType getAccessPolicy() {
         return AccessPolicyType.getByType(properties.getAccessPolicy());
-    }
-
-    /**
-     * 生成 AWS S3 存储桶访问策略
-     *
-     * @param bucketName 存储桶
-     * @param policyType 桶策略类型
-     * @return 符合 AWS S3 存储桶访问策略格式的字符串
-     */
-    private static String getPolicy(String bucketName, PolicyType policyType) {
-        String policy = switch (policyType) {
-            case WRITE -> """
-                {
-                  "Version": "2012-10-17",
-                  "Statement": []
-                }
-                """;
-            case READ_WRITE -> """
-                {
-                  "Version": "2012-10-17",
-                  "Statement": [
-                    {
-                      "Effect": "Allow",
-                      "Principal": "*",
-                      "Action": [
-                        "s3:GetBucketLocation",
-                        "s3:ListBucket",
-                        "s3:ListBucketMultipartUploads"
-                      ],
-                      "Resource": "arn:aws:s3:::bucketName"
-                    },
-                    {
-                      "Effect": "Allow",
-                      "Principal": "*",
-                      "Action": [
-                        "s3:AbortMultipartUpload",
-                        "s3:DeleteObject",
-                        "s3:GetObject",
-                        "s3:ListMultipartUploadParts",
-                        "s3:PutObject"
-                      ],
-                      "Resource": "arn:aws:s3:::bucketName/*"
-                    }
-                  ]
-                }
-                """;
-            case READ -> """
-                {
-                  "Version": "2012-10-17",
-                  "Statement": [
-                    {
-                      "Effect": "Allow",
-                      "Principal": "*",
-                      "Action": ["s3:GetBucketLocation"],
-                      "Resource": "arn:aws:s3:::bucketName"
-                    },
-                    {
-                      "Effect": "Deny",
-                      "Principal": "*",
-                      "Action": ["s3:ListBucket"],
-                      "Resource": "arn:aws:s3:::bucketName"
-                    },
-                    {
-                      "Effect": "Allow",
-                      "Principal": "*",
-                      "Action": "s3:GetObject",
-                      "Resource": "arn:aws:s3:::bucketName/*"
-                    }
-                  ]
-                }
-                """;
-        };
-        return policy.replaceAll("bucketName", bucketName);
     }
 
 }
