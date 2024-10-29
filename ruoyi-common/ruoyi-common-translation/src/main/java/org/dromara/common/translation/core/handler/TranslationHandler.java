@@ -39,7 +39,7 @@ public class TranslationHandler extends JsonSerializer<Object> implements Contex
         if (ObjectUtil.isNotNull(trans)) {
             // 如果映射字段不为空 则取映射字段的值
             if (StringUtils.isNotBlank(translation.mapper())) {
-                value = ReflectUtils.invokeGetter(gen.getCurrentValue(), translation.mapper());
+                value = ReflectUtils.invokeGetter(gen.currentValue(), translation.mapper());
             }
             // 如果为 null 直接写出
             if (ObjectUtil.isNull(value)) {
