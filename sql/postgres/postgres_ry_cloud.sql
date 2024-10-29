@@ -5,7 +5,7 @@ create table sys_social
 (
     id                 int8             not null,
     user_id            int8             not null,
-    tenant_id          varchar(20)      default null::varchar,
+    tenant_id          varchar(20)      default '000000'::varchar,
     auth_id            varchar(255)     not null,
     source             varchar(255)     not null,
     open_id            varchar(255)     default null::varchar,

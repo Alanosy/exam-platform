@@ -5,7 +5,7 @@ create table sys_social
 (
     id                 bigint           not null        comment '主键',
     user_id            bigint           not null        comment '用户ID',
-    tenant_id          varchar(20)      default null    comment '租户id',
+    tenant_id          varchar(20)      default '000000' comment '租户id',
     auth_id            varchar(255)     not null        comment '平台+平台唯一id',
     source             varchar(255)     not null        comment '用户来源',
     open_id            varchar(255)     default null    comment '平台编号唯一id',
