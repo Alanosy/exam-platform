@@ -17,6 +17,7 @@ import org.redisson.config.SingleServerConfig;
 import org.redisson.spring.starter.RedissonAutoConfigurationCustomizer;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.cache.CacheManager;
@@ -33,8 +34,8 @@ import org.springframework.context.annotation.Primary;
 @ConditionalOnProperty(value = "tenant.enable", havingValue = "true")
 public class TenantConfiguration {
 
-    @ConditionalOnBean(MybatisPlusConfiguration.class)
-    @AutoConfiguration(after = {MybatisPlusConfiguration.class})
+    @ConditionalOnClass(TenantLineInnerInterceptor.class)
+    @AutoConfiguration
     static class MybatisPlusConfig {
 
         /**
