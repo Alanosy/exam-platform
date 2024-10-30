@@ -54,13 +54,14 @@ public class RateLimiterAspect {
     public void doBefore(JoinPoint point, RateLimiter rateLimiter) {
         int time = rateLimiter.time();
         int count = rateLimiter.count();
+        int timeout = rateLimiter.timeout();
         try {
             String combineKey = getCombineKey(rateLimiter, point);
             RateType rateType = RateType.OVERALL;
             if (rateLimiter.limitType() == LimitType.CLUSTER) {
                 rateType = RateType.PER_CLIENT;
             }
-            long number = RedisUtils.rateLimiter(combineKey, rateType, count, time);
+            long number = RedisUtils.rateLimiter(combineKey, rateType, count, time, timeout);
             if (number == -1) {
                 String message = rateLimiter.message();
                 if (StringUtils.startsWith(message, "{") && StringUtils.endsWith(message, "}")) {

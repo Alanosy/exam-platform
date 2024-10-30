@@ -37,8 +37,22 @@ public class RedisUtils {
      * @return -1 表示失败
      */
     public static long rateLimiter(String key, RateType rateType, int rate, int rateInterval) {
+        return rateLimiter(key, rateType, rate, rateInterval, 0);
+    }
+
+    /**
+     * 限流
+     *
+     * @param key          限流key
+     * @param rateType     限流类型
+     * @param rate         速率
+     * @param rateInterval 速率间隔
+     * @param timeout      超时时间
+     * @return -1 表示失败
+     */
+    public static long rateLimiter(String key, RateType rateType, int rate, int rateInterval, int timeout) {
         RRateLimiter rateLimiter = CLIENT.getRateLimiter(key);
-        rateLimiter.trySetRate(rateType, rate, Duration.ofSeconds(rateInterval));
+        rateLimiter.trySetRate(rateType, rate, Duration.ofSeconds(rateInterval), Duration.ofSeconds(timeout));
         if (rateLimiter.tryAcquire()) {
             return rateLimiter.availablePermits();
         } else {
