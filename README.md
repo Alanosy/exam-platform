@@ -12,6 +12,8 @@
 
 由大学生开发，本项目还在初期开发中，欢迎小伙伴一起开发一起进步,具体可以参考下方参与贡献，有问题的话可以在issue中提问，会仔细回答各位
 
+本平台登录可以登录三个角色，分别为学生、教师和管理员，加入班级请点击头像打开个人信息中加入，班级口令请看教师或管理端班级口令查找
+
 **如果各位喜欢，麻烦各位大佬点点Star**
 
 #### 功能介绍
@@ -139,24 +141,3 @@
 [Apache License 2.0](https://github.com/macrozheng/mall/blob/master/LICENSE)
 
 Copyright (c) 2018-2024 macrozheng
-
-
-
-<picture>
-  <source
-    media="(prefers-color-scheme: dark)"
-    srcset="
-      https://api.star-history.com/svg?repos=Alanosy/online-exam-system-backend&type=Date&theme=dark
-    "
-  />
-  <source
-    media="(prefers-color-scheme: light)"
-    srcset="
-      https://api.star-history.com/svg?repos=Alanosy/online-exam-system-backend&type=Date
-    "
-  />
-  <img
-    alt="Star History Chart"
-    src="https://api.star-history.com/svg?repos=Alanosy/online-exam-system-backend&type=Date"
-  />
-</picture>
