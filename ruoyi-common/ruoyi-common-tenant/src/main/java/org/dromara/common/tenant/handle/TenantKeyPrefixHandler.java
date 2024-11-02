@@ -27,8 +27,12 @@ public class TenantKeyPrefixHandler extends KeyPrefixHandler {
         if (StringUtils.isBlank(name)) {
             return null;
         }
-        if (InterceptorIgnoreHelper.willIgnoreTenantLine("")) {
-            return super.map(name);
+        try {
+            if (InterceptorIgnoreHelper.willIgnoreTenantLine("")) {
+                return super.map(name);
+            }
+        } catch (NoClassDefFoundError ignore) {
+            // 有些服务不需要mp导致类不存在 忽略即可
         }
         if (StringUtils.contains(name, GlobalConstants.GLOBAL_REDIS_KEY)) {
             return super.map(name);
@@ -54,8 +58,12 @@ public class TenantKeyPrefixHandler extends KeyPrefixHandler {
         if (StringUtils.isBlank(unmap)) {
             return null;
         }
-        if (InterceptorIgnoreHelper.willIgnoreTenantLine("")) {
-            return super.unmap(name);
+        try {
+            if (InterceptorIgnoreHelper.willIgnoreTenantLine("")) {
+                return super.unmap(name);
+            }
+        } catch (NoClassDefFoundError ignore) {
+            // 有些服务不需要mp导致类不存在 忽略即可
         }
         if (StringUtils.contains(name, GlobalConstants.GLOBAL_REDIS_KEY)) {
             return super.unmap(name);
