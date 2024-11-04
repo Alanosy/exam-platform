@@ -22,20 +22,14 @@ import com.alibaba.nacos.common.model.RestResult;
 import com.alibaba.nacos.common.model.RestResultUtils;
 import com.alibaba.nacos.common.utils.StringUtils;
 import com.alibaba.nacos.console.paramcheck.ConsoleDefaultHttpParamExtractor;
-import com.alibaba.nacos.core.namespace.repository.NamespacePersistService;
 import com.alibaba.nacos.core.namespace.model.Namespace;
+import com.alibaba.nacos.core.namespace.repository.NamespacePersistService;
 import com.alibaba.nacos.core.paramcheck.ExtractorManager;
 import com.alibaba.nacos.core.service.NamespaceOperationService;
 import com.alibaba.nacos.plugin.auth.constant.ActionTypes;
 import com.alibaba.nacos.plugin.auth.impl.constant.AuthConstants;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.UUID;
@@ -94,8 +88,8 @@ public class NamespaceController {
     @PostMapping
     @Secured(resource = AuthConstants.CONSOLE_RESOURCE_NAME_PREFIX + "namespaces", action = ActionTypes.WRITE)
     public Boolean createNamespace(@RequestParam("customNamespaceId") String namespaceId,
-                                   @RequestParam("namespaceName") String namespaceName,
-                                   @RequestParam(value = "namespaceDesc", required = false) String namespaceDesc) {
+            @RequestParam("namespaceName") String namespaceName,
+            @RequestParam(value = "namespaceDesc", required = false) String namespaceDesc) {
         if (StringUtils.isBlank(namespaceId)) {
             namespaceId = UUID.randomUUID().toString();
         } else {
@@ -147,8 +141,8 @@ public class NamespaceController {
     @PutMapping
     @Secured(resource = AuthConstants.CONSOLE_RESOURCE_NAME_PREFIX + "namespaces", action = ActionTypes.WRITE)
     public Boolean editNamespace(@RequestParam("namespace") String namespace,
-                                 @RequestParam("namespaceShowName") String namespaceShowName,
-                                 @RequestParam(value = "namespaceDesc", required = false) String namespaceDesc) {
+            @RequestParam("namespaceShowName") String namespaceShowName,
+            @RequestParam(value = "namespaceDesc", required = false) String namespaceDesc) {
         // contains illegal chars
         if (!namespaceNameCheckPattern.matcher(namespaceShowName).matches()) {
             return false;

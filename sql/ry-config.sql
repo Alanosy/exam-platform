@@ -172,7 +172,7 @@ CREATE TABLE `his_config_info` (
   `src_ip` varchar(50) DEFAULT NULL COMMENT 'source ip',
   `op_type` char(10) DEFAULT NULL COMMENT 'operation type',
   `tenant_id` varchar(128) DEFAULT '' COMMENT '租户字段',
-  `encrypted_data_key` text NOT NULL COMMENT '密钥',
+  `encrypted_data_key` varchar(1024) NOT NULL DEFAULT '' COMMENT '密钥',
   PRIMARY KEY (`nid`),
   KEY `idx_gmt_create` (`gmt_create`),
   KEY `idx_gmt_modified` (`gmt_modified`),

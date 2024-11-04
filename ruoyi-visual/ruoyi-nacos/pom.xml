@@ -27,7 +27,8 @@
     <packaging>jar</packaging>
 
     <properties>
-        <nacos.version>2.3.2</nacos.version>
+        <nacos.version>2.4.3</nacos.version>
+        <SnakeYaml.version>2.0</SnakeYaml.version>
         <!-- 需要与 Nacos 内置 Boot 版本保持一致 -->
         <spring-boot.version>2.7.18</spring-boot.version>
         <spring-boot-admin.version>2.7.11</spring-boot-admin.version>
@@ -254,10 +255,6 @@
             <scope>runtime</scope>
         </dependency>
         <dependency>
-            <groupId>org.javatuples</groupId>
-            <artifactId>javatuples</artifactId>
-        </dependency>
-        <dependency>
             <groupId>com.google.code.gson</groupId>
             <artifactId>gson</artifactId>
         </dependency>
@@ -295,6 +292,13 @@
             <groupId>org.slf4j</groupId>
             <artifactId>jul-to-slf4j</artifactId>
         </dependency>
+
+        <dependency>
+            <groupId>org.yaml</groupId>
+            <artifactId>snakeyaml</artifactId>
+            <version>${SnakeYaml.version}</version>
+        </dependency>
+
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-security</artifactId>
