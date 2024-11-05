@@ -38,7 +38,7 @@
         <logstash.version>7.4</logstash.version>
         <easy-es.version>2.0.0</easy-es.version>
         <elasticsearch.version>7.14.0</elasticsearch.version>
-        <skywalking-toolkit.version>9.2.0</skywalking-toolkit.version>
+        <skywalking-toolkit.version>9.3.0</skywalking-toolkit.version>
         <bouncycastle.version>1.76</bouncycastle.version>
         <mapstruct-plus.version>1.4.5</mapstruct-plus.version>
         <mapstruct-plus.lombok.version>0.2.0</mapstruct-plus.lombok.version>
