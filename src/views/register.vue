@@ -140,7 +140,7 @@ const getCode = async () => {
 };
 
 const initTenantList = async () => {
-  const { data } = await getTenantList();
+  const { data } = await getTenantList(false);
   tenantEnabled.value = data.tenantEnabled === undefined ? true : data.tenantEnabled;
   if (tenantEnabled.value) {
     tenantList.value = data.voList;

@@ -100,11 +100,11 @@ export function getInfo(): AxiosPromise<UserInfo> {
 }
 
 // 获取租户列表
-export function getTenantList(): AxiosPromise<TenantInfo> {
+export function getTenantList(isToken: boolean): AxiosPromise<TenantInfo> {
   return request({
     url: '/auth/tenant/list',
     headers: {
-      isToken: false
+      isToken: isToken
     },
     method: 'get'
   });
