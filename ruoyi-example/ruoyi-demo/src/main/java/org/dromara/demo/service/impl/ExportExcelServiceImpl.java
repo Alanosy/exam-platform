@@ -1,5 +1,6 @@
 package org.dromara.demo.service.impl;
 
+import cn.hutool.core.util.RandomUtil;
 import cn.hutool.core.util.StrUtil;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.Data;
@@ -121,8 +122,9 @@ public class ExportExcelServiceImpl implements IExportExcelService {
         List<DemoCityData> provinceList = new ArrayList<>();
 
         // 实际业务中一般采用数据库读取的形式，这里直接拼接创建
-        provinceList.add(new DemoCityData(0, null, "安徽省"));
-        provinceList.add(new DemoCityData(1, null, "江苏省"));
+        provinceList.add(new DemoCityData(0, null, "P100000"));
+        provinceList.add(new DemoCityData(1, null, "P200000"));
+        provinceList.add(new DemoCityData(2, null, "P300000"));
 
         return provinceList;
     }
@@ -137,11 +139,11 @@ public class ExportExcelServiceImpl implements IExportExcelService {
         List<DemoCityData> cityList = new ArrayList<>();
 
         // 实际业务中一般采用数据库读取的形式，这里直接拼接创建
-        cityList.add(new DemoCityData(0, 0, "合肥市"));
-        cityList.add(new DemoCityData(1, 0, "芜湖市"));
-        cityList.add(new DemoCityData(2, 1, "南京市"));
-        cityList.add(new DemoCityData(3, 1, "无锡市"));
-        cityList.add(new DemoCityData(4, 1, "徐州市"));
+        cityList.add(new DemoCityData(0, 0, "C110000"));
+        cityList.add(new DemoCityData(1, 0, "C120000"));
+        cityList.add(new DemoCityData(2, 1, "C210000"));
+        cityList.add(new DemoCityData(3, 1, "C220000"));
+        cityList.add(new DemoCityData(4, 1, "C230000"));
 
         selectParentData(provinceList, cityList);
 
@@ -157,17 +159,29 @@ public class ExportExcelServiceImpl implements IExportExcelService {
     private List<DemoCityData> getAreaList(List<DemoCityData> cityList) {
         List<DemoCityData> areaList = new ArrayList<>();
 
+        int minCount = 500;
+        int maxCount = 10000;
+
         // 实际业务中一般采用数据库读取的形式，这里直接拼接创建
-        areaList.add(new DemoCityData(0, 0, "瑶海区"));
-        areaList.add(new DemoCityData(1, 0, "庐江区"));
-        areaList.add(new DemoCityData(2, 1, "南宁县"));
-        areaList.add(new DemoCityData(3, 1, "镜湖区"));
-        areaList.add(new DemoCityData(4, 2, "玄武区"));
-        areaList.add(new DemoCityData(5, 2, "秦淮区"));
-        areaList.add(new DemoCityData(6, 3, "宜兴市"));
-        areaList.add(new DemoCityData(7, 3, "新吴区"));
-        areaList.add(new DemoCityData(8, 4, "鼓楼区"));
-        areaList.add(new DemoCityData(9, 4, "丰县"));
+        for (int i = 0; i < RandomUtil.randomInt(minCount, maxCount); i++) {
+            areaList.add(new DemoCityData(areaList.size(), 0, String.format("A11%04d", i)));
+        }
+
+        for (int i = 0; i < RandomUtil.randomInt(minCount, maxCount); i++) {
+            areaList.add(new DemoCityData(areaList.size(), 1, String.format("A12%04d", i)));
+        }
+
+        for (int i = 0; i < RandomUtil.randomInt(minCount, maxCount); i++) {
+            areaList.add(new DemoCityData(areaList.size(), 2, String.format("A21%04d", i)));
+        }
+
+        for (int i = 0; i < RandomUtil.randomInt(minCount, maxCount); i++) {
+            areaList.add(new DemoCityData(areaList.size(), 3, String.format("A22%04d", i)));
+        }
+
+        for (int i = 0; i < RandomUtil.randomInt(minCount, maxCount); i++) {
+            areaList.add(new DemoCityData(areaList.size(), 4, String.format("A23%04d", i)));
+        }
 
         selectParentData(cityList, areaList);
 

@@ -55,6 +55,7 @@ public class ExcelDownHandler implements SheetWriteHandler {
      * 下拉可选项
      */
     private final List<DropDownOptions> dropDownOptions;
+    private final DictService dictService;
     /**
      * 当前单选进度
      */
@@ -63,7 +64,6 @@ public class ExcelDownHandler implements SheetWriteHandler {
      * 当前联动选择进度
      */
     private int currentLinkedOptionsSheetIndex;
-    private final DictService dictService;
 
     public ExcelDownHandler(List<DropDownOptions> options) {
         this.dropDownOptions = options;
@@ -139,8 +139,8 @@ public class ExcelDownHandler implements SheetWriteHandler {
             } else if (everyOptions.getOptions().size() > 10) {
                 // 当一级选项参数个数大于10，使用额外表的形式
                 dropDownWithSheet(helper, workbook, sheet, everyOptions.getIndex(), everyOptions.getOptions());
-            } else if (everyOptions.getOptions().size() != 0) {
-                // 当一级选项个数不为空，使用默认形式
+            } else {
+                // 否则使用默认形式
                 dropDownWithSimple(helper, sheet, everyOptions.getIndex(), everyOptions.getOptions());
             }
         });
@@ -171,9 +171,23 @@ public class ExcelDownHandler implements SheetWriteHandler {
         Sheet linkedOptionsDataSheet = workbook.createSheet(WorkbookUtil.createSafeSheetName(linkedOptionsSheetName));
         // 将下拉表隐藏
         workbook.setSheetHidden(workbook.getSheetIndex(linkedOptionsDataSheet), true);
-        // 完善横向的一级选项数据表
+        // 选项数据
         List<String> firstOptions = options.getOptions();
         Map<String, List<String>> secoundOptionsMap = options.getNextOptions();
+
+        // 采用按行填充数据的方式，避免EasyExcel出现数据无法写入的问题
+        // Attempting to write a row in the range that is already written to disk
+
+        // 使用ArrayList记载数据，防止乱序
+        List<String> columnNames = new ArrayList<>();
+        // 写入第一行，即第一级的数据
+        Row firstRow = linkedOptionsDataSheet.createRow(0);
+        for (int columnIndex = 0; columnIndex < firstOptions.size(); columnIndex++) {
+            String columnName = firstOptions.get(columnIndex);
+            firstRow.createCell(columnIndex)
+                .setCellValue(columnName);
+            columnNames.add(columnName);
+        }
 
         // 创建名称管理器
         Name name = workbook.createName();
@@ -190,28 +204,12 @@ public class ExcelDownHandler implements SheetWriteHandler {
         // 设置数据校验为序列模式，引用的是名称管理器中的别名
         this.markOptionsToSheet(helper, sheet, options.getIndex(), helper.createFormulaListConstraint(linkedOptionsSheetName));
 
-        for (int columIndex = 0; columIndex < firstOptions.size(); columIndex++) {
-            // 先提取主表中一级下拉的列名
+        // 创建二级选项的名称管理器
+        for (int columIndex = 0; columIndex < columnNames.size(); columIndex++) {
+            // 列名
             String firstOptionsColumnName = getExcelColumnName(columIndex);
-            // 一次循环是每一个一级选项
-            int finalI = columIndex;
-            // 本次循环的一级选项值
-            String thisFirstOptionsValue = firstOptions.get(columIndex);
-            // 创建第一行的数据
-            Optional.ofNullable(linkedOptionsDataSheet.getRow(0))
-                // 如果不存在则创建第一行
-                .orElseGet(() -> linkedOptionsDataSheet.createRow(finalI))
-                // 第一行当前列
-                .createCell(columIndex)
-                // 设置值为当前一级选项值
-                .setCellValue(thisFirstOptionsValue);
-
-            // 第二行开始，设置第二级别选项参数
-            List<String> secondOptions = secoundOptionsMap.get(thisFirstOptionsValue);
-            if (CollUtil.isEmpty(secondOptions)) {
-                // 必须保证至少有一个关联选项，否则将导致Excel解析错误
-                secondOptions = Collections.singletonList("暂无_0");
-            }
+            // 对应的一级值
+            String thisFirstOptionsValue = columnNames.get(columIndex);
 
             // 以该一级选项值创建子名称管理器
             Name sonName = workbook.createName();
@@ -222,7 +220,9 @@ public class ExcelDownHandler implements SheetWriteHandler {
                 linkedOptionsSheetName,
                 firstOptionsColumnName,
                 firstOptionsColumnName,
-                secondOptions.size() + 1
+                // 二级选项存在则设置为(选项个数+1)行，否则设置为2行
+                Math.max(Optional.ofNullable(secoundOptionsMap.get(thisFirstOptionsValue))
+                    .orElseGet(ArrayList::new).size(), 1) + 1
             );
             // 设置名称管理器的引用位置
             sonName.setRefersToFormula(sonFunction);
@@ -235,24 +235,50 @@ public class ExcelDownHandler implements SheetWriteHandler {
                 // 二级只能主表每一行的每一列添加二级校验
                 markLinkedOptionsToSheet(helper, sheet, i, options.getNextIndex(), helper.createFormulaListConstraint(secondOptionsFunction));
             }
+        }
 
-            for (int rowIndex = 0; rowIndex < secondOptions.size(); rowIndex++) {
-                // 从第二行开始填充二级选项
-                int finalRowIndex = rowIndex + 1;
-                int finalColumIndex = columIndex;
-
-                Row row = Optional.ofNullable(linkedOptionsDataSheet.getRow(finalRowIndex))
-                    // 没有则创建
-                    .orElseGet(() -> linkedOptionsDataSheet.createRow(finalRowIndex));
-                Optional
-                    // 在本级一级选项所在的列
-                    .ofNullable(row.getCell(finalColumIndex))
-                    // 不存在则创建
-                    .orElseGet(() -> row.createCell(finalColumIndex))
-                    // 设置二级选项值
-                    .setCellValue(secondOptions.get(rowIndex));
+        // 将二级数据处理为按行区分
+        Map<Integer, List<String>> columnValueMap = new HashMap<>();
+        int currentRow = 1;
+        while (currentRow >= 0) {
+            boolean flag = false;
+            List<String> rowData = new ArrayList<>();
+            for (String columnName : columnNames) {
+                List<String> data = secoundOptionsMap.get(columnName);
+                if (CollUtil.isEmpty(data)) {
+                    // 添加空字符串填充位置
+                    rowData.add(" ");
+                    continue;
+                }
+                // 取第一个
+                String str = data.get(0);
+                rowData.add(str);
+                // 通过移除的方式避免重复
+                data.remove(0);
+                // 设置可以继续
+                flag = true;
+            }
+            columnValueMap.put(currentRow, rowData);
+            // 可以继续，则增加行数，否则置为负数跳出循环
+            if (flag) {
+                currentRow++;
+            } else {
+                currentRow = -1;
             }
         }
+
+        // 填充第二级选项数据
+        columnValueMap.forEach((rowIndex, rowValues) -> {
+            Row row = linkedOptionsDataSheet.createRow(rowIndex);
+            for (int columnIndex = 0; columnIndex < rowValues.size(); columnIndex++) {
+                String rowValue = rowValues.get(columnIndex);
+                // 填充位置的部分不渲染
+                if (StrUtil.isNotBlank(rowValue)) {
+                    row.createCell(columnIndex)
+                        .setCellValue(rowValue);
+                }
+            }
+        });
 
         currentLinkedOptionsSheetIndex++;
     }
