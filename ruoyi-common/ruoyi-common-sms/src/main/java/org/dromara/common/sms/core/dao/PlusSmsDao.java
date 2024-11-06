@@ -66,7 +66,7 @@ public class PlusSmsDao implements SmsDao {
      */
     @Override
     public void clean() {
-        RedisUtils.deleteObject(GlobalConstants.GLOBAL_REDIS_KEY + "sms:");
+        RedisUtils.deleteKeys(GlobalConstants.GLOBAL_REDIS_KEY + "sms:*");
     }
 
 }
