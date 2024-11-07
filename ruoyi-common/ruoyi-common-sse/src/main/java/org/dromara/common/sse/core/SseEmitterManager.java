@@ -1,14 +1,11 @@
 package org.dromara.common.sse.core;
 
-import cn.hutool.core.collection.CollUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.dromara.common.redis.utils.RedisUtils;
 import org.dromara.common.sse.dto.SseMessageDto;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
