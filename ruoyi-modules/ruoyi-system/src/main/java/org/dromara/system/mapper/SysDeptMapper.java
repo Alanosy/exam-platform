@@ -1,10 +1,12 @@
 package org.dromara.system.mapper;
 
 import com.baomidou.mybatisplus.core.conditions.Wrapper;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Constants;
 import org.dromara.common.mybatis.annotation.DataColumn;
 import org.dromara.common.mybatis.annotation.DataPermission;
 import org.dromara.common.mybatis.core.mapper.BaseMapperPlus;
+import org.dromara.common.mybatis.helper.DataBaseHelper;
 import org.dromara.system.domain.SysDept;
 import org.dromara.system.domain.vo.SysDeptVo;
 import org.apache.ibatis.annotations.Param;
@@ -33,6 +35,12 @@ public interface SysDeptMapper extends BaseMapperPlus<SysDept, SysDeptVo> {
         @DataColumn(key = "deptName", value = "dept_id")
     })
     long countDeptById(Long deptId);
+
+    default List<SysDept> selectListByParentId(Long parentId) {
+        return this.selectList(new LambdaQueryWrapper<SysDept>()
+            .select(SysDept::getDeptId)
+            .apply(DataBaseHelper.findInSet(parentId, "ancestors")));
+    }
 
     /**
      * 根据角色ID查询部门树信息

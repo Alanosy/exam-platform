@@ -78,12 +78,8 @@ public class SysPostServiceImpl implements ISysPostService {
         } else if (ObjectUtil.isNotNull(bo.getBelongDeptId())) {
             //部门树搜索
             wrapper.and(x -> {
-                List<Long> deptIds = deptMapper.selectList(new LambdaQueryWrapper<SysDept>()
-                        .select(SysDept::getDeptId)
-                        .apply(DataBaseHelper.findInSet(bo.getBelongDeptId(), "ancestors")))
-                    .stream()
-                    .map(SysDept::getDeptId)
-                    .collect(Collectors.toList());
+                List<SysDept> deptList = deptMapper.selectListByParentId(bo.getBelongDeptId());
+                List<Long> deptIds = StreamUtils.toList(deptList, SysDept::getDeptId);
                 deptIds.add(bo.getBelongDeptId());
                 x.in(SysPost::getDeptId, deptIds);
             });

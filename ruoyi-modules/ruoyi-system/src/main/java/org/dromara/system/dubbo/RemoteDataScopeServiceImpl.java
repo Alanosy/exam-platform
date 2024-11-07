@@ -65,9 +65,7 @@ public class RemoteDataScopeServiceImpl implements RemoteDataScopeService {
         if (ObjectUtil.isNull(deptId)) {
             return "-1";
         }
-        List<SysDept> deptList = deptMapper.selectList(new LambdaQueryWrapper<SysDept>()
-            .select(SysDept::getDeptId)
-            .apply(DataBaseHelper.findInSet(deptId, "ancestors")));
+        List<SysDept> deptList = deptMapper.selectListByParentId(deptId);
         List<Long> ids = StreamUtils.toList(deptList, SysDept::getDeptId);
         ids.add(deptId);
         if (CollUtil.isNotEmpty(ids)) {
