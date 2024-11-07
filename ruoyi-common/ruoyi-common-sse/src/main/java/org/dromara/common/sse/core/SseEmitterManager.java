@@ -70,7 +70,9 @@ public class SseEmitterManager {
         Map<String, SseEmitter> emitters = USER_TOKEN_EMITTERS.get(userId);
         if (emitters != null) {
             try {
-                emitters.get(token).send(SseEmitter.event().comment("disconnected"));
+                SseEmitter sseEmitter = emitters.get(token);
+                sseEmitter.send(SseEmitter.event().comment("disconnected"));
+                sseEmitter.complete();
             } catch (Exception ignore) {
             }
             emitters.remove(token);
