@@ -32,7 +32,7 @@ import java.util.Map;
 @Validated
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/workflow/processDefinition")
+@RequestMapping("/processDefinition")
 public class ActProcessDefinitionController extends BaseController {
 
     private final IActProcessDefinitionService actProcessDefinitionService;

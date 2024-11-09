@@ -32,7 +32,7 @@ import java.util.Map;
 @Validated
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/workflow/processInstance")
+@RequestMapping("/processInstance")
 public class ActProcessInstanceController extends BaseController {
 
     private final IActProcessInstanceService actProcessInstanceService;

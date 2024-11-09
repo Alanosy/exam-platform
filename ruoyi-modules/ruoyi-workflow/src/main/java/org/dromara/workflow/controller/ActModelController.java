@@ -34,7 +34,7 @@ import java.util.List;
 @Validated
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/workflow/model")
+@RequestMapping("/model")
 public class ActModelController extends BaseController {
 
     @Autowired(required = false)
