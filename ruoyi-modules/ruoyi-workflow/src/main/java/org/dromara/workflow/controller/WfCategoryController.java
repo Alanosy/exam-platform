@@ -30,7 +30,7 @@ import java.util.List;
 @Validated
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/workflow/category")
+@RequestMapping("/category")
 public class WfCategoryController extends BaseController {
 
     private final IWfCategoryService wfCategoryService;

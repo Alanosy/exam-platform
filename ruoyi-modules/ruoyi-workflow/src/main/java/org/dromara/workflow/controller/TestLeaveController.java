@@ -32,7 +32,7 @@ import java.util.List;
 @Validated
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/workflow/leave")
+@RequestMapping("/leave")
 public class TestLeaveController extends BaseController {
 
     private final ITestLeaveService testLeaveService;
