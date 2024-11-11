@@ -29,7 +29,7 @@ public class ObjectUtils extends ObjectUtil {
     }
 
     /**
-     * 如果对象不为空，则获取对象中的某个字段  ObjectUtils.notNullGetter(user, User::getName, "");
+     * 如果对象不为空，则获取对象中的某个字段，否则返回默认值
      *
      * @param obj          对象
      * @param func         获取方法
@@ -39,6 +39,33 @@ public class ObjectUtils extends ObjectUtil {
     public static <T, E> E notNullGetter(T obj, Function<T, E> func, E defaultValue) {
         if (isNotNull(obj) && isNotNull(func)) {
             return func.apply(obj);
+        }
+        return defaultValue;
+    }
+
+    /**
+     * 如果值不为空，则返回值
+     *
+     * @param obj          对象
+     * @return 对象字段
+     */
+    public static <T> T notNull(T obj) {
+        if (isNotNull(obj)) {
+            return obj;
+        }
+        return null;
+    }
+
+    /**
+     * 如果值不为空，则返回值，否则返回默认值
+     *
+     * @param obj          对象
+     * @param defaultValue 默认值
+     * @return 对象字段
+     */
+    public static <T> T notNull(T obj, T defaultValue) {
+        if (isNotNull(obj)) {
+            return obj;
         }
         return defaultValue;
     }

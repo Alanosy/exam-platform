@@ -15,10 +15,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.dromara.common.core.constant.CacheNames;
 import org.dromara.common.core.constant.SystemConstants;
 import org.dromara.common.core.exception.ServiceException;
-import org.dromara.common.core.utils.MapstructUtils;
-import org.dromara.common.core.utils.SpringUtils;
-import org.dromara.common.core.utils.StreamUtils;
-import org.dromara.common.core.utils.StringUtils;
+import org.dromara.common.core.utils.*;
 import org.dromara.common.mybatis.core.page.PageQuery;
 import org.dromara.common.mybatis.core.page.TableDataInfo;
 import org.dromara.common.satoken.utils.LoginHelper;
@@ -567,7 +564,7 @@ public class SysUserServiceImpl implements ISysUserService {
     public String selectUserNameById(Long userId) {
         SysUser sysUser = baseMapper.selectOne(new LambdaQueryWrapper<SysUser>()
             .select(SysUser::getUserName).eq(SysUser::getUserId, userId));
-        return ObjectUtil.isNull(sysUser) ? null : sysUser.getUserName();
+        return ObjectUtils.notNullGetter(sysUser, SysUser::getUserName);
     }
 
     /**
@@ -581,7 +578,7 @@ public class SysUserServiceImpl implements ISysUserService {
     public String selectNicknameById(Long userId) {
         SysUser sysUser = baseMapper.selectOne(new LambdaQueryWrapper<SysUser>()
             .select(SysUser::getNickName).eq(SysUser::getUserId, userId));
-        return ObjectUtil.isNull(sysUser) ? null : sysUser.getNickName();
+        return ObjectUtils.notNullGetter(sysUser, SysUser::getNickName);
     }
 
     @Override
@@ -606,7 +603,7 @@ public class SysUserServiceImpl implements ISysUserService {
     public String selectPhonenumberById(Long userId) {
         SysUser sysUser = baseMapper.selectOne(new LambdaQueryWrapper<SysUser>()
             .select(SysUser::getPhonenumber).eq(SysUser::getUserId, userId));
-        return ObjectUtil.isNull(sysUser) ? null : sysUser.getPhonenumber();
+        return ObjectUtils.notNullGetter(sysUser, SysUser::getPhonenumber);
     }
 
     /**
@@ -619,7 +616,7 @@ public class SysUserServiceImpl implements ISysUserService {
     public String selectEmailById(Long userId) {
         SysUser sysUser = baseMapper.selectOne(new LambdaQueryWrapper<SysUser>()
             .select(SysUser::getEmail).eq(SysUser::getUserId, userId));
-        return ObjectUtil.isNull(sysUser) ? null : sysUser.getEmail();
+        return ObjectUtils.notNullGetter(sysUser, SysUser::getEmail);
     }
 
 }
