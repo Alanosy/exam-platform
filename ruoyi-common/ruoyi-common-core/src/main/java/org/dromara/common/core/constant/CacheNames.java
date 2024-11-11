@@ -61,6 +61,16 @@ public interface CacheNames {
     String SYS_OSS = "sys_oss#30d";
 
     /**
+     * 角色自定义权限
+     */
+    String SYS_ROLE_CUSTOM = "sys_role_custom#30d";
+
+    /**
+     * 部门及以下权限
+     */
+    String SYS_DEPT_AND_CHILD = "sys_dept_and_child#30d";
+
+    /**
      * OSS配置
      */
     String SYS_OSS_CONFIG = GlobalConstants.GLOBAL_REDIS_KEY + "sys_oss_config";

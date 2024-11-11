@@ -15,28 +15,32 @@ import java.util.function.Function;
 public class ObjectUtils extends ObjectUtil {
 
     /**
-     * 如果对象不为空，则获取对象中的某个字段
-     * <p>
-     * 例：
-     * <code>
-     * <p>    public class User {
-     * <p>        private String name;
-     * <p>        // 省略 getter/setter
-     * <p>    }
-     * </code>
-     * <code>
-     * <p>    User user = userService.queryById(userId);
-     * <p>    String name = ObjectUtils.notNullGetter(user,User::getName);
-     * </code>
+     * 如果对象不为空，则获取对象中的某个字段 ObjectUtils.notNullGetter(user, User::getName);
+     *
      * @param obj 对象
      * @param func 获取方法
      * @return 对象字段
      */
-    public static <T,E> E notNullGetter(T obj, Function<T,E> func) {
+    public static <T, E> E notNullGetter(T obj, Function<T, E> func) {
         if (isNotNull(obj) && isNotNull(func)) {
             return func.apply(obj);
         }
         return null;
+    }
+
+    /**
+     * 如果对象不为空，则获取对象中的某个字段  ObjectUtils.notNullGetter(user, User::getName, "");
+     *
+     * @param obj          对象
+     * @param func         获取方法
+     * @param defaultValue 默认值
+     * @return 对象字段
+     */
+    public static <T, E> E notNullGetter(T obj, Function<T, E> func, E defaultValue) {
+        if (isNotNull(obj) && isNotNull(func)) {
+            return func.apply(obj);
+        }
+        return defaultValue;
     }
 
 }
