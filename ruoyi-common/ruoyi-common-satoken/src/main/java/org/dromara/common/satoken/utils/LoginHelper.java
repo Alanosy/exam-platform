@@ -9,7 +9,7 @@ import cn.hutool.core.util.ObjectUtil;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.dromara.common.core.constant.TenantConstants;
-import org.dromara.common.core.constant.UserConstants;
+import org.dromara.common.core.constant.SystemConstants;
 import org.dromara.common.core.enums.UserType;
 import org.dromara.system.api.model.LoginUser;
 
@@ -153,7 +153,7 @@ public class LoginHelper {
      * @return 结果
      */
     public static boolean isSuperAdmin(Long userId) {
-        return UserConstants.SUPER_ADMIN_ID.equals(userId);
+        return SystemConstants.SUPER_ADMIN_ID.equals(userId);
     }
 
     /**

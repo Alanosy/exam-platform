@@ -8,7 +8,7 @@ import cn.hutool.core.util.ObjectUtil;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
-import org.dromara.common.core.constant.UserConstants;
+import org.dromara.common.core.constant.SystemConstants;
 import org.dromara.common.core.domain.R;
 import org.dromara.common.core.utils.StreamUtils;
 import org.dromara.common.core.utils.StringUtils;
@@ -144,7 +144,7 @@ public class SysUserController extends BaseController {
             }
         }
         SysRoleBo roleBo = new SysRoleBo();
-        roleBo.setStatus(UserConstants.ROLE_NORMAL);
+        roleBo.setStatus(SystemConstants.NORMAL);
         List<SysRoleVo> roles = roleService.selectRoleList(roleBo);
         userInfoVo.setRoles(LoginHelper.isSuperAdmin(userId) ? roles : StreamUtils.filter(roles, r -> !r.isSuperAdmin()));
         return R.ok(userInfoVo);

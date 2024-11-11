@@ -13,7 +13,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.dromara.common.core.constant.CacheNames;
-import org.dromara.common.core.constant.UserConstants;
+import org.dromara.common.core.constant.SystemConstants;
 import org.dromara.common.core.exception.ServiceException;
 import org.dromara.common.core.utils.MapstructUtils;
 import org.dromara.common.core.utils.SpringUtils;
@@ -21,7 +21,6 @@ import org.dromara.common.core.utils.StreamUtils;
 import org.dromara.common.core.utils.StringUtils;
 import org.dromara.common.mybatis.core.page.PageQuery;
 import org.dromara.common.mybatis.core.page.TableDataInfo;
-import org.dromara.common.mybatis.helper.DataBaseHelper;
 import org.dromara.common.satoken.utils.LoginHelper;
 import org.dromara.system.domain.*;
 import org.dromara.system.domain.bo.SysUserBo;
@@ -77,7 +76,7 @@ public class SysUserServiceImpl implements ISysUserService {
     private Wrapper<SysUser> buildQueryWrapper(SysUserBo user) {
         Map<String, Object> params = user.getParams();
         QueryWrapper<SysUser> wrapper = Wrappers.query();
-        wrapper.eq("u.del_flag", UserConstants.USER_NORMAL)
+        wrapper.eq("u.del_flag", SystemConstants.NORMAL)
             .eq(ObjectUtil.isNotNull(user.getUserId()), "u.user_id", user.getUserId())
             .like(StringUtils.isNotBlank(user.getUserName()), "u.user_name", user.getUserName())
             .eq(StringUtils.isNotBlank(user.getStatus()), "u.status", user.getStatus())
@@ -105,7 +104,7 @@ public class SysUserServiceImpl implements ISysUserService {
     @Override
     public TableDataInfo<SysUserVo> selectAllocatedList(SysUserBo user, PageQuery pageQuery) {
         QueryWrapper<SysUser> wrapper = Wrappers.query();
-        wrapper.eq("u.del_flag", UserConstants.USER_NORMAL)
+        wrapper.eq("u.del_flag", SystemConstants.NORMAL)
             .eq(ObjectUtil.isNotNull(user.getRoleId()), "r.role_id", user.getRoleId())
             .like(StringUtils.isNotBlank(user.getUserName()), "u.user_name", user.getUserName())
             .eq(StringUtils.isNotBlank(user.getStatus()), "u.status", user.getStatus())
@@ -125,7 +124,7 @@ public class SysUserServiceImpl implements ISysUserService {
     public TableDataInfo<SysUserVo> selectUnallocatedList(SysUserBo user, PageQuery pageQuery) {
         List<Long> userIds = userRoleMapper.selectUserIdsByRoleId(user.getRoleId());
         QueryWrapper<SysUser> wrapper = Wrappers.query();
-        wrapper.eq("u.del_flag", UserConstants.USER_NORMAL)
+        wrapper.eq("u.del_flag", SystemConstants.NORMAL)
             .and(w -> w.ne("r.role_id", user.getRoleId()).or().isNull("r.role_id"))
             .notIn(CollUtil.isNotEmpty(userIds), "u.user_id", userIds)
             .like(StringUtils.isNotBlank(user.getUserName()), "u.user_name", user.getUserName())
@@ -183,7 +182,7 @@ public class SysUserServiceImpl implements ISysUserService {
     @Override
     public List<SysUserVo> selectUserByIds(List<Long> userIds, Long deptId) {
         return baseMapper.selectUserList(new LambdaQueryWrapper<SysUser>()
-            .select(SysUser::getUserId, SysUser::getUserName, SysUser::getNickName, SysUser::getEmail, SysUser::getPhonenumber)            .eq(SysUser::getStatus, UserConstants.USER_NORMAL)
+            .select(SysUser::getUserId, SysUser::getUserName, SysUser::getNickName, SysUser::getEmail, SysUser::getPhonenumber)            .eq(SysUser::getStatus, SystemConstants.NORMAL)
             .eq(ObjectUtil.isNotNull(deptId), SysUser::getDeptId, deptId)
             .in(CollUtil.isNotEmpty(userIds), SysUser::getUserId, userIds));
     }
@@ -466,7 +465,7 @@ public class SysUserServiceImpl implements ISysUserService {
         if (ArrayUtil.isNotEmpty(roleIds)) {
             List<Long> roleList = new ArrayList<>(List.of(roleIds));
             if (!LoginHelper.isSuperAdmin(userId)) {
-                roleList.remove(UserConstants.SUPER_ADMIN_ID);
+                roleList.remove(SystemConstants.SUPER_ADMIN_ID);
             }
             // 判断是否具有此角色的操作权限
             List<SysRoleVo> roles = roleMapper.selectRoleList(

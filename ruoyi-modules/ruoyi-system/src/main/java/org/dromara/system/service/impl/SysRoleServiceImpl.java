@@ -13,7 +13,7 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.RequiredArgsConstructor;
 import org.dromara.common.core.constant.TenantConstants;
-import org.dromara.common.core.constant.UserConstants;
+import org.dromara.common.core.constant.SystemConstants;
 import org.dromara.common.core.exception.ServiceException;
 import org.dromara.common.core.utils.MapstructUtils;
 import org.dromara.common.core.utils.StreamUtils;
@@ -72,7 +72,7 @@ public class SysRoleServiceImpl implements ISysRoleService {
     private Wrapper<SysRole> buildQueryWrapper(SysRoleBo bo) {
         Map<String, Object> params = bo.getParams();
         QueryWrapper<SysRole> wrapper = Wrappers.query();
-        wrapper.eq("r.del_flag", UserConstants.ROLE_NORMAL)
+        wrapper.eq("r.del_flag", SystemConstants.NORMAL)
             .eq(ObjectUtil.isNotNull(bo.getRoleId()), "r.role_id", bo.getRoleId())
             .like(StringUtils.isNotBlank(bo.getRoleName()), "r.role_name", bo.getRoleName())
             .eq(StringUtils.isNotBlank(bo.getStatus()), "r.status", bo.getStatus())
@@ -174,7 +174,7 @@ public class SysRoleServiceImpl implements ISysRoleService {
     @Override
     public List<SysRoleVo> selectRoleByIds(List<Long> roleIds) {
         return baseMapper.selectRoleList(new QueryWrapper<SysRole>()
-            .eq("r.status", UserConstants.ROLE_NORMAL)
+            .eq("r.status", SystemConstants.NORMAL)
             .in(CollUtil.isNotEmpty(roleIds), "r.role_id", roleIds));
     }
 
@@ -294,7 +294,7 @@ public class SysRoleServiceImpl implements ISysRoleService {
     public int updateRole(SysRoleBo bo) {
         SysRole role = MapstructUtils.convert(bo, SysRole.class);
 
-        if (UserConstants.ROLE_DISABLE.equals(role.getStatus()) && this.countUserRoleByRoleId(role.getRoleId()) > 0) {
+        if (SystemConstants.DISABLE.equals(role.getStatus()) && this.countUserRoleByRoleId(role.getRoleId()) > 0) {
             throw new ServiceException("角色已分配，不能禁用!");
         }
         // 修改角色信息
@@ -313,7 +313,7 @@ public class SysRoleServiceImpl implements ISysRoleService {
      */
     @Override
     public int updateRoleStatus(Long roleId, String status) {
-        if (UserConstants.ROLE_DISABLE.equals(status) && this.countUserRoleByRoleId(roleId) > 0) {
+        if (SystemConstants.DISABLE.equals(status) && this.countUserRoleByRoleId(roleId) > 0) {
             throw new ServiceException("角色已分配，不能禁用!");
         }
         return baseMapper.update(null,

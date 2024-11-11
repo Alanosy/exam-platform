@@ -3,7 +3,7 @@ package org.dromara.system.api.domain.bo;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.dromara.common.core.constant.UserConstants;
+import org.dromara.common.core.constant.SystemConstants;
 import org.dromara.common.core.xss.Xss;
 
 import jakarta.validation.constraints.Email;
@@ -118,7 +118,7 @@ public class RemoteUserBo implements Serializable {
     }
 
     public boolean isSuperAdmin() {
-        return UserConstants.SUPER_ADMIN_ID.equals(this.userId);
+        return SystemConstants.SUPER_ADMIN_ID.equals(this.userId);
     }
 
 }

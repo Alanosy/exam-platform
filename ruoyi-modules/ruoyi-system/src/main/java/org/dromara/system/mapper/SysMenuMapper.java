@@ -3,7 +3,7 @@ package org.dromara.system.mapper;
 import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Constants;
-import org.dromara.common.core.constant.UserConstants;
+import org.dromara.common.core.constant.SystemConstants;
 import org.dromara.system.domain.SysMenu;
 import org.dromara.common.mybatis.core.mapper.BaseMapperPlus;
 import org.dromara.system.domain.vo.SysMenuVo;
@@ -49,8 +49,8 @@ public interface SysMenuMapper extends BaseMapperPlus<SysMenu, SysMenuVo> {
      */
     default List<SysMenu> selectMenuTreeAll() {
         LambdaQueryWrapper<SysMenu> lqw = new LambdaQueryWrapper<SysMenu>()
-            .in(SysMenu::getMenuType, UserConstants.TYPE_DIR, UserConstants.TYPE_MENU)
-            .eq(SysMenu::getStatus, UserConstants.MENU_NORMAL)
+            .in(SysMenu::getMenuType, SystemConstants.TYPE_DIR, SystemConstants.TYPE_MENU)
+            .eq(SysMenu::getStatus, SystemConstants.NORMAL)
             .orderByAsc(SysMenu::getParentId)
             .orderByAsc(SysMenu::getOrderNum);
         return this.selectList(lqw);

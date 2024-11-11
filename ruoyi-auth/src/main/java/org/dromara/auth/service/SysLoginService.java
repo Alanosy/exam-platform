@@ -14,12 +14,8 @@ import org.apache.dubbo.config.annotation.DubboReference;
 import org.dromara.auth.form.RegisterBody;
 import org.dromara.auth.properties.CaptchaProperties;
 import org.dromara.auth.properties.UserPasswordProperties;
-import org.dromara.common.core.constant.CacheConstants;
-import org.dromara.common.core.constant.Constants;
-import org.dromara.common.core.constant.GlobalConstants;
-import org.dromara.common.core.constant.TenantConstants;
+import org.dromara.common.core.constant.*;
 import org.dromara.common.core.enums.LoginType;
-import org.dromara.common.core.enums.TenantStatus;
 import org.dromara.common.core.enums.UserType;
 import org.dromara.common.core.exception.ServiceException;
 import org.dromara.common.core.exception.user.CaptchaException;
@@ -257,7 +253,7 @@ public class SysLoginService {
         if (ObjectUtil.isNull(tenant)) {
             log.info("登录租户：{} 不存在.", tenantId);
             throw new TenantException("tenant.not.exists");
-        } else if (TenantStatus.DISABLE.getCode().equals(tenant.getStatus())) {
+        } else if (SystemConstants.DISABLE.equals(tenant.getStatus())) {
             log.info("登录租户：{} 已被停用.", tenantId);
             throw new TenantException("tenant.blocked");
         } else if (ObjectUtil.isNotNull(tenant.getExpireTime())

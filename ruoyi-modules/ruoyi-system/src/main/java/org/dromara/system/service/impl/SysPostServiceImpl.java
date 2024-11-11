@@ -6,14 +6,13 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.RequiredArgsConstructor;
-import org.dromara.common.core.constant.UserConstants;
+import org.dromara.common.core.constant.SystemConstants;
 import org.dromara.common.core.exception.ServiceException;
 import org.dromara.common.core.utils.MapstructUtils;
 import org.dromara.common.core.utils.StreamUtils;
 import org.dromara.common.core.utils.StringUtils;
 import org.dromara.common.mybatis.core.page.PageQuery;
 import org.dromara.common.mybatis.core.page.TableDataInfo;
-import org.dromara.common.mybatis.helper.DataBaseHelper;
 import org.dromara.system.domain.SysDept;
 import org.dromara.system.domain.SysPost;
 import org.dromara.system.domain.SysUserPost;
@@ -27,7 +26,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * 岗位信息 服务层处理
@@ -130,7 +128,7 @@ public class SysPostServiceImpl implements ISysPostService {
     public List<SysPostVo> selectPostByIds(List<Long> postIds) {
         return baseMapper.selectVoList(new LambdaQueryWrapper<SysPost>()
             .select(SysPost::getPostId, SysPost::getPostName, SysPost::getPostCode)
-            .eq(SysPost::getStatus, UserConstants.POST_NORMAL)
+            .eq(SysPost::getStatus, SystemConstants.NORMAL)
             .in(CollUtil.isNotEmpty(postIds), SysPost::getPostId, postIds));
     }
 

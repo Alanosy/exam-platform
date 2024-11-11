@@ -12,6 +12,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.RequiredArgsConstructor;
 import org.dromara.common.core.constant.CacheNames;
 import org.dromara.common.core.constant.Constants;
+import org.dromara.common.core.constant.SystemConstants;
 import org.dromara.common.core.constant.TenantConstants;
 import org.dromara.common.core.exception.ServiceException;
 import org.dromara.common.core.utils.MapstructUtils;
@@ -231,7 +232,7 @@ public class SysTenantServiceImpl implements ISysTenantService {
         role.setRoleName(TenantConstants.TENANT_ADMIN_ROLE_NAME);
         role.setRoleKey(TenantConstants.TENANT_ADMIN_ROLE_KEY);
         role.setRoleSort(1);
-        role.setStatus(TenantConstants.NORMAL);
+        role.setStatus(SystemConstants.NORMAL);
         roleMapper.insert(role);
         Long roleId = role.getRoleId();
 
@@ -398,7 +399,7 @@ public class SysTenantServiceImpl implements ISysTenantService {
         // 获取所有租户编号
         List<String> tenantIds = baseMapper.selectObjs(
             new LambdaQueryWrapper<SysTenant>().select(SysTenant::getTenantId)
-                .eq(SysTenant::getStatus, TenantConstants.NORMAL), x -> {return Convert.toStr(x);});
+                .eq(SysTenant::getStatus, SystemConstants.NORMAL), x -> {return Convert.toStr(x);});
         List<SysDictType> saveTypeList = new ArrayList<>();
         List<SysDictData> saveDataList = new ArrayList<>();
         Set<String> set = new HashSet<>();

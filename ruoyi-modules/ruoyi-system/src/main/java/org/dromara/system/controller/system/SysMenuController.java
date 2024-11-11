@@ -6,7 +6,7 @@ import cn.dev33.satoken.annotation.SaMode;
 import cn.hutool.core.lang.tree.Tree;
 import lombok.RequiredArgsConstructor;
 import org.dromara.common.core.constant.TenantConstants;
-import org.dromara.common.core.constant.UserConstants;
+import org.dromara.common.core.constant.SystemConstants;
 import org.dromara.common.core.domain.R;
 import org.dromara.common.core.utils.StringUtils;
 import org.dromara.common.web.core.BaseController;
@@ -128,7 +128,7 @@ public class SysMenuController extends BaseController {
     public R<Void> add(@Validated @RequestBody SysMenuBo menu) {
         if (!menuService.checkMenuNameUnique(menu)) {
             return R.fail("新增菜单'" + menu.getMenuName() + "'失败，菜单名称已存在");
-        } else if (UserConstants.YES_FRAME.equals(menu.getIsFrame()) && !StringUtils.ishttp(menu.getPath())) {
+        } else if (SystemConstants.YES_FRAME.equals(menu.getIsFrame()) && !StringUtils.ishttp(menu.getPath())) {
             return R.fail("新增菜单'" + menu.getMenuName() + "'失败，地址必须以http(s)://开头");
         }
         return toAjax(menuService.insertMenu(menu));
@@ -144,7 +144,7 @@ public class SysMenuController extends BaseController {
     public R<Void> edit(@Validated @RequestBody SysMenuBo menu) {
         if (!menuService.checkMenuNameUnique(menu)) {
             return R.fail("修改菜单'" + menu.getMenuName() + "'失败，菜单名称已存在");
-        } else if (UserConstants.YES_FRAME.equals(menu.getIsFrame()) && !StringUtils.ishttp(menu.getPath())) {
+        } else if (SystemConstants.YES_FRAME.equals(menu.getIsFrame()) && !StringUtils.ishttp(menu.getPath())) {
             return R.fail("修改菜单'" + menu.getMenuName() + "'失败，地址必须以http(s)://开头");
         } else if (menu.getMenuId().equals(menu.getParentId())) {
             return R.fail("修改菜单'" + menu.getMenuName() + "'失败，上级菜单不能选择自己");

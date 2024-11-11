@@ -8,7 +8,7 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.RequiredArgsConstructor;
 import org.dromara.common.core.constant.CacheNames;
-import org.dromara.common.core.constant.UserConstants;
+import org.dromara.common.core.constant.SystemConstants;
 import org.dromara.common.core.exception.ServiceException;
 import org.dromara.common.core.utils.MapstructUtils;
 import org.dromara.common.core.utils.StringUtils;
@@ -171,7 +171,7 @@ public class SysConfigServiceImpl implements ISysConfigService {
     public void deleteConfigByIds(Long[] configIds) {
         for (Long configId : configIds) {
             SysConfig config = baseMapper.selectById(configId);
-            if (StringUtils.equals(UserConstants.YES, config.getConfigType())) {
+            if (StringUtils.equals(SystemConstants.YES, config.getConfigType())) {
                 throw new ServiceException(String.format("内置参数【%1$s】不能删除 ", config.getConfigKey()));
             }
             CacheUtils.evict(CacheNames.SYS_CONFIG, config.getConfigKey());
