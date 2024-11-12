@@ -1,7 +1,7 @@
 package org.dromara.system.service.impl;
 
 import cn.dev33.satoken.stp.StpUtil;
-import org.dromara.common.core.utils.StringUtils;
+import cn.hutool.core.util.ArrayUtil;
 import org.dromara.common.satoken.utils.LoginHelper;
 import org.dromara.common.sensitive.core.SensitiveService;
 import org.dromara.common.tenant.helper.TenantHelper;
@@ -22,19 +22,19 @@ public class SysSensitiveServiceImpl implements SensitiveService {
      * 是否脱敏
      */
     @Override
-    public boolean isSensitive(String roleKey, String perms) {
+    public boolean isSensitive(String[] roleKey, String[] perms) {
         if (!LoginHelper.isLogin()) {
             return true;
         }
-        boolean roleExist = StringUtils.isNotEmpty(roleKey);
-        boolean permsExist = StringUtils.isNotEmpty(perms);
+        boolean roleExist = ArrayUtil.isNotEmpty(roleKey);
+        boolean permsExist = ArrayUtil.isNotEmpty(perms);
         if (roleExist && permsExist) {
-            if (StpUtil.hasRole(roleKey) && StpUtil.hasPermission(perms)) {
+            if (StpUtil.hasRoleOr(roleKey) && StpUtil.hasPermissionOr(perms)) {
                 return false;
             }
-        } else if (roleExist && StpUtil.hasRole(roleKey)) {
+        } else if (roleExist && StpUtil.hasRoleOr(roleKey)) {
             return false;
-        } else if (permsExist && StpUtil.hasPermission(perms)) {
+        } else if (permsExist && StpUtil.hasPermissionOr(perms)) {
             return false;
         }
 

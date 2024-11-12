@@ -22,7 +22,13 @@ import java.lang.annotation.Target;
 public @interface Sensitive {
     SensitiveStrategy strategy();
 
-    String roleKey() default "";
+    /**
+     * 角色标识符 多个角色满足一个即可
+     */
+    String[] roleKey() default {};
 
-    String perms() default "";
+    /**
+     * 权限标识符 多个权限满足一个即可
+     */
+    String[] perms() default {};
 }
