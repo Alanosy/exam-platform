@@ -70,7 +70,10 @@ public class InjectionMetaObjectHandler implements MetaObjectHandler {
                 baseEntity.setUpdateTime(current);
 
                 // 获取当前登录用户的ID，并填充更新人信息
-                baseEntity.setUpdateBy(ObjectUtils.notNull(LoginHelper.getUserId()));
+                Long userId = LoginHelper.getUserId();
+                if (ObjectUtil.isNotNull(userId)) {
+                    baseEntity.setUpdateBy(userId);
+                }
             } else {
                 this.strictUpdateFill(metaObject, "updateTime", Date.class, new Date());
             }
