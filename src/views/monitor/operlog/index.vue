@@ -123,56 +123,14 @@
       <pagination v-show="total > 0" v-model:page="queryParams.pageNum" v-model:limit="queryParams.pageSize" :total="total" @pagination="getList" />
     </el-card>
     <!-- 操作日志详细 -->
-    <el-dialog v-model="dialog.visible" title="操作日志详细" width="700px" append-to-body>
-      <el-form :model="form" label-width="100px">
-        <el-row>
-          <el-col :span="24">
-            <el-form-item label="登录信息：">{{ form.operName }} / {{ form.deptName }} / {{ form.operIp }} / {{ form.operLocation }}</el-form-item>
-          </el-col>
-          <el-col :span="12">
-            <el-form-item label="请求信息：">{{ form.requestMethod }} {{ form.operUrl }}</el-form-item>
-          </el-col>
-          <el-col :span="12">
-            <el-form-item label="操作模块：">{{ form.title }} / {{ typeFormat(form) }}</el-form-item>
-          </el-col>
-          <el-col :span="24">
-            <el-form-item label="操作方法：">{{ form.method }}</el-form-item>
-          </el-col>
-          <el-col :span="24">
-            <el-form-item label="请求参数：">{{ form.operParam }}</el-form-item>
-          </el-col>
-          <el-col :span="24">
-            <el-form-item label="返回参数：">{{ form.jsonResult }}</el-form-item>
-          </el-col>
-          <el-col :span="6">
-            <el-form-item label="操作状态：">
-              <div v-if="form.status === 0">正常</div>
-              <div v-else-if="form.status === 1">失败</div>
-            </el-form-item>
-          </el-col>
-          <el-col :span="8">
-            <el-form-item label="消耗时间：">{{ form.costTime }}毫秒</el-form-item>
-          </el-col>
-          <el-col :span="10">
-            <el-form-item label="操作时间：">{{ parseTime(form.operTime) }}</el-form-item>
-          </el-col>
-          <el-col :span="24">
-            <el-form-item v-if="form.status === 1" label="异常信息：">{{ form.errorMsg }}</el-form-item>
-          </el-col>
-        </el-row>
-      </el-form>
-      <template #footer>
-        <div class="dialog-footer">
-          <el-button @click="dialog.visible = false">关 闭</el-button>
-        </div>
-      </template>
-    </el-dialog>
+    <OperInfoDialog ref="operInfoDialogRef" />
   </div>
 </template>
 
 <script setup name="Operlog" lang="ts">
 import { list, delOperlog, cleanOperlog } from '@/api/monitor/operlog';
 import { OperLogForm, OperLogQuery, OperLogVO } from '@/api/monitor/operlog/types';
+import OperInfoDialog from './oper-info-dialog.vue';
 
 const { proxy } = getCurrentInstance() as ComponentInternalInstance;
 const { sys_oper_type, sys_common_status } = toRefs<any>(proxy?.useDict('sys_oper_type', 'sys_common_status'));
@@ -188,11 +146,6 @@ const defaultSort = ref<any>({ prop: 'operTime', order: 'descending' });
 
 const operLogTableRef = ref<ElTableInstance>();
 const queryFormRef = ref<ElFormInstance>();
-
-const dialog = reactive<DialogOption>({
-  visible: false,
-  title: ''
-});
 
 const data = reactive<PageData<OperLogForm, OperLogQuery>>({
   form: {
@@ -267,11 +220,13 @@ const handleSortChange = (column: any) => {
   queryParams.value.isAsc = column.order;
   getList();
 };
+
+const operInfoDialogRef = ref<InstanceType<typeof OperInfoDialog>>();
 /** 详细按钮操作 */
 const handleView = (row: OperLogVO) => {
-  dialog.visible = true;
-  form.value = row;
+  operInfoDialogRef.value.openDialog(row);
 };
+
 /** 删除按钮操作 */
 const handleDelete = async (row?: OperLogVO) => {
   const operIds = row?.operId || ids.value;
