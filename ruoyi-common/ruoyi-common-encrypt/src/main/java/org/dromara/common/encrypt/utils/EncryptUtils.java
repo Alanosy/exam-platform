@@ -19,10 +19,12 @@ import java.util.Map;
  * @author 老马
  */
 public class EncryptUtils {
+
     /**
      * 公钥
      */
     public static final String PUBLIC_KEY = "publicKey";
+
     /**
      * 私钥
      */
@@ -51,7 +53,7 @@ public class EncryptUtils {
     /**
      * AES加密
      *
-     * @param data     待解密数据
+     * @param data     待加密数据
      * @param password 秘钥字符串
      * @return 加密后字符串, 采用Base64编码
      */
@@ -70,7 +72,7 @@ public class EncryptUtils {
     /**
      * AES加密
      *
-     * @param data     待解密数据
+     * @param data     待加密数据
      * @param password 秘钥字符串
      * @return 加密后字符串, 采用Hex编码
      */
@@ -208,7 +210,7 @@ public class EncryptUtils {
     /**
      * sm2私钥解密
      *
-     * @param data       待加密数据
+     * @param data       待解密数据
      * @param privateKey 私钥
      * @return 解密后字符串
      */
@@ -266,7 +268,7 @@ public class EncryptUtils {
     /**
      * rsa私钥解密
      *
-     * @param data       待加密数据
+     * @param data       待解密数据
      * @param privateKey 私钥
      * @return 解密后字符串
      */
