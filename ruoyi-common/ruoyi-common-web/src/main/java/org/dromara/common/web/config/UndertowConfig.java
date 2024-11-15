@@ -1,6 +1,8 @@
 package org.dromara.common.web.config;
 
 import io.undertow.server.DefaultByteBufferPool;
+import io.undertow.server.handlers.DisallowedMethodsHandler;
+import io.undertow.util.HttpString;
 import io.undertow.websockets.jsr.WebSocketDeploymentInfo;
 import org.dromara.common.core.utils.SpringUtils;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
@@ -29,6 +31,15 @@ public class UndertowConfig implements WebServerFactoryCustomizer<UndertowServle
                 deploymentInfo.setExecutor(executor);
                 deploymentInfo.setAsyncExecutor(executor);
             }
+            deploymentInfo.addInitialHandlerChainWrapper(handler -> {
+                // 禁止三个方法 CONNECT/TRACE/TRACK 也是不安全的 避免爬虫骚扰
+                HttpString[] disallowedHttpMethods = {
+                    HttpString.tryFromString("CONNECT"),
+                    HttpString.tryFromString("TRACE"),
+                    HttpString.tryFromString("TRACK")
+                };
+                return new DisallowedMethodsHandler(handler, disallowedHttpMethods);
+            });
         });
     }
 
