@@ -44,6 +44,9 @@
           <el-col :span="1.5">
             <el-button v-hasPermi="['system:tenant:export']" type="warning" plain icon="Download" @click="handleExport">导出</el-button>
           </el-col>
+          <el-col :span="1.5">
+            <el-button v-if="userId === 1" type="success" plain icon="Refresh" @click="handleSyncTenantDict">同步租户字典</el-button>
+          </el-col>
           <right-toolbar v-model:showSearch="showSearch" @query-table="getList"></right-toolbar>
         </el-row>
       </template>
@@ -141,13 +144,16 @@
 </template>
 
 <script setup name="Tenant" lang="ts">
-import { listTenant, getTenant, delTenant, addTenant, updateTenant, changeTenantStatus, syncTenantPackage } from '@/api/system/tenant';
+import { listTenant, getTenant, delTenant, addTenant, updateTenant, changeTenantStatus, syncTenantPackage, syncTenantDict } from '@/api/system/tenant';
 import { selectTenantPackage } from '@/api/system/tenantPackage';
+import useUserStore from '@/store/modules/user';
 import { TenantForm, TenantQuery, TenantVO } from '@/api/system/tenant/types';
 import { TenantPkgVO } from '@/api/system/tenantPackage/types';
 
 const { proxy } = getCurrentInstance() as ComponentInternalInstance;
 
+const userStore = useUserStore();
+const userId = ref(userStore.userId);
 const tenantList = ref<TenantVO[]>([]);
 const packageList = ref<TenantPkgVO[]>([]);
 const buttonLoading = ref(false);
@@ -341,6 +347,13 @@ const handleExport = () => {
     },
     `tenant_${new Date().getTime()}.xlsx`
   );
+};
+
+/**同步租户字典*/
+const handleSyncTenantDict = async () => {
+  await proxy?.$modal.confirm('确认要同步所有租户字典吗？');
+  let res = await syncTenantDict();
+  proxy?.$modal.msgSuccess(res.msg);
 };
 
 onMounted(() => {
