@@ -98,6 +98,7 @@ import { getTenantList } from '@/api/login';
 import { dynamicClear, dynamicTenant } from '@/api/system/tenant';
 import { TenantVO } from '@/api/types';
 import notice from './notice/index.vue';
+import router from "@/router";
 
 const appStore = useAppStore();
 const userStore = useUserStore();
@@ -163,8 +164,14 @@ const logout = async () => {
     cancelButtonText: '取消',
     type: 'warning'
   });
-  await userStore.logout();
-  location.href = import.meta.env.VITE_APP_CONTEXT_PATH + 'index';
+  userStore.logout().then(() => {
+    router.replace({
+      path: '/login',
+      query: {
+        redirect: encodeURIComponent(router.currentRoute.value.fullPath || '/')
+      }
+    })
+  });
 };
 
 const emits = defineEmits(['setLayout']);
