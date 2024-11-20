@@ -16,6 +16,8 @@ EXPOSE 17888
 
 ADD ./target/ruoyi-snailjob-server.jar ./app.jar
 
+SHELL ["/bin/bash", "-c"]
+
 ENTRYPOINT java -Djava.security.egd=file:/dev/./urandom \
            -XX:+HeapDumpOnOutOfMemoryError -XX:+UseZGC ${JAVA_OPTS} \
            -jar app.jar

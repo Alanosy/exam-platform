@@ -17,6 +17,8 @@ EXPOSE ${SERVER_PORT}
 
 ADD ./target/ruoyi-job.jar ./app.jar
 
+SHELL ["/bin/bash", "-c"]
+
 ENTRYPOINT java -Djava.security.egd=file:/dev/./urandom -Dserver.port=${SERVER_PORT} \
            #-Dskywalking.agent.service_name=ruoyi-job \
            #-javaagent:/ruoyi/skywalking/agent/skywalking-agent.jar \

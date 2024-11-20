@@ -15,4 +15,6 @@ EXPOSE ${SERVER_PORT}
 
 ADD ./target/ruoyi-gen.jar ./app.jar
 
+SHELL ["/bin/bash", "-c"]
+
 ENTRYPOINT java -Djava.security.egd=file:/dev/./urandom -Dserver.port=${SERVER_PORT} ${JAVA_OPTS} -jar app.jar
