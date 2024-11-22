@@ -29,7 +29,6 @@ import org.dromara.common.core.utils.file.FileUtils;
 import org.dromara.common.json.utils.JsonUtils;
 import org.dromara.common.mybatis.core.page.PageQuery;
 import org.dromara.common.mybatis.core.page.TableDataInfo;
-import org.dromara.common.satoken.utils.LoginHelper;
 import org.dromara.gen.constant.GenConstants;
 import org.dromara.gen.domain.GenTable;
 import org.dromara.gen.domain.GenTableColumn;
@@ -311,7 +310,7 @@ public class GenTableServiceImpl implements IGenTableService {
             tableColumn.setIsPk(String.valueOf(column.isPrimaryKey()));
             tableColumn.setColumnName(column.getName());
             tableColumn.setColumnComment(column.getComment());
-            tableColumn.setColumnType(column.getTypeName().toLowerCase());
+            tableColumn.setColumnType(column.getOriginType().toLowerCase());
             tableColumn.setSort(column.getPosition());
             tableColumn.setIsRequired(column.isNullable() == 0 ? "1" : "0");
             tableColumn.setIsIncrement(column.isAutoIncrement() == -1 ? "0" : "1");
