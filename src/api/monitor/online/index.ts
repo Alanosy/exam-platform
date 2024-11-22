@@ -30,7 +30,7 @@ export function getOnline() {
 // 删除当前在线设备
 export function delOnline(tokenId: string) {
   return request({
-    url: '/monitor/online/' + tokenId,
-    method: 'post'
+    url: '/monitor/online/myself/' + tokenId,
+    method: 'delete'
   });
 }
