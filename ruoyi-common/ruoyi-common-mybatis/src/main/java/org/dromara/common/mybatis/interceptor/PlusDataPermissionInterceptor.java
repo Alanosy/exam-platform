@@ -39,9 +39,11 @@ public class PlusDataPermissionInterceptor extends BaseMultiTableInnerIntercepto
 
     /**
      * 构造函数，初始化 PlusDataPermissionHandler 实例
+     *
+     * @param mapperPackage 扫描的映射器包
      */
-    public PlusDataPermissionInterceptor() {
-        this.dataPermissionHandler = new PlusDataPermissionHandler();
+    public PlusDataPermissionInterceptor(String mapperPackage) {
+        this.dataPermissionHandler = new PlusDataPermissionHandler(mapperPackage);
     }
 
     /**
@@ -62,7 +64,7 @@ public class PlusDataPermissionInterceptor extends BaseMultiTableInnerIntercepto
             return;
         }
         // 检查是否缺少有效的数据权限注解
-        if (dataPermissionHandler.invalid()) {
+        if (dataPermissionHandler.invalid(ms.getId())) {
             return;
         }
         // 解析 sql 分配对应方法
@@ -90,7 +92,7 @@ public class PlusDataPermissionInterceptor extends BaseMultiTableInnerIntercepto
                 return;
             }
             // 检查是否缺少有效的数据权限注解
-            if (dataPermissionHandler.invalid()) {
+            if (dataPermissionHandler.invalid(ms.getId())) {
                 return;
             }
             PluginUtils.MPBoundSql mpBs = mpSh.mPBoundSql();
