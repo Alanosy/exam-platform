@@ -303,7 +303,11 @@ public class GenTableServiceImpl implements IGenTableService {
     @DS("#dataName")
     @Override
     public List<GenTableColumn> selectDbTableColumnsByName(String tableName, String dataName) {
-        LinkedHashMap<String, Column> columns = ServiceProxy.metadata().columns(tableName);
+        Table<?> table = ServiceProxy.metadata().table(tableName);
+        if (ObjectUtil.isNull(table)) {
+            return new ArrayList<>();
+        }
+        LinkedHashMap<String, Column> columns = table.getColumns();
         List<GenTableColumn> tableColumns = new ArrayList<>();
         columns.forEach((columnName, column) -> {
             GenTableColumn tableColumn = new GenTableColumn();
