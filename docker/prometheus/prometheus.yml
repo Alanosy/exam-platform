@@ -38,5 +38,13 @@ scrape_configs:
     scrape_timeout: 10s
     metrics_path: /actuator/prometheus
     scheme: http
+    # monitor 监控的账号密码
+    basic_auth:
+      username: ruoyi
+      password: 123456
     http_sd_configs:
       - url: 'http://127.0.0.1:9100/actuator/prometheus/sd'
+        # monitor 监控的账号密码
+        basic_auth:
+          username: ruoyi
+          password: 123456
