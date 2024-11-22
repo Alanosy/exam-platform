@@ -31,6 +31,10 @@ scrape_configs:
     metrics_path: '/nacos/actuator/prometheus'
     static_configs:
       - targets: ['127.0.0.1:8848']
+    # monitor 监控的账号密码
+    basic_auth:
+      username: ruoyi
+      password: 123456
 
   - job_name: RuoYi-Cloud-Plus
     honor_timestamps: true
