@@ -112,7 +112,7 @@ public class SysUserOnlineController extends BaseController {
      * @param tokenId token值
      */
     @Log(title = "在线设备", businessType = BusinessType.FORCE)
-    @PostMapping("/{tokenId}")
+    @DeleteMapping("/myself/{tokenId}")
     public R<Void> remove(@PathVariable("tokenId") String tokenId) {
         try {
             // 获取指定账号 id 的 token 集合
