@@ -243,11 +243,11 @@ public class SysLoginService {
         if (!TenantHelper.isEnable()) {
             return;
         }
-        if (TenantConstants.DEFAULT_TENANT_ID.equals(tenantId)) {
-            return;
-        }
         if (StringUtils.isBlank(tenantId)) {
             throw new TenantException("tenant.number.not.blank");
+        }
+        if (TenantConstants.DEFAULT_TENANT_ID.equals(tenantId)) {
+            return;
         }
         RemoteTenantVo tenant = remoteTenantService.queryByTenantId(tenantId);
         if (ObjectUtil.isNull(tenant)) {
