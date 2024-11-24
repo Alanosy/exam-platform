@@ -2,7 +2,16 @@
 import { createI18n } from 'vue-i18n';
 
 import { LanguageEnum } from '@/enums/LanguageEnum';
-import messages from '@intlify/unplugin-vue-i18n/messages';
+import en_US from '@/lang/en_US';
+import zh_CN from '@/lang/zh_CN';
+
+/**
+ * 组合导入的语言包
+ */
+const messages = {
+  en_US,
+  zh_CN
+};
 
 /**
  * 获取当前语言
