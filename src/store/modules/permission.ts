@@ -158,9 +158,12 @@ export const filterDynamicRoutes = (routes: RouteRecordRaw[]) => {
 export const loadView = (view: any, name: string) => {
   let res;
   for (const path in modules) {
-    const dir = path.split('views/')[1].split('.vue')[0];
+    const viewsIndex = path.indexOf('/views/');
+    let dir = path.substring(viewsIndex + 7);
+    dir = dir.substring(0, dir.lastIndexOf('.vue'));
     if (dir === view) {
       res = createCustomNameComponent(modules[path], { name });
+      return res;
     }
   }
   return res;
