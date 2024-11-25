@@ -36,10 +36,7 @@ import org.springframework.expression.spel.standard.SpelExpressionParser;
 import org.springframework.expression.spel.support.StandardEvaluationContext;
 import org.springframework.util.ClassUtils;
 
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
 
@@ -149,14 +146,20 @@ public class PlusDataPermissionHandler {
                 return "";
             }
             boolean isSuccess = false;
+            List<String> keys = new ArrayList<>();
             for (DataColumn dataColumn : dataPermission.value()) {
                 if (dataColumn.key().length != dataColumn.value().length) {
                     throw new ServiceException("角色数据范围异常 => key与value长度不匹配");
                 }
+                // 设置注解变量 key 为表达式变量 value 为变量值
+                for (int i = 0; i < dataColumn.key().length; i++) {
+                    context.setVariable(dataColumn.key()[i], dataColumn.value()[i]);
+                }
+                keys.addAll(Arrays.stream(dataColumn.key()).map(key -> "#" + key).toList());
+            }
+            for (DataColumn dataColumn : dataPermission.value()) {
                 // 不包含 key 变量 则不处理
-                if (!StringUtils.containsAny(type.getSqlTemplate(),
-                    Arrays.stream(dataColumn.key()).map(key -> "#" + key).toArray(String[]::new)
-                )) {
+                if (!StringUtils.containsAny(type.getSqlTemplate(), keys.toArray(String[]::new))) {
                     continue;
                 }
                 // 包含权限标识符 这直接跳过
@@ -167,10 +170,6 @@ public class PlusDataPermissionHandler {
                     conditions.add(joinStr + " 1 = 1 ");
                     isSuccess = true;
                     continue;
-                }
-                // 设置注解变量 key 为表达式变量 value 为变量值
-                for (int i = 0; i < dataColumn.key().length; i++) {
-                    context.setVariable(dataColumn.key()[i], dataColumn.value()[i]);
                 }
 
                 // 忽略数据权限 防止spel表达式内有其他sql查询导致死循环调用
