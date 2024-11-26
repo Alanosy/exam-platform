@@ -774,10 +774,10 @@ create table if not exists sys_oper_log
     oper_url       varchar(255)  default ''::varchar,
     oper_ip        varchar(128)  default ''::varchar,
     oper_location  varchar(255)  default ''::varchar,
-    oper_param     varchar(5000) default ''::varchar,
-    json_result    varchar(5000) default ''::varchar,
+    oper_param     varchar(4000) default ''::varchar,
+    json_result    varchar(4000) default ''::varchar,
     status         int4          default 0,
-    error_msg      varchar(5000) default ''::varchar,
+    error_msg      varchar(4000) default ''::varchar,
     oper_time      timestamp,
     cost_time      int8          default 0,
     constraint sys_oper_log_pk primary key (oper_id)
@@ -1254,7 +1254,7 @@ comment on column sys_oss_config.remark         is '备注';
 insert into sys_oss_config values (1, '000000', 'minio',  'ruoyi',            'ruoyi123',        'ruoyi',             '', '127.0.0.1:9000',                      '','N', '',            '1', '0', '', 103, 1, now(), 1, now(), null);
 insert into sys_oss_config values (2, '000000', 'qiniu',  'XXXXXXXXXXXXXXX',  'XXXXXXXXXXXXXXX', 'ruoyi',             '', 's3-cn-north-1.qiniucs.com',           '','N', '',            '1', '1', '', 103, 1, now(), 1, now(), null);
 insert into sys_oss_config values (3, '000000', 'aliyun', 'XXXXXXXXXXXXXXX',  'XXXXXXXXXXXXXXX', 'ruoyi',             '', 'oss-cn-beijing.aliyuncs.com',         '','N', '',            '1', '1', '', 103, 1, now(), 1, now(), null);
-insert into sys_oss_config values (4, '000000', 'qcloud', 'XXXXXXXXXXXXXXX',  'XXXXXXXXXXXXXXX', 'ruoyi-1250000000',  '', 'cos.ap-beijing.myqcloud.com',         '','N', 'ap-beijing',  '1', '1', '', 103, 1, now(), 1, now(), null);
+insert into sys_oss_config values (4, '000000', 'qcloud', 'XXXXXXXXXXXXXXX',  'XXXXXXXXXXXXXXX', 'ruoyi-1240000000',  '', 'cos.ap-beijing.myqcloud.com',         '','N', 'ap-beijing',  '1', '1', '', 103, 1, now(), 1, now(), null);
 insert into sys_oss_config values (5, '000000', 'image',  'ruoyi',            'ruoyi123',        'ruoyi',             'image', '127.0.0.1:9000',                 '','N', '',            '1', '1', '', 103, 1, now(), 1, now(), NULL);
 
 

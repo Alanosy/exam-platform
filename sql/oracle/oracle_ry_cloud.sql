@@ -774,10 +774,10 @@ create table sys_oper_log (
   oper_url          varchar2(255)   default '',
   oper_ip           varchar2(128)   default '',
   oper_location     varchar2(255)   default '',
-  oper_param        varchar2(5500)  default '',
-  json_result       varchar2(5500)  default '',
+  oper_param        varchar2(4000)  default '',
+  json_result       varchar2(4000)  default '',
   status            number(1)       default 0,
-  error_msg         varchar2(5500)  default '',
+  error_msg         varchar2(4000)  default '',
   oper_time         date,
   cost_time         number(20)      default 0
 );
