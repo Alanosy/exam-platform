@@ -98,7 +98,7 @@ import { getTenantList } from '@/api/login';
 import { dynamicClear, dynamicTenant } from '@/api/system/tenant';
 import { TenantVO } from '@/api/types';
 import notice from './notice/index.vue';
-import router from "@/router";
+import router from '@/router';
 
 const appStore = useAppStore();
 const userStore = useUserStore();
@@ -170,7 +170,7 @@ const logout = async () => {
       query: {
         redirect: encodeURIComponent(router.currentRoute.value.fullPath || '/')
       }
-    })
+    });
   });
 };
 

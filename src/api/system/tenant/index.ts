@@ -96,6 +96,6 @@ export function syncTenantPackage(tenantId: string | number, packageId: string |
 export function syncTenantDict() {
   return request({
     url: '/system/tenant/syncTenantDict',
-    method: 'get',
+    method: 'get'
   });
 }

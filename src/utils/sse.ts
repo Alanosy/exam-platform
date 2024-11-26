@@ -9,10 +9,7 @@ export const initSSE = (url: any) => {
   }
 
   url = url + '?Authorization=Bearer ' + getToken() + '&clientid=' + import.meta.env.VITE_APP_CLIENT_ID;
-  const {
-    data,
-    error
-  } = useEventSource(url, [], {
+  const { data, error } = useEventSource(url, [], {
     autoReconnect: {
       retries: 10,
       delay: 3000,

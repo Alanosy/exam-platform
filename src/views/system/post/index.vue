@@ -81,7 +81,7 @@
               <el-col :span="1.5">
                 <el-button v-hasPermi="['system:post:export']" type="warning" plain icon="Download" @click="handleExport">导出</el-button>
               </el-col>
-              <right-toolbar v-model:showSearch="showSearch" @query-table="getList"></right-toolbar>
+              <right-toolbar v-model:show-search="showSearch" @query-table="getList"></right-toolbar>
             </el-row>
           </template>
           <el-table v-loading="loading" :data="postList" @selection-change="handleSelectionChange">

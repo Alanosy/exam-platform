@@ -38,7 +38,7 @@
         <el-card shadow="hover">
           <template #header>
             <el-row :gutter="10" class="mb8">
-              <right-toolbar v-model:showSearch="showSearch" @query-table="handleQuery"></right-toolbar>
+              <right-toolbar v-model:show-search="showSearch" @query-table="handleQuery"></right-toolbar>
             </el-row>
           </template>
 

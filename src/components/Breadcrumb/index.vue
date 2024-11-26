@@ -28,16 +28,16 @@ const getBreadcrumb = () => {
     const pathList = route.path.match(reg).map((item, index) => {
       if (index !== 0) item = item.slice(1);
       return item;
-    })
+    });
     getMatched(pathList, permissionStore.defaultRoutes, matched);
   } else {
-    matched = route.matched.filter(item => item.meta && item.meta.title);
+    matched = route.matched.filter((item) => item.meta && item.meta.title);
   }
   // 判断是否为首页
   if (!isDashboard(matched[0])) {
     matched = [{ path: '/index', meta: { title: '首页' } }].concat(matched);
   }
-  levelList.value = matched.filter(item => item.meta && item.meta.title && item.meta.breadcrumb !== false);
+  levelList.value = matched.filter((item) => item.meta && item.meta.title && item.meta.breadcrumb !== false);
 };
 const findPathNum = (str, char = '/') => {
   let index = str.indexOf(char);
@@ -49,7 +49,7 @@ const findPathNum = (str, char = '/') => {
   return num;
 };
 const getMatched = (pathList, routeList, matched) => {
-  let data = routeList.find(item => item.path == pathList[0] || (item.name += '').toLowerCase() == pathList[0]);
+  let data = routeList.find((item) => item.path == pathList[0] || (item.name += '').toLowerCase() == pathList[0]);
   if (data) {
     matched.push(data);
     if (data.children && pathList.length) {

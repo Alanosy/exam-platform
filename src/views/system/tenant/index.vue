@@ -47,7 +47,7 @@
           <el-col :span="1.5">
             <el-button v-if="userId === 1" type="success" plain icon="Refresh" @click="handleSyncTenantDict">同步租户字典</el-button>
           </el-col>
-          <right-toolbar v-model:showSearch="showSearch" @query-table="getList"></right-toolbar>
+          <right-toolbar v-model:show-search="showSearch" @query-table="getList"></right-toolbar>
         </el-row>
       </template>
 
@@ -144,7 +144,16 @@
 </template>
 
 <script setup name="Tenant" lang="ts">
-import { listTenant, getTenant, delTenant, addTenant, updateTenant, changeTenantStatus, syncTenantPackage, syncTenantDict } from '@/api/system/tenant';
+import {
+  listTenant,
+  getTenant,
+  delTenant,
+  addTenant,
+  updateTenant,
+  changeTenantStatus,
+  syncTenantPackage,
+  syncTenantDict
+} from '@/api/system/tenant';
 import { selectTenantPackage } from '@/api/system/tenantPackage';
 import useUserStore from '@/store/modules/user';
 import { TenantForm, TenantQuery, TenantVO } from '@/api/system/tenant/types';

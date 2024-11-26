@@ -54,7 +54,7 @@
           <el-col :span="1.5">
             <el-button v-hasPermi="['monitor:logininfor:export']" type="warning" plain icon="Download" @click="handleExport">导出</el-button>
           </el-col>
-          <right-toolbar v-model:showSearch="showSearch" @query-table="getList"></right-toolbar>
+          <right-toolbar v-model:show-search="showSearch" @query-table="getList"></right-toolbar>
         </el-row>
       </template>
 

@@ -35,7 +35,7 @@
           <el-col :span="1.5">
             <el-button type="primary" plain icon="Edit" :disabled="multiple" @click="handleUpdate">修改办理人</el-button>
           </el-col>
-          <right-toolbar v-model:showSearch="showSearch" @query-table="handleQuery"></right-toolbar>
+          <right-toolbar v-model:show-search="showSearch" @query-table="handleQuery"></right-toolbar>
         </el-row>
       </template>
 

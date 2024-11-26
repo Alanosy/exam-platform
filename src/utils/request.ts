@@ -10,7 +10,7 @@ import FileSaver from 'file-saver';
 import { getLanguage } from '@/lang';
 import { encryptBase64, encryptWithAes, generateAesKey, decryptWithAes, decryptBase64 } from '@/utils/crypto';
 import { encrypt, decrypt } from '@/utils/jsencrypt';
-import router from "@/router";
+import router from '@/router';
 
 const encryptHeader = 'encrypt-key';
 let downloadLoadingInstance: LoadingInstance;

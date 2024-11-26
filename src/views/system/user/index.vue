@@ -87,7 +87,7 @@
                   </template>
                 </el-dropdown>
               </el-col>
-              <right-toolbar v-model:showSearch="showSearch" :columns="columns" :search="true" @query-table="getList"></right-toolbar>
+              <right-toolbar v-model:show-search="showSearch" :columns="columns" :search="true" @query-table="getList"></right-toolbar>
             </el-row>
           </template>
 

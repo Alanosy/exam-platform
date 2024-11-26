@@ -47,7 +47,7 @@
               <el-col :span="1.5">
                 <el-button type="primary" icon="UploadFilled" @click="uploadDialog.visible = true">部署流程文件</el-button>
               </el-col>
-              <right-toolbar v-model:showSearch="showSearch" @query-table="getList"></right-toolbar>
+              <right-toolbar v-model:show-search="showSearch" @query-table="getList"></right-toolbar>
             </el-row>
           </template>
 

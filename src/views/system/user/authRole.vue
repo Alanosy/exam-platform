@@ -80,7 +80,7 @@ const tableRef = ref<ElTableInstance>();
 
 /** 单击选中行数据 */
 const clickRow = (row: RoleVO) => {
-  row.flag = !row.flag
+  row.flag = !row.flag;
   tableRef.value?.toggleRowSelection(row, row.flag);
 };
 /** 多选框选中数据 */
