@@ -63,14 +63,18 @@ const emit = defineEmits(['ok']);
 
 /** 查询参数列表 */
 const show = (dataName: string) => {
-  getDataNameList();
-  if (dataName) {
-    queryParams.dataName = dataName;
-  } else {
-    queryParams.dataName = 'master';
-  }
-  getList();
-  visible.value = true;
+  getDataNames().then(res => {
+    if (res.code == 200) {
+      dataNameList.value = res.data;
+      if (dataName) {
+        queryParams.dataName = dataName;
+      } else {
+        queryParams.dataName = dataNameList.value[0];
+      }
+      getList();
+      visible.value = true;
+    }
+  });
 };
 /** 单击选择行 */
 const clickRow = (row: DbTableVO) => {
@@ -110,11 +114,6 @@ const handleImportTable = async () => {
     visible.value = false;
     emit('ok');
   }
-};
-/** 查询多数据源名称 */
-const getDataNameList = async () => {
-  const res = await getDataNames();
-  dataNameList.value = res.data;
 };
 
 defineExpose({
