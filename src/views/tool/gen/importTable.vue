@@ -63,7 +63,7 @@ const emit = defineEmits(['ok']);
 
 /** 查询参数列表 */
 const show = (dataName: string) => {
-  getDataNames().then(res => {
+  getDataNames().then((res) => {
     if (res.code == 200) {
       dataNameList.value = res.data;
       if (dataName) {
