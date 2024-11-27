@@ -1,56 +1,73 @@
 <template>
   <div class="login">
     <el-form ref="loginRef" :model="loginForm" :rules="loginRules" class="login-form">
-      <h3 class="title">RuoYi-Vue-Plus多租户管理系统</h3>
+      <div class="title-box">
+        <h3 class="title">RuoYi-Vue-Plus多租户管理系统</h3>
+        <lang-select class="lang-select hover-effect" />
+      </div>
       <el-form-item v-if="tenantEnabled" prop="tenantId">
-        <el-select v-model="loginForm.tenantId" filterable placeholder="请选择/输入公司名称" style="width: 100%">
+        <el-select v-model="loginForm.tenantId" filterable :placeholder="$t('tenant.selectPlaceholder')" style="width: 100%">
           <el-option v-for="item in tenantList" :key="item.tenantId" :label="item.companyName" :value="item.tenantId"></el-option>
           <template #prefix><svg-icon icon-class="company" class="el-input__icon input-icon" /></template>
         </el-select>
       </el-form-item>
       <el-form-item prop="username">
-        <el-input v-model="loginForm.username" type="text" size="large" auto-complete="off" placeholder="账号">
+        <el-input v-model="loginForm.username" type="text" size="large" auto-complete="off" :placeholder="$t('login.username')">
           <template #prefix><svg-icon icon-class="user" class="el-input__icon input-icon" /></template>
         </el-input>
       </el-form-item>
       <el-form-item prop="password">
-        <el-input v-model="loginForm.password" type="password" size="large" auto-complete="off" placeholder="密码" @keyup.enter="handleLogin">
+        <el-input
+          v-model="loginForm.password"
+          type="password"
+          size="large"
+          auto-complete="off"
+          :placeholder="$t('login.password')"
+          @keyup.enter="handleLogin"
+        >
           <template #prefix><svg-icon icon-class="password" class="el-input__icon input-icon" /></template>
         </el-input>
       </el-form-item>
       <el-form-item v-if="captchaEnabled" prop="code">
-        <el-input v-model="loginForm.code" size="large" auto-complete="off" placeholder="验证码" style="width: 63%" @keyup.enter="handleLogin">
+        <el-input
+          v-model="loginForm.code"
+          size="large"
+          auto-complete="off"
+          :placeholder="$t('login.code')"
+          style="width: 63%"
+          @keyup.enter="handleLogin"
+        >
           <template #prefix><svg-icon icon-class="validCode" class="el-input__icon input-icon" /></template>
         </el-input>
         <div class="login-code">
           <img :src="codeUrl" class="login-code-img" @click="getCode" />
         </div>
       </el-form-item>
-      <el-checkbox v-model="loginForm.rememberMe" style="margin: 0 0 25px 0">记住密码</el-checkbox>
+      <el-checkbox v-model="loginForm.rememberMe" style="margin: 0 0 25px 0">{{ $t('login.rememberPassword') }}</el-checkbox>
       <el-form-item style="float: right">
-        <el-button circle title="微信登录" @click="doSocialLogin('wechat')">
+        <el-button circle :title="$t('login.social.wechat')" @click="doSocialLogin('wechat')">
           <svg-icon icon-class="wechat" />
         </el-button>
-        <el-button circle title="MaxKey登录" @click="doSocialLogin('maxkey')">
+        <el-button circle :title="$t('login.social.maxkey')" @click="doSocialLogin('maxkey')">
           <svg-icon icon-class="maxkey" />
         </el-button>
-        <el-button circle title="TopIam登录" @click="doSocialLogin('topiam')">
+        <el-button circle :title="$t('login.social.topiam')" @click="doSocialLogin('topiam')">
           <svg-icon icon-class="topiam" />
         </el-button>
-        <el-button circle title="Gitee登录" @click="doSocialLogin('gitee')">
+        <el-button circle :title="$t('login.social.gitee')" @click="doSocialLogin('gitee')">
           <svg-icon icon-class="gitee" />
         </el-button>
-        <el-button circle title="Github登录" @click="doSocialLogin('github')">
+        <el-button circle :title="$t('login.social.github')" @click="doSocialLogin('github')">
           <svg-icon icon-class="github" />
         </el-button>
       </el-form-item>
       <el-form-item style="width: 100%">
         <el-button :loading="loading" size="large" type="primary" style="width: 100%" @click.prevent="handleLogin">
-          <span v-if="!loading">登 录</span>
-          <span v-else>登 录 中...</span>
+          <span v-if="!loading">{{ $t('login.login') }}</span>
+          <span v-else>{{ $t('login.logging') }}</span>
         </el-button>
         <div v-if="register" style="float: right">
-          <router-link class="link-type" :to="'/register'">立即注册</router-link>
+          <router-link class="link-type" :to="'/register'">{{ $t('login.switchRegisterPage') }}</router-link>
         </div>
       </el-form-item>
     </el-form>
@@ -68,9 +85,11 @@ import { useUserStore } from '@/store/modules/user';
 import { LoginData, TenantVO } from '@/api/types';
 import { to } from 'await-to-js';
 import { HttpStatus } from '@/enums/RespEnum';
+import { useI18n } from 'vue-i18n';
 
 const userStore = useUserStore();
 const router = useRouter();
+const { t } = useI18n();
 
 const loginForm = ref<LoginData>({
   tenantId: '000000',
@@ -82,10 +101,10 @@ const loginForm = ref<LoginData>({
 } as LoginData);
 
 const loginRules: ElFormRules = {
-  tenantId: [{ required: true, trigger: 'blur', message: '请输入您的租户编号' }],
-  username: [{ required: true, trigger: 'blur', message: '请输入您的账号' }],
-  password: [{ required: true, trigger: 'blur', message: '请输入您的密码' }],
-  code: [{ required: true, trigger: 'change', message: '请输入验证码' }]
+  tenantId: [{ required: true, trigger: 'blur', message: t('login.rule.tenantId.required') }],
+  username: [{ required: true, trigger: 'blur', message: t('login.rule.username.required') }],
+  password: [{ required: true, trigger: 'blur', message: t('login.rule.password.required') }],
+  code: [{ required: true, trigger: 'change', message: t('login.rule.code.required') }]
 };
 
 const codeUrl = ref('');
@@ -218,10 +237,23 @@ onMounted(() => {
   background-size: cover;
 }
 
-.title {
-  margin: 0px auto 30px auto;
-  text-align: center;
-  color: #707070;
+.title-box {
+  display: flex;
+
+  .title {
+    margin: 0px auto 30px auto;
+    text-align: center;
+    color: #707070;
+  }
+
+  .lang-select {
+    line-height: 30px;
+    color: #7483a3;
+
+    &.hover-effect {
+      cursor: pointer;
+    }
+  }
 }
 
 .login-form {
