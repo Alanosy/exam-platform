@@ -134,7 +134,8 @@ const handleRegister = () => {
       const [err] = await to(register(registerForm.value));
       if (!err) {
         const username = registerForm.value.username;
-        await ElMessageBox.alert("<font color='red'>" + t('register.registerSuccess', { username }) + '</font>', '系统提示', {
+        await ElMessageBox.alert('<span style="color: red; ">' + t('register.registerSuccess', { username }) + '</font>', '系统提示', {
+          app: undefined,
           dangerouslyUseHTMLString: true,
           type: 'success'
         });
