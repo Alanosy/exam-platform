@@ -124,7 +124,7 @@ const tenantList = ref<TenantVO[]>([]);
 watch(
   () => router.currentRoute.value,
   (newRoute: any) => {
-    redirect.value = newRoute.query && decodeURIComponent(newRoute.query.redirect);
+    redirect.value = newRoute.query && newRoute.query.redirect && decodeURIComponent(newRoute.query.redirect);
   },
   { immediate: true }
 );
