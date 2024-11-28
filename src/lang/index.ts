@@ -2,8 +2,8 @@
 import { createI18n } from 'vue-i18n';
 
 import { LanguageEnum } from '@/enums/LanguageEnum';
-import zh_CN from "@/lang/zh_CN";
-import en_US from "@/lang/en_US";
+import zh_CN from '@/lang/zh_CN';
+import en_US from '@/lang/en_US';
 
 /**
  * 获取当前语言
@@ -29,3 +29,5 @@ const i18n = createI18n({
 });
 
 export default i18n;
+
+export type LanguageType = typeof zh_CN;
