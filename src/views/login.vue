@@ -6,7 +6,7 @@
         <lang-select class="lang-select hover-effect" />
       </div>
       <el-form-item v-if="tenantEnabled" prop="tenantId">
-        <el-select v-model="loginForm.tenantId" filterable :placeholder="$t('tenant.selectPlaceholder')" style="width: 100%">
+        <el-select v-model="loginForm.tenantId" filterable :placeholder="$t('login.selectPlaceholder')" style="width: 100%">
           <el-option v-for="item in tenantList" :key="item.tenantId" :label="item.companyName" :value="item.tenantId"></el-option>
           <template #prefix><svg-icon icon-class="company" class="el-input__icon input-icon" /></template>
         </el-select>
