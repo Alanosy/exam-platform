@@ -2,7 +2,8 @@
 import { createI18n } from 'vue-i18n';
 
 import { LanguageEnum } from '@/enums/LanguageEnum';
-import messages from '@intlify/unplugin-vue-i18n/messages';
+import zh_CN from "@/lang/zh_CN";
+import en_US from "@/lang/en_US";
 
 /**
  * 获取当前语言
@@ -21,7 +22,10 @@ const i18n = createI18n({
   allowComposition: true,
   legacy: false,
   locale: getLanguage(),
-  messages
+  messages: {
+    zh_CN: zh_CN,
+    en_US: en_US
+  }
 });
 
 export default i18n;
