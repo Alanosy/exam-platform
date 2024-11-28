@@ -3,7 +3,7 @@
     <el-form ref="registerRef" :model="registerForm" :rules="registerRules" class="register-form">
       <div class="title-box">
         <h3 class="title">RuoYi-Vue-Plus多租户管理系统</h3>
-        <lang-select class="lang-select hover-effect" />
+        <lang-select />
       </div>
       <el-form-item v-if="tenantEnabled" prop="tenantId">
         <el-select v-model="registerForm.tenantId" filterable :placeholder="$t('register.selectPlaceholder')" style="width: 100%">
@@ -196,14 +196,11 @@ onMounted(() => {
     color: #707070;
   }
 
-  .lang-select {
-    line-height: 30px;
+  :deep(.lang-select--style) {
+    line-height: 0;
     color: #7483a3;
-
-    &.hover-effect {
-      cursor: pointer;
-    }
   }
+
 }
 
 .register-form {
