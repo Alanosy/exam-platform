@@ -76,11 +76,8 @@
 import { getCodeImg, register, getTenantList } from '@/api/login';
 import { RegisterForm, TenantVO } from '@/api/types';
 import { to } from 'await-to-js';
-import { useI18n } from 'vue-i18n';
 
 const router = useRouter();
-
-const { t } = useI18n();
 
 const registerForm = ref<RegisterForm>({
   tenantId: '',
