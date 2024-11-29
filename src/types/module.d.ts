@@ -49,7 +49,3 @@ export type ObjKeysToUnion<T, P extends string = ''> = T extends object
     }[keyof T]
   : P;
 
-declare module 'vform3-builds' {
-  const content: any;
-  export = content;
-}
