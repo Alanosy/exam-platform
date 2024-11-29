@@ -113,8 +113,8 @@
 </template>
 
 <script setup name="Gen" lang="ts">
-import { listTable, previewTable, delTable, genCode, synchDb, getDataNames } from '@/api/tool/gen';
-import { TableQuery, TableVO } from '@/api/tool/gen/types';
+import {delTable, genCode, getDataNames, listTable, previewTable, synchDb} from '@/api/tool/gen';
+import {TableQuery, TableVO} from '@/api/tool/gen/types';
 import router from '@/router';
 import ImportTable from './importTable.vue';
 
@@ -153,17 +153,6 @@ const preview = ref<{
 const dialog = reactive<DialogOption>({
   visible: false,
   title: '代码预览'
-});
-
-onActivated(() => {
-  const time = route.query.t;
-  if (time != null && time != uniqueId.value) {
-    uniqueId.value = time as string;
-    queryParams.value.pageNum = Number(route.query.pageNum);
-    dateRange.value = ['', ''];
-    queryFormRef.value?.resetFields();
-    getList();
-  }
 });
 
 /** 查询多数据源名称 */
@@ -248,7 +237,14 @@ const handleDelete = async (row?: TableVO) => {
 };
 
 onMounted(() => {
-  getList();
+  const time = route.query.t;
+  if (time != null && time != uniqueId.value) {
+    uniqueId.value = time as string;
+    queryParams.value.pageNum = Number(route.query.pageNum);
+    dateRange.value = ['', ''];
+    queryFormRef.value?.resetFields();
+    getList();
+  }
   getDataNameList();
 });
 </script>
