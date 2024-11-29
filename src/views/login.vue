@@ -85,9 +85,11 @@ import { useUserStore } from '@/store/modules/user';
 import { LoginData, TenantVO } from '@/api/types';
 import { to } from 'await-to-js';
 import { HttpStatus } from '@/enums/RespEnum';
+import { useI18n } from 'vue-i18n';
 
 const userStore = useUserStore();
 const router = useRouter();
+const { t } = useI18n();
 
 const loginForm = ref<LoginData>({
   tenantId: '000000',
