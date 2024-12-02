@@ -36,7 +36,8 @@ public class GenUtils {
      */
     public static void initColumnField(GenTableColumn column, GenTable table) {
         String dataType = getDbType(column.getColumnType());
-        String columnName = column.getColumnName();
+        // 统一转小写 避免有些数据库默认大写问题 如果需要特别书写方式 请在实体类增加注解标注别名
+        String columnName = column.getColumnName().toLowerCase();
         column.setTableId(table.getTableId());
         // 设置java字段名
         column.setJavaField(StringUtils.toCamelCase(columnName));
