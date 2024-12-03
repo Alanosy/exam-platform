@@ -135,11 +135,7 @@ const addTags = () => {
   }
   if (name) {
     useTagsViewStore().addView(route as any);
-    if (route.meta.link) {
-      useTagsViewStore().addIframeView(route as any);
-    }
   }
-  return false;
 };
 const moveToCurrentTag = () => {
   nextTick(() => {

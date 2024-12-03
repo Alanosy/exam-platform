@@ -20,6 +20,7 @@ import useTagsViewStore from '@/store/modules/tagsView';
 
 import IframeToggle from './IframeToggle/index.vue';
 const { proxy } = getCurrentInstance() as ComponentInternalInstance;
+const route = useRoute();
 const tagsViewStore = useTagsViewStore();
 
 // 随机动画集合
@@ -37,6 +38,20 @@ watch(
   },
   { immediate: true }
 );
+
+onMounted(() => {
+  addIframe()
+})
+
+watch((route) => {
+  addIframe()
+})
+
+function addIframe() {
+  if (route.meta.link) {
+    useTagsViewStore().addIframeView(route)
+  }
+}
 </script>
 
 <style lang="scss" scoped>
