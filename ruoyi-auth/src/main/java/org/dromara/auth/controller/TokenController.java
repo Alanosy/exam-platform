@@ -223,7 +223,7 @@ public class TokenController {
         }
         // 根据域名进行筛选
         List<TenantListVo> list = StreamUtils.filter(voList, vo ->
-            StringUtils.equals(vo.getDomain(), host));
+            StringUtils.equalsIgnoreCase(vo.getDomain(), host));
         result.setVoList(CollUtil.isNotEmpty(list) ? list : voList);
         return R.ok(result);
     }
