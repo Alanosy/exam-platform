@@ -45,6 +45,10 @@ public class PrometheusController {
             // labels.put("__meta_datacenter", "beijing");
             // 服务名
             labels.put("__meta_prometheus_job", service);
+            String contextPath = instances.get(0).getMetadata().get("management.context-path");
+            if (contextPath != null) {
+                labels.put("__meta_http_sd_context_path", contextPath.replaceAll("/actuator", ""));
+            }
             Map<String, Object> group = new HashMap<>(2);
             group.put("targets", targets);
             group.put("labels", labels);
