@@ -243,8 +243,8 @@ onMounted(() => {
     queryParams.value.pageNum = Number(route.query.pageNum);
     dateRange.value = ['', ''];
     queryFormRef.value?.resetFields();
-    getList();
   }
+  getList();
   getDataNameList();
 });
 </script>
