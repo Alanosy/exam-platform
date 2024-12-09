@@ -95,6 +95,10 @@ public class ${ClassName}ServiceImpl implements I${ClassName}Service {
             ${ClassName}::get$AttrName ,params.get("begin$AttrName"), params.get("end$AttrName"));
 #end
 #end
+#set($AttrName=$column.javaField.substring(0,1).toUpperCase() + ${column.javaField.substring(1)})
+#if($column.isPk==1)
+        lqw.orderByAsc(${ClassName}::get$AttrName);
+#end
 #end
         return lqw;
     }
