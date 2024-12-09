@@ -29,6 +29,8 @@ public class GenUtils {
         genTable.setBusinessName(getBusinessName(genTable.getTableName()));
         genTable.setFunctionName(replaceText(genTable.getTableComment()));
         genTable.setFunctionAuthor(GenConfig.getAuthor());
+        genTable.setCreateTime(null);
+        genTable.setUpdateTime(null);
     }
 
     /**
@@ -39,6 +41,8 @@ public class GenUtils {
         // 统一转小写 避免有些数据库默认大写问题 如果需要特别书写方式 请在实体类增加注解标注别名
         String columnName = column.getColumnName().toLowerCase();
         column.setTableId(table.getTableId());
+        column.setCreateTime(null);
+        column.setUpdateTime(null);
         // 设置java字段名
         column.setJavaField(StringUtils.toCamelCase(columnName));
         // 设置默认类型
@@ -67,10 +71,6 @@ public class GenUtils {
         // BO对象 默认编辑勾选
         if (!arraysContains(GenConstants.COLUMNNAME_NOT_EDIT, columnName)) {
             column.setIsEdit(GenConstants.REQUIRE);
-        }
-        // BO对象 默认是否必填勾选
-        if (!arraysContains(GenConstants.COLUMNNAME_NOT_EDIT, columnName)) {
-            column.setIsRequired(GenConstants.REQUIRE);
         }
         // VO对象 默认返回勾选
         if (!arraysContains(GenConstants.COLUMNNAME_NOT_LIST, columnName)) {
