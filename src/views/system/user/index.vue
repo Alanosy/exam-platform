@@ -154,7 +154,7 @@
             <el-form-item label="归属部门" prop="deptId">
               <el-tree-select
                 v-model="form.deptId"
-                :data="deptOptions"
+                :data="enabledDeptOptions"
                 :props="{ value: 'id', label: 'label', children: 'children' }"
                 value-key="id"
                 placeholder="请选择归属部门"
@@ -287,7 +287,7 @@
 <script setup name="User" lang="ts">
 import api from '@/api/system/user';
 import { UserForm, UserQuery, UserVO } from '@/api/system/user/types';
-import { DeptVO } from '@/api/system/dept/types';
+import {DeptTreeVO, DeptVO} from '@/api/system/dept/types';
 import { RoleVO } from '@/api/system/role/types';
 import { PostQuery, PostVO } from '@/api/system/post/types';
 import { treeselect } from '@/api/system/dept';
@@ -307,7 +307,8 @@ const multiple = ref(true);
 const total = ref(0);
 const dateRange = ref<[DateModelType, DateModelType]>(['', '']);
 const deptName = ref('');
-const deptOptions = ref<DeptVO[]>([]);
+const deptOptions = ref<DeptTreeVO[]>([]);
+const enabledDeptOptions = ref<DeptTreeVO[]>([]);
 const initPassword = ref<string>('');
 const postOptions = ref<PostVO[]>([]);
 const roleOptions = ref<RoleVO[]>([]);
@@ -431,12 +432,6 @@ watchEffect(
   }
 );
 
-/** 查询部门下拉树结构 */
-const getTreeSelect = async () => {
-  const res = await api.deptTreeSelect();
-  deptOptions.value = res.data;
-};
-
 /** 查询用户列表 */
 const getList = async () => {
   loading.value = true;
@@ -444,6 +439,26 @@ const getList = async () => {
   loading.value = false;
   userList.value = res.rows;
   total.value = res.total;
+};
+
+/** 查询部门下拉树结构 */
+const getDeptTree = async () => {
+  const res = await api.deptTreeSelect();
+  deptOptions.value = res.data;
+  enabledDeptOptions.value = filterDisabledDept(res.data);
+};
+
+/** 过滤禁用的部门 */
+const filterDisabledDept = (deptList: DeptTreeVO[]) => {
+  return deptList.filter(dept => {
+    if (dept.disabled) {
+      return false;
+    }
+    if (dept.children && dept.children.length) {
+      dept.children = filterDisabledDept(dept.children);
+    }
+    return true;
+  });
 };
 
 /** 节点单击事件 */
@@ -643,7 +658,7 @@ const resetForm = () => {
   form.value.status = '1';
 };
 onMounted(() => {
-  getTreeSelect(); // 初始化部门数据
+  getDeptTree(); // 初始化部门数据
   getList(); // 初始化列表数据
   proxy?.getConfigKey('sys.user.initPassword').then((response) => {
     initPassword.value = response.data;
