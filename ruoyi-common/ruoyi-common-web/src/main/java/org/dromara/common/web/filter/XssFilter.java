@@ -3,6 +3,7 @@ package org.dromara.common.web.filter;
 import jakarta.servlet.*;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.dromara.common.core.utils.ServletUtils;
 import org.dromara.common.core.utils.SpringUtils;
 import org.dromara.common.core.utils.StringUtils;
 import org.dromara.common.web.config.properties.XssProperties;
@@ -26,12 +27,13 @@ public class XssFilter implements Filter {
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
         XssProperties properties = SpringUtils.getBean(XssProperties.class);
-        String appName = SpringUtils.getApplicationName();
-        String appPath = "/" + StringUtils.substring(appName, appName.indexOf("-") + 1);
+        HttpServletRequest request = ServletUtils.getRequest();
+        // 从请求头获取gateway转发的服务前缀
+        String prefix = StringUtils.blankToDefault(request.getHeader("X-Forwarded-Prefix"), "");
         List<String> excludeUrls = properties.getExcludeUrls()
             .stream()
-            .filter(x -> StringUtils.startsWith(x, appPath))
-            .map(x -> x.replaceFirst(appPath, StringUtils.EMPTY))
+            .filter(x -> StringUtils.startsWith(x, prefix))
+            .map(x -> x.replaceFirst(prefix, StringUtils.EMPTY))
             .toList();
         excludes.addAll(excludeUrls);
     }
