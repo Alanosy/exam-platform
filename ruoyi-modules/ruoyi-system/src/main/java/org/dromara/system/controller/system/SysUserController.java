@@ -219,7 +219,7 @@ public class SysUserController extends BaseController {
     @GetMapping("/optionselect")
     public R<List<SysUserVo>> optionselect(@RequestParam(required = false) Long[] userIds,
                                            @RequestParam(required = false) Long deptId) {
-        return R.ok(userService.selectUserByIds(userIds == null ? null : List.of(userIds), deptId));
+        return R.ok(userService.selectUserByIds(ArrayUtil.isEmpty(userIds) ? null : List.of(userIds), deptId));
     }
 
     /**

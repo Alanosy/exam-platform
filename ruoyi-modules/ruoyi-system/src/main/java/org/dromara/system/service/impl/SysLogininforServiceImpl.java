@@ -42,8 +42,7 @@ public class SysLogininforServiceImpl implements ISysLogininforService {
             .between(params.get("beginTime") != null && params.get("endTime") != null,
                 SysLogininfor::getLoginTime, params.get("beginTime"), params.get("endTime"));
         if (StringUtils.isBlank(pageQuery.getOrderByColumn())) {
-            pageQuery.setOrderByColumn("info_id");
-            pageQuery.setIsAsc("desc");
+            lqw.orderByDesc(SysLogininfor::getInfoId);
         }
         Page<SysLogininforVo> page = baseMapper.selectVoPage(pageQuery.build(), lqw);
         return TableDataInfo.build(page);

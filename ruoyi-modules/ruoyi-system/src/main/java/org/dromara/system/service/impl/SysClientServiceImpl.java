@@ -122,7 +122,7 @@ public class SysClientServiceImpl implements ISysClientService {
      */
     @CacheEvict(cacheNames = CacheNames.SYS_CLIENT, key = "#clientId")
     @Override
-    public int updateUserStatus(String clientId, String status) {
+    public int updateClientStatus(String clientId, String status) {
         return baseMapper.update(null,
             new LambdaUpdateWrapper<SysClient>()
                 .set(SysClient::getStatus, status)

@@ -109,7 +109,7 @@ public class SysDeptServiceImpl implements ISysDeptService {
                         .setName(dept.getDeptName())
                         .setWeight(dept.getOrderNum())
                         .putExtra("disabled", SystemConstants.DISABLE.equals(dept.getStatus())));
-                Tree<Long> tree = trees.stream().filter(it -> it.getId().longValue() == d.getDeptId()).findFirst().get();
+                Tree<Long> tree = StreamUtils.findFirst(trees, it -> it.getId().longValue() == d.getDeptId());
                 treeList.add(tree);
             }
         }
