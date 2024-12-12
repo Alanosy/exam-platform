@@ -1,16 +1,19 @@
 package org.dromara.system.dubbo;
 
 import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.lang.Opt;
 import cn.hutool.core.util.ObjectUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import lombok.RequiredArgsConstructor;
 import org.apache.dubbo.config.annotation.DubboService;
+import org.dromara.common.core.constant.SystemConstants;
 import org.dromara.common.core.enums.UserStatus;
 import org.dromara.common.core.exception.ServiceException;
 import org.dromara.common.core.exception.user.UserException;
 import org.dromara.common.core.utils.DateUtils;
 import org.dromara.common.core.utils.MapstructUtils;
+import org.dromara.common.core.utils.StreamUtils;
 import org.dromara.common.core.utils.StringUtils;
 import org.dromara.common.mybatis.helper.DataPermissionHelper;
 import org.dromara.common.tenant.helper.TenantHelper;
@@ -22,16 +25,22 @@ import org.dromara.system.api.model.PostDTO;
 import org.dromara.system.api.model.RoleDTO;
 import org.dromara.system.api.model.XcxLoginUser;
 import org.dromara.system.domain.SysUser;
+import org.dromara.system.domain.SysUserPost;
+import org.dromara.system.domain.SysUserRole;
 import org.dromara.system.domain.bo.SysUserBo;
 import org.dromara.system.domain.vo.SysDeptVo;
 import org.dromara.system.domain.vo.SysPostVo;
 import org.dromara.system.domain.vo.SysRoleVo;
 import org.dromara.system.domain.vo.SysUserVo;
 import org.dromara.system.mapper.SysUserMapper;
+import org.dromara.system.mapper.SysUserPostMapper;
+import org.dromara.system.mapper.SysUserRoleMapper;
 import org.dromara.system.service.*;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 /**
  * 用户服务
@@ -50,6 +59,8 @@ public class RemoteUserServiceImpl implements RemoteUserService {
     private final ISysDeptService deptService;
     private final ISysPostService postService;
     private final SysUserMapper userMapper;
+    private final SysUserRoleMapper userRoleMapper;
+    private final SysUserPostMapper userPostMapper;
 
     /**
      * 通过用户名查询用户信息
@@ -312,6 +323,68 @@ public class RemoteUserServiceImpl implements RemoteUserService {
     @Override
     public List<Long> selectUserIdsByRoleIds(List<Long> roleIds) {
         return userService.selectUserIdsByRoleIds(roleIds);
+    }
+
+    /**
+     * 通过角色ID查询用户
+     *
+     * @param roleIds 角色ids
+     * @return 用户
+     */
+    @Override
+    public List<RemoteUserVo> selectUsersByRoleIds(List<Long> roleIds) {
+        if (CollUtil.isEmpty(roleIds)) {
+            return List.of();
+        }
+
+        // 通过角色ID获取用户角色信息
+        List<SysUserRole> userRoles = userRoleMapper.selectList(
+            new LambdaQueryWrapper<SysUserRole>().in(SysUserRole::getRoleId, roleIds));
+
+        // 获取用户ID列表
+        Set<Long> userIds = StreamUtils.toSet(userRoles, SysUserRole::getUserId);
+
+        return selectListByIds(new ArrayList<>(userIds));
+    }
+
+    /**
+     * 通过部门ID查询用户
+     *
+     * @param deptIds 部门ids
+     * @return 用户
+     */
+    @Override
+    public List<RemoteUserVo> selectUsersByDeptIds(List<Long> deptIds) {
+        if (CollUtil.isEmpty(deptIds)) {
+            return List.of();
+        }
+        List<SysUserVo> list = userMapper.selectVoList(new LambdaQueryWrapper<SysUser>()
+            .select(SysUser::getUserId, SysUser::getUserName, SysUser::getNickName, SysUser::getEmail, SysUser::getPhonenumber)
+            .eq(SysUser::getStatus, SystemConstants.NORMAL)
+            .in(SysUser::getDeptId, deptIds));
+        return BeanUtil.copyToList(list, RemoteUserVo.class);
+    }
+
+    /**
+     * 通过岗位ID查询用户
+     *
+     * @param postIds 岗位ids
+     * @return 用户
+     */
+    @Override
+    public List<RemoteUserVo> selectUsersByPostIds(List<Long> postIds) {
+        if (CollUtil.isEmpty(postIds)) {
+            return List.of();
+        }
+
+        // 通过岗位ID获取用户岗位信息
+        List<SysUserPost> userPosts = userPostMapper.selectList(
+            new LambdaQueryWrapper<SysUserPost>().in(SysUserPost::getPostId, postIds));
+
+        // 获取用户ID列表
+        Set<Long> userIds = StreamUtils.toSet(userPosts, SysUserPost::getUserId);
+
+        return selectListByIds(new ArrayList<>(userIds));
     }
 
 }

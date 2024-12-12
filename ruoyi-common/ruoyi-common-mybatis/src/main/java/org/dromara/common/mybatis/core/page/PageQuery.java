@@ -121,4 +121,9 @@ public class PageQuery implements Serializable {
         return (pageNum - 1) * pageSize;
     }
 
+    public PageQuery(Integer pageSize, Integer pageNum) {
+        this.pageSize = pageSize;
+        this.pageNum = pageNum;
+    }
+
 }

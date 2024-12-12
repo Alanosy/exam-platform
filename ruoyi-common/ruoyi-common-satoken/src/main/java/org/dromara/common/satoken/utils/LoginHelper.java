@@ -89,6 +89,13 @@ public class LoginHelper {
     }
 
     /**
+     * 获取用户id
+     */
+    public static String getUserIdStr() {
+        return Convert.toStr(getExtra(USER_KEY));
+    }
+
+    /**
      * 获取用户账户
      */
     public static String getUsername() {

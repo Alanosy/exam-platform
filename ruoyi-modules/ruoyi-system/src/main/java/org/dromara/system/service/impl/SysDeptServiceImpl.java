@@ -356,4 +356,16 @@ public class SysDeptServiceImpl implements ISysDeptService {
         return baseMapper.deleteById(deptId);
     }
 
+    /**
+     * 查询部门(简单查询)
+     *
+     * @return 部门列表
+     */
+    @Override
+    public List<SysDeptVo> selectDeptsSimple() {
+        return baseMapper.selectDeptList(new LambdaQueryWrapper<SysDept>()
+            .select(SysDept::getDeptId, SysDept::getDeptName, SysDept::getParentId)
+            .eq(SysDept::getStatus, SystemConstants.NORMAL));
+    }
+
 }

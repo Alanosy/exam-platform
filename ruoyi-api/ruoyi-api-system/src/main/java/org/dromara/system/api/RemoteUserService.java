@@ -131,4 +131,29 @@ public interface RemoteUserService {
      * @return 用户ids
      */
     List<Long> selectUserIdsByRoleIds(List<Long> roleIds);
+
+    /**
+     * 通过角色ID查询用户
+     *
+     * @param roleIds 角色ids
+     * @return 用户
+     */
+    List<RemoteUserVo> selectUsersByRoleIds(List<Long> roleIds);
+
+    /**
+     * 通过部门ID查询用户
+     *
+     * @param deptIds 部门ids
+     * @return 用户
+     */
+    List<RemoteUserVo> selectUsersByDeptIds(List<Long> deptIds);
+
+    /**
+     * 通过岗位ID查询用户
+     *
+     * @param postIds 岗位ids
+     * @return 用户
+     */
+    List<RemoteUserVo> selectUsersByPostIds(List<Long> postIds);
+
 }
