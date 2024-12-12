@@ -116,6 +116,11 @@ public class LoginUser implements Serializable {
     private List<RoleDTO> roles;
 
     /**
+     * 岗位对象
+     */
+    private List<PostDTO> posts;
+
+    /**
      * 数据权限 当前角色ID
      */
     private Long roleId;

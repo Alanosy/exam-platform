@@ -18,11 +18,13 @@ import org.dromara.system.api.RemoteUserService;
 import org.dromara.system.api.domain.bo.RemoteUserBo;
 import org.dromara.system.api.domain.vo.RemoteUserVo;
 import org.dromara.system.api.model.LoginUser;
+import org.dromara.system.api.model.PostDTO;
 import org.dromara.system.api.model.RoleDTO;
 import org.dromara.system.api.model.XcxLoginUser;
 import org.dromara.system.domain.SysUser;
 import org.dromara.system.domain.bo.SysUserBo;
 import org.dromara.system.domain.vo.SysDeptVo;
+import org.dromara.system.domain.vo.SysPostVo;
 import org.dromara.system.domain.vo.SysRoleVo;
 import org.dromara.system.domain.vo.SysUserVo;
 import org.dromara.system.mapper.SysUserMapper;
@@ -46,6 +48,7 @@ public class RemoteUserServiceImpl implements RemoteUserService {
     private final ISysConfigService configService;
     private final ISysRoleService roleService;
     private final ISysDeptService deptService;
+    private final ISysPostService postService;
     private final SysUserMapper userMapper;
 
     /**
@@ -250,22 +253,25 @@ public class RemoteUserServiceImpl implements RemoteUserService {
      */
     private LoginUser buildLoginUser(SysUserVo userVo) {
         LoginUser loginUser = new LoginUser();
+        Long userId = userVo.getUserId();
         loginUser.setTenantId(userVo.getTenantId());
-        loginUser.setUserId(userVo.getUserId());
+        loginUser.setUserId(userId);
         loginUser.setDeptId(userVo.getDeptId());
         loginUser.setUsername(userVo.getUserName());
         loginUser.setNickname(userVo.getNickName());
         loginUser.setPassword(userVo.getPassword());
         loginUser.setUserType(userVo.getUserType());
-        loginUser.setMenuPermission(permissionService.getMenuPermission(userVo.getUserId()));
-        loginUser.setRolePermission(permissionService.getRolePermission(userVo.getUserId()));
+        loginUser.setMenuPermission(permissionService.getMenuPermission(userId));
+        loginUser.setRolePermission(permissionService.getRolePermission(userId));
         if (ObjectUtil.isNotNull(userVo.getDeptId())) {
             Opt<SysDeptVo> deptOpt = Opt.of(userVo.getDeptId()).map(deptService::selectDeptById);
             loginUser.setDeptName(deptOpt.map(SysDeptVo::getDeptName).orElse(StringUtils.EMPTY));
             loginUser.setDeptCategory(deptOpt.map(SysDeptVo::getDeptCategory).orElse(StringUtils.EMPTY));
         }
-        List<SysRoleVo> roles = roleService.selectRolesByUserId(userVo.getUserId());
+        List<SysRoleVo> roles = roleService.selectRolesByUserId(userId);
+        List<SysPostVo> posts = postService.selectPostsByUserId(userId);
         loginUser.setRoles(BeanUtil.copyToList(roles, RoleDTO.class));
+        loginUser.setPosts(BeanUtil.copyToList(posts, PostDTO.class));
         return loginUser;
     }
 

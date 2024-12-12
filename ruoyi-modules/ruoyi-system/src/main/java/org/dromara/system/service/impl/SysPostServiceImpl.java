@@ -58,6 +58,17 @@ public class SysPostServiceImpl implements ISysPostService {
     }
 
     /**
+     * 查询用户所属岗位组
+     *
+     * @param userId 用户ID
+     * @return 岗位ID
+     */
+    @Override
+    public List<SysPostVo> selectPostsByUserId(Long userId) {
+        return baseMapper.selectPostsByUserId(userId);
+    }
+
+    /**
      * 根据查询条件构建查询包装器
      *
      * @param bo 查询条件对象
