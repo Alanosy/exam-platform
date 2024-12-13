@@ -159,8 +159,8 @@ const dialog = reactive<DialogOption>({
 
 // 列显隐信息
 const columns = ref<FieldOption[]>([
-  { key: 0, label: `主建`, visible: true },
-  { key: 1, label: `配置key`, visible: false },
+  { key: 0, label: `主建`, visible: false },
+  { key: 1, label: `配置key`, visible: true },
   { key: 2, label: `访问站点`, visible: true },
   { key: 3, label: `自定义域名`, visible: true },
   { key: 4, label: `桶名称`, visible: true },
