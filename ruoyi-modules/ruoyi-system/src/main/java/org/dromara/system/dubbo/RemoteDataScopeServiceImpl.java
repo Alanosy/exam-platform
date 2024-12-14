@@ -40,7 +40,7 @@ public class RemoteDataScopeServiceImpl implements RemoteDataScopeService {
      * @param roleId 角色ID
      * @return 返回角色的自定义权限语句，如果没有找到则返回 null
      */
-    @Cacheable(cacheNames = CacheNames.SYS_ROLE_CUSTOM, key = "#roleId")
+    @Cacheable(cacheNames = CacheNames.SYS_ROLE_CUSTOM, key = "#roleId", condition = "#roleId != null")
     @Override
     public String getRoleCustom(Long roleId) {
         if (ObjectUtil.isNull(roleId)) {
@@ -62,7 +62,7 @@ public class RemoteDataScopeServiceImpl implements RemoteDataScopeService {
      * @param deptId 部门ID
      * @return 返回部门及其下级的权限语句，如果没有找到则返回 null
      */
-    @Cacheable(cacheNames = CacheNames.SYS_DEPT_AND_CHILD, key = "#deptId")
+    @Cacheable(cacheNames = CacheNames.SYS_DEPT_AND_CHILD, key = "#deptId", condition = "#deptId != null")
     @Override
     public String getDeptAndChild(Long deptId) {
         if (ObjectUtil.isNull(deptId)) {
