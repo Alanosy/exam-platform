@@ -579,15 +579,6 @@ function submitFileForm() {
   uploadRef.value?.submit();
 }
 
-/** 初始化部门数据 */
-const initTreeData = async () => {
-  // 判断部门的数据是否存在，存在不获取，不存在则获取
-  if (deptOptions.value === undefined) {
-    const { data } = await treeselect();
-    deptOptions.value = data;
-  }
-};
-
 /** 重置操作表单 */
 const reset = () => {
   form.value = { ...initFormData };
@@ -605,7 +596,6 @@ const handleAdd = async () => {
   const { data } = await api.getUser();
   dialog.visible = true;
   dialog.title = '新增用户';
-  await initTreeData();
   postOptions.value = data.posts;
   roleOptions.value = data.roles;
   form.value.password = initPassword.value.toString();
@@ -618,7 +608,6 @@ const handleUpdate = async (row?: UserForm) => {
   const { data } = await api.getUser(userId);
   dialog.visible = true;
   dialog.title = '修改用户';
-  await initTreeData();
   Object.assign(form.value, data.user);
   postOptions.value = data.posts;
   roleOptions.value = data.roles;
