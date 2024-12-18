@@ -18,7 +18,10 @@ public class PlusPostInitTableInfoHandler implements PostInitTableInfoHandler {
     @Override
     public void postTableInfo(TableInfo tableInfo, Configuration configuration) {
         String flag = SpringUtils.getProperty("mybatis-plus.enableLogicDelete", "true");
-        ReflectUtils.setFieldValue(tableInfo, "withLogicDelete", Convert.toBool(flag));
+        // 只有关闭时 统一设置false 为true时mp自动判断不处理
+        if (!Convert.toBool(flag)) {
+            ReflectUtils.setFieldValue(tableInfo, "withLogicDelete", false);
+        }
     }
 
 }
