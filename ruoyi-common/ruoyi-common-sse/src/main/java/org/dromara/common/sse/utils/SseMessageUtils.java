@@ -26,7 +26,7 @@ public class SseMessageUtils {
      * @param message 要发送的消息内容
      */
     public static void sendMessage(Long userId, String message) {
-        if (SSE_ENABLE) {
+        if (!isEnable()) {
             return;
         }
         MANAGER.sendMessage(userId, message);
@@ -38,7 +38,7 @@ public class SseMessageUtils {
      * @param message 要发送的消息内容
      */
     public static void sendMessage(String message) {
-        if (SSE_ENABLE) {
+        if (!isEnable()) {
             return;
         }
         MANAGER.sendMessage(message);
@@ -50,7 +50,7 @@ public class SseMessageUtils {
      * @param sseMessageDto 要发布的SSE消息对象
      */
     public static void publishMessage(SseMessageDto sseMessageDto) {
-        if (SSE_ENABLE) {
+        if (!isEnable()) {
             return;
         }
         MANAGER.publishMessage(sseMessageDto);
@@ -62,10 +62,17 @@ public class SseMessageUtils {
      * @param message 要发布的消息内容
      */
     public static void publishAll(String message) {
-        if (SSE_ENABLE) {
+        if (!isEnable()) {
             return;
         }
         MANAGER.publishAll(message);
+    }
+
+    /**
+     * 是否开启
+     */
+    public static Boolean isEnable() {
+        return SSE_ENABLE;
     }
 
 }
