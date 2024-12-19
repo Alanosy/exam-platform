@@ -16,6 +16,7 @@ import org.dromara.common.sse.dto.SseMessageDto;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class SseMessageUtils {
 
+    private final static Boolean SSE_ENABLE = SpringUtils.getProperty("sse.enabled", Boolean.class, true);
     private final static SseEmitterManager MANAGER = SpringUtils.getBean(SseEmitterManager.class);
 
     /**
@@ -25,6 +26,9 @@ public class SseMessageUtils {
      * @param message 要发送的消息内容
      */
     public static void sendMessage(Long userId, String message) {
+        if (SSE_ENABLE) {
+            return;
+        }
         MANAGER.sendMessage(userId, message);
     }
 
@@ -34,6 +38,9 @@ public class SseMessageUtils {
      * @param message 要发送的消息内容
      */
     public static void sendMessage(String message) {
+        if (SSE_ENABLE) {
+            return;
+        }
         MANAGER.sendMessage(message);
     }
 
@@ -43,6 +50,9 @@ public class SseMessageUtils {
      * @param sseMessageDto 要发布的SSE消息对象
      */
     public static void publishMessage(SseMessageDto sseMessageDto) {
+        if (SSE_ENABLE) {
+            return;
+        }
         MANAGER.publishMessage(sseMessageDto);
     }
 
@@ -52,6 +62,9 @@ public class SseMessageUtils {
      * @param message 要发布的消息内容
      */
     public static void publishAll(String message) {
+        if (SSE_ENABLE) {
+            return;
+        }
         MANAGER.publishAll(message);
     }
 
