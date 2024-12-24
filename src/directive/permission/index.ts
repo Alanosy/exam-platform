@@ -31,7 +31,7 @@ export const hasRoles: Directive = {
     const { roles } = useUserStore();
     if (value && value instanceof Array && value.length > 0) {
       const hasRole = roles.some((role: string) => {
-        return role === 'admin' || value.includes(role);
+        return role === 'superadmin' || role === 'admin' || value.includes(role);
       });
       if (!hasRole) {
         el.parentNode && el.parentNode.removeChild(el);
