@@ -81,8 +81,8 @@
                   <template #dropdown>
                     <el-dropdown-menu>
                       <el-dropdown-item icon="Download" @click="importTemplate">下载模板</el-dropdown-item>
-                      <el-dropdown-item icon="Top" @click="handleImport">导入数据</el-dropdown-item>
-                      <el-dropdown-item icon="Download" @click="handleExport"> 导出数据</el-dropdown-item>
+                      <el-dropdown-item v-has-permi="['system:user:import']" icon="Top" @click="handleImport">导入数据</el-dropdown-item>
+                      <el-dropdown-item v-has-permi="['system:user:export']" icon="Download" @click="handleExport">导出数据</el-dropdown-item>
                     </el-dropdown-menu>
                   </template>
                 </el-dropdown>
