@@ -68,7 +68,7 @@
                 </el-button>
               </el-col>
               <el-col :span="1.5">
-                <el-button v-has-permi="['system:user:delete']" type="danger" plain :disabled="multiple" icon="Delete" @click="handleDelete()">
+                <el-button v-has-permi="['system:user:remove']" type="danger" plain :disabled="multiple" icon="Delete" @click="handleDelete()">
                   删除
                 </el-button>
               </el-col>
