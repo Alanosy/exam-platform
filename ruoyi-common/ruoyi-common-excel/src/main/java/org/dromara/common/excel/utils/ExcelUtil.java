@@ -192,7 +192,7 @@ public class ExcelUtil {
             .registerWriteHandler(new LongestMatchColumnWidthStyleStrategy())
             // 大数值自动转换 防止失真
             .registerConverter(new ExcelBigNumberConvert())
-            .registerWriteHandler(new DataWriteHandler(list.get(0).getClass()))
+            .registerWriteHandler(new DataWriteHandler(clazz))
             .sheet(sheetName);
         if (merge) {
             // 合并处理器
