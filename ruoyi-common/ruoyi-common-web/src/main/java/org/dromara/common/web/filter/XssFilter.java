@@ -1,6 +1,5 @@
 package org.dromara.common.web.filter;
 
-import cn.hutool.core.collection.CollUtil;
 import jakarta.servlet.*;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -10,7 +9,6 @@ import org.dromara.common.web.config.properties.XssProperties;
 import org.springframework.http.HttpMethod;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -19,10 +17,6 @@ import java.util.List;
  * @author ruoyi
  */
 public class XssFilter implements Filter {
-    /**
-     * 排除链接
-     */
-    public List<String> excludes = new ArrayList<>();
 
     @Override
     public void init(FilterConfig filterConfig) {
@@ -48,17 +42,15 @@ public class XssFilter implements Filter {
         if (method == null || HttpMethod.GET.matches(method) || HttpMethod.DELETE.matches(method)) {
             return true;
         }
-        if (CollUtil.isEmpty(excludes)) {
-            XssProperties properties = SpringUtils.getBean(XssProperties.class);
-            // 从请求头获取gateway转发的服务前缀
-            String prefix = StringUtils.blankToDefault(request.getHeader("X-Forwarded-Prefix"), "");
-            List<String> excludeUrls = properties.getExcludeUrls().stream()
-                .filter(x -> StringUtils.startsWith(x, prefix))
-                .map(x -> x.replaceFirst(prefix, StringUtils.EMPTY))
-                .toList();
-            excludes.addAll(excludeUrls);
-        }
-        return StringUtils.matches(url, excludes);
+        // 每次都获取处理 支持nacos热更配置
+        XssProperties properties = SpringUtils.getBean(XssProperties.class);
+        String prefix = StringUtils.blankToDefault(request.getHeader("X-Forwarded-Prefix"), "");
+        // 从请求头获取gateway转发的服务前缀
+        List<String> excludeUrls = properties.getExcludeUrls().stream()
+            .filter(x -> StringUtils.startsWith(x, prefix))
+            .map(x -> x.replaceFirst(prefix, StringUtils.EMPTY))
+            .toList();
+        return StringUtils.matches(url, excludeUrls);
     }
 
     @Override
