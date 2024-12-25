@@ -63,7 +63,7 @@
                 <el-button v-has-permi="['system:user:add']" type="primary" plain icon="Plus" @click="handleAdd()">新增</el-button>
               </el-col>
               <el-col :span="1.5">
-                <el-button v-has-permi="['system:user:add']" type="success" plain :disabled="single" icon="Edit" @click="handleUpdate()">
+                <el-button v-has-permi="['system:user:edit']" type="success" plain :disabled="single" icon="Edit" @click="handleUpdate()">
                   修改
                 </el-button>
               </el-col>
