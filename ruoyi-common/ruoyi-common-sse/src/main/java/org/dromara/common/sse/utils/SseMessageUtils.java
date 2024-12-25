@@ -17,7 +17,13 @@ import org.dromara.common.sse.dto.SseMessageDto;
 public class SseMessageUtils {
 
     private final static Boolean SSE_ENABLE = SpringUtils.getProperty("sse.enabled", Boolean.class, true);
-    private final static SseEmitterManager MANAGER = SpringUtils.getBean(SseEmitterManager.class);
+    private static SseEmitterManager MANAGER;
+
+    static {
+        if (isEnable() && MANAGER == null) {
+            MANAGER = SpringUtils.getBean(SseEmitterManager.class);
+        }
+    }
 
     /**
      * 向指定的WebSocket会话发送消息
