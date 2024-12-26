@@ -3,6 +3,7 @@ package org.dromara.common.mybatis.handler;
 import cn.hutool.core.annotation.AnnotationUtil;
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.ObjectUtil;
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.sf.jsqlparser.JSQLParserException;
 import net.sf.jsqlparser.expression.Expression;
@@ -28,9 +29,7 @@ import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.core.io.support.ResourcePatternResolver;
 import org.springframework.core.type.ClassMetadata;
 import org.springframework.core.type.classreading.CachingMetadataReaderFactory;
-import org.springframework.expression.BeanResolver;
-import org.springframework.expression.ExpressionParser;
-import org.springframework.expression.ParserContext;
+import org.springframework.expression.*;
 import org.springframework.expression.common.TemplateParserContext;
 import org.springframework.expression.spel.standard.SpelExpressionParser;
 import org.springframework.expression.spel.support.StandardEvaluationContext;
@@ -130,7 +129,9 @@ public class PlusDataPermissionHandler {
             joinStr = " " + dataPermission.joinStr() + " ";
         }
         LoginUser user = DataPermissionHelper.getVariable("user");
-        StandardEvaluationContext context = new StandardEvaluationContext();
+        Object defaultValue = "-1";
+        NullSafeStandardEvaluationContext context = new NullSafeStandardEvaluationContext(defaultValue);
+        context.addPropertyAccessor(new NullSafePropertyAccessor(context.getPropertyAccessors().get(0), defaultValue));
         context.setBeanResolver(beanResolver);
         DataPermissionHelper.getContext().forEach(context::setVariable);
         Set<String> conditions = new HashSet<>();
@@ -255,6 +256,66 @@ public class PlusDataPermissionHandler {
      */
     public boolean invalid(String mapperId) {
         return getDataPermission(mapperId) == null;
+    }
+
+    /**
+     * 对所有null变量找不到的变量返回默认值
+     */
+    @AllArgsConstructor
+    private static class NullSafeStandardEvaluationContext extends StandardEvaluationContext {
+
+        private final Object defaultValue;
+
+        @Override
+        public Object lookupVariable(String name) {
+            Object obj = super.lookupVariable(name);
+            // 如果读取到的值是 null，则返回默认值
+            if (obj == null) {
+                return defaultValue;
+            }
+            return obj;
+        }
+
+    }
+
+    /**
+     * 对所有null变量找不到的变量返回默认值 委托模式 将不需要处理的方法委托给原处理器
+     */
+    @AllArgsConstructor
+    private static class NullSafePropertyAccessor implements PropertyAccessor {
+
+        private final PropertyAccessor delegate;
+        private final Object defaultValue;
+
+        @Override
+        public Class<?>[] getSpecificTargetClasses() {
+            return delegate.getSpecificTargetClasses();
+        }
+
+        @Override
+        public boolean canRead(EvaluationContext context, Object target, String name) throws AccessException {
+            return delegate.canRead(context, target, name);
+        }
+
+        @Override
+        public TypedValue read(EvaluationContext context, Object target, String name) throws AccessException {
+            TypedValue value = delegate.read(context, target, name);
+            // 如果读取到的值是 null，则返回默认值
+            if (value.getValue() == null) {
+                return new TypedValue(defaultValue);
+            }
+            return value;
+        }
+
+        @Override
+        public boolean canWrite(EvaluationContext context, Object target, String name) throws AccessException {
+            return delegate.canWrite(context, target, name);
+        }
+
+        @Override
+        public void write(EvaluationContext context, Object target, String name, Object newValue) throws AccessException {
+            delegate.write(context, target, name, newValue);
+        }
     }
 
 }
