@@ -70,8 +70,8 @@ const isActive = (r: RouteLocationNormalized): boolean => {
 const activeStyle = (tag: RouteLocationNormalized) => {
   if (!isActive(tag)) return {};
   return {
-    'background-color': theme.value,
-    'border-color': theme.value
+    'background-color': 'var(--tags-view-active-bg)',
+    'border-color': 'var(--tags-view-active-border-color)'
   };
 };
 const isAffix = (tag: RouteLocationNormalized) => {

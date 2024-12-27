@@ -21,7 +21,12 @@
 
   // ele
   --brder-color: #e8e8e8;
+
+  // 添加 tag 相关变量
+  --tags-view-active-bg: var(--el-color-primary);
+  --tags-view-active-border-color: var(--el-color-primary);
 }
+
 html.dark {
   --menuBg: #1d1e1f;
   --menuColor: #bfcbd9;
@@ -41,6 +46,20 @@ html.dark {
   .el-tree-node__content {
     --el-color-primary-light-9: #262727;
   }
+
+  .el-button--primary {
+    --el-button-bg-color: var(--el-color-primary-dark-6);
+    --el-button-border-color: var(--el-color-primary-light-2);
+  }
+
+  .el-switch {
+    --el-switch-on-color: var(--el-color-primary-dark-6);
+    --el-switch-border-color: var(--el-color-primary-light-2);
+  }
+
+  // 在深色模式下使用更深的颜色
+  --tags-view-active-bg: var(--el-color-primary-dark-6);
+  --tags-view-active-border-color: var(--el-color-primary-light-2);
   // vxe-table 主题
   --vxe-font-color: #98989e;
   --vxe-primary-color: #2c7ecf;
