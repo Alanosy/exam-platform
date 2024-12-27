@@ -1,5 +1,6 @@
 package org.dromara.common.sse.core;
 
+import cn.hutool.core.map.MapUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.dromara.common.redis.utils.RedisUtils;
 import org.dromara.common.sse.dto.SseMessageDto;
@@ -65,7 +66,7 @@ public class SseEmitterManager {
      */
     public void disconnect(Long userId, String token) {
         Map<String, SseEmitter> emitters = USER_TOKEN_EMITTERS.get(userId);
-        if (emitters != null) {
+        if (MapUtil.isNotEmpty(emitters)) {
             try {
                 SseEmitter sseEmitter = emitters.get(token);
                 sseEmitter.send(SseEmitter.event().comment("disconnected"));
@@ -73,6 +74,8 @@ public class SseEmitterManager {
             } catch (Exception ignore) {
             }
             emitters.remove(token);
+        } else {
+            USER_TOKEN_EMITTERS.remove(userId);
         }
     }
 
@@ -93,7 +96,7 @@ public class SseEmitterManager {
      */
     public void sendMessage(Long userId, String message) {
         Map<String, SseEmitter> emitters = USER_TOKEN_EMITTERS.get(userId);
-        if (emitters != null) {
+        if (MapUtil.isNotEmpty(emitters)) {
             for (Map.Entry<String, SseEmitter> entry : emitters.entrySet()) {
                 try {
                     entry.getValue().send(SseEmitter.event()
@@ -103,6 +106,8 @@ public class SseEmitterManager {
                     emitters.remove(entry.getKey());
                 }
             }
+        } else {
+            USER_TOKEN_EMITTERS.remove(userId);
         }
     }
 
