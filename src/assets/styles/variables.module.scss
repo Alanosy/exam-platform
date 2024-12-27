@@ -57,6 +57,11 @@ html.dark {
     --el-switch-border-color: var(--el-color-primary-light-2);
   }
 
+  .el-tag--primary {
+    --el-tag-bg-color: var(--el-color-primary-dark-6);
+    --el-tag-border-color: var(--el-color-primary-light-2);
+  }
+
   // 在深色模式下使用更深的颜色
   --tags-view-active-bg: var(--el-color-primary-dark-6);
   --tags-view-active-border-color: var(--el-color-primary-light-2);
