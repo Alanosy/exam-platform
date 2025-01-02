@@ -3,9 +3,11 @@ package org.dromara.common.core.config;
 import jakarta.annotation.PreDestroy;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.concurrent.BasicThreadFactory;
+import org.dromara.common.core.utils.SpringUtils;
 import org.dromara.common.core.utils.Threads;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.context.annotation.Bean;
+import org.springframework.core.task.VirtualThreadTaskExecutor;
 
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
@@ -32,8 +34,15 @@ public class ThreadPoolConfig {
      */
     @Bean(name = "scheduledExecutorService")
     protected ScheduledExecutorService scheduledExecutorService() {
+        // daemon 必须为 true
+        BasicThreadFactory.Builder builder = new BasicThreadFactory.Builder().daemon(true);
+        if (SpringUtils.isVirtual()) {
+            builder.namingPattern("virtual-schedule-pool-%d").wrappedFactory(new VirtualThreadTaskExecutor().getVirtualThreadFactory());
+        } else {
+            builder.namingPattern("schedule-pool-%d");
+        }
         ScheduledThreadPoolExecutor scheduledThreadPoolExecutor = new ScheduledThreadPoolExecutor(core,
-            new BasicThreadFactory.Builder().namingPattern("schedule-pool-%d").daemon(true).build(),
+            builder.build(),
             new ThreadPoolExecutor.CallerRunsPolicy()) {
             @Override
             protected void afterExecute(Runnable r, Throwable t) {
