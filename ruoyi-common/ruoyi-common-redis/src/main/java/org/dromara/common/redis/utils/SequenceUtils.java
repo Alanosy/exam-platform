@@ -59,10 +59,10 @@ public class SequenceUtils {
             stepValue = DEFAULT_STEP_VALUE;
         }
         RIdGenerator idGenerator = REDISSON_CLIENT.getIdGenerator(key);
-        // 设置过期时间
-        idGenerator.expire(expireTime);
         // 设置初始值和步长
         idGenerator.tryInit(initValue, stepValue);
+        // 设置过期时间
+        idGenerator.expire(expireTime);
         return idGenerator;
     }
 
