@@ -135,6 +135,27 @@ public class PlusDataPermissionHandler {
         context.setBeanResolver(beanResolver);
         DataPermissionHelper.getContext().forEach(context::setVariable);
         Set<String> conditions = new HashSet<>();
+        // 优先设置变量
+        List<String> keys = new ArrayList<>();
+        Map<DataColumn, Boolean> ignoreMap = new HashMap<>();
+        for (DataColumn dataColumn : dataPermission.value()) {
+            if (dataColumn.key().length != dataColumn.value().length) {
+                throw new ServiceException("角色数据范围异常 => key与value长度不匹配");
+            }
+            // 包含权限标识符 这直接跳过
+            if (StringUtils.isNotBlank(dataColumn.permission()) &&
+                CollUtil.contains(user.getMenuPermission(), dataColumn.permission())
+            ) {
+                ignoreMap.put(dataColumn, Boolean.TRUE);
+                continue;
+            }
+            // 设置注解变量 key 为表达式变量 value 为变量值
+            for (int i = 0; i < dataColumn.key().length; i++) {
+                context.setVariable(dataColumn.key()[i], dataColumn.value()[i]);
+            }
+            keys.addAll(Arrays.stream(dataColumn.key()).map(key -> "#" + key).toList());
+        }
+
         for (RoleDTO role : user.getRoles()) {
             user.setRoleId(role.getRoleId());
             // 获取角色权限泛型
@@ -144,32 +165,19 @@ public class PlusDataPermissionHandler {
             }
             // 全部数据权限直接返回
             if (type == DataScopeType.ALL) {
-                return "";
+                return StringUtils.EMPTY;
             }
             boolean isSuccess = false;
-            List<String> keys = new ArrayList<>();
             for (DataColumn dataColumn : dataPermission.value()) {
-                if (dataColumn.key().length != dataColumn.value().length) {
-                    throw new ServiceException("角色数据范围异常 => key与value长度不匹配");
-                }
-                // 设置注解变量 key 为表达式变量 value 为变量值
-                for (int i = 0; i < dataColumn.key().length; i++) {
-                    context.setVariable(dataColumn.key()[i], dataColumn.value()[i]);
-                }
-                keys.addAll(Arrays.stream(dataColumn.key()).map(key -> "#" + key).toList());
-            }
-            for (DataColumn dataColumn : dataPermission.value()) {
-                // 不包含 key 变量 则不处理
-                if (!StringUtils.containsAny(type.getSqlTemplate(), keys.toArray(String[]::new))) {
-                    continue;
-                }
                 // 包含权限标识符 这直接跳过
-                if (StringUtils.isNotBlank(dataColumn.permission()) &&
-                    CollUtil.contains(user.getMenuPermission(), dataColumn.permission())
-                ) {
+                if (ignoreMap.containsKey(dataColumn)) {
                     // 修复多角色与权限标识符共用问题 https://gitee.com/dromara/RuoYi-Vue-Plus/issues/IB4CS4
                     conditions.add(joinStr + " 1 = 1 ");
                     isSuccess = true;
+                    continue;
+                }
+                // 不包含 key 变量 则不处理
+                if (!StringUtils.containsAny(type.getSqlTemplate(), keys.toArray(String[]::new))) {
                     continue;
                 }
 
@@ -191,7 +199,7 @@ public class PlusDataPermissionHandler {
             String sql = StreamUtils.join(conditions, Function.identity(), "");
             return sql.substring(joinStr.length());
         }
-        return "";
+        return StringUtils.EMPTY;
     }
 
     /**
