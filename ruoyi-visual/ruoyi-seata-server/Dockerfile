@@ -21,7 +21,7 @@ ADD ./target/ruoyi-seata-server.jar ./app.jar
 SHELL ["/bin/bash", "-c"]
 
 ENTRYPOINT java -Djava.security.egd=file:/dev/./urandom \
-           #-Dskywalking.agent.service_name=ruoyi-seata-server", \
-           #-Dskywalking.plugin.seata.server=true", \
-           #-javaagent:/ruoyi/skywalking/agent/skywalking-agent.jar", \
+           #-Dskywalking.agent.service_name=ruoyi-seata-server \
+           #-Dskywalking.plugin.seata.server=true \
+           #-javaagent:/ruoyi/skywalking/agent/skywalking-agent.jar \
            ${JAVA_OPTS} -jar app.jar
