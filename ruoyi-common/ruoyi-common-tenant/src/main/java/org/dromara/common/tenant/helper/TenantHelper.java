@@ -1,16 +1,16 @@
 package org.dromara.common.tenant.helper;
 
+import cn.dev33.satoken.context.SaHolder;
+import cn.dev33.satoken.context.model.SaStorage;
 import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.convert.Convert;
 import cn.hutool.core.util.ObjectUtil;
 import com.baomidou.mybatisplus.core.plugins.IgnoreStrategy;
 import com.baomidou.mybatisplus.core.plugins.InterceptorIgnoreHelper;
-import jakarta.servlet.http.HttpServletRequest;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.dromara.common.core.constant.GlobalConstants;
-import org.dromara.common.core.utils.ServletUtils;
 import org.dromara.common.core.utils.SpringUtils;
 import org.dromara.common.core.utils.StringUtils;
 import org.dromara.common.core.utils.reflect.ReflectUtils;
@@ -137,7 +137,7 @@ public class TenantHelper {
         }
         String cacheKey = DYNAMIC_TENANT_KEY + ":" + LoginHelper.getUserId();
         RedisUtils.setCacheObject(cacheKey, tenantId);
-        ServletUtils.getRequest().setAttribute(cacheKey, tenantId);
+        SaHolder.getStorage().set(cacheKey, tenantId);
     }
 
     /**
@@ -157,15 +157,15 @@ public class TenantHelper {
         if (StringUtils.isNotBlank(tenantId)) {
             return tenantId;
         }
-        HttpServletRequest request = ServletUtils.getRequest();
+        SaStorage storage = SaHolder.getStorage();
         String cacheKey = DYNAMIC_TENANT_KEY + ":" + LoginHelper.getUserId();
-        tenantId = (String) request.getAttribute(cacheKey);
+        tenantId = storage.getString(cacheKey);
         // 如果为 -1 说明已经查过redis并且不存在值 则直接返回null
         if (StringUtils.isNotBlank(tenantId)) {
             return tenantId.equals("-1") ? null : tenantId;
         }
         tenantId = RedisUtils.getCacheObject(cacheKey);
-        request.setAttribute(cacheKey, StringUtils.isBlank(tenantId) ? "-1" : tenantId);
+        storage.set(cacheKey, StringUtils.isBlank(tenantId) ? "-1" : tenantId);
         return tenantId;
     }
 
@@ -183,7 +183,7 @@ public class TenantHelper {
         TEMP_DYNAMIC_TENANT.remove();
         String cacheKey = DYNAMIC_TENANT_KEY + ":" + LoginHelper.getUserId();
         RedisUtils.deleteObject(cacheKey);
-        ServletUtils.getRequest().removeAttribute(cacheKey);
+        SaHolder.getStorage().delete(cacheKey);
     }
 
     /**
