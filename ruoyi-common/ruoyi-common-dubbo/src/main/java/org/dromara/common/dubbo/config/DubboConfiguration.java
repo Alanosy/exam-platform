@@ -1,6 +1,7 @@
 package org.dromara.common.dubbo.config;
 
 import org.dromara.common.core.factory.YmlPropertySourceFactory;
+import org.dromara.common.dubbo.handler.DubboExceptionHandler;
 import org.dromara.common.dubbo.properties.DubboCustomProperties;
 import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
@@ -23,4 +24,13 @@ public class DubboConfiguration {
     public BeanFactoryPostProcessor customBeanFactoryPostProcessor() {
         return new CustomBeanFactoryPostProcessor();
     }
+
+    /**
+     * 异常处理器
+     */
+    @Bean
+    public DubboExceptionHandler dubboExceptionHandler() {
+        return new DubboExceptionHandler();
+    }
+
 }
