@@ -180,7 +180,10 @@ public class PlusDataPermissionHandler {
                 if (!StringUtils.containsAny(type.getSqlTemplate(), keys.toArray(String[]::new))) {
                     continue;
                 }
-
+                // 当前注解不满足模板 不处理
+                if (!StringUtils.containsAny(type.getSqlTemplate(), dataColumn.key())) {
+                    continue;
+                }
                 // 忽略数据权限 防止spel表达式内有其他sql查询导致死循环调用
                 String sql = DataPermissionHelper.ignore(() ->
                     parser.parseExpression(type.getSqlTemplate(), parserContext).getValue(context, String.class)
