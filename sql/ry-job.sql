@@ -47,7 +47,7 @@ CREATE TABLE `sj_notify_config`
     `id`                     bigint(20) unsigned NOT NULL AUTO_INCREMENT COMMENT '主键',
     `namespace_id`           varchar(64)         NOT NULL DEFAULT '764d604ec6fc45f68cd92514c40e9e1a' COMMENT '命名空间id',
     `group_name`             varchar(64)         NOT NULL COMMENT '组名称',
-    `business_id`            varchar(64)         NOT NULL COMMENT '业务id (job_id或workflow_id或scene_name)',
+    `notify_name`            varchar(64)         NOT NULL DEFAULT '' COMMENT '通知名称',
     `system_task_type`       tinyint(4)          NOT NULL DEFAULT 3 COMMENT '任务类型 1. 重试任务 2. 重试回调 3、JOB任务 4、WORKFLOW任务',
     `notify_status`          tinyint(4)          NOT NULL DEFAULT 0 COMMENT '通知状态 0、未启用 1、启用',
     `recipient_ids`          varchar(128)        NOT NULL COMMENT '接收人id列表',
@@ -59,7 +59,7 @@ CREATE TABLE `sj_notify_config`
     `create_dt`              datetime            NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
     `update_dt`              datetime            NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '修改时间',
     PRIMARY KEY (`id`),
-    KEY `idx_namespace_id_group_name_scene_name` (`namespace_id`, `group_name`, `business_id`)
+    KEY `idx_namespace_id_group_name_scene_name` (`namespace_id`, `group_name`)
 ) ENGINE = InnoDB
   AUTO_INCREMENT = 0
   DEFAULT CHARSET = utf8mb4 COMMENT ='通知配置';
@@ -188,6 +188,7 @@ CREATE TABLE `sj_retry_scene_config`
     `max_retry_count`  int(11)             NOT NULL DEFAULT 5 COMMENT '最大重试次数',
     `back_off`         tinyint(4)          NOT NULL DEFAULT 1 COMMENT '1、默认等级 2、固定间隔时间 3、CRON 表达式',
     `trigger_interval` varchar(16)         NOT NULL DEFAULT '' COMMENT '间隔时长',
+    `notify_ids`       varchar(128)        NOT NULL DEFAULT '' COMMENT '通知告警场景配置id列表',
     `deadline_request` bigint(20) unsigned NOT NULL DEFAULT 60000 COMMENT 'Deadline Request 调用链超时 单位毫秒',
     `executor_timeout` int(11) unsigned    NOT NULL DEFAULT 5 COMMENT '任务执行超时时间，单位秒',
     `route_key`        tinyint(4)          NOT NULL DEFAULT 4 COMMENT '路由策略',
@@ -300,6 +301,8 @@ CREATE TABLE `sj_job`
     `retry_interval`   int(11)             NOT NULL DEFAULT 0 COMMENT '重试间隔(s)',
     `bucket_index`     int(11)             NOT NULL DEFAULT 0 COMMENT 'bucket',
     `resident`         tinyint(4)          NOT NULL DEFAULT 0 COMMENT '是否是常驻任务',
+    `notify_ids`       varchar(128)        NOT NULL DEFAULT '' COMMENT '通知告警场景配置id列表',
+    `owner_id`         bigint(20)          NULL                 COMMENT '负责人id',
     `description`      varchar(256)        NOT NULL DEFAULT '' COMMENT '描述',
     `ext_attrs`        varchar(256)        NULL     DEFAULT '' COMMENT '扩展字段',
     `deleted`          tinyint(4)          NOT NULL DEFAULT 0 COMMENT '逻辑删除 1、删除',
@@ -313,7 +316,7 @@ CREATE TABLE `sj_job`
   AUTO_INCREMENT = 0
   DEFAULT CHARSET = utf8mb4 COMMENT ='任务信息';
 
-INSERT INTO `sj_job` VALUES (1, 'dev', 'ruoyi_group', 'demo-job', null, 1, 1710344035622, 1, 1, 4, 1, 'testJobExecutor', 2, '60', 1, 60, 3, 1, 1, 116, 0, '', '', 0 , now(), now());
+INSERT INTO `sj_job` VALUES (1, 'dev', 'ruoyi_group', 'demo-job', null, 1, 1710344035622, 1, 1, 4, 1, 'testJobExecutor', 2, '60', 1, 60, 3, 1, 1, 116, 0, '', 1, '', '', 0 , now(), now());
 
 CREATE TABLE `sj_job_log_message`
 (
@@ -451,6 +454,7 @@ CREATE TABLE `sj_workflow`
     `description`      varchar(256)        NOT NULL DEFAULT '' COMMENT '描述',
     `flow_info`        text                         DEFAULT NULL COMMENT '流程信息',
     `wf_context`       text                         DEFAULT NULL COMMENT '上下文',
+    `notify_ids`       varchar(128)        NOT NULL DEFAULT '' COMMENT '通知告警场景配置id列表',
     `bucket_index`     int(11)             NOT NULL DEFAULT 0 COMMENT 'bucket',
     `version`          int(11)             NOT NULL COMMENT '版本号',
     `ext_attrs`        varchar(256)        NULL     DEFAULT '' COMMENT '扩展字段',

@@ -25,9 +25,11 @@ snail-job:
     # 服务名优先 ip垫底
     host: 127.0.0.1
     port: 17888
-  # 详见 script/sql/ry_job.sql `sj_namespace` 表
+  # 详见 sql/ry_job.sql `sj_namespace` 表 `unique_id`
   namespace: ${spring.profiles.active}
   # 随主应用端口飘逸
   port: 2${server.port}
   # 客户端ip指定
   host:
+  # RPC类型: netty, grpc
+  rpc-type: grpc

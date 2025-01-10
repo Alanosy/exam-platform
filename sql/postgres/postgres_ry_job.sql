@@ -2,7 +2,7 @@
  SnailJob Database Transfer Tool
  Source Server Type    : MySQL
  Target Server Type    : PostgreSQL
- Date: 2024-07-06 11:45:40
+ Date: 2024-12-27 22:13:49
 */
 
 
@@ -76,7 +76,7 @@ CREATE TABLE sj_notify_config
     id                     bigserial PRIMARY KEY,
     namespace_id           varchar(64)  NOT NULL DEFAULT '764d604ec6fc45f68cd92514c40e9e1a',
     group_name             varchar(64)  NOT NULL,
-    business_id            varchar(64)  NOT NULL,
+    notify_name            varchar(64)  NOT NULL DEFAULT '',
     system_task_type       smallint     NOT NULL DEFAULT 3,
     notify_status          smallint     NOT NULL DEFAULT 0,
     recipient_ids          varchar(128) NOT NULL,
@@ -89,12 +89,12 @@ CREATE TABLE sj_notify_config
     update_dt              timestamp    NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE INDEX idx_sj_notify_config_01 ON sj_notify_config (namespace_id, group_name, business_id);
+CREATE INDEX idx_sj_notify_config_01 ON sj_notify_config (namespace_id, group_name);
 
 COMMENT ON COLUMN sj_notify_config.id IS '主键';
 COMMENT ON COLUMN sj_notify_config.namespace_id IS '命名空间id';
 COMMENT ON COLUMN sj_notify_config.group_name IS '组名称';
-COMMENT ON COLUMN sj_notify_config.business_id IS '业务id  ( job_id或workflow_id或scene_name ) ';
+COMMENT ON COLUMN sj_notify_config.notify_name IS '通知名称';
 COMMENT ON COLUMN sj_notify_config.system_task_type IS '任务类型 1. 重试任务 2. 重试回调 3、JOB任务 4、WORKFLOW任务';
 COMMENT ON COLUMN sj_notify_config.notify_status IS '通知状态 0、未启用 1、启用';
 COMMENT ON COLUMN sj_notify_config.recipient_ids IS '接收人id列表';
@@ -297,6 +297,7 @@ CREATE TABLE sj_retry_scene_config
     max_retry_count  int          NOT NULL DEFAULT 5,
     back_off         smallint     NOT NULL DEFAULT 1,
     trigger_interval varchar(16)  NOT NULL DEFAULT '',
+    notify_ids       varchar(128) NOT NULL DEFAULT '',
     deadline_request bigint       NOT NULL DEFAULT 60000,
     executor_timeout int          NOT NULL DEFAULT 5,
     route_key        smallint     NOT NULL DEFAULT 4,
@@ -315,6 +316,7 @@ COMMENT ON COLUMN sj_retry_scene_config.scene_status IS '组状态 0、未启用
 COMMENT ON COLUMN sj_retry_scene_config.max_retry_count IS '最大重试次数';
 COMMENT ON COLUMN sj_retry_scene_config.back_off IS '1、默认等级 2、固定间隔时间 3、CRON 表达式';
 COMMENT ON COLUMN sj_retry_scene_config.trigger_interval IS '间隔时长';
+COMMENT ON COLUMN sj_retry_scene_config.notify_ids IS '通知告警场景配置id列表';
 COMMENT ON COLUMN sj_retry_scene_config.deadline_request IS 'Deadline Request 调用链超时 单位毫秒';
 COMMENT ON COLUMN sj_retry_scene_config.executor_timeout IS '任务执行超时时间，单位秒';
 COMMENT ON COLUMN sj_retry_scene_config.route_key IS '路由策略';
@@ -464,6 +466,8 @@ CREATE TABLE sj_job
     retry_interval   int          NOT NULL DEFAULT 0,
     bucket_index     int          NOT NULL DEFAULT 0,
     resident         smallint     NOT NULL DEFAULT 0,
+    notify_ids       varchar(128) NOT NULL DEFAULT '',
+    owner_id         bigint       NULL,
     description      varchar(256) NOT NULL DEFAULT '',
     ext_attrs        varchar(256) NULL     DEFAULT '',
     deleted          smallint     NOT NULL DEFAULT 0,
@@ -496,6 +500,8 @@ COMMENT ON COLUMN sj_job.parallel_num IS '并行数';
 COMMENT ON COLUMN sj_job.retry_interval IS '重试间隔 ( s ) ';
 COMMENT ON COLUMN sj_job.bucket_index IS 'bucket';
 COMMENT ON COLUMN sj_job.resident IS '是否是常驻任务';
+COMMENT ON COLUMN sj_job.notify_ids IS '通知告警场景配置id列表';
+COMMENT ON COLUMN sj_job.owner_id IS '负责人id';
 COMMENT ON COLUMN sj_job.description IS '描述';
 COMMENT ON COLUMN sj_job.ext_attrs IS '扩展字段';
 COMMENT ON COLUMN sj_job.deleted IS '逻辑删除 1、删除';
@@ -503,7 +509,7 @@ COMMENT ON COLUMN sj_job.create_dt IS '创建时间';
 COMMENT ON COLUMN sj_job.update_dt IS '修改时间';
 COMMENT ON TABLE sj_job IS '任务信息';
 
-INSERT INTO sj_job VALUES (1, 'dev', 'ruoyi_group', 'demo-job', null, 1, 1710344035622, 1, 1, 4, 1, 'testJobExecutor', 2, '60', 1, 60, 3, 1, 1, 116, 0, '', '', 0, now(), now());
+INSERT INTO sj_job VALUES (1, 'dev', 'ruoyi_group', 'demo-job', null, 1, 1710344035622, 1, 1, 4, 1, 'testJobExecutor', 2, '60', 1, 60, 3, 1, 1, 116, 0, '', 1, '', '', 0, now(), now());
 
 -- sj_job_log_message
 CREATE TABLE sj_job_log_message
@@ -721,6 +727,7 @@ CREATE TABLE sj_workflow
     description      varchar(256) NOT NULL DEFAULT '',
     flow_info        text         NULL     DEFAULT NULL,
     wf_context       text         NULL     DEFAULT NULL,
+    notify_ids       varchar(128) NOT NULL DEFAULT '',
     bucket_index     int          NOT NULL DEFAULT 0,
     version          int          NOT NULL,
     ext_attrs        varchar(256) NULL     DEFAULT '',
@@ -745,6 +752,7 @@ COMMENT ON COLUMN sj_workflow.executor_timeout IS '任务执行超时时间，�
 COMMENT ON COLUMN sj_workflow.description IS '描述';
 COMMENT ON COLUMN sj_workflow.flow_info IS '流程信息';
 COMMENT ON COLUMN sj_workflow.wf_context IS '上下文';
+COMMENT ON COLUMN sj_workflow.notify_ids IS '通知告警场景配置id列表';
 COMMENT ON COLUMN sj_workflow.bucket_index IS 'bucket';
 COMMENT ON COLUMN sj_workflow.version IS '版本号';
 COMMENT ON COLUMN sj_workflow.ext_attrs IS '扩展字段';
@@ -835,4 +843,3 @@ COMMENT ON COLUMN sj_workflow_task_batch.deleted IS '逻辑删除 1、删除';
 COMMENT ON COLUMN sj_workflow_task_batch.create_dt IS '创建时间';
 COMMENT ON COLUMN sj_workflow_task_batch.update_dt IS '修改时间';
 COMMENT ON TABLE sj_workflow_task_batch IS '工作流批次';
-
