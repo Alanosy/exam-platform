@@ -55,14 +55,12 @@ public class TenantConfiguration {
                 // 使用单机模式
                 // 设置多租户 redis key前缀
                 singleServerConfig.setNameMapper(nameMapper);
-                ReflectUtils.invokeSetter(config, "singleServerConfig", singleServerConfig);
             }
             ClusterServersConfig clusterServersConfig = ReflectUtils.invokeGetter(config, "clusterServersConfig");
             // 集群配置方式 参考下方注释
             if (ObjectUtil.isNotNull(clusterServersConfig)) {
                 // 设置多租户 redis key前缀
                 clusterServersConfig.setNameMapper(nameMapper);
-                ReflectUtils.invokeSetter(config, "clusterServersConfig", clusterServersConfig);
             }
         };
     }
