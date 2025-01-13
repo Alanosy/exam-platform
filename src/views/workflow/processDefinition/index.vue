@@ -358,6 +358,7 @@ const handlePublish = async (row?: FlowDefinitionVo) => {
   loading.value = true;
   await publish(row.id).finally(() => (loading.value = false));
   processDefinitionDialog.visible = false;
+  activeName.value = "0"
   await handleQuery();
   proxy?.$modal.msgSuccess('发布成功');
 };
@@ -404,6 +405,7 @@ const handlerImportDefinition = (data: UploadRequestOptions): XMLHttpRequest => 
     .then(() => {
       uploadDialog.visible = false;
       proxy?.$modal.msgSuccess('部署成功');
+      activeName.value = "1"
       handleQuery();
     })
     .finally(() => {
