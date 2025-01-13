@@ -1,6 +1,6 @@
 import request from '@/utils/request';
 import { AxiosPromise } from 'axios';
-import { DeptForm, DeptQuery, DeptVO } from './types';
+import {DeptForm, DeptQuery, DeptTreeVO, DeptVO} from './types';
 
 // 查询部门列表
 export const listDept = (query?: DeptQuery) => {
@@ -8,6 +8,17 @@ export const listDept = (query?: DeptQuery) => {
     url: '/system/dept/list',
     method: 'get',
     params: query
+  });
+};
+
+/**
+ * 通过deptIds查询部门
+ * @param deptIds
+ */
+export const optionSelect = (deptIds: (number | string)[]): AxiosPromise<DeptVO[]> => {
+  return request({
+    url: '/system/dept/optionselect?deptIds=' + deptIds,
+    method: 'get'
   });
 };
 
@@ -28,7 +39,7 @@ export const getDept = (deptId: string | number): AxiosPromise<DeptVO> => {
 };
 
 // 查询部门下拉树结构
-export const treeselect = (): AxiosPromise<DeptVO[]> => {
+export const treeselect = (): AxiosPromise<DeptTreeVO[]> => {
   return request({
     url: '/system/dept/treeselect',
     method: 'get'

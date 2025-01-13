@@ -1,16 +1,13 @@
-import { NodeConfigVO } from '@/api/workflow/nodeConfig/types';
-import { DefinitionConfigVO } from '@/api/workflow/definitionConfig/types';
-
 export interface RouterJumpVo {
-  wfNodeConfigVo: NodeConfigVO;
-  wfDefinitionConfigVo: DefinitionConfigVO;
-  businessKey: string;
-  taskId: string;
+  businessId: string;
+  taskId: string | number;
   type: string;
+  formCustom: string;
+  formPath: string;
 }
 
 export interface StartProcessBo {
-  businessKey: string | number;
-  tableName: string;
+  businessId: string | number;
+  flowCode: string;
   variables: any;
 }

@@ -176,6 +176,20 @@ export const dynamicRoutes: RouteRecordRaw[] = [
         meta: { title: '请假申请', activeMenu: '/workflow/leave', noCache: true }
       }
     ]
+  },
+  {
+    path: '/workflow/design',
+    component: Layout,
+    hidden: true,
+    permissions: ['workflow:leave:edit'],
+    children: [
+      {
+        path: 'index',
+        component: () => import('@/views/workflow/processDefinition/design.vue'),
+        name: 'design',
+        meta: { title: '流程设计', activeMenu: '/workflow/processDefinition', noCache: true }
+      }
+    ]
   }
 ];
 

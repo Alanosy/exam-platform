@@ -44,6 +44,17 @@
     <submitVerify ref="submitVerifyRef" :task-variables="taskVariables" @submit-callback="submitCallback" />
     <!-- 审批记录 -->
     <approvalRecord ref="approvalRecordRef" />
+    <el-dialog v-model="dialogVisible.visible" :title="dialogVisible.title" :before-close="handleClose" width="500">
+      <el-select v-model="flowCode" placeholder="Select" style="width: 240px">
+        <el-option v-for="item in flowCodeOptions" :key="item.value" :label="item.label" :value="item.value" />
+      </el-select>
+      <template #footer>
+        <div class="dialog-footer">
+          <el-button @click="handleClose">取消</el-button>
+          <el-button type="primary" @click="submitFlow()"> 确认 </el-button>
+        </div>
+      </template>
+    </el-dialog>
   </div>
 </template>
 
@@ -80,6 +91,35 @@ const options = [
     label: '婚假'
   }
 ];
+const flowCodeOptions = [
+  {
+    value: 'leave1',
+    label: '请假申请-普通'
+  },
+  {
+    value: 'leave2',
+    label: '请假申请-排他网关'
+  },
+  {
+    value: 'leave3',
+    label: '请假申请-并行网关'
+  },
+  {
+    value: 'leave4',
+    label: '请假申请-会签'
+  },
+  {
+    value: 'leave5',
+    label: '请假申请-并行会签网关'
+  }
+];
+
+const flowCode = ref<string>('');
+
+const dialogVisible = reactive<DialogOption>({
+  visible: false,
+  title: '流程定义'
+});
 //提交组件
 const submitVerifyRef = ref<InstanceType<typeof SubmitVerify>>();
 //审批记录组件
@@ -88,8 +128,8 @@ const approvalRecordRef = ref<InstanceType<typeof ApprovalRecord>>();
 const leaveFormRef = ref<ElFormInstance>();
 
 const submitFormData = ref<StartProcessBo>({
-  businessKey: '',
-  tableName: '',
+  businessId: '',
+  flowCode: '',
   variables: {}
 });
 const taskVariables = ref<Record<string, any>>({});
@@ -119,6 +159,11 @@ const data = reactive<PageData<LeaveForm, LeaveQuery>>({
   }
 });
 
+const handleClose = () => {
+  dialogVisible.visible = false;
+  flowCode.value = '';
+  buttonLoading.value = false;
+};
 const { form, rules } = toRefs(data);
 
 /** 表单重置 */
@@ -174,6 +219,15 @@ const submitForm = (status: string) => {
           proxy.$tab.closePage(proxy.$route);
           proxy.$router.go(-1);
         } else {
+          if ((form.value.status === 'draft' && (flowCode.value === '' || flowCode.value === null)) || routeParams.value.type === 'add') {
+            flowCode.value = flowCodeOptions[0].value;
+            dialogVisible.visible = true;
+            return;
+          }
+          //说明启动过先随意穿个参数
+          if (flowCode.value === '' || flowCode.value === null) {
+            flowCode.value = 'xx';
+          }
           await handleStartWorkFlow(res.data);
         }
       }
@@ -183,17 +237,19 @@ const submitForm = (status: string) => {
   }
 };
 
+const submitFlow = async () => {
+  handleStartWorkFlow(form.value);
+  dialogVisible.visible = false;
+};
 //提交申请
 const handleStartWorkFlow = async (data: LeaveVO) => {
   try {
-    submitFormData.value.tableName = 'test_leave';
-    submitFormData.value.businessKey = data.id;
+    submitFormData.value.flowCode = flowCode.value;
+    submitFormData.value.businessId = data.id;
     //流程变量
     taskVariables.value = {
-      entity: data,
       leaveDays: data.leaveDays,
-      userList: ['1', '3'],
-      userList2: ['1', '3']
+      userList: ['1', '3', '4']
     };
     submitFormData.value.variables = taskVariables.value;
     const resp = await startWorkFlow(submitFormData.value);
