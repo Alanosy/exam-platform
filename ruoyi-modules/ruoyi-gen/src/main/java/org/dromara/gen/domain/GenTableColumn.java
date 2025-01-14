@@ -158,7 +158,7 @@ public class GenTableColumn extends BaseEntity {
     }
 
     public boolean isEdit() {
-        return isInsert(this.isEdit);
+        return isEdit(this.isEdit);
     }
 
     public boolean isEdit(String isEdit) {
