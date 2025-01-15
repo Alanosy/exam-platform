@@ -143,13 +143,13 @@
           class="upload-demo"
           drag
           multiple
-          accept="application/zip,application/xml,.bpmn"
+          accept="application/json,application/text"
           :before-upload="handlerBeforeUpload"
           :http-request="handlerImportDefinition"
         >
           <el-icon class="UploadFilled"><upload-filled /></el-icon>
-          <div class="el-upload__text"><em>点击上传，选择BPMN流程文件</em></div>
-          <div class="el-upload__text">仅支持 .zip、.bpmn20.xml、bpmn 格式文件</div>
+          <div class="el-upload__text"><em>点击上传，选择JSON流程文件</em></div>
+          <div class="el-upload__text">仅支持json格式文件</div>
           <div class="el-upload__text">PS:如若部署请部署从本项目模型管理导出的数据</div>
         </el-upload>
       </div>
@@ -498,6 +498,6 @@ const handleCopyDef = async (row: FlowDefinitionVo) => {
 
 /** 导出按钮操作 */
 const handleExportDef = () => {
-  proxy?.download(`/workflow/definition/exportDef/${ids.value[0]}`, {}, `${flowCodeList.value[0]}.xml`);
+  proxy?.download(`/workflow/definition/exportDef/${ids.value[0]}`, {}, `${flowCodeList.value[0]}.json`);
 };
 </script>
