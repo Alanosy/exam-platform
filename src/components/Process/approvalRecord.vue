@@ -1,8 +1,8 @@
 <template>
   <div class="container">
     <el-dialog v-model="visible" draggable title="审批记录" :width="props.width" :height="props.height" :close-on-click-modal="false">
-      <el-tabs v-model="tabActiveName" class="demo-tabs">
-        <el-tab-pane v-loading="loading" label="流程图" name="image">
+      <el-tabs v-model="tabActiveName" class="demo-tabs" >
+        <el-tab-pane v-loading="loading" label="流程图" name="image" style="height: 500px">
           <div
             ref="imageWrapperRef"
             class="image-wrapper"
@@ -16,7 +16,6 @@
           >
             <el-image :src="imgUrl" class="scalable-image" />
           </div>
-<!--          <img :src="imgUrl" width="100%" style="margin: 0 auto" />-->
         </el-tab-pane>
         <el-tab-pane v-loading="loading" label="审批信息" name="info">
           <div>
@@ -274,6 +273,7 @@ defineExpose({
 }
 
 .scalable-image {
+  object-fit: contain;
   width: 100%;
 }
 </style>
