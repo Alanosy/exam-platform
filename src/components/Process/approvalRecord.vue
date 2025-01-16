@@ -2,7 +2,7 @@
   <div class="container">
     <el-dialog v-model="visible" draggable title="审批记录" :width="props.width" :height="props.height" :close-on-click-modal="false">
       <el-tabs v-model="tabActiveName" class="demo-tabs" >
-        <el-tab-pane v-loading="loading" label="流程图" name="image" style="height: 500px">
+        <el-tab-pane v-loading="loading" label="流程图" name="image" style="height: 68vh;">
           <div
             ref="imageWrapperRef"
             class="image-wrapper"
