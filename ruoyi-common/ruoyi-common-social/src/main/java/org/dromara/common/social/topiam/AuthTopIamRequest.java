@@ -16,7 +16,7 @@ import me.zhyd.oauth.utils.UrlBuilder;
 import org.dromara.common.core.utils.SpringUtils;
 import org.dromara.common.json.utils.JsonUtils;
 
-import static org.dromara.common.social.topiam.AuthTopiamSource.TOPIAM;
+import static org.dromara.common.social.topiam.AuthTopIamSource.TOPIAM;
 
 /**
  * TopIAM 认证请求

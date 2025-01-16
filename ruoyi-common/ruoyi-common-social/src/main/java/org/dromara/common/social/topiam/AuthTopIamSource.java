@@ -9,7 +9,7 @@ import me.zhyd.oauth.request.AuthDefaultRequest;
  * @author xlsea
  * @since 2024-01-06
  */
-public enum AuthTopiamSource implements AuthSource {
+public enum AuthTopIamSource implements AuthSource {
 
     /**
      * 测试
