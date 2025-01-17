@@ -1,6 +1,6 @@
 <template>
-  <div ref="container" class="w-full h-[calc(100vh-84px)]">
-    <iframe ref="iframe" :src="iframeUrl" frameborder="0" style="height: 100%; width: inherit"></iframe>
+  <div ref="container" class="w-full h-[calc(100vh-88px)]">
+    <iframe ref="iframe" :src="iframeUrl" frameborder="0" height="100%" style="height: 100%; width: inherit"></iframe>
   </div>
 </template>
 
