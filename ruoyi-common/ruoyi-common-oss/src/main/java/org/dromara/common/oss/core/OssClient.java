@@ -21,7 +21,6 @@ import software.amazon.awssdk.services.s3.S3AsyncClient;
 import software.amazon.awssdk.services.s3.S3Configuration;
 import software.amazon.awssdk.services.s3.crt.S3CrtHttpConfiguration;
 import software.amazon.awssdk.services.s3.model.GetObjectResponse;
-import software.amazon.awssdk.services.s3.model.NoSuchBucketException;
 import software.amazon.awssdk.services.s3.presigner.S3Presigner;
 import software.amazon.awssdk.transfer.s3.S3TransferManager;
 import software.amazon.awssdk.transfer.s3.model.*;
@@ -285,13 +284,13 @@ public class OssClient {
     /**
      * 获取私有URL链接
      *
-     * @param objectKey 对象KEY
-     * @param second    授权时间
+     * @param objectKey   对象KEY
+     * @param expiredTime 链接授权到期时间
      */
-    public String getPrivateUrl(String objectKey, Integer second) {
+    public String getPrivateUrl(String objectKey, Duration expiredTime) {
         // 使用 AWS S3 预签名 URL 的生成器 获取对象的预签名 URL
         URL url = presigner.presignGetObject(
-                x -> x.signatureDuration(Duration.ofSeconds(second))
+                x -> x.signatureDuration(expiredTime)
                     .getObjectRequest(
                         y -> y.bucket(properties.getBucketName())
                             .key(objectKey)
