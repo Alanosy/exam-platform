@@ -93,7 +93,7 @@
               </el-table-column>
               <el-table-column align="center" prop="createTime" label="启动时间" width="160"></el-table-column>
               <el-table-column v-if="tab === 'finish'" align="center" prop="updateTime" label="结束时间" width="160"></el-table-column>
-              <el-table-column label="操作" align="center" :width="162">
+              <el-table-column label="操作" align="center" :width="165">
                 <template #default="scope">
                   <el-row v-if="tab === 'running'" :gutter="10" class="mb8">
                     <el-col :span="1.5">

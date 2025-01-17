@@ -1,8 +1,8 @@
 <template>
   <div class="container">
     <el-dialog v-model="visible" draggable title="审批记录" :width="props.width" :height="props.height" :close-on-click-modal="false">
-      <el-tabs v-model="tabActiveName" class="demo-tabs" >
-        <el-tab-pane v-loading="loading" label="流程图" name="image" style="height: 68vh;">
+      <el-tabs v-model="tabActiveName" class="demo-tabs">
+        <el-tab-pane v-loading="loading" label="流程图" name="image" style="height: 68vh">
           <div
             ref="imageWrapperRef"
             class="image-wrapper"
@@ -14,7 +14,9 @@
             @dblclick="resetTransform"
             :style="transformStyle"
           >
-            <el-image :src="imgUrl" class="scalable-image" />
+            <el-card class="box-card">
+              <el-image :src="imgUrl" class="scalable-image" />
+            </el-card>
           </div>
         </el-tab-pane>
         <el-tab-pane v-loading="loading" label="审批信息" name="info">
@@ -222,9 +224,8 @@ const getBounds = () => {
 };
 
 const transformStyle = computed(() => ({
-  transition: isDragging ? 'none' : 'transform 0.2s ease',
+  transition: isDragging ? 'none' : 'transform 0.2s ease'
 }));
-
 
 /**
  * 对外暴露子组件方法
@@ -257,7 +258,6 @@ defineExpose({
 
 .image-wrapper {
   width: 100%;
-  height: 100%;
   overflow: hidden;
   position: relative;
   margin: 0 auto;
@@ -275,5 +275,6 @@ defineExpose({
 .scalable-image {
   object-fit: contain;
   width: 100%;
+  padding: 15px;
 }
 </style>

@@ -1,25 +1,13 @@
 <template>
   <div ref="container" class="container">
-    <iframe ref="iframe" :src="iframeUrl" frameborder="0" :width="sidebarStatusWidth()" height="100%"></iframe>
+    <iframe ref="iframe" :src="iframeUrl" frameborder="0" style="height: 100%; width: inherit"></iframe>
   </div>
 </template>
 
 <script setup name="WarmFlow">
-
 const { proxy } = getCurrentInstance();
 import { onMounted } from 'vue';
 import { getToken } from '@/utils/auth';
-
-const sidebarStatus = useStorage('sidebarStatus', '1');
-
-console.log(sidebarStatus.value)
-
-const sidebarStatusWidth = () => {
-  if (sidebarStatus.value === '0') {
-    return "115%";
-  }
-  return "104%";
-}
 
 // definitionId为需要查询的流程定义id，
 // disabled为是否可编辑, 例如：查看的时候不可编辑，不可保存
