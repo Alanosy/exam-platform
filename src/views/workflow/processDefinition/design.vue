@@ -1,5 +1,5 @@
 <template>
-  <div ref="container" class="container">
+  <div ref="container" class="w-full h-[calc(100vh-84px)]">
     <iframe ref="iframe" :src="iframeUrl" frameborder="0" style="height: 100%; width: inherit"></iframe>
   </div>
 </template>
@@ -44,10 +44,3 @@ defineExpose({
   open
 });
 </script>
-
-<style scoped>
-.container {
-  width: 100%;
-  height: calc(100vh - 84px);
-}
-</style>
