@@ -7,7 +7,6 @@ security:
       - /auth/logout
       - /auth/login
       - /auth/binding/*
-      - /auth/social/callback
       - /auth/register
       - /auth/tenant/list
       - /resource/sms/code
