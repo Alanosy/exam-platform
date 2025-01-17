@@ -1,7 +1,5 @@
 package org.dromara.common.core.utils;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
 import org.apache.commons.lang3.time.DateFormatUtils;
 import org.dromara.common.core.enums.FormatsType;
 import org.dromara.common.core.exception.ServiceException;
@@ -18,12 +16,15 @@ import java.util.concurrent.TimeUnit;
  *
  * @author ruoyi
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class DateUtils extends org.apache.commons.lang3.time.DateUtils {
     private static final String[] PARSE_PATTERNS = {
         "yyyy-MM-dd", "yyyy-MM-dd HH:mm:ss", "yyyy-MM-dd HH:mm", "yyyy-MM",
         "yyyy/MM/dd", "yyyy/MM/dd HH:mm:ss", "yyyy/MM/dd HH:mm", "yyyy/MM",
         "yyyy.MM.dd", "yyyy.MM.dd HH:mm:ss", "yyyy.MM.dd HH:mm", "yyyy.MM"};
+
+    @Deprecated
+    private DateUtils() {
+    }
 
     /**
      * 获取当前日期和时间

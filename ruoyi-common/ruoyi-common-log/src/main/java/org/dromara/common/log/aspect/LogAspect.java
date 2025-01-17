@@ -113,7 +113,7 @@ public class LogAspect {
             // 设置消耗时间
             StopWatch stopWatch = KEY_CACHE.get();
             stopWatch.stop();
-            operLog.setCostTime(stopWatch.getTime());
+            operLog.setCostTime(stopWatch.getDuration().toMillis());
             // 发布事件保存数据库
             SpringUtils.context().publishEvent(operLog);
         } catch (Exception exp) {

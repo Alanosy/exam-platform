@@ -59,7 +59,7 @@ public class SocialUtils  {
             case "microsoft" -> new AuthMicrosoftRequest(builder.build(), STATE_CACHE);
             case "renren" -> new AuthRenrenRequest(builder.build(), STATE_CACHE);
             case "stack_overflow" -> new AuthStackOverflowRequest(builder.stackOverflowKey(obj.getStackOverflowKey()).build(), STATE_CACHE);
-            case "huawei" -> new AuthHuaweiRequest(builder.build(), STATE_CACHE);
+            case "huawei" -> new AuthHuaweiV3Request(builder.build(), STATE_CACHE);
             case "wechat_enterprise" -> new AuthWeChatEnterpriseQrcodeRequest(builder.agentId(obj.getAgentId()).build(), STATE_CACHE);
             case "gitlab" -> new AuthGitlabRequest(builder.build(), STATE_CACHE);
             case "wechat_mp" -> new AuthWeChatMpRequest(builder.build(), STATE_CACHE);
