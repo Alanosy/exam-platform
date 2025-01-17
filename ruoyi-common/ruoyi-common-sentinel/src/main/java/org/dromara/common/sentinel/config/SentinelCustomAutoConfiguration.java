@@ -30,7 +30,7 @@ public class SentinelCustomAutoConfiguration {
     private DiscoveryClient discoveryClient;
 
     @Bean
-    public void sentinelInit() {
+    public Object sentinelInit() {
         if (StringUtils.isNotBlank(customProperties.getServerName())) {
             List<ServiceInstance> instances = discoveryClient.getInstances(customProperties.getServerName());
             String serverList = StreamUtils.join(instances, instance ->
@@ -45,6 +45,7 @@ public class SentinelCustomAutoConfiguration {
         }
         // 手动初始化 sentinel
         InitExecutor.doInit();
+        return new Object();
     }
 
 
