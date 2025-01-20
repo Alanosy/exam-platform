@@ -116,7 +116,7 @@
               v-model:page="queryParams.pageNum"
               v-model:limit="queryParams.pageSize"
               :total="total"
-              @pagination="handleQuery"
+              @pagination="getPageList"
             />
           </el-tabs>
         </el-card>
@@ -321,6 +321,14 @@ const handleSelectionChange = (selection: any) => {
   flowCodeList.value = selection.map((item: any) => item.flowCode);
   single.value = selection.length !== 1;
   multiple.value = !selection.length;
+};
+//分页
+const getPageList = async () => {
+  if (activeName.value === '0') {
+    getList();
+  } else {
+    getUnPublishList();
+  }
 };
 //分页
 const getList = async () => {
