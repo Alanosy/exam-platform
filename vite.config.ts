@@ -64,16 +64,6 @@ export default defineConfig(({ mode, command }: ConfigEnv): UserConfig => {
         'echarts',
         'vue-i18n',
         '@vueup/vue-quill',
-        'bpmn-js/lib/Viewer',
-        'bpmn-js/lib/Modeler.js',
-        'bpmn-js-properties-panel',
-        'min-dash',
-        'diagram-js/lib/navigation/movecanvas',
-        'diagram-js/lib/navigation/zoomscroll',
-        'bpmn-js/lib/features/palette/PaletteProvider',
-        'bpmn-js/lib/features/context-pad/ContextPadProvider',
-        'diagram-js/lib/draw/BaseRenderer',
-        'tiny-svg',
         'image-conversion',
         'element-plus/es/components/**/css'
       ]

@@ -14,14 +14,14 @@
   --tableHeaderBg: #f8f8f9;
   --tableHeaderTextColor: #515a6e;
 
-  // 工作流
-  --bpmn-panel-border: #eeeeee;
-  --bpmn-panel-box-shadow: #cccccc;
-  --bpmn-panel-bar-background-color: #f5f7fa;
-
   // ele
-  --brder-color: #e8e8e8
+  --brder-color: #e8e8e8;
+
+  // 添加 tag 相关变量
+  --tags-view-active-bg: var(--el-color-primary);
+  --tags-view-active-border-color: var(--el-color-primary);
 }
+
 html.dark {
   --menuBg: #1d1e1f;
   --menuColor: #bfcbd9;
@@ -41,26 +41,40 @@ html.dark {
   .el-tree-node__content {
     --el-color-primary-light-9: #262727;
   }
+
+  .el-button--primary {
+    --el-button-bg-color: var(--el-color-primary-dark-6);
+    --el-button-border-color: var(--el-color-primary-light-2);
+  }
+
+  .el-switch {
+    --el-switch-on-color: var(--el-color-primary-dark-6);
+    --el-switch-border-color: var(--el-color-primary-light-2);
+  }
+
+  .el-tag--primary {
+    --el-tag-bg-color: var(--el-color-primary-dark-6);
+    --el-tag-border-color: var(--el-color-primary-light-2);
+  }
+
+  // 在深色模式下使用更深的颜色
+  --tags-view-active-bg: var(--el-color-primary-dark-6);
+  --tags-view-active-border-color: var(--el-color-primary-light-2);
   // vxe-table 主题
-  --vxe-font-color: #98989E;
-  --vxe-primary-color: #2C7ECF;
-  --vxe-icon-background-color: #98989E;
-  --vxe-table-font-color: #98989E;
+  --vxe-font-color: #98989e;
+  --vxe-primary-color: #2c7ecf;
+  --vxe-icon-background-color: #98989e;
+  --vxe-table-font-color: #98989e;
   --vxe-table-resizable-color: #95969a;
-  --vxe-table-header-background-color: #28282A;
+  --vxe-table-header-background-color: #28282a;
   --vxe-table-body-background-color: #151518;
   --vxe-table-background-color: #4a5663;
   --vxe-table-border-width: 1px;
-  --vxe-table-border-color: #37373A;
-  --vxe-toolbar-background-color: #37373A;
-
-  // 工作流
-  --bpmn-panel-border: #37373A;
-  --bpmn-panel-box-shadow: #37373A;
-  --bpmn-panel-bar-background-color: #37373A;
+  --vxe-table-border-color: #37373a;
+  --vxe-toolbar-background-color: #37373a;
 
   // ele
-  --brder-color: #37373A
+  --brder-color: #37373a;
 }
 
 // base color

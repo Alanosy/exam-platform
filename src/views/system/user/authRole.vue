@@ -39,7 +39,7 @@
           <el-table-column label="权限字符" align="center" prop="roleKey" />
           <el-table-column label="创建时间" align="center" prop="createTime" width="180">
             <template #default="scope">
-              <span>{{ parseTime(scope.row.createTime) }}</span>
+              <span>{{ proxy.parseTime(scope.row.createTime) }}</span>
             </template>
           </el-table-column>
         </el-table>
@@ -80,7 +80,7 @@ const tableRef = ref<ElTableInstance>();
 
 /** 单击选中行数据 */
 const clickRow = (row: RoleVO) => {
-  row.flag = !row.flag
+  row.flag = !row.flag;
   tableRef.value?.toggleRowSelection(row, row.flag);
 };
 /** 多选框选中数据 */

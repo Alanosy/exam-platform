@@ -27,11 +27,11 @@
           <el-col :span="1.5">
             <el-button v-hasPermi="['workflow:leave:export']" type="warning" plain icon="Download" @click="handleExport">导出</el-button>
           </el-col>
-          <right-toolbar v-model:showSearch="showSearch" @query-table="getList"></right-toolbar>
+          <right-toolbar v-model:show-search="showSearch" @query-table="getList"></right-toolbar>
         </el-row>
       </template>
 
-      <el-table v-loading="loading" :data="leaveList" @selection-change="handleSelectionChange">
+      <el-table v-loading="loading" border :data="leaveList" @selection-change="handleSelectionChange">
         <el-table-column type="selection" width="55" align="center" />
         <el-table-column v-if="false" label="主键" align="center" prop="id" />
         <el-table-column label="请假类型" align="center">
@@ -41,12 +41,12 @@
         </el-table-column>
         <el-table-column label="开始时间" align="center" prop="startDate">
           <template #default="scope">
-            <span>{{ parseTime(scope.row.startDate, '{y}-{m}-{d}') }}</span>
+            <span>{{ proxy.parseTime(scope.row.startDate, '{y}-{m}-{d}') }}</span>
           </template>
         </el-table-column>
         <el-table-column label="结束时间" align="center" prop="endDate">
           <template #default="scope">
-            <span>{{ parseTime(scope.row.endDate, '{y}-{m}-{d}') }}</span>
+            <span>{{ proxy.parseTime(scope.row.endDate, '{y}-{m}-{d}') }}</span>
           </template>
         </el-table-column>
         <el-table-column label="请假天数" align="center" prop="leaveDays" />
@@ -56,38 +56,28 @@
             <dict-tag :options="wf_business_status" :value="scope.row.status"></dict-tag>
           </template>
         </el-table-column>
-        <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
+        <el-table-column label="操作" align="center" width="162">
           <template #default="scope">
-            <el-button
-              v-if="scope.row.status === 'draft' || scope.row.status === 'cancel' || scope.row.status === 'back'"
-              v-hasPermi="['workflow:leave:edit']"
-              size="small"
-              link
-              type="primary"
-              icon="Edit"
-              @click="handleUpdate(scope.row)"
-              >修改</el-button
-            >
-            <el-button
-              v-if="scope.row.status === 'draft' || scope.row.status === 'cancel' || scope.row.status === 'back'"
-              v-hasPermi="['workflow:leave:remove']"
-              size="small"
-              link
-              type="primary"
-              icon="Delete"
-              @click="handleDelete(scope.row)"
-              >删除</el-button
-            >
-            <el-button link type="primary" size="small" icon="View" @click="handleView(scope.row)">查看</el-button>
-            <el-button
-              v-if="scope.row.status === 'waiting'"
-              link
-              size="small"
-              type="primary"
-              icon="Notification"
-              @click="handleCancelProcessApply(scope.row.id)"
-              >撤销</el-button
-            >
+            <el-row :gutter="10" class="mb8">
+              <el-col :span="1.5" v-if="scope.row.status === 'draft' || scope.row.status === 'cancel' || scope.row.status === 'back'">
+                <el-button v-hasPermi="['workflow:leave:edit']" size="small" type="primary" icon="Edit" @click="handleUpdate(scope.row)"
+                  >修改</el-button
+                >
+              </el-col>
+              <el-col :span="1.5" v-if="scope.row.status === 'draft' || scope.row.status === 'cancel' || scope.row.status === 'back'">
+                <el-button v-hasPermi="['workflow:leave:remove']" size="small" type="primary" icon="Delete" @click="handleDelete(scope.row)"
+                  >删除</el-button
+                >
+              </el-col>
+            </el-row>
+            <el-row :gutter="10" class="mb8">
+              <el-col :span="1.5">
+                <el-button type="primary" size="small" icon="View" @click="handleView(scope.row)">查看</el-button>
+              </el-col>
+              <el-col :span="1.5" v-if="scope.row.status === 'waiting'">
+                <el-button size="small" type="primary" icon="Notification" @click="handleCancelProcessApply(scope.row.id)">撤销</el-button>
+              </el-col>
+            </el-row>
           </template>
         </el-table-column>
       </el-table>
@@ -99,7 +89,7 @@
 
 <script setup name="Leave" lang="ts">
 import { delLeave, listLeave } from '@/api/workflow/leave';
-import { cancelProcessApply } from '@/api/workflow/processInstance';
+import { cancelProcessApply } from '@/api/workflow/instance';
 import { LeaveForm, LeaveQuery, LeaveVO } from '@/api/workflow/leave/types';
 
 const { proxy } = getCurrentInstance() as ComponentInternalInstance;
@@ -232,7 +222,11 @@ const handleExport = () => {
 const handleCancelProcessApply = async (id: string) => {
   await proxy?.$modal.confirm('是否确认撤销当前单据？');
   loading.value = true;
-  await cancelProcessApply(id).finally(() => (loading.value = false));
+  let data = {
+    businessId: id,
+    message: '申请人撤销流程！'
+  };
+  await cancelProcessApply(data).finally(() => (loading.value = false));
   await getList();
   proxy?.$modal.msgSuccess('撤销成功');
 };

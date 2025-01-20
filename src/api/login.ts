@@ -51,10 +51,12 @@ export function register(data: any) {
  * 注销
  */
 export function logout() {
-  request({
-    url: '/resource/sse/close',
-    method: 'get'
-  });
+  if (import.meta.env.VITE_APP_SSE === 'true') {
+    request({
+      url: '/resource/sse/close',
+      method: 'get'
+    });
+  }
   return request({
     url: '/auth/logout',
     method: 'post'
@@ -100,11 +102,11 @@ export function getInfo(): AxiosPromise<UserInfo> {
 }
 
 // 获取租户列表
-export function getTenantList(): AxiosPromise<TenantInfo> {
+export function getTenantList(isToken: boolean): AxiosPromise<TenantInfo> {
   return request({
     url: '/auth/tenant/list',
     headers: {
-      isToken: false
+      isToken: isToken
     },
     method: 'get'
   });

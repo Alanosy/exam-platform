@@ -1,29 +1,15 @@
 export const useDictStore = defineStore('dict', () => {
-  const dict = ref<
-    Array<{
-      key: string;
-      value: DictDataOption[];
-    }>
-  >([]);
+  const dict = ref<Map<string, DictDataOption[]>>(new Map());
 
   /**
    * 获取字典
    * @param _key 字典key
    */
   const getDict = (_key: string): DictDataOption[] | null => {
-    if (_key == null && _key == '') {
+    if (!_key) {
       return null;
     }
-    try {
-      for (let i = 0; i < dict.value.length; i++) {
-        if (dict.value[i].key == _key) {
-          return dict.value[i].value;
-        }
-      }
-    } catch (e) {
-      return null;
-    }
-    return null;
+    return dict.value.get(_key) || null;
   };
 
   /**
@@ -32,11 +18,15 @@ export const useDictStore = defineStore('dict', () => {
    * @param _value 字典value
    */
   const setDict = (_key: string, _value: DictDataOption[]) => {
-    if (_key !== null && _key !== '') {
-      dict.value.push({
-        key: _key,
-        value: _value
-      });
+    if (!_key) {
+      return false;
+    }
+    try {
+      dict.value.set(_key, _value);
+      return true;
+    } catch (e) {
+      console.error('Error in setDict:', e);
+      return false;
     }
   };
 
@@ -45,25 +35,22 @@ export const useDictStore = defineStore('dict', () => {
    * @param _key
    */
   const removeDict = (_key: string): boolean => {
-    let bln = false;
-    try {
-      for (let i = 0; i < dict.value.length; i++) {
-        if (dict.value[i].key == _key) {
-          dict.value.splice(i, 1);
-          return true;
-        }
-      }
-    } catch (e) {
-      bln = false;
+    if (!_key) {
+      return false;
     }
-    return bln;
+    try {
+      return dict.value.delete(_key);
+    } catch (e) {
+      console.error('Error in removeDict:', e);
+      return false;
+    }
   };
 
   /**
    * 清空字典
    */
   const cleanDict = (): void => {
-    dict.value = [];
+    dict.value.clear();
   };
 
   return {

@@ -103,7 +103,7 @@ export const dynamicRoutes: RouteRecordRaw[] = [
         path: 'role/:userId(\\d+)',
         component: () => import('@/views/system/user/authRole.vue'),
         name: 'AuthRole',
-        meta: { title: '分配角色', activeMenu: '/system/user', icon: '' }
+        meta: { title: '分配角色', activeMenu: '/system/user', icon: '', noCache: true }
       }
     ]
   },
@@ -117,7 +117,7 @@ export const dynamicRoutes: RouteRecordRaw[] = [
         path: 'user/:roleId(\\d+)',
         component: () => import('@/views/system/role/authUser.vue'),
         name: 'AuthUser',
-        meta: { title: '分配用户', activeMenu: '/system/role', icon: '' }
+        meta: { title: '分配用户', activeMenu: '/system/role', icon: '', noCache: true }
       }
     ]
   },
@@ -131,7 +131,7 @@ export const dynamicRoutes: RouteRecordRaw[] = [
         path: 'index/:dictId(\\d+)',
         component: () => import('@/views/system/dict/data.vue'),
         name: 'Data',
-        meta: { title: '字典数据', activeMenu: '/system/dict', icon: '' }
+        meta: { title: '字典数据', activeMenu: '/system/dict', icon: '', noCache: true }
       }
     ]
   },
@@ -145,7 +145,7 @@ export const dynamicRoutes: RouteRecordRaw[] = [
         path: 'index',
         component: () => import('@/views/system/oss/config.vue'),
         name: 'OssConfig',
-        meta: { title: '配置管理', activeMenu: '/system/oss', icon: '' }
+        meta: { title: '配置管理', activeMenu: '/system/oss', icon: '', noCache: true }
       }
     ]
   },
@@ -176,6 +176,20 @@ export const dynamicRoutes: RouteRecordRaw[] = [
         meta: { title: '请假申请', activeMenu: '/workflow/leave', noCache: true }
       }
     ]
+  },
+  {
+    path: '/workflow/design',
+    component: Layout,
+    hidden: true,
+    permissions: ['workflow:leave:edit'],
+    children: [
+      {
+        path: 'index',
+        component: () => import('@/views/workflow/processDefinition/design.vue'),
+        name: 'design',
+        meta: { title: '流程设计', activeMenu: '/workflow/processDefinition', noCache: true }
+      }
+    ]
   }
 ];
 
@@ -189,9 +203,8 @@ const router = createRouter({
   scrollBehavior(to, from, savedPosition) {
     if (savedPosition) {
       return savedPosition;
-    } else {
-      return { top: 0 };
     }
+    return { top: 0 };
   }
 });
 

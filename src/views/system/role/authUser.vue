@@ -30,7 +30,7 @@
           <el-col :span="1.5">
             <el-button type="warning" plain icon="Close" @click="handleClose">关闭</el-button>
           </el-col>
-          <right-toolbar v-model:showSearch="showSearch" :search="true" @query-table="getList"></right-toolbar>
+          <right-toolbar v-model:show-search="showSearch" :search="true" @query-table="getList"></right-toolbar>
         </el-row>
       </template>
       <el-table v-loading="loading" :data="userList" @selection-change="handleSelectionChange">

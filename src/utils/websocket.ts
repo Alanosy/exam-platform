@@ -7,7 +7,7 @@ export const initWebSocket = (url: any) => {
   if (import.meta.env.VITE_APP_WEBSOCKET === 'false') {
     return;
   }
-  url = url + '?Authorization=Bearer ' + getToken() + '&clientid=' + import.meta.env.VITE_APP_CLIENT_ID
+  url = url + '?Authorization=Bearer ' + getToken() + '&clientid=' + import.meta.env.VITE_APP_CLIENT_ID;
   useWebSocket(url, {
     autoReconnect: {
       // 重连最大次数
@@ -16,14 +16,14 @@ export const initWebSocket = (url: any) => {
       delay: 1000,
       onFailed() {
         console.log('websocket重连失败');
-      },
+      }
     },
     heartbeat: {
-      message: JSON.stringify({type: 'ping'}),
+      message: JSON.stringify({ type: 'ping' }),
       // 发送心跳的间隔
       interval: 10000,
       // 接收到心跳response的超时时间
-      pongTimeout: 2000,
+      pongTimeout: 2000
     },
     onConnected() {
       console.log('websocket已经连接');

@@ -66,7 +66,7 @@ const closeSearch = () => {
   state.isShowSearch = false;
 };
 // 菜单搜索数据过滤
-const menuSearch = (queryString: string, cb: Function) => {
+const menuSearch = (queryString: string, cb: (options: any[]) => void) => {
   let options = state.menuList.filter((item) => {
     return item.title.indexOf(queryString) > -1;
   });

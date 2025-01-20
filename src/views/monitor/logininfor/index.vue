@@ -54,7 +54,7 @@
           <el-col :span="1.5">
             <el-button v-hasPermi="['monitor:logininfor:export']" type="warning" plain icon="Download" @click="handleExport">导出</el-button>
           </el-col>
-          <right-toolbar v-model:showSearch="showSearch" @query-table="getList"></right-toolbar>
+          <right-toolbar v-model:show-search="showSearch" @query-table="getList"></right-toolbar>
         </el-row>
       </template>
 
@@ -94,7 +94,7 @@
         <el-table-column label="描述" align="center" prop="msg" :show-overflow-tooltip="true" />
         <el-table-column label="访问时间" align="center" prop="loginTime" sortable="custom" :sort-orders="['descending', 'ascending']" width="180">
           <template #default="scope">
-            <span>{{ parseTime(scope.row.loginTime) }}</span>
+            <span>{{ proxy.parseTime(scope.row.loginTime) }}</span>
           </template>
         </el-table-column>
       </el-table>

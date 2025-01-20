@@ -3,14 +3,18 @@ import router from './router';
 import NProgress from 'nprogress';
 import 'nprogress/nprogress.css';
 import { getToken } from '@/utils/auth';
-import { isHttp } from '@/utils/validate';
+import { isHttp, isPathMatch } from '@/utils/validate';
 import { isRelogin } from '@/utils/request';
 import useUserStore from '@/store/modules/user';
 import useSettingsStore from '@/store/modules/settings';
 import usePermissionStore from '@/store/modules/permission';
 
 NProgress.configure({ showSpinner: false });
-const whiteList = ['/login', '/register', '/social-callback'];
+const whiteList = ['/login', '/register', '/social-callback', '/register*', '/register/*'];
+
+const isWhiteList = (path: string) => {
+  return whiteList.some(pattern => isPathMatch(pattern, path))
+}
 
 router.beforeEach(async (to, from, next) => {
   NProgress.start();
@@ -20,7 +24,7 @@ router.beforeEach(async (to, from, next) => {
     if (to.path === '/login') {
       next({ path: '/' });
       NProgress.done();
-    } else if (whiteList.indexOf(to.path as string) !== -1) {
+    } else if (isWhiteList(to.path)) {
       next();
     } else {
       if (useUserStore().roles.length === 0) {
@@ -40,7 +44,7 @@ router.beforeEach(async (to, from, next) => {
               router.addRoute(route); // 动态添加可访问路由表
             }
           });
-          // @ts-ignore
+          // @ts-expect-error hack方法 确保addRoutes已完成
           next({ path: to.path, replace: true, params: to.params, query: to.query, hash: to.hash, name: to.name as string }); // hack方法 确保addRoutes已完成
         }
       } else {
@@ -49,7 +53,7 @@ router.beforeEach(async (to, from, next) => {
     }
   } else {
     // 没有token
-    if (whiteList.indexOf(to.path as string) !== -1) {
+    if (isWhiteList(to.path)) {
       // 在免登录白名单，直接进入
       next();
     } else {

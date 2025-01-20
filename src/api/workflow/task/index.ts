@@ -1,15 +1,15 @@
 import request from '@/utils/request';
 import { AxiosPromise } from 'axios';
-import { TaskQuery, TaskVO } from '@/api/workflow/task/types';
+import { TaskQuery, FlowTaskVO, TaskOperationBo } from '@/api/workflow/task/types';
 
 /**
  * 查询待办列表
  * @param query
  * @returns {*}
  */
-export const getPageByTaskWait = (query: TaskQuery): AxiosPromise<TaskVO[]> => {
+export const pageByTaskWait = (query: TaskQuery): AxiosPromise<FlowTaskVO[]> => {
   return request({
-    url: '/workflow/task/getPageByTaskWait',
+    url: '/workflow/task/pageByTaskWait',
     method: 'get',
     params: query
   });
@@ -20,9 +20,9 @@ export const getPageByTaskWait = (query: TaskQuery): AxiosPromise<TaskVO[]> => {
  * @param query
  * @returns {*}
  */
-export const getPageByTaskFinish = (query: TaskQuery): AxiosPromise<TaskVO[]> => {
+export const pageByTaskFinish = (query: TaskQuery): AxiosPromise<FlowTaskVO[]> => {
   return request({
-    url: '/workflow/task/getPageByTaskFinish',
+    url: '/workflow/task/pageByTaskFinish',
     method: 'get',
     params: query
   });
@@ -33,9 +33,9 @@ export const getPageByTaskFinish = (query: TaskQuery): AxiosPromise<TaskVO[]> =>
  * @param query
  * @returns {*}
  */
-export const getPageByTaskCopy = (query: TaskQuery): AxiosPromise<TaskVO[]> => {
+export const pageByTaskCopy = (query: TaskQuery): AxiosPromise<FlowTaskVO[]> => {
   return request({
-    url: '/workflow/task/getPageByTaskCopy',
+    url: '/workflow/task/pageByTaskCopy',
     method: 'get',
     params: query
   });
@@ -46,9 +46,9 @@ export const getPageByTaskCopy = (query: TaskQuery): AxiosPromise<TaskVO[]> => {
  * @param query
  * @returns {*}
  */
-export const getPageByAllTaskWait = (query: TaskQuery): AxiosPromise<TaskVO[]> => {
+export const pageByAllTaskWait = (query: TaskQuery): AxiosPromise<FlowTaskVO[]> => {
   return request({
-    url: '/workflow/task/getPageByAllTaskWait',
+    url: '/workflow/task/pageByAllTaskWait',
     method: 'get',
     params: query
   });
@@ -59,9 +59,9 @@ export const getPageByAllTaskWait = (query: TaskQuery): AxiosPromise<TaskVO[]> =
  * @param query
  * @returns {*}
  */
-export const getPageByAllTaskFinish = (query: TaskQuery): AxiosPromise<TaskVO[]> => {
+export const pageByAllTaskFinish = (query: TaskQuery): AxiosPromise<FlowTaskVO[]> => {
   return request({
-    url: '/workflow/task/getPageByAllTaskFinish',
+    url: '/workflow/task/pageByAllTaskFinish',
     method: 'get',
     params: query
   });
@@ -94,30 +94,6 @@ export const completeTask = (data: object) => {
 };
 
 /**
- * 认领任务
- * @param taskId
- * @returns {*}
- */
-export const claim = (taskId: string): any => {
-  return request({
-    url: '/workflow/task/claim/' + taskId,
-    method: 'post'
-  });
-};
-
-/**
- * 归还任务
- * @param taskId
- * @returns {*}
- */
-export const returnTask = (taskId: string): any => {
-  return request({
-    url: '/workflow/task/returnTask/' + taskId,
-    method: 'post'
-  });
-};
-
-/**
  * 任务驳回
  * @param data
  * @returns {*}
@@ -135,61 +111,24 @@ export const backProcess = (data: any): any => {
  * @param taskId
  * @returns
  */
-export const getTaskById = (taskId: string) => {
+export const getTask = (taskId: string) => {
   return request({
-    url: '/workflow/task/getTaskById/' + taskId,
+    url: '/workflow/task/getTask/' + taskId,
     method: 'get'
   });
 };
 
 /**
- * 加签
- * @param data
- * @returns
- */
-export const addMultiInstanceExecution = (data: any) => {
-  return request({
-    url: '/workflow/task/addMultiInstanceExecution',
-    method: 'post',
-    data: data
-  });
-};
-
-/**
- * 减签
- * @param data
- * @returns
- */
-export const deleteMultiInstanceExecution = (data: any) => {
-  return request({
-    url: '/workflow/task/deleteMultiInstanceExecution',
-    method: 'post',
-    data: data
-  });
-};
-
-/**
  * 修改任务办理人
- * @param taskIds
+ * @param taskIdList
  * @param userId
  * @returns
  */
-export const updateAssignee = (taskIds: Array<string>, userId: string) => {
+export const updateAssignee = (taskIdList: Array<string>, userId: string) => {
   return request({
-    url: `/workflow/task/updateAssignee/${taskIds}/${userId}`,
-    method: 'put'
-  });
-};
-
-/**
- * 转办任务
- * @returns
- */
-export const transferTask = (data: any) => {
-  return request({
-    url: `/workflow/task/transferTask`,
-    method: 'post',
-    data: data
+    url: `/workflow/task/updateAssignee/${userId}`,
+    method: 'put',
+    data: taskIdList
   });
 };
 
@@ -206,59 +145,36 @@ export const terminationTask = (data: any) => {
 };
 
 /**
- * 查询流程变量
- * @returns
- */
-export const getInstanceVariable = (taskId: string) => {
-  return request({
-    url: `/workflow/task/getInstanceVariable/${taskId}`,
-    method: 'get'
-  });
-};
-
-/**
  * 获取可驳回得任务节点
  * @returns
  */
-export const getTaskNodeList = (processInstanceId: string) => {
+export const getBackTaskNode = (definitionId: string, nodeCode: string) => {
   return request({
-    url: `/workflow/task/getTaskNodeList/${processInstanceId}`,
+    url: `/workflow/task/getBackTaskNode/${definitionId}/${nodeCode}`,
     method: 'get'
   });
 };
 
 /**
- * 委托任务
+ * 任务操作 操作类型，委派 delegateTask、转办 transferTask、加签 addSignature、减签 reductionSignature
  * @returns
  */
-export const delegateTask = (data: any) => {
+export const taskOperation = (data: TaskOperationBo, operation: string) => {
   return request({
-    url: `/workflow/task/delegateTask`,
+    url: `/workflow/task/taskOperation/${operation}`,
     method: 'post',
     data: data
   });
 };
 
 /**
- * 查询工作流任务用户选择加签人员
- * @param taskId
- * @returns {*}
+ * 获取当前任务办理人
+ * @param taskId 任务id
+ * @returns
  */
-export const getTaskUserIdsByAddMultiInstance = (taskId: string) => {
+export const currentTaskAllUser = (taskId: string | number) => {
   return request({
-    url: '/workflow/task/getTaskUserIdsByAddMultiInstance/' + taskId,
-    method: 'get'
-  });
-};
-
-/**
- * 查询工作流选择减签人员
- * @param taskId
- * @returns {*}
- */
-export const getListByDeleteMultiInstance = (taskId: string) => {
-  return request({
-    url: '/workflow/task/getListByDeleteMultiInstance/' + taskId,
+    url: `/workflow/task/currentTaskAllUser/${taskId}`,
     method: 'get'
   });
 };

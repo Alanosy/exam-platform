@@ -29,6 +29,18 @@ export interface DeptVO extends BaseEntity {
 }
 
 /**
+ * 部门类型
+ */
+export interface DeptTreeVO extends BaseEntity {
+  id: number | string;
+  label: string;
+  parentId: number | string;
+  weight: number;
+  children: DeptTreeVO[];
+  disabled: boolean;
+}
+
+/**
  * 部门表单类型
  */
 export interface DeptForm {

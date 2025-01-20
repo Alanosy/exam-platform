@@ -8,11 +8,8 @@ export const initSSE = (url: any) => {
     return;
   }
 
-  url = url + '?Authorization=Bearer ' + getToken() + '&clientid=' + import.meta.env.VITE_APP_CLIENT_ID
-  const {
-    data,
-    error
-  } = useEventSource(url, [], {
+  url = url + '?Authorization=Bearer ' + getToken() + '&clientid=' + import.meta.env.VITE_APP_CLIENT_ID;
+  const { data, error } = useEventSource(url, [], {
     autoReconnect: {
       retries: 10,
       delay: 3000,

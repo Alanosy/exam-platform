@@ -63,12 +63,12 @@
                 <el-button v-has-permi="['system:user:add']" type="primary" plain icon="Plus" @click="handleAdd()">新增</el-button>
               </el-col>
               <el-col :span="1.5">
-                <el-button v-has-permi="['system:user:add']" type="success" plain :disabled="single" icon="Edit" @click="handleUpdate()">
+                <el-button v-has-permi="['system:user:edit']" type="success" plain :disabled="single" icon="Edit" @click="handleUpdate()">
                   修改
                 </el-button>
               </el-col>
               <el-col :span="1.5">
-                <el-button v-has-permi="['system:user:delete']" type="danger" plain :disabled="multiple" icon="Delete" @click="handleDelete()">
+                <el-button v-has-permi="['system:user:remove']" type="danger" plain :disabled="multiple" icon="Delete" @click="handleDelete()">
                   删除
                 </el-button>
               </el-col>
@@ -81,13 +81,13 @@
                   <template #dropdown>
                     <el-dropdown-menu>
                       <el-dropdown-item icon="Download" @click="importTemplate">下载模板</el-dropdown-item>
-                      <el-dropdown-item icon="Top" @click="handleImport"> 导入数据</el-dropdown-item>
-                      <el-dropdown-item icon="Download" @click="handleExport"> 导出数据</el-dropdown-item>
+                      <el-dropdown-item v-has-permi="['system:user:import']" icon="Top" @click="handleImport">导入数据</el-dropdown-item>
+                      <el-dropdown-item v-has-permi="['system:user:export']" icon="Download" @click="handleExport">导出数据</el-dropdown-item>
                     </el-dropdown-menu>
                   </template>
                 </el-dropdown>
               </el-col>
-              <right-toolbar v-model:showSearch="showSearch" :columns="columns" :search="true" @query-table="getList"></right-toolbar>
+              <right-toolbar v-model:show-search="showSearch" :columns="columns" :search="true" @query-table="getList"></right-toolbar>
             </el-row>
           </template>
 
@@ -154,7 +154,7 @@
             <el-form-item label="归属部门" prop="deptId">
               <el-tree-select
                 v-model="form.deptId"
-                :data="deptOptions"
+                :data="enabledDeptOptions"
                 :props="{ value: 'id', label: 'label', children: 'children' }"
                 value-key="id"
                 placeholder="请选择归属部门"
@@ -287,7 +287,7 @@
 <script setup name="User" lang="ts">
 import api from '@/api/system/user';
 import { UserForm, UserQuery, UserVO } from '@/api/system/user/types';
-import { DeptVO } from '@/api/system/dept/types';
+import {DeptTreeVO, DeptVO} from '@/api/system/dept/types';
 import { RoleVO } from '@/api/system/role/types';
 import { PostQuery, PostVO } from '@/api/system/post/types';
 import { treeselect } from '@/api/system/dept';
@@ -307,7 +307,8 @@ const multiple = ref(true);
 const total = ref(0);
 const dateRange = ref<[DateModelType, DateModelType]>(['', '']);
 const deptName = ref('');
-const deptOptions = ref<DeptVO[]>([]);
+const deptOptions = ref<DeptTreeVO[]>([]);
+const enabledDeptOptions = ref<DeptTreeVO[]>([]);
 const initPassword = ref<string>('');
 const postOptions = ref<PostVO[]>([]);
 const roleOptions = ref<RoleVO[]>([]);
@@ -393,7 +394,7 @@ const initData: PageData<UserForm, UserQuery> = {
         message: '用户密码长度必须介于 5 和 20 之间',
         trigger: 'blur'
       },
-      { pattern: /^[^<>"'|\\]+$/, message: '不能包含非法字符：< > " \' \\\ |', trigger: 'blur' }
+      { pattern: /^[^<>"'|\\]+$/, message: '不能包含非法字符：< > " \' \\ |', trigger: 'blur' }
     ],
     email: [
       {
@@ -431,12 +432,6 @@ watchEffect(
   }
 );
 
-/** 查询部门下拉树结构 */
-const getTreeSelect = async () => {
-  const res = await api.deptTreeSelect();
-  deptOptions.value = res.data;
-};
-
 /** 查询用户列表 */
 const getList = async () => {
   loading.value = true;
@@ -444,6 +439,26 @@ const getList = async () => {
   loading.value = false;
   userList.value = res.rows;
   total.value = res.total;
+};
+
+/** 查询部门下拉树结构 */
+const getDeptTree = async () => {
+  const res = await api.deptTreeSelect();
+  deptOptions.value = res.data;
+  enabledDeptOptions.value = filterDisabledDept(res.data);
+};
+
+/** 过滤禁用的部门 */
+const filterDisabledDept = (deptList: DeptTreeVO[]) => {
+  return deptList.filter(dept => {
+    if (dept.disabled) {
+      return false;
+    }
+    if (dept.children && dept.children.length) {
+      dept.children = filterDisabledDept(dept.children);
+    }
+    return true;
+  });
 };
 
 /** 节点单击事件 */
@@ -506,7 +521,7 @@ const handleResetPwd = async (row: UserVO) => {
       inputErrorMessage: '用户密码长度必须介于 5 和 20 之间',
       inputValidator: (value) => {
         if (/<|>|"|'|\||\\/.test(value)) {
-          return '不能包含非法字符：< > " \' \\\ |';
+          return '不能包含非法字符：< > " \' \\ |';
         }
       }
     })
@@ -564,15 +579,6 @@ function submitFileForm() {
   uploadRef.value?.submit();
 }
 
-/** 初始化部门数据 */
-const initTreeData = async () => {
-  // 判断部门的数据是否存在，存在不获取，不存在则获取
-  if (deptOptions.value === undefined) {
-    const { data } = await treeselect();
-    deptOptions.value = data;
-  }
-};
-
 /** 重置操作表单 */
 const reset = () => {
   form.value = { ...initFormData };
@@ -590,7 +596,6 @@ const handleAdd = async () => {
   const { data } = await api.getUser();
   dialog.visible = true;
   dialog.title = '新增用户';
-  await initTreeData();
   postOptions.value = data.posts;
   roleOptions.value = data.roles;
   form.value.password = initPassword.value.toString();
@@ -603,7 +608,6 @@ const handleUpdate = async (row?: UserForm) => {
   const { data } = await api.getUser(userId);
   dialog.visible = true;
   dialog.title = '修改用户';
-  await initTreeData();
   Object.assign(form.value, data.user);
   postOptions.value = data.posts;
   roleOptions.value = data.roles;
@@ -643,7 +647,7 @@ const resetForm = () => {
   form.value.status = '1';
 };
 onMounted(() => {
-  getTreeSelect(); // 初始化部门数据
+  getDeptTree(); // 初始化部门数据
   getList(); // 初始化列表数据
   proxy?.getConfigKey('sys.user.initPassword').then((response) => {
     initPassword.value = response.data;

@@ -1,4 +1,4 @@
-import { DeptVO } from './../dept/types';
+import {DeptTreeVO, DeptVO} from './../dept/types';
 import { RoleVO } from '@/api/system/role/types';
 import request from '@/utils/request';
 import { AxiosPromise } from 'axios';
@@ -202,7 +202,7 @@ export const listUserByDeptId = (deptId: string | number): AxiosPromise<UserVO[]
 /**
  * 查询部门下拉树结构
  */
-export const deptTreeSelect = (): AxiosPromise<DeptVO[]> => {
+export const deptTreeSelect = (): AxiosPromise<DeptTreeVO[]> => {
   return request({
     url: '/system/user/deptTree',
     method: 'get'
