@@ -6,13 +6,13 @@
         <lang-select />
       </div>
       <el-form-item v-if="tenantEnabled" prop="tenantId">
-        <el-select v-model="registerForm.tenantId" filterable :placeholder="$t('register.selectPlaceholder')" style="width: 100%">
+        <el-select v-model="registerForm.tenantId" filterable :placeholder="proxy.$t('register.selectPlaceholder')" style="width: 100%">
           <el-option v-for="item in tenantList" :key="item.tenantId" :label="item.companyName" :value="item.tenantId"> </el-option>
           <template #prefix><svg-icon icon-class="company" class="el-input__icon input-icon" /></template>
         </el-select>
       </el-form-item>
       <el-form-item prop="username">
-        <el-input v-model="registerForm.username" type="text" size="large" auto-complete="off" :placeholder="$t('register.username')">
+        <el-input v-model="registerForm.username" type="text" size="large" auto-complete="off" :placeholder="proxy.$t('register.username')">
           <template #prefix><svg-icon icon-class="user" class="el-input__icon input-icon" /></template>
         </el-input>
       </el-form-item>
@@ -22,7 +22,7 @@
           type="password"
           size="large"
           auto-complete="off"
-          :placeholder="$t('register.password')"
+          :placeholder="proxy.$t('register.password')"
           @keyup.enter="handleRegister"
         >
           <template #prefix><svg-icon icon-class="password" class="el-input__icon input-icon" /></template>
@@ -34,7 +34,7 @@
           type="password"
           size="large"
           auto-complete="off"
-          :placeholder="$t('register.confirmPassword')"
+          :placeholder="proxy.$t('register.confirmPassword')"
           @keyup.enter="handleRegister"
         >
           <template #prefix><svg-icon icon-class="password" class="el-input__icon input-icon" /></template>
@@ -45,7 +45,7 @@
           v-model="registerForm.code"
           size="large"
           auto-complete="off"
-          :placeholder="$t('register.code')"
+          :placeholder="proxy.$t('register.code')"
           style="width: 63%"
           @keyup.enter="handleRegister"
         >
@@ -57,11 +57,11 @@
       </el-form-item>
       <el-form-item style="width: 100%">
         <el-button :loading="loading" size="large" type="primary" style="width: 100%" @click.prevent="handleRegister">
-          <span v-if="!loading">{{ $t('register.register') }}</span>
-          <span v-else>{{ $t('register.registering') }}</span>
+          <span v-if="!loading">{{ proxy.$t('register.register') }}</span>
+          <span v-else>{{ proxy.$t('register.registering') }}</span>
         </el-button>
         <div style="float: right">
-          <router-link class="link-type" :to="'/login'">{{ $t('register.switchLoginPage') }}</router-link>
+          <router-link class="link-type" :to="'/login'">{{ proxy.$t('register.switchLoginPage') }}</router-link>
         </div>
       </el-form-item>
     </el-form>
@@ -77,6 +77,8 @@ import { getCodeImg, register, getTenantList } from '@/api/login';
 import { RegisterForm, TenantVO } from '@/api/types';
 import { to } from 'await-to-js';
 import { useI18n } from 'vue-i18n';
+
+const { proxy } = getCurrentInstance() as ComponentInternalInstance;
 
 const router = useRouter();
 

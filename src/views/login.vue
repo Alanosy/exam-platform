@@ -6,13 +6,13 @@
         <lang-select />
       </div>
       <el-form-item v-if="tenantEnabled" prop="tenantId">
-        <el-select v-model="loginForm.tenantId" filterable :placeholder="$t('login.selectPlaceholder')" style="width: 100%">
+        <el-select v-model="loginForm.tenantId" filterable :placeholder="proxy.$t('login.selectPlaceholder')" style="width: 100%">
           <el-option v-for="item in tenantList" :key="item.tenantId" :label="item.companyName" :value="item.tenantId"></el-option>
           <template #prefix><svg-icon icon-class="company" class="el-input__icon input-icon" /></template>
         </el-select>
       </el-form-item>
       <el-form-item prop="username">
-        <el-input v-model="loginForm.username" type="text" size="large" auto-complete="off" :placeholder="$t('login.username')">
+        <el-input v-model="loginForm.username" type="text" size="large" auto-complete="off" :placeholder="proxy.$t('login.username')">
           <template #prefix><svg-icon icon-class="user" class="el-input__icon input-icon" /></template>
         </el-input>
       </el-form-item>
@@ -22,7 +22,7 @@
           type="password"
           size="large"
           auto-complete="off"
-          :placeholder="$t('login.password')"
+          :placeholder="proxy.$t('login.password')"
           @keyup.enter="handleLogin"
         >
           <template #prefix><svg-icon icon-class="password" class="el-input__icon input-icon" /></template>
@@ -33,7 +33,7 @@
           v-model="loginForm.code"
           size="large"
           auto-complete="off"
-          :placeholder="$t('login.code')"
+          :placeholder="proxy.$t('login.code')"
           style="width: 63%"
           @keyup.enter="handleLogin"
         >
@@ -43,31 +43,31 @@
           <img :src="codeUrl" class="login-code-img" @click="getCode" />
         </div>
       </el-form-item>
-      <el-checkbox v-model="loginForm.rememberMe" style="margin: 0 0 25px 0">{{ $t('login.rememberPassword') }}</el-checkbox>
+      <el-checkbox v-model="loginForm.rememberMe" style="margin: 0 0 25px 0">{{ proxy.$t('login.rememberPassword') }}</el-checkbox>
       <el-form-item style="float: right">
-        <el-button circle :title="$t('login.social.wechat')" @click="doSocialLogin('wechat')">
+        <el-button circle :title="proxy.$t('login.social.wechat')" @click="doSocialLogin('wechat')">
           <svg-icon icon-class="wechat" />
         </el-button>
-        <el-button circle :title="$t('login.social.maxkey')" @click="doSocialLogin('maxkey')">
+        <el-button circle :title="proxy.$t('login.social.maxkey')" @click="doSocialLogin('maxkey')">
           <svg-icon icon-class="maxkey" />
         </el-button>
-        <el-button circle :title="$t('login.social.topiam')" @click="doSocialLogin('topiam')">
+        <el-button circle :title="proxy.$t('login.social.topiam')" @click="doSocialLogin('topiam')">
           <svg-icon icon-class="topiam" />
         </el-button>
-        <el-button circle :title="$t('login.social.gitee')" @click="doSocialLogin('gitee')">
+        <el-button circle :title="proxy.$t('login.social.gitee')" @click="doSocialLogin('gitee')">
           <svg-icon icon-class="gitee" />
         </el-button>
-        <el-button circle :title="$t('login.social.github')" @click="doSocialLogin('github')">
+        <el-button circle :title="proxy.$t('login.social.github')" @click="doSocialLogin('github')">
           <svg-icon icon-class="github" />
         </el-button>
       </el-form-item>
       <el-form-item style="width: 100%">
         <el-button :loading="loading" size="large" type="primary" style="width: 100%" @click.prevent="handleLogin">
-          <span v-if="!loading">{{ $t('login.login') }}</span>
-          <span v-else>{{ $t('login.logging') }}</span>
+          <span v-if="!loading">{{ proxy.$t('login.login') }}</span>
+          <span v-else>{{ proxy.$t('login.logging') }}</span>
         </el-button>
         <div v-if="register" style="float: right">
-          <router-link class="link-type" :to="'/register'">{{ $t('login.switchRegisterPage') }}</router-link>
+          <router-link class="link-type" :to="'/register'">{{ proxy.$t('login.switchRegisterPage') }}</router-link>
         </div>
       </el-form-item>
     </el-form>
@@ -86,6 +86,8 @@ import { LoginData, TenantVO } from '@/api/types';
 import { to } from 'await-to-js';
 import { HttpStatus } from '@/enums/RespEnum';
 import { useI18n } from 'vue-i18n';
+
+const { proxy } = getCurrentInstance() as ComponentInternalInstance;
 
 const userStore = useUserStore();
 const router = useRouter();

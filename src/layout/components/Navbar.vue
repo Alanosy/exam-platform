@@ -13,7 +13,7 @@
           clearable
           filterable
           reserve-keyword
-          :placeholder="$t('navbar.selectTenant')"
+          :placeholder="proxy.$t('navbar.selectTenant')"
           @change="dynamicTenantEvent"
           @clear="dynamicClearEvent"
         >
@@ -29,7 +29,7 @@
           </div>
         </el-tooltip>
         <!-- 消息 -->
-        <el-tooltip :content="$t('navbar.message')" effect="dark" placement="bottom">
+        <el-tooltip :content="proxy.$t('navbar.message')" effect="dark" placement="bottom">
           <div>
             <el-popover placement="bottom" trigger="click" transition="el-zoom-in-top" :width="300" :persistent="false">
               <template #reference>
@@ -47,19 +47,19 @@
           <ruo-yi-git id="ruoyi-git" class="right-menu-item hover-effect" />
         </el-tooltip>
 
-        <el-tooltip :content="$t('navbar.document')" effect="dark" placement="bottom">
+        <el-tooltip :content="proxy.$t('navbar.document')" effect="dark" placement="bottom">
           <ruo-yi-doc id="ruoyi-doc" class="right-menu-item hover-effect" />
         </el-tooltip>
 
-        <el-tooltip :content="$t('navbar.full')" effect="dark" placement="bottom">
+        <el-tooltip :content="proxy.$t('navbar.full')" effect="dark" placement="bottom">
           <screenfull id="screenfull" class="right-menu-item hover-effect" />
         </el-tooltip>
 
-        <el-tooltip :content="$t('navbar.language')" effect="dark" placement="bottom">
+        <el-tooltip :content="proxy.$t('navbar.language')" effect="dark" placement="bottom">
           <lang-select id="lang-select" class="right-menu-item hover-effect" />
         </el-tooltip>
 
-        <el-tooltip :content="$t('navbar.layoutSize')" effect="dark" placement="bottom">
+        <el-tooltip :content="proxy.$t('navbar.layoutSize')" effect="dark" placement="bottom">
           <size-select id="size-select" class="right-menu-item hover-effect" />
         </el-tooltip>
       </template>
@@ -72,13 +72,13 @@
           <template #dropdown>
             <el-dropdown-menu>
               <router-link v-if="!dynamic" to="/user/profile">
-                <el-dropdown-item>{{ $t('navbar.personalCenter') }}</el-dropdown-item>
+                <el-dropdown-item>{{ proxy.$t('navbar.personalCenter') }}</el-dropdown-item>
               </router-link>
               <el-dropdown-item v-if="settingsStore.showSettings" command="setLayout">
-                <span>{{ $t('navbar.layoutSetting') }}</span>
+                <span>{{ proxy.$t('navbar.layoutSetting') }}</span>
               </el-dropdown-item>
               <el-dropdown-item divided command="logout">
-                <span>{{ $t('navbar.logout') }}</span>
+                <span>{{ proxy.$t('navbar.logout') }}</span>
               </el-dropdown-item>
             </el-dropdown-menu>
           </template>
@@ -128,8 +128,8 @@ const dynamicTenantEvent = async (tenantId: string) => {
     await dynamicTenant(tenantId);
     dynamic.value = true;
     await proxy?.$router.push('/');
-    await proxy?.$tab.closeAllPage();
-    await proxy?.$tab.refreshPage();
+    await proxy?.proxy.$tab.closeAllPage();
+    await proxy?.proxy.$tab.refreshPage();
   }
 };
 
@@ -137,8 +137,8 @@ const dynamicClearEvent = async () => {
   await dynamicClear();
   dynamic.value = false;
   await proxy?.$router.push('/');
-  await proxy?.$tab.closeAllPage();
-  await proxy?.$tab.refreshPage();
+  await proxy?.proxy.$tab.closeAllPage();
+  await proxy?.proxy.$tab.refreshPage();
 };
 
 /** 租户列表 */
