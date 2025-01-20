@@ -95,7 +95,7 @@
         </el-table-column>
         <el-table-column label="操作日期" align="center" prop="operTime" width="180" sortable="custom" :sort-orders="['descending', 'ascending']">
           <template #default="scope">
-            <span>{{ parseTime(scope.row.operTime) }}</span>
+            <span>{{ proxy.parseTime(scope.row.operTime) }}</span>
           </template>
         </el-table-column>
         <el-table-column

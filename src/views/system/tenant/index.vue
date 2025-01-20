@@ -61,7 +61,7 @@
         <el-table-column label="社会信用代码" align="center" prop="licenseNumber" />
         <el-table-column label="过期时间" align="center" prop="expireTime" width="180">
           <template #default="scope">
-            <span>{{ parseTime(scope.row.expireTime, '{y}-{m}-{d}') }}</span>
+            <span>{{ proxy.parseTime(scope.row.expireTime, '{y}-{m}-{d}') }}</span>
           </template>
         </el-table-column>
         <el-table-column label="租户状态" align="center" prop="status">

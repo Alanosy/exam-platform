@@ -94,7 +94,7 @@
         <el-table-column label="描述" align="center" prop="msg" :show-overflow-tooltip="true" />
         <el-table-column label="访问时间" align="center" prop="loginTime" sortable="custom" :sort-orders="['descending', 'ascending']" width="180">
           <template #default="scope">
-            <span>{{ parseTime(scope.row.loginTime) }}</span>
+            <span>{{ proxy.parseTime(scope.row.loginTime) }}</span>
           </template>
         </el-table-column>
       </el-table>

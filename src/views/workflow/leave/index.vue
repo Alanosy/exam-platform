@@ -41,12 +41,12 @@
         </el-table-column>
         <el-table-column label="开始时间" align="center" prop="startDate">
           <template #default="scope">
-            <span>{{ parseTime(scope.row.startDate, '{y}-{m}-{d}') }}</span>
+            <span>{{ proxy.parseTime(scope.row.startDate, '{y}-{m}-{d}') }}</span>
           </template>
         </el-table-column>
         <el-table-column label="结束时间" align="center" prop="endDate">
           <template #default="scope">
-            <span>{{ parseTime(scope.row.endDate, '{y}-{m}-{d}') }}</span>
+            <span>{{ proxy.parseTime(scope.row.endDate, '{y}-{m}-{d}') }}</span>
           </template>
         </el-table-column>
         <el-table-column label="请假天数" align="center" prop="leaveDays" />

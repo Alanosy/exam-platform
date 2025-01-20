@@ -41,7 +41,7 @@
         </template>
       </el-descriptions-item>
       <el-descriptions-item label="操作时间">
-        <template #default> {{ parseTime(info.operTime) }}</template>
+        <template #default> {{ proxy.parseTime(info.operTime) }}</template>
       </el-descriptions-item>
       <el-descriptions-item v-if="info.status === 1" label="异常信息">
         <template #default>

@@ -53,7 +53,7 @@
           </vxe-column>
           <vxe-column field="createTime" title="创建时间" align="center">
             <template #default="scope">
-              <span>{{ parseTime(scope.row.createTime) }}</span>
+              <span>{{ proxy.parseTime(scope.row.createTime) }}</span>
             </template>
           </vxe-column>
         </vxe-table>

@@ -61,7 +61,7 @@
         <el-table-column label="创建者" align="center" prop="createByName" width="100" />
         <el-table-column label="创建时间" align="center" prop="createTime" width="100">
           <template #default="scope">
-            <span>{{ parseTime(scope.row.createTime, '{y}-{m}-{d}') }}</span>
+            <span>{{ proxy.parseTime(scope.row.createTime, '{y}-{m}-{d}') }}</span>
           </template>
         </el-table-column>
         <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
