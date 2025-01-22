@@ -71,6 +71,9 @@
             <el-checkbox label="3" name="type">短信</el-checkbox>
           </el-checkbox-group>
         </el-form-item>
+        <el-form-item v-if="task.flowStatus === 'waiting'" label="附件">
+          <fileUpload v-model="backForm.fileId" :file-type="['png', 'jpg', 'jpeg', 'doc', 'docx', 'xlsx', 'xls', 'ppt', 'txt', 'pdf']" :file-size="20" />
+        </el-form-item>
         <el-form-item label="审批意见">
           <el-input v-model="backForm.message" type="textarea" resize="none" />
         </el-form-item>
