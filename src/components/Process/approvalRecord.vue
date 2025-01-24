@@ -42,7 +42,7 @@
               <el-table-column prop="updateTime" label="结束时间" width="160" :show-overflow-tooltip="true" sortable align="center"></el-table-column>
               <el-table-column
                 prop="runDuration"
-                label="运行时常"
+                label="运行时长"
                 width="140"
                 :show-overflow-tooltip="true"
                 sortable
