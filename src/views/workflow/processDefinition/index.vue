@@ -56,7 +56,7 @@
               <el-col :span="1.5">
                 <el-button type="warning" icon="Download" :disabled="single" @click="handleExportDef">导出</el-button>
               </el-col>
-              <right-toolbar v-model:show-search="showSearch" @query-table="getList"></right-toolbar>
+              <right-toolbar v-model:show-search="showSearch" @query-table="handleQuery"></right-toolbar>
             </el-row>
           </template>
           <el-tabs v-model="activeName" class="demo-tabs" @tab-click="handleClick">
@@ -116,7 +116,7 @@
               v-model:page="queryParams.pageNum"
               v-model:limit="queryParams.pageSize"
               :total="total"
-              @pagination="handleQuery"
+              @pagination="getPageList"
             />
           </el-tabs>
         </el-card>
@@ -261,7 +261,7 @@ const form = ref<FlowDefinitionForm>({
   formPath: ''
 });
 onMounted(() => {
-  handleQuery();
+  getPageList();
   getTreeselect();
 });
 
@@ -321,6 +321,18 @@ const handleSelectionChange = (selection: any) => {
   flowCodeList.value = selection.map((item: any) => item.flowCode);
   single.value = selection.length !== 1;
   multiple.value = !selection.length;
+};
+//分页
+const getPageList = async () => {
+  console.log(proxy.$route.query.activeName)
+  if (proxy.$route.query.activeName) {
+    activeName.value = proxy.$route.query.activeName;
+  }
+  if (activeName.value === '0') {
+    getList();
+  } else {
+    getUnPublishList();
+  }
 };
 //分页
 const getList = async () => {
@@ -422,7 +434,8 @@ const design = async (row: FlowDefinitionVo) => {
     path: `/workflow/design/index`,
     query: {
       definitionId: row.id,
-      disabled: false
+      disabled: false,
+      activeName: activeName.value
     }
   });
 };
@@ -436,7 +449,8 @@ const designView = async (row: FlowDefinitionVo) => {
     path: `/workflow/design/index`,
     query: {
       definitionId: row.id,
-      disabled: true
+      disabled: true,
+      activeName: activeName.value
     }
   });
 };

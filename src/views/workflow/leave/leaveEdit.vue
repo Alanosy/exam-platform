@@ -242,7 +242,7 @@ const submitFlow = async () => {
   dialogVisible.visible = false;
 };
 //提交申请
-const handleStartWorkFlow = async (data: LeaveVO) => {
+const handleStartWorkFlow = async (data: LeaveForm) => {
   try {
     submitFormData.value.flowCode = flowCode.value;
     submitFormData.value.businessId = data.id;

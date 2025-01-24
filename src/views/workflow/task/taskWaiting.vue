@@ -134,6 +134,7 @@ const resetQuery = () => {
   queryParams.value.pageSize = 10;
   queryParams.value.createByIds = [];
   userSelectCount.value = 0;
+  selectUserIds.value = [];
   handleQuery();
 };
 // 多选框选中数据

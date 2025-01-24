@@ -29,7 +29,7 @@ const open = async (definitionId, disabled) => {
 };
 /** 关闭按钮 */
 function close() {
-  const obj = { path: '/workflow/processDefinition' };
+  const obj = { path: '/workflow/processDefinition', query: {activeName: proxy.$route.query.activeName}};
   proxy.$tab.closeOpenPage(obj);
 }
 
