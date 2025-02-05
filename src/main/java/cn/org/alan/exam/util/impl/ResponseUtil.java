@@ -1,4 +1,4 @@
-package cn.org.alan.exam.util;
+package cn.org.alan.exam.util.impl;
 
 import cn.org.alan.exam.common.result.Result;
 import com.fasterxml.jackson.core.JsonProcessingException;

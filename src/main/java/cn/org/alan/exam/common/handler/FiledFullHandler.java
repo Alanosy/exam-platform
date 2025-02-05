@@ -1,11 +1,10 @@
 package cn.org.alan.exam.common.handler;
 
-import cn.org.alan.exam.util.DateTimeUtil;
-import cn.org.alan.exam.util.SecurityUtil;
+import cn.org.alan.exam.util.impl.DateTimeUtil;
+import cn.org.alan.exam.util.impl.SecurityUtil;
 import com.baomidou.mybatisplus.core.handlers.MetaObjectHandler;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.ibatis.reflection.MetaObject;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Component;
 
 import java.lang.reflect.Field;

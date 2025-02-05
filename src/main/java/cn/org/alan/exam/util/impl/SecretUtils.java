@@ -1,4 +1,4 @@
-package cn.org.alan.exam.util;
+package cn.org.alan.exam.util.impl;
 import org.apache.tomcat.util.codec.binary.Base64;
 import org.springframework.stereotype.Component;
 

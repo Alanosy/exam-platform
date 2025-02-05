@@ -2,13 +2,12 @@ package cn.org.alan.exam.util;
 
 import cn.org.alan.exam.mapper.UserMapper;
 import cn.org.alan.exam.model.entity.User;
+import cn.org.alan.exam.util.impl.DateTimeUtil;
 import jakarta.annotation.Resource;
 import org.junit.jupiter.api.Test;
 
-import java.time.LocalDate;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
 /**
  * @Author Alan
  * @Version

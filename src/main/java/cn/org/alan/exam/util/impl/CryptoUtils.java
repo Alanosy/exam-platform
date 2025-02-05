@@ -1,9 +1,9 @@
-package cn.org.alan.exam.util;
+package cn.org.alan.exam.util.impl;
 
 
 
-import cn.org.alan.exam.util.CryptoUtils.Algorithm.Encryption;
-import cn.org.alan.exam.util.CryptoUtils.Algorithm.Signing;
+import cn.org.alan.exam.util.impl.CryptoUtils.Algorithm.Encryption;
+import cn.org.alan.exam.util.impl.CryptoUtils.Algorithm.Signing;
 import org.apache.commons.lang3.StringUtils;
 import lombok.AllArgsConstructor;
 import lombok.Data;

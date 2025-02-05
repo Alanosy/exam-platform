@@ -1,4 +1,4 @@
-package cn.org.alan.exam.util;
+package cn.org.alan.exam.util.impl;
 
 import jakarta.annotation.Resource;
 import org.springframework.data.redis.core.StringRedisTemplate;

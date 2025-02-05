@@ -26,7 +26,8 @@
                 g.user_id = #{id}
             </if>
         </trim>
-        group by eg.grade_id
+        group by eg.grade_id,
+        g.grade_name
     </select>
 
 
