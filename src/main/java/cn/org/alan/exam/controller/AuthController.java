@@ -8,6 +8,7 @@ import cn.org.alan.exam.service.IAuthService;
 import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
@@ -31,6 +32,8 @@ public class AuthController {
 
     @Resource
     private IAuthService iAuthService;
+    @Value("${online-exam.login.captcha.enabled}")
+    private boolean captchaEnabled;
 
     /**
      * 用户登录
@@ -85,6 +88,9 @@ public class AuthController {
      */
     @PostMapping("/verifyCode/{code}")
     public Result<String> verifyCode(HttpServletRequest request, @PathVariable("code") String code) {
+        if(!captchaEnabled) {
+            return Result.success();
+        }
         return iAuthService.verifyCode(request, code);
     }
     @PostMapping("/track-presence")
