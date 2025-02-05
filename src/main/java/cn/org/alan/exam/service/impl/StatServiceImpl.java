@@ -9,15 +9,12 @@ import cn.org.alan.exam.model.vo.stat.DailyVO;
 import cn.org.alan.exam.model.vo.stat.GradeExamVO;
 import cn.org.alan.exam.model.vo.stat.GradeStudentVO;
 import cn.org.alan.exam.service.IStatService;
-import cn.org.alan.exam.util.SecurityUtil;
+import cn.org.alan.exam.util.impl.SecurityUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import jakarta.annotation.Resource;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 
 /**

@@ -1,9 +1,6 @@
-package cn.org.alan.exam.util;
+package cn.org.alan.exam.util.impl;
 
-import cn.org.alan.exam.model.entity.User;
 import cn.org.alan.exam.security.SysUserDetails;
-import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import lombok.extern.java.Log;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;

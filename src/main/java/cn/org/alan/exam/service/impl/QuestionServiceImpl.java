@@ -8,15 +8,13 @@ import cn.org.alan.exam.mapper.QuestionMapper;
 import cn.org.alan.exam.model.entity.ExerciseRecord;
 import cn.org.alan.exam.model.entity.Option;
 import cn.org.alan.exam.model.entity.Question;
-import cn.org.alan.exam.model.entity.UserExerciseRecord;
 import cn.org.alan.exam.model.form.question.QuestionExcelFrom;
 import cn.org.alan.exam.model.form.question.QuestionFrom;
-import cn.org.alan.exam.model.vo.GradeVO;
 import cn.org.alan.exam.model.vo.QuestionVO;
 import cn.org.alan.exam.service.IQuestionService;
-import cn.org.alan.exam.util.AliOSSUtil;
-import cn.org.alan.exam.util.CacheClient;
-import cn.org.alan.exam.util.SecurityUtil;
+import cn.org.alan.exam.util.FileService;
+import cn.org.alan.exam.util.impl.CacheClient;
+import cn.org.alan.exam.util.impl.SecurityUtil;
 import cn.org.alan.exam.util.excel.ExcelUtils;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -26,7 +24,6 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import jakarta.annotation.Resource;
 import lombok.SneakyThrows;
 import org.springframework.data.redis.core.StringRedisTemplate;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -53,7 +50,7 @@ public class QuestionServiceImpl extends ServiceImpl<QuestionMapper, Question> i
     @Resource
     private OptionMapper optionMapper;
     @Resource
-    private AliOSSUtil aliOSSUtil;
+    private FileService fileService;
     @Resource
     private ExerciseRecordMapper exerciseRecordMapper;
     @Resource
@@ -245,13 +242,13 @@ public class QuestionServiceImpl extends ServiceImpl<QuestionMapper, Question> i
     @SneakyThrows(IOException.class)
     @Override
     public Result<String> uploadImage(MultipartFile file) {
-        if (!aliOSSUtil.isImage(Objects.requireNonNull(file.getOriginalFilename()))) {
+        if (!fileService.isImage(Objects.requireNonNull(file.getOriginalFilename()))) {
             return Result.failed("该文件不是常用图片格式(png、jpg、jpeg、bmp)");
         }
-        if (aliOSSUtil.isOverSize(file)) {
+        if (fileService.isOverSize(file)) {
             return Result.failed("图片大小不能超过50KB");
         }
-        String url = aliOSSUtil.upload(file);
+        String url = fileService.upload(file);
         if (StringUtils.isBlank(url)) {
             return Result.failed("图片上传失败");
         }

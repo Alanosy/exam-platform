@@ -3,8 +3,8 @@ package cn.org.alan.exam.filter;
 import cn.org.alan.exam.model.entity.User;
 import cn.org.alan.exam.common.result.Result;
 import cn.org.alan.exam.security.SysUserDetails;
-import cn.org.alan.exam.util.JwtUtil;
-import cn.org.alan.exam.util.ResponseUtil;
+import cn.org.alan.exam.util.impl.JwtUtil;
+import cn.org.alan.exam.util.impl.ResponseUtil;
 import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.annotation.Resource;
@@ -22,7 +22,6 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 /**
  * @Author WeiJin
