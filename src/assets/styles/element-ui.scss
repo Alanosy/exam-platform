@@ -146,3 +146,8 @@
 .el-form--inline .el-input {
   width: 240px;
 }
+
+/* 设置 el-message-box 消息弹框内容强制换行 */
+.el-message-box .el-message-box__message {
+  word-break: break-word;
+}
