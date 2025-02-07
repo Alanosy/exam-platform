@@ -50,13 +50,29 @@ const setting: DefaultSettings = {
    */
   errorLog: 'production',
 
+  /**
+   * 是否开启动画 开启随机 关闭渐进渐出
+   */
   animationEnable: false,
 
+  /**
+   * 是否暗黑模式
+   */
   dark: false,
+
+  /**
+   * 默认语言
+   */
   language: LanguageEnum.zh_CN,
 
+  /**
+   * 默认大小
+   */
   size: 'default',
 
+  /**
+   * 默认布局
+   */
   layout: ''
 };
 export default setting;
