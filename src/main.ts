@@ -23,6 +23,7 @@ import HighLight from '@highlightjs/vue-plugin';
 
 // svg图标
 import 'virtual:svg-icons-register';
+import ElementIcons from '@/plugins/svgicon';
 
 // permission control
 import './permission';
@@ -44,6 +45,7 @@ ElDialog.props.closeOnClickModal.default = false;
 const app = createApp(App);
 
 app.use(HighLight);
+app.use(ElementIcons);
 app.use(router);
 app.use(store);
 app.use(i18n);
