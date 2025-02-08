@@ -177,7 +177,7 @@
           <el-form-item label="流程名称" prop="flowName">
             <el-input v-model="form.flowName" placeholder="请输入流程名称" maxlength="100" show-word-limit />
           </el-form-item>
-          <el-form-item label="表单路径" prop="flowName">
+          <el-form-item label="表单路径" prop="formPath">
             <el-input v-model="form.formPath" placeholder="请输入表单路径" maxlength="100" show-word-limit />
           </el-form-item>
         </el-form>
