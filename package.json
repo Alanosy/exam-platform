@@ -28,8 +28,6 @@
     "await-to-js": "3.0.0",
     "axios": "1.7.8",
     "crypto-js": "4.2.0",
-    "diagram-js": "12.3.0",
-    "didi": "9.0.2",
     "echarts": "5.5.0",
     "element-plus": "2.8.8",
     "file-saver": "2.0.5",
