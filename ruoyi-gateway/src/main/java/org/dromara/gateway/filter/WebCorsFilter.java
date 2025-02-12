@@ -20,7 +20,7 @@ import reactor.core.publisher.Mono;
  * @author Lion Li
  */
 @Component
-public class GlobalCorsFilter implements WebFilter, Ordered {
+public class WebCorsFilter implements WebFilter, Ordered {
 
     /**
      * 这里为支持的请求头，如果有自定义的header字段请自己添加

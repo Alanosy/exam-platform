@@ -1,13 +1,13 @@
 package org.dromara.gateway.filter;
 
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.cloud.gateway.filter.GatewayFilterChain;
-import org.springframework.cloud.gateway.filter.GlobalFilter;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.context.i18n.SimpleLocaleContext;
 import org.springframework.core.Ordered;
 import org.springframework.stereotype.Component;
 import org.springframework.web.server.ServerWebExchange;
+import org.springframework.web.server.WebFilter;
+import org.springframework.web.server.WebFilterChain;
 import reactor.core.publisher.Mono;
 
 import java.util.Locale;
@@ -19,10 +19,10 @@ import java.util.Locale;
  */
 @Slf4j
 @Component
-public class GlobalI18nFilter implements GlobalFilter, Ordered {
+public class WebI18nFilter implements WebFilter, Ordered {
 
     @Override
-    public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
+    public Mono<Void> filter(ServerWebExchange exchange, WebFilterChain chain) {
         String language = exchange.getRequest().getHeaders().getFirst("content-language");
         Locale locale = Locale.getDefault();
         if (language != null && language.length() > 0) {
