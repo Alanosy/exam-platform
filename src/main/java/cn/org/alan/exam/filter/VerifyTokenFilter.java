@@ -55,18 +55,18 @@ public class VerifyTokenFilter extends OncePerRequestFilter {
         String authorization = request.getHeader("Authorization");
         // 判断是否为空
         if (StringUtils.isBlank(authorization)) {
-            responseUtil.response(response, Result.failed("Authorization为空，请先登录"));
+            responseUtil.response(response, Result.failed("Authorization为空，请先登录"), 401);
             return;
         }
         // 校验jwt是否过期
         boolean verify = jwtUtil.verifyToken(authorization);
         if (!verify) {
-            responseUtil.response(response, Result.failed("token已过期，请重新登录"));
+            responseUtil.response(response, Result.failed("token已过期，请重新登录"), 401);
             return;
         }
         // 验证token在redis中是否存在，key使用sessionId
         if (Boolean.FALSE.equals(stringRedisTemplate.hasKey("token" + request.getSession().getId()))) {
-            responseUtil.response(response, Result.failed("token无效，请重新登录"));
+            responseUtil.response(response, Result.failed("token无效，请重新登录"), 401);
             return;
         }
         // 自动续期

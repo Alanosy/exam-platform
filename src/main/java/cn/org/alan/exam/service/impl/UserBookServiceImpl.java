@@ -51,7 +51,7 @@ public class UserBookServiceImpl extends ServiceImpl<UserBookMapper, UserBook> i
     public Result<IPage<UserPageBookVO>> getPage(Integer pageNum, Integer pageSize, String examName) {
         Page<UserPageBookVO> page = new Page<>(pageNum, pageSize);
         String role = SecurityUtil.getRole();
-        int roleId = 0;
+        int roleId;
         if("role_admin".equals(role)){
             roleId =3;
         }else if ("role_teacher".equals(role)){

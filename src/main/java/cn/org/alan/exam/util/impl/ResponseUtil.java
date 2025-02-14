@@ -34,4 +34,16 @@ public class ResponseUtil {
         writer.flush();
         writer.close();
     }
+
+    @SneakyThrows({JsonProcessingException.class, IOException.class})
+    public void response(HttpServletResponse response, Result result, Integer status) {
+        String s = objectMapper.writeValueAsString(result);
+        response.setStatus(status);
+        response.setCharacterEncoding("UTF-8");
+        response.setContentType("application/json;charset=utf-8");
+        PrintWriter writer = response.getWriter();
+        writer.write(s);
+        writer.flush();
+        writer.close();
+    }
 }
