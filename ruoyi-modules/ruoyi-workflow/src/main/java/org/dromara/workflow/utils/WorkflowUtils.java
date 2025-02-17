@@ -2,43 +2,42 @@ package org.dromara.workflow.utils;
 
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.ObjectUtil;
-import cn.hutool.core.util.StrUtil;
-import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.dromara.common.core.utils.SpringUtils;
 import org.dromara.common.core.utils.StreamUtils;
 import org.dromara.common.core.utils.StringUtils;
 import org.dromara.common.mail.utils.MailUtils;
-import org.dromara.common.satoken.utils.LoginHelper;
-import org.dromara.common.tenant.helper.TenantHelper;
-import org.dromara.common.websocket.dto.WebSocketMessageDto;
-import org.dromara.common.websocket.utils.WebSocketUtils;
-import org.dromara.system.api.RemoteUserService;
+import org.dromara.common.sse.dto.SseMessageDto;
+import org.dromara.common.sse.utils.SseMessageUtils;
 import org.dromara.system.api.domain.vo.RemoteUserVo;
-import org.dromara.system.api.model.RoleDTO;
-import org.dromara.workflow.common.constant.FlowConstant;
+import org.dromara.warm.flow.core.constant.ExceptionCons;
+import org.dromara.warm.flow.core.dto.FlowParams;
+import org.dromara.warm.flow.core.entity.Node;
+import org.dromara.warm.flow.core.entity.Task;
+import org.dromara.warm.flow.core.entity.User;
+import org.dromara.warm.flow.core.enums.NodeType;
+import org.dromara.warm.flow.core.enums.SkipType;
+import org.dromara.warm.flow.core.service.NodeService;
+import org.dromara.warm.flow.core.service.TaskService;
+import org.dromara.warm.flow.core.service.UserService;
+import org.dromara.warm.flow.core.utils.AssertUtil;
+import org.dromara.warm.flow.orm.entity.FlowNode;
+import org.dromara.warm.flow.orm.entity.FlowTask;
+import org.dromara.warm.flow.orm.entity.FlowUser;
+import org.dromara.warm.flow.orm.mapper.FlowNodeMapper;
+import org.dromara.warm.flow.orm.mapper.FlowTaskMapper;
 import org.dromara.workflow.common.enums.MessageTypeEnum;
-import org.dromara.workflow.common.enums.TaskStatusEnum;
-import org.dromara.workflow.domain.ActHiTaskinst;
-import org.dromara.workflow.domain.vo.MultiInstanceVo;
-import org.dromara.workflow.domain.vo.ParticipantVo;
-import org.dromara.workflow.flowable.cmd.UpdateHiTaskInstCmd;
-import org.dromara.workflow.mapper.ActHiTaskinstMapper;
-import org.flowable.bpmn.model.BpmnModel;
-import org.flowable.bpmn.model.FlowNode;
-import org.flowable.common.engine.api.delegate.Expression;
-import org.flowable.engine.ProcessEngine;
-import org.flowable.engine.history.HistoricProcessInstance;
-import org.flowable.engine.impl.bpmn.behavior.ParallelMultiInstanceBehavior;
-import org.flowable.engine.impl.bpmn.behavior.SequentialMultiInstanceBehavior;
-import org.flowable.identitylink.api.history.HistoricIdentityLink;
-import org.flowable.task.api.Task;
-import org.flowable.task.api.TaskQuery;
-import org.flowable.task.api.history.HistoricTaskInstance;
-import org.flowable.task.service.impl.persistence.entity.TaskEntity;
+import org.dromara.workflow.service.IFlwTaskAssigneeService;
+import org.dromara.workflow.service.IFlwTaskService;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
+
 
 /**
  * 工作流工具
@@ -48,221 +47,84 @@ import java.util.*;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class WorkflowUtils {
 
-    private static final ProcessEngine PROCESS_ENGINE = SpringUtils.getBean(ProcessEngine.class);
-    private static final ActHiTaskinstMapper ACT_HI_TASKINST_MAPPER = SpringUtils.getBean(ActHiTaskinstMapper.class);
+    private static final IFlwTaskAssigneeService TASK_ASSIGNEE_SERVICE = SpringUtils.getBean(IFlwTaskAssigneeService.class);
+    private static final IFlwTaskService FLW_TASK_SERVICE = SpringUtils.getBean(IFlwTaskService.class);
+    private static final FlowNodeMapper FLOW_NODE_MAPPER = SpringUtils.getBean(FlowNodeMapper.class);
+    private static final FlowTaskMapper FLOW_TASK_MAPPER = SpringUtils.getBean(FlowTaskMapper.class);
+    private static final UserService USER_SERVICE = SpringUtils.getBean(UserService.class);
+    private static final TaskService TASK_SERVICE = SpringUtils.getBean(TaskService.class);
+    private static final NodeService NODE_SERVICE = SpringUtils.getBean(NodeService.class);
 
     /**
-     * 创建一个新任务
-     *
-     * @param currentTask 参数
+     * 获取工作流用户service
      */
-    public static TaskEntity createNewTask(Task currentTask) {
-        TaskEntity task = null;
-        if (ObjectUtil.isNotEmpty(currentTask)) {
-            task = (TaskEntity) PROCESS_ENGINE.getTaskService().newTask();
-            task.setCategory(currentTask.getCategory());
-            task.setDescription(currentTask.getDescription());
-            task.setAssignee(currentTask.getAssignee());
-            task.setName(currentTask.getName());
-            task.setProcessDefinitionId(currentTask.getProcessDefinitionId());
-            task.setProcessInstanceId(currentTask.getProcessInstanceId());
-            task.setTaskDefinitionKey(currentTask.getTaskDefinitionKey());
-            task.setPriority(currentTask.getPriority());
-            task.setCreateTime(new Date());
-            task.setTenantId(TenantHelper.getTenantId());
-            PROCESS_ENGINE.getTaskService().saveTask(task);
-        }
-        if (ObjectUtil.isNotNull(task)) {
-            UpdateHiTaskInstCmd updateHiTaskInstCmd = new UpdateHiTaskInstCmd(Collections.singletonList(task.getId()), task.getProcessDefinitionId(), task.getProcessInstanceId());
-            PROCESS_ENGINE.getManagementService().executeCommand(updateHiTaskInstCmd);
-        }
-        return task;
+    public static UserService getFlowUserService() {
+        return USER_SERVICE;
     }
 
     /**
-     * 抄送任务
+     * 构建工作流用户
      *
-     * @param parentTaskList 父级任务
-     * @param userIds        人员id
+     * @param userList 办理用户
+     * @param taskId   任务ID
+     * @return 用户
      */
-    public static void createCopyTask(List<Task> parentTaskList, List<Long> userIds) {
-        List<Task> list = new ArrayList<>();
-        String tenantId = TenantHelper.getTenantId();
-        for (Task parentTask : parentTaskList) {
-            for (Long userId : userIds) {
-                TaskEntity newTask = (TaskEntity) PROCESS_ENGINE.getTaskService().newTask();
-                newTask.setParentTaskId(parentTask.getId());
-                newTask.setAssignee(userId.toString());
-                newTask.setName("【抄送】-" + parentTask.getName());
-                newTask.setProcessDefinitionId(parentTask.getProcessDefinitionId());
-                newTask.setProcessInstanceId(parentTask.getProcessInstanceId());
-                newTask.setTaskDefinitionKey(parentTask.getTaskDefinitionKey());
-                newTask.setTenantId(tenantId);
-                list.add(newTask);
+    public static Set<User> buildUser(List<User> userList, Long taskId) {
+        if (CollUtil.isEmpty(userList)) {
+            return Set.of();
+        }
+        Set<User> list = new HashSet<>();
+        Set<String> processedBySet = new HashSet<>();
+        for (User user : userList) {
+            // 根据 processedBy 前缀判断处理人类型，分别获取用户列表
+            List<RemoteUserVo> users = TASK_ASSIGNEE_SERVICE.fetchUsersByStorageId(user.getProcessedBy());
+            // 转换为 FlowUser 并添加到结果集合
+            if (CollUtil.isNotEmpty(users)) {
+                users.forEach(dto -> {
+                    String processedBy = String.valueOf(dto.getUserId());
+                    if (!processedBySet.contains(processedBy)) {
+                        FlowUser flowUser = new FlowUser();
+                        flowUser.setType(user.getType());
+                        flowUser.setProcessedBy(processedBy);
+                        flowUser.setAssociated(taskId);
+                        list.add(flowUser);
+                        processedBySet.add(processedBy);
+                    }
+                });
             }
         }
-        PROCESS_ENGINE.getTaskService().bulkSaveTasks(list);
-        if (CollUtil.isNotEmpty(list) && CollUtil.isNotEmpty(parentTaskList)) {
-            String processInstanceId = parentTaskList.get(0).getProcessInstanceId();
-            String processDefinitionId = parentTaskList.get(0).getProcessDefinitionId();
-            List<String> taskIds = StreamUtils.toList(list, Task::getId);
-            ActHiTaskinst actHiTaskinst = new ActHiTaskinst();
-            actHiTaskinst.setProcDefId(processDefinitionId);
-            actHiTaskinst.setProcInstId(processInstanceId);
-            actHiTaskinst.setScopeType(TaskStatusEnum.COPY.getStatus());
-            actHiTaskinst.setTenantId(tenantId);
-            LambdaUpdateWrapper<ActHiTaskinst> updateWrapper = new LambdaUpdateWrapper<>();
-            updateWrapper.in(ActHiTaskinst::getId, taskIds);
-            ACT_HI_TASKINST_MAPPER.update(actHiTaskinst, updateWrapper);
-            for (Task task : list) {
-                PROCESS_ENGINE.getTaskService().addComment(task.getId(), task.getProcessInstanceId(), TaskStatusEnum.COPY.getStatus(), StrUtil.EMPTY);
-            }
-        }
-    }
-
-    /**
-     * 获取当前任务参与者
-     *
-     * @param taskId 任务id
-     */
-    public static ParticipantVo getCurrentTaskParticipant(String taskId, RemoteUserService remoteUserService) {
-        ParticipantVo participantVo = new ParticipantVo();
-        List<HistoricIdentityLink> linksForTask = PROCESS_ENGINE.getHistoryService().getHistoricIdentityLinksForTask(taskId);
-        Task task = QueryUtils.taskQuery().taskId(taskId).singleResult();
-        if (task != null && CollUtil.isNotEmpty(linksForTask)) {
-            List<HistoricIdentityLink> groupList = StreamUtils.filter(linksForTask, e -> StringUtils.isNotBlank(e.getGroupId()));
-            if (CollUtil.isNotEmpty(groupList)) {
-                List<Long> groupIds = StreamUtils.toList(groupList, e -> Long.valueOf(e.getGroupId()));
-
-                List<Long> userIds = remoteUserService.selectUserIdsByRoleIds(groupIds);
-                if (CollUtil.isNotEmpty(userIds)) {
-                    participantVo.setGroupIds(groupIds);
-                    List<RemoteUserVo> userList = remoteUserService.selectListByIds(userIds);
-                    if (CollUtil.isNotEmpty(userList)) {
-                        List<Long> userIdList = StreamUtils.toList(userList, RemoteUserVo::getUserId);
-                        List<String> nickNames = StreamUtils.toList(userList, RemoteUserVo::getNickName);
-                        participantVo.setCandidate(userIdList);
-                        participantVo.setCandidateName(nickNames);
-                        participantVo.setClaim(!StringUtils.isBlank(task.getAssignee()));
-                    }
-                }
-            } else {
-                List<HistoricIdentityLink> candidateList = StreamUtils.filter(linksForTask, e -> FlowConstant.CANDIDATE.equals(e.getType()));
-                List<Long> userIdList = new ArrayList<>();
-                for (HistoricIdentityLink historicIdentityLink : linksForTask) {
-                    try {
-                        userIdList.add(Long.valueOf(historicIdentityLink.getUserId()));
-                    } catch (NumberFormatException ignored) {
-
-                    }
-                }
-                List<RemoteUserVo> userList = remoteUserService.selectListByIds(userIdList);
-                if (CollUtil.isNotEmpty(userList)) {
-                    List<Long> userIds = StreamUtils.toList(userList, RemoteUserVo::getUserId);
-                    List<String> nickNames = StreamUtils.toList(userList, RemoteUserVo::getNickName);
-                    participantVo.setCandidate(userIds);
-                    participantVo.setCandidateName(nickNames);
-                    // 判断当前任务是否具有多个办理人
-                    if (CollUtil.isNotEmpty(candidateList) && candidateList.size() > 1) {
-                        // 如果 assignee 存在，则设置当前任务已经被认领
-                        participantVo.setClaim(StringUtils.isNotBlank(task.getAssignee()));
-                    }
-                }
-            }
-        }
-        return participantVo;
-    }
-
-    /**
-     * 判断当前节点是否为会签节点
-     *
-     * @param processDefinitionId 流程定义id
-     * @param taskDefinitionKey   流程定义id
-     */
-    public static MultiInstanceVo isMultiInstance(String processDefinitionId, String taskDefinitionKey) {
-        BpmnModel bpmnModel = PROCESS_ENGINE.getRepositoryService().getBpmnModel(processDefinitionId);
-        FlowNode flowNode = (FlowNode) bpmnModel.getFlowElement(taskDefinitionKey);
-        MultiInstanceVo multiInstanceVo = new MultiInstanceVo();
-        //判断是否为并行会签节点
-        if (flowNode.getBehavior() instanceof ParallelMultiInstanceBehavior behavior && behavior.getCollectionExpression() != null) {
-            Expression collectionExpression = behavior.getCollectionExpression();
-            String assigneeList = collectionExpression.getExpressionText();
-            String assignee = behavior.getCollectionElementVariable();
-            multiInstanceVo.setType(behavior);
-            multiInstanceVo.setAssignee(assignee);
-            multiInstanceVo.setAssigneeList(assigneeList);
-            return multiInstanceVo;
-            //判断是否为串行会签节点
-        } else if (flowNode.getBehavior() instanceof SequentialMultiInstanceBehavior behavior && behavior.getCollectionExpression() != null) {
-            Expression collectionExpression = behavior.getCollectionExpression();
-            String assigneeList = collectionExpression.getExpressionText();
-            String assignee = behavior.getCollectionElementVariable();
-            multiInstanceVo.setType(behavior);
-            multiInstanceVo.setAssignee(assignee);
-            multiInstanceVo.setAssigneeList(assigneeList);
-            return multiInstanceVo;
-        }
-        return null;
-    }
-
-    /**
-     * 获取当前流程状态
-     *
-     * @param taskId 任务id
-     */
-    public static String getBusinessStatusByTaskId(String taskId) {
-        HistoricTaskInstance historicTaskInstance = QueryUtils.hisTaskInstanceQuery().taskId(taskId).singleResult();
-        HistoricProcessInstance historicProcessInstance = QueryUtils.hisInstanceQuery(historicTaskInstance.getProcessInstanceId()).singleResult();
-        return historicProcessInstance.getBusinessStatus();
-    }
-
-    /**
-     * 获取当前流程状态
-     *
-     * @param businessKey 业务id
-     */
-    public static String getBusinessStatus(String businessKey) {
-        HistoricProcessInstance historicProcessInstance = QueryUtils.hisBusinessKeyQuery(businessKey).singleResult();
-        return historicProcessInstance.getBusinessStatus();
+        return list;
     }
 
     /**
      * 发送消息
      *
-     * @param list        任务
-     * @param name        流程名称
+     * @param flowName    流程定义名称
      * @param messageType 消息类型
      * @param message     消息内容，为空则发送默认配置的消息内容
      */
-    public static void sendMessage(List<Task> list, String name, List<String> messageType, String message, RemoteUserService remoteUserService) {
-        Set<Long> userIds = new HashSet<>();
+    public static void sendMessage(String flowName, Long instId, List<String> messageType, String message) {
+        List<RemoteUserVo> userList = new ArrayList<>();
+        List<FlowTask> list = FLW_TASK_SERVICE.selectByInstId(instId);
         if (StringUtils.isBlank(message)) {
-            message = "有新的【" + name + "】单据已经提交至您的待办，请您及时处理。";
+            message = "有新的【" + flowName + "】单据已经提交至您，请您及时处理。";
         }
-        for (Task t : list) {
-            ParticipantVo taskParticipant = WorkflowUtils.getCurrentTaskParticipant(t.getId(), remoteUserService);
-            if (CollUtil.isNotEmpty(taskParticipant.getGroupIds())) {
-                List<Long> userIdList = remoteUserService.selectUserIdsByRoleIds(taskParticipant.getGroupIds());
-                if (CollUtil.isNotEmpty(userIdList)) {
-                    userIds.addAll(userIdList);
-                }
-            }
-            List<Long> candidate = taskParticipant.getCandidate();
-            if (CollUtil.isNotEmpty(candidate)) {
-                userIds.addAll(candidate);
+        for (Task task : list) {
+            List<RemoteUserVo> users = FLW_TASK_SERVICE.currentTaskAllUser(task.getId());
+            if (CollUtil.isNotEmpty(users)) {
+                userList.addAll(users);
             }
         }
-        if (CollUtil.isNotEmpty(userIds)) {
-            List<RemoteUserVo> userList = remoteUserService.selectListByIds(new ArrayList<>(userIds));
+        if (CollUtil.isNotEmpty(userList)) {
             for (String code : messageType) {
                 MessageTypeEnum messageTypeEnum = MessageTypeEnum.getByCode(code);
                 if (ObjectUtil.isNotEmpty(messageTypeEnum)) {
                     switch (messageTypeEnum) {
                         case SYSTEM_MESSAGE:
-                            WebSocketMessageDto dto = new WebSocketMessageDto();
-                            dto.setSessionKeys(new ArrayList<>(userIds));
+                            SseMessageDto dto = new SseMessageDto();
+                            dto.setUserIds(StreamUtils.toList(userList, RemoteUserVo::getUserId).stream().distinct().collect(Collectors.toList()));
                             dto.setMessage(message);
-                            WebSocketUtils.publishMessage(dto);
+                            SseMessageUtils.publishMessage(dto);
                             break;
                         case EMAIL_MESSAGE:
                             MailUtils.sendText(StreamUtils.join(userList, RemoteUserVo::getEmail), "单据审批提醒", message);
@@ -270,6 +132,8 @@ public class WorkflowUtils {
                         case SMS_MESSAGE:
                             //todo 短信发送
                             break;
+                        default:
+                            throw new IllegalStateException("Unexpected value: " + messageTypeEnum);
                     }
                 }
             }
@@ -277,20 +141,66 @@ public class WorkflowUtils {
     }
 
     /**
-     * 根据任务id查询 当前用户的任务，检查 当前人员 是否是该 taskId 的办理人
+     * 驳回
      *
-     * @param taskId 任务id
-     * @return 结果
+     * @param message        审批意见
+     * @param instanceId     流程实例id
+     * @param targetNodeCode 目标节点
+     * @param flowStatus     流程状态
+     * @param flowHisStatus  节点操作状态
      */
-    public static Task getTaskByCurrentUser(String taskId) {
-        TaskQuery taskQuery = QueryUtils.taskQuery();
-        taskQuery.taskId(taskId).taskCandidateOrAssigned(String.valueOf(LoginHelper.getUserId()));
-
-        List<RoleDTO> roles = LoginHelper.getLoginUser().getRoles();
-        if (CollUtil.isNotEmpty(roles)) {
-            List<String> groupIds = StreamUtils.toList(roles, e -> String.valueOf(e.getRoleId()));
-            taskQuery.taskCandidateGroupIn(groupIds);
+    public static void backTask(String message, Long instanceId, String targetNodeCode, String flowStatus, String flowHisStatus) {
+        List<FlowTask> list = FLW_TASK_SERVICE.selectByInstId(instanceId);
+        if (CollUtil.isNotEmpty(list)) {
+            List<FlowTask> tasks = StreamUtils.filter(list, e -> e.getNodeCode().equals(targetNodeCode));
+            if (list.size() == tasks.size()) {
+                return;
+            }
         }
-        return taskQuery.singleResult();
+        for (FlowTask task : list) {
+            List<RemoteUserVo> userList = FLW_TASK_SERVICE.currentTaskAllUser(task.getId());
+            FlowParams flowParams = FlowParams.build();
+            flowParams.nodeCode(targetNodeCode);
+            flowParams.message(message);
+            flowParams.skipType(SkipType.PASS.getKey());
+            flowParams.flowStatus(flowStatus).hisStatus(flowHisStatus);
+            flowParams.ignore(true);
+            //解决会签没权限问题
+            if (CollUtil.isNotEmpty(userList)) {
+                flowParams.handler(userList.get(0).getUserId().toString());
+            }
+            TASK_SERVICE.skip(task.getId(), flowParams);
+        }
+        //解决会签多人审批问题
+        backTask(message, instanceId, targetNodeCode, flowStatus, flowHisStatus);
+    }
+
+    /**
+     * 申请人节点编码
+     *
+     * @param definitionId 流程定义id
+     * @return 申请人节点编码
+     */
+    public static String applyNodeCode(Long definitionId) {
+        //获取已发布的流程节点
+        List<FlowNode> flowNodes = FLOW_NODE_MAPPER.selectList(new LambdaQueryWrapper<FlowNode>().eq(FlowNode::getDefinitionId, definitionId));
+        AssertUtil.isTrue(CollUtil.isEmpty(flowNodes), ExceptionCons.NOT_PUBLISH_NODE);
+        Node startNode = flowNodes.stream().filter(t -> NodeType.isStart(t.getNodeType())).findFirst().orElse(null);
+        AssertUtil.isNull(startNode, ExceptionCons.LOST_START_NODE);
+        Node nextNode = NODE_SERVICE.getNextNode(definitionId, startNode.getNodeCode(), null, SkipType.PASS.getKey());
+        return nextNode.getNodeCode();
+    }
+
+    /**
+     * 删除运行中的任务
+     *
+     * @param taskIds 任务id
+     */
+    public static void deleteRunTask(List<Long> taskIds) {
+        if (CollUtil.isEmpty(taskIds)) {
+            return;
+        }
+        USER_SERVICE.deleteByTaskIds(taskIds);
+        FLOW_TASK_MAPPER.deleteByIds(taskIds);
     }
 }

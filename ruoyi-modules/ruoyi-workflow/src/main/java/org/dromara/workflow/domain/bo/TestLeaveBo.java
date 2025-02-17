@@ -53,7 +53,6 @@ public class TestLeaveBo extends BaseEntity {
     /**
      * 请假天数
      */
-    @NotNull(message = "请假天数不能为空", groups = {AddGroup.class, EditGroup.class})
     private Integer leaveDays;
 
     /**

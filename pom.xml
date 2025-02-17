@@ -55,8 +55,8 @@
         <sms4j.version>3.3.3</sms4j.version>
         <!-- 面向运行时的D-ORM依赖 -->
         <anyline.version>8.7.2-20250101</anyline.version>
-        <!-- 工作流配置 -->
-        <flowable.version>7.0.1</flowable.version>
+        <!--工作流配置-->
+        <warm-flow.version>1.6.6</warm-flow.version>
         <!-- mq配置 -->
         <rocketmq.version>2.3.0</rocketmq.version>
 
@@ -159,14 +159,6 @@
                 <groupId>org.dromara</groupId>
                 <artifactId>ruoyi-api-bom</artifactId>
                 <version>${revision}</version>
-                <type>pom</type>
-                <scope>import</scope>
-            </dependency>
-
-            <dependency>
-                <groupId>org.flowable</groupId>
-                <artifactId>flowable-bom</artifactId>
-                <version>${flowable.version}</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
@@ -364,6 +356,18 @@
                 <groupId>org.apache.rocketmq</groupId>
                 <artifactId>rocketmq-spring-boot-starter</artifactId>
                 <version>${rocketmq.version}</version>
+            </dependency>
+
+            <!-- Warm-Flow国产工作流引擎, 在线文档：http://warm-flow.cn/ -->
+            <dependency>
+                <groupId>org.dromara.warm</groupId>
+                <artifactId>warm-flow-mybatis-plus-sb3-starter</artifactId>
+                <version>${warm-flow.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.dromara.warm</groupId>
+                <artifactId>warm-flow-plugin-ui-sb-web</artifactId>
+                <version>${warm-flow.version}</version>
             </dependency>
 
         </dependencies>

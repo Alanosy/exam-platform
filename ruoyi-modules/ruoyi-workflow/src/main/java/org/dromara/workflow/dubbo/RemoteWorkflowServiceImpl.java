@@ -2,8 +2,10 @@ package org.dromara.workflow.dubbo;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.dubbo.config.annotation.DubboService;
-import org.dromara.workflow.api.domain.RemoteWorkflowService;
-import org.dromara.workflow.service.IActHiProcinstService;
+import org.dromara.workflow.api.RemoteWorkflowService;
+import org.dromara.workflow.api.domain.RemoteCompleteTask;
+import org.dromara.workflow.api.domain.RemoteStartProcess;
+import org.dromara.workflow.api.domain.RemoteStartProcessReturn;
 import org.dromara.workflow.service.WorkflowService;
 
 import java.util.List;
@@ -20,51 +22,50 @@ import java.util.Map;
 public class RemoteWorkflowServiceImpl implements RemoteWorkflowService {
 
     private final WorkflowService workflowService;
-    private final IActHiProcinstService actHiProcinstService;
 
     @Override
-    public boolean deleteRunAndHisInstance(List<String> businessKeys) {
-        return workflowService.deleteRunAndHisInstance(businessKeys);
+    public boolean deleteInstance(List<Long> businessIds) {
+        return workflowService.deleteInstance(businessIds);
     }
 
     @Override
-    public String getBusinessStatusByTaskId(String taskId) {
+    public String getBusinessStatusByTaskId(Long taskId) {
         return workflowService.getBusinessStatusByTaskId(taskId);
     }
 
     @Override
-    public String getBusinessStatus(String businessKey) {
-        return workflowService.getBusinessStatus(businessKey);
+    public String getBusinessStatus(String businessId) {
+        return workflowService.getBusinessStatus(businessId);
     }
 
     @Override
-    public void setVariable(String taskId, String variableName, Object value) {
-        workflowService.setVariable(taskId, variableName, value);
+    public void setVariable(Long instanceId, Map<String, Object> variable) {
+        workflowService.setVariable(instanceId, variable);
     }
 
     @Override
-    public void setVariables(String taskId, Map<String, Object> variables) {
-        workflowService.setVariables(taskId, variables);
+    public Map<String, Object> instanceVariable(Long instanceId) {
+        return workflowService.instanceVariable(instanceId);
     }
 
     @Override
-    public void setVariableLocal(String taskId, String variableName, Object value) {
-        workflowService.setVariableLocal(taskId, variableName, value);
+    public Long getInstanceIdByBusinessId(String businessId) {
+        return workflowService.getInstanceIdByBusinessId(businessId);
     }
 
     @Override
-    public void setVariablesLocal(String taskId, Map<String, Object> variables) {
-        workflowService.setVariablesLocal(taskId, variables);
+    public void syncDef(String tenantId) {
+        workflowService.syncDef(tenantId);
     }
 
-    /**
-     * 按照业务id查询流程实例id
-     *
-     * @param businessKey 业务id
-     * @return 结果
-     */
     @Override
-    public String getInstanceIdByBusinessKey(String businessKey) {
-        return workflowService.getInstanceIdByBusinessKey(businessKey);
+    public RemoteStartProcessReturn startWorkFlow(RemoteStartProcess startProcess) {
+        return workflowService.startWorkFlow(startProcess);
     }
+
+    @Override
+    public boolean completeTask(RemoteCompleteTask completeTask) {
+        return workflowService.completeTask(completeTask);
+    }
+
 }

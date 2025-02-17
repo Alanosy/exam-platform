@@ -1,9 +1,8 @@
 package org.dromara.workflow.domain.bo;
 
-import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 import org.dromara.common.core.validate.AddGroup;
-import org.dromara.workflow.domain.vo.WfCopy;
 
 import java.io.Serial;
 import java.io.Serializable;
@@ -26,8 +25,8 @@ public class CompleteTaskBo implements Serializable {
     /**
      * 任务id
      */
-    @NotBlank(message = "任务id不能为空", groups = {AddGroup.class})
-    private String taskId;
+    @NotNull(message = "任务id不能为空", groups = {AddGroup.class})
+    private Long taskId;
 
     /**
      * 附件id
@@ -37,7 +36,7 @@ public class CompleteTaskBo implements Serializable {
     /**
      * 抄送人员
      */
-    private List<WfCopy> wfCopyList;
+    private List<FlowCopyBo> flowCopyList;
 
     /**
      * 消息类型
@@ -50,9 +49,20 @@ public class CompleteTaskBo implements Serializable {
     private String message;
 
     /**
+     * 消息通知
+     */
+    private String notice;
+
+    /**
      * 流程变量
      */
     private Map<String, Object> variables;
+
+    /**
+     * 扩展变量(此处为逗号分隔的ossId)
+     * @return
+     */
+    private String ext;
 
     public Map<String, Object> getVariables() {
         if (variables == null) {
