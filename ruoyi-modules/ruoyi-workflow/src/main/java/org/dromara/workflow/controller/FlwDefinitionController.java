@@ -32,7 +32,7 @@ import java.util.List;
 @Validated
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/workflow/definition")
+@RequestMapping("/definition")
 public class FlwDefinitionController extends BaseController {
 
     private final DefService defService;

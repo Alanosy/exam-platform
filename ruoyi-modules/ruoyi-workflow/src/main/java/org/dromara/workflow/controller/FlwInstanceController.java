@@ -30,7 +30,7 @@ import java.util.Map;
 @Validated
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/workflow/instance")
+@RequestMapping("/instance")
 public class FlwInstanceController extends BaseController {
 
     private final InsService insService;
