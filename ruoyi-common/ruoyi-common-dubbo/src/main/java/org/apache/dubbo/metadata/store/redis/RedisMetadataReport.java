@@ -67,7 +67,7 @@ public class RedisMetadataReport extends AbstractMetadataReport {
         this.root = url.getGroup(DEFAULT_ROOT);
         if (url.getParameter(CYCLE_REPORT_KEY, DEFAULT_METADATA_REPORT_CYCLE_REPORT)) {
             // ttl default is twice the cycle-report time
-            jedisParams.ex(ONE_DAY_IN_MILLISECONDS * 2);
+            jedisParams.px(ONE_DAY_IN_MILLISECONDS * 2);
         }
         if (url.getParameter(CLUSTER_KEY, false)) {
             jedisClusterNodes = new HashSet<>();
