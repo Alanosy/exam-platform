@@ -298,8 +298,10 @@ public class SysDeptServiceImpl implements ISysDeptService {
             dept.setAncestors(oldDept.getAncestors());
         }
         int result = baseMapper.updateById(dept);
-        if (SystemConstants.NORMAL.equals(dept.getStatus()) && StringUtils.isNotEmpty(dept.getAncestors())
-            && !StringUtils.equals(SystemConstants.NORMAL, dept.getAncestors())) {
+        // 如果部门状态为启用，且部门祖级列表不为空，且部门祖级列表不等于根部门祖级列表（如果部门祖级列表不等于根部门祖级列表，则说明存在上级部门）
+        if (SystemConstants.NORMAL.equals(dept.getStatus())
+            && StringUtils.isNotEmpty(dept.getAncestors())
+            && !StringUtils.equals(SystemConstants.ROOT_DEPT_ANCESTORS, dept.getAncestors())) {
             // 如果该部门是启用状态，则启用该部门的所有上级部门
             updateParentDeptStatusNormal(dept);
         }
