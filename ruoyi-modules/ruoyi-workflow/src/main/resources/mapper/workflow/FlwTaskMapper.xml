@@ -31,7 +31,7 @@
                 d.version,
                 uu.processed_by,
                 uu.type
-            from flow_task as t
+            from flow_task t
                     left join flow_user uu on uu.associated = t.id
                     left join flow_definition d on t.definition_id = d.id
                     left join flow_instance i on t.instance_id = i.id
