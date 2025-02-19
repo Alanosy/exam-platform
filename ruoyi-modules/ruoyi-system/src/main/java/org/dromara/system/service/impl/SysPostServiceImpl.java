@@ -153,6 +153,7 @@ public class SysPostServiceImpl implements ISysPostService {
     public boolean checkPostNameUnique(SysPostBo post) {
         boolean exist = baseMapper.exists(new LambdaQueryWrapper<SysPost>()
             .eq(SysPost::getPostName, post.getPostName())
+            .eq(SysPost::getDeptId, post.getDeptId())
             .ne(ObjectUtil.isNotNull(post.getPostId()), SysPost::getPostId, post.getPostId()));
         return !exist;
     }
