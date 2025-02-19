@@ -15,6 +15,7 @@ import org.dromara.common.core.utils.StringUtils;
 import org.dromara.common.mybatis.core.domain.BaseEntity;
 import org.dromara.common.mybatis.core.page.PageQuery;
 import org.dromara.common.mybatis.core.page.TableDataInfo;
+import org.dromara.common.tenant.helper.TenantHelper;
 import org.dromara.workflow.api.event.ProcessCreateTaskEvent;
 import org.dromara.workflow.api.event.ProcessDeleteEvent;
 import org.dromara.workflow.api.event.ProcessEvent;
@@ -131,23 +132,25 @@ public class TestLeaveServiceImpl implements ITestLeaveService {
      */
     @EventListener(condition = "#processEvent.flowCode.startsWith('leave')")
     public void processHandler(ProcessEvent processEvent) {
-        log.info("当前任务执行了{}", processEvent.toString());
-        TestLeave testLeave = baseMapper.selectById(Long.valueOf(processEvent.getBusinessId()));
-        testLeave.setStatus(processEvent.getStatus());
-        // 用于例如审批附件 审批意见等 存储到业务表内 自行根据业务实现存储流程
-        Map<String, Object> params = processEvent.getParams();
-        if (MapUtil.isNotEmpty(params)) {
-            // 历史任务扩展(通常为附件)
-            String hisTaskExt = Convert.toStr(params.get("hisTaskExt"));
-            // 办理人
-            String handler = Convert.toStr(params.get("handler"));
-            // 办理意见
-            String message = Convert.toStr(params.get("message"));
-        }
-        if (processEvent.isSubmit()) {
-            testLeave.setStatus(BusinessStatusEnum.WAITING.getStatus());
-        }
-        baseMapper.updateById(testLeave);
+        TenantHelper.dynamic(processEvent.getTenantId(), () -> {
+            log.info("当前任务执行了{}", processEvent.toString());
+            TestLeave testLeave = baseMapper.selectById(Long.valueOf(processEvent.getBusinessId()));
+            testLeave.setStatus(processEvent.getStatus());
+            // 用于例如审批附件 审批意见等 存储到业务表内 自行根据业务实现存储流程
+            Map<String, Object> params = processEvent.getParams();
+            if (MapUtil.isNotEmpty(params)) {
+                // 历史任务扩展(通常为附件)
+                String hisTaskExt = Convert.toStr(params.get("hisTaskExt"));
+                // 办理人
+                String handler = Convert.toStr(params.get("handler"));
+                // 办理意见
+                String message = Convert.toStr(params.get("message"));
+            }
+            if (processEvent.isSubmit()) {
+                testLeave.setStatus(BusinessStatusEnum.WAITING.getStatus());
+            }
+            baseMapper.updateById(testLeave);
+        });
     }
 
     /**
@@ -162,10 +165,12 @@ public class TestLeaveServiceImpl implements ITestLeaveService {
      */
     @EventListener(condition = "#processCreateTaskEvent.flowCode.startsWith('leave')")
     public void processCreateTaskHandler(ProcessCreateTaskEvent processCreateTaskEvent) {
-        log.info("当前任务创建了{}", processCreateTaskEvent.toString());
-        TestLeave testLeave = baseMapper.selectById(Long.valueOf(processCreateTaskEvent.getBusinessId()));
-        testLeave.setStatus(BusinessStatusEnum.WAITING.getStatus());
-        baseMapper.updateById(testLeave);
+        TenantHelper.dynamic(processCreateTaskEvent.getTenantId(), () -> {
+            log.info("当前任务创建了{}", processCreateTaskEvent.toString());
+            TestLeave testLeave = baseMapper.selectById(Long.valueOf(processCreateTaskEvent.getBusinessId()));
+            testLeave.setStatus(BusinessStatusEnum.WAITING.getStatus());
+            baseMapper.updateById(testLeave);
+        });
     }
 
     /**
@@ -177,12 +182,14 @@ public class TestLeaveServiceImpl implements ITestLeaveService {
      */
     @EventListener(condition = "#processDeleteEvent.flowCode.startsWith('leave')")
     public void processDeleteHandler(ProcessDeleteEvent processDeleteEvent) {
-        log.info("监听删除流程事件，当前任务执行了{}", processDeleteEvent.toString());
-        TestLeave testLeave = baseMapper.selectById(Long.valueOf(processDeleteEvent.getBusinessId()));
-        if (ObjectUtil.isNull(testLeave)) {
-            return;
-        }
-        baseMapper.deleteById(testLeave.getId());
+        TenantHelper.dynamic(processDeleteEvent.getTenantId(), () -> {
+            log.info("监听删除流程事件，当前任务执行了{}", processDeleteEvent.toString());
+            TestLeave testLeave = baseMapper.selectById(Long.valueOf(processDeleteEvent.getBusinessId()));
+            if (ObjectUtil.isNull(testLeave)) {
+                return;
+            }
+            baseMapper.deleteById(testLeave.getId());
+        });
     }
 
 }
