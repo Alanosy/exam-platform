@@ -16,6 +16,8 @@ ENV SERVER_PORT=9205 LANG=C.UTF-8 LC_ALL=C.UTF-8 JAVA_OPTS=""
 EXPOSE ${SERVER_PORT}
 
 ADD ./target/ruoyi-workflow.jar ./app.jar
+# 工作流字体文件
+ADD ./zhFonts/ /usr/share/fonts/zhFonts/
 
 SHELL ["/bin/bash", "-c"]
 
