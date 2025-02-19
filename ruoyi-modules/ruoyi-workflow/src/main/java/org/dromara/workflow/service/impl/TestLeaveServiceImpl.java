@@ -15,9 +15,9 @@ import org.dromara.common.core.utils.StringUtils;
 import org.dromara.common.mybatis.core.domain.BaseEntity;
 import org.dromara.common.mybatis.core.page.PageQuery;
 import org.dromara.common.mybatis.core.page.TableDataInfo;
+import org.dromara.workflow.api.event.ProcessCreateTaskEvent;
 import org.dromara.workflow.api.event.ProcessDeleteEvent;
 import org.dromara.workflow.api.event.ProcessEvent;
-import org.dromara.workflow.api.event.ProcessTaskEvent;
 import org.dromara.workflow.common.ConditionalOnEnable;
 import org.dromara.workflow.domain.TestLeave;
 import org.dromara.workflow.domain.bo.TestLeaveBo;
@@ -123,7 +123,7 @@ public class TestLeaveServiceImpl implements ITestLeaveService {
     }
 
     /**
-     * 总体流程监听(例如: 草稿，撤销，退回，作废，终止，已完成等)
+     * 总体流程监听(例如: 草稿，撤销，退回，作废，终止，已完成，单任务完成等)
      * 正常使用只需#processEvent.flowCode=='leave1'
      * 示例为了方便则使用startsWith匹配了全部示例key
      *
@@ -151,19 +151,19 @@ public class TestLeaveServiceImpl implements ITestLeaveService {
     }
 
     /**
-     * 执行办理任务监听
-     * 示例：也可通过  @EventListener(condition = "#processTaskEvent.flowCode=='leave1'")进行判断
+     * 执行任务创建监听
+     * 示例：也可通过  @EventListener(condition = "#processCreateTaskEvent.flowCode=='leave1'")进行判断
      * 在方法中判断流程节点key
-     * if ("xxx".equals(processTaskEvent.getNodeCode())) {
+     * if ("xxx".equals(processCreateTaskEvent.getNodeCode())) {
      * //执行业务逻辑
      * }
      *
-     * @param processTaskEvent 参数
+     * @param processCreateTaskEvent 参数
      */
-    @EventListener(condition = "#processTaskEvent.flowCode.startsWith('leave')")
-    public void processTaskHandler(ProcessTaskEvent processTaskEvent) {
-        log.info("当前任务执行了{}", processTaskEvent.toString());
-        TestLeave testLeave = baseMapper.selectById(Long.valueOf(processTaskEvent.getBusinessId()));
+    @EventListener(condition = "#processCreateTaskEvent.flowCode.startsWith('leave')")
+    public void processCreateTaskHandler(ProcessCreateTaskEvent processCreateTaskEvent) {
+        log.info("当前任务创建了{}", processCreateTaskEvent.toString());
+        TestLeave testLeave = baseMapper.selectById(Long.valueOf(processCreateTaskEvent.getBusinessId()));
         testLeave.setStatus(BusinessStatusEnum.WAITING.getStatus());
         baseMapper.updateById(testLeave);
     }

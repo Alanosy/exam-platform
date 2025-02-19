@@ -52,7 +52,7 @@ public class WorkflowGlobalListener implements GlobalListener {
         Task task = listenerVariable.getTask();
         if (task != null && BusinessStatusEnum.WAITING.getStatus().equals(flowStatus)) {
             // 判断流程状态（发布审批中事件）
-            flowProcessEventHandler.processTaskHandler(definition.getFlowCode(), task.getNodeCode(), task.getId(), businessId);
+            flowProcessEventHandler.processCreateTaskHandler(definition.getFlowCode(), task.getNodeCode(), task.getId(), businessId);
         }
     }
 

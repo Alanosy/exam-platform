@@ -8,13 +8,13 @@ import org.springframework.cloud.bus.event.RemoteApplicationEvent;
 import java.io.Serial;
 
 /**
- * 流程办理监听
+ * 流程创建任务监听
  *
  * @author may
  */
 @Data
 @EqualsAndHashCode(callSuper = true)
-public class ProcessTaskEvent extends RemoteApplicationEvent {
+public class ProcessCreateTaskEvent extends RemoteApplicationEvent {
 
     @Serial
     private static final long serialVersionUID = 1L;
@@ -44,7 +44,7 @@ public class ProcessTaskEvent extends RemoteApplicationEvent {
      */
     private String businessId;
 
-    public ProcessTaskEvent() {
+    public ProcessCreateTaskEvent() {
         super(new Object(), SpringUtils.getApplicationName(), DEFAULT_DESTINATION_FACTORY.getDestination(null));
     }
 }
