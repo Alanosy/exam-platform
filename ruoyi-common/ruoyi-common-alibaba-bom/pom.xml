@@ -19,7 +19,8 @@
         <sentinel.version>1.8.8</sentinel.version>
         <seata.version>1.7.1</seata.version>
         <nacos.client.version>2.4.3</nacos.client.version>
-        <dubbo.version>3.2.14</dubbo.version>
+        <dubbo.version>3.3.3</dubbo.version>
+        <dubbo-extensions.version>3.3.1</dubbo-extensions.version>
         <spring.context.support.version>1.0.11</spring.context.support.version>
     </properties>
     <dependencyManagement>
@@ -167,9 +168,9 @@
             </dependency>
 
             <dependency>
-                <groupId>org.apache.dubbo</groupId>
+                <groupId>org.apache.dubbo.extensions</groupId>
                 <artifactId>dubbo-metadata-report-redis</artifactId>
-                <version>${dubbo.version}</version>
+                <version>${dubbo-extensions.version}</version>
             </dependency>
 
             <dependency>

@@ -48,6 +48,8 @@ import static org.apache.dubbo.metadata.report.support.Constants.DEFAULT_METADAT
  */
 public class RedisMetadataReport extends AbstractMetadataReport {
 
+    private static final int ONE_DAY_IN_MILLISECONDS = 86400000;
+
     private static final String REDIS_DATABASE_KEY = "database";
     private static final ErrorTypeAwareLogger logger = LoggerFactory.getErrorTypeAwareLogger(RedisMetadataReport.class);
 
