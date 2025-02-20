@@ -176,10 +176,20 @@ public class SysTenantServiceImpl implements ISysTenantService {
         for (SysDictType dictType : dictTypeList) {
             dictType.setDictId(null);
             dictType.setTenantId(tenantId);
+            dictType.setCreateDept(null);
+            dictType.setCreateBy(null);
+            dictType.setCreateTime(null);
+            dictType.setUpdateBy(null);
+            dictType.setUpdateTime(null);
         }
         for (SysDictData dictData : dictDataList) {
             dictData.setDictCode(null);
             dictData.setTenantId(tenantId);
+            dictData.setCreateDept(null);
+            dictData.setCreateBy(null);
+            dictData.setCreateTime(null);
+            dictData.setUpdateBy(null);
+            dictData.setUpdateTime(null);
         }
         dictTypeMapper.insertBatch(dictTypeList);
         dictDataMapper.insertBatch(dictDataList);
@@ -189,6 +199,11 @@ public class SysTenantServiceImpl implements ISysTenantService {
         for (SysConfig config : sysConfigList) {
             config.setConfigId(null);
             config.setTenantId(tenantId);
+            config.setCreateDept(null);
+            config.setCreateBy(null);
+            config.setCreateTime(null);
+            config.setUpdateBy(null);
+            config.setUpdateTime(null);
         }
         configMapper.insertBatch(sysConfigList);
         return true;
