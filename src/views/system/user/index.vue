@@ -81,8 +81,9 @@
                   <template #dropdown>
                     <el-dropdown-menu>
                       <el-dropdown-item icon="Download" @click="importTemplate">下载模板</el-dropdown-item>
-                      <el-dropdown-item v-has-permi="['system:user:import']" icon="Top" @click="handleImport">导入数据</el-dropdown-item>
-                      <el-dropdown-item v-has-permi="['system:user:export']" icon="Download" @click="handleExport">导出数据</el-dropdown-item>
+                      <!-- 注意 由于el-dropdown-item标签是延迟加载的 所以v-has-permi自定义标签不生效 需要使用v-if调用方法执行 -->
+                      <el-dropdown-item v-if="checkPermi(['system:user:import'])" icon="Top" @click="handleImport">导入数据</el-dropdown-item>
+                      <el-dropdown-item v-if="checkPermi(['system:user:export'])" icon="Download" @click="handleExport">导出数据</el-dropdown-item>
                     </el-dropdown-menu>
                   </template>
                 </el-dropdown>
@@ -294,6 +295,8 @@ import { treeselect } from '@/api/system/dept';
 import { globalHeaders } from '@/utils/request';
 import { to } from 'await-to-js';
 import { optionselect } from '@/api/system/post';
+import {hasPermi} from "@/directive/permission";
+import {checkPermi} from "@/utils/permission";
 
 const router = useRouter();
 const { proxy } = getCurrentInstance() as ComponentInternalInstance;
