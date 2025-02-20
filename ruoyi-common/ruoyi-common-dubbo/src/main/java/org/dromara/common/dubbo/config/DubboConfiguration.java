@@ -8,8 +8,6 @@ import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.PropertySource;
-import org.springframework.core.task.AsyncTaskExecutor;
-import org.springframework.core.task.VirtualThreadTaskExecutor;
 
 /**
  * dubbo 配置类
@@ -33,11 +31,6 @@ public class DubboConfiguration {
     @Bean
     public DubboExceptionHandler dubboExceptionHandler() {
         return new DubboExceptionHandler();
-    }
-
-    @Bean
-    public AsyncTaskExecutor virtualThreadExecutor() {
-        return new VirtualThreadTaskExecutor("dubbo-");
     }
 
 }
