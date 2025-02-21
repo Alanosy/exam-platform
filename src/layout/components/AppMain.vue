@@ -24,16 +24,16 @@ const route = useRoute();
 const tagsViewStore = useTagsViewStore();
 
 // 随机动画集合
-const animante = ref<string>('');
+const animate = ref<string>('');
 const animationEnable = ref(useSettingsStore().animationEnable);
 watch(
   () => useSettingsStore().animationEnable,
   (val: boolean) => {
     animationEnable.value = val;
     if (val) {
-      animante.value = proxy?.animate.animateList[Math.round(Math.random() * proxy?.animate.animateList.length)] as string;
+      animate.value = proxy?.animate.animateList[Math.round(Math.random() * proxy?.animate.animateList.length)] as string;
     } else {
-      animante.value = proxy?.animate.defaultAnimate as string;
+      animate.value = proxy?.animate.defaultAnimate as string;
     }
   },
   { immediate: true }
