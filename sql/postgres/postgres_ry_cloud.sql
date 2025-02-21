@@ -75,7 +75,7 @@ create table if not exists sys_tenant
     tenant_id         varchar(20)   not null,
     contact_user_name varchar(20)   default null::varchar,
     contact_phone     varchar(20)   default null::varchar,
-    company_name      varchar(50)   default null::varchar,
+    company_name      varchar(30)   default null::varchar,
     license_number    varchar(30)   default null::varchar,
     address           varchar(200)  default null::varchar,
     intro             varchar(200)  default null::varchar,

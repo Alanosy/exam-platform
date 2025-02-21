@@ -44,7 +44,7 @@ create table sys_tenant
     tenant_id         varchar(20)   not null        comment '租户编号',
     contact_user_name varchar(20)                   comment '联系人',
     contact_phone     varchar(20)                   comment '联系电话',
-    company_name      varchar(50)                   comment '企业名称',
+    company_name      varchar(30)                   comment '企业名称',
     license_number    varchar(30)                   comment '统一社会信用代码',
     address           varchar(200)                  comment '地址',
     intro             varchar(200)                  comment '企业简介',

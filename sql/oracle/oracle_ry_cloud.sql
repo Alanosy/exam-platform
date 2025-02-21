@@ -75,7 +75,7 @@ create table sys_tenant (
     tenant_id         varchar2(20)  not null,
     contact_user_name varchar2(20)  default '',
     contact_phone     varchar2(20)  default '',
-    company_name      varchar2(50)  default '',
+    company_name      varchar2(30)  default '',
     license_number    varchar2(30)  default '',
     address           varchar2(200) default '',
     intro             varchar2(200) default '',
