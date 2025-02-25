@@ -68,7 +68,7 @@ onMounted(() => {
 });
 
 onMounted(() => {
-  let protocol = window.location.protocol === 'https:' ? 'wss://' : 'ws://';
+  const protocol = window.location.protocol === 'https:' ? 'wss://' : 'ws://';
   initWebSocket(protocol + window.location.host + import.meta.env.VITE_APP_BASE_API + '/resource/websocket');
 });
 
@@ -86,11 +86,11 @@ const setLayout = () => {
 </script>
 
 <style lang="scss" scoped>
-@import '@/assets/styles/mixin.scss';
-@import '@/assets/styles/variables.module.scss';
+@use '@/assets/styles/mixin.scss';
+@use '@/assets/styles/variables.module.scss' as *;
 
 .app-wrapper {
-  @include clearfix;
+  @include mixin.clearfix;
   position: relative;
   height: 100%;
   width: 100%;
