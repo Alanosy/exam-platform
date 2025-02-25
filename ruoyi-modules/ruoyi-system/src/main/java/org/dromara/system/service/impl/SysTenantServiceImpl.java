@@ -436,6 +436,9 @@ public class SysTenantServiceImpl implements ISysTenantService {
                             data.setTenantId(tenantId);
                             data.setCreateTime(null);
                             data.setUpdateTime(null);
+                            data.setCreateDept(null);
+                            data.setCreateBy(null);
+                            data.setUpdateBy(null);
                             set.add(tenantId);
                             saveDataList.add(data);
                         }
@@ -446,6 +449,9 @@ public class SysTenantServiceImpl implements ISysTenantService {
                     type.setTenantId(tenantId);
                     type.setCreateTime(null);
                     type.setUpdateTime(null);
+                    type.setCreateDept(null);
+                    type.setCreateBy(null);
+                    type.setUpdateBy(null);
                     set.add(tenantId);
                     saveTypeList.add(type);
                     if (CollUtil.isNotEmpty(dataList)) {
