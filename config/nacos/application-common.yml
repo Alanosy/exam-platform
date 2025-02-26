@@ -26,6 +26,8 @@ dubbo:
     port: -1
     # 指定dubbo协议注册ip
     # host: 192.168.0.100
+    # 开启虚拟线程
+    # threadpool: virtual
   # 消费者相关配置
   consumer:
     # 超时时间
