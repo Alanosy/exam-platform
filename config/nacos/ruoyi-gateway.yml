@@ -61,6 +61,11 @@ spring:
             - Path=/workflow/**
           filters:
             - StripPrefix=1
+        # warm-flow服务
+        - id: warm-flow
+          uri: lb://ruoyi-workflow
+          predicates:
+            - Path=/warm-flow-ui/**,/warm-flow/**
         # 演示服务
         - id: ruoyi-demo
           uri: lb://ruoyi-demo
