@@ -14,7 +14,7 @@ security:
       - /*/v3/api-docs
       - /*/error
       - /csrf
-      - /warm-flow-ui/token-name
+      - /warm-flow-ui/**
 
 spring:
   cloud:
