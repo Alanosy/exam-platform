@@ -232,8 +232,6 @@ xss:
   enabled: true
   excludeUrls:
     - /system/notice
-    - /workflow/model/save
-    - /workflow/model/editModelXml
 
 # 接口文档配置
 springdoc:
