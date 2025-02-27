@@ -32,9 +32,6 @@ dubbo:
       timeout: ${spring.data.redis.timeout}
       # 集群地址 cluster 为 true 生效
       backup: 127.0.0.1:6379,127.0.0.1:6381
-  protocol:
-    # 自定义线程池 如开启虚拟线程这使用虚拟线程 默认使用cached
-    threadpool: virtualOrCached
   # 消费者相关配置
   consumer:
     # 结果缓存(LRU算法)
