@@ -3,6 +3,7 @@ package org.dromara.common.core.config;
 import jakarta.validation.Validator;
 import org.hibernate.validator.HibernateValidator;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
+import org.springframework.boot.autoconfigure.validation.ValidationAutoConfiguration;
 import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
@@ -14,11 +15,11 @@ import java.util.Properties;
  *
  * @author Lion Li
  */
-@AutoConfiguration
+@AutoConfiguration(before = ValidationAutoConfiguration.class)
 public class ValidatorConfig {
 
     /**
-     * 配置校验框架 快速返回模式
+     * 配置校验框架 快速失败模式
      */
     @Bean
     public Validator validator(MessageSource messageSource) {
@@ -28,7 +29,7 @@ public class ValidatorConfig {
             // 设置使用 HibernateValidator 校验器
             factoryBean.setProviderClass(HibernateValidator.class);
             Properties properties = new Properties();
-            // 设置 快速异常返回
+            // 设置快速失败模式（fail-fast），即校验过程中一旦遇到失败，立即停止并返回错误
             properties.setProperty("hibernate.validator.fail_fast", "true");
             factoryBean.setValidationProperties(properties);
             // 加载配置
