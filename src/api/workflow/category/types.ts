@@ -6,7 +6,6 @@ export interface CategoryTreeVO {
   children: CategoryTreeVO[];
 }
 export interface CategoryVO {
-
   /**
    * 流程分类ID
    */
@@ -39,7 +38,6 @@ export interface CategoryVO {
 }
 
 export interface CategoryForm extends BaseEntity {
-
   /**
    * 流程分类ID
    */
@@ -59,14 +57,11 @@ export interface CategoryForm extends BaseEntity {
    * 显示顺序
    */
   orderNum?: number;
-
 }
 
 export interface CategoryQuery {
-
   /**
    * 流程分类名称
    */
   categoryName?: string;
-
 }

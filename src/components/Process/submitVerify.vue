@@ -11,7 +11,7 @@
       <el-form-item v-if="task.flowStatus === 'waiting'" label="附件">
         <fileUpload v-model="form.fileId" :file-type="['png', 'jpg', 'jpeg', 'doc', 'docx', 'xlsx', 'xls', 'ppt', 'txt', 'pdf']" :file-size="20" />
       </el-form-item>
-      <el-form-item label="抄送">
+      <el-form-item label="抄送" v-if="task.flowStatus === 'waiting' && buttonObj.copy">
         <el-button type="primary" icon="Plus" circle @click="openUserSelectCopy" />
         <el-tag v-for="user in selectCopyUserList" :key="user.userId" closable style="margin: 2px" @close="handleCopyCloseTag(user)">
           {{ user.nickName }}
@@ -24,10 +24,14 @@
     <template #footer>
       <span class="dialog-footer">
         <el-button :disabled="buttonDisabled" type="primary" @click="handleCompleteTask"> 提交 </el-button>
-        <el-button v-if="task.flowStatus === 'waiting'" :disabled="buttonDisabled" type="primary" @click="openDelegateTask"> 委托 </el-button>
-        <el-button v-if="task.flowStatus === 'waiting'" :disabled="buttonDisabled" type="primary" @click="openTransferTask"> 转办 </el-button>
+        <el-button v-if="task.flowStatus === 'waiting' && buttonObj.trust" :disabled="buttonDisabled" type="primary" @click="openDelegateTask">
+          委托
+        </el-button>
+        <el-button v-if="task.flowStatus === 'waiting' && buttonObj.transfer" :disabled="buttonDisabled" type="primary" @click="openTransferTask">
+          转办
+        </el-button>
         <el-button
-          v-if="task.flowStatus === 'waiting' && Number(task.nodeRatio) > 0"
+          v-if="task.flowStatus === 'waiting' && Number(task.nodeRatio) > 0 && buttonObj.subSign"
           :disabled="buttonDisabled"
           type="primary"
           @click="openMultiInstanceUser"
@@ -35,15 +39,24 @@
           加签
         </el-button>
         <el-button
-          v-if="task.flowStatus === 'waiting' && Number(task.nodeRatio) > 0"
+          v-if="task.flowStatus === 'waiting' && Number(task.nodeRatio) > 0 && buttonObj.subSign"
           :disabled="buttonDisabled"
           type="primary"
           @click="handleTaskUser"
         >
           减签
         </el-button>
-        <el-button v-if="task.flowStatus === 'waiting'" :disabled="buttonDisabled" type="danger" @click="handleTerminationTask"> 终止 </el-button>
-        <el-button v-if="task.flowStatus === 'waiting'" :disabled="buttonDisabled" type="danger" @click="handleBackProcessOpen"> 退回 </el-button>
+        <el-button
+          v-if="task.flowStatus === 'waiting' && buttonObj.termination"
+          :disabled="buttonDisabled"
+          type="danger"
+          @click="handleTerminationTask"
+        >
+          终止
+        </el-button>
+        <el-button v-if="task.flowStatus === 'waiting' && buttonObj.back" :disabled="buttonDisabled" type="danger" @click="handleBackProcessOpen">
+          退回
+        </el-button>
         <el-button :disabled="buttonDisabled" @click="cancel">取消</el-button>
       </span>
     </template>
@@ -72,7 +85,11 @@
           </el-checkbox-group>
         </el-form-item>
         <el-form-item v-if="task.flowStatus === 'waiting'" label="附件">
-          <fileUpload v-model="backForm.fileId" :file-type="['png', 'jpg', 'jpeg', 'doc', 'docx', 'xlsx', 'xls', 'ppt', 'txt', 'pdf']" :file-size="20" />
+          <fileUpload
+            v-model="backForm.fileId"
+            :file-type="['png', 'jpg', 'jpeg', 'doc', 'docx', 'xlsx', 'xls', 'ppt', 'txt', 'pdf']"
+            :file-size="20"
+          />
         </el-form-item>
         <el-form-item label="审批意见">
           <el-input v-model="backForm.message" type="textarea" resize="none" />
@@ -142,6 +159,10 @@ const backLoading = ref(true);
 const backButtonDisabled = ref(true);
 // 可驳回得任务节点
 const taskNodeList = ref([]);
+const buttonObj = ref<any>({
+  code: undefined,
+  show: false
+});
 //任务
 const task = ref<FlowTaskVO>({
   id: undefined,
@@ -159,7 +180,8 @@ const task = ref<FlowTaskVO>({
   formCustom: undefined,
   formPath: undefined,
   nodeType: undefined,
-  nodeRatio: undefined
+  nodeRatio: undefined,
+  buttonList: []
 });
 const dialog = reactive<DialogOption>({
   visible: false,
@@ -181,6 +203,7 @@ const backForm = ref<Record<string, any>>({
   variables: {},
   messageType: ['1']
 });
+
 //打开弹窗
 const openDialog = (id?: string) => {
   selectCopyUserIds.value = undefined;
@@ -194,6 +217,10 @@ const openDialog = (id?: string) => {
   nextTick(() => {
     getTask(taskId.value).then((response) => {
       task.value = response.data;
+      buttonObj.value = [];
+      task.value.buttonList.forEach((e) => {
+        buttonObj.value[e.code] = e.show;
+      });
       loading.value = false;
       buttonDisabled.value = false;
     });
@@ -208,9 +235,9 @@ const handleCompleteTask = async () => {
   form.value.taskId = taskId.value;
   form.value.taskVariables = props.taskVariables;
   if (selectCopyUserList.value && selectCopyUserList.value.length > 0) {
-    let flowCopyList = [];
+    const flowCopyList = [];
     selectCopyUserList.value.forEach((e) => {
-      let copyUser = {
+      const copyUser = {
         userId: e.userId,
         userName: e.nickName
       };
@@ -239,7 +266,7 @@ const handleBackProcessOpen = async () => {
   backVisible.value = true;
   backLoading.value = true;
   backButtonDisabled.value = true;
-  let data = await getBackTaskNode(task.value.definitionId, task.value.nodeCode);
+  const data = await getBackTaskNode(task.value.definitionId, task.value.nodeCode);
   taskNodeList.value = data.data;
   backLoading.value = false;
   backButtonDisabled.value = false;
@@ -386,7 +413,7 @@ const handleDelegateTask = async (data) => {
 };
 //终止任务
 const handleTerminationTask = async () => {
-  let params = {
+  const params = {
     taskId: taskId.value,
     comment: form.value.message
   };
@@ -402,7 +429,7 @@ const handleTerminationTask = async () => {
   proxy?.$modal.msgSuccess('操作成功');
 };
 const handleTaskUser = async () => {
-  let data = await currentTaskAllUser(taskId.value);
+  const data = await currentTaskAllUser(taskId.value);
   deleteUserList.value = data.data;
   if (deleteUserList.value && deleteUserList.value.length > 0) {
     deleteUserList.value.forEach((e) => {
