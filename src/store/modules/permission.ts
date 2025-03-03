@@ -23,6 +23,9 @@ export const usePermissionStore = defineStore('permission', () => {
   const getRoutes = (): RouteRecordRaw[] => {
     return routes.value as RouteRecordRaw[];
   };
+  const getDefaultRoutes = (): RouteRecordRaw[] => {
+    return defaultRoutes.value as RouteRecordRaw[];
+  };
   const getSidebarRoutes = (): RouteRecordRaw[] => {
     return sidebarRouters.value as RouteRecordRaw[];
   };
@@ -97,29 +100,14 @@ export const usePermissionStore = defineStore('permission', () => {
   };
   const filterChildren = (childrenMap: RouteRecordRaw[], lastRouter?: RouteRecordRaw): RouteRecordRaw[] => {
     let children: RouteRecordRaw[] = [];
-    childrenMap.forEach((el) => {
-      if (el.children && el.children.length) {
-        if (el.component?.toString() === 'ParentView' && !lastRouter) {
-          el.children.forEach((c) => {
-            c.path = el.path + '/' + c.path;
-            if (c.children && c.children.length) {
-              children = children.concat(filterChildren(c.children, c));
-              return;
-            }
-            children.push(c);
-          });
-          return;
-        }
+    childrenMap.forEach(el => {
+      el.path = lastRouter ? lastRouter.path + '/' + el.path : el.path;
+      if (el.children && el.children.length && el.component?.toString() === 'ParentView') {
+        children = children.concat(filterChildren(el.children, el));
+      } else {
+        children.push(el);
       }
-      if (lastRouter) {
-        el.path = lastRouter.path + '/' + el.path;
-        if (el.children && el.children.length) {
-          children = children.concat(filterChildren(el.children, el));
-          return;
-        }
-      }
-      children = children.concat(el);
-    });
+    })
     return children;
   };
   return {
@@ -129,6 +117,7 @@ export const usePermissionStore = defineStore('permission', () => {
     defaultRoutes,
 
     getRoutes,
+    getDefaultRoutes,
     getSidebarRoutes,
     getTopbarRoutes,
 
