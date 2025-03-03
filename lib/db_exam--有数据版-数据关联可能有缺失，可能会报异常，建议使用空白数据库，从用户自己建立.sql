@@ -11,7 +11,7 @@
  Target Server Version : 80023 (8.0.23)
  File Encoding         : 65001
 
- Date: 29/08/2024 13:54:18
+ Date: 02/03/2025 15:19:11
 */
 
 SET NAMES utf8mb4;
@@ -905,7 +905,7 @@ CREATE TABLE `t_question` (
   `content` varchar(255) NOT NULL COMMENT '题干',
   `create_time` datetime NOT NULL COMMENT '创建时间',
   `analysis` varchar(255) DEFAULT NULL COMMENT '题目分析',
-  `repo_id` int NOT NULL COMMENT '题库id',
+  `repo_id` int DEFAULT NULL COMMENT '题库id',
   `user_id` int DEFAULT NULL COMMENT '用户id',
   `is_deleted` int NOT NULL DEFAULT '0' COMMENT '逻辑删除：0代表未删除，1代表删除',
   PRIMARY KEY (`id`) USING BTREE
@@ -995,8 +995,8 @@ INSERT INTO `t_question` (`id`, `qu_type`, `image`, `content`, `create_time`, `a
 INSERT INTO `t_question` (`id`, `qu_type`, `image`, `content`, `create_time`, `analysis`, `repo_id`, `user_id`, `is_deleted`) VALUES (695, '4', NULL, '测试简答题1', '2024-06-24 21:57:59', '测试简答1解析', 64, 1, 0);
 INSERT INTO `t_question` (`id`, `qu_type`, `image`, `content`, `create_time`, `analysis`, `repo_id`, `user_id`, `is_deleted`) VALUES (696, '4', NULL, '测试简答题2', '2024-06-24 21:57:59', '测试简答2解析', 64, 1, 0);
 INSERT INTO `t_question` (`id`, `qu_type`, `image`, `content`, `create_time`, `analysis`, `repo_id`, `user_id`, `is_deleted`) VALUES (697, '4', NULL, '天气与心情关系', '2024-06-27 14:48:19', '正正，负负', 69, 1, 0);
-INSERT INTO `t_question` (`id`, `qu_type`, `image`, `content`, `create_time`, `analysis`, `repo_id`, `user_id`, `is_deleted`) VALUES (698, '4', NULL, 'test是什么', '2024-06-27 16:25:50', '测试', 70, 132, 0);
-INSERT INTO `t_question` (`id`, `qu_type`, `image`, `content`, `create_time`, `analysis`, `repo_id`, `user_id`, `is_deleted`) VALUES (699, '1', NULL, '软件工程', '2024-06-28 16:01:13', NULL, 70, 132, 0);
+INSERT INTO `t_question` (`id`, `qu_type`, `image`, `content`, `create_time`, `analysis`, `repo_id`, `user_id`, `is_deleted`) VALUES (698, '4', NULL, 'test是什么', '2024-06-27 16:25:50', '测试', NULL, 132, 0);
+INSERT INTO `t_question` (`id`, `qu_type`, `image`, `content`, `create_time`, `analysis`, `repo_id`, `user_id`, `is_deleted`) VALUES (699, '1', NULL, '软件工程', '2024-06-28 16:01:13', NULL, NULL, 132, 0);
 INSERT INTO `t_question` (`id`, `qu_type`, `image`, `content`, `create_time`, `analysis`, `repo_id`, `user_id`, `is_deleted`) VALUES (700, '1', NULL, 'kfjdt', '2024-07-09 16:24:54', NULL, 65, 1, 0);
 INSERT INTO `t_question` (`id`, `qu_type`, `image`, `content`, `create_time`, `analysis`, `repo_id`, `user_id`, `is_deleted`) VALUES (701, '3', NULL, '请问', '2024-07-16 10:59:17', NULL, 63, 1, 0);
 COMMIT;
@@ -1025,10 +1025,10 @@ INSERT INTO `t_repo` (`id`, `user_id`, `title`, `create_time`, `is_deleted`) VAL
 INSERT INTO `t_repo` (`id`, `user_id`, `title`, `create_time`, `is_deleted`) VALUES (67, 1, '111', '2024-06-21 14:26:45', 0);
 INSERT INTO `t_repo` (`id`, `user_id`, `title`, `create_time`, `is_deleted`) VALUES (68, 1, 'mm', '2024-06-24 21:49:52', 0);
 INSERT INTO `t_repo` (`id`, `user_id`, `title`, `create_time`, `is_deleted`) VALUES (69, 1, '主观题库', '2024-06-27 14:44:58', 0);
-INSERT INTO `t_repo` (`id`, `user_id`, `title`, `create_time`, `is_deleted`) VALUES (70, 132, 'test题库', '2024-06-27 16:25:25', 0);
+INSERT INTO `t_repo` (`id`, `user_id`, `title`, `create_time`, `is_deleted`) VALUES (70, 132, 'test题库', '2024-06-27 16:25:25', 1);
 INSERT INTO `t_repo` (`id`, `user_id`, `title`, `create_time`, `is_deleted`) VALUES (71, 1, '123', '2024-07-05 21:18:19', 1);
 INSERT INTO `t_repo` (`id`, `user_id`, `title`, `create_time`, `is_deleted`) VALUES (72, 1, '111', '2024-07-06 07:14:30', 0);
-INSERT INTO `t_repo` (`id`, `user_id`, `title`, `create_time`, `is_deleted`) VALUES (73, 1, 'rrew', '2024-07-11 17:37:20', 0);
+INSERT INTO `t_repo` (`id`, `user_id`, `title`, `create_time`, `is_deleted`) VALUES (73, 1, 'rrew', '2024-07-11 17:37:20', 1);
 COMMIT;
 
 -- ----------------------------
@@ -1068,7 +1068,7 @@ CREATE TABLE `t_user` (
   `is_deleted` int NOT NULL DEFAULT '0' COMMENT '逻辑删除：0代表未删除，1代表删除',
   PRIMARY KEY (`id`) USING BTREE,
   UNIQUE KEY `user_name` (`user_name`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=147 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci ROW_FORMAT=DYNAMIC;
+) ENGINE=InnoDB AUTO_INCREMENT=148 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci ROW_FORMAT=DYNAMIC;
 
 -- ----------------------------
 -- Records of t_user
@@ -1104,6 +1104,7 @@ INSERT INTO `t_user` (`id`, `user_name`, `real_name`, `password`, `avatar`, `rol
 INSERT INTO `t_user` (`id`, `user_name`, `real_name`, `password`, `avatar`, `role_id`, `grade_id`, `create_time`, `status`, `is_deleted`) VALUES (144, 'yanglaoshi', 'yanglaoshi', '$2a$10$Kh6HIp/FBKBlGyBbj6bagOfJ/xEV752wo59wMNfzHRkt30aQth.gS', 'https://online-exam-system-backend.oss-cn-beijing.aliyuncs.com/da93c2a6-6879-46c3-b38f-a99956f70d22.jpg', 2, NULL, '2024-07-12 16:45:03', 1, 0);
 INSERT INTO `t_user` (`id`, `user_name`, `real_name`, `password`, `avatar`, `role_id`, `grade_id`, `create_time`, `status`, `is_deleted`) VALUES (145, '123123', '123123', '$2a$10$UrSnd/GLt0cvFW8MU9o0fexQglFZ8eNcRKWODfbIQUbc0bQhZTUGi', 'https://online-exam-system-backend.oss-cn-beijing.aliyuncs.com/da93c2a6-6879-46c3-b38f-a99956f70d22.jpg', 1, NULL, '2024-07-12 16:46:34', 1, 0);
 INSERT INTO `t_user` (`id`, `user_name`, `real_name`, `password`, `avatar`, `role_id`, `grade_id`, `create_time`, `status`, `is_deleted`) VALUES (146, '阿是范德萨发', '111', '$2a$10$Jny8PjSPGci1ODXdvev7teQaah8fcw6OqQsH..a2tbPuNosEejCAq', 'https://online-exam-system-backend.oss-cn-beijing.aliyuncs.com/da93c2a6-6879-46c3-b38f-a99956f70d22.jpg', 1, NULL, '2024-07-16 17:15:19', 1, 0);
+INSERT INTO `t_user` (`id`, `user_name`, `real_name`, `password`, `avatar`, `role_id`, `grade_id`, `create_time`, `status`, `is_deleted`) VALUES (147, '111', '111', '$2a$10$U1mFiuWi5Jsf8Dtdi5Q1geOiU2f01je.D6EqtN7l1NCdmo8reasjO', 'https://online-exam-system-backend.oss-cn-beijing.aliyuncs.com/da93c2a6-6879-46c3-b38f-a99956f70d22.jpg', 1, NULL, '2025-03-02 14:21:14', 1, 0);
 COMMIT;
 
 -- ----------------------------
@@ -1172,7 +1173,7 @@ CREATE TABLE `t_user_daily_login_duration` (
   `login_date` date DEFAULT NULL COMMENT '登录日期，记录用户在哪一天的登录时长',
   `total_seconds` int DEFAULT NULL COMMENT '累积在线秒数，每日登录总时长，单位为秒',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=114 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin;
+) ENGINE=InnoDB AUTO_INCREMENT=115 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin;
 
 -- ----------------------------
 -- Records of t_user_daily_login_duration
@@ -1230,6 +1231,7 @@ INSERT INTO `t_user_daily_login_duration` (`id`, `user_id`, `login_date`, `total
 INSERT INTO `t_user_daily_login_duration` (`id`, `user_id`, `login_date`, `total_seconds`) VALUES (111, 1, '2024-07-20', 16736);
 INSERT INTO `t_user_daily_login_duration` (`id`, `user_id`, `login_date`, `total_seconds`) VALUES (112, 1, '2024-07-21', 25024);
 INSERT INTO `t_user_daily_login_duration` (`id`, `user_id`, `login_date`, `total_seconds`) VALUES (113, 1, '2024-07-22', 2365417);
+INSERT INTO `t_user_daily_login_duration` (`id`, `user_id`, `login_date`, `total_seconds`) VALUES (114, 1, '2025-03-02', 3358);
 COMMIT;
 
 -- ----------------------------
@@ -1250,7 +1252,7 @@ CREATE TABLE `t_user_exams_score` (
   `whether_mark` int DEFAULT NULL COMMENT '是否阅卷-1无简答题、0未阅卷、1阅卷',
   PRIMARY KEY (`id`) USING BTREE,
   UNIQUE KEY `user_id` (`user_id`,`exam_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=194 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci ROW_FORMAT=DYNAMIC;
+) ENGINE=InnoDB AUTO_INCREMENT=195 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci ROW_FORMAT=DYNAMIC;
 
 -- ----------------------------
 -- Records of t_user_exams_score
@@ -1275,6 +1277,7 @@ INSERT INTO `t_user_exams_score` (`id`, `user_id`, `exam_id`, `total_time`, `use
 INSERT INTO `t_user_exams_score` (`id`, `user_id`, `exam_id`, `total_time`, `user_time`, `user_score`, `limit_time`, `count`, `state`, `create_time`, `whether_mark`) VALUES (191, 118, 98, 120, NULL, 0, NULL, 1, 0, '2024-06-26 00:38:28', NULL);
 INSERT INTO `t_user_exams_score` (`id`, `user_id`, `exam_id`, `total_time`, `user_time`, `user_score`, `limit_time`, `count`, `state`, `create_time`, `whether_mark`) VALUES (192, 131, 102, 15, NULL, 0, NULL, 0, 0, '2024-06-28 16:06:55', NULL);
 INSERT INTO `t_user_exams_score` (`id`, `user_id`, `exam_id`, `total_time`, `user_time`, `user_score`, `limit_time`, `count`, `state`, `create_time`, `whether_mark`) VALUES (193, 131, 103, 544, 13, 0, '2024-06-28 16:08:16', 0, 1, '2024-06-28 16:08:03', 0);
+INSERT INTO `t_user_exams_score` (`id`, `user_id`, `exam_id`, `total_time`, `user_time`, `user_score`, `limit_time`, `count`, `state`, `create_time`, `whether_mark`) VALUES (194, 1, 87, 20, NULL, 0, NULL, 2, 0, '2025-03-02 14:56:37', NULL);
 COMMIT;
 
 -- ----------------------------

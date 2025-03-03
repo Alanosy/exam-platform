@@ -75,7 +75,7 @@
         </if>
 
         <if test="roleId != null and roleId == 1">
-            join t_grade as g on u.grade_id = g.id and g.user_id = #{userId}
+            left join t_grade as g on u.grade_id = g.id and g.user_id = #{userId}
         </if>
         <trim prefixOverrides="and" prefix="where">
             u.is_deleted = 0
