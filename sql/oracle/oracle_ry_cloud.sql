@@ -1183,7 +1183,7 @@ create table sys_oss (
   file_suffix     varchar2(10)   not null,
   url             varchar2(500)  not null,
   service         varchar2(20)   default 'minio' not null,
-  ext1            varchar2(255)  default '',
+  ext1            varchar2(500)  default '',
   create_dept     number(20)    default null,
   create_by       number(20)    default null,
   create_time     date,
