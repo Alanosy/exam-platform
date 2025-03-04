@@ -17,6 +17,21 @@
           {{ user.nickName }}
         </el-tag>
       </el-form-item>
+      <el-form-item v-if="buttonObj.pop && nestNodeList && nestNodeList.length > 0" label="下一步审批人" prop="assigneeMap">
+        <div v-for="(item, index) in nestNodeList" :key="index" style="display: flex; justify-content: space-between; margin-bottom: 5px">
+          <div>
+            <span>【{{ item.nodeName }}】：</span>
+            <el-input v-if="false" v-model="form.assigneeMap[item.nodeCode]" />
+          </div>
+          <div>
+            <el-input placeholder="请选择审批人" readonly>
+              <template v-slot:append>
+                <el-button @click="choosePeople(item)" icon="search">选择</el-button>
+              </template>
+            </el-input>
+          </div>
+        </div>
+      </el-form-item>
       <el-form-item v-if="task.flowStatus === 'waiting'" label="审批意见">
         <el-input v-model="form.message" type="textarea" resize="none" />
       </el-form-item>
@@ -68,6 +83,8 @@
     <UserSelect ref="delegateTaskRef" :multiple="false" @confirm-call-back="handleDelegateTask"></UserSelect>
     <!-- 加签组件 -->
     <UserSelect ref="multiInstanceUserRef" :multiple="true" @confirm-call-back="addMultiInstanceUser"></UserSelect>
+    <!-- 弹窗选人 -->
+    <UserSelect ref="porUserRef" :multiple="true" :userIds="popUserIds" @confirm-call-back="handlePopUser"></UserSelect>
 
     <!-- 驳回开始 -->
     <el-dialog v-model="backVisible" draggable title="驳回" width="40%" :close-on-click-modal="false">
@@ -123,7 +140,16 @@
 import { ref } from 'vue';
 import { ComponentInternalInstance } from 'vue';
 import { ElForm } from 'element-plus';
-import { completeTask, backProcess, getTask, taskOperation, terminationTask, getBackTaskNode, currentTaskAllUser } from '@/api/workflow/task';
+import {
+  completeTask,
+  backProcess,
+  getTask,
+  taskOperation,
+  terminationTask,
+  getBackTaskNode,
+  currentTaskAllUser,
+  getNextNodeList
+} from '@/api/workflow/task';
 import UserSelect from '@/components/UserSelect';
 
 const { proxy } = getCurrentInstance() as ComponentInternalInstance;
@@ -134,6 +160,7 @@ const userSelectCopyRef = ref<InstanceType<typeof UserSelect>>();
 const transferTaskRef = ref<InstanceType<typeof UserSelect>>();
 const delegateTaskRef = ref<InstanceType<typeof UserSelect>>();
 const multiInstanceUserRef = ref<InstanceType<typeof UserSelect>>();
+const porUserRef = ref<InstanceType<typeof UserSelect>>();
 
 const props = defineProps({
   taskVariables: {
@@ -153,6 +180,8 @@ const selectCopyUserList = ref<UserVO[]>([]);
 const selectCopyUserIds = ref<string>(undefined);
 //可减签的人员
 const deleteUserList = ref<any>([]);
+//弹窗可选择的人员id
+const popUserIds = ref<any>([]);
 //驳回是否显示
 const backVisible = ref(false);
 const backLoading = ref(true);
@@ -163,6 +192,8 @@ const buttonObj = ref<any>({
   code: undefined,
   show: false
 });
+//下一节点列表
+const nestNodeList = ref([]);
 //任务
 const task = ref<FlowTaskVO>({
   id: undefined,
@@ -181,6 +212,7 @@ const task = ref<FlowTaskVO>({
   formPath: undefined,
   nodeType: undefined,
   nodeRatio: undefined,
+  applyNode: false,
   buttonList: []
 });
 const dialog = reactive<DialogOption>({
@@ -205,7 +237,7 @@ const backForm = ref<Record<string, any>>({
 });
 
 //打开弹窗
-const openDialog = (id?: string) => {
+const openDialog = async (id?: string) => {
   selectCopyUserIds.value = undefined;
   selectCopyUserList.value = [];
   form.value.fileId = undefined;
@@ -214,17 +246,21 @@ const openDialog = (id?: string) => {
   dialog.visible = true;
   loading.value = true;
   buttonDisabled.value = true;
-  nextTick(() => {
-    getTask(taskId.value).then((response) => {
-      task.value = response.data;
-      buttonObj.value = [];
-      task.value.buttonList.forEach((e) => {
-        buttonObj.value[e.code] = e.show;
-      });
-      loading.value = false;
-      buttonDisabled.value = false;
-    });
+  const response = await getTask(taskId.value);
+  task.value = response.data;
+  buttonObj.value = [];
+  task.value.buttonList.forEach((e) => {
+    buttonObj.value[e.code] = e.show;
   });
+  buttonObj.value.applyNode = task.value.applyNode;
+  loading.value = false;
+  buttonDisabled.value = false;
+  const data = {
+    taskId: taskId.value,
+    variables: props.taskVariables
+  };
+  const nextData = await getNextNodeList(data);
+  nestNodeList.value = nextData.data;
 };
 
 onMounted(() => {});
@@ -438,6 +474,15 @@ const handleTaskUser = async () => {
   }
   deleteSignatureVisible.value = true;
 };
+// 选择人员
+const choosePeople = async (data) => {
+  if (!data.permissionFlag) {
+    proxy?.$modal.msgError('没有可选择的人员，请联系管理员！');
+  }
+  popUserIds.value = data.permissionFlag;
+  porUserRef.value.open();
+};
+const handlePopUser = async () => {};
 
 /**
  * 对外暴露子组件方法

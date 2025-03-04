@@ -108,11 +108,13 @@ interface PropType {
   modelValue?: UserVO[] | UserVO | undefined;
   multiple?: boolean;
   data?: string | number | (string | number)[] | undefined;
+  userIds?: string;
 }
 const prop = withDefaults(defineProps<PropType>(), {
   multiple: true,
   modelValue: undefined,
-  data: undefined
+  data: undefined,
+  userIds: undefined
 });
 const emit = defineEmits(['update:modelValue', 'confirmCallBack']);
 
@@ -143,7 +145,8 @@ const queryParams = ref<UserQuery>({
   phonenumber: '',
   status: '',
   deptId: '',
-  roleId: ''
+  roleId: '',
+  userIds: ''
 });
 
 const defaultSelectUserIds = computed(() => computedIds(prop.data));
@@ -166,7 +169,7 @@ const confirm = () => {
 
 const computedIds = (data) => {
   if (data instanceof Array) {
-    return data.map(item => String(item));
+    return data.map((item) => String(item));
   } else if (typeof data === 'string') {
     return data.split(',');
   } else if (typeof data === 'number') {
@@ -192,6 +195,7 @@ const getTreeSelect = async () => {
 /** 查询用户列表 */
 const getList = async () => {
   loading.value = true;
+  queryParams.value.userIds = prop.userIds;
   const res = await api.listUser(proxy?.addDateRange(queryParams.value, dateRange.value));
   loading.value = false;
   userList.value = res.rows;

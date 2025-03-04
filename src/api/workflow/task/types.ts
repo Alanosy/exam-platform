@@ -29,6 +29,7 @@ export interface FlowTaskVO {
   nodeType: number;
   nodeRatio: string | number;
   version?: string;
+  applyNode?: boolean;
   buttonList?: buttonList[];
 }
 
