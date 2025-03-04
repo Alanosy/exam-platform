@@ -1,7 +1,7 @@
 <template>
   <div class="component-upload-image">
     <el-upload
-      ref="imageUpload"
+      ref="imageUploadRef"
       multiple
       :action="uploadImgUrl"
       list-type="picture-card"
