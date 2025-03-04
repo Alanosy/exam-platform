@@ -2,13 +2,11 @@ package cn.org.alan.exam.service.impl;
 
 import cn.org.alan.exam.common.result.Result;
 import cn.org.alan.exam.converter.ExerciseConverter;
-import cn.org.alan.exam.converter.QuestionConverter;
 import cn.org.alan.exam.converter.RecordConverter;
 import cn.org.alan.exam.mapper.*;
 import cn.org.alan.exam.model.entity.*;
 import cn.org.alan.exam.model.form.ExerciseFillAnswerFrom;
 import cn.org.alan.exam.model.vo.QuestionVO;
-import cn.org.alan.exam.model.vo.exam.ExamQuestionVO;
 import cn.org.alan.exam.model.vo.exercise.AnswerInfoVO;
 import cn.org.alan.exam.model.vo.exercise.QuestionSheetVO;
 import cn.org.alan.exam.model.vo.record.ExamRecordDetailVO;
@@ -17,8 +15,8 @@ import cn.org.alan.exam.model.vo.record.ExerciseRecordDetailVO;
 import cn.org.alan.exam.model.vo.record.ExerciseRecordVO;
 import cn.org.alan.exam.service.IExerciseRecordService;
 import cn.org.alan.exam.service.IOptionService;
-import cn.org.alan.exam.util.CacheClient;
-import cn.org.alan.exam.util.SecurityUtil;
+import cn.org.alan.exam.util.impl.CacheClient;
+import cn.org.alan.exam.util.impl.SecurityUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.StringUtils;
@@ -30,7 +28,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 

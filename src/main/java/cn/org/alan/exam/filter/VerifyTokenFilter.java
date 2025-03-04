@@ -3,8 +3,8 @@ package cn.org.alan.exam.filter;
 import cn.org.alan.exam.model.entity.User;
 import cn.org.alan.exam.common.result.Result;
 import cn.org.alan.exam.security.SysUserDetails;
-import cn.org.alan.exam.util.JwtUtil;
-import cn.org.alan.exam.util.ResponseUtil;
+import cn.org.alan.exam.util.impl.JwtUtil;
+import cn.org.alan.exam.util.impl.ResponseUtil;
 import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.annotation.Resource;
@@ -22,7 +22,6 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 /**
  * @Author WeiJin
@@ -56,18 +55,18 @@ public class VerifyTokenFilter extends OncePerRequestFilter {
         String authorization = request.getHeader("Authorization");
         // 判断是否为空
         if (StringUtils.isBlank(authorization)) {
-            responseUtil.response(response, Result.failed("Authorization为空，请先登录"));
+            responseUtil.response(response, Result.failed("Authorization为空，请先登录"), 401);
             return;
         }
         // 校验jwt是否过期
         boolean verify = jwtUtil.verifyToken(authorization);
         if (!verify) {
-            responseUtil.response(response, Result.failed("token已过期，请重新登录"));
+            responseUtil.response(response, Result.failed("token已过期，请重新登录"), 401);
             return;
         }
         // 验证token在redis中是否存在，key使用sessionId
         if (Boolean.FALSE.equals(stringRedisTemplate.hasKey("token" + request.getSession().getId()))) {
-            responseUtil.response(response, Result.failed("token无效，请重新登录"));
+            responseUtil.response(response, Result.failed("token无效，请重新登录"), 401);
             return;
         }
         // 自动续期

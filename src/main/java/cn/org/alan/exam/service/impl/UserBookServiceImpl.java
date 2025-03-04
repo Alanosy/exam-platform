@@ -12,17 +12,14 @@ import cn.org.alan.exam.model.vo.userbook.*;
 import cn.org.alan.exam.service.IOptionService;
 import cn.org.alan.exam.service.IQuestionService;
 import cn.org.alan.exam.service.IUserBookService;
-import cn.org.alan.exam.util.SecurityUtil;
+import cn.org.alan.exam.util.impl.SecurityUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import jakarta.annotation.Resource;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
-import org.springframework.util.CollectionUtils;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -54,7 +51,7 @@ public class UserBookServiceImpl extends ServiceImpl<UserBookMapper, UserBook> i
     public Result<IPage<UserPageBookVO>> getPage(Integer pageNum, Integer pageSize, String examName) {
         Page<UserPageBookVO> page = new Page<>(pageNum, pageSize);
         String role = SecurityUtil.getRole();
-        int roleId = 0;
+        int roleId;
         if("role_admin".equals(role)){
             roleId =3;
         }else if ("role_teacher".equals(role)){

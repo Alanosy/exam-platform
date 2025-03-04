@@ -1,9 +1,12 @@
-package cn.org.alan.exam.util;
+package cn.org.alan.exam.util.impl;
 
+import cn.org.alan.exam.util.FileService;
 import com.aliyun.oss.OSS;
 import com.aliyun.oss.OSSClientBuilder;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -15,8 +18,9 @@ import java.util.UUID;
  * @author WeiJin
  * @version 1.0
  */
-@Component
-public class AliOSSUtil {
+@Service
+@ConditionalOnProperty(name = "online-exam.storage.type", havingValue = "aliyun")
+public class AliOSSUtil implements FileService {
 
     @Value("${oss.endpoint}")
     private String endpoint;
@@ -30,6 +34,7 @@ public class AliOSSUtil {
     /**
      * 实现上传图片到OSS
      */
+    @Override
     public String upload(MultipartFile file) throws IOException {
         // 获取上传的文件的输入流
         InputStream inputStream = file.getInputStream();
@@ -58,6 +63,7 @@ public class AliOSSUtil {
      * @param filename 文件名
      * @return 结果
      */
+    @Override
     public boolean isImage(String filename) {
         String lastName = filename.substring(filename.lastIndexOf(".") + 1);
         String[] lastnames = {"png", "jpg", "jpeg", "bmp"};
@@ -70,6 +76,7 @@ public class AliOSSUtil {
      * @param file 文件
      * @return 结果
      */
+    @Override
     public boolean isOverSize(MultipartFile file) {
         return file.getSize() > 20 * 1024 * 1024;
     }

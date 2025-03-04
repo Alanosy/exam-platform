@@ -8,9 +8,9 @@ spring:
     # 允许循环引用
     allow-circular-references: true
   datasource:
-    url: jdbc:mysql://localhost:3306/db_exam?useSSL=false&serverTimezone=UTC
+    url: jdbc:mysql://172.27.1.130:3306/db_exam?useSSL=false&serverTimezone=UTC
     username: root
-    password: Aa112211
+    password: 123456
     driver-class-name: com.mysql.cj.jdbc.Driver
 
     # druid 连接池管理
@@ -21,9 +21,9 @@ spring:
 #        max-redirects: 3
 #      password: 123456
       database: 0
-      host: 127.0.0.1
+      host: 172.27.1.130
       port: 6379
-#      password: ${redispassword}
+      password: 123456
       timeout: 10s
       lettuce:
         pool:
@@ -59,9 +59,24 @@ oss:
   access-key-secret: 4hFcObCh2ArA0wZZYbBP9mRy4BD2NO
   bucket-name: online-exam-system-backend
 
+
+minio:
+  endpoint: http://172.27.1.130:9000 # minio服务地址
+  accesskey: admin # minio用户名
+  secretKey: 12345678 # minio密码
+  bucket: online-exam #桶名
+
 logging:
   level:
     root: info
     com.example: debug
 common:
   adminId: 1
+
+#自定义配置
+online-exam:
+  storage:
+    type: minio # 存储方式的配置 aliyun、minio
+  login:
+    captcha:
+      enabled: false #是否启用验证码登录

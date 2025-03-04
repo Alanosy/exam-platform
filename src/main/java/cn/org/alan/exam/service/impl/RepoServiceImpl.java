@@ -1,24 +1,18 @@
 package cn.org.alan.exam.service.impl;
 
 import cn.org.alan.exam.common.result.Result;
-import cn.org.alan.exam.converter.RepoConverter;
 import cn.org.alan.exam.mapper.ExerciseRecordMapper;
 import cn.org.alan.exam.mapper.QuestionMapper;
 import cn.org.alan.exam.mapper.RepoMapper;
-import cn.org.alan.exam.mapper.UserExerciseRecordMapper;
-import cn.org.alan.exam.model.entity.ExerciseRecord;
 import cn.org.alan.exam.model.entity.Question;
 import cn.org.alan.exam.model.entity.Repo;
-import cn.org.alan.exam.model.entity.UserExerciseRecord;
 import cn.org.alan.exam.model.vo.repo.RepoListVO;
 import cn.org.alan.exam.model.vo.repo.RepoVO;
 import cn.org.alan.exam.model.vo.exercise.ExerciseRepoVO;
 import cn.org.alan.exam.service.IRepoService;
-import cn.org.alan.exam.util.SecurityUtil;
-import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import cn.org.alan.exam.util.impl.SecurityUtil;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
-import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import jakarta.annotation.Resource;

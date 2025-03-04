@@ -3,7 +3,7 @@ package cn.org.alan.exam.config;
 
 import cn.org.alan.exam.filter.VerifyTokenFilter;
 import cn.org.alan.exam.common.result.Result;
-import cn.org.alan.exam.util.ResponseUtil;
+import cn.org.alan.exam.util.impl.ResponseUtil;
 import jakarta.annotation.Resource;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;

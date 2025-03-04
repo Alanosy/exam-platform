@@ -9,15 +9,12 @@ import cn.org.alan.exam.model.vo.stat.DailyVO;
 import cn.org.alan.exam.model.vo.stat.GradeExamVO;
 import cn.org.alan.exam.model.vo.stat.GradeStudentVO;
 import cn.org.alan.exam.service.IStatService;
-import cn.org.alan.exam.util.SecurityUtil;
+import cn.org.alan.exam.util.impl.SecurityUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import jakarta.annotation.Resource;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -89,16 +86,24 @@ public class StatServiceImpl extends ServiceImpl<ExamGradeMapper, ExamGrade> imp
         AllStatsVO allStatsVO = new AllStatsVO();
         String role = SecurityUtil.getRole();
         if("role_admin".equals(role)){
-            allStatsVO.setClassCount(gradeMapper.selectCount(null).intValue());
-            allStatsVO.setExamCount(examMapper.selectCount(null).intValue());
-            allStatsVO.setQuestionCount(questionMapper.selectCount(null).intValue());
+            allStatsVO.setClassCount(gradeMapper.selectCount(new LambdaQueryWrapper<Grade>()
+                            .eq(Grade::getIsDeleted,0)).intValue());
+            allStatsVO.setExamCount(examMapper.selectCount(new LambdaQueryWrapper<Exam>()
+                            .eq(Exam::getIsDeleted,0)).intValue());
+            allStatsVO.setQuestionCount(questionMapper.selectCount( new LambdaQueryWrapper<Question>()
+                    .eq(Question::getIsDeleted,0)).intValue());
         }else if("role_teacher".equals(role)){
-            allStatsVO.setClassCount(gradeMapper.selectCount(new LambdaQueryWrapper<Grade>().eq(Grade::getUserId,
-                    SecurityUtil.getUserId())).intValue());
+            allStatsVO.setClassCount(gradeMapper.selectCount(new LambdaQueryWrapper<Grade>()
+                            .eq(Grade::getIsDeleted,0)
+                            .eq(Grade::getUserId, SecurityUtil.getUserId())).intValue());
             allStatsVO.setExamCount(examMapper.selectCount(
-                    new LambdaQueryWrapper<Exam>().eq(Exam::getUserId,SecurityUtil.getUserId())).intValue());
+                    new LambdaQueryWrapper<Exam>()
+                            .eq(Exam::getIsDeleted,0)
+                            .eq(Exam::getUserId,SecurityUtil.getUserId())).intValue());
             allStatsVO.setQuestionCount(questionMapper.selectCount(
-                    new LambdaQueryWrapper<Question>().eq(Question::getUserId,SecurityUtil.getUserId())).intValue());
+                    new LambdaQueryWrapper<Question>()
+                            .eq(Question::getIsDeleted,0)
+                            .eq(Question::getUserId,SecurityUtil.getUserId())).intValue());
         }
         return Result.success("查询成功", allStatsVO);
     }

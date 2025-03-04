@@ -10,7 +10,7 @@ import cn.org.alan.exam.model.vo.score.ExportScoreVO;
 import cn.org.alan.exam.model.vo.score.GradeScoreVO;
 import cn.org.alan.exam.model.vo.score.UserScoreVO;
 import cn.org.alan.exam.service.IUserExamsScoreService;
-import cn.org.alan.exam.util.SecurityUtil;
+import cn.org.alan.exam.util.impl.SecurityUtil;
 import cn.org.alan.exam.util.excel.ExcelUtils;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;

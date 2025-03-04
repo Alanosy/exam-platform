@@ -13,10 +13,10 @@ import cn.org.alan.exam.model.form.Auth.LoginForm;
 import cn.org.alan.exam.model.form.UserForm;
 import cn.org.alan.exam.security.SysUserDetails;
 import cn.org.alan.exam.service.IAuthService;
-import cn.org.alan.exam.util.DateTimeUtil;
-import cn.org.alan.exam.util.JwtUtil;
-import cn.org.alan.exam.util.SecretUtils;
-import cn.org.alan.exam.util.SecurityUtil;
+import cn.org.alan.exam.util.impl.DateTimeUtil;
+import cn.org.alan.exam.util.impl.JwtUtil;
+import cn.org.alan.exam.util.impl.SecretUtils;
+import cn.org.alan.exam.util.impl.SecurityUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -27,6 +27,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import lombok.SneakyThrows;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -71,6 +72,8 @@ public class AuthServiceImpl implements IAuthService {
     private JwtUtil jwtUtil;
     @Resource
     private UserDailyLoginDurationMapper userDailyLoginDurationMapper;
+    @Value("${online-exam.login.captcha.enabled}")
+    private boolean captchaEnabled;
 
     /**
      * 登录
@@ -83,7 +86,7 @@ public class AuthServiceImpl implements IAuthService {
     public Result<String> login(HttpServletRequest request, LoginForm loginForm) {
         // 先判断用户是否通过校验
         String s = stringRedisTemplate.opsForValue().get("isVerifyCode" + request.getSession().getId());
-        if (StringUtils.isBlank(s)) {
+        if (StringUtils.isBlank(s)&&captchaEnabled) {
             return Result.failed("请先验证验证码");
         }
         // 根据用户名获取用户信息
@@ -93,7 +96,7 @@ public class AuthServiceImpl implements IAuthService {
 
         // 判读用户名是否存在
         if (Objects.isNull(user)) {
-            throw new UsernameNotFoundException("该用户不存在");
+            return Result.failed("该用户不存在");
         }
         if(user.getIsDeleted() == 1){
             return Result.failed("该用户已注销");

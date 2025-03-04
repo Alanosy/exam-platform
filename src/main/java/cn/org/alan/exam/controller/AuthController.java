@@ -8,6 +8,7 @@ import cn.org.alan.exam.service.IAuthService;
 import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 /**
  * 权限管理
@@ -31,22 +33,26 @@ public class AuthController {
 
     @Resource
     private IAuthService iAuthService;
+    @Value("${online-exam.login.captcha.enabled}")
+    private boolean captchaEnabled;
 
     /**
      * 用户登录
+     *
      * @param request request对象，用户获取sessionId
-     * @param user 用户信息
+     * @param user    用户信息
      * @return token
      */
     @PostMapping("/login")
     public Result<String> login(HttpServletRequest request,
                                 @Validated @RequestBody LoginForm loginForm) {
 
-        return iAuthService.login(request,loginForm);
+        return iAuthService.login(request, loginForm);
     }
 
     /**
      * 用户注销
+     *
      * @param request request对象，需要清除session里面的内容
      * @return 响应结果
      */
@@ -57,6 +63,7 @@ public class AuthController {
 
     /**
      * 用户注册，只能注册学生
+     *
      * @param request  request对象，用于获取sessionId
      * @param userForm 用户信息
      * @return 响应结果
@@ -69,6 +76,7 @@ public class AuthController {
 
     /**
      * 获取图片验证码
+     *
      * @param request  request对象，获取sessionId
      * @param response response对象，响应图片
      */
@@ -79,14 +87,19 @@ public class AuthController {
 
     /**
      * 校验验证码
+     *
      * @param request request对象，获取sessionId
      * @param code    用户输入的验证码
      * @return 响应结果
      */
-    @PostMapping("/verifyCode/{code}")
-    public Result<String> verifyCode(HttpServletRequest request, @PathVariable("code") String code) {
+    @PostMapping(value = {"/verifyCode/{code}", "/verifyCode/"})
+    public Result<String> verifyCode(HttpServletRequest request, @PathVariable(value = "code" , required = false) String code) {
+        if (!captchaEnabled) {
+            return Result.success();
+        }
         return iAuthService.verifyCode(request, code);
     }
+
     @PostMapping("/track-presence")
     public Result<String> trackPresence(HttpServletRequest request) {
         return iAuthService.sendHeartbeat(request);
