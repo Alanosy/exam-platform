@@ -8,15 +8,22 @@
 
 #### 介绍
 
-本项目致力于打造一款通用的校园在线考试系统，此项目为后端项目，还有配套前端，在上面有可以点击跳转过去
+本项目致力于打造一款通用的在线考试系统，此项目为**后端项目**，**还有配套前端**，在上面有可以点击跳转过去。本项目主要优点是开发、部署简单快捷、界面设计友好、代码结构清晰。
 
-由大学生开发，本项目还在初期开发中，欢迎小伙伴一起开发一起进步,具体可以参考下方参与贡献，有问题的话可以在issue中提问，会仔细回答各位
-
-本平台登录可以登录三个角色，分别为学生、教师和管理员，加入班级请点击头像打开个人信息中加入，班级口令请看教师或管理端班级口令查找
+本项目还在初期开发中，欢迎小伙伴一起开发一起进步,具体可以参考下方参与贡献，有问题的话可以在issue中提问，会仔细回答各位
 
 **如果各位喜欢，麻烦各位大佬点点Star**
 
+##### 温馨提示
+
+1. 登录页面可以登录三个角色，分别为学生、教师和管理员,不同账号显示不用用户界面，具体账号登录管理员查看用户管理
+2. **加入班级请点击头像打开个人信息中加入**，班级口令请看教师或管理端班级口令查找
+
+****
+
 #### 功能介绍
+
+本项目包含以下功能
 
 * 用户管理
 * 班级管理
@@ -34,6 +41,15 @@
 * 公告管理
 * 切屏检测
 * 证书生成
+
+项目展示
+
+<table>
+    <tr>
+        <td><img src="https://www.mindskip.net/style/git/images/admin/1.png"/></td>
+        <td><img src="https://www.mindskip.net/style/git/images/admin/2.png"/></td>
+    </tr>
+</table>
 
 ### 技术选型
 
@@ -77,11 +93,18 @@
 
 
 
-#### 系统架构
+#### 相关文档
+
+<table>
+    <tr>
+        <td><img src="https://www.mindskip.net/style/git/images/admin/1.png"/></td>
+        <td><img src="https://www.mindskip.net/style/git/images/admin/2.png"/></td>
+    </tr>
+</table>
 
 ##### 功能结构图
 
-![image-20240722113039659](https://alantypora.oss-cn-chengdu.aliyuncs.com/image-20240722113039659.png)
+![image-20240722113039659](https://github.com/Alanosy/online-exam-system-backend/blob/master/img/%E5%8A%9F%E8%83%BD%E7%BB%93%E6%9E%84%E5%9B%BE.drawio.png)
 
 ##### ER图
 
@@ -121,11 +144,7 @@
 
 
 
-#### 项目展示![截屏2024-06-01 下午7.59.40](https://alantypora.oss-cn-chengdu.aliyuncs.com/%E6%88%AA%E5%B1%8F2024-06-01%20%E4%B8%8B%E5%8D%887.59.40.png)
 
-![截屏2024-06-01 下午7.59.28](https://alantypora.oss-cn-chengdu.aliyuncs.com/%E6%88%AA%E5%B1%8F2024-06-01%20%E4%B8%8B%E5%8D%887.59.28.png)
-
-![截屏2024-06-01 下午7.57.15](https://alantypora.oss-cn-chengdu.aliyuncs.com/%E6%88%AA%E5%B1%8F2024-06-01%20%E4%B8%8B%E5%8D%887.59.14.png)
 
 
 
