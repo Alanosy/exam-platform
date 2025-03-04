@@ -27,7 +27,7 @@
 
 用户管理、班级管理、试卷中心、刷题中心、考试记录、错题本、考试管理、题库管理、试题管理、证书管理、我的证书、成绩分析、阅卷管理、公告管理、切屏检测、证书生成
 
-项目展示
+#### 项目展示
 
 <table>
     <tr>
@@ -51,32 +51,14 @@
 
 4. 直接点运行就可以使用了
 
-### 技术选型
-
 #### 开发环境
 
-| 工具  | 版本号 | 下载                                                         |
-| ----- | ------ | ------------------------------------------------------------ |
-| JDK   | 17     | https://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html |
-| MySQL | 5.7    | https://www.mysql.com/                                       |
-| Redis | 7.0    | https://redis.io/download                                    |
-| Nginx | 1.22   | http://nginx.org/en/download.html                            |
-
-#### 后端技术
-
-| 技术             | 说明             | 官网                                           |
-| ---------------- | ---------------- | ---------------------------------------------- |
-| SpringBoot       | Web应用开发框架  | https://spring.io/projects/spring-boot         |
-| SpringSecurity   | 认证和授权框架   | https://spring.io/projects/spring-security     |
-| MyBatisPlus      | ORM框架          | http://www.mybatis.org/mybatis-3/zh/index.html |
-| MyBatisGenerator | 数据层代码生成器 | http://www.mybatis.org/generator/index.html    |
-| Redis            | 内存数据存储     | https://redis.io/                              |
-| Druid            | 数据库连接池     | https://github.com/alibaba/druid               |
-| OSS              | 对象存储         | https://github.com/aliyun/aliyun-oss-java-sdk  |
-| MinIO            | 对象存储         | https://github.com/minio/minio                 |
-| JWT              | JWT登录支持      | https://github.com/jwtk/jjwt                   |
-| Lombok           | Java语言增强库   | https://github.com/rzwitserloot/lombok         |
-| Hutool           | Java工具类库     | https://github.com/looly/hutool                |
+| 工具  | 版本号 | 下载                                                       |
+| ----- | ------ | ---------------------------------------------------------- |
+| JDK   | 17     | https://www.oracle.com/java/technologies/downloads/#java17 |
+| MySQL | 5.7    | https://dev.mysql.com/downloads/mysql/5.7.html             |
+| Redis | 7.0    | https://redis.io/download                                  |
+| Nginx | 1.22   | http://nginx.org/en/download.html                          |
 
 #### 相关文档
 
