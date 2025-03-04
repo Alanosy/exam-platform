@@ -25,33 +25,42 @@
 
 本项目包含以下功能
 
-* 用户管理
-* 班级管理
-* 试卷中心
-* 刷题中心
-* 考试记录
-* 错题本
-* 考试管理
-* 题库管理
-* 试题管理
-* 证书管理
-* 我的证书
-* 成绩分析
-* 阅卷管理
-* 公告管理
-* 切屏检测
-* 证书生成
+用户管理、班级管理、试卷中心、刷题中心、考试记录、错题本、考试管理、题库管理、试题管理、证书管理、我的证书、成绩分析、阅卷管理、公告管理、切屏检测、证书生成
 
 项目展示
 
 <table>
     <tr>
-        <td><img src="https://www.mindskip.net/style/git/images/admin/1.png"/></td>
-        <td><img src="https://www.mindskip.net/style/git/images/admin/2.png"/></td>
+        <td><img src="https://github.com/Alanosy/online-exam-system-backend/blob/master/img/管理端.png"/></td>
+        <td><img src="https://github.com/Alanosy/online-exam-system-backend/blob/master/img/教师端.png"/></td>
+      	<td><img src="https://github.com/Alanosy/online-exam-system-backend/blob/master/img/学生端.png"/></td>
     </tr>
 </table>
 
+#### 安装
+
+1. 拉取项目
+
+   ``` bash
+   git clone https://github.com/Alanosy/online-exam-system-backend.git
+   ```
+
+2. 导入IDEA，配置好maven、java版本（需要java17版本）
+
+3. 配置application-dev.yml，配置好mysql和redis。（注意：mysql需要5.7版本，8.0有only_full_group_by 模式有些地方会报异常）
+
+4. 直接点运行就可以使用了
+
 ### 技术选型
+
+#### 开发环境
+
+| 工具  | 版本号 | 下载                                                         |
+| ----- | ------ | ------------------------------------------------------------ |
+| JDK   | 17     | https://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html |
+| MySQL | 5.7    | https://www.mysql.com/                                       |
+| Redis | 7.0    | https://redis.io/download                                    |
+| Nginx | 1.22   | http://nginx.org/en/download.html                            |
 
 #### 后端技术
 
@@ -69,84 +78,50 @@
 | Lombok           | Java语言增强库   | https://github.com/rzwitserloot/lombok         |
 | Hutool           | Java工具类库     | https://github.com/looly/hutool                |
 
-### 开发工具
-
-| 工具         | 说明                | 官网                                                  |
-| ------------ | ------------------- | ----------------------------------------------------- |
-| IDEA         | 开发IDE             | https://www.jetbrains.com/idea/download               |
-| RedisDesktop | redis客户端连接工具 | https://github.com/qishibo/AnotherRedisDesktopManager |
-| SwitchHosts  | 本地host管理        | https://oldj.github.io/SwitchHosts/                   |
-| Navicat      | 数据库连接工具      | http://www.formysql.com/xiazai.html                   |
-| Xmind        | 思维导图设计工具    | http://www.edrawsoft.cn/mindmaster                    |
-| Draw         | 流程图绘制工具      | https://draw.io                                       |
-| Apifox       | API接口调试工具     | http://apifox.com                                     |
-| Typora       | Markdown编辑器      | https://typora.io/                                    |
-
-### 开发环境
-
-| 工具  | 版本号 | 下载                                                         |
-| ----- | ------ | ------------------------------------------------------------ |
-| JDK   | 17     | https://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html |
-| MySQL | 5.7    | https://www.mysql.com/                                       |
-| Redis | 7.0    | https://redis.io/download                                    |
-| Nginx | 1.22   | http://nginx.org/en/download.html                            |
-
-
-
 #### 相关文档
 
 <table>
     <tr>
-        <td><img src="https://www.mindskip.net/style/git/images/admin/1.png"/></td>
-        <td><img src="https://www.mindskip.net/style/git/images/admin/2.png"/></td>
+        <td>功能结构图</td>
+        <td>架构图</td>
     </tr>
+  <tr>
+        <td><img src="https://github.com/Alanosy/online-exam-system-backend/blob/master/img/%E5%8A%9F%E8%83%BD%E7%BB%93%E6%9E%84%E5%9B%BE.drawio.png"/></td>
+        <td><img src="https://github.com/Alanosy/online-exam-system-backend/blob/master/img/架构图.png"/></td>
+    </tr>
+  <tr>
+        <td>ER图</td>
+        <td>技术栈</td>
+    </tr>
+  <tr>
+        <td><img src="https://github.com/Alanosy/online-exam-system-backend/blob/master/img/ER图.png"/></td>
+        <td><img src="https://github.com/Alanosy/online-exam-system-backend/blob/master/img/技术栈.png"/></td>
+    </tr>
+    <tr>
+        <td>主从分离</td>
+        <td>Redis集群</td>
+    </tr>
+  <tr>
+        <td><img src="https://github.com/Alanosy/online-exam-system-backend/blob/master/img/主从分离.drawio.png"/></td>
+        <td><img src="https://github.com/Alanosy/online-exam-system-backend/blob/master/img/redis分片集群.drawio.png"/></td>
+    </tr>
+  <tr>
+        <td>缓存模型</td>
+        <td>单条记录缓存</td>
+    </tr>
+  <tr>
+        <td><img src="https://github.com/Alanosy/online-exam-system-backend/blob/master/img/缓存作用模型.drawio.png"/></td>
+        <td><img src="https://github.com/Alanosy/online-exam-system-backend/blob/master/img/单条记录缓存.drawio.png"/></td>
+    </tr>
+   <tr>
+        <td>连接池</td>
+        <td></td>
+    </tr>
+  <tr>
+    <td><img src="https://github.com/Alanosy/online-exam-system-backend/blob/master/img/连接池.png"/></td>
+     <td></td>
+  </tr>
 </table>
-
-##### 功能结构图
-
-![image-20240722113039659](https://github.com/Alanosy/online-exam-system-backend/blob/master/img/%E5%8A%9F%E8%83%BD%E7%BB%93%E6%9E%84%E5%9B%BE.drawio.png)
-
-##### ER图
-
-![ER图](https://alantypora.oss-cn-chengdu.aliyuncs.com/ER%E5%9B%BE.png)
-
-#### 架构图
-
-![架构图](https://alantypora.oss-cn-chengdu.aliyuncs.com/%E6%9E%B6%E6%9E%84%E5%9B%BE.png)
-
-#### 缓存
-
-![缓存作用模型.drawio](https://alantypora.oss-cn-chengdu.aliyuncs.com/%E7%BC%93%E5%AD%98%E4%BD%9C%E7%94%A8%E6%A8%A1%E5%9E%8B.drawio.png)
-
-
-
-![分页缓存.drawio](https://alantypora.oss-cn-chengdu.aliyuncs.com/%E5%8D%95%E6%9D%A1%E8%AE%B0%E5%BD%95%E7%BC%93%E5%AD%98.drawio.png)
-
-
-
-
-
-![redis分片集群.drawio](https://alantypora.oss-cn-chengdu.aliyuncs.com/redis%E5%88%86%E7%89%87%E9%9B%86%E7%BE%A4.drawio.png)
-
-#### 主从分离
-
-![主从分离.drawio](https://alantypora.oss-cn-chengdu.aliyuncs.com/%E4%B8%BB%E4%BB%8E%E5%88%86%E7%A6%BB.drawio.png)
-
-
-
-#### 连接池
-
-![连接池](https://alantypora.oss-cn-chengdu.aliyuncs.com/%E8%BF%9E%E6%8E%A5%E6%B1%A0.png)
-
-#### 技术栈
-
-![技术栈](https://alantypora.oss-cn-chengdu.aliyuncs.com/%E6%8A%80%E6%9C%AF%E6%A0%88.png)
-
-
-
-
-
-
 
 #### 参与贡献
 
@@ -154,6 +129,14 @@
 2.  新建 Feat_xxx 分支
 3.  提交代码
 4.  新建 Pull Request
+
+#### 联系方式
+
+微信：fignet
+
+QQ群：1034380536
+
+
 
 ## 许可证
 
