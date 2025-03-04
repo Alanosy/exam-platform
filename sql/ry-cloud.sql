@@ -849,6 +849,7 @@ create table sys_oss (
   original_name   varchar(255) not null default ''        comment '原名',
   file_suffix     varchar(10)  not null default ''        comment '文件后缀名',
   url             varchar(500) not null                   comment 'URL地址',
+  ext1            text                  default ''        comment '扩展字段',
   create_dept     bigint(20)            default null      comment '创建部门',
   create_time     datetime              default null      comment '创建时间',
   create_by       bigint(20)            default null      comment '上传人',

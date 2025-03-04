@@ -1180,6 +1180,7 @@ create table if not exists sys_oss
     original_name varchar(255) default ''::varchar not null,
     file_suffix   varchar(10)  default ''::varchar not null,
     url           varchar(500) default ''::varchar not null,
+    ext1          varchar(500) default ''::varchar,
     create_dept   int8,
     create_by     int8,
     create_time   timestamp,
@@ -1196,6 +1197,7 @@ comment on column sys_oss.file_name         is '文件名';
 comment on column sys_oss.original_name     is '原名';
 comment on column sys_oss.file_suffix       is '文件后缀名';
 comment on column sys_oss.url               is 'URL地址';
+comment on column sys_oss.ext1              is '扩展字段';
 comment on column sys_oss.create_by         is '上传人';
 comment on column sys_oss.create_dept       is '创建部门';
 comment on column sys_oss.create_time       is '创建时间';
