@@ -23,8 +23,8 @@
             <span>【{{ item.nodeName }}】：</span>
             <el-input v-if="false" v-model="form.assigneeMap[item.nodeCode]" />
           </div>
-          <div>
-            <el-input placeholder="请选择审批人" readonly>
+          <div style="width: 400px">
+            <el-input placeholder="请选择审批人" readonly v-model="nickName[item.nodeCode]">
               <template v-slot:append>
                 <el-button @click="choosePeople(item)" icon="search">选择</el-button>
               </template>
@@ -188,6 +188,9 @@ const backLoading = ref(true);
 const backButtonDisabled = ref(true);
 // 可驳回得任务节点
 const taskNodeList = ref([]);
+const nickName = ref({});
+//节点编码
+const nodeCode = ref<string>('');
 const buttonObj = ref<any>({
   code: undefined,
   show: false
@@ -224,6 +227,7 @@ const deleteSignatureVisible = ref(false);
 const form = ref<Record<string, any>>({
   taskId: undefined,
   message: undefined,
+  assigneeMap: {},
   variables: {},
   messageType: ['1'],
   flowCopyList: []
@@ -253,7 +257,6 @@ const openDialog = async (id?: string) => {
     buttonObj.value[e.code] = e.show;
   });
   buttonObj.value.applyNode = task.value.applyNode;
-  loading.value = false;
   buttonDisabled.value = false;
   const data = {
     taskId: taskId.value,
@@ -261,6 +264,7 @@ const openDialog = async (id?: string) => {
   };
   const nextData = await getNextNodeList(data);
   nestNodeList.value = nextData.data;
+  loading.value = false;
 };
 
 onMounted(() => {});
@@ -270,6 +274,9 @@ const emits = defineEmits(['submitCallback', 'cancelCallback']);
 const handleCompleteTask = async () => {
   form.value.taskId = taskId.value;
   form.value.taskVariables = props.taskVariables;
+  if (!buttonObj.value.pop) {
+    form.value.assigneeMap = {};
+  }
   if (selectCopyUserList.value && selectCopyUserList.value.length > 0) {
     const flowCopyList = [];
     selectCopyUserList.value.forEach((e) => {
@@ -480,9 +487,20 @@ const choosePeople = async (data) => {
     proxy?.$modal.msgError('没有可选择的人员，请联系管理员！');
   }
   popUserIds.value = data.permissionFlag;
+  nodeCode.value = data.nodeCode;
   porUserRef.value.open();
 };
-const handlePopUser = async () => {};
+//确认选择
+const handlePopUser = async (userList) => {
+  const userIds = userList.map((item) => {
+    return item.userId;
+  });
+  const nickNames = userList.map((item) => {
+    return item.nickName;
+  });
+  form.value.assigneeMap[nodeCode.value] = userIds.join(',');
+  nickName.value[nodeCode.value] = nickNames.join(',');
+};
 
 /**
  * 对外暴露子组件方法
