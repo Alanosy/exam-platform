@@ -79,4 +79,4 @@ online-exam:
     type: aliyun # 存储方式的配置 aliyun、minio
   login:
     captcha:
-      enabled: false #是否启用验证码登录
+      enabled: true #是否启用验证码登录
