@@ -18,18 +18,14 @@
         </el-tag>
       </el-form-item>
       <el-form-item v-if="buttonObj.pop && nestNodeList && nestNodeList.length > 0" label="下一步审批人" prop="assigneeMap">
-        <div v-for="(item, index) in nestNodeList" :key="index" style="display: flex; justify-content: space-between; margin-bottom: 5px">
-          <div>
-            <span>【{{ item.nodeName }}】：</span>
-            <el-input v-if="false" v-model="form.assigneeMap[item.nodeCode]" />
-          </div>
-          <div style="width: 400px">
-            <el-input placeholder="请选择审批人" readonly v-model="nickName[item.nodeCode]">
-              <template v-slot:append>
-                <el-button @click="choosePeople(item)" icon="search">选择</el-button>
-              </template>
-            </el-input>
-          </div>
+        <div v-for="(item, index) in nestNodeList" :key="index" style="margin-bottom: 5px">
+          <div>【{{ item.nodeName }}】：</div>
+          <el-input v-if="false" v-model="form.assigneeMap[item.nodeCode]" />
+          <el-input placeholder="请选择审批人" style="width: 500px" readonly v-model="nickName[item.nodeCode]">
+            <template v-slot:append>
+              <el-button @click="choosePeople(item)" icon="search">选择</el-button>
+            </template>
+          </el-input>
         </div>
       </el-form-item>
       <el-form-item v-if="task.flowStatus === 'waiting'" label="审批意见">
