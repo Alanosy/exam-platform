@@ -64,7 +64,6 @@
     "eslint": "9.21.0",
     "eslint-plugin-prettier": "5.2.3",
     "eslint-plugin-vue": "9.32.0",
-    "fast-glob": "3.3.2",
     "globals": "16.0.0",
     "prettier": "3.5.2",
     "sass": "1.84.0",
@@ -76,7 +75,7 @@
     "unplugin-vue-setup-extend-plus": "1.0.1",
     "vite": "5.4.11",
     "vite-plugin-compression": "0.5.1",
-    "vite-plugin-svg-icons": "2.0.1",
+    "vite-plugin-svg-icons-ng": "1.0.2",
     "vite-plugin-vue-devtools": "7.7.1",
     "vitest": "3.0.5",
     "vue-tsc": "2.2.0"
