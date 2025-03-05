@@ -1,6 +1,6 @@
 <template>
   <div class="p-2">
-    <el-row>
+    <el-row :gutter="10">
       <el-col :span="24" class="card-box">
         <el-card shadow="hover">
           <template #header>
