@@ -70,7 +70,10 @@ public class RemoteTaskAssigneeVo implements Serializable {
     @Data
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class TaskHandler {
+    public static class TaskHandler implements Serializable {
+
+        @Serial
+        private static final long serialVersionUID = 1L;
 
         /**
          * 主键
