@@ -8,6 +8,7 @@
       :on-success="handleUploadSuccess"
       :before-upload="handleBeforeUpload"
       :limit="limit"
+      :accept="fileAccept"
       :on-error="handleUploadError"
       :on-exceed="handleExceed"
       :before-remove="handleDelete"
@@ -86,6 +87,9 @@ const fileList = ref<any[]>([]);
 const showTip = computed(() => props.isShowTip && (props.fileType || props.fileSize));
 
 const imageUploadRef = ref<ElUploadInstance>();
+
+// 监听 fileType 变化，更新 fileAccept
+const fileAccept = computed(() => props.fileType.map((type) => `.${type}`).join(','));
 
 watch(
   () => props.modelValue,
