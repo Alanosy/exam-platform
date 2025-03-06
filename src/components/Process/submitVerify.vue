@@ -42,7 +42,7 @@
           转办
         </el-button>
         <el-button
-          v-if="task.flowStatus === 'waiting' && Number(task.nodeRatio) > 0 && buttonObj.subSign"
+          v-if="task.flowStatus === 'waiting' && Number(task.nodeRatio) > 0 && buttonObj.addSign"
           :disabled="buttonDisabled"
           type="primary"
           @click="openMultiInstanceUser"
@@ -189,7 +189,13 @@ const nickName = ref({});
 const nodeCode = ref<string>('');
 const buttonObj = ref<any>({
   code: undefined,
-  show: false
+  show: false,
+  trust: false,
+  transfer: false,
+  addSign: false,
+  subSign: false,
+  termination: false,
+  back: false
 });
 //下一节点列表
 const nestNodeList = ref([]);
