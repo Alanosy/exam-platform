@@ -196,6 +196,7 @@ import { categoryTree } from '@/api/workflow/category';
 import { CategoryTreeVO } from '@/api/workflow/category/types';
 import { FlowDefinitionQuery, FlowDefinitionVo, FlowDefinitionForm } from '@/api/workflow/definition/types';
 import { UploadRequestOptions, TabsPaneContext } from 'element-plus';
+import { ElMessageBoxOptions } from "element-plus/es/components/message-box/src/message-box.type";
 
 const { proxy } = getCurrentInstance() as ComponentInternalInstance;
 
@@ -498,7 +499,7 @@ const handleCopyDef = async (row: FlowDefinitionVo) => {
     confirmButtonText: '确认',
     cancelButtonText: '取消',
     type: 'warning'
-  }).then(() => {
+  } as ElMessageBoxOptions).then(() => {
     loading.value = true;
     copy(row.id).then((resp) => {
       if (resp.code === 200) {
