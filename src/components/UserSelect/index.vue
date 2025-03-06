@@ -306,5 +306,3 @@ defineExpose({
   close: userDialog.closeDialog
 });
 </script>
-
-<style lang="scss" scoped></style>

@@ -288,15 +288,15 @@
 <script setup name="User" lang="ts">
 import api from '@/api/system/user';
 import { UserForm, UserQuery, UserVO } from '@/api/system/user/types';
-import {DeptTreeVO, DeptVO} from '@/api/system/dept/types';
+import { DeptTreeVO, DeptVO } from '@/api/system/dept/types';
 import { RoleVO } from '@/api/system/role/types';
 import { PostQuery, PostVO } from '@/api/system/post/types';
 import { treeselect } from '@/api/system/dept';
 import { globalHeaders } from '@/utils/request';
 import { to } from 'await-to-js';
 import { optionselect } from '@/api/system/post';
-import {hasPermi} from "@/directive/permission";
-import {checkPermi} from "@/utils/permission";
+import { hasPermi } from '@/directive/permission';
+import { checkPermi } from '@/utils/permission';
 
 const router = useRouter();
 const { proxy } = getCurrentInstance() as ComponentInternalInstance;
@@ -453,7 +453,7 @@ const getDeptTree = async () => {
 
 /** 过滤禁用的部门 */
 const filterDisabledDept = (deptList: DeptTreeVO[]) => {
-  return deptList.filter(dept => {
+  return deptList.filter((dept) => {
     if (dept.disabled) {
       return false;
     }
@@ -663,5 +663,3 @@ async function handleDeptChange(value: number | string) {
   form.value.postIds = [];
 }
 </script>
-
-<style lang="scss" scoped></style>

@@ -65,7 +65,7 @@ const selectedIcon = (iconName: string) => {
 };
 </script>
 
-<style scoped lang="scss">
+<style lang="scss" scoped>
 .el-scrollbar {
   max-height: calc(50vh - 100px) !important;
   overflow-y: auto;

@@ -94,7 +94,7 @@ const authUrl = (source: string) => {
 };
 </script>
 
-<style type="text/css">
+<style lang="scss" scoped>
 .user-bind .third-app {
   display: -webkit-box;
   display: -ms-flexbox;

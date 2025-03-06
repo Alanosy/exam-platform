@@ -65,7 +65,7 @@ onMounted(() => {
 });
 </script>
 
-<style scoped lang="scss">
+<style lang="scss" scoped>
 .layout-navbars-breadcrumb-user-news {
   .head-box {
     display: flex;
