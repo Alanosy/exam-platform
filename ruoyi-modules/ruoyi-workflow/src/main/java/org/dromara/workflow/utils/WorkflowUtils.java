@@ -1,21 +1,15 @@
 package org.dromara.workflow.utils;
 
 import cn.hutool.core.collection.CollUtil;
-import cn.hutool.core.util.ObjectUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.dromara.common.core.utils.SpringUtils;
 import org.dromara.common.core.utils.StreamUtils;
-import org.dromara.common.core.utils.StringUtils;
-import org.dromara.common.mail.utils.MailUtils;
-import org.dromara.common.sse.dto.SseMessageDto;
-import org.dromara.common.sse.utils.SseMessageUtils;
 import org.dromara.system.api.domain.vo.RemoteUserVo;
 import org.dromara.warm.flow.core.constant.ExceptionCons;
 import org.dromara.warm.flow.core.dto.FlowParams;
 import org.dromara.warm.flow.core.entity.Node;
-import org.dromara.warm.flow.core.entity.Task;
 import org.dromara.warm.flow.core.entity.User;
 import org.dromara.warm.flow.core.enums.NodeType;
 import org.dromara.warm.flow.core.enums.SkipType;
@@ -28,15 +22,12 @@ import org.dromara.warm.flow.orm.entity.FlowTask;
 import org.dromara.warm.flow.orm.entity.FlowUser;
 import org.dromara.warm.flow.orm.mapper.FlowNodeMapper;
 import org.dromara.warm.flow.orm.mapper.FlowTaskMapper;
-import org.dromara.workflow.common.enums.MessageTypeEnum;
 import org.dromara.workflow.service.IFlwTaskAssigneeService;
 import org.dromara.workflow.service.IFlwTaskService;
 
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 
 /**
@@ -94,50 +85,6 @@ public class WorkflowUtils {
             }
         }
         return list;
-    }
-
-    /**
-     * 发送消息
-     *
-     * @param flowName    流程定义名称
-     * @param messageType 消息类型
-     * @param message     消息内容，为空则发送默认配置的消息内容
-     */
-    public static void sendMessage(String flowName, Long instId, List<String> messageType, String message) {
-        List<RemoteUserVo> userList = new ArrayList<>();
-        List<FlowTask> list = FLW_TASK_SERVICE.selectByInstId(instId);
-        if (StringUtils.isBlank(message)) {
-            message = "有新的【" + flowName + "】单据已经提交至您，请您及时处理。";
-        }
-        for (Task task : list) {
-            List<RemoteUserVo> users = FLW_TASK_SERVICE.currentTaskAllUser(task.getId());
-            if (CollUtil.isNotEmpty(users)) {
-                userList.addAll(users);
-            }
-        }
-        if (CollUtil.isNotEmpty(userList)) {
-            for (String code : messageType) {
-                MessageTypeEnum messageTypeEnum = MessageTypeEnum.getByCode(code);
-                if (ObjectUtil.isNotEmpty(messageTypeEnum)) {
-                    switch (messageTypeEnum) {
-                        case SYSTEM_MESSAGE:
-                            SseMessageDto dto = new SseMessageDto();
-                            dto.setUserIds(StreamUtils.toList(userList, RemoteUserVo::getUserId).stream().distinct().collect(Collectors.toList()));
-                            dto.setMessage(message);
-                            SseMessageUtils.publishMessage(dto);
-                            break;
-                        case EMAIL_MESSAGE:
-                            MailUtils.sendText(StreamUtils.join(userList, RemoteUserVo::getEmail), "单据审批提醒", message);
-                            break;
-                        case SMS_MESSAGE:
-                            //todo 短信发送
-                            break;
-                        default:
-                            throw new IllegalStateException("Unexpected value: " + messageTypeEnum);
-                    }
-                }
-            }
-        }
     }
 
     /**

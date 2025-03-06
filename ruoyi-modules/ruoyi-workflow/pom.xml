@@ -24,22 +24,7 @@
 
         <dependency>
             <groupId>org.dromara</groupId>
-            <artifactId>ruoyi-common-sse</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>org.dromara</groupId>
             <artifactId>ruoyi-common-doc</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>org.dromara</groupId>
-            <artifactId>ruoyi-common-mail</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>org.dromara</groupId>
-            <artifactId>ruoyi-common-sms</artifactId>
         </dependency>
 
         <dependency>

@@ -23,6 +23,8 @@ import org.dromara.common.core.validate.EditGroup;
 import org.dromara.common.mybatis.core.page.PageQuery;
 import org.dromara.common.mybatis.core.page.TableDataInfo;
 import org.dromara.common.satoken.utils.LoginHelper;
+import org.dromara.resource.api.RemoteMailService;
+import org.dromara.resource.api.RemoteMessageService;
 import org.dromara.system.api.RemoteUserService;
 import org.dromara.system.api.domain.vo.RemoteUserVo;
 import org.dromara.warm.flow.core.dto.FlowParams;
@@ -36,6 +38,7 @@ import org.dromara.warm.flow.orm.mapper.FlowInstanceMapper;
 import org.dromara.warm.flow.orm.mapper.FlowTaskMapper;
 import org.dromara.workflow.api.domain.RemoteStartProcessReturn;
 import org.dromara.workflow.common.ConditionalOnEnable;
+import org.dromara.workflow.common.enums.MessageTypeEnum;
 import org.dromara.workflow.common.enums.TaskAssigneeType;
 import org.dromara.workflow.common.enums.TaskStatusEnum;
 import org.dromara.workflow.domain.bo.*;
@@ -82,6 +85,10 @@ public class FlwTaskServiceImpl implements IFlwTaskService {
 
     @DubboReference
     private RemoteUserService remoteUserService;
+    @DubboReference
+    private RemoteMessageService remoteMessageService;
+    @DubboReference
+    private RemoteMailService remoteMailService;
 
     /**
      * 启动任务
@@ -170,7 +177,7 @@ public class FlwTaskServiceImpl implements IFlwTaskService {
             Instance instance = taskService.skip(taskId, flowParams);
             this.setHandler(instance, flowTask, flowCopyList);
             // 消息通知
-            WorkflowUtils.sendMessage(definition.getFlowName(), ins.getId(), messageType, notice);
+            this.sendMessage(definition.getFlowName(), ins.getId(), messageType, notice);
             return true;
         } catch (Exception e) {
             log.error(e.getMessage(), e);
@@ -397,7 +404,7 @@ public class FlwTaskServiceImpl implements IFlwTaskService {
             Instance instance = insService.getById(inst.getId());
             this.setHandler(instance, task, null);
             // 消息通知
-            WorkflowUtils.sendMessage(definition.getFlowName(), instance.getId(), messageType, notice);
+            this.sendMessage(definition.getFlowName(), instance.getId(), messageType, notice);
             return true;
         } catch (Exception e) {
             log.error(e.getMessage(), e);
@@ -687,4 +694,47 @@ public class FlwTaskServiceImpl implements IFlwTaskService {
         }
         return remoteUserService.selectListByIds(StreamUtils.toList(userList, e -> Long.valueOf(e.getProcessedBy())));
     }
+
+    /**
+     * 发送消息
+     *
+     * @param flowName    流程定义名称
+     * @param messageType 消息类型
+     * @param message     消息内容，为空则发送默认配置的消息内容
+     */
+    private void sendMessage(String flowName, Long instId, List<String> messageType, String message) {
+        List<RemoteUserVo> userList = new ArrayList<>();
+        List<FlowTask> list = this.selectByInstId(instId);
+        if (StringUtils.isBlank(message)) {
+            message = "有新的【" + flowName + "】单据已经提交至您，请您及时处理。";
+        }
+        for (Task task : list) {
+            List<RemoteUserVo> users = this.currentTaskAllUser(task.getId());
+            if (CollUtil.isNotEmpty(users)) {
+                userList.addAll(users);
+            }
+        }
+        if (CollUtil.isNotEmpty(userList)) {
+            for (String code : messageType) {
+                MessageTypeEnum messageTypeEnum = MessageTypeEnum.getByCode(code);
+                if (ObjectUtil.isNotEmpty(messageTypeEnum)) {
+                    switch (messageTypeEnum) {
+                        case SYSTEM_MESSAGE:
+                            List<Long> userIds = StreamUtils.toList(userList, RemoteUserVo::getUserId).stream().distinct().collect(Collectors.toList());
+                            remoteMessageService.publishMessage(userIds, message);
+                            break;
+                        case EMAIL_MESSAGE:
+                            remoteMailService.send(StreamUtils.join(userList, RemoteUserVo::getEmail), "单据审批提醒", message);
+                            break;
+                        case SMS_MESSAGE:
+                            //todo 短信发送
+                            break;
+                        default:
+                            throw new IllegalStateException("Unexpected value: " + messageTypeEnum);
+                    }
+                }
+            }
+        }
+    }
+
 }
