@@ -174,7 +174,7 @@
   </div>
 </template>
 
-<script lang="ts" setup>
+<script setup lang="ts">
 import { pageByRunning, pageByFinish, deleteByInstanceIds, instanceVariable, invalid } from '@/api/workflow/instance';
 import { categoryTree } from '@/api/workflow/category';
 import { CategoryTreeVO } from '@/api/workflow/category/types';

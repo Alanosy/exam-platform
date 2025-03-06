@@ -4,7 +4,7 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 const url = ref('https://plus-doc.dromara.org/');
 
 function goto() {

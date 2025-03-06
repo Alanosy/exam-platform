@@ -104,7 +104,7 @@
   </div>
 </template>
 
-<script lang="ts" setup>
+<script setup lang="ts">
 import { pageByAllTaskWait, pageByAllTaskFinish, updateAssignee } from '@/api/workflow/task';
 import UserSelect from '@/components/UserSelect';
 import { TaskQuery } from '@/api/workflow/task/types';

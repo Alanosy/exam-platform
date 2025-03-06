@@ -72,7 +72,7 @@
     </el-dialog>
   </div>
 </template>
-<script lang="ts" setup>
+<script setup lang="ts">
 import { flowImage } from '@/api/workflow/instance';
 import { propTypes } from '@/utils/propTypes';
 import { listByIds } from '@/api/system/oss';
