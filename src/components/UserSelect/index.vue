@@ -108,7 +108,7 @@ interface PropType {
   modelValue?: UserVO[] | UserVO | undefined;
   multiple?: boolean;
   data?: string | number | (string | number)[] | undefined;
-  userIds?: string;
+  userIds?: string | number | (string | number)[] | undefined;
 }
 const prop = withDefaults(defineProps<PropType>(), {
   multiple: true,
