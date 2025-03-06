@@ -190,7 +190,7 @@
   </div>
 </template>
 
-<script lang="ts" setup name="processDefinition">
+<script setup name="processDefinition" lang="ts">
 import { listDefinition, deleteDefinition, active, importDef, unPublishList, publish, add, edit, getInfo, copy } from '@/api/workflow/definition';
 import { categoryTree } from '@/api/workflow/category';
 import { CategoryTreeVO } from '@/api/workflow/category/types';
@@ -325,7 +325,7 @@ const handleSelectionChange = (selection: any) => {
 };
 //分页
 const getPageList = async () => {
-  console.log(proxy.$route.query.activeName)
+  console.log(proxy.$route.query.activeName);
   if (proxy.$route.query.activeName) {
     activeName.value = proxy.$route.query.activeName;
   }
@@ -371,7 +371,7 @@ const handlePublish = async (row?: FlowDefinitionVo) => {
   loading.value = true;
   await publish(row.id).finally(() => (loading.value = false));
   processDefinitionDialog.visible = false;
-  activeName.value = "0"
+  activeName.value = '0';
   await handleQuery();
   proxy?.$modal.msgSuccess('发布成功');
 };
@@ -418,7 +418,7 @@ const handlerImportDefinition = (data: UploadRequestOptions): XMLHttpRequest => 
     .then(() => {
       uploadDialog.visible = false;
       proxy?.$modal.msgSuccess('部署成功');
-      activeName.value = "1"
+      activeName.value = '1';
       handleQuery();
     })
     .finally(() => {
@@ -483,9 +483,9 @@ const handleSubmit = async () => {
     if (valid) {
       loading.value = true;
       if (form.value.id) {
-        await edit(form.value).finally(() => loading.value = false);
+        await edit(form.value).finally(() => (loading.value = false));
       } else {
-        await add(form.value).finally(() => loading.value = false);
+        await add(form.value).finally(() => (loading.value = false));
       }
       proxy?.$modal.msgSuccess('操作成功');
       modelDialog.visible = false;
@@ -501,13 +501,15 @@ const handleCopyDef = async (row: FlowDefinitionVo) => {
     type: 'warning'
   } as ElMessageBoxOptions).then(() => {
     loading.value = true;
-    copy(row.id).then((resp) => {
-      if (resp.code === 200) {
-        proxy?.$modal.msgSuccess('操作成功');
-        activeName.value = "1"
-        handleQuery();
-      }
-    }).finally(() => loading.value = false);
+    copy(row.id)
+      .then((resp) => {
+        if (resp.code === 200) {
+          proxy?.$modal.msgSuccess('操作成功');
+          activeName.value = '1';
+          handleQuery();
+        }
+      })
+      .finally(() => (loading.value = false));
   });
 };
 

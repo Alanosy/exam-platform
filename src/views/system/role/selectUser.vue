@@ -128,5 +128,3 @@ defineExpose({
   show
 });
 </script>
-
-<style scoped></style>

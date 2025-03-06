@@ -55,7 +55,7 @@
   </div>
 </template>
 
-<script lang="ts" setup>
+<script setup lang="ts">
 import { authUnlock, authBinding } from '@/api/system/social/auth';
 import { propTypes } from '@/utils/propTypes';
 import useUserStore from '@/store/modules/user';
@@ -94,7 +94,7 @@ const authUrl = (source: string) => {
 };
 </script>
 
-<style type="text/css">
+<style lang="scss" scoped>
 .user-bind .third-app {
   display: -webkit-box;
   display: -ms-flexbox;
@@ -128,8 +128,9 @@ a {
 }
 
 .provider-desc {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol',
-    'Liberation Sans', 'PingFang SC', 'Microsoft YaHei', 'Hiragino Sans GB', 'Wenquanyi Micro Hei', 'WenQuanYi Zen Hei', 'ST Heiti', SimHei, SimSun,
+  font-family:
+    -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Liberation Sans',
+    'PingFang SC', 'Microsoft YaHei', 'Hiragino Sans GB', 'Wenquanyi Micro Hei', 'WenQuanYi Zen Hei', 'ST Heiti', SimHei, SimSun,
     'WenQuanYi Zen Hei Sharp', sans-serif;
   font-size: 1.071rem;
 }

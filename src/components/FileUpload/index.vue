@@ -216,7 +216,7 @@ const listToString = (list: any[], separator?: string) => {
 };
 </script>
 
-<style scoped lang="scss">
+<style lang="scss" scoped>
 .upload-file-uploader {
   margin-bottom: 5px;
 }

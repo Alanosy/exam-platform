@@ -234,7 +234,7 @@ const listToString = (list: any[], separator?: string) => {
 };
 </script>
 
-<style scoped lang="scss">
+<style lang="scss" scoped>
 // .el-upload--picture-card 控制加号部分
 :deep(.hide .el-upload--picture-card) {
   display: none;

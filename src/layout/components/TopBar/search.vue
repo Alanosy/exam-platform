@@ -130,7 +130,7 @@ defineExpose({
 });
 </script>
 
-<style scoped lang="scss">
+<style lang="scss" scoped>
 .layout-search-dialog {
   position: relative;
   :deep(.el-dialog) {

@@ -4,7 +4,7 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 const url = ref('https://gitee.com/dromara/RuoYi-Vue-Plus');
 
 function goto() {

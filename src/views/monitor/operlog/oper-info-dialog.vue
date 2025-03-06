@@ -95,7 +95,7 @@ const typeFormat = (row: OperLogForm) => {
 };
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
 /**
 label宽度固定
 */

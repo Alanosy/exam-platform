@@ -100,7 +100,7 @@ const goTarget = (url: string) => {
 };
 </script>
 
-<style scoped lang="scss">
+<style lang="scss" scoped>
 .home {
   blockquote {
     padding: 10px 20px;
