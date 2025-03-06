@@ -1,5 +1,5 @@
 package cn.org.alan.exam.filter;
-
+import org.springframework.beans.factory.annotation.Value;
 import cn.org.alan.exam.model.entity.User;
 import cn.org.alan.exam.common.result.Result;
 import cn.org.alan.exam.security.SysUserDetails;
@@ -41,13 +41,17 @@ public class VerifyTokenFilter extends OncePerRequestFilter {
     @Resource
     private ObjectMapper objectMapper;
 
+    @Value("${system.register.enabled}")
+    private boolean registerEnabled;
+
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
         // 登录、注册、校验验证码、获取验证码、放行
         String uri = request.getRequestURI();
         if (uri.contains("login") || uri.contains("verifyCode")
-                || uri.contains("captcha") || uri.contains("register")) {
+                || uri.contains("captcha")
+                || (registerEnabled && uri.contains("register"))) {
             doFilter(request, response, filterChain);
             return;
         }

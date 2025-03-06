@@ -1,5 +1,9 @@
 server:
   port: 8080
+# ... 其他配置 ...
+system:
+  register:
+    enabled: true  # 控制是否开放注册功能
 
 spring:
   main:
