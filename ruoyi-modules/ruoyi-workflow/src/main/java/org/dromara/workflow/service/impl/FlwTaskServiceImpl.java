@@ -70,7 +70,6 @@ public class FlwTaskServiceImpl implements IFlwTaskService {
     private final TaskService taskService;
     private final InsService insService;
     private final DefService defService;
-    private final UserService userService;
     private final HisTaskService hisTaskService;
     private final NodeService nodeService;
     private final FlowInstanceMapper flowInstanceMapper;
@@ -200,7 +199,7 @@ public class FlwTaskServiceImpl implements IFlwTaskService {
         }
         List<Long> taskIdList = StreamUtils.toList(flowTasks, FlowTask::getId);
         // 获取与当前任务关联的用户列表
-        List<User> associatedUsers = userService.getByAssociateds(taskIdList);
+        List<User> associatedUsers = flwCommonService.getFlowUserService().getByAssociateds(taskIdList);
         if (CollUtil.isEmpty(associatedUsers)) {
             return;
         }
@@ -213,12 +212,12 @@ public class FlwTaskServiceImpl implements IFlwTaskService {
             }
         }
         // 批量删除现有任务的办理人记录
-        userService.deleteByTaskIds(taskIdList);
+        flwCommonService.getFlowUserService().deleteByTaskIds(taskIdList);
         // 确保要保存的 userList 不为空
         if (CollUtil.isEmpty(userList)) {
             return;
         }
-        userService.saveBatch(userList);
+        flwCommonService.getFlowUserService().saveBatch(userList);
     }
 
     /**
@@ -258,7 +257,7 @@ public class FlwTaskServiceImpl implements IFlwTaskService {
                 return flowUser;
             }).collect(Collectors.toList());
         // 批量保存抄送人员
-        userService.saveBatch(userList);
+        flwCommonService.getFlowUserService().saveBatch(userList);
     }
 
     /**
@@ -633,7 +632,7 @@ public class FlwTaskServiceImpl implements IFlwTaskService {
             List<FlowTask> flowTasks = this.selectByIdList(taskIdList);
             // 批量删除现有任务的办理人记录
             if (CollUtil.isNotEmpty(flowTasks)) {
-                userService.deleteByTaskIds(StreamUtils.toList(flowTasks, FlowTask::getId));
+                flwCommonService.getFlowUserService().deleteByTaskIds(StreamUtils.toList(flowTasks, FlowTask::getId));
                 List<User> userList = flowTasks.stream()
                     .map(flowTask -> {
                         FlowUser flowUser = new FlowUser();
@@ -644,7 +643,7 @@ public class FlwTaskServiceImpl implements IFlwTaskService {
                     })
                     .collect(Collectors.toList());
                 if (CollUtil.isNotEmpty(userList)) {
-                    userService.saveBatch(userList);
+                    flwCommonService.getFlowUserService().saveBatch(userList);
                 }
             }
         } catch (Exception e) {
@@ -663,7 +662,7 @@ public class FlwTaskServiceImpl implements IFlwTaskService {
     public Map<Long, List<RemoteUserVo>> currentTaskAllUser(List<Long> taskIdList) {
         Map<Long, List<RemoteUserVo>> map = new HashMap<>();
         // 获取与当前任务关联的用户列表
-        List<User> associatedUsers = userService.getByAssociateds(taskIdList);
+        List<User> associatedUsers = flwCommonService.getFlowUserService().getByAssociateds(taskIdList);
         Map<Long, List<User>> listMap = StreamUtils.groupByKey(associatedUsers, User::getAssociated);
         for (Map.Entry<Long, List<User>> entry : listMap.entrySet()) {
             List<User> value = entry.getValue();
@@ -683,7 +682,7 @@ public class FlwTaskServiceImpl implements IFlwTaskService {
     @Override
     public List<RemoteUserVo> currentTaskAllUser(Long taskId) {
         // 获取与当前任务关联的用户列表
-        List<User> userList = userService.getByAssociateds(Collections.singletonList(taskId));
+        List<User> userList = flwCommonService.getFlowUserService().getByAssociateds(Collections.singletonList(taskId));
         if (CollUtil.isEmpty(userList)) {
             return Collections.emptyList();
         }
