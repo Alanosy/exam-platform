@@ -1,5 +1,6 @@
 package org.dromara.workflow.domain;
 
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableLogic;
 import com.baomidou.mybatisplus.annotation.TableName;
@@ -8,6 +9,8 @@ import lombok.EqualsAndHashCode;
 import org.dromara.common.tenant.core.TenantEntity;
 
 import java.io.Serial;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * 流程分类对象 wf_category
@@ -54,5 +57,11 @@ public class FlowCategory extends TenantEntity {
      */
     @TableLogic
     private String delFlag;
+
+    /**
+     * 子菜单
+     */
+    @TableField(exist = false)
+    private List<FlowCategory> children = new ArrayList<>();
 
 }
