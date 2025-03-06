@@ -85,7 +85,3 @@ export const useUserStore = defineStore('user', () => {
 });
 
 export default useUserStore;
-// 非setup
-export function useUserStoreHook() {
-  return useUserStore(store);
-}

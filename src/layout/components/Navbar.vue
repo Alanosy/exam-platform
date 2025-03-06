@@ -99,6 +99,7 @@ import { dynamicClear, dynamicTenant } from '@/api/system/tenant';
 import { TenantVO } from '@/api/types';
 import notice from './notice/index.vue';
 import router from '@/router';
+import {ElMessageBoxOptions} from "element-plus/es/components/message-box/src/message-box.type";
 
 const appStore = useAppStore();
 const userStore = useUserStore();
@@ -128,8 +129,8 @@ const dynamicTenantEvent = async (tenantId: string) => {
     await dynamicTenant(tenantId);
     dynamic.value = true;
     await proxy?.$router.push('/');
-    await proxy?.proxy.$tab.closeAllPage();
-    await proxy?.proxy.$tab.refreshPage();
+    await proxy?.$tab.closeAllPage();
+    await proxy?.$tab.refreshPage();
   }
 };
 
@@ -137,8 +138,8 @@ const dynamicClearEvent = async () => {
   await dynamicClear();
   dynamic.value = false;
   await proxy?.$router.push('/');
-  await proxy?.proxy.$tab.closeAllPage();
-  await proxy?.proxy.$tab.refreshPage();
+  await proxy?.$tab.closeAllPage();
+  await proxy?.$tab.refreshPage();
 };
 
 /** 租户列表 */
@@ -163,7 +164,7 @@ const logout = async () => {
     confirmButtonText: '确定',
     cancelButtonText: '取消',
     type: 'warning'
-  });
+  } as ElMessageBoxOptions);
   userStore.logout().then(() => {
     router.replace({
       path: '/login',
