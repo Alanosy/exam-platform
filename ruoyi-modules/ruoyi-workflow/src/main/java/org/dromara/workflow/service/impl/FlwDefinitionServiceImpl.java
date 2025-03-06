@@ -33,8 +33,8 @@ import org.dromara.workflow.common.constant.FlowConstant;
 import org.dromara.workflow.domain.FlowCategory;
 import org.dromara.workflow.domain.vo.FlowDefinitionVo;
 import org.dromara.workflow.mapper.FlwCategoryMapper;
+import org.dromara.workflow.service.IFlwCommonService;
 import org.dromara.workflow.service.IFlwDefinitionService;
-import org.dromara.workflow.utils.WorkflowUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -64,6 +64,7 @@ public class FlwDefinitionServiceImpl implements IFlwDefinitionService {
     private final FlowNodeMapper flowNodeMapper;
     private final FlowSkipMapper flowSkipMapper;
     private final FlwCategoryMapper flwCategoryMapper;
+    private final IFlwCommonService flwCommonService;
 
     /**
      * 查询流程定义列表
@@ -125,7 +126,7 @@ public class FlwDefinitionServiceImpl implements IFlwDefinitionService {
         List<String> errorMsg = new ArrayList<>();
         if (CollUtil.isNotEmpty(flowNodes)) {
             for (FlowNode flowNode : flowNodes) {
-                String applyNodeCode = WorkflowUtils.applyNodeCode(id);
+                String applyNodeCode = flwCommonService.applyNodeCode(id);
                 if (StringUtils.isBlank(flowNode.getPermissionFlag()) && !applyNodeCode.equals(flowNode.getNodeCode()) && NodeType.BETWEEN.getKey().equals(flowNode.getNodeType())) {
                     errorMsg.add(flowNode.getNodeName());
                 }

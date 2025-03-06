@@ -23,8 +23,6 @@ import org.dromara.common.core.validate.EditGroup;
 import org.dromara.common.mybatis.core.page.PageQuery;
 import org.dromara.common.mybatis.core.page.TableDataInfo;
 import org.dromara.common.satoken.utils.LoginHelper;
-import org.dromara.resource.api.RemoteMailService;
-import org.dromara.resource.api.RemoteMessageService;
 import org.dromara.system.api.RemoteUserService;
 import org.dromara.system.api.domain.vo.RemoteUserVo;
 import org.dromara.warm.flow.core.dto.FlowParams;
@@ -38,7 +36,6 @@ import org.dromara.warm.flow.orm.mapper.FlowInstanceMapper;
 import org.dromara.warm.flow.orm.mapper.FlowTaskMapper;
 import org.dromara.workflow.api.domain.RemoteStartProcessReturn;
 import org.dromara.workflow.common.ConditionalOnEnable;
-import org.dromara.workflow.common.enums.MessageTypeEnum;
 import org.dromara.workflow.common.enums.TaskAssigneeType;
 import org.dromara.workflow.common.enums.TaskStatusEnum;
 import org.dromara.workflow.domain.bo.*;
@@ -48,8 +45,8 @@ import org.dromara.workflow.handler.FlowProcessEventHandler;
 import org.dromara.workflow.handler.WorkflowPermissionHandler;
 import org.dromara.workflow.mapper.FlwCategoryMapper;
 import org.dromara.workflow.mapper.FlwTaskMapper;
+import org.dromara.workflow.service.IFlwCommonService;
 import org.dromara.workflow.service.IFlwTaskService;
-import org.dromara.workflow.utils.WorkflowUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -73,6 +70,7 @@ public class FlwTaskServiceImpl implements IFlwTaskService {
     private final TaskService taskService;
     private final InsService insService;
     private final DefService defService;
+    private final UserService userService;
     private final HisTaskService hisTaskService;
     private final NodeService nodeService;
     private final FlowInstanceMapper flowInstanceMapper;
@@ -82,13 +80,10 @@ public class FlwTaskServiceImpl implements IFlwTaskService {
     private final FlowProcessEventHandler flowProcessEventHandler;
     private final FlwTaskMapper flwTaskMapper;
     private final FlwCategoryMapper flwCategoryMapper;
+    private final IFlwCommonService flwCommonService;
 
     @DubboReference
     private RemoteUserService remoteUserService;
-    @DubboReference
-    private RemoteMessageService remoteMessageService;
-    @DubboReference
-    private RemoteMailService remoteMailService;
 
     /**
      * 启动任务
@@ -177,7 +172,7 @@ public class FlwTaskServiceImpl implements IFlwTaskService {
             Instance instance = taskService.skip(taskId, flowParams);
             this.setHandler(instance, flowTask, flowCopyList);
             // 消息通知
-            this.sendMessage(definition.getFlowName(), ins.getId(), messageType, notice);
+            flwCommonService.sendMessage(definition.getFlowName(), ins.getId(), messageType, notice);
             return true;
         } catch (Exception e) {
             log.error(e.getMessage(), e);
@@ -205,7 +200,7 @@ public class FlwTaskServiceImpl implements IFlwTaskService {
         }
         List<Long> taskIdList = StreamUtils.toList(flowTasks, FlowTask::getId);
         // 获取与当前任务关联的用户列表
-        List<User> associatedUsers = WorkflowUtils.getFlowUserService().getByAssociateds(taskIdList);
+        List<User> associatedUsers = userService.getByAssociateds(taskIdList);
         if (CollUtil.isEmpty(associatedUsers)) {
             return;
         }
@@ -214,16 +209,16 @@ public class FlwTaskServiceImpl implements IFlwTaskService {
         for (FlowTask flowTask : flowTasks) {
             List<User> users = StreamUtils.filter(associatedUsers, user -> Objects.equals(user.getAssociated(), flowTask.getId()));
             if (CollUtil.isNotEmpty(users)) {
-                userList.addAll(WorkflowUtils.buildUser(users, flowTask.getId()));
+                userList.addAll(flwCommonService.buildUser(users, flowTask.getId()));
             }
         }
         // 批量删除现有任务的办理人记录
-        WorkflowUtils.getFlowUserService().deleteByTaskIds(taskIdList);
+        userService.deleteByTaskIds(taskIdList);
         // 确保要保存的 userList 不为空
         if (CollUtil.isEmpty(userList)) {
             return;
         }
-        WorkflowUtils.getFlowUserService().saveBatch(userList);
+        userService.saveBatch(userList);
     }
 
     /**
@@ -263,7 +258,7 @@ public class FlwTaskServiceImpl implements IFlwTaskService {
                 return flowUser;
             }).collect(Collectors.toList());
         // 批量保存抄送人员
-        WorkflowUtils.getFlowUserService().saveBatch(userList);
+        userService.saveBatch(userList);
     }
 
     /**
@@ -391,7 +386,7 @@ public class FlwTaskServiceImpl implements IFlwTaskService {
             BusinessStatusEnum.checkBackStatus(inst.getFlowStatus());
             Long definitionId = task.getDefinitionId();
             Definition definition = defService.getById(definitionId);
-            String applyNodeCode = WorkflowUtils.applyNodeCode(definitionId);
+            String applyNodeCode = flwCommonService.applyNodeCode(definitionId);
             FlowParams flowParams = FlowParams.build();
             flowParams.nodeCode(bo.getNodeCode());
             flowParams.message(message);
@@ -404,7 +399,7 @@ public class FlwTaskServiceImpl implements IFlwTaskService {
             Instance instance = insService.getById(inst.getId());
             this.setHandler(instance, task, null);
             // 消息通知
-            this.sendMessage(definition.getFlowName(), instance.getId(), messageType, notice);
+            flwCommonService.sendMessage(definition.getFlowName(), instance.getId(), messageType, notice);
             return true;
         } catch (Exception e) {
             log.error(e.getMessage(), e);
@@ -638,7 +633,7 @@ public class FlwTaskServiceImpl implements IFlwTaskService {
             List<FlowTask> flowTasks = this.selectByIdList(taskIdList);
             // 批量删除现有任务的办理人记录
             if (CollUtil.isNotEmpty(flowTasks)) {
-                WorkflowUtils.getFlowUserService().deleteByTaskIds(StreamUtils.toList(flowTasks, FlowTask::getId));
+                userService.deleteByTaskIds(StreamUtils.toList(flowTasks, FlowTask::getId));
                 List<User> userList = flowTasks.stream()
                     .map(flowTask -> {
                         FlowUser flowUser = new FlowUser();
@@ -649,7 +644,7 @@ public class FlwTaskServiceImpl implements IFlwTaskService {
                     })
                     .collect(Collectors.toList());
                 if (CollUtil.isNotEmpty(userList)) {
-                    WorkflowUtils.getFlowUserService().saveBatch(userList);
+                    userService.saveBatch(userList);
                 }
             }
         } catch (Exception e) {
@@ -668,7 +663,7 @@ public class FlwTaskServiceImpl implements IFlwTaskService {
     public Map<Long, List<RemoteUserVo>> currentTaskAllUser(List<Long> taskIdList) {
         Map<Long, List<RemoteUserVo>> map = new HashMap<>();
         // 获取与当前任务关联的用户列表
-        List<User> associatedUsers = WorkflowUtils.getFlowUserService().getByAssociateds(taskIdList);
+        List<User> associatedUsers = userService.getByAssociateds(taskIdList);
         Map<Long, List<User>> listMap = StreamUtils.groupByKey(associatedUsers, User::getAssociated);
         for (Map.Entry<Long, List<User>> entry : listMap.entrySet()) {
             List<User> value = entry.getValue();
@@ -688,53 +683,11 @@ public class FlwTaskServiceImpl implements IFlwTaskService {
     @Override
     public List<RemoteUserVo> currentTaskAllUser(Long taskId) {
         // 获取与当前任务关联的用户列表
-        List<User> userList = WorkflowUtils.getFlowUserService().getByAssociateds(Collections.singletonList(taskId));
+        List<User> userList = userService.getByAssociateds(Collections.singletonList(taskId));
         if (CollUtil.isEmpty(userList)) {
             return Collections.emptyList();
         }
         return remoteUserService.selectListByIds(StreamUtils.toList(userList, e -> Long.valueOf(e.getProcessedBy())));
-    }
-
-    /**
-     * 发送消息
-     *
-     * @param flowName    流程定义名称
-     * @param messageType 消息类型
-     * @param message     消息内容，为空则发送默认配置的消息内容
-     */
-    private void sendMessage(String flowName, Long instId, List<String> messageType, String message) {
-        List<RemoteUserVo> userList = new ArrayList<>();
-        List<FlowTask> list = this.selectByInstId(instId);
-        if (StringUtils.isBlank(message)) {
-            message = "有新的【" + flowName + "】单据已经提交至您，请您及时处理。";
-        }
-        for (Task task : list) {
-            List<RemoteUserVo> users = this.currentTaskAllUser(task.getId());
-            if (CollUtil.isNotEmpty(users)) {
-                userList.addAll(users);
-            }
-        }
-        if (CollUtil.isNotEmpty(userList)) {
-            for (String code : messageType) {
-                MessageTypeEnum messageTypeEnum = MessageTypeEnum.getByCode(code);
-                if (ObjectUtil.isNotEmpty(messageTypeEnum)) {
-                    switch (messageTypeEnum) {
-                        case SYSTEM_MESSAGE:
-                            List<Long> userIds = StreamUtils.toList(userList, RemoteUserVo::getUserId).stream().distinct().collect(Collectors.toList());
-                            remoteMessageService.publishMessage(userIds, message);
-                            break;
-                        case EMAIL_MESSAGE:
-                            remoteMailService.send(StreamUtils.join(userList, RemoteUserVo::getEmail), "单据审批提醒", message);
-                            break;
-                        case SMS_MESSAGE:
-                            //todo 短信发送
-                            break;
-                        default:
-                            throw new IllegalStateException("Unexpected value: " + messageTypeEnum);
-                    }
-                }
-            }
-        }
     }
 
 }

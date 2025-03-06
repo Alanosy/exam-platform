@@ -46,9 +46,9 @@ import org.dromara.workflow.domain.vo.FlowVariableVo;
 import org.dromara.workflow.handler.FlowProcessEventHandler;
 import org.dromara.workflow.mapper.FlwCategoryMapper;
 import org.dromara.workflow.mapper.FlwInstanceMapper;
+import org.dromara.workflow.service.IFlwCommonService;
 import org.dromara.workflow.service.IFlwInstanceService;
 import org.dromara.workflow.service.IFlwTaskService;
-import org.dromara.workflow.utils.WorkflowUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -76,6 +76,7 @@ public class FlwInstanceServiceImpl implements IFlwInstanceService {
     private final IFlwTaskService flwTaskService;
     private final FlwInstanceMapper flwInstanceMapper;
     private final FlwCategoryMapper flwCategoryMapper;
+    private final IFlwCommonService flwCommonService;
 
     /**
      * 分页查询正在运行的流程实例
@@ -245,15 +246,15 @@ public class FlwInstanceServiceImpl implements IFlwInstanceService {
             }
             String message = bo.getMessage();
             BusinessStatusEnum.checkCancelStatus(instance.getFlowStatus());
-            String applyNodeCode = WorkflowUtils.applyNodeCode(definition.getId());
+            String applyNodeCode = flwCommonService.applyNodeCode(definition.getId());
             //撤销
-            WorkflowUtils.backTask(message, instance.getId(), applyNodeCode, BusinessStatusEnum.CANCEL.getStatus(), BusinessStatusEnum.CANCEL.getStatus());
+            flwCommonService.backTask(message, instance.getId(), applyNodeCode, BusinessStatusEnum.CANCEL.getStatus(), BusinessStatusEnum.CANCEL.getStatus());
             //判断或签节点是否有多个，只保留一个
             List<Task> currentTaskList = taskService.list(FlowEngine.newTask().setInstanceId(instance.getId()));
             if (CollUtil.isNotEmpty(currentTaskList)) {
                 if (currentTaskList.size() > 1) {
                     currentTaskList.remove(0);
-                    WorkflowUtils.deleteRunTask(StreamUtils.toList(currentTaskList, Task::getId));
+                    flwCommonService.deleteRunTask(StreamUtils.toList(currentTaskList, Task::getId));
                 }
             }
 
