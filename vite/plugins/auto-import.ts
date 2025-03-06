@@ -6,7 +6,7 @@ export default (path: any) => {
     // 自动导入 Vue 相关函数
     imports: ['vue', 'vue-router', '@vueuse/core', 'pinia'],
     eslintrc: {
-      enabled: false,
+      enabled: true,
       filepath: './.eslintrc-auto-import.json',
       globalsPropValue: true
     },
