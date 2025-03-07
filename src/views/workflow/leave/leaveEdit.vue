@@ -111,6 +111,10 @@ const flowCodeOptions = [
   {
     value: 'leave5',
     label: '请假申请-并行会签网关'
+  },
+  {
+    value: 'leave6',
+    label: '请假申请-排他并行会签'
   }
 ];
 
