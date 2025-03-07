@@ -325,9 +325,9 @@ const handleSelectionChange = (selection: any) => {
 };
 //分页
 const getPageList = async () => {
-  console.log(proxy.$route.query.activeName);
-  if (proxy.$route.query.activeName) {
-    activeName.value = proxy.$route.query.activeName;
+  let query = proxy.$route.query;
+  if (query.activeName) {
+    activeName.value = query.activeName;
   }
   if (activeName.value === '0') {
     getList();
