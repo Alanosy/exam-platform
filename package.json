@@ -1,5 +1,5 @@
 {
-  "$schema": "https://json.schemastore.org/tsconfig",
+  "$schema": "https://json.schemastore.org/package",
   "name": "ruoyi-vue-plus",
   "version": "5.3.0",
   "description": "RuoYi-Vue-Plus多租户管理系统",
@@ -52,6 +52,7 @@
     "@types/crypto-js": "4.2.2",
     "@types/file-saver": "2.0.7",
     "@types/js-cookie": "3.0.6",
+    "@types/node": "^22.13.4",
     "@types/nprogress": "0.2.3",
     "@unocss/preset-attributify": "66.0.0",
     "@unocss/preset-icons": "66.0.0",
@@ -67,7 +68,7 @@
     "globals": "16.0.0",
     "prettier": "3.5.2",
     "sass": "1.84.0",
-    "typescript": "5.7.3",
+    "typescript": "~5.7.3",
     "unocss": "66.0.0",
     "unplugin-auto-import": "0.17.5",
     "unplugin-icons": "0.18.5",
@@ -78,10 +79,16 @@
     "vite-plugin-svg-icons-ng": "1.0.2",
     "vite-plugin-vue-devtools": "7.7.1",
     "vitest": "3.0.5",
-    "vue-tsc": "2.2.0"
+    "vue-tsc": "^2.2.2"
   },
   "engines": {
     "node": ">=18.18.0",
     "npm": ">=8.9.0"
-  }
+  },
+  "browserslist": [
+    "Chrome >= 87",
+    "Edge >= 88",
+    "Safari >= 14",
+    "Firefox >= 78"
+  ]
 }

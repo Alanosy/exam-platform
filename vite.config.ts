@@ -12,7 +12,6 @@ export default defineConfig(({ mode, command }) => {
     base: env.VITE_APP_CONTEXT_PATH,
     resolve: {
       alias: {
-        '~': path.resolve(__dirname, './'),
         '@': path.resolve(__dirname, './src')
       },
       extensions: ['.mjs', '.js', '.ts', '.jsx', '.tsx', '.json', '.vue']
@@ -43,16 +42,12 @@ export default defineConfig(({ mode, command }) => {
       postcss: {
         plugins: [
           // 浏览器兼容性
-          autoprefixer({
-            overrideBrowserslist: ['Android 4.1', 'iOS 7.1', 'Chrome > 31', 'ff > 31', 'ie >= 8']
-          }),
+          autoprefixer(),
           {
             postcssPlugin: 'internal:charset-removal',
             AtRule: {
               charset: (atRule) => {
-                if (atRule.name === 'charset') {
-                  atRule.remove();
-                }
+                atRule.remove();
               }
             }
           }
