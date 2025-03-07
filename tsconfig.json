@@ -30,6 +30,13 @@
     "allowSyntheticDefaultImports": true, // 允许默认导入
     "forceConsistentCasingInFileNames": true // 强制在文件名中使用一致的大小写
   },
-  "include": ["src/**/.ts", "src/**/*.vue", "vite.config.ts", "vitest.config.ts", "eslint.config.ts"],
+  "include": [
+    "src/**/.ts",
+    "src/**/*.vue",
+    "vite.config.ts",
+    "vitest.config.ts",
+    "eslint.config.ts",
+    "src/**/*.d.ts"
+  ],
   "exclude": ["node_modules", "dist", "src/**/__tests__/*"]
 }
