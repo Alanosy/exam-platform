@@ -70,7 +70,7 @@
           <el-tree-select
             v-model="infoForm.parentMenuId"
             :data="menuOptions"
-            :props="{ value: 'menuId', label: 'menuName', children: 'children' }"
+            :props="{ value: 'menuId', label: 'menuName', children: 'children' } as any"
             value-key="menuId"
             node-key="menuId"
             placeholder="选择上级菜单"

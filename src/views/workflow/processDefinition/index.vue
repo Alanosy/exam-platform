@@ -10,7 +10,7 @@
             class="mt-2"
             node-key="id"
             :data="categoryOptions"
-            :props="{ label: 'label', children: 'children' }"
+            :props="{ label: 'label', children: 'children' } as any"
             :expand-on-click-node="false"
             :filter-node-method="filterNode"
             highlight-current
@@ -131,7 +131,7 @@
           <el-tree-select
             v-model="selectCategory"
             :data="categoryOptions"
-            :props="{ value: 'id', label: 'label', children: 'children' }"
+            :props="{ value: 'id', label: 'label', children: 'children' } as any"
             filterable
             value-key="id"
             :render-after-expand="false"
@@ -163,7 +163,7 @@
             <el-tree-select
               v-model="form.category"
               :data="categoryOptions"
-              :props="{ value: 'id', label: 'label', children: 'children' }"
+              :props="{ value: 'id', label: 'label', children: 'children' } as any"
               filterable
               value-key="id"
               :render-after-expand="false"

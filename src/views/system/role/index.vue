@@ -135,7 +135,7 @@
             node-key="id"
             :check-strictly="!form.menuCheckStrictly"
             empty-text="加载中，请稍候"
-            :props="{ label: 'label', children: 'children' }"
+            :props="{ label: 'label', children: 'children' } as any"
           ></el-tree>
         </el-form-item>
         <el-form-item label="备注">
@@ -177,7 +177,7 @@
             node-key="id"
             :check-strictly="!form.deptCheckStrictly"
             empty-text="加载中，请稍候"
-            :props="{ label: 'label', children: 'children' }"
+            :props="{ label: 'label', children: 'children' } as any"
           ></el-tree>
         </el-form-item>
       </el-form>

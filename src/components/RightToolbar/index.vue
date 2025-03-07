@@ -16,7 +16,7 @@
               :data="columns"
               show-checkbox
               node-key="key"
-              :props="{ label: 'label', children: 'children' }"
+              :props="{ label: 'label', children: 'children' } as any"
               @check="columnChange"
             ></el-tree>
             <template #reference>

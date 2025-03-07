@@ -6,7 +6,7 @@
       style="width: 100%"
       :filterable="true"
       :clearable="true"
-      :filter-method="selectFilterData"
+      :filter-method="selectFilterData as any"
       :placeholder="placeholder"
       @clear="clearHandle"
     >
@@ -16,7 +16,7 @@
           ref="selectTree"
           :accordion="accordion"
           :data="options"
-          :props="objMap"
+          :props="objMap as any"
           :node-key="objMap.value"
           :expand-on-click-node="false"
           :default-expanded-keys="defaultExpandedKey"
