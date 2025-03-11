@@ -27,7 +27,7 @@
     <packaging>jar</packaging>
 
     <properties>
-        <nacos.version>2.4.3</nacos.version>
+        <nacos.version>2.5.1</nacos.version>
         <SnakeYaml.version>2.0</SnakeYaml.version>
         <!-- 需要与 Nacos 内置 Boot 版本保持一致 -->
         <spring-boot.version>2.7.18</spring-boot.version>
@@ -153,6 +153,13 @@
             <version>${nacos.version}</version>
             <scope>system</scope>
             <systemPath>${nacos.lib.path}/nacos-sys-${nacos.version}.jar</systemPath>
+        </dependency>
+        <dependency>
+            <groupId>com.alibaba.nacos</groupId>
+            <artifactId>nacos-default-plugin-all</artifactId>
+            <version>${nacos.version}</version>
+            <scope>system</scope>
+            <systemPath>${nacos.lib.path}/nacos-default-plugin-all-${nacos.version}.jar</systemPath>
         </dependency>
         <dependency>
             <groupId>com.alibaba.nacos</groupId>

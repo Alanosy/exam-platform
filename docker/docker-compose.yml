@@ -386,7 +386,6 @@ services:
     network_mode: "host"
 
   rabbitmq:
-    image: rabbitmq:3.13.3
     container_name: rabbitmq
     build:
       context: ./rabbitmq
