@@ -28,6 +28,15 @@ public interface IFlwCommonService {
     Set<User> buildUser(List<User> userList, Long taskId);
 
     /**
+     * 构建工作流用户
+     *
+     * @param userIdList 办理用户
+     * @param taskId     任务ID
+     * @return 用户
+     */
+    Set<User> buildFlowUser(List<String> userIdList, Long taskId);
+
+    /**
      * 发送消息
      *
      * @param flowName    流程定义名称

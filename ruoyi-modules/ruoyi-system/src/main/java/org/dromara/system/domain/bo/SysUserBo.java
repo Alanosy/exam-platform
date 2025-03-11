@@ -104,6 +104,11 @@ public class SysUserBo extends BaseEntity {
     private Long roleId;
 
     /**
+     * 用户ID
+     */
+    private String userIds;
+
+    /**
      * 排除不查询的用户(工作流用)
      */
     private String excludeUserIds;

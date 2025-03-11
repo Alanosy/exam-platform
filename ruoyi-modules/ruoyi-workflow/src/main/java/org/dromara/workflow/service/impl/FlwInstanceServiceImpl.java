@@ -374,6 +374,7 @@ public class FlwInstanceServiceImpl implements IFlwInstanceService {
         Instance instance = insService.getById(instanceId);
         if (instance != null) {
             taskService.mergeVariable(instance, variable);
+            insService.updateById(instance);
         }
     }
 

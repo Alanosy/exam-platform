@@ -59,6 +59,11 @@ public class CompleteTaskBo implements Serializable {
     private Map<String, Object> variables;
 
     /**
+     * 弹窗选择的办理人
+     */
+    private Map<String, Object> assigneeMap;
+
+    /**
      * 扩展变量(此处为逗号分隔的ossId)
      * @return
      */

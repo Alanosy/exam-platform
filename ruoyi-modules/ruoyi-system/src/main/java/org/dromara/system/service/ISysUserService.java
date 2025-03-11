@@ -15,11 +15,17 @@ import java.util.List;
  */
 public interface ISysUserService {
 
-
+    /**
+     * 根据条件分页查询用户列表
+     *
+     * @param user      用户信息
+     * @param pageQuery 发呢也
+     * @return 用户信息
+     */
     TableDataInfo<SysUserVo> selectPageUserList(SysUserBo user, PageQuery pageQuery);
 
     /**
-     * 根据条件分页查询用户列表
+     * 导出用户列表
      *
      * @param user 用户信息
      * @return 用户信息集合信息

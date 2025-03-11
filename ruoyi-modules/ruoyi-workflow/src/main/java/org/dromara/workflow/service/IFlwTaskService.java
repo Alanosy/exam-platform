@@ -5,6 +5,7 @@ import org.dromara.common.mybatis.core.page.TableDataInfo;
 import org.dromara.system.api.domain.vo.RemoteUserVo;
 import org.dromara.warm.flow.core.entity.Node;
 import org.dromara.warm.flow.orm.entity.FlowHisTask;
+import org.dromara.warm.flow.orm.entity.FlowNode;
 import org.dromara.warm.flow.orm.entity.FlowTask;
 import org.dromara.workflow.api.domain.RemoteStartProcessReturn;
 import org.dromara.workflow.domain.bo.*;
@@ -133,6 +134,14 @@ public interface IFlwTaskService {
     FlowTaskVo selectById(Long taskId);
 
     /**
+     * 获取下一节点信息
+     *
+     * @param bo 参数
+     * @return 结果
+     */
+    List<FlowNode> getNextNodeList(FlowNextNodeBo bo);
+
+    /**
      * 按照任务id查询任务
      *
      * @param taskIdList 任务id
@@ -188,4 +197,14 @@ public interface IFlwTaskService {
      * @return 结果
      */
     List<RemoteUserVo> currentTaskAllUser(Long taskId);
+
+    /**
+     * 按照节点编码查询节点
+     *
+     * @param nodeCode     节点编码
+     * @param definitionId 流程定义id
+     * @return 节点
+     */
+    FlowNode getByNodeCode(String nodeCode, Long definitionId);
+
 }

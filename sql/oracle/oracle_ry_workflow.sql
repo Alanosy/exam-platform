@@ -47,7 +47,6 @@ create table FLOW_NODE
     NODE_NAME       VARCHAR2(100),
     NODE_RATIO      NUMBER(6, 3),
     COORDINATE      VARCHAR2(100),
-    SKIP_ANY_NODE   VARCHAR2(100) default 'N',
     ANY_NODE_SKIP   VARCHAR2(100),
     LISTENER_TYPE   VARCHAR2(100),
     LISTENER_PATH   VARCHAR2(500),
@@ -58,6 +57,7 @@ create table FLOW_NODE
     VERSION         VARCHAR2(20),
     CREATE_TIME     DATE,
     UPDATE_TIME     DATE,
+    EXT             VARCHAR2(500),
     DEL_FLAG        VARCHAR2(1)   default '0',
     TENANT_ID       VARCHAR2(40),
     PERMISSION_FLAG VARCHAR2(200)
@@ -73,7 +73,6 @@ comment on column FLOW_NODE.NODE_CODE is '流程节点编码';
 comment on column FLOW_NODE.NODE_NAME is '流程节点名称';
 comment on column FLOW_NODE.NODE_RATIO is '流程签署比例值';
 comment on column FLOW_NODE.COORDINATE is '坐标';
-comment on column FLOW_NODE.SKIP_ANY_NODE is '是否可以退回任意节点（Y是 N否）即将删除';
 comment on column FLOW_NODE.ANY_NODE_SKIP is '任意结点跳转';
 comment on column FLOW_NODE.LISTENER_TYPE is '监听器类型';
 comment on column FLOW_NODE.LISTENER_PATH is '监听器路径';
@@ -84,6 +83,7 @@ comment on column FLOW_NODE.FORM_PATH is '审批表单路径';
 comment on column FLOW_NODE.VERSION is '版本';
 comment on column FLOW_NODE.CREATE_TIME is '创建时间';
 comment on column FLOW_NODE.UPDATE_TIME is '更新时间';
+comment on column FLOW_NODE.EXT is '扩展属性';
 comment on column FLOW_NODE.DEL_FLAG is '删除标志';
 comment on column FLOW_NODE.TENANT_ID is '租户id';
 comment on column FLOW_NODE.PERMISSION_FLAG is '权限标识（权限类型:权限标识，可以多个，用逗号隔开)';

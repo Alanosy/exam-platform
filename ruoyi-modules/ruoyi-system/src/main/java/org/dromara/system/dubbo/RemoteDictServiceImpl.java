@@ -5,7 +5,9 @@ import org.apache.dubbo.config.annotation.DubboService;
 import org.dromara.common.core.utils.MapstructUtils;
 import org.dromara.system.api.RemoteDictService;
 import org.dromara.system.api.domain.vo.RemoteDictDataVo;
+import org.dromara.system.api.domain.vo.RemoteDictTypeVo;
 import org.dromara.system.domain.vo.SysDictDataVo;
+import org.dromara.system.domain.vo.SysDictTypeVo;
 import org.dromara.system.service.ISysDictTypeService;
 import org.springframework.stereotype.Service;
 
@@ -22,6 +24,12 @@ import java.util.List;
 public class RemoteDictServiceImpl implements RemoteDictService {
 
     private final ISysDictTypeService sysDictTypeService;
+
+    @Override
+    public RemoteDictTypeVo selectDictTypeByType(String dictType) {
+        SysDictTypeVo vo = sysDictTypeService.selectDictTypeByType(dictType);
+        return MapstructUtils.convert(vo, RemoteDictTypeVo.class);
+    }
 
     /**
      * 根据字典类型查询字典数据

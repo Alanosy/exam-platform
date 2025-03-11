@@ -49,6 +49,19 @@ public class TestLeaveServiceImpl implements ITestLeaveService {
     private final WorkflowService workflowService;
 
     /**
+     * spel条件表达：判断小于2
+     *
+     * @param leaveDays 待判断的变量（可不传自行返回true或false）
+     * @return boolean
+     */
+    public boolean eval(Integer leaveDays) {
+        if (leaveDays < 2) {
+            return true;
+        }
+        return false;
+    }
+
+    /**
      * 查询请假
      */
     @Override
