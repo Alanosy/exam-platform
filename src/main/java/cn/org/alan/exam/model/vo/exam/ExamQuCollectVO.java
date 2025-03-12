@@ -13,7 +13,10 @@ import java.util.List;
  */
 @Data
 public class ExamQuCollectVO {
-
+    /**
+     * 题目ID
+     */
+    private Integer id;
     /**
      * 图片
      */
