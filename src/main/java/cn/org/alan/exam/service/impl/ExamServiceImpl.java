@@ -623,12 +623,12 @@ public class ExamServiceImpl extends ServiceImpl<ExamMapper, Exam> implements IE
                     if (!quIds.contains(temp.getId())) {
                         examQuAnswer.setIsRight(0);
                         examQuAnswerMapper.insert(examQuAnswer);
-                        yield Result.success("回答错误");
+                        yield Result.success("请求成功");
                     }
                 }
                 examQuAnswer.setIsRight(1);
                 examQuAnswerMapper.insert(examQuAnswer);
-                yield Result.success("回答正确");
+                yield Result.success("请求成功");
             }
             case 3 -> {
                 Option byId = optionService.getById(examQuAnswerForm.getAnswer());
@@ -703,7 +703,7 @@ public class ExamServiceImpl extends ServiceImpl<ExamMapper, Exam> implements IE
                 List<Integer> quIds = Arrays.stream(examQuAnswerForm.getAnswer().split(","))
                         .map(Integer::parseInt)
                         .toList();
-                // 判读啊是否正确
+                // 判读答案是否正确
                 for (Option temp : examQuAnswers) {
                     if (!quIds.contains(temp.getId())) {
                         LambdaUpdateWrapper<ExamQuAnswer> examQuAnswerWrapper = new LambdaUpdateWrapper<>();
@@ -713,7 +713,7 @@ public class ExamServiceImpl extends ServiceImpl<ExamMapper, Exam> implements IE
                                 .set(ExamQuAnswer::getIsRight, 0)
                                 .set(ExamQuAnswer::getAnswerId, examQuAnswerForm.getAnswer());
                         examQuAnswerMapper.update(examQuAnswerWrapper);
-                        yield Result.success("回答错误");
+                        yield Result.success("请求成功");
                     }
                 }
                 LambdaUpdateWrapper<ExamQuAnswer> examQuAnswerWrapper = new LambdaUpdateWrapper<>();
@@ -723,7 +723,7 @@ public class ExamServiceImpl extends ServiceImpl<ExamMapper, Exam> implements IE
                         .set(ExamQuAnswer::getIsRight, 1)
                         .set(ExamQuAnswer::getAnswerId, examQuAnswerForm.getAnswer());
                 examQuAnswerMapper.update(examQuAnswerWrapper);
-                yield Result.success("回答正确");
+                yield Result.success("请求成功");
             }
             case 3 -> {
                 Option byId = optionService.getById(examQuAnswerForm.getAnswer());
