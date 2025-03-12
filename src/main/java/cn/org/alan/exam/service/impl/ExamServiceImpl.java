@@ -454,6 +454,8 @@ public class ExamServiceImpl extends ServiceImpl<ExamMapper, Exam> implements IE
             // 设置标题
             examQuCollectVO.setTitle(temp.getContent());
             examQuCollectVO.setQuType(temp.getQuType());
+            // 设置题目ID
+            examQuCollectVO.setId(temp.getId());
 
             // 查询试题选项
             LambdaQueryWrapper<Option> optionWrapper = new LambdaQueryWrapper<>();
