@@ -5,6 +5,7 @@ import { useStorage } from '@vueuse/core';
 import { ref } from 'vue';
 
 export const useSettingsStore = defineStore('setting', () => {
+  // @ts-ignore
   const storageSetting = useStorage<LayoutSetting>('layout-setting', {
     topNav: defaultSettings.topNav,
     tagsView: defaultSettings.tagsView,
