@@ -7,6 +7,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.dromara.common.core.constant.Constants;
 import org.dromara.common.core.constant.GlobalConstants;
 import org.dromara.common.core.domain.R;
+import org.dromara.common.core.exception.ServiceException;
+import org.dromara.common.core.utils.SpringUtils;
 import org.dromara.common.ratelimiter.annotation.RateLimiter;
 import org.dromara.common.web.core.BaseController;
 import org.dromara.common.mail.config.properties.MailProperties;
@@ -39,12 +41,21 @@ public class SysEmailController extends BaseController {
      *
      * @param email 邮箱
      */
-    @RateLimiter(key = "#email", time = 60, count = 1)
     @GetMapping("/code")
     public R<Void> emailCode(@NotBlank(message = "{user.email.not.blank}") String email) {
         if (!mailProperties.getEnabled()) {
             return R.fail("当前系统没有开启邮箱功能！");
         }
+        SpringUtils.getAopProxy(this).emailCodeImpl(email);
+        return R.ok();
+    }
+
+    /**
+     * 邮箱验证码
+     * 独立方法避免验证码关闭之后仍然走限流
+     */
+    @RateLimiter(key = "#email", time = 60, count = 1)
+    public void emailCodeImpl(String email) {
         String key = GlobalConstants.CAPTCHA_CODE_KEY + email;
         String code = RandomUtil.randomNumbers(4);
         RedisUtils.setCacheObject(key, code, Duration.ofMinutes(Constants.CAPTCHA_EXPIRATION));
@@ -52,9 +63,8 @@ public class SysEmailController extends BaseController {
             MailUtils.sendText(email, "登录验证码", "您本次验证码为：" + code + "，有效性为" + Constants.CAPTCHA_EXPIRATION + "分钟，请尽快填写。");
         } catch (Exception e) {
             log.error("验证码短信发送异常 => {}", e.getMessage());
-            return R.fail(e.getMessage());
+            throw new ServiceException(e.getMessage());
         }
-        return R.ok();
     }
 
 }
