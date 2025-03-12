@@ -90,10 +90,10 @@
 
 <script setup lang="ts">
 import SearchMenu from './TopBar/search.vue';
-import useAppStore from '@/store/modules/app';
-import useUserStore from '@/store/modules/user';
-import useSettingsStore from '@/store/modules/settings';
-import useNoticeStore from '@/store/modules/notice';
+import { useAppStore } from '@/store/modules/app';
+import { useUserStore } from '@/store/modules/user';
+import { useSettingsStore } from '@/store/modules/settings';
+import { useNoticeStore } from '@/store/modules/notice';
 import { getTenantList } from '@/api/login';
 import { dynamicClear, dynamicTenant } from '@/api/system/tenant';
 import { TenantVO } from '@/api/types';

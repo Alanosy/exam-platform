@@ -24,9 +24,9 @@
 import Logo from './Logo.vue';
 import SidebarItem from './SidebarItem.vue';
 import variables from '@/assets/styles/variables.module.scss';
-import useAppStore from '@/store/modules/app';
-import useSettingsStore from '@/store/modules/settings';
-import usePermissionStore from '@/store/modules/permission';
+import { useAppStore } from '@/store/modules/app';
+import { useSettingsStore } from '@/store/modules/settings';
+import { usePermissionStore } from '@/store/modules/permission';
 import { RouteRecordRaw } from 'vue-router';
 
 const { proxy } = getCurrentInstance() as ComponentInternalInstance;

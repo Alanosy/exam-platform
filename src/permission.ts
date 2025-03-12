@@ -5,9 +5,10 @@ import 'nprogress/nprogress.css';
 import { getToken } from '@/utils/auth';
 import { isHttp, isPathMatch } from '@/utils/validate';
 import { isRelogin } from '@/utils/request';
-import useUserStore from '@/store/modules/user';
-import useSettingsStore from '@/store/modules/settings';
-import usePermissionStore from '@/store/modules/permission';
+import { useUserStore } from '@/store/modules/user';
+import { useSettingsStore } from '@/store/modules/settings';
+import { usePermissionStore } from '@/store/modules/permission';
+import { ElMessage } from 'element-plus/es';
 
 NProgress.configure({ showSpinner: false });
 const whiteList = ['/login', '/register', '/social-callback', '/register*', '/register/*'];

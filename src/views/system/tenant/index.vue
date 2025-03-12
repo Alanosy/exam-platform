@@ -155,7 +155,7 @@ import {
   syncTenantDict
 } from '@/api/system/tenant';
 import { selectTenantPackage } from '@/api/system/tenantPackage';
-import useUserStore from '@/store/modules/user';
+import { useUserStore } from '@/store/modules/user';
 import { TenantForm, TenantQuery, TenantVO } from '@/api/system/tenant/types';
 import { TenantPkgVO } from '@/api/system/tenantPackage/types';
 

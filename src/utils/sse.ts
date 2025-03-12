@@ -1,6 +1,6 @@
 import { getToken } from '@/utils/auth';
 import { ElNotification } from 'element-plus';
-import useNoticeStore from '@/store/modules/notice';
+import { useNoticeStore } from '@/store/modules/notice';
 
 // 初始化
 export const initSSE = (url: any) => {

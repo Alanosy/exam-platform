@@ -4,11 +4,10 @@ import store from '@/store';
 import { getRouters } from '@/api/menu';
 import auth from '@/plugins/auth';
 import { RouteRecordRaw } from 'vue-router';
-
 import Layout from '@/layout/index.vue';
 import ParentView from '@/components/ParentView/index.vue';
 import InnerLink from '@/layout/components/InnerLink/index.vue';
-
+import { ref } from 'vue';
 import { createCustomNameComponent } from '@/utils/createCustomNameComponent';
 
 // 匹配views里面所有的.vue文件
@@ -206,5 +205,3 @@ function duplicateRouteChecker(localRoutes: Route[], routes: Route[]) {
     nameList.push(route.name.toString());
   });
 }
-
-export default usePermissionStore;

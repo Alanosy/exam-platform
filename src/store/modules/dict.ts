@@ -1,3 +1,5 @@
+import { defineStore } from 'pinia';
+
 export const useDictStore = defineStore('dict', () => {
   const dict = ref<Map<string, DictDataOption[]>>(new Map());
 
@@ -61,5 +63,3 @@ export const useDictStore = defineStore('dict', () => {
     cleanDict
   };
 });
-
-export default useDictStore;

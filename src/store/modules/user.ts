@@ -3,7 +3,7 @@ import { getToken, removeToken, setToken } from '@/utils/auth';
 import { login as loginApi, logout as logoutApi, getInfo as getUserInfo } from '@/api/login';
 import { LoginData } from '@/api/types';
 import defAva from '@/assets/images/profile.jpg';
-import store from '@/store';
+import { ref } from 'vue';
 
 export const useUserStore = defineStore('user', () => {
   const token = ref(getToken());
@@ -83,5 +83,3 @@ export const useUserStore = defineStore('user', () => {
     setAvatar
   };
 });
-
-export default useUserStore;

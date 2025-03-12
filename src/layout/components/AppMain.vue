@@ -15,8 +15,8 @@
 </template>
 
 <script setup name="AppMain" lang="ts">
-import useSettingsStore from '@/store/modules/settings';
-import useTagsViewStore from '@/store/modules/tagsView';
+import { useSettingsStore } from '@/store/modules/settings';
+import { useTagsViewStore } from '@/store/modules/tagsView';
 
 import IframeToggle from './IframeToggle/index.vue';
 const { proxy } = getCurrentInstance() as ComponentInternalInstance;

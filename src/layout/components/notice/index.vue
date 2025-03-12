@@ -25,7 +25,7 @@
 
 <script setup lang="ts" name="layoutBreadcrumbUserNews">
 import { storeToRefs } from 'pinia';
-import useNoticeStore from '@/store/modules/notice';
+import { useNoticeStore } from '@/store/modules/notice';
 
 const noticeStore = storeToRefs(useNoticeStore());
 const { readAll } = useNoticeStore();
