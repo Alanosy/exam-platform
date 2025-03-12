@@ -17,9 +17,14 @@ public interface RegexConstants extends RegexPool {
     String DICTIONARY_TYPE = "^[a-z][a-z0-9_]*$";
 
     /**
-     * 权限标识必须符合 tool:build:list 格式，或者空字符串
+     * 权限标识必须符合以下格式：
+     * 1. 标准格式：xxx:yyy:zzz
+     * - 第一部分（xxx）：只能包含字母、数字和下划线（_），不能使用 `*`
+     * - 第二部分（yyy）：可以包含字母、数字、下划线（_）和 `*`
+     * - 第三部分（zzz）：可以包含字母、数字、下划线（_）和 `*`
+     * 2. 允许空字符串（""），表示没有权限标识
      */
-    String PERMISSION_STRING = "^(|^[a-zA-Z0-9_]+:[a-zA-Z0-9_]+:[a-zA-Z0-9_]+)$";
+    String PERMISSION_STRING = "^$|^[a-zA-Z0-9_]+:[a-zA-Z0-9_*]+:[a-zA-Z0-9_*]+$";
 
     /**
      * 身份证号码（后6位）

@@ -18,6 +18,7 @@ package com.alibaba.csp.sentinel.adapter.gateway.sc.callback;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.InvalidMediaTypeException;
 import org.springframework.http.MediaType;
+import org.springframework.util.MimeTypeUtils;
 import org.springframework.web.reactive.function.server.ServerResponse;
 import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Mono;
@@ -67,7 +68,7 @@ public class DefaultBlockRequestHandler implements BlockRequestHandler {
         try {
             List<MediaType> acceptedMediaTypes = exchange.getRequest().getHeaders().getAccept();
             acceptedMediaTypes.remove(MediaType.ALL);
-            MediaType.sortBySpecificityAndQuality(acceptedMediaTypes);
+            MimeTypeUtils. sortBySpecificity(acceptedMediaTypes);
             return acceptedMediaTypes.stream()
                 .anyMatch(MediaType.TEXT_HTML::isCompatibleWith);
         } catch (InvalidMediaTypeException ex) {

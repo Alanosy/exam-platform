@@ -19,7 +19,7 @@ import org.dromara.auth.form.RegisterBody;
 import org.dromara.auth.form.SocialLoginBody;
 import org.dromara.auth.service.IAuthStrategy;
 import org.dromara.auth.service.SysLoginService;
-import org.dromara.common.core.constant.UserConstants;
+import org.dromara.common.core.constant.SystemConstants;
 import org.dromara.common.core.domain.R;
 import org.dromara.common.core.domain.model.LoginBody;
 import org.dromara.common.core.utils.*;
@@ -92,7 +92,7 @@ public class TokenController {
         if (ObjectUtil.isNull(clientVo) || !StringUtils.contains(clientVo.getGrantType(), grantType)) {
             log.info("客户端id: {} 认证类型：{} 异常!.", clientId, grantType);
             return R.fail(MessageUtils.message("auth.grant.type.error"));
-        } else if (!UserConstants.NORMAL.equals(clientVo.getStatus())) {
+        } else if (!SystemConstants.NORMAL.equals(clientVo.getStatus())) {
             return R.fail(MessageUtils.message("auth.grant.type.blocked"));
         }
         // 校验租户
@@ -102,7 +102,7 @@ public class TokenController {
 
         Long userId = LoginHelper.getUserId();
         scheduledExecutorService.schedule(() -> {
-            remoteMessageService.publishMessage(userId, "欢迎登录RuoYi-Cloud-Plus微服务管理系统");
+            remoteMessageService.publishMessage(List.of(userId), "欢迎登录RuoYi-Cloud-Plus微服务管理系统");
         }, 3, TimeUnit.SECONDS);
         return R.ok(loginVo);
     }
@@ -223,7 +223,7 @@ public class TokenController {
         }
         // 根据域名进行筛选
         List<TenantListVo> list = StreamUtils.filter(voList, vo ->
-            StringUtils.equals(vo.getDomain(), host));
+            StringUtils.equalsIgnoreCase(vo.getDomain(), host));
         result.setVoList(CollUtil.isNotEmpty(list) ? list : voList);
         return R.ok(result);
     }

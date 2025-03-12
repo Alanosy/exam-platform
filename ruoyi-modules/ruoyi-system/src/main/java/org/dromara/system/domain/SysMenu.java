@@ -6,7 +6,7 @@ import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.dromara.common.core.constant.Constants;
-import org.dromara.common.core.constant.UserConstants;
+import org.dromara.common.core.constant.SystemConstants;
 import org.dromara.common.core.utils.StringUtils;
 import org.dromara.common.mybatis.core.domain.BaseEntity;
 
@@ -134,8 +134,8 @@ public class SysMenu extends BaseEntity {
             routerPath = innerLinkReplaceEach(routerPath);
         }
         // 非外链并且是一级目录（类型为目录）
-        if (0L == getParentId() && UserConstants.TYPE_DIR.equals(getMenuType())
-            && UserConstants.NO_FRAME.equals(getIsFrame())) {
+        if (0L == getParentId() && SystemConstants.TYPE_DIR.equals(getMenuType())
+            && SystemConstants.NO_FRAME.equals(getIsFrame())) {
             routerPath = "/" + this.path;
         }
         // 非外链并且是一级目录（类型为菜单）
@@ -149,13 +149,13 @@ public class SysMenu extends BaseEntity {
      * 获取组件信息
      */
     public String getComponentInfo() {
-        String component = UserConstants.LAYOUT;
+        String component = SystemConstants.LAYOUT;
         if (StringUtils.isNotEmpty(this.component) && !isMenuFrame()) {
             component = this.component;
         } else if (StringUtils.isEmpty(this.component) && getParentId() != 0L && isInnerLink()) {
-            component = UserConstants.INNER_LINK;
+            component = SystemConstants.INNER_LINK;
         } else if (StringUtils.isEmpty(this.component) && isParentView()) {
-            component = UserConstants.PARENT_VIEW;
+            component = SystemConstants.PARENT_VIEW;
         }
         return component;
     }
@@ -164,21 +164,21 @@ public class SysMenu extends BaseEntity {
      * 是否为菜单内部跳转
      */
     public boolean isMenuFrame() {
-        return getParentId() == 0L && UserConstants.TYPE_MENU.equals(menuType) && isFrame.equals(UserConstants.NO_FRAME);
+        return getParentId() == 0L && SystemConstants.TYPE_MENU.equals(menuType) && isFrame.equals(SystemConstants.NO_FRAME);
     }
 
     /**
      * 是否为内链组件
      */
     public boolean isInnerLink() {
-        return isFrame.equals(UserConstants.NO_FRAME) && StringUtils.ishttp(path);
+        return isFrame.equals(SystemConstants.NO_FRAME) && StringUtils.ishttp(path);
     }
 
     /**
      * 是否为parent_view组件
      */
     public boolean isParentView() {
-        return getParentId() != 0L && UserConstants.TYPE_DIR.equals(menuType);
+        return getParentId() != 0L && SystemConstants.TYPE_DIR.equals(menuType);
     }
 
     /**

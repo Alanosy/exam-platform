@@ -8,7 +8,7 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import lombok.RequiredArgsConstructor;
-import org.dromara.common.core.constant.UserConstants;
+import org.dromara.common.core.constant.SystemConstants;
 import org.dromara.common.core.utils.MapstructUtils;
 import org.dromara.common.core.utils.StreamUtils;
 import org.dromara.common.core.utils.StringUtils;
@@ -196,7 +196,7 @@ public class SysMenuServiceImpl implements ISysMenuService {
             router.setQuery(menu.getQueryParam());
             router.setMeta(new MetaVo(menu.getMenuName(), menu.getIcon(), StringUtils.equals("1", menu.getIsCache()), menu.getPath()));
             List<SysMenu> cMenus = menu.getChildren();
-            if (CollUtil.isNotEmpty(cMenus) && UserConstants.TYPE_DIR.equals(menu.getMenuType())) {
+            if (CollUtil.isNotEmpty(cMenus) && SystemConstants.TYPE_DIR.equals(menu.getMenuType())) {
                 router.setAlwaysShow(true);
                 router.setRedirect("noRedirect");
                 router.setChildren(buildMenus(cMenus));
@@ -220,7 +220,7 @@ public class SysMenuServiceImpl implements ISysMenuService {
                 String routerPath = SysMenu.innerLinkReplaceEach(menu.getPath());
                 String innerLinkName = StringUtils.capitalize(routerPath) + menu.getMenuId();
                 children.setPath(routerPath);
-                children.setComponent(UserConstants.INNER_LINK);
+                children.setComponent(SystemConstants.INNER_LINK);
                 children.setName(innerLinkName);
                 children.setMeta(new MetaVo(menu.getMenuName(), menu.getIcon(), menu.getPath()));
                 childrenList.add(children);
@@ -242,11 +242,14 @@ public class SysMenuServiceImpl implements ISysMenuService {
         if (CollUtil.isEmpty(menus)) {
             return CollUtil.newArrayList();
         }
-        return TreeBuildUtils.build(menus, (menu, tree) ->
-            tree.setId(menu.getMenuId())
+        return TreeBuildUtils.build(menus, (menu, tree) -> {
+            Tree<Long> menuTree = tree.setId(menu.getMenuId())
                 .setParentId(menu.getParentId())
                 .setName(menu.getMenuName())
-                .setWeight(menu.getOrderNum()));
+                .setWeight(menu.getOrderNum());
+            menuTree.put("menuType", menu.getMenuType());
+            menuTree.put("icon", menu.getIcon());
+        });
     }
 
     /**

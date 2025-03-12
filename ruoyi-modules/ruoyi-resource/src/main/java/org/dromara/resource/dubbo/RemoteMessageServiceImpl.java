@@ -28,10 +28,10 @@ public class RemoteMessageServiceImpl implements RemoteMessageService {
      * @param message    消息文本
      */
     @Override
-    public void publishMessage(Long sessionKey, String message) {
+    public void publishMessage(List<Long> sessionKey, String message) {
         SseMessageDto dto = new SseMessageDto();
         dto.setMessage(message);
-        dto.setUserIds(List.of(sessionKey));
+        dto.setUserIds(sessionKey);
         SseMessageUtils.publishMessage(dto);
     }
 

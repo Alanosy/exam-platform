@@ -22,7 +22,7 @@ public class SecurityConfig {
     public FilterRegistrationBean<ActuatorAuthFilter> actuatorFilterRegistrationBean() {
         FilterRegistrationBean<ActuatorAuthFilter> registrationBean = new FilterRegistrationBean<>();
         registrationBean.setFilter(new ActuatorAuthFilter(username, password));
-        registrationBean.addUrlPatterns("/actuator", "/actuator/**");
+        registrationBean.addUrlPatterns("/actuator", "/actuator/*");
         return registrationBean;
     }
 

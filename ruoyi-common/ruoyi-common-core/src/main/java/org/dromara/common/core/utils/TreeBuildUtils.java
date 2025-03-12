@@ -44,6 +44,23 @@ public class TreeBuildUtils extends TreeUtil {
     }
 
     /**
+     * 构建树形结构
+     *
+     * @param <T>        输入节点的类型
+     * @param <K>        节点ID的类型
+     * @param parentId   顶级节点
+     * @param list       节点列表，其中包含了要构建树形结构的所有节点
+     * @param nodeParser 解析器，用于将输入节点转换为树节点
+     * @return 构建好的树形结构列表
+     */
+    public static <T, K> List<Tree<K>> build(List<T> list, K parentId, NodeParser<T, K> nodeParser) {
+        if (CollUtil.isEmpty(list)) {
+            return CollUtil.newArrayList();
+        }
+        return TreeUtil.build(list, parentId, DEFAULT_CONFIG, nodeParser);
+    }
+
+    /**
      * 获取节点列表中所有节点的叶子节点
      *
      * @param <K>   节点ID的类型

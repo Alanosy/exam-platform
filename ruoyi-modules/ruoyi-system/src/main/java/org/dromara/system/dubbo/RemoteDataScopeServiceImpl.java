@@ -6,13 +6,14 @@ import cn.hutool.core.util.ObjectUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import lombok.RequiredArgsConstructor;
 import org.apache.dubbo.config.annotation.DubboService;
+import org.dromara.common.core.constant.CacheNames;
 import org.dromara.common.core.utils.StreamUtils;
-import org.dromara.common.mybatis.helper.DataBaseHelper;
 import org.dromara.system.api.RemoteDataScopeService;
 import org.dromara.system.domain.SysDept;
 import org.dromara.system.domain.SysRoleDept;
 import org.dromara.system.mapper.SysDeptMapper;
 import org.dromara.system.mapper.SysRoleDeptMapper;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -39,6 +40,7 @@ public class RemoteDataScopeServiceImpl implements RemoteDataScopeService {
      * @param roleId 角色ID
      * @return 返回角色的自定义权限语句，如果没有找到则返回 null
      */
+    @Cacheable(cacheNames = CacheNames.SYS_ROLE_CUSTOM, key = "#roleId", condition = "#roleId != null")
     @Override
     public String getRoleCustom(Long roleId) {
         if (ObjectUtil.isNull(roleId)) {
@@ -60,14 +62,13 @@ public class RemoteDataScopeServiceImpl implements RemoteDataScopeService {
      * @param deptId 部门ID
      * @return 返回部门及其下级的权限语句，如果没有找到则返回 null
      */
+    @Cacheable(cacheNames = CacheNames.SYS_DEPT_AND_CHILD, key = "#deptId", condition = "#deptId != null")
     @Override
     public String getDeptAndChild(Long deptId) {
         if (ObjectUtil.isNull(deptId)) {
             return "-1";
         }
-        List<SysDept> deptList = deptMapper.selectList(new LambdaQueryWrapper<SysDept>()
-            .select(SysDept::getDeptId)
-            .apply(DataBaseHelper.findInSet(deptId, "ancestors")));
+        List<SysDept> deptList = deptMapper.selectListByParentId(deptId);
         List<Long> ids = StreamUtils.toList(deptList, SysDept::getDeptId);
         ids.add(deptId);
         if (CollUtil.isNotEmpty(ids)) {

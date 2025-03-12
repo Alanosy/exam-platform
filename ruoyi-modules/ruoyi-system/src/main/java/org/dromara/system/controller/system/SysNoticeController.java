@@ -32,7 +32,7 @@ public class SysNoticeController extends BaseController {
     private final DictService dictService;
 
     @DubboReference
-    private final RemoteMessageService remoteMessageService;
+    private RemoteMessageService remoteMessageService;
 
     /**
      * 获取通知公告列表

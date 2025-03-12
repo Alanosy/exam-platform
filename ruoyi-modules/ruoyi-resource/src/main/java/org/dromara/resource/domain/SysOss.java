@@ -43,6 +43,11 @@ public class SysOss extends TenantEntity {
     private String url;
 
     /**
+     * 扩展字段
+     */
+    private String ext1;
+
+    /**
      * 服务商
      */
     private String service;

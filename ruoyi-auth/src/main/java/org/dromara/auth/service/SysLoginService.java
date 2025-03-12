@@ -14,12 +14,8 @@ import org.apache.dubbo.config.annotation.DubboReference;
 import org.dromara.auth.form.RegisterBody;
 import org.dromara.auth.properties.CaptchaProperties;
 import org.dromara.auth.properties.UserPasswordProperties;
-import org.dromara.common.core.constant.CacheConstants;
-import org.dromara.common.core.constant.Constants;
-import org.dromara.common.core.constant.GlobalConstants;
-import org.dromara.common.core.constant.TenantConstants;
+import org.dromara.common.core.constant.*;
 import org.dromara.common.core.enums.LoginType;
-import org.dromara.common.core.enums.TenantStatus;
 import org.dromara.common.core.enums.UserType;
 import org.dromara.common.core.exception.ServiceException;
 import org.dromara.common.core.exception.user.CaptchaException;
@@ -175,11 +171,11 @@ public class SysLoginService {
         String captcha = RedisUtils.getCacheObject(verifyKey);
         RedisUtils.deleteObject(verifyKey);
         if (captcha == null) {
-            recordLogininfor(tenantId, username, Constants.REGISTER, MessageUtils.message("user.jcaptcha.expire"));
+            recordLogininfor(tenantId, username, Constants.LOGIN_FAIL, MessageUtils.message("user.jcaptcha.expire"));
             throw new CaptchaExpireException();
         }
         if (!code.equalsIgnoreCase(captcha)) {
-            recordLogininfor(tenantId, username, Constants.REGISTER, MessageUtils.message("user.jcaptcha.error"));
+            recordLogininfor(tenantId, username, Constants.LOGIN_FAIL, MessageUtils.message("user.jcaptcha.error"));
             throw new CaptchaException();
         }
     }
@@ -247,17 +243,17 @@ public class SysLoginService {
         if (!TenantHelper.isEnable()) {
             return;
         }
-        if (TenantConstants.DEFAULT_TENANT_ID.equals(tenantId)) {
-            return;
-        }
         if (StringUtils.isBlank(tenantId)) {
             throw new TenantException("tenant.number.not.blank");
+        }
+        if (TenantConstants.DEFAULT_TENANT_ID.equals(tenantId)) {
+            return;
         }
         RemoteTenantVo tenant = remoteTenantService.queryByTenantId(tenantId);
         if (ObjectUtil.isNull(tenant)) {
             log.info("登录租户：{} 不存在.", tenantId);
             throw new TenantException("tenant.not.exists");
-        } else if (TenantStatus.DISABLE.getCode().equals(tenant.getStatus())) {
+        } else if (SystemConstants.DISABLE.equals(tenant.getStatus())) {
             log.info("登录租户：{} 已被停用.", tenantId);
             throw new TenantException("tenant.blocked");
         } else if (ObjectUtil.isNotNull(tenant.getExpireTime())

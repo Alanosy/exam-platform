@@ -26,8 +26,8 @@ import java.util.Objects;
 public class SensitiveHandler extends JsonSerializer<String> implements ContextualSerializer {
 
     private SensitiveStrategy strategy;
-    private String roleKey;
-    private String perms;
+    private String[] roleKey;
+    private String[] perms;
 
     @Override
     public void serialize(String value, JsonGenerator gen, SerializerProvider serializers) throws IOException {

@@ -31,6 +31,11 @@ public interface CacheNames {
     String SYS_DICT = "sys_dict";
 
     /**
+     * 数据字典类型
+     */
+    String SYS_DICT_TYPE = "sys_dict_type";
+
+    /**
      * 租户
      */
     String SYS_TENANT = GlobalConstants.GLOBAL_REDIS_KEY + "sys_tenant#30d";
@@ -59,6 +64,16 @@ public interface CacheNames {
      * OSS内容
      */
     String SYS_OSS = "sys_oss#30d";
+
+    /**
+     * 角色自定义权限
+     */
+    String SYS_ROLE_CUSTOM = "sys_role_custom#30d";
+
+    /**
+     * 部门及以下权限
+     */
+    String SYS_DEPT_AND_CHILD = "sys_dept_and_child#30d";
 
     /**
      * OSS配置

@@ -1,6 +1,7 @@
 package org.dromara.system.api;
 
 import org.dromara.system.api.domain.vo.RemoteDictDataVo;
+import org.dromara.system.api.domain.vo.RemoteDictTypeVo;
 
 import java.util.List;
 
@@ -10,6 +11,14 @@ import java.util.List;
  * @author Lion Li
  */
 public interface RemoteDictService {
+
+    /**
+     * 根据字典类型查询信息
+     *
+     * @param dictType 字典类型
+     * @return 字典类型
+     */
+    RemoteDictTypeVo selectDictTypeByType(String dictType);
 
     /**
      * 根据字典类型查询字典数据

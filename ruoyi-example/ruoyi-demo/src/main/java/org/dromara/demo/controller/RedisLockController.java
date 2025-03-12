@@ -1,5 +1,6 @@
 package org.dromara.demo.controller;
 
+import cn.hutool.core.thread.ThreadUtil;
 import com.baomidou.lock.LockInfo;
 import com.baomidou.lock.LockTemplate;
 import com.baomidou.lock.annotation.Lock4j;
@@ -34,11 +35,7 @@ public class RedisLockController {
     @GetMapping("/testLock4j")
     public R<String> testLock4j(String key, String value) {
         System.out.println("start:" + key + ",time:" + LocalTime.now());
-        try {
-            Thread.sleep(10000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+        ThreadUtil.sleep(10000);
         System.out.println("end :" + key + ",time:" + LocalTime.now());
         return R.ok("操作成功", value);
     }
@@ -54,11 +51,7 @@ public class RedisLockController {
         }
         // 获取锁成功，处理业务
         try {
-            try {
-                Thread.sleep(8000);
-            } catch (InterruptedException e) {
-                //
-            }
+            ThreadUtil.sleep(8000);
             System.out.println("执行简单方法1 , 当前线程:" + Thread.currentThread().getName());
         } finally {
             //释放锁

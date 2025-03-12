@@ -3,6 +3,7 @@ package org.dromara.common.mybatis.handler;
 import cn.hutool.core.annotation.AnnotationUtil;
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.ObjectUtil;
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.sf.jsqlparser.JSQLParserException;
 import net.sf.jsqlparser.expression.Expression;
@@ -28,19 +29,13 @@ import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.core.io.support.ResourcePatternResolver;
 import org.springframework.core.type.ClassMetadata;
 import org.springframework.core.type.classreading.CachingMetadataReaderFactory;
-import org.springframework.expression.BeanResolver;
-import org.springframework.expression.ExpressionParser;
-import org.springframework.expression.ParserContext;
+import org.springframework.expression.*;
 import org.springframework.expression.common.TemplateParserContext;
 import org.springframework.expression.spel.standard.SpelExpressionParser;
 import org.springframework.expression.spel.support.StandardEvaluationContext;
 import org.springframework.util.ClassUtils;
 
-import java.lang.reflect.Method;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
 
@@ -54,7 +49,7 @@ import java.util.function.Function;
 public class PlusDataPermissionHandler {
 
     /**
-     * 方法或类(名称) 与 注解的映射关系缓存
+     * 类名称与注解的映射关系缓存(由于aop无法拦截mybatis接口类上的注解 只能通过启动预扫描的方式进行)
      */
     private final Map<String, DataPermission> dataPermissionCacheMap = new ConcurrentHashMap<>();
 
@@ -86,24 +81,24 @@ public class PlusDataPermissionHandler {
      * @return 数据过滤条件的 SQL 片段
      */
     public Expression getSqlSegment(Expression where, String mappedStatementId, boolean isSelect) {
-        // 获取数据权限配置
-        DataPermission dataPermission = getDataPermission(mappedStatementId);
-        // 获取当前登录用户信息
-        LoginUser currentUser = DataPermissionHelper.getVariable("user");
-        if (ObjectUtil.isNull(currentUser)) {
-            currentUser = LoginHelper.getLoginUser();
-            DataPermissionHelper.setVariable("user", currentUser);
-        }
-        // 如果是超级管理员或租户管理员，则不过滤数据
-        if (LoginHelper.isSuperAdmin() || LoginHelper.isTenantAdmin()) {
-            return where;
-        }
-        // 构造数据过滤条件的 SQL 片段
-        String dataFilterSql = buildDataFilter(dataPermission, isSelect);
-        if (StringUtils.isBlank(dataFilterSql)) {
-            return where;
-        }
         try {
+            // 获取数据权限配置
+            DataPermission dataPermission = getDataPermission(mappedStatementId);
+            // 获取当前登录用户信息
+            LoginUser currentUser = DataPermissionHelper.getVariable("user");
+            if (ObjectUtil.isNull(currentUser)) {
+                currentUser = LoginHelper.getLoginUser();
+                DataPermissionHelper.setVariable("user", currentUser);
+            }
+            // 如果是超级管理员或租户管理员，则不过滤数据
+            if (LoginHelper.isSuperAdmin() || LoginHelper.isTenantAdmin()) {
+                return where;
+            }
+            // 构造数据过滤条件的 SQL 片段
+            String dataFilterSql = buildDataFilter(dataPermission, isSelect);
+            if (StringUtils.isBlank(dataFilterSql)) {
+                return where;
+            }
             Expression expression = CCJSqlParserUtil.parseExpression(dataFilterSql);
             // 数据权限使用单独的括号 防止与其他条件冲突
             ParenthesedExpressionList<Expression> parenthesis = new ParenthesedExpressionList<>(expression);
@@ -114,6 +109,8 @@ public class PlusDataPermissionHandler {
             }
         } catch (JSQLParserException e) {
             throw new ServiceException("数据权限解析异常 => " + e.getMessage());
+        } finally {
+            DataPermissionHelper.removePermission();
         }
     }
 
@@ -132,10 +129,33 @@ public class PlusDataPermissionHandler {
             joinStr = " " + dataPermission.joinStr() + " ";
         }
         LoginUser user = DataPermissionHelper.getVariable("user");
-        StandardEvaluationContext context = new StandardEvaluationContext();
+        Object defaultValue = "-1";
+        NullSafeStandardEvaluationContext context = new NullSafeStandardEvaluationContext(defaultValue);
+        context.addPropertyAccessor(new NullSafePropertyAccessor(context.getPropertyAccessors().get(0), defaultValue));
         context.setBeanResolver(beanResolver);
         DataPermissionHelper.getContext().forEach(context::setVariable);
         Set<String> conditions = new HashSet<>();
+        // 优先设置变量
+        List<String> keys = new ArrayList<>();
+        Map<DataColumn, Boolean> ignoreMap = new HashMap<>();
+        for (DataColumn dataColumn : dataPermission.value()) {
+            if (dataColumn.key().length != dataColumn.value().length) {
+                throw new ServiceException("角色数据范围异常 => key与value长度不匹配");
+            }
+            // 包含权限标识符 这直接跳过
+            if (StringUtils.isNotBlank(dataColumn.permission()) &&
+                CollUtil.contains(user.getMenuPermission(), dataColumn.permission())
+            ) {
+                ignoreMap.put(dataColumn, Boolean.TRUE);
+                continue;
+            }
+            // 设置注解变量 key 为表达式变量 value 为变量值
+            for (int i = 0; i < dataColumn.key().length; i++) {
+                context.setVariable(dataColumn.key()[i], dataColumn.value()[i]);
+            }
+            keys.addAll(Arrays.stream(dataColumn.key()).map(key -> "#" + key).toList());
+        }
+
         for (RoleDTO role : user.getRoles()) {
             user.setRoleId(role.getRoleId());
             // 获取角色权限泛型
@@ -145,33 +165,30 @@ public class PlusDataPermissionHandler {
             }
             // 全部数据权限直接返回
             if (type == DataScopeType.ALL) {
-                return "";
+                return StringUtils.EMPTY;
             }
             boolean isSuccess = false;
             for (DataColumn dataColumn : dataPermission.value()) {
-                if (dataColumn.key().length != dataColumn.value().length) {
-                    throw new ServiceException("角色数据范围异常 => key与value长度不匹配");
-                }
-                // 不包含 key 变量 则不处理
-                if (!StringUtils.containsAny(type.getSqlTemplate(),
-                    Arrays.stream(dataColumn.key()).map(key -> "#" + key).toArray(String[]::new)
-                )) {
-                    continue;
-                }
                 // 包含权限标识符 这直接跳过
-                if (StringUtils.isNotBlank(dataColumn.permission()) &&
-                    CollUtil.contains(user.getMenuPermission(), dataColumn.permission())
-                ) {
+                if (ignoreMap.containsKey(dataColumn)) {
+                    // 修复多角色与权限标识符共用问题 https://gitee.com/dromara/RuoYi-Vue-Plus/issues/IB4CS4
+                    conditions.add(joinStr + " 1 = 1 ");
                     isSuccess = true;
                     continue;
                 }
-                // 设置注解变量 key 为表达式变量 value 为变量值
-                for (int i = 0; i < dataColumn.key().length; i++) {
-                    context.setVariable(dataColumn.key()[i], dataColumn.value()[i]);
+                // 不包含 key 变量 则不处理
+                if (!StringUtils.containsAny(type.getSqlTemplate(), keys.toArray(String[]::new))) {
+                    continue;
                 }
-
+                // 当前注解不满足模板 不处理
+                if (!StringUtils.containsAny(type.getSqlTemplate(), dataColumn.key())) {
+                    continue;
+                }
+                // 忽略数据权限 防止spel表达式内有其他sql查询导致死循环调用
+                String sql = DataPermissionHelper.ignore(() ->
+                    parser.parseExpression(type.getSqlTemplate(), parserContext).getValue(context, String.class)
+                );
                 // 解析sql模板并填充
-                String sql = parser.parseExpression(type.getSqlTemplate(), parserContext).getValue(context, String.class);
                 conditions.add(joinStr + sql);
                 isSuccess = true;
             }
@@ -185,7 +202,7 @@ public class PlusDataPermissionHandler {
             String sql = StreamUtils.join(conditions, Function.identity(), "");
             return sql.substring(joinStr.length());
         }
-        return "";
+        return StringUtils.EMPTY;
     }
 
     /**
@@ -212,34 +229,14 @@ public class PlusDataPermissionHandler {
                     // 获取资源对应的类对象
                     Class<?> clazz = Resources.classForName(classMetadata.getClassName());
                     // 查找类中的特定注解
-                    findAnnotation(clazz);
+                    if (AnnotationUtil.hasAnnotation(clazz, DataPermission.class)) {
+                        DataPermission dataPermission = AnnotationUtil.getAnnotation(clazz, DataPermission.class);
+                        dataPermissionCacheMap.put(clazz.getName(), dataPermission);
+                    }
                 }
             }
         } catch (Exception e) {
             log.error("初始化数据安全缓存时出错:{}", e.getMessage());
-        }
-    }
-
-    /**
-     * 在指定的类中查找特定的注解 DataPermission，并将带有这个注解的方法或类存储到 dataPermissionCacheMap 中
-     *
-     * @param clazz 要查找的类
-     */
-    private void findAnnotation(Class<?> clazz) {
-        DataPermission dataPermission;
-        for (Method method : clazz.getMethods()) {
-            if (method.isDefault() || method.isVarArgs()) {
-                continue;
-            }
-            String mappedStatementId = clazz.getName() + "." + method.getName();
-            if (AnnotationUtil.hasAnnotation(method, DataPermission.class)) {
-                dataPermission = AnnotationUtil.getAnnotation(method, DataPermission.class);
-                dataPermissionCacheMap.put(mappedStatementId, dataPermission);
-            }
-        }
-        if (AnnotationUtil.hasAnnotation(clazz, DataPermission.class)) {
-            dataPermission = AnnotationUtil.getAnnotation(clazz, DataPermission.class);
-            dataPermissionCacheMap.put(clazz.getName(), dataPermission);
         }
     }
 
@@ -250,9 +247,9 @@ public class PlusDataPermissionHandler {
      * @return DataPermission 注解对象，如果不存在则返回 null
      */
     public DataPermission getDataPermission(String mapperId) {
-        // 检查缓存中是否包含映射语句 ID 对应的 DataPermission 注解对象
-        if (dataPermissionCacheMap.containsKey(mapperId)) {
-            return dataPermissionCacheMap.get(mapperId);
+        // 检查上下文中是否包含映射语句 ID 对应的 DataPermission 注解对象
+        if (DataPermissionHelper.getPermission() != null) {
+            return DataPermissionHelper.getPermission();
         }
         // 如果缓存中不包含映射语句 ID 对应的 DataPermission 注解对象，则尝试使用类名作为键查找
         String clazzName = mapperId.substring(0, mapperId.lastIndexOf("."));
@@ -271,4 +268,65 @@ public class PlusDataPermissionHandler {
     public boolean invalid(String mapperId) {
         return getDataPermission(mapperId) == null;
     }
+
+    /**
+     * 对所有null变量找不到的变量返回默认值
+     */
+    @AllArgsConstructor
+    private static class NullSafeStandardEvaluationContext extends StandardEvaluationContext {
+
+        private final Object defaultValue;
+
+        @Override
+        public Object lookupVariable(String name) {
+            Object obj = super.lookupVariable(name);
+            // 如果读取到的值是 null，则返回默认值
+            if (obj == null) {
+                return defaultValue;
+            }
+            return obj;
+        }
+
+    }
+
+    /**
+     * 对所有null变量找不到的变量返回默认值 委托模式 将不需要处理的方法委托给原处理器
+     */
+    @AllArgsConstructor
+    private static class NullSafePropertyAccessor implements PropertyAccessor {
+
+        private final PropertyAccessor delegate;
+        private final Object defaultValue;
+
+        @Override
+        public Class<?>[] getSpecificTargetClasses() {
+            return delegate.getSpecificTargetClasses();
+        }
+
+        @Override
+        public boolean canRead(EvaluationContext context, Object target, String name) throws AccessException {
+            return delegate.canRead(context, target, name);
+        }
+
+        @Override
+        public TypedValue read(EvaluationContext context, Object target, String name) throws AccessException {
+            TypedValue value = delegate.read(context, target, name);
+            // 如果读取到的值是 null，则返回默认值
+            if (value.getValue() == null) {
+                return new TypedValue(defaultValue);
+            }
+            return value;
+        }
+
+        @Override
+        public boolean canWrite(EvaluationContext context, Object target, String name) throws AccessException {
+            return delegate.canWrite(context, target, name);
+        }
+
+        @Override
+        public void write(EvaluationContext context, Object target, String name, Object newValue) throws AccessException {
+            delegate.write(context, target, name, newValue);
+        }
+    }
+
 }

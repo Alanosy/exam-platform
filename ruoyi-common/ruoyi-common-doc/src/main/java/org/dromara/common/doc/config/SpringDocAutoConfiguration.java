@@ -4,7 +4,9 @@ import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.Paths;
 import io.swagger.v3.oas.models.info.Info;
 import io.swagger.v3.oas.models.security.SecurityRequirement;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import org.dromara.common.core.utils.ServletUtils;
 import org.dromara.common.core.utils.StringUtils;
 import org.dromara.common.doc.config.properties.SpringDocProperties;
 import org.dromara.common.doc.handler.OpenApiHandler;
@@ -93,23 +95,17 @@ public class SpringDocAutoConfiguration {
      */
     @Bean
     public OpenApiCustomizer openApiCustomizer() {
-        // 拼接服务路径
-        String appPath = "/" + StringUtils.substring(appName, appName.indexOf("-") + 1);
-        String contextPath = serverProperties.getServlet().getContextPath();
-        String finalContextPath;
-        if (StringUtils.isBlank(contextPath) || "/".equals(contextPath)) {
-            finalContextPath = appPath;
-        } else {
-            finalContextPath = appPath + contextPath;
-        }
         // 对所有路径增加前置上下文路径
         return openApi -> {
+            HttpServletRequest request = ServletUtils.getRequest();
+            // 从请求头获取gateway转发的服务前缀
+            String prefix = StringUtils.blankToDefault(request.getHeader("X-Forwarded-Prefix"), "");
             Paths oldPaths = openApi.getPaths();
             if (oldPaths instanceof PlusPaths) {
                 return;
             }
             PlusPaths newPaths = new PlusPaths();
-            oldPaths.forEach((k, v) -> newPaths.addPathItem(finalContextPath + k, v));
+            oldPaths.forEach((k, v) -> newPaths.addPathItem(prefix + k, v));
             openApi.setPaths(newPaths);
         };
     }

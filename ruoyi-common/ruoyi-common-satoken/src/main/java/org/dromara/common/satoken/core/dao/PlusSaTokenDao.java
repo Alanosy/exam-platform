@@ -51,7 +51,11 @@ public class PlusSaTokenDao implements SaTokenDao {
         if (timeout == NEVER_EXPIRE) {
             RedisUtils.setCacheObject(key, value);
         } else {
-            RedisUtils.setCacheObject(key, value, Duration.ofSeconds(timeout));
+            if (RedisUtils.hasKey(key)) {
+                RedisUtils.setCacheObject(key, value, true);
+            } else {
+                RedisUtils.setCacheObject(key, value, Duration.ofSeconds(timeout));
+            }
         }
         CAFFEINE.invalidate(key);
     }
@@ -114,7 +118,11 @@ public class PlusSaTokenDao implements SaTokenDao {
         if (timeout == NEVER_EXPIRE) {
             RedisUtils.setCacheObject(key, object);
         } else {
-            RedisUtils.setCacheObject(key, object, Duration.ofSeconds(timeout));
+            if (RedisUtils.hasKey(key)) {
+                RedisUtils.setCacheObject(key, object, true);
+            } else {
+                RedisUtils.setCacheObject(key, object, Duration.ofSeconds(timeout));
+            }
         }
         CAFFEINE.invalidate(key);
     }

@@ -49,12 +49,6 @@
             <artifactId>spring-boot-starter-actuator</artifactId>
         </dependency>
 
-        <!-- SpringCloud Loadbalancer -->
-        <dependency>
-            <groupId>org.springframework.cloud</groupId>
-            <artifactId>spring-cloud-loadbalancer</artifactId>
-        </dependency>
-
         <dependency>
             <groupId>cn.hutool</groupId>
             <artifactId>hutool-http</artifactId>
@@ -92,12 +86,6 @@
         <dependency>
             <groupId>org.dromara</groupId>
             <artifactId>ruoyi-common-tenant</artifactId>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.dromara</groupId>
-                    <artifactId>ruoyi-common-mybatis</artifactId>
-                </exclusion>
-            </exclusions>
         </dependency>
 
         <!-- 自定义负载均衡(多团队开发使用) -->

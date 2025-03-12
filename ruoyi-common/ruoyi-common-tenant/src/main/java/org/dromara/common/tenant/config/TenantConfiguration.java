@@ -4,7 +4,6 @@ import cn.dev33.satoken.dao.SaTokenDao;
 import cn.hutool.core.util.ObjectUtil;
 import com.baomidou.mybatisplus.extension.plugins.inner.TenantLineInnerInterceptor;
 import org.dromara.common.core.utils.reflect.ReflectUtils;
-import org.dromara.common.mybatis.config.MybatisPlusConfiguration;
 import org.dromara.common.redis.config.RedisConfiguration;
 import org.dromara.common.redis.config.properties.RedissonProperties;
 import org.dromara.common.tenant.core.TenantSaTokenDao;
@@ -16,7 +15,7 @@ import org.redisson.config.ClusterServersConfig;
 import org.redisson.config.SingleServerConfig;
 import org.redisson.spring.starter.RedissonAutoConfigurationCustomizer;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.cache.CacheManager;
@@ -33,8 +32,8 @@ import org.springframework.context.annotation.Primary;
 @ConditionalOnProperty(value = "tenant.enable", havingValue = "true")
 public class TenantConfiguration {
 
-    @ConditionalOnBean(MybatisPlusConfiguration.class)
-    @AutoConfiguration(after = {MybatisPlusConfiguration.class})
+    @ConditionalOnClass(TenantLineInnerInterceptor.class)
+    @AutoConfiguration
     static class MybatisPlusConfig {
 
         /**
@@ -56,14 +55,12 @@ public class TenantConfiguration {
                 // 使用单机模式
                 // 设置多租户 redis key前缀
                 singleServerConfig.setNameMapper(nameMapper);
-                ReflectUtils.invokeSetter(config, "singleServerConfig", singleServerConfig);
             }
             ClusterServersConfig clusterServersConfig = ReflectUtils.invokeGetter(config, "clusterServersConfig");
             // 集群配置方式 参考下方注释
             if (ObjectUtil.isNotNull(clusterServersConfig)) {
                 // 设置多租户 redis key前缀
                 clusterServersConfig.setNameMapper(nameMapper);
-                ReflectUtils.invokeSetter(config, "clusterServersConfig", clusterServersConfig);
             }
         };
     }

@@ -33,13 +33,7 @@ import com.alibaba.nacos.plugin.auth.constant.ActionTypes;
 import com.alibaba.nacos.plugin.auth.constant.SignType;
 import com.alibaba.nacos.plugin.auth.impl.constant.AuthConstants;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.UUID;
@@ -90,7 +84,7 @@ public class NamespaceControllerV2 {
      */
     @GetMapping()
     @Secured(resource = AuthConstants.CONSOLE_RESOURCE_NAME_PREFIX
-        + "namespaces", action = ActionTypes.READ, signType = SignType.CONSOLE)
+            + "namespaces", action = ActionTypes.READ, signType = SignType.CONSOLE)
     public Result<Namespace> getNamespace(@RequestParam("namespaceId") String namespaceId) throws NacosException {
         return Result.success(namespaceOperationService.getNamespace(namespaceId));
     }
@@ -103,7 +97,7 @@ public class NamespaceControllerV2 {
      */
     @PostMapping
     @Secured(resource = AuthConstants.CONSOLE_RESOURCE_NAME_PREFIX
-        + "namespaces", action = ActionTypes.WRITE, signType = SignType.CONSOLE)
+            + "namespaces", action = ActionTypes.WRITE, signType = SignType.CONSOLE)
     public Result<Boolean> createNamespace(NamespaceForm namespaceForm) throws NacosException {
 
         namespaceForm.validate();
@@ -118,16 +112,16 @@ public class NamespaceControllerV2 {
             namespaceId = namespaceId.trim();
             if (!namespaceIdCheckPattern.matcher(namespaceId).matches()) {
                 throw new NacosApiException(HttpStatus.BAD_REQUEST.value(), ErrorCode.ILLEGAL_NAMESPACE,
-                    "namespaceId [" + namespaceId + "] mismatch the pattern");
+                        "namespaceId [" + namespaceId + "] mismatch the pattern");
             }
             if (namespaceId.length() > NAMESPACE_ID_MAX_LENGTH) {
                 throw new NacosApiException(HttpStatus.BAD_REQUEST.value(), ErrorCode.ILLEGAL_NAMESPACE,
-                    "too long namespaceId, over " + NAMESPACE_ID_MAX_LENGTH);
+                        "too long namespaceId, over " + NAMESPACE_ID_MAX_LENGTH);
             }
             // check unique
             if (namespacePersistService.tenantInfoCountByTenantId(namespaceId) > 0) {
                 throw new NacosApiException(HttpStatus.BAD_REQUEST.value(), ErrorCode.ILLEGAL_NAMESPACE,
-                    "the namespaceId is existed, namespaceId: " + namespaceForm.getNamespaceId());
+                        "the namespaceId is existed, namespaceId: " + namespaceForm.getNamespaceId());
             }
         }
         // contains illegal chars
@@ -146,7 +140,7 @@ public class NamespaceControllerV2 {
      */
     @PutMapping
     @Secured(resource = AuthConstants.CONSOLE_RESOURCE_NAME_PREFIX
-        + "namespaces", action = ActionTypes.WRITE, signType = SignType.CONSOLE)
+            + "namespaces", action = ActionTypes.WRITE, signType = SignType.CONSOLE)
     public Result<Boolean> editNamespace(NamespaceForm namespaceForm) throws NacosException {
         namespaceForm.validate();
         // contains illegal chars
@@ -155,8 +149,8 @@ public class NamespaceControllerV2 {
                 "namespaceName [" + namespaceForm.getNamespaceName() + "] contains illegal char");
         }
         return Result.success(namespaceOperationService
-            .editNamespace(namespaceForm.getNamespaceId(), namespaceForm.getNamespaceName(),
-                namespaceForm.getNamespaceDesc()));
+                .editNamespace(namespaceForm.getNamespaceId(), namespaceForm.getNamespaceName(),
+                        namespaceForm.getNamespaceDesc()));
     }
 
     /**
@@ -167,7 +161,7 @@ public class NamespaceControllerV2 {
      */
     @DeleteMapping
     @Secured(resource = AuthConstants.CONSOLE_RESOURCE_NAME_PREFIX
-        + "namespaces", action = ActionTypes.WRITE, signType = SignType.CONSOLE)
+            + "namespaces", action = ActionTypes.WRITE, signType = SignType.CONSOLE)
     public Result<Boolean> deleteNamespace(@RequestParam("namespaceId") String namespaceId) {
         return Result.success(namespaceOperationService.removeNamespace(namespaceId));
     }

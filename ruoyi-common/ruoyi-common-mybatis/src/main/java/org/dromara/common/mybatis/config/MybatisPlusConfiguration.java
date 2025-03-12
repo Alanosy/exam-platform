@@ -2,6 +2,7 @@ package org.dromara.common.mybatis.config;
 
 import cn.hutool.core.net.NetUtil;
 import com.baomidou.mybatisplus.core.handlers.MetaObjectHandler;
+import com.baomidou.mybatisplus.core.handlers.PostInitTableInfoHandler;
 import com.baomidou.mybatisplus.core.incrementer.DefaultIdentifierGenerator;
 import com.baomidou.mybatisplus.core.incrementer.IdentifierGenerator;
 import com.baomidou.mybatisplus.extension.plugins.MybatisPlusInterceptor;
@@ -10,8 +11,10 @@ import com.baomidou.mybatisplus.extension.plugins.inner.PaginationInnerIntercept
 import com.baomidou.mybatisplus.extension.plugins.inner.TenantLineInnerInterceptor;
 import org.dromara.common.core.factory.YmlPropertySourceFactory;
 import org.dromara.common.core.utils.SpringUtils;
+import org.dromara.common.mybatis.aspect.DataPermissionAspect;
 import org.dromara.common.mybatis.handler.InjectionMetaObjectHandler;
 import org.dromara.common.mybatis.handler.MybatisExceptionHandler;
+import org.dromara.common.mybatis.handler.PlusPostInitTableInfoHandler;
 import org.dromara.common.mybatis.interceptor.PlusDataPermissionInterceptor;
 import org.dromara.common.mybatis.service.SysDataScopeService;
 import org.mybatis.spring.annotation.MapperScan;
@@ -55,6 +58,14 @@ public class MybatisPlusConfiguration {
      */
     public PlusDataPermissionInterceptor dataPermissionInterceptor() {
         return new PlusDataPermissionInterceptor(SpringUtils.getProperty("mybatis-plus.mapperPackage"));
+    }
+
+    /**
+     * 数据权限切面处理器
+     */
+    @Bean
+    public DataPermissionAspect dataPermissionAspect() {
+        return new DataPermissionAspect();
     }
 
     /**
@@ -105,6 +116,14 @@ public class MybatisPlusConfiguration {
     @Bean("sdss")
     public SysDataScopeService sysDataScopeService() {
         return new SysDataScopeService();
+    }
+
+    /**
+     * 初始化表对象处理器
+     */
+    @Bean
+    public PostInitTableInfoHandler postInitTableInfoHandler() {
+        return new PlusPostInitTableInfoHandler();
     }
 
     /**

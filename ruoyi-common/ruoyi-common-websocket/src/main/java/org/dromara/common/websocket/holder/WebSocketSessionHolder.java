@@ -2,6 +2,7 @@ package org.dromara.common.websocket.holder;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.WebSocketSession;
 
 import java.util.Map;
@@ -25,6 +26,7 @@ public class WebSocketSessionHolder {
      * @param session    要添加的WebSocket会话
      */
     public static void addSession(Long sessionKey, WebSocketSession session) {
+        removeSession(sessionKey);
         USER_SESSION_MAP.put(sessionKey, session);
     }
 
@@ -34,8 +36,10 @@ public class WebSocketSessionHolder {
      * @param sessionKey 要移除的会话键
      */
     public static void removeSession(Long sessionKey) {
-        if (USER_SESSION_MAP.containsKey(sessionKey)) {
-            USER_SESSION_MAP.remove(sessionKey);
+        WebSocketSession session = USER_SESSION_MAP.remove(sessionKey);
+        try {
+            session.close(CloseStatus.BAD_DATA);
+        } catch (Exception ignored) {
         }
     }
 

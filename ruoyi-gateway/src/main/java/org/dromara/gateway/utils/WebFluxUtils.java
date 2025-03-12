@@ -4,7 +4,7 @@ import cn.hutool.core.util.ObjectUtil;
 import org.dromara.common.core.domain.R;
 import org.dromara.common.core.utils.StringUtils;
 import org.dromara.common.json.utils.JsonUtils;
-import org.dromara.gateway.filter.GlobalCacheRequestFilter;
+import org.dromara.gateway.filter.WebCacheRequestFilter;
 import org.springframework.cloud.gateway.support.ServerWebExchangeUtils;
 import org.springframework.core.io.buffer.DataBuffer;
 import org.springframework.core.io.buffer.DataBufferUtils;
@@ -19,7 +19,6 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.net.URI;
-import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
 import java.nio.charset.StandardCharsets;
 import java.util.LinkedHashSet;
@@ -78,7 +77,7 @@ public class WebFluxUtils {
      * 从缓存中读取request内的body
      *
      * 注意要求经过 {@link ServerWebExchangeUtils#cacheRequestBody(ServerWebExchange, Function)} 此方法创建缓存
-     * 框架内已经使用 {@link GlobalCacheRequestFilter} 全局创建了body缓存
+     * 框架内已经使用 {@link WebCacheRequestFilter} 全局创建了body缓存
      *
      * @return body
      */

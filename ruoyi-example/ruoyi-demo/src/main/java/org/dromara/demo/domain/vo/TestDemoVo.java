@@ -2,9 +2,13 @@ package org.dromara.demo.domain.vo;
 
 import com.alibaba.excel.annotation.ExcelIgnoreUnannotated;
 import com.alibaba.excel.annotation.ExcelProperty;
+import org.dromara.common.excel.annotation.ExcelNotation;
+import org.dromara.common.excel.annotation.ExcelRequired;
+import org.dromara.common.translation.annotation.Translation;
+import org.dromara.common.translation.constant.TransConstant;
+import org.dromara.demo.domain.TestDemo;
 import io.github.linpeilie.annotations.AutoMapper;
 import lombok.Data;
-import org.dromara.demo.domain.TestDemo;
 
 import java.io.Serial;
 import java.io.Serializable;
@@ -34,30 +38,35 @@ public class TestDemoVo implements Serializable {
     /**
      * 部门id
      */
+    @ExcelRequired
     @ExcelProperty(value = "部门id")
     private Long deptId;
 
     /**
      * 用户id
      */
+    @ExcelRequired
     @ExcelProperty(value = "用户id")
     private Long userId;
 
     /**
      * 排序号
      */
+    @ExcelRequired
     @ExcelProperty(value = "排序号")
     private Integer orderNum;
 
     /**
      * key键
      */
+    @ExcelNotation(value = "测试key")
     @ExcelProperty(value = "key键")
     private String testKey;
 
     /**
      * 值
      */
+    @ExcelNotation(value = "测试value")
     @ExcelProperty(value = "值")
     private String value;
 
@@ -71,7 +80,14 @@ public class TestDemoVo implements Serializable {
      * 创建人
      */
     @ExcelProperty(value = "创建人")
-    private String createBy;
+    private Long createBy;
+
+    /**
+     * 创建人账号
+     */
+    @Translation(type = TransConstant.USER_ID_TO_NAME, mapper = "createBy")
+    @ExcelProperty(value = "创建人账号")
+    private String createByName;
 
     /**
      * 更新时间
@@ -83,7 +99,13 @@ public class TestDemoVo implements Serializable {
      * 更新人
      */
     @ExcelProperty(value = "更新人")
-    private String updateBy;
+    private Long updateBy;
 
+    /**
+     * 更新人账号
+     */
+    @Translation(type = TransConstant.USER_ID_TO_NAME, mapper = "updateBy")
+    @ExcelProperty(value = "更新人账号")
+    private String updateByName;
 
 }

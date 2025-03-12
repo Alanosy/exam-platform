@@ -1,5 +1,6 @@
 package org.dromara.demo.controller;
 
+import cn.hutool.core.thread.ThreadUtil;
 import org.dromara.common.core.constant.CacheNames;
 import org.dromara.common.core.domain.R;
 import org.dromara.common.redis.utils.RedisUtils;
@@ -83,11 +84,7 @@ public class RedisCacheController {
         RedisUtils.setCacheObject(key, value);
         boolean flag = RedisUtils.expire(key, Duration.ofSeconds(10));
         System.out.println("***********" + flag);
-        try {
-            Thread.sleep(11 * 1000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+        ThreadUtil.sleep(11 * 1000);
         Object obj = RedisUtils.getCacheObject(key);
         return R.ok(value.equals(obj));
     }

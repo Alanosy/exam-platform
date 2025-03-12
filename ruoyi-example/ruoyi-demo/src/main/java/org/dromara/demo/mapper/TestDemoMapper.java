@@ -34,15 +34,18 @@ public interface TestDemoMapper extends BaseMapperPlus<TestDemo, TestDemoVo> {
         @DataColumn(key = "deptName", value = "dept_id"),
         @DataColumn(key = "userName", value = "user_id")
     })
-    List<TestDemo> selectList(IPage<TestDemo> page, @Param(Constants.WRAPPER) Wrapper<TestDemo> queryWrapper);
-
+    default <P extends IPage<TestDemoVo>> P selectVoPage(IPage<TestDemo> page, Wrapper<TestDemo> wrapper) {
+        return selectVoPage(page, wrapper, this.currentVoClass());
+    }
 
     @Override
     @DataPermission({
         @DataColumn(key = "deptName", value = "dept_id"),
         @DataColumn(key = "userName", value = "user_id")
     })
-    List<TestDemo> selectList(@Param(Constants.WRAPPER) Wrapper<TestDemo> queryWrapper);
+    default List<TestDemoVo> selectVoList(Wrapper<TestDemo> wrapper) {
+        return selectVoList(wrapper, this.currentVoClass());
+    }
 
     @Override
     @DataPermission(value = {

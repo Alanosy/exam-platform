@@ -4,8 +4,6 @@ import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.convert.Convert;
 import cn.hutool.core.lang.Validator;
 import cn.hutool.core.util.StrUtil;
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
 import org.springframework.util.AntPathMatcher;
 
 import java.util.*;
@@ -17,12 +15,15 @@ import java.util.stream.Collectors;
  *
  * @author Lion Li
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class StringUtils extends org.apache.commons.lang3.StringUtils {
 
     public static final String SEPARATOR = ",";
 
     public static final String SLASH = "/";
+
+    @Deprecated
+    private StringUtils() {
+    }
 
     /**
      * 获取参数不为空值
@@ -317,7 +318,25 @@ public class StringUtils extends org.apache.commons.lang3.StringUtils {
             .stream()
             .filter(Objects::nonNull)
             .map(mapper)
+            .filter(Objects::nonNull)
             .collect(Collectors.toList());
+    }
+
+    /**
+     * 不区分大小写检查 CharSequence 是否以指定的前缀开头。
+     *
+     * @param str     要检查的 CharSequence 可能为 null
+     * @param prefixs 要查找的前缀可能为 null
+     * @return 是否包含
+     */
+    public static boolean startWithAnyIgnoreCase(CharSequence str, CharSequence... prefixs) {
+        // 判断是否是以指定字符串开头
+        for (CharSequence prefix : prefixs) {
+            if (StringUtils.startsWithIgnoreCase(str, prefix)) {
+                return true;
+            }
+        }
+        return false;
     }
 
 }

@@ -12,6 +12,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.RequiredArgsConstructor;
 import org.dromara.common.core.constant.CacheNames;
 import org.dromara.common.core.constant.Constants;
+import org.dromara.common.core.constant.SystemConstants;
 import org.dromara.common.core.constant.TenantConstants;
 import org.dromara.common.core.exception.ServiceException;
 import org.dromara.common.core.utils.MapstructUtils;
@@ -175,10 +176,20 @@ public class SysTenantServiceImpl implements ISysTenantService {
         for (SysDictType dictType : dictTypeList) {
             dictType.setDictId(null);
             dictType.setTenantId(tenantId);
+            dictType.setCreateDept(null);
+            dictType.setCreateBy(null);
+            dictType.setCreateTime(null);
+            dictType.setUpdateBy(null);
+            dictType.setUpdateTime(null);
         }
         for (SysDictData dictData : dictDataList) {
             dictData.setDictCode(null);
             dictData.setTenantId(tenantId);
+            dictData.setCreateDept(null);
+            dictData.setCreateBy(null);
+            dictData.setCreateTime(null);
+            dictData.setUpdateBy(null);
+            dictData.setUpdateTime(null);
         }
         dictTypeMapper.insertBatch(dictTypeList);
         dictDataMapper.insertBatch(dictDataList);
@@ -188,6 +199,11 @@ public class SysTenantServiceImpl implements ISysTenantService {
         for (SysConfig config : sysConfigList) {
             config.setConfigId(null);
             config.setTenantId(tenantId);
+            config.setCreateDept(null);
+            config.setCreateBy(null);
+            config.setCreateTime(null);
+            config.setUpdateBy(null);
+            config.setUpdateTime(null);
         }
         configMapper.insertBatch(sysConfigList);
         return true;
@@ -231,7 +247,7 @@ public class SysTenantServiceImpl implements ISysTenantService {
         role.setRoleName(TenantConstants.TENANT_ADMIN_ROLE_NAME);
         role.setRoleKey(TenantConstants.TENANT_ADMIN_ROLE_KEY);
         role.setRoleSort(1);
-        role.setStatus(TenantConstants.NORMAL);
+        role.setStatus(SystemConstants.NORMAL);
         roleMapper.insert(role);
         Long roleId = role.getRoleId();
 
@@ -398,7 +414,7 @@ public class SysTenantServiceImpl implements ISysTenantService {
         // 获取所有租户编号
         List<String> tenantIds = baseMapper.selectObjs(
             new LambdaQueryWrapper<SysTenant>().select(SysTenant::getTenantId)
-                .eq(SysTenant::getStatus, TenantConstants.NORMAL), x -> {return Convert.toStr(x);});
+                .eq(SysTenant::getStatus, SystemConstants.NORMAL), x -> {return Convert.toStr(x);});
         List<SysDictType> saveTypeList = new ArrayList<>();
         List<SysDictData> saveDataList = new ArrayList<>();
         Set<String> set = new HashSet<>();
@@ -420,6 +436,9 @@ public class SysTenantServiceImpl implements ISysTenantService {
                             data.setTenantId(tenantId);
                             data.setCreateTime(null);
                             data.setUpdateTime(null);
+                            data.setCreateDept(null);
+                            data.setCreateBy(null);
+                            data.setUpdateBy(null);
                             set.add(tenantId);
                             saveDataList.add(data);
                         }
@@ -430,6 +449,9 @@ public class SysTenantServiceImpl implements ISysTenantService {
                     type.setTenantId(tenantId);
                     type.setCreateTime(null);
                     type.setUpdateTime(null);
+                    type.setCreateDept(null);
+                    type.setCreateBy(null);
+                    type.setUpdateBy(null);
                     set.add(tenantId);
                     saveTypeList.add(type);
                     if (CollUtil.isNotEmpty(dataList)) {

@@ -36,8 +36,7 @@ public class SysOperLogServiceImpl implements ISysOperLogService {
     public TableDataInfo<SysOperLogVo> selectPageOperLogList(SysOperLogBo operLog, PageQuery pageQuery) {
         LambdaQueryWrapper<SysOperLog> lqw = buildQueryWrapper(operLog);
         if (StringUtils.isBlank(pageQuery.getOrderByColumn())) {
-            pageQuery.setOrderByColumn("oper_id");
-            pageQuery.setIsAsc("desc");
+            lqw.orderByDesc(SysOperLog::getOperId);
         }
         Page<SysOperLogVo> page = baseMapper.selectVoPage(pageQuery.build(), lqw);
         return TableDataInfo.build(page);

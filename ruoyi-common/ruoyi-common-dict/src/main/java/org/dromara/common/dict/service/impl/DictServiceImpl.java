@@ -80,6 +80,12 @@ public class DictServiceImpl implements DictService {
         }
     }
 
+    /**
+     * 获取字典下所有的字典值与标签
+     *
+     * @param dictType 字典类型
+     * @return dictValue为key，dictLabel为值组成的Map
+     */
     @Override
     public Map<String, String> getAllDictByDictType(String dictType) {
         List<RemoteDictDataVo> list = remoteDictService.selectDictDataByType(dictType);

@@ -78,6 +78,7 @@ public class CaffeineCacheDecorator implements Cache {
 
     @Override
     public void clear() {
+        CAFFEINE.invalidateAll();
         cache.clear();
     }
 

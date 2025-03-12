@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import org.dromara.common.core.constant.CacheNames;
 import org.dromara.common.core.exception.ServiceException;
 import org.dromara.common.core.utils.MapstructUtils;
+import org.dromara.common.core.utils.ObjectUtils;
 import org.dromara.common.core.utils.StringUtils;
 import org.dromara.common.mybatis.core.page.PageQuery;
 import org.dromara.common.mybatis.core.page.TableDataInfo;
@@ -144,7 +145,7 @@ public class SysDictDataServiceImpl implements ISysDictDataService {
      */
     @Override
     public boolean checkDictDataUnique(SysDictDataBo dict) {
-        Long dictCode = ObjectUtil.isNull(dict.getDictCode()) ? -1L : dict.getDictCode();
+        Long dictCode = ObjectUtils.notNull(dict.getDictCode(), -1L);
         SysDictData entity = baseMapper.selectOne(new LambdaQueryWrapper<SysDictData>()
             .eq(SysDictData::getDictType, dict.getDictType()).eq(SysDictData::getDictValue, dict.getDictValue()));
         if (ObjectUtil.isNotNull(entity) && !dictCode.equals(entity.getDictCode())) {

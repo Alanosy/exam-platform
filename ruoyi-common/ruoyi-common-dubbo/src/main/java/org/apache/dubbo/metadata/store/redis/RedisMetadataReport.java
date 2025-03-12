@@ -48,6 +48,8 @@ import static org.apache.dubbo.metadata.report.support.Constants.DEFAULT_METADAT
  */
 public class RedisMetadataReport extends AbstractMetadataReport {
 
+    private static final int ONE_DAY_IN_MILLISECONDS = 86400000;
+
     private static final String REDIS_DATABASE_KEY = "database";
     private static final ErrorTypeAwareLogger logger = LoggerFactory.getErrorTypeAwareLogger(RedisMetadataReport.class);
 
@@ -67,7 +69,7 @@ public class RedisMetadataReport extends AbstractMetadataReport {
         this.root = url.getGroup(DEFAULT_ROOT);
         if (url.getParameter(CYCLE_REPORT_KEY, DEFAULT_METADATA_REPORT_CYCLE_REPORT)) {
             // ttl default is twice the cycle-report time
-            jedisParams.ex(ONE_DAY_IN_MILLISECONDS * 2);
+            jedisParams.px(ONE_DAY_IN_MILLISECONDS * 2);
         }
         if (url.getParameter(CLUSTER_KEY, false)) {
             jedisClusterNodes = new HashSet<>();

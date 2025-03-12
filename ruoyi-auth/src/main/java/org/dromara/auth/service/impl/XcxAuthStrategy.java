@@ -4,11 +4,19 @@ import cn.dev33.satoken.stp.SaLoginModel;
 import cn.dev33.satoken.stp.StpUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import me.zhyd.oauth.config.AuthConfig;
+import me.zhyd.oauth.model.AuthCallback;
+import me.zhyd.oauth.model.AuthResponse;
+import me.zhyd.oauth.model.AuthToken;
+import me.zhyd.oauth.model.AuthUser;
+import me.zhyd.oauth.request.AuthRequest;
+import me.zhyd.oauth.request.AuthWechatMiniProgramRequest;
 import org.apache.dubbo.config.annotation.DubboReference;
 import org.dromara.auth.domain.vo.LoginVo;
 import org.dromara.auth.form.XcxLoginBody;
 import org.dromara.auth.service.IAuthStrategy;
 import org.dromara.auth.service.SysLoginService;
+import org.dromara.common.core.exception.ServiceException;
 import org.dromara.common.core.utils.ValidatorUtils;
 import org.dromara.common.json.utils.JsonUtils;
 import org.dromara.common.satoken.utils.LoginHelper;
@@ -41,9 +49,23 @@ public class XcxAuthStrategy implements IAuthStrategy {
         // 多个小程序识别使用
         String appid = loginBody.getAppid();
 
-        // todo 以下自行实现
         // 校验 appid + appsrcret + xcxCode 调用登录凭证校验接口 获取 session_key 与 openid
-        String openid = "";
+        AuthRequest authRequest = new AuthWechatMiniProgramRequest(AuthConfig.builder()
+            .clientId(appid).clientSecret("自行填写密钥 可根据不同appid填入不同密钥")
+            .ignoreCheckRedirectUri(true).ignoreCheckState(true).build());
+        AuthCallback authCallback = new AuthCallback();
+        authCallback.setCode(xcxCode);
+        AuthResponse<AuthUser> resp = authRequest.login(authCallback);
+        String openid, unionId;
+        if (resp.ok()) {
+            AuthToken token = resp.getData().getToken();
+            openid = token.getOpenId();
+            // 微信小程序只有关联到微信开放平台下之后才能获取到 unionId，因此unionId不一定能返回。
+            unionId = token.getUnionId();
+        } else {
+            throw new ServiceException(resp.getMsg());
+        }
+        // todo getUserInfoByOpenid 方法内部查询逻辑需要自行根据业务实现
         XcxLoginUser loginUser = remoteUserService.getUserInfoByOpenid(openid);
         loginUser.setClientKey(client.getClientKey());
         loginUser.setDeviceType(client.getDeviceType());

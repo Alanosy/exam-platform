@@ -48,6 +48,11 @@ public class SysOssVo implements Serializable {
     private String url;
 
     /**
+     * 扩展字段
+     */
+    private String ext1;
+
+    /**
      * 创建时间
      */
     private Date createTime;

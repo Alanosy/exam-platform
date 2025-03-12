@@ -3,6 +3,8 @@ package org.dromara.resource.api;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+import java.util.List;
+
 /**
  * 消息服务
  *
@@ -21,7 +23,7 @@ public class RemoteMessageServiceStub implements RemoteMessageService {
      * @param message    消息文本
      */
     @Override
-    public void publishMessage(Long sessionKey, String message) {
+    public void publishMessage(List<Long> sessionKey, String message) {
         try {
             remoteMessageService.publishMessage(sessionKey, message);
         } catch (Exception e) {

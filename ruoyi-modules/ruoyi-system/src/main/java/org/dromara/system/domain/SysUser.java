@@ -4,7 +4,7 @@ import com.baomidou.mybatisplus.annotation.*;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
-import org.dromara.common.core.constant.UserConstants;
+import org.dromara.common.core.constant.SystemConstants;
 import org.dromara.common.tenant.core.TenantEntity;
 
 import java.util.Date;
@@ -109,7 +109,7 @@ public class SysUser extends TenantEntity {
     }
 
     public boolean isSuperAdmin() {
-        return UserConstants.SUPER_ADMIN_ID.equals(this.userId);
+        return SystemConstants.SUPER_ADMIN_ID.equals(this.userId);
     }
 
 }

@@ -1,11 +1,11 @@
 package org.dromara.common.encrypt.core;
 
 import cn.hutool.core.collection.CollUtil;
-import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.ReflectUtil;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.ibatis.io.Resources;
+import org.dromara.common.core.utils.ObjectUtils;
 import org.dromara.common.core.utils.StringUtils;
 import org.dromara.common.encrypt.annotation.EncryptField;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -58,10 +58,7 @@ public class EncryptorManager {
      * 获取类加密字段缓存
      */
     public Set<Field> getFieldCache(Class<?> sourceClazz) {
-        if (ObjectUtil.isNotNull(fieldCache)) {
-            return fieldCache.get(sourceClazz);
-        }
-        return null;
+        return ObjectUtils.notNullGetter(fieldCache, f -> f.get(sourceClazz));
     }
 
     /**

@@ -36,7 +36,7 @@ import javax.servlet.http.HttpServletRequest;
 @RequestMapping("/v2/console/health")
 @ExtractorManager.Extractor(httpExtractor = ConsoleDefaultHttpParamExtractor.class)
 public class HealthControllerV2 {
-
+    
     /**
      * Whether the Nacos is in broken states or not, and cannot recover except by being restarted.
      *
@@ -47,7 +47,7 @@ public class HealthControllerV2 {
     public Result<String> liveness() {
         return Result.success("ok");
     }
-
+    
     /**
      * Ready to receive the request or not.
      *
@@ -62,5 +62,5 @@ public class HealthControllerV2 {
         }
         return Result.failure(result.getResultMessage());
     }
-
+    
 }

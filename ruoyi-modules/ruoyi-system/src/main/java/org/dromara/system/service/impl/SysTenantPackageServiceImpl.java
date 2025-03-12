@@ -6,7 +6,7 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.RequiredArgsConstructor;
-import org.dromara.common.core.constant.TenantConstants;
+import org.dromara.common.core.constant.SystemConstants;
 import org.dromara.common.core.exception.ServiceException;
 import org.dromara.common.core.utils.MapstructUtils;
 import org.dromara.common.core.utils.StringUtils;
@@ -59,7 +59,7 @@ public class SysTenantPackageServiceImpl implements ISysTenantPackageService {
     @Override
     public List<SysTenantPackageVo> selectList() {
         return baseMapper.selectVoList(new LambdaQueryWrapper<SysTenantPackage>()
-                .eq(SysTenantPackage::getStatus, TenantConstants.NORMAL));
+                .eq(SysTenantPackage::getStatus, SystemConstants.NORMAL));
     }
 
     /**

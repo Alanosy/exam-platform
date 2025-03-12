@@ -6,22 +6,24 @@
 
 [![码云Gitee](https://gitee.com/dromara/RuoYi-Cloud-Plus/badge/star.svg?theme=blue)](https://gitee.com/dromara/RuoYi-Cloud-Plus)
 [![GitHub](https://img.shields.io/github/stars/dromara/RuoYi-Cloud-Plus.svg?style=social&label=Stars)](https://github.com/dromara/RuoYi-Cloud-Plus)
+[![Star](https://gitcode.com/dromara/RuoYi-Cloud-Plus/star/badge.svg)](https://gitcode.com/dromara/RuoYi-Cloud-Plus)
 [![License](https://img.shields.io/badge/License-MIT-blue.svg)](https://gitee.com/dromara/RuoYi-Cloud-Plus/blob/master/LICENSE)
 [![使用IntelliJ IDEA开发维护](https://img.shields.io/badge/IntelliJ%20IDEA-提供支持-blue.svg)](https://www.jetbrains.com/?from=RuoYi-Cloud-Plus)
 <br>
-[![RuoYi-Cloud-Plus](https://img.shields.io/badge/RuoYi_Cloud_Plus-2.2.2-success.svg)](https://gitee.com/dromara/RuoYi-Cloud-Plus)
-[![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.1-blue.svg)]()
+[![RuoYi-Cloud-Plus](https://img.shields.io/badge/RuoYi_Cloud_Plus-2.3.0--BETA-success.svg)](https://gitee.com/dromara/RuoYi-Cloud-Plus)
+[![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.3-blue.svg)]()
 [![JDK-17](https://img.shields.io/badge/JDK-17-green.svg)]()
 [![JDK-21](https://img.shields.io/badge/JDK-21-green.svg)]()
 
-> RuoYi-Cloud-Plus `微服务通用权限管理系统` 重写 RuoYi-Cloud 全方位升级(不兼容原框架)
+> Dromara RuoYi-Cloud-Plus `微服务通用权限管理系统` 重写 RuoYi-Cloud 全方位升级(不兼容原框架)
 
 > 项目代码、文档 均开源免费可商用 遵循开源协议在项目中保留开源协议文件即可<br>
 活到老写到老 为兴趣而开源 为学习而开源 为让大家真正可以学到技术而开源
 
 > 系统演示: [传送门](https://plus-doc.dromara.org/#/common/demo_system)
 
-> 前端项目地址: [plus-ui](https://gitee.com/JavaLionLi/plus-ui)
+> 官方前端项目地址: [plus-ui](https://gitee.com/JavaLionLi/plus-ui)<br>
+> 成员前端项目地址: 基于vben5 [ruoyi-plus-vben5](https://gitee.com/dapppp/ruoyi-plus-vben5)
 
 > 文档地址: [plus-doc](https://plus-doc.dromara.org)
 
@@ -31,6 +33,7 @@ MaxKey 业界领先单点登录产品 - https://gitee.com/dromara/MaxKey <br>
 CCFlow 驰聘低代码-流程-表单 - https://gitee.com/opencc/RuoYi-JFlow <br>
 数舵科技 软件定制开发APP小程序等 - http://www.shuduokeji.com/ <br>
 引迈信息 软件开发平台 - https://www.jnpfsoft.com/index.html?from=plus-doc <br>
+<font color="red">**启山商城系统 多租户商城源码可免费商用可二次开发 - https://www.73app.cn/** </font><br>
 [如何成为赞助商 加群联系作者详谈](https://plus-doc.dromara.org/#/common/add_group)
 
 # 本框架与RuoYi的功能差异
@@ -175,8 +178,8 @@ CCFlow 驰聘低代码-流程-表单 - https://gitee.com/opencc/RuoYi-JFlow <br>
 | ![输入图片说明](https://foruda.gitee.com/images/1680078779416197879/75e3ed02_1766278.png "屏幕截图") | ![输入图片说明](https://foruda.gitee.com/images/1680078802329118061/77e10915_1766278.png "屏幕截图") |
 | ![输入图片说明](https://foruda.gitee.com/images/1680078893627848351/34a1c342_1766278.png "屏幕截图") | ![输入图片说明](https://foruda.gitee.com/images/1680078928175016986/f126ec4a_1766278.png "屏幕截图") |
 | ![输入图片说明](https://foruda.gitee.com/images/1680078941718318363/b68a0f72_1766278.png "屏幕截图") | ![输入图片说明](https://foruda.gitee.com/images/1680078963175518631/3bb769a1_1766278.png "屏幕截图") |
-| ![输入图片说明](https://foruda.gitee.com/images/1680078982294090567/b31c343d_1766278.png "屏幕截图") | ![输入图片说明](https://foruda.gitee.com/images/1680079000642440444/77ca82a9_1766278.png "屏幕截图") |
-| ![输入图片说明](https://foruda.gitee.com/images/1680079020995074177/03b7d52e_1766278.png "屏幕截图") | ![输入图片说明](https://foruda.gitee.com/images/1680079039367822173/76811806_1766278.png "屏幕截图") |
+| ![输入图片说明](https://foruda.gitee.com/images/1735829153637063344/3c21fd4c_1419627.png "屏幕截图") | ![输入图片说明](https://foruda.gitee.com/images/1735829181303499815/4522cefa_1419627.png "屏幕截图") |
+| ![输入图片说明](https://foruda.gitee.com/images/1735829377205259767/76a705d7_1419627.png "屏幕截图") | ![输入图片说明](https://foruda.gitee.com/images/1722959592856812900/e2d0d342_1419627.png "屏幕截图") |
 | ![输入图片说明](https://foruda.gitee.com/images/1680079274333484664/4dfdc7c0_1766278.png "屏幕截图") | ![输入图片说明](https://foruda.gitee.com/images/1680079290467458224/d6715fcf_1766278.png "屏幕截图") |
 
 

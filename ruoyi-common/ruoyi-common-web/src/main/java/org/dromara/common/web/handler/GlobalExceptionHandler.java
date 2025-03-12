@@ -63,7 +63,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(SseException.class)
     public String handleNotLoginException(SseException e, HttpServletRequest request) {
         String requestURI = request.getRequestURI();
-        log.error("请求地址'{}',认证失败'{}',无法访问系统资源", requestURI, e.getMessage());
+        log.debug("请求地址'{}',认证失败'{}',无法访问系统资源", requestURI, e.getMessage());
         return JsonUtils.toJsonString(R.fail(HttpStatus.HTTP_UNAUTHORIZED, "认证失败，无法访问系统资源"));
     }
 

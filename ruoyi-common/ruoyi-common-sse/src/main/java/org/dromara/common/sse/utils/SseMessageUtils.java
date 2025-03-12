@@ -16,7 +16,14 @@ import org.dromara.common.sse.dto.SseMessageDto;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class SseMessageUtils {
 
-    private final static SseEmitterManager MANAGER = SpringUtils.getBean(SseEmitterManager.class);
+    private final static Boolean SSE_ENABLE = SpringUtils.getProperty("sse.enabled", Boolean.class, true);
+    private static SseEmitterManager MANAGER;
+
+    static {
+        if (isEnable() && MANAGER == null) {
+            MANAGER = SpringUtils.getBean(SseEmitterManager.class);
+        }
+    }
 
     /**
      * 向指定的WebSocket会话发送消息
@@ -25,6 +32,9 @@ public class SseMessageUtils {
      * @param message 要发送的消息内容
      */
     public static void sendMessage(Long userId, String message) {
+        if (!isEnable()) {
+            return;
+        }
         MANAGER.sendMessage(userId, message);
     }
 
@@ -34,6 +44,9 @@ public class SseMessageUtils {
      * @param message 要发送的消息内容
      */
     public static void sendMessage(String message) {
+        if (!isEnable()) {
+            return;
+        }
         MANAGER.sendMessage(message);
     }
 
@@ -43,6 +56,9 @@ public class SseMessageUtils {
      * @param sseMessageDto 要发布的SSE消息对象
      */
     public static void publishMessage(SseMessageDto sseMessageDto) {
+        if (!isEnable()) {
+            return;
+        }
         MANAGER.publishMessage(sseMessageDto);
     }
 
@@ -52,7 +68,17 @@ public class SseMessageUtils {
      * @param message 要发布的消息内容
      */
     public static void publishAll(String message) {
+        if (!isEnable()) {
+            return;
+        }
         MANAGER.publishAll(message);
+    }
+
+    /**
+     * 是否开启
+     */
+    public static Boolean isEnable() {
+        return SSE_ENABLE;
     }
 
 }

@@ -4,6 +4,7 @@ import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.ObjectUtil;
 import com.baomidou.mybatisplus.core.metadata.OrderItem;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.dromara.common.core.exception.ServiceException;
@@ -115,8 +116,14 @@ public class PageQuery implements Serializable {
         return list;
     }
 
+    @JsonIgnore
     public Integer getFirstNum() {
         return (pageNum - 1) * pageSize;
+    }
+
+    public PageQuery(Integer pageSize, Integer pageNum) {
+        this.pageSize = pageSize;
+        this.pageNum = pageNum;
     }
 
 }

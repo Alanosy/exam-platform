@@ -9,7 +9,7 @@ import cn.hutool.core.util.ObjectUtil;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.dromara.common.core.constant.TenantConstants;
-import org.dromara.common.core.constant.UserConstants;
+import org.dromara.common.core.constant.SystemConstants;
 import org.dromara.common.core.enums.UserType;
 import org.dromara.system.api.model.LoginUser;
 
@@ -62,23 +62,25 @@ public class LoginHelper {
     /**
      * 获取用户(多级缓存)
      */
-    public static LoginUser getLoginUser() {
+    @SuppressWarnings("unchecked cast")
+    public static <T extends LoginUser> T getLoginUser() {
         SaSession session = StpUtil.getTokenSession();
         if (ObjectUtil.isNull(session)) {
             return null;
         }
-        return (LoginUser) session.get(LOGIN_USER_KEY);
+        return (T) session.get(LOGIN_USER_KEY);
     }
 
     /**
      * 获取用户基于token
      */
-    public static LoginUser getLoginUser(String token) {
+    @SuppressWarnings("unchecked cast")
+    public static <T extends LoginUser> T getLoginUser(String token) {
         SaSession session = StpUtil.getTokenSessionByToken(token);
         if (ObjectUtil.isNull(session)) {
             return null;
         }
-        return (LoginUser) session.get(LOGIN_USER_KEY);
+        return (T) session.get(LOGIN_USER_KEY);
     }
 
     /**
@@ -86,6 +88,13 @@ public class LoginHelper {
      */
     public static Long getUserId() {
         return Convert.toLong(getExtra(USER_KEY));
+    }
+
+    /**
+     * 获取用户id
+     */
+    public static String getUserIdStr() {
+        return Convert.toStr(getExtra(USER_KEY));
     }
 
     /**
@@ -153,7 +162,7 @@ public class LoginHelper {
      * @return 结果
      */
     public static boolean isSuperAdmin(Long userId) {
-        return UserConstants.SUPER_ADMIN_ID.equals(userId);
+        return SystemConstants.SUPER_ADMIN_ID.equals(userId);
     }
 
     /**
@@ -184,7 +193,11 @@ public class LoginHelper {
      * @return 结果
      */
     public static boolean isTenantAdmin() {
-        return Convert.toBool(isTenantAdmin(getLoginUser().getRolePermission()));
+        LoginUser loginUser = getLoginUser();
+        if (loginUser == null) {
+            return false;
+        }
+        return Convert.toBool(isTenantAdmin(loginUser.getRolePermission()));
     }
 
     /**

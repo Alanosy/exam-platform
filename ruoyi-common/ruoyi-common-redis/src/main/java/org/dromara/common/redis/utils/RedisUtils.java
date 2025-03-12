@@ -4,6 +4,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.dromara.common.core.utils.SpringUtils;
 import org.redisson.api.*;
+import org.redisson.api.options.KeysScanOptions;
 
 import java.time.Duration;
 import java.util.Collection;
@@ -36,8 +37,22 @@ public class RedisUtils {
      * @return -1 表示失败
      */
     public static long rateLimiter(String key, RateType rateType, int rate, int rateInterval) {
+        return rateLimiter(key, rateType, rate, rateInterval, 0);
+    }
+
+    /**
+     * 限流
+     *
+     * @param key          限流key
+     * @param rateType     限流类型
+     * @param rate         速率
+     * @param rateInterval 速率间隔
+     * @param timeout      超时时间
+     * @return -1 表示失败
+     */
+    public static long rateLimiter(String key, RateType rateType, int rate, int rateInterval, int timeout) {
         RRateLimiter rateLimiter = CLIENT.getRateLimiter(key);
-        rateLimiter.trySetRate(rateType, rate, rateInterval, RateIntervalUnit.SECONDS);
+        rateLimiter.trySetRate(rateType, rate, Duration.ofSeconds(rateInterval), Duration.ofSeconds(timeout));
         if (rateLimiter.tryAcquire()) {
             return rateLimiter.availablePermits();
         } else {
@@ -518,13 +533,34 @@ public class RedisUtils {
 
     /**
      * 获得缓存的基本对象列表(全局匹配忽略租户 自行拼接租户id)
-     *
+     * <P>
+     * limit-设置扫描的限制数量(默认为0,查询全部)
+     * pattern-设置键的匹配模式(默认为null)
+     * chunkSize-设置每次扫描的块大小(默认为0,本方法设置为1000)
+     * type-设置键的类型(默认为null,查询全部类型)
+     * </P>
+     * @see KeysScanOptions
      * @param pattern 字符串前缀
      * @return 对象列表
      */
     public static Collection<String> keys(final String pattern) {
-        Stream<String> stream = CLIENT.getKeys().getKeysStreamByPattern(pattern);
-        return stream.collect(Collectors.toList());
+        return  keys(KeysScanOptions.defaults().pattern(pattern).chunkSize(1000));
+    }
+
+    /**
+     * 通过扫描参数获取缓存的基本对象列表
+     * @param keysScanOptions 扫描参数
+     * <P>
+     * limit-设置扫描的限制数量(默认为0,查询全部)
+     * pattern-设置键的匹配模式(默认为null)
+     * chunkSize-设置每次扫描的块大小(默认为0)
+     * type-设置键的类型(默认为null,查询全部类型)
+     * </P>
+     * @see KeysScanOptions
+     */
+    public static Collection<String> keys(final KeysScanOptions keysScanOptions) {
+        Stream<String> keysStream = CLIENT.getKeys().getKeysStream(keysScanOptions);
+        return keysStream.collect(Collectors.toList());
     }
 
     /**
