@@ -11,7 +11,7 @@
  Target Server Version : 50744 (5.7.44)
  File Encoding         : 65001
 
- Date: 12/03/2025 21:45:19
+ Date: 13/03/2025 20:51:55
 */
 
 SET NAMES utf8mb4;
@@ -312,7 +312,7 @@ CREATE TABLE `t_option` (
   `sort` int(11) DEFAULT NULL COMMENT '排序',
   `is_deleted` int(11) NOT NULL DEFAULT '0' COMMENT '逻辑删除：0代表未删除，1代表删除',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=2612 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin ROW_FORMAT=DYNAMIC;
+) ENGINE=InnoDB AUTO_INCREMENT=2620 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin ROW_FORMAT=DYNAMIC;
 
 -- ----------------------------
 -- Records of t_option
@@ -339,7 +339,7 @@ CREATE TABLE `t_question` (
   `user_id` int(11) DEFAULT NULL COMMENT '用户id',
   `is_deleted` int(11) NOT NULL DEFAULT '0' COMMENT '逻辑删除：0代表未删除，1代表删除',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=703 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin ROW_FORMAT=DYNAMIC;
+) ENGINE=InnoDB AUTO_INCREMENT=706 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin ROW_FORMAT=DYNAMIC;
 
 -- ----------------------------
 -- Records of t_question
@@ -358,14 +358,15 @@ CREATE TABLE `t_repo` (
   `title` varchar(255) COLLATE utf8mb4_bin NOT NULL COMMENT '题库标题',
   `create_time` datetime DEFAULT NULL COMMENT '创建时间',
   `is_deleted` int(11) NOT NULL DEFAULT '0' COMMENT '逻辑删除：0代表未删除，1代表删除',
+  `is_exercise` int(11) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=75 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin ROW_FORMAT=DYNAMIC;
+) ENGINE=InnoDB AUTO_INCREMENT=88 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin ROW_FORMAT=DYNAMIC;
 
 -- ----------------------------
 -- Records of t_repo
 -- ----------------------------
 BEGIN;
-INSERT INTO `t_repo` (`id`, `user_id`, `title`, `create_time`, `is_deleted`) VALUES (74, 148, '语文题库', '2025-03-12 21:39:37', 0);
+INSERT INTO `t_repo` (`id`, `user_id`, `title`, `create_time`, `is_deleted`, `is_exercise`) VALUES (74, 148, '语文题库', '2025-03-12 21:39:37', 0, 0);
 COMMIT;
 
 -- ----------------------------

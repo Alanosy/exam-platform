@@ -16,6 +16,7 @@ public class RepoVO {
     private Integer id;
     private Integer userId;
     private String title;
+    private Integer isExercise;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime createTime;
     private String realName;

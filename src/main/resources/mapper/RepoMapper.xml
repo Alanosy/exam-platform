@@ -9,7 +9,7 @@
     </delete>
 
     <select id="pagingRepo" resultType="cn.org.alan.exam.model.vo.repo.RepoVO">
-        select r.id,u.real_name,r.title,r.create_time from t_repo r join t_user u on r.user_id = u.id
+        select r.id,u.real_name,r.title,r.create_time,r.is_exercise as isExercise from t_repo r join t_user u on r.user_id = u.id
         <trim prefix="where" prefixOverrides=" and ">
 
             r.is_deleted = 0
@@ -27,12 +27,11 @@
         select r.id,r.title as repoTitle,count(q.id) as totalCount from t_repo as r
         join t_question as q on q.repo_id = r.id
         <trim prefix="where" prefixOverrides="and">
+            r.is_deleted = 0 and r.is_exercise=1
             <if test='title != null and title != ""'>
-                r.title like concat('%',#{title},'%')
+               and r.title like concat('%',#{title},'%')
             </if>
-            <if test='true'>
-                r.is_deleted = 0
-            </if>
+
         </trim>
         group by r.id
     </select>

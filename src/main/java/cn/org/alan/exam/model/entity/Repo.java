@@ -40,6 +40,11 @@ public class Repo implements Serializable {
     private String title;
 
     /**
+     * 是否可以刷题
+     */
+    private Integer isExercise;
+
+    /**
      * 创建时间
      */
     @TableField(fill = FieldFill.INSERT)
@@ -56,6 +61,14 @@ public class Repo implements Serializable {
 
     public void setIsDeleted(Integer isDeleted) {
         this.isDeleted = isDeleted;
+    }
+
+    public Integer getIsExercise() {
+        return isExercise;
+    }
+
+    public void setIsExercise(Integer isExercise) {
+        this.isExercise = isExercise;
     }
 
     public Integer getId() {
