@@ -19,7 +19,7 @@ export default (viteEnv: any, isBuild = false): [] => {
   vitePlugins.push(createComponents(path));
   vitePlugins.push(createCompression(viteEnv));
   vitePlugins.push(createIcons());
-  vitePlugins.push(createSvgIconsPlugin(path, isBuild));
+  vitePlugins.push(createSvgIconsPlugin(path));
   vitePlugins.push(createSetupExtend());
   return vitePlugins;
 };
