@@ -26,7 +26,7 @@ public class SseMessageUtils {
     }
 
     /**
-     * 向指定的WebSocket会话发送消息
+     * 向指定的SSE会话发送消息
      *
      * @param userId  要发送消息的用户id
      * @param message 要发送的消息内容
