@@ -25,7 +25,7 @@
 
 <script setup lang="ts" name="layoutBreadcrumbUserNews">
 import { storeToRefs } from 'pinia';
-import useNoticeStore from '@/store/modules/notice';
+import { useNoticeStore } from '@/store/modules/notice';
 
 const noticeStore = storeToRefs(useNoticeStore());
 const { readAll } = useNoticeStore();
@@ -65,7 +65,7 @@ onMounted(() => {
 });
 </script>
 
-<style scoped lang="scss">
+<style lang="scss" scoped>
 .layout-navbars-breadcrumb-user-news {
   .head-box {
     display: flex;

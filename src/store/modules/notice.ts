@@ -1,4 +1,5 @@
 import { defineStore } from 'pinia';
+import { reactive } from 'vue';
 
 interface NoticeItem {
   title?: string;
@@ -38,5 +39,3 @@ export const useNoticeStore = defineStore('notice', () => {
     clearNotice
   };
 });
-
-export default useNoticeStore;

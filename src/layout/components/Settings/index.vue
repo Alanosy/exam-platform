@@ -89,9 +89,9 @@
 
 <script setup lang="ts">
 import { useDynamicTitle } from '@/utils/dynamicTitle';
-import useAppStore from '@/store/modules/app';
-import useSettingsStore from '@/store/modules/settings';
-import usePermissionStore from '@/store/modules/permission';
+import { useAppStore } from '@/store/modules/app';
+import { useSettingsStore } from '@/store/modules/settings';
+import { usePermissionStore } from '@/store/modules/permission';
 import { handleThemeStyle } from '@/utils/theme';
 import { SideThemeEnum } from '@/enums/SideThemeEnum';
 import defaultSettings from '@/settings';

@@ -1,4 +1,4 @@
-import useUserStore from '@/store/modules/user';
+import { useUserStore } from '@/store/modules/user';
 
 const authPermission = (permission: string): boolean => {
   const all_permission = '*:*:*';

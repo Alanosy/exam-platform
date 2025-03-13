@@ -10,7 +10,7 @@
             class="mt-2"
             node-key="id"
             :data="categoryOptions"
-            :props="{ label: 'label', children: 'children' }"
+            :props="{ label: 'label', children: 'children' } as any"
             :expand-on-click-node="false"
             :filter-node-method="filterNode"
             highlight-current
@@ -174,7 +174,7 @@
   </div>
 </template>
 
-<script lang="ts" setup>
+<script setup lang="ts">
 import { pageByRunning, pageByFinish, deleteByInstanceIds, instanceVariable, invalid } from '@/api/workflow/instance';
 import { categoryTree } from '@/api/workflow/category';
 import { CategoryTreeVO } from '@/api/workflow/category/types';

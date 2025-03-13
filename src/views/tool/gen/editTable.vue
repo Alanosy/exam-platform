@@ -89,7 +89,7 @@
           </el-table-column>
           <el-table-column label="字典类型" min-width="12%">
             <template #default="scope">
-              <el-select v-model="scope.row.dictType" clearable filterable placeholder="请选择">
+              <el-select v-model="scope.row.dictType" clearable filterable placeholder="请选择" value-on-clear="">
                 <el-option v-for="dict in dictOptions" :key="dict.dictType" :label="dict.dictName" :value="dict.dictType">
                   <span style="float: left">{{ dict.dictName }}</span>
                   <span style="float: right; color: #8492a6; font-size: 13px">{{ dict.dictType }}</span>

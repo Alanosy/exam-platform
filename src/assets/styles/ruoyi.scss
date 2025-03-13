@@ -1,3 +1,5 @@
+@use './variables.module.scss' as *;
+
 /**
  * 通用css样式布局处理
  * Copyright (c) 2019 ruoyi
@@ -114,10 +116,9 @@ h6 {
 
 /** 表格布局 **/
 .pagination-container {
-  // position: relative;
-  height: 25px;
-  margin-bottom: 10px;
-  margin-top: 15px;
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 20px;
   padding: 10px 20px !important;
 }
 
@@ -128,11 +129,6 @@ h6 {
   background: #ffffff none;
   border-radius: 4px;
   width: 100%;
-}
-
-.pagination-container .el-pagination {
-  //right: 0;
-  //position: absolute;
 }
 
 @media (max-width: 768px) {
@@ -201,8 +197,6 @@ h6 {
 }
 
 .card-box {
-  padding-right: 15px;
-  padding-left: 15px;
   margin-bottom: 10px;
 }
 

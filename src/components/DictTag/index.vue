@@ -87,7 +87,7 @@ const handleArray = (array: Array<string | number>) => {
 };
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
 .el-tag + .el-tag {
   margin-left: 10px;
 }

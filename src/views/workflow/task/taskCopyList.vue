@@ -59,7 +59,7 @@
   </div>
 </template>
 
-<script lang="ts" setup>
+<script setup lang="ts">
 import { pageByTaskCopy } from '@/api/workflow/task';
 import { TaskQuery } from '@/api/workflow/task/types';
 import workflowCommon from '@/api/workflow/workflowCommon';

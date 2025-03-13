@@ -1,12 +1,12 @@
 <template>
   <section class="app-main">
     <router-view v-slot="{ Component, route }">
-      <transition v-if="!route.meta.noCache" :enter-active-class="animante" mode="out-in">
+      <transition v-if="!route.meta.noCache" :enter-active-class="animate" mode="out-in">
         <keep-alive v-if="!route.meta.noCache" :include="tagsViewStore.cachedViews">
           <component :is="Component" v-if="!route.meta.link" :key="route.path" />
         </keep-alive>
       </transition>
-      <transition v-if="route.meta.noCache" :enter-active-class="animante" mode="out-in">
+      <transition v-if="route.meta.noCache" :enter-active-class="animate" mode="out-in">
         <component :is="Component" v-if="!route.meta.link && route.meta.noCache" :key="route.path" />
       </transition>
     </router-view>
@@ -15,8 +15,8 @@
 </template>
 
 <script setup name="AppMain" lang="ts">
-import useSettingsStore from '@/store/modules/settings';
-import useTagsViewStore from '@/store/modules/tagsView';
+import { useSettingsStore } from '@/store/modules/settings';
+import { useTagsViewStore } from '@/store/modules/tagsView';
 
 import IframeToggle from './IframeToggle/index.vue';
 const { proxy } = getCurrentInstance() as ComponentInternalInstance;
@@ -24,16 +24,16 @@ const route = useRoute();
 const tagsViewStore = useTagsViewStore();
 
 // 随机动画集合
-const animante = ref<string>('');
+const animate = ref<string>('');
 const animationEnable = ref(useSettingsStore().animationEnable);
 watch(
   () => useSettingsStore().animationEnable,
   (val: boolean) => {
     animationEnable.value = val;
     if (val) {
-      animante.value = proxy?.animate.animateList[Math.round(Math.random() * proxy?.animate.animateList.length)] as string;
+      animate.value = proxy?.animate.animateList[Math.round(Math.random() * proxy?.animate.animateList.length)] as string;
     } else {
-      animante.value = proxy?.animate.defaultAnimate as string;
+      animate.value = proxy?.animate.defaultAnimate as string;
     }
   },
   { immediate: true }

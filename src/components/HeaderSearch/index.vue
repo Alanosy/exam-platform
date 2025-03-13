@@ -21,7 +21,7 @@
 import Fuse from 'fuse.js';
 import { getNormalPath } from '@/utils/ruoyi';
 import { isHttp } from '@/utils/validate';
-import usePermissionStore from '@/store/modules/permission';
+import { usePermissionStore } from '@/store/modules/permission';
 import { RouteRecordRaw } from 'vue-router';
 
 type Router = Array<{
@@ -36,7 +36,7 @@ const show = ref(false);
 const fuse = ref();
 const headerSearchSelectRef = ref<ElSelectInstance>();
 const router = useRouter();
-const routes = computed(() => usePermissionStore().getRoutes());
+const routes = computed(() => usePermissionStore().getDefaultRoutes());
 
 const click = () => {
   show.value = !show.value;

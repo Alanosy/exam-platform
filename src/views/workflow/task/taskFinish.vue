@@ -80,7 +80,7 @@
   </div>
 </template>
 
-<script lang="ts" setup>
+<script setup lang="ts">
 import { pageByTaskFinish } from '@/api/workflow/task';
 import { TaskQuery, FlowTaskVO } from '@/api/workflow/task/types';
 import workflowCommon from '@/api/workflow/workflowCommon';

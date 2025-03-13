@@ -11,11 +11,22 @@
       <el-form-item v-if="task.flowStatus === 'waiting'" label="附件">
         <fileUpload v-model="form.fileId" :file-type="['png', 'jpg', 'jpeg', 'doc', 'docx', 'xlsx', 'xls', 'ppt', 'txt', 'pdf']" :file-size="20" />
       </el-form-item>
-      <el-form-item label="抄送">
+      <el-form-item label="抄送" v-if="task.flowStatus === 'waiting' && buttonObj.copy">
         <el-button type="primary" icon="Plus" circle @click="openUserSelectCopy" />
         <el-tag v-for="user in selectCopyUserList" :key="user.userId" closable style="margin: 2px" @close="handleCopyCloseTag(user)">
           {{ user.nickName }}
         </el-tag>
+      </el-form-item>
+      <el-form-item v-if="buttonObj.pop && nestNodeList && nestNodeList.length > 0" label="下一步审批人" prop="assigneeMap">
+        <div v-for="(item, index) in nestNodeList" :key="index" style="margin-bottom: 5px; width: 500px">
+          <span>【{{ item.nodeName }}】：</span>
+          <el-input v-if="false" v-model="form.assigneeMap[item.nodeCode]" />
+          <el-input placeholder="请选择审批人" readonly v-model="nickName[item.nodeCode]">
+            <template v-slot:append>
+              <el-button @click="choosePeople(item)" icon="search">选择</el-button>
+            </template>
+          </el-input>
+        </div>
       </el-form-item>
       <el-form-item v-if="task.flowStatus === 'waiting'" label="审批意见">
         <el-input v-model="form.message" type="textarea" resize="none" />
@@ -24,10 +35,14 @@
     <template #footer>
       <span class="dialog-footer">
         <el-button :disabled="buttonDisabled" type="primary" @click="handleCompleteTask"> 提交 </el-button>
-        <el-button v-if="task.flowStatus === 'waiting'" :disabled="buttonDisabled" type="primary" @click="openDelegateTask"> 委托 </el-button>
-        <el-button v-if="task.flowStatus === 'waiting'" :disabled="buttonDisabled" type="primary" @click="openTransferTask"> 转办 </el-button>
+        <el-button v-if="task.flowStatus === 'waiting' && buttonObj.trust" :disabled="buttonDisabled" type="primary" @click="openDelegateTask">
+          委托
+        </el-button>
+        <el-button v-if="task.flowStatus === 'waiting' && buttonObj.transfer" :disabled="buttonDisabled" type="primary" @click="openTransferTask">
+          转办
+        </el-button>
         <el-button
-          v-if="task.flowStatus === 'waiting' && Number(task.nodeRatio) > 0"
+          v-if="task.flowStatus === 'waiting' && Number(task.nodeRatio) > 0 && buttonObj.addSign"
           :disabled="buttonDisabled"
           type="primary"
           @click="openMultiInstanceUser"
@@ -35,15 +50,24 @@
           加签
         </el-button>
         <el-button
-          v-if="task.flowStatus === 'waiting' && Number(task.nodeRatio) > 0"
+          v-if="task.flowStatus === 'waiting' && Number(task.nodeRatio) > 0 && buttonObj.subSign"
           :disabled="buttonDisabled"
           type="primary"
           @click="handleTaskUser"
         >
           减签
         </el-button>
-        <el-button v-if="task.flowStatus === 'waiting'" :disabled="buttonDisabled" type="danger" @click="handleTerminationTask"> 终止 </el-button>
-        <el-button v-if="task.flowStatus === 'waiting'" :disabled="buttonDisabled" type="danger" @click="handleBackProcessOpen"> 退回 </el-button>
+        <el-button
+          v-if="task.flowStatus === 'waiting' && buttonObj.termination"
+          :disabled="buttonDisabled"
+          type="danger"
+          @click="handleTerminationTask"
+        >
+          终止
+        </el-button>
+        <el-button v-if="task.flowStatus === 'waiting' && buttonObj.back" :disabled="buttonDisabled" type="danger" @click="handleBackProcessOpen">
+          退回
+        </el-button>
         <el-button :disabled="buttonDisabled" @click="cancel">取消</el-button>
       </span>
     </template>
@@ -55,6 +79,8 @@
     <UserSelect ref="delegateTaskRef" :multiple="false" @confirm-call-back="handleDelegateTask"></UserSelect>
     <!-- 加签组件 -->
     <UserSelect ref="multiInstanceUserRef" :multiple="true" @confirm-call-back="addMultiInstanceUser"></UserSelect>
+    <!-- 弹窗选人 -->
+    <UserSelect ref="porUserRef" :multiple="true" :userIds="popUserIds" @confirm-call-back="handlePopUser"></UserSelect>
 
     <!-- 驳回开始 -->
     <el-dialog v-model="backVisible" draggable title="驳回" width="40%" :close-on-click-modal="false">
@@ -72,7 +98,11 @@
           </el-checkbox-group>
         </el-form-item>
         <el-form-item v-if="task.flowStatus === 'waiting'" label="附件">
-          <fileUpload v-model="backForm.fileId" :file-type="['png', 'jpg', 'jpeg', 'doc', 'docx', 'xlsx', 'xls', 'ppt', 'txt', 'pdf']" :file-size="20" />
+          <fileUpload
+            v-model="backForm.fileId"
+            :file-type="['png', 'jpg', 'jpeg', 'doc', 'docx', 'xlsx', 'xls', 'ppt', 'txt', 'pdf']"
+            :file-size="20"
+          />
         </el-form-item>
         <el-form-item label="审批意见">
           <el-input v-model="backForm.message" type="textarea" resize="none" />
@@ -102,11 +132,20 @@
   </el-dialog>
 </template>
 
-<script lang="ts" setup>
+<script setup lang="ts">
 import { ref } from 'vue';
 import { ComponentInternalInstance } from 'vue';
 import { ElForm } from 'element-plus';
-import { completeTask, backProcess, getTask, taskOperation, terminationTask, getBackTaskNode, currentTaskAllUser } from '@/api/workflow/task';
+import {
+  completeTask,
+  backProcess,
+  getTask,
+  taskOperation,
+  terminationTask,
+  getBackTaskNode,
+  currentTaskAllUser,
+  getNextNodeList
+} from '@/api/workflow/task';
 import UserSelect from '@/components/UserSelect';
 
 const { proxy } = getCurrentInstance() as ComponentInternalInstance;
@@ -117,6 +156,7 @@ const userSelectCopyRef = ref<InstanceType<typeof UserSelect>>();
 const transferTaskRef = ref<InstanceType<typeof UserSelect>>();
 const delegateTaskRef = ref<InstanceType<typeof UserSelect>>();
 const multiInstanceUserRef = ref<InstanceType<typeof UserSelect>>();
+const porUserRef = ref<InstanceType<typeof UserSelect>>();
 
 const props = defineProps({
   taskVariables: {
@@ -136,12 +176,28 @@ const selectCopyUserList = ref<UserVO[]>([]);
 const selectCopyUserIds = ref<string>(undefined);
 //可减签的人员
 const deleteUserList = ref<any>([]);
+//弹窗可选择的人员id
+const popUserIds = ref<any>([]);
 //驳回是否显示
 const backVisible = ref(false);
 const backLoading = ref(true);
 const backButtonDisabled = ref(true);
 // 可驳回得任务节点
 const taskNodeList = ref([]);
+const nickName = ref({});
+//节点编码
+const nodeCode = ref<string>('');
+const buttonObj = ref<any>({
+  pop: false,
+  trust: false,
+  transfer: false,
+  addSign: false,
+  subSign: false,
+  termination: false,
+  back: false
+});
+//下一节点列表
+const nestNodeList = ref([]);
 //任务
 const task = ref<FlowTaskVO>({
   id: undefined,
@@ -159,7 +215,9 @@ const task = ref<FlowTaskVO>({
   formCustom: undefined,
   formPath: undefined,
   nodeType: undefined,
-  nodeRatio: undefined
+  nodeRatio: undefined,
+  applyNode: false,
+  buttonList: []
 });
 const dialog = reactive<DialogOption>({
   visible: false,
@@ -170,6 +228,7 @@ const deleteSignatureVisible = ref(false);
 const form = ref<Record<string, any>>({
   taskId: undefined,
   message: undefined,
+  assigneeMap: {},
   variables: {},
   messageType: ['1'],
   flowCopyList: []
@@ -181,8 +240,9 @@ const backForm = ref<Record<string, any>>({
   variables: {},
   messageType: ['1']
 });
+
 //打开弹窗
-const openDialog = (id?: string) => {
+const openDialog = async (id?: string) => {
   selectCopyUserIds.value = undefined;
   selectCopyUserList.value = [];
   form.value.fileId = undefined;
@@ -191,13 +251,20 @@ const openDialog = (id?: string) => {
   dialog.visible = true;
   loading.value = true;
   buttonDisabled.value = true;
-  nextTick(() => {
-    getTask(taskId.value).then((response) => {
-      task.value = response.data;
-      loading.value = false;
-      buttonDisabled.value = false;
-    });
+  const response = await getTask(taskId.value);
+  task.value = response.data;
+  buttonObj.value = {};
+  task.value.buttonList.forEach((e) => {
+    buttonObj.value[e.code] = e.show;
   });
+  buttonDisabled.value = false;
+  const data = {
+    taskId: taskId.value,
+    variables: props.taskVariables
+  };
+  const nextData = await getNextNodeList(data);
+  nestNodeList.value = nextData.data;
+  loading.value = false;
 };
 
 onMounted(() => {});
@@ -207,10 +274,29 @@ const emits = defineEmits(['submitCallback', 'cancelCallback']);
 const handleCompleteTask = async () => {
   form.value.taskId = taskId.value;
   form.value.taskVariables = props.taskVariables;
+  let verify = false;
+  if (buttonObj.value.pop && nestNodeList.value && nestNodeList.value.length > 0) {
+    nestNodeList.value.forEach((e) => {
+      if (
+        Object.keys(form.value.assigneeMap).length === 0 ||
+        form.value.assigneeMap[e.nodeCode] === '' ||
+        form.value.assigneeMap[e.nodeCode] === null ||
+        form.value.assigneeMap[e.nodeCode] === undefined
+      ) {
+        verify = true;
+      }
+    });
+    if (verify) {
+      proxy?.$modal.msgWarning('请选择审批人！');
+      return false;
+    }
+  } else {
+    form.value.assigneeMap = {};
+  }
   if (selectCopyUserList.value && selectCopyUserList.value.length > 0) {
-    let flowCopyList = [];
+    const flowCopyList = [];
     selectCopyUserList.value.forEach((e) => {
-      let copyUser = {
+      const copyUser = {
         userId: e.userId,
         userName: e.nickName
       };
@@ -239,7 +325,7 @@ const handleBackProcessOpen = async () => {
   backVisible.value = true;
   backLoading.value = true;
   backButtonDisabled.value = true;
-  let data = await getBackTaskNode(task.value.definitionId, task.value.nodeCode);
+  const data = await getBackTaskNode(task.value.definitionId, task.value.nodeCode);
   taskNodeList.value = data.data;
   backLoading.value = false;
   backButtonDisabled.value = false;
@@ -266,6 +352,8 @@ const handleBackProcess = async () => {
 const cancel = async () => {
   dialog.visible = false;
   buttonDisabled.value = false;
+  nickName.value = {};
+  form.value.assigneeMap = {};
   emits('cancelCallback');
 };
 //打开抄送人员
@@ -386,7 +474,7 @@ const handleDelegateTask = async (data) => {
 };
 //终止任务
 const handleTerminationTask = async () => {
-  let params = {
+  const params = {
     taskId: taskId.value,
     comment: form.value.message
   };
@@ -402,7 +490,7 @@ const handleTerminationTask = async () => {
   proxy?.$modal.msgSuccess('操作成功');
 };
 const handleTaskUser = async () => {
-  let data = await currentTaskAllUser(taskId.value);
+  const data = await currentTaskAllUser(taskId.value);
   deleteUserList.value = data.data;
   if (deleteUserList.value && deleteUserList.value.length > 0) {
     deleteUserList.value.forEach((e) => {
@@ -410,6 +498,26 @@ const handleTaskUser = async () => {
     });
   }
   deleteSignatureVisible.value = true;
+};
+// 选择人员
+const choosePeople = async (data) => {
+  if (!data.permissionFlag) {
+    proxy?.$modal.msgError('没有可选择的人员，请联系管理员！');
+  }
+  popUserIds.value = data.permissionFlag;
+  nodeCode.value = data.nodeCode;
+  porUserRef.value.open();
+};
+//确认选择
+const handlePopUser = async (userList) => {
+  const userIds = userList.map((item) => {
+    return item.userId;
+  });
+  const nickNames = userList.map((item) => {
+    return item.nickName;
+  });
+  form.value.assigneeMap[nodeCode.value] = userIds.join(',');
+  nickName.value[nodeCode.value] = nickNames.join(',');
 };
 
 /**

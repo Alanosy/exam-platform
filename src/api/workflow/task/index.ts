@@ -178,3 +178,16 @@ export const currentTaskAllUser = (taskId: string | number) => {
     method: 'get'
   });
 };
+
+/**
+ * 获取下一节点写
+ * @param data参数
+ * @returns
+ */
+export const getNextNodeList = (data: any): any => {
+  return request({
+    url: '/workflow/task/getNextNodeList',
+    method: 'post',
+    data: data
+  });
+};

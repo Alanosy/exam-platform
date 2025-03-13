@@ -10,7 +10,7 @@
             class="mt-2"
             node-key="id"
             :data="deptOptions"
-            :props="{ label: 'label', children: 'children' }"
+            :props="{ label: 'label', children: 'children' } as any"
             :expand-on-click-node="false"
             :filter-node-method="filterNode"
             highlight-current
@@ -43,7 +43,7 @@
                   <el-tree-select
                     v-model="queryParams.deptId"
                     :data="deptOptions"
-                    :props="{ value: 'id', label: 'label', children: 'children' }"
+                    :props="{ value: 'id', label: 'label', children: 'children' } as any"
                     value-key="id"
                     placeholder="请选择部门"
                     check-strictly
@@ -133,7 +133,7 @@
               <el-tree-select
                 v-model="form.deptId"
                 :data="deptOptions"
-                :props="{ value: 'id', label: 'label', children: 'children' }"
+                :props="{ value: 'id', label: 'label', children: 'children' } as any"
                 value-key="id"
                 placeholder="请选择部门"
                 check-strictly

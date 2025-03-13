@@ -1,13 +1,14 @@
 <template>
   <div class="component-upload-image">
     <el-upload
-      ref="imageUpload"
+      ref="imageUploadRef"
       multiple
       :action="uploadImgUrl"
       list-type="picture-card"
       :on-success="handleUploadSuccess"
       :before-upload="handleBeforeUpload"
       :limit="limit"
+      :accept="fileAccept"
       :on-error="handleUploadError"
       :on-exceed="handleExceed"
       :before-remove="handleDelete"
@@ -86,6 +87,9 @@ const fileList = ref<any[]>([]);
 const showTip = computed(() => props.isShowTip && (props.fileType || props.fileSize));
 
 const imageUploadRef = ref<ElUploadInstance>();
+
+// 监听 fileType 变化，更新 fileAccept
+const fileAccept = computed(() => props.fileType.map((type) => `.${type}`).join(','));
 
 watch(
   () => props.modelValue,
@@ -230,7 +234,7 @@ const listToString = (list: any[], separator?: string) => {
 };
 </script>
 
-<style scoped lang="scss">
+<style lang="scss" scoped>
 // .el-upload--picture-card 控制加号部分
 :deep(.hide .el-upload--picture-card) {
   display: none;

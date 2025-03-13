@@ -1,4 +1,6 @@
 import { RouteLocationNormalized } from 'vue-router';
+import { defineStore } from 'pinia';
+import { ref } from 'vue';
 
 export const useTagsViewStore = defineStore('tagsView', () => {
   const visitedViews = ref<RouteLocationNormalized[]>([]);
@@ -230,4 +232,3 @@ export const useTagsViewStore = defineStore('tagsView', () => {
     delIframeView
   };
 });
-export default useTagsViewStore;

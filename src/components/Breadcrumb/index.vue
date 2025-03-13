@@ -11,7 +11,7 @@
 
 <script setup lang="ts">
 import { RouteLocationMatched } from 'vue-router';
-import usePermissionStore from '@/store/modules/permission';
+import { usePermissionStore } from '@/store/modules/permission';
 
 const route = useRoute();
 const router = useRouter();

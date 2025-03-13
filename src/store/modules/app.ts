@@ -1,5 +1,8 @@
 import zhCN from 'element-plus/es/locale/lang/zh-cn';
 import enUS from 'element-plus/es/locale/lang/en';
+import { defineStore } from 'pinia';
+import { useStorage } from '@vueuse/core';
+import { ref, reactive, computed } from 'vue';
 
 export const useAppStore = defineStore('app', () => {
   const sidebarStatus = useStorage('sidebarStatus', '1');
@@ -68,5 +71,3 @@ export const useAppStore = defineStore('app', () => {
     toggleSideBarHide
   };
 });
-
-export default useAppStore;

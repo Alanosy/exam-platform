@@ -1,4 +1,4 @@
-import useUserStore from '@/store/modules/user';
+import { useUserStore } from '@/store/modules/user';
 
 /**
  * 字符权限校验

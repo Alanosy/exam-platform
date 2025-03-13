@@ -10,7 +10,7 @@
             class="mt-2"
             node-key="id"
             :data="categoryOptions"
-            :props="{ label: 'label', children: 'children' }"
+            :props="{ label: 'label', children: 'children' } as any"
             :expand-on-click-node="false"
             :filter-node-method="filterNode"
             highlight-current
@@ -131,7 +131,7 @@
           <el-tree-select
             v-model="selectCategory"
             :data="categoryOptions"
-            :props="{ value: 'id', label: 'label', children: 'children' }"
+            :props="{ value: 'id', label: 'label', children: 'children' } as any"
             filterable
             value-key="id"
             :render-after-expand="false"
@@ -163,7 +163,7 @@
             <el-tree-select
               v-model="form.category"
               :data="categoryOptions"
-              :props="{ value: 'id', label: 'label', children: 'children' }"
+              :props="{ value: 'id', label: 'label', children: 'children' } as any"
               filterable
               value-key="id"
               :render-after-expand="false"
@@ -177,7 +177,7 @@
           <el-form-item label="流程名称" prop="flowName">
             <el-input v-model="form.flowName" placeholder="请输入流程名称" maxlength="100" show-word-limit />
           </el-form-item>
-          <el-form-item label="表单路径" prop="flowName">
+          <el-form-item label="表单路径" prop="formPath">
             <el-input v-model="form.formPath" placeholder="请输入表单路径" maxlength="100" show-word-limit />
           </el-form-item>
         </el-form>
@@ -190,12 +190,13 @@
   </div>
 </template>
 
-<script lang="ts" setup name="processDefinition">
+<script setup name="processDefinition" lang="ts">
 import { listDefinition, deleteDefinition, active, importDef, unPublishList, publish, add, edit, getInfo, copy } from '@/api/workflow/definition';
 import { categoryTree } from '@/api/workflow/category';
 import { CategoryTreeVO } from '@/api/workflow/category/types';
 import { FlowDefinitionQuery, FlowDefinitionVo, FlowDefinitionForm } from '@/api/workflow/definition/types';
 import { UploadRequestOptions, TabsPaneContext } from 'element-plus';
+import { ElMessageBoxOptions } from "element-plus/es/components/message-box/src/message-box.type";
 
 const { proxy } = getCurrentInstance() as ComponentInternalInstance;
 
@@ -324,9 +325,9 @@ const handleSelectionChange = (selection: any) => {
 };
 //分页
 const getPageList = async () => {
-  console.log(proxy.$route.query.activeName)
-  if (proxy.$route.query.activeName) {
-    activeName.value = proxy.$route.query.activeName;
+  let query = proxy.$route.query;
+  if (query.activeName) {
+    activeName.value = query.activeName;
   }
   if (activeName.value === '0') {
     getList();
@@ -370,7 +371,7 @@ const handlePublish = async (row?: FlowDefinitionVo) => {
   loading.value = true;
   await publish(row.id).finally(() => (loading.value = false));
   processDefinitionDialog.visible = false;
-  activeName.value = "0"
+  activeName.value = '0';
   await handleQuery();
   proxy?.$modal.msgSuccess('发布成功');
 };
@@ -417,7 +418,7 @@ const handlerImportDefinition = (data: UploadRequestOptions): XMLHttpRequest => 
     .then(() => {
       uploadDialog.visible = false;
       proxy?.$modal.msgSuccess('部署成功');
-      activeName.value = "1"
+      activeName.value = '1';
       handleQuery();
     })
     .finally(() => {
@@ -482,9 +483,9 @@ const handleSubmit = async () => {
     if (valid) {
       loading.value = true;
       if (form.value.id) {
-        await edit(form.value).finally(() => loading.value = false);
+        await edit(form.value).finally(() => (loading.value = false));
       } else {
-        await add(form.value).finally(() => loading.value = false);
+        await add(form.value).finally(() => (loading.value = false));
       }
       proxy?.$modal.msgSuccess('操作成功');
       modelDialog.visible = false;
@@ -498,15 +499,17 @@ const handleCopyDef = async (row: FlowDefinitionVo) => {
     confirmButtonText: '确认',
     cancelButtonText: '取消',
     type: 'warning'
-  }).then(() => {
+  } as ElMessageBoxOptions).then(() => {
     loading.value = true;
-    copy(row.id).then((resp) => {
-      if (resp.code === 200) {
-        proxy?.$modal.msgSuccess('操作成功');
-        activeName.value = "1"
-        handleQuery();
-      }
-    }).finally(() => loading.value = false);
+    copy(row.id)
+      .then((resp) => {
+        if (resp.code === 200) {
+          proxy?.$modal.msgSuccess('操作成功');
+          activeName.value = '1';
+          handleQuery();
+        }
+      })
+      .finally(() => (loading.value = false));
   });
 };
 

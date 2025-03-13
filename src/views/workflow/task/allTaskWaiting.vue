@@ -97,14 +97,14 @@
     </el-card>
     <!-- 选人组件 -->
     <UserSelect ref="userSelectRef" :multiple="false" @confirm-call-back="submitCallback"></UserSelect>
-    <!-- 选人组件 -->
+    <!-- 流程干预组件 -->
     <processMeddle ref="processMeddleRef" @submitCallback="getWaitingList"></processMeddle>
     <!-- 申请人 -->
     <UserSelect ref="applyUserSelectRef" :multiple="true" :data="selectUserIds" @confirm-call-back="userSelectCallBack"></UserSelect>
   </div>
 </template>
 
-<script lang="ts" setup>
+<script setup lang="ts">
 import { pageByAllTaskWait, pageByAllTaskFinish, updateAssignee } from '@/api/workflow/task';
 import UserSelect from '@/components/UserSelect';
 import { TaskQuery } from '@/api/workflow/task/types';

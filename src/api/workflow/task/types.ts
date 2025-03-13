@@ -29,8 +29,14 @@ export interface FlowTaskVO {
   nodeType: number;
   nodeRatio: string | number;
   version?: string;
+  applyNode?: boolean;
+  buttonList?: buttonList[];
 }
 
+export interface buttonList {
+  code: string;
+  show: boolean;
+}
 export interface VariableVo {
   key: string;
   value: string;

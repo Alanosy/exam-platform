@@ -49,7 +49,7 @@
     </el-dialog>
   </el-dialog>
 </template>
-<script lang="ts" setup>
+<script setup lang="ts">
 import { propTypes } from '@/utils/propTypes';
 import { FlowTaskVO, TaskOperationBo } from '@/api/workflow/task/types';
 import UserSelect from '@/components/UserSelect';

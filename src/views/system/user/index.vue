@@ -10,7 +10,7 @@
             class="mt-2"
             node-key="id"
             :data="deptOptions"
-            :props="{ label: 'label', children: 'children' }"
+            :props="{ label: 'label', children: 'children' } as any"
             :expand-on-click-node="false"
             :filter-node-method="filterNode"
             highlight-current
@@ -81,8 +81,9 @@
                   <template #dropdown>
                     <el-dropdown-menu>
                       <el-dropdown-item icon="Download" @click="importTemplate">下载模板</el-dropdown-item>
-                      <el-dropdown-item v-has-permi="['system:user:import']" icon="Top" @click="handleImport">导入数据</el-dropdown-item>
-                      <el-dropdown-item v-has-permi="['system:user:export']" icon="Download" @click="handleExport">导出数据</el-dropdown-item>
+                      <!-- 注意 由于el-dropdown-item标签是延迟加载的 所以v-has-permi自定义标签不生效 需要使用v-if调用方法执行 -->
+                      <el-dropdown-item v-if="checkPermi(['system:user:import'])" icon="Top" @click="handleImport">导入数据</el-dropdown-item>
+                      <el-dropdown-item v-if="checkPermi(['system:user:export'])" icon="Download" @click="handleExport">导出数据</el-dropdown-item>
                     </el-dropdown-menu>
                   </template>
                 </el-dropdown>
@@ -155,7 +156,7 @@
               <el-tree-select
                 v-model="form.deptId"
                 :data="enabledDeptOptions"
-                :props="{ value: 'id', label: 'label', children: 'children' }"
+                :props="{ value: 'id', label: 'label', children: 'children' } as any"
                 value-key="id"
                 placeholder="请选择归属部门"
                 check-strictly
@@ -287,13 +288,15 @@
 <script setup name="User" lang="ts">
 import api from '@/api/system/user';
 import { UserForm, UserQuery, UserVO } from '@/api/system/user/types';
-import {DeptTreeVO, DeptVO} from '@/api/system/dept/types';
+import { DeptTreeVO, DeptVO } from '@/api/system/dept/types';
 import { RoleVO } from '@/api/system/role/types';
 import { PostQuery, PostVO } from '@/api/system/post/types';
 import { treeselect } from '@/api/system/dept';
 import { globalHeaders } from '@/utils/request';
 import { to } from 'await-to-js';
 import { optionselect } from '@/api/system/post';
+import { hasPermi } from '@/directive/permission';
+import { checkPermi } from '@/utils/permission';
 
 const router = useRouter();
 const { proxy } = getCurrentInstance() as ComponentInternalInstance;
@@ -450,7 +453,7 @@ const getDeptTree = async () => {
 
 /** 过滤禁用的部门 */
 const filterDisabledDept = (deptList: DeptTreeVO[]) => {
-  return deptList.filter(dept => {
+  return deptList.filter((dept) => {
     if (dept.disabled) {
       return false;
     }
@@ -660,5 +663,3 @@ async function handleDeptChange(value: number | string) {
   form.value.postIds = [];
 }
 </script>
-
-<style lang="scss" scoped></style>

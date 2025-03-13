@@ -85,7 +85,7 @@
               <el-tree-select
                 v-model="form.parentId"
                 :data="menuOptions"
-                :props="{ value: 'menuId', label: 'menuName', children: 'children' }"
+                :props="{ value: 'menuId', label: 'menuName', children: 'children' } as any"
                 value-key="menuId"
                 placeholder="选择上级菜单"
                 check-strictly

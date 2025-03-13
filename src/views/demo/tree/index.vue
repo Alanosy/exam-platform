@@ -62,7 +62,7 @@
           <el-tree-select
             v-model="form.parentId"
             :data="treeOptions"
-            :props="{ value: 'id', label: 'treeName', children: 'children' }"
+            :props="{ value: 'id', label: 'treeName', children: 'children' } as any"
             value-key="id"
             placeholder="请选择父id"
             check-strictly
