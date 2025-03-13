@@ -7,7 +7,6 @@ import lombok.Data;
 import org.dromara.common.excel.annotation.ExcelDictFormat;
 import org.dromara.common.excel.convert.ExcelDictConvert;
 import org.dromara.system.domain.SysDept;
-import org.dromara.system.domain.SysMenu;
 
 import java.io.Serial;
 import java.io.Serializable;
@@ -105,6 +104,6 @@ public class SysDeptVo implements Serializable {
     /**
      * 子菜单
      */
-    private List<SysMenu> children = new ArrayList<>();
+    private List<SysDept> children = new ArrayList<>();
 
 }
