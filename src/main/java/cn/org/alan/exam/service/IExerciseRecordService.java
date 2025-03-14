@@ -35,12 +35,14 @@ public interface IExerciseRecordService extends IService<ExerciseRecord> {
     Result<List<QuestionSheetVO>> getQuestionSheet(Integer repoId, Integer quType);
 
     /**
-     * 查询所考过的考试
-     * @param pageNum
-     * @param pageSize
-     * @return
+     * 分页查询已考试试卷
+     * @param pageNum 页码
+     * @param pageSize 每页记录数
+     * @param examName 考试名称
+     * @param isASC 是否升序排列，true为升序，false为降序
+     * @return 查询结果
      */
-    Result<IPage<ExamRecordVO>> getExamRecordPage(Integer pageNum, Integer pageSize,String examName);
+    Result<IPage<ExamRecordVO>> getExamRecordPage(Integer pageNum, Integer pageSize, String examName, Boolean isASC);
 
     /**
      * 查询某场考试的信息

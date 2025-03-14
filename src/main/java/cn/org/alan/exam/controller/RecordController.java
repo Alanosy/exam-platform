@@ -31,16 +31,19 @@ public class RecordController {
 
     /**
      * 分页查询已考试试卷
-     * @param pageNum
-     * @param pageSize
-     * @return
+     * @param pageNum 页码
+     * @param pageSize 每页记录数
+     * @param examName 考试名称
+     * @param isASC 是否升序排列，true为升序，false为降序，默认为false
+     * @return 查询结果
      */
     @GetMapping("/exam/paging")
     @PreAuthorize("hasAnyAuthority('role_teacher','role_admin','role_student')")
     public Result<IPage<ExamRecordVO>> getExamRecordPage(@RequestParam(value = "pageNum",required = false, defaultValue = "1") Integer pageNum,
                                                    @RequestParam(value = "pageSize",required = false, defaultValue = "10") Integer pageSize,
-                                                         @RequestParam(value = "examName", required = false) String examName){
-        return exerciseRecordService.getExamRecordPage(pageNum,pageSize,examName);
+                                                   @RequestParam(value = "examName", required = false) String examName,
+                                                   @RequestParam(value = "isASC", required = false, defaultValue = "false") Boolean isASC){
+        return exerciseRecordService.getExamRecordPage(pageNum, pageSize, examName, isASC);
     }
 
     /**
