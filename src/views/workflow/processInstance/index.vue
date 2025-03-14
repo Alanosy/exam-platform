@@ -76,6 +76,7 @@
               </el-table-column>
               <el-table-column align="center" prop="nodeName" label="任务名称"></el-table-column>
               <el-table-column align="center" prop="flowCode" label="流程定义编码"></el-table-column>
+              <el-table-column align="center" prop="categoryName" label="流程分类"></el-table-column>
               <el-table-column align="center" prop="createByName" label="申请人"></el-table-column>
               <el-table-column align="center" prop="version" label="版本号" width="90">
                 <template #default="scope"> v{{ scope.row.version }}.0</template>
