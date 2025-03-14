@@ -140,16 +140,19 @@ public class ExamController {
 
     /**
      * 根据班级获得考试
-     * @param pageNum
-     * @param pageSize
+     * @param pageNum 页码
+     * @param pageSize 每页数量
+     * @param title 标题
+     * @param isASC 是否升序排列，true为升序，false为降序，默认为false
      * @return
      */
     @GetMapping("/grade")
     @PreAuthorize("hasAnyAuthority('role_teacher','role_admin','role_student')")
     public Result<IPage<ExamGradeListVO>> getGradeExamList(@RequestParam(value = "pageNum", required = false, defaultValue = "1") Integer pageNum,
                                                        @RequestParam(value = "pageSize", required = false, defaultValue = "10") Integer pageSize,
-                                                    @RequestParam(value = "title", required = false) String title) {
-        return examService.getGradeExamList(pageNum,pageSize,title);
+                                                       @RequestParam(value = "title", required = false) String title,
+                                                       @RequestParam(value = "isASC", required = false, defaultValue = "false") Boolean isASC) {
+        return examService.getGradeExamList(pageNum, pageSize, title, isASC);
     }
 
     /**

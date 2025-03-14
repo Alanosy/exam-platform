@@ -32,8 +32,13 @@
         <if test="title != null">
             and title like concat('%',#{title},'%')
         </if>
-
-
+        order by create_time 
+        <if test="isASC == true">
+            asc
+        </if>
+        <if test="isASC != true">
+            desc
+        </if>
     </select>
     <resultMap id="examGrade" type="cn.org.alan.exam.model.vo.score.GradeScoreVO">
         <id column="id" property="id"/>
@@ -69,6 +74,13 @@
                 and title like concat('%',#{title},'%')
             </if>
         </where>
+        order by create_time 
+        <if test="isASC == true">
+            asc
+        </if>
+        <if test="isASC != true">
+            desc
+        </if>
     </select>
 
 

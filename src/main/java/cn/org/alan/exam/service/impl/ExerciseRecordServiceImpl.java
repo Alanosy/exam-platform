@@ -95,11 +95,26 @@ public class ExerciseRecordServiceImpl extends ServiceImpl<ExerciseRecordMapper,
     }
 
     @Override
-    public Result<IPage<ExamRecordVO>> getExamRecordPage(Integer pageNum, Integer pageSize,String examName) {
+    public Result<IPage<ExamRecordVO>> getExamRecordPage(Integer pageNum, Integer pageSize, String examName, Boolean isASC) {
         // 创建page对象
         Page<ExamRecordVO> examPage = new Page<>(pageNum, pageSize);
-        // 查询该用户已考试的考试
-        examPage = examMapper.getExamRecordPage(examPage, SecurityUtil.getUserId(),examName);
+        
+        // 获取当前用户ID和角色
+        Integer userId = SecurityUtil.getUserId();
+        String role = SecurityUtil.getRole();
+        
+        // 根据不同角色查询不同的试卷
+        if ("role_admin".equals(role)) {
+            // 管理员查询所有已作答的试卷
+            examPage = examMapper.getAllExamRecordPage(examPage, examName, isASC);
+        } else if ("role_teacher".equals(role)) {
+            // 教师查询自己创建的试卷
+            examPage = examMapper.getTeacherExamRecordPage(examPage, userId, examName, isASC);
+        } else {
+            // 学生查询自己的试卷
+            examPage = examMapper.getExamRecordPage(examPage, userId, examName, isASC);
+        }
+        
         return Result.success("查询成功", examPage);
     }
 

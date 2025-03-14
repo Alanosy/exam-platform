@@ -102,11 +102,14 @@ public interface IExamService extends IService<Exam> {
     Result<String> addAnswer(ExamQuAnswerAddForm examQuAnswerForm);
 
     /**
-     * 根据班级获得考试
-     *
-     * @return
+     * 根据班级获得考试列表
+     * @param pageNum 页码
+     * @param pageSize 每页大小
+     * @param title 标题
+     * @param isASC 是否升序排列，true为升序，false为降序
+     * @return 考试列表分页结果
      */
-    Result<IPage<ExamGradeListVO>> getGradeExamList(Integer pageNum, Integer pageSize,String title);
+    Result<IPage<ExamGradeListVO>> getGradeExamList(Integer pageNum, Integer pageSize, String title, Boolean isASC);
 
     /**
      * 交卷操作

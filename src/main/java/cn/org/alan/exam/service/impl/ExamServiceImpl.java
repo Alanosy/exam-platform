@@ -793,17 +793,23 @@ public class ExamServiceImpl extends ServiceImpl<ExamMapper, Exam> implements IE
     }
 
     @Override
-    public Result<IPage<ExamGradeListVO>> getGradeExamList(Integer pageNum, Integer pageSize, String title) {
+    public Result<IPage<ExamGradeListVO>> getGradeExamList(Integer pageNum, Integer pageSize, String title, Boolean isASC) {
+        // 创建分页对象
         IPage<ExamGradeListVO> examPage = new Page<>(pageNum, pageSize);
+        // 获取用户ID
+        Integer userId = SecurityUtil.getUserId();
+        // 获取用户角色
+        String role = SecurityUtil.getRole();
         // 根据班级查找考试ID
-        if ("role_student".equals(SecurityUtil.getRole())) {
-            examPage = examGradeMapper.selectClassExam(examPage, SecurityUtil.getUserId(), title);
-        } else if ("role_admin".equals(SecurityUtil.getRole())) {
-            examPage = examGradeMapper.selectAdminClassExam(examPage, SecurityUtil.getUserId(),title);
+        if ("role_student".equals(role)) {
+            examGradeMapper.selectClassExam(examPage, userId, title, isASC);
+        } else if ("role_admin".equals(role)) {
+            examGradeMapper.selectAdminClassExam(examPage, userId, title, isASC);
         }
         // 根据考试id查找考试
         return Result.success("查询成功", examPage);
     }
+    
 
     @Override
     @Transactional
