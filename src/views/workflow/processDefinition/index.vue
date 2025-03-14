@@ -27,8 +27,8 @@
                 <el-form-item label="流程定义名称" prop="flowName">
                   <el-input v-model="queryParams.flowName" placeholder="请输入流程定义名称" clearable @keyup.enter="handleQuery" />
                 </el-form-item>
-                <el-form-item label="流程定义KEY" prop="flowCode">
-                  <el-input v-model="queryParams.flowCode" placeholder="请输入流程定义KEY" clearable @keyup.enter="handleQuery" />
+                <el-form-item label="流程定义编码" prop="flowCode">
+                  <el-input v-model="queryParams.flowCode" placeholder="请输入流程定义编码" clearable @keyup.enter="handleQuery" />
                 </el-form-item>
                 <el-form-item>
                   <el-button type="primary" icon="Search" @click="handleQuery">搜索</el-button>
@@ -67,6 +67,7 @@
               <el-table-column align="center" prop="id" label="主键" v-if="false"></el-table-column>
               <el-table-column align="center" prop="flowName" label="流程定义名称" :show-overflow-tooltip="true"></el-table-column>
               <el-table-column align="center" prop="flowCode" label="标识KEY" :show-overflow-tooltip="true"></el-table-column>
+              <el-table-column align="center" prop="categoryName" label="流程分类" :show-overflow-tooltip="true"></el-table-column>
               <el-table-column align="center" prop="version" label="版本号" width="80">
                 <template #default="scope"> v{{ scope.row.version }}.0</template>
               </el-table-column>
@@ -356,7 +357,7 @@ const getUnPublishList = async () => {
 const handleDelete = async (row?: FlowDefinitionVo) => {
   const id = row?.id || ids.value;
   const defList = processDefinitionList.value.filter((x) => id.indexOf(x.id) != -1).map((x) => x.flowCode);
-  await proxy?.$modal.confirm('是否确认删除流程定义KEY为【' + defList + '】的数据项？');
+  await proxy?.$modal.confirm('是否确认删除流程定义编码为【' + defList + '】的数据项？');
   loading.value = true;
   await deleteDefinition(id).finally(() => (loading.value = false));
   await handleQuery();
@@ -366,7 +367,7 @@ const handleDelete = async (row?: FlowDefinitionVo) => {
 /** 发布流程定义 */
 const handlePublish = async (row?: FlowDefinitionVo) => {
   await proxy?.$modal.confirm(
-    '是否确认发布流程定义KEY为【' + row.flowCode + '】版本为【' + row.version + '】的数据项？，发布后会将已发布流程定义改为失效！'
+    '是否确认发布流程定义编码为【' + row.flowCode + '】版本为【' + row.version + '】的数据项？，发布后会将已发布流程定义改为失效！'
   );
   loading.value = true;
   await publish(row.id).finally(() => (loading.value = false));
