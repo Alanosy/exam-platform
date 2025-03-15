@@ -35,7 +35,7 @@ public interface INoticeService extends IService<Notice> {
      * @param noticeForm
      * @return
      */
-    Result<String> updateNotice(String id, NoticeForm noticeForm);
+    Result<String> updateNotice(Integer id, NoticeForm noticeForm);
 
     /**
      * 教师分页查找

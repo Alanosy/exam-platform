@@ -56,6 +56,8 @@ mybatis-plus:
 
 jwt:
   secret: 47EQ7VKDBvOufw5PWhtTaOTORKrzaUVAitduSVFvK862kkx2TIHH4xNtVih8SH0V56fS4S7ff0VfqVZPaonWdR3N1t8eE2f2CPeL
+  expiration: 1800000 # 30分钟，单位为毫秒 token过期时间
+  refreshThreshold: 300000 # 5分钟，单位为毫秒 判断是否剩xx分钟过期
 
 oss:
   endpoint: https://oss-cn-beijing.aliyuncs.com

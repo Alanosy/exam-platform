@@ -4,6 +4,7 @@ import cn.org.alan.exam.common.result.Result;
 import cn.org.alan.exam.mapper.ExamGradeMapper;
 import cn.org.alan.exam.mapper.ExamMapper;
 import cn.org.alan.exam.mapper.UserExamsScoreMapper;
+import cn.org.alan.exam.mapper.UserGradeMapper;
 import cn.org.alan.exam.model.entity.Exam;
 import cn.org.alan.exam.model.entity.UserExamsScore;
 import cn.org.alan.exam.model.vo.score.ExportScoreVO;
@@ -38,6 +39,8 @@ public class UserExamsScoreServiceImpl extends ServiceImpl<UserExamsScoreMapper,
     private ExamMapper examMapper;
     @Resource
     private ExamGradeMapper examGradeMapper;
+    @Resource
+    private UserGradeMapper userGradeMapper;
 
     @Override
     public Result<IPage<UserScoreVO>> pagingScore(Integer pageNum, Integer pageSize, Integer gradeId, Integer examId, String realName) {
@@ -64,12 +67,14 @@ public class UserExamsScoreServiceImpl extends ServiceImpl<UserExamsScoreMapper,
     @Override
     public Result<IPage<GradeScoreVO>> getExamScoreInfo(Integer pageNum, Integer pageSize, String examTitle,Integer gradeId) {
         IPage<GradeScoreVO> page = new Page<>(pageNum, pageSize);
+        Integer userId = SecurityUtil.getUserId();
+        List<Integer> userIdList = userGradeMapper.getGradeIdListByUserId(userId);
         if ("role_teacher".equals(SecurityUtil.getRole())) {
             page = userExamsScoreMapper
-                    .scoreStatistics(page,gradeId,examTitle,SecurityUtil.getUserId(),2);
+                    .scoreStatistics(page,gradeId,examTitle,userId,2,userIdList);
         } else {
             page = userExamsScoreMapper
-                    .scoreStatistics(page, gradeId, examTitle, SecurityUtil.getUserId(), 3);
+                    .scoreStatistics(page, gradeId, examTitle, userId, 3,userIdList);
         }
 
         return Result.success("查询成功", page);

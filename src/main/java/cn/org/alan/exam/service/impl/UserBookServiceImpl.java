@@ -50,16 +50,8 @@ public class UserBookServiceImpl extends ServiceImpl<UserBookMapper, UserBook> i
     @Override
     public Result<IPage<UserPageBookVO>> getPage(Integer pageNum, Integer pageSize, String examName) {
         Page<UserPageBookVO> page = new Page<>(pageNum, pageSize);
-        String role = SecurityUtil.getRole();
-        int roleId;
-        if("role_admin".equals(role)){
-            roleId =3;
-        }else if ("role_teacher".equals(role)){
-            roleId = 2;
-        }else {
-            roleId = 1;
-        }
-        Page<UserPageBookVO> userPageBookVOPage = userBookMapper.selectPageVo(page, examName, SecurityUtil.getUserId(),roleId);
+        Integer userId = SecurityUtil.getUserId();
+        Page<UserPageBookVO> userPageBookVOPage = userBookMapper.selectPageVo(page, examName,userId );
         return Result.success("查询成功", userPageBookVOPage);
     }
 

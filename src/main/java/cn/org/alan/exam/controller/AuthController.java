@@ -40,7 +40,6 @@ public class AuthController {
      * 用户登录
      *
      * @param request request对象，用户获取sessionId
-     * @param user    用户信息
      * @return token
      */
     @PostMapping("/login")
@@ -99,6 +98,7 @@ public class AuthController {
         }
         return iAuthService.verifyCode(request, code);
     }
+
 
     @PostMapping("/track-presence")
     public Result<String> trackPresence(HttpServletRequest request) {

@@ -61,6 +61,12 @@ public interface ICertificateService extends IService<Certificate> {
      */
     Result<String> deleteCertificate(Integer id);
 
-
+    /**
+     * 分页查已获证书
+     * @param pageNum
+     * @param pageSize
+     * @param examName
+     * @return
+     */
     Result<IPage<MyCertificateVO>> getMyCertificatePaging(Integer pageNum, Integer pageSize,String examName);
 }

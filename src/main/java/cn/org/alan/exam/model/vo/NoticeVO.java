@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 /**
  * @Author Alan
@@ -44,4 +45,14 @@ public class NoticeVO {
      * 创建人名字
      */
     private String realName;
+
+    /**
+     * 是否公开 教师：所有班级用户 管理员：所有用户
+     */
+    private Integer isPublic;
+
+    /**
+     * 班级id列表
+     */
+    private List<Integer> gradeIds;
 }

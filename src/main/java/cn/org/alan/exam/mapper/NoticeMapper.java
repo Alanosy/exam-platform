@@ -1,8 +1,10 @@
 package cn.org.alan.exam.mapper;
 
 import cn.org.alan.exam.model.entity.Notice;
+import cn.org.alan.exam.model.form.NoticeForm;
 import cn.org.alan.exam.model.vo.NoticeVO;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 
 import java.util.List;
@@ -42,4 +44,12 @@ public interface NoticeMapper extends BaseMapper<Notice> {
     List<NoticeVO> batchSelectByIds(List<Integer> missIds);
 
     List<Integer> selectNewNoticeIdsPage(Integer userId, int offset, Integer pageSize);
+
+    Integer getIsPublic(Integer noticeId);
+
+    Integer updateNotice(Integer noticeId, NoticeForm noticeForm);
+
+    Page<NoticeVO> getNewNotice(Page<NoticeVO> page, List<Integer> teachIdList, List<Integer> noticeIdList, List<Integer> adminIdList);
+
+    List<NoticeVO> getNotice( Integer userId, String title);
 }

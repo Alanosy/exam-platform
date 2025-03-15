@@ -33,7 +33,10 @@
                 and e.title like concat('%',#{examTitle},'%')
             </if>
             <if test="roleId == 2">
-               and g.user_id = #{userId}
+               and g.id in
+                <foreach collection="userIdList" item="uId" open="(" close=")" separator=",">
+                    #{uId}
+                </foreach>
             </if>
         </trim>
         GROUP BY

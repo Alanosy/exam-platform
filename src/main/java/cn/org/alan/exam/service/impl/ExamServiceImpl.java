@@ -237,8 +237,10 @@ public class ExamServiceImpl extends ServiceImpl<ExamMapper, Exam> implements IE
         // 开始查询
         LambdaQueryWrapper<Exam> examQuery = new LambdaQueryWrapper<>();
         examQuery.like(StringUtils.isNotBlank(title), Exam::getTitle, title)
-                .eq(Exam::getIsDeleted,0)
-                .eq(Exam::getUserId, SecurityUtil.getUserId());
+                .eq(Exam::getIsDeleted,0);
+        if(SecurityUtil.getRoleCode()==2){
+            examQuery.eq(Exam::getUserId, SecurityUtil.getUserId());
+        }
         Page<Exam> examPage = examMapper.selectPage(page, examQuery);
         // 实体转换
         Page<ExamVO> examVOPage = examConverter.pageEntityToVo(examPage);

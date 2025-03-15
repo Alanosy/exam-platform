@@ -49,7 +49,7 @@ public class GradeController {
      * @return
      */
     @PostMapping("/add")
-    @PreAuthorize("hasAnyAuthority('role_teacher','role_admin')")
+    @PreAuthorize("hasAnyAuthority('role_admin')")
     public Result<String> addGrade(@Validated @RequestBody GradeForm gradeForm) {
         return gradeService.addGrade(gradeForm);
     }
@@ -61,7 +61,7 @@ public class GradeController {
      * @return
      */
     @PutMapping("/update/{id}")
-    @PreAuthorize("hasAnyAuthority('role_teacher','role_admin')")
+    @PreAuthorize("hasAnyAuthority('role_admin')")
     public Result<String> updateGrade(@PathVariable("id") @NotNull Integer id,@Validated @RequestBody GradeForm gradeForm) {
         return gradeService.updateGrade(id, gradeForm);
     }
@@ -72,7 +72,7 @@ public class GradeController {
      * @return
      */
     @DeleteMapping("/delete/{id}")
-    @PreAuthorize("hasAnyAuthority('role_teacher','role_admin')")
+    @PreAuthorize("hasAnyAuthority('role_admin')")
     public Result<String> deleteGrade(@PathVariable("id") @NotNull Integer id) {
         return gradeService.deleteGrade(id);
     }
@@ -83,7 +83,7 @@ public class GradeController {
      * @return
      */
     @PatchMapping("/remove/{ids}")
-    @PreAuthorize("hasAnyAuthority('role_teacher','role_admin','role_studnet')")
+    @PreAuthorize("hasAnyAuthority('role_teacher','role_admin','role_student')")
     public Result<String> removeUserGrade(@PathVariable("ids") @NotBlank String ids) {
         return gradeService.removeUserGrade(ids);
     }
@@ -97,4 +97,38 @@ public class GradeController {
    public Result<List<GradeVO>> getAllGrade(){
        return gradeService.getAllGrade();
    }
+
+    /**
+     * 老师加入班级
+     * @param code
+     * @return
+     */
+   @GetMapping("/teacher/join")
+   @PreAuthorize("hasAnyAuthority('role_teacher')")
+   public Result teacherJoinClass(@RequestParam("code") String code){
+       return gradeService.teacherJoinClass(code);
+   }
+
+    /**
+     * 老师退出班级
+     * @param gradeId
+     * @return
+     */
+    @DeleteMapping("/teacher/exit/{gradeId}")
+    @PreAuthorize("hasAnyAuthority('role_teacher')")
+    public Result teacherExitClass(@PathVariable("gradeId") String gradeId){
+        return gradeService.teacherExitClass(gradeId);
+    }
+
+    /**
+     * 学生退出班级
+     * @return
+     */
+    @PutMapping("/user/exit")
+    @PreAuthorize("hasAnyAuthority('role_student')")
+    public Result userExitGrade(){
+        return gradeService.userExitGrade();
+    }
+
+
 }

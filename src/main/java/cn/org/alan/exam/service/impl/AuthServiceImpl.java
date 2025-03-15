@@ -93,7 +93,6 @@ public class AuthServiceImpl implements IAuthService {
         LambdaQueryWrapper<User> wrapper = new LambdaQueryWrapper<>();
         wrapper.eq(User::getUserName, loginForm.getUsername());
         User user = userMapper.selectOne(wrapper);
-
         // 判读用户名是否存在
         if (Objects.isNull(user)) {
             return Result.failed("该用户不存在");
@@ -102,11 +101,27 @@ public class AuthServiceImpl implements IAuthService {
             return Result.failed("该用户已注销");
         }
         BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
-        if (!encoder.matches(SecretUtils.desEncrypt(loginForm.getPassword()), user.getPassword())) {
+        String userPassword = SecretUtils.desEncrypt(loginForm.getPassword());
+        if (!encoder.matches(userPassword, user.getPassword())) {
             return Result.failed("密码错误");
         }
         user.setPassword(null);
-        // 根据用户Id获取权限
+        // 根据用户角色代码
+        ///
+        // List<String> authList = jwtUtil.getAuthList(token);
+        // 反序列化jwtToken获取用户信息
+        // User sysUser = objectMapper.readValue(userInfo, User.class);
+        // // 权限转型
+        // // List<SimpleGrantedAuthority> permissions = authList.stream().map(SimpleGrantedAuthority::new).toList();
+        // // 创建登录用户
+        // SysUserDetails securityUser = new SysUserDetails(sysUser);
+        // securityUser.setPermissions(permissions);
+        // // 创建权限授权的token 参数：用户，密码，权限 不给密码因为已经登录了
+        // UsernamePasswordAuthenticationToken token1 =
+        //         new UsernamePasswordAuthenticationToken(securityUser, null, permissions);
+        // // 通过安全上下文设置授权token
+        // SecurityContextHolder.getContext().setAuthentication(token1);
+        ///
         List<String> permissions = roleMapper.selectCodeById(user.getRoleId());
 
         // 数据库获取的权限是字符串springSecurity需要实现GrantedAuthority接口类型，所有这里做一个类型转换
@@ -117,13 +132,12 @@ public class AuthServiceImpl implements IAuthService {
         SysUserDetails sysUserDetails = new SysUserDetails(user);
         // 把转型后的权限放进sysUserDetails对象
         sysUserDetails.setPermissions(userPermissions);
-
-        // 将用户信息转为字符串
+        // 将用户序列化 转为字符串
         String userInfo = objectMapper.writeValueAsString(user);
-
+        // 创建token
         String token = jwtUtil.createJwt(userInfo, userPermissions.stream().map(String::valueOf).toList());
         // 把token放到redis中
-        stringRedisTemplate.opsForValue().set("token" + request.getSession().getId(), token, 30, TimeUnit.MINUTES);
+        stringRedisTemplate.opsForValue().set("token:" + request.getSession().getId(), token, 30, TimeUnit.MINUTES);
 
         // 封装用户的身份信息，为后续的身份验证和授权操作提供必要的输入
         // 创建UsernamePasswordAuthenticationToken  参数：用户信息，密码，权限列表
@@ -136,7 +150,6 @@ public class AuthServiceImpl implements IAuthService {
         // 用户信息存放进上下文
         SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
         //用户信息放入
-
         // 清除redis通过校验表示
         stringRedisTemplate.delete("isVerifyCode" + request.getSession().getId());
         return Result.success("登录成功", token);
@@ -145,16 +158,14 @@ public class AuthServiceImpl implements IAuthService {
 
     @Override
     public Result<String> logout(HttpServletRequest request) {
-
         // 清除session
         HttpSession session = request.getSession(false);
-
-        if (session != null) {
-            // 清除redis
-            stringRedisTemplate.delete("token" + session.getId());
+        String token = request.getHeader("Authorization");
+        if (StringUtils.isNotBlank(token) && session!=null) {
+            token = token.substring(7);
+            stringRedisTemplate.delete("token:" + request.getSession().getId());
             session.invalidate();
         }
-
         return Result.success("退出成功");
     }
 
@@ -197,17 +208,16 @@ public class AuthServiceImpl implements IAuthService {
 
     @Override
     public Result<String> register(HttpServletRequest request, UserForm userForm) {
-
+        // 判断验证码
         String s = stringRedisTemplate.opsForValue().get("isVerifyCode" + request.getSession().getId());
         if (StringUtils.isBlank(s)) {
             return Result.failed("请先验证验证码");
         }
+        // 判断两次密码是否一致
         if (!SecretUtils.desEncrypt(userForm.getPassword()).equals(SecretUtils.desEncrypt(userForm.getCheckedPassword()))) {
             return Result.failed("两次密码不一致");
         }
-
         User user = userConverter.fromToEntity(userForm);
-
         user.setPassword(new BCryptPasswordEncoder().encode(SecretUtils.desEncrypt(user.getPassword())));
         user.setRoleId(1);
         userMapper.insert(user);
@@ -216,52 +226,56 @@ public class AuthServiceImpl implements IAuthService {
         return Result.success("注册成功");
     }
 
-
-
     /**
      * 用户发送心跳，更新最后活跃时间。
      *
      * @return
      */
     @Override
-    @SneakyThrows(value = JsonProcessingException.class)
     public Result<String> sendHeartbeat(HttpServletRequest request) {
-
+        // 创建Redis键
         String key = HEARTBEAT_KEY_PREFIX + SecurityUtil.getUserId();
-        String lastHeartbeatStr = stringRedisTemplate.opsForValue().getAndDelete(key);
-        LocalDateTime now = LocalDateTime.now(ZoneOffset.UTC);
-        stringRedisTemplate.opsForValue().set(key, now.toString());
-        if (lastHeartbeatStr != null) {
-            LocalDateTime lastHeartbeat = LocalDateTime.parse(lastHeartbeatStr);
-            Duration durationSinceLastHeartbeat = Duration.between(lastHeartbeat, LocalDateTime.now(ZoneOffset.UTC));
+        if (SecurityUtil.getRoleCode()==1) {
+            // 删除该键值并获取上一次的心跳时间
+            String lastHeartbeatStr = stringRedisTemplate.opsForValue().get(key);
+            // 获取当前时间
+            LocalDateTime now = LocalDateTime.now(ZoneOffset.UTC);
+            // 设置新的时间
+            stringRedisTemplate.opsForValue().set(key, now.toString());
+            LocalDateTime lastHeartbeat = null;
+            // 将上次时间字符串转换为时间对象
+            if(lastHeartbeatStr==null){
+                lastHeartbeat = now;
+            }else {
+                lastHeartbeat = LocalDateTime.parse(lastHeartbeatStr);
+            }
+            // 计算上次和现在过了多久 连个时间的时间差
+            Duration durationSinceLastHeartbeat = Duration.between(lastHeartbeat, now);
+            // 获取今天日期
             LocalDate date = DateTimeUtil.getDate();
             // 实现累加逻辑，比如更新数据库中的记录
-            LambdaQueryWrapper<UserDailyLoginDuration> userDailyLoginDurationLambdaQueryWrapper = new LambdaQueryWrapper<>();
-            userDailyLoginDurationLambdaQueryWrapper.eq(UserDailyLoginDuration::getUserId,SecurityUtil.getUserId())
-                    .eq(UserDailyLoginDuration::getLoginDate, date);
-            List<UserDailyLoginDuration> userDailyLoginDurations =
-                    userDailyLoginDurationMapper.selectList(userDailyLoginDurationLambdaQueryWrapper);
-            if(userDailyLoginDurations.isEmpty()){
+            // 获取当前用户的今天的记录
+            Integer userId = SecurityUtil.getUserId();
+            UserDailyLoginDuration userDailyLogin = userDailyLoginDurationMapper.getTodeyRecord(userId,date);
+            // 如果记录为空
+            if(Objects.isNull(userDailyLogin)){
+                // 如果没记录
                 UserDailyLoginDuration userDailyLoginDuration = new UserDailyLoginDuration();
-                userDailyLoginDuration.setUserId(SecurityUtil.getUserId());
+                // 设置用户id
+                userDailyLoginDuration.setUserId(userId);
+                // 设置今天日期
                 userDailyLoginDuration.setLoginDate(date);
-                userDailyLoginDuration.setTotalSeconds(0);
+                // 存入秒数
+                userDailyLoginDuration.setTotalSeconds((int)durationSinceLastHeartbeat.getSeconds());
                 userDailyLoginDurationMapper.insert(userDailyLoginDuration);
             }else {
-                UserDailyLoginDuration userDailyLoginDuration = new UserDailyLoginDuration();
-                userDailyLoginDuration.setTotalSeconds(userDailyLoginDurations.get(0)
-                        .getTotalSeconds()+(int)durationSinceLastHeartbeat.getSeconds());
-                userDailyLoginDuration.setId(userDailyLoginDurations.get(0).getId());
-                userDailyLoginDurationMapper.updateById(userDailyLoginDuration);
+                // 如果有记录
+                // 累加今天的时长
+                userDailyLogin.setTotalSeconds(userDailyLogin.getTotalSeconds()
+                        +(int)durationSinceLastHeartbeat.getSeconds());
+                userDailyLoginDurationMapper.updateById(userDailyLogin);
             }
         }
-        ArrayList<String> permissions = new ArrayList<>();
-        permissions.add(SecurityUtil.getRole());
-        SysUserDetails principal = (SysUserDetails) (SecurityContextHolder.getContext().getAuthentication().getPrincipal());
-        User user = principal.getUser();
-        String string = objectMapper.writeValueAsString(user);
-        String jwt = jwtUtil.createJwt(string, permissions);
-        stringRedisTemplate.opsForValue().set("token" + request.getSession().getId(), jwt, 30, TimeUnit.MINUTES);
-        return Result.success("请求成功",jwt);
+         return Result.success("请求成功");
     }
 }

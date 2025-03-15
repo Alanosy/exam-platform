@@ -2,11 +2,9 @@ package cn.org.alan.exam.service.impl;
 
 import cn.org.alan.exam.common.result.Result;
 import cn.org.alan.exam.converter.GradeConverter;
-import cn.org.alan.exam.mapper.ExamMapper;
-import cn.org.alan.exam.mapper.GradeMapper;
-import cn.org.alan.exam.mapper.QuestionMapper;
-import cn.org.alan.exam.mapper.UserMapper;
+import cn.org.alan.exam.mapper.*;
 import cn.org.alan.exam.model.entity.Grade;
+import cn.org.alan.exam.model.entity.UserGrade;
 import cn.org.alan.exam.model.form.GradeForm;
 import cn.org.alan.exam.model.vo.GradeVO;
 import cn.org.alan.exam.service.IGradeService;
@@ -55,6 +53,8 @@ public class GradeServiceImpl extends ServiceImpl<GradeMapper, Grade> implements
     private StringRedisTemplate stringRedisTemplate;
     @Resource
     private CacheClient cacheClient;
+    @Resource
+    private UserGradeMapper userGradeMapper;
 
     @Override
     @Transactional
@@ -125,6 +125,7 @@ public class GradeServiceImpl extends ServiceImpl<GradeMapper, Grade> implements
 
     @Override
     public Result<IPage<GradeVO>> getPaging(Integer pageNum, Integer pageSize, String gradeName) {
+        // 获取角色
         Integer role = 0;
         if("role_teacher".equals(SecurityUtil.getRole())){
             role = 2;
@@ -193,22 +194,45 @@ public class GradeServiceImpl extends ServiceImpl<GradeMapper, Grade> implements
 
     @Override
     public Result<List<GradeVO>> getAllGrade() {
-        Function<Integer, List> function = new Function<>() {
-            @Override
-            public List apply(Integer userId) {
-                LambdaQueryWrapper<Grade> gradeLambdaQueryWrapper = new LambdaQueryWrapper<>();
-                gradeLambdaQueryWrapper.eq(Grade::getUserId, userId)
-                        .eq(Grade::getIsDeleted,0);
-                List<Grade> grades = gradeMapper.selectList(gradeLambdaQueryWrapper);
-                List<GradeVO> gradeVOS = gradeConverter.listEntityToVo(grades);
-                return gradeVOS;
-            }
-        };
-        List<GradeVO> result = cacheClient.queryWithPassThrough("cache:grade:getAllGrade:", SecurityUtil.getUserId(), List.class, function, GradeVO.class, 10L, TimeUnit.MINUTES);
-        if(result==null){
-            return Result.failed("查询失败");
+        Integer roleCode = SecurityUtil.getRoleCode();
+        Integer userId = SecurityUtil.getUserId();
+        List<GradeVO> grades = gradeMapper.getAllGrade(userId,roleCode);
+        return Result.success("查询成功", grades);
+    }
+
+    @Override
+    public Result teacherJoinClass(String code) {
+        Grade grade = gradeMapper.getGradeById(code);
+        Integer userId = SecurityUtil.getUserId();
+        UserGrade userGrade = new UserGrade();
+        userGrade.setGId(grade.getId());
+        userGrade.setUId(userId);
+        int insert = userGradeMapper.insert(userGrade);
+        if(insert>0){
+            return Result.success("加入成功");
         }
-        return Result.success("查询成功", result);
+        return Result.failed("加入失败");
+    }
+
+    @Override
+    public Result teacherExitClass(String gradeId) {
+        Integer userId = SecurityUtil.getUserId();
+        Integer row = userGradeMapper.teacherExitClass(userId,gradeId);
+        if(row >0){
+            return Result.success("退出成功");
+        }
+        return Result.failed("退出失败");
+    }
+
+    @Override
+    public Result userExitGrade() {
+        Integer gradeId = SecurityUtil.getGradeId();
+        Integer userId = SecurityUtil.getUserId();
+        Integer row = userMapper.userExitGrade(gradeId,userId);
+        if(row>0){
+            return Result.success("退出成功");
+        }
+        return Result.failed("退出失败");
     }
 
 }

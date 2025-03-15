@@ -1,6 +1,7 @@
 package cn.org.alan.exam.model.entity;
 
 import com.baomidou.mybatisplus.annotation.*;
+import lombok.Data;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
@@ -14,6 +15,7 @@ import java.time.LocalDateTime;
  * @since 2024-03-21
  */
 @TableName("t_notice")
+@Data
 public class Notice implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -52,76 +54,12 @@ public class Notice implements Serializable {
     private LocalDateTime createTime;
 
     /**
+     * 是否公开 教师：所有班级用户 管理员：所有用户
+     */
+    private Integer isPublic;
+
+    /**
      * 逻辑删除字段
      */
     private Integer isDeleted;
-
-    public Integer getIsDeleted() {
-        return isDeleted;
-    }
-
-    public void setIsDeleted(Integer isDeleted) {
-        this.isDeleted = isDeleted;
-    }
-
-    public Integer getId() {
-        return id;
-    }
-
-    public void setId(Integer id) {
-        this.id = id;
-    }
-
-    public String getTitle() {
-        return title;
-    }
-
-    public void setTitle(String title) {
-        this.title = title;
-    }
-
-    public String getImage() {
-        return image;
-    }
-
-    public void setImage(String image) {
-        this.image = image;
-    }
-
-    public String getContent() {
-        return content;
-    }
-
-    public void setContent(String content) {
-        this.content = content;
-    }
-
-    public Integer getUserId() {
-        return userId;
-    }
-
-    public void setUserId(Integer userId) {
-        this.userId = userId;
-    }
-
-    public LocalDateTime getCreateTime() {
-        return createTime;
-    }
-
-    public void setCreateTime(LocalDateTime createTime) {
-        this.createTime = createTime;
-    }
-
-    @Override
-    public String toString() {
-        return "Notice{" +
-                "id=" + id +
-                ", title='" + title + '\'' +
-                ", image='" + image + '\'' +
-                ", content='" + content + '\'' +
-                ", userId=" + userId +
-                ", createTime=" + createTime +
-                ", isDeleted=" + isDeleted +
-                '}';
-    }
 }

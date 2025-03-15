@@ -20,6 +20,7 @@ public class UserVO {
     private String password;
     private String avatar;
     private String gradeName;
+    private Integer gradeId;
     /**
      * 班级创建人Id
      */

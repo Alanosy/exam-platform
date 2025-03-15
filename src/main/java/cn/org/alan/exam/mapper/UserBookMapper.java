@@ -27,5 +27,5 @@ public interface UserBookMapper extends BaseMapper<UserBook> {
 
     int addUserBookList(List<UserBook> userBookArrayList);
 
-    Page<UserPageBookVO> selectPageVo(Page<UserPageBookVO> page, String examName, Integer userId,Integer role);
+    Page<UserPageBookVO> selectPageVo(Page<UserPageBookVO> page, String examName, Integer userId);
 }

@@ -3,18 +3,21 @@
 <mapper namespace="cn.org.alan.exam.mapper.NoticeGradeMapper">
     <insert id="addNoticeGrade">
         insert into t_notice_grade
-        (id,notice_id,grade_id)
+        (notice_id,grade_id)
         VALUES
-        <foreach collection="grades" item="item" separator="," index="sort">
-            (null,#{noticeId},#{item.id})
+        <foreach collection="gradeIdList" item="gradeId"  separator="," >
+            (#{noticeId},#{gradeId})
         </foreach>
     </insert>
-
-    <delete id="deleteByNoticeIds">
-        delete from t_notice_grade where notice_id in
-        <foreach collection="noticeIds" item="noticeId" open="(" close=")" separator=",">
-            #{noticeId}
-        </foreach>
+    <delete id="delNoticeGrade">
+        delete from t_notice_grade
+        where notice_id = #{noticeId}
     </delete>
+    <select id="getNoticeIdList" resultType="java.lang.Integer">
+        select notice_id from t_notice_grade where grade_id = #{gradeId}
+    </select>
+    <select id="getGradeList" resultType="java.lang.Integer">
+        select n.grade_id from t_notice_grade n where n.notice_id = #{noticeId}
+    </select>
 
 </mapper>

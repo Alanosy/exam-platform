@@ -49,14 +49,14 @@ public class NoticeController {
 
     /**
      * 修改公告
-     * @param id
+     * @param noticeId
      * @param noticeForm
      * @return
      */
-    @PutMapping("/{id}")
+    @PutMapping("/{noticeId}")
     @PreAuthorize("hasAnyAuthority('role_teacher','role_admin')")
-    public Result<String> updateNotice(@PathVariable("id") @NotBlank String id,@Validated @RequestBody NoticeForm noticeForm) {
-        return noticeService.updateNotice(id, noticeForm);
+    public Result<String> updateNotice(@PathVariable("noticeId") @NotBlank Integer noticeId,@Validated @RequestBody NoticeForm noticeForm) {
+        return noticeService.updateNotice(noticeId, noticeForm);
     }
 
     /**
@@ -81,7 +81,7 @@ public class NoticeController {
      * @return
      */
     @GetMapping("/new")
-    @PreAuthorize("hasAnyAuthority('role_teacher','role_admin','role_student')")
+    @PreAuthorize("hasAnyAuthority('role_student')")
     public Result<IPage<NoticeVO>> getNewNotice(@RequestParam(value = "pageNum", required = false, defaultValue = "1") Integer pageNum,
                                                 @RequestParam(value = "pageSize", required = false, defaultValue = "10") Integer pageSize){
         return noticeService.getNewNotice(pageNum,pageSize);

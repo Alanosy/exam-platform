@@ -40,12 +40,18 @@
                 #{userId}
             </foreach>
     </update>
+    <update id="userExitGrade">
+        update t_user u
+        set u.grade_id = null
+        where u.id = #{userId}
+    </update>
+
 
     <!--获取用户信息-->
     <select id="info" resultType="cn.org.alan.exam.model.vo.UserVO">
         select
         <include refid="simpleFiled"/>
-        ,r.role_name,g.grade_name
+        ,r.role_name,g.grade_name,g.id as gradeId
         from t_user u join t_role r on role_id = r.id left join t_grade g on grade_id = g.id
         where u.id = #{userId}
     </select>
@@ -106,5 +112,8 @@
             INNER JOIN grade g ON u.grade_id = g.id
         WHERE u.role_id = #{roleId}
         GROUP BY g.id
+    </select>
+    <select id="getAdminList" resultType="java.lang.Integer">
+        select id from t_user where role_id = 3
     </select>
 </mapper>

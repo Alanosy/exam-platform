@@ -13,7 +13,7 @@ import lombok.Data;
 public class NoticeForm {
 
     /**
-     * ID   公告表
+     * ID
      */
     private Integer id;
 
@@ -35,9 +35,19 @@ public class NoticeForm {
     private String content;
 
     /**
-     * 创建用户ID   唯一
+     * 创建用户ID
      */
     private Integer userId;
+
+    /**
+     * 公告班级
+     */
+    private String gradeIds;
+
+    /**
+     * 是否公开 教师：所有班级用户 管理员：所有用户
+     */
+    private Integer isPublic;
 
 
 }

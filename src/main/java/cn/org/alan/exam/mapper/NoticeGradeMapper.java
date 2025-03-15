@@ -1,15 +1,12 @@
 package cn.org.alan.exam.mapper;
 
-import cn.org.alan.exam.model.entity.Grade;
 import cn.org.alan.exam.model.entity.NoticeGrade;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 
 import java.util.List;
 
 /**
- * <p>
- *  Mapper 接口
- * </p>
+ *  公告班级关联 Mapper 接口
  *
  * @author WeiJin
  * @since 2024-03-21
@@ -17,11 +14,31 @@ import java.util.List;
 public interface NoticeGradeMapper extends BaseMapper<NoticeGrade> {
 
     /**
-     * 根据公告id删除公告与班级关联
-     * @param noticeIds 公告id列表
-     * @return 影响数据库记录数
+     * 添加公告和班级关系
+     * @param noticeId
+     * @param gradeIdList
+     * @return
      */
-    Integer deleteByNoticeIds(List<Integer> noticeIds);
+    int addNoticeGrade(Integer noticeId, List<Integer> gradeIdList);
 
-    int addNoticeGrade(Integer noticeId, List<Grade> grades);
+    /**
+     * 删除公告班级关系
+     * @param noticeId
+     * @return
+     */
+    Integer delNoticeGrade(Integer noticeId);
+
+    /**
+     * 获得班级关联的公告id
+     * @param gradeId
+     * @return
+     */
+    List<Integer> getNoticeIdList(Integer gradeId);
+
+    /**
+     * 获得班级关联的班级id
+     * @param noticeId
+     * @return
+     */
+    List<Integer> getGradeList(Integer noticeId);
 }

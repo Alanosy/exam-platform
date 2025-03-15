@@ -17,23 +17,18 @@
             #{userId}
         </foreach>
     </update>
-
+    <!--only_full_group_by-->
     <select id="selectPageVo" resultType="cn.org.alan.exam.model.vo.userbook.UserPageBookVO">
-        SELECT a.id,b.title as title, a.exam_id as examId,count(*) as numberOfErrors , a.create_time as createTime
-        from t_user_book as a
-        LEFT JOIN t_exam as b on a.exam_id = b.id
+        SELECT ub.exam_id as examId,count(*) as numberOfErrors,MIN(ub.create_time) as createTime,e.title
+        FROM t_user_book ub
+        JOIN t_exam e on ub.exam_id = e.id
         <trim prefix="where" prefixOverrides="and">
-            <!--<if test="userId!=1">-->
-            <!--    and a.user_id = #{userId}-->
-            <!--</if>-->
+            ub.user_id = #{userId}
             <if test='examName != null and examName!=""'>
-                and b.title like concat('%',#{examName},'%')
+                and e.title like concat('%',#{examName},'%')
             </if>
-            <if test='role == 1'>
-                and a.user_id = #{userId}
-            </if>
-
         </trim>
-        GROUP BY exam_id
+        GROUP BY ub.exam_id,e.title
+
     </select>
 </mapper>

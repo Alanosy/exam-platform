@@ -44,7 +44,7 @@ public class ExerciseController {
      * @return 响应结果
      */
     @GetMapping("/{repoId}")
-    @PreAuthorize("hasAnyAuthority('role_student','role_teacher','role_admin')")
+    @PreAuthorize("hasAnyAuthority('role_student')")
     public Result<List<QuestionSheetVO>> getQuestion(@PathVariable("repoId") Integer repoId,
                                                      @Min(value = 1, message = "试题类型最小值应为1")
                                                      @Max(value = 4, message = "试题类型最大值应为4")
@@ -61,7 +61,7 @@ public class ExerciseController {
      * @return 响应结果
      */
     @PostMapping("/fillAnswer")
-    @PreAuthorize("hasAnyAuthority('role_student','role_teacher','role_admin')")
+    @PreAuthorize("hasAnyAuthority('role_student')")
     public Result<QuestionVO> fillAnswer(@RequestBody ExerciseFillAnswerFrom exerciseFillAnswerFrom) {
         return iExerciseRecordService.fillAnswer(exerciseFillAnswerFrom);
     }
@@ -75,7 +75,7 @@ public class ExerciseController {
      * @return 响应结果
      */
     @GetMapping("/getRepo")
-    @PreAuthorize("hasAnyAuthority('role_student','role_teacher','role_admin')")
+    @PreAuthorize("hasAnyAuthority('role_student')")
     public Result<IPage<ExerciseRepoVO>> getRepo(
             @RequestParam(value = "pageNum", required = false, defaultValue = "1") Integer pageNum,
             @RequestParam(value = "pageSize", required = false, defaultValue = "10") Integer pageSize,
@@ -89,7 +89,7 @@ public class ExerciseController {
      * @return
      */
     @GetMapping("/question/{id}")
-    @PreAuthorize("hasAnyAuthority('role_student','role_teacher','role_admin')")
+    @PreAuthorize("hasAnyAuthority('role_student')")
     public Result<QuestionVO> getSingle(@PathVariable("id")Integer id){
         return iExerciseRecordService.getSingle(id);
     }
@@ -100,7 +100,7 @@ public class ExerciseController {
      * @return
      */
     @GetMapping("/answerInfo/{repoId}/{quId}")
-    @PreAuthorize("hasAnyAuthority('role_student','role_teacher','role_admin')")
+    @PreAuthorize("hasAnyAuthority('role_student')")
     public Result<AnswerInfoVO> getAnswerInfo(@PathVariable("repoId")Integer repoId, @PathVariable("quId")Integer quId){
         return iExerciseRecordService.getAnswerInfo(repoId,quId);
     }

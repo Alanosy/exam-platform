@@ -10,6 +10,22 @@
             #{noticeId}
         </foreach>
     </update>
+    <update id="updateNotice">
+        update t_notice
+        <set>
+            <if test="noticeForm.isPublic!=null">
+                is_public = #{noticeForm.isPublic},
+            </if>
+            <if test="noticeForm.title!='' and noticeForm.title!=null">
+                title = #{noticeForm.title},
+            </if>
+            <if test="noticeForm.content!='' and noticeForm.content!=null">
+                content = #{noticeForm.content},
+            </if>
+        </set>
+        where id = #{noticeId}
+
+    </update>
     <delete id="deleteByUserIds">
         delete from t_notice where user_id in
         <foreach collection="userIds" item="userId" open="(" close=")" separator=",">
@@ -78,5 +94,61 @@
         n.id in (select notice_id from t_notice_grade where grade_id=(select grade_id from t_user where id = #{userId}))
         or n.user_id = 1
         ORDER BY  n.create_time DESC
+    </select>
+    <select id="getIsPublic" resultType="java.lang.Integer">
+        select is_public from t_notice
+        where id = #{noticeId}
+    </select>
+    <select id="getNewNotice" resultType="cn.org.alan.exam.model.vo.NoticeVO">
+        select n.id as id ,n.title as title,n.image as image,n.content as content,n.user_id as userId,
+        n.create_time as createTime,u.real_name as realName,n.is_public as isPublic
+        from t_notice n
+        left join t_user as u on n.user_id=u.id
+        where
+        <!--非公开的-->
+        (n.is_public = 0 and
+        <!--创建人是班级老师列表中的-->
+        n.user_id in
+        <foreach collection="teachIdList" item="teachId" open="(" close=")" separator=",">
+            #{teachId}
+        </foreach>
+        and
+        <!--公告并且是和班级关联的-->
+        n.id in
+        <foreach collection="noticeIdList" item="noticeId" open="(" close=")" separator=",">
+            #{noticeId}
+        </foreach>)
+        or
+        <!--或者公告是公开的-->
+        (n.is_public = 1
+        and
+        <!--创建人是班级老师列表中的-->
+        (n.user_id in
+        <foreach collection="teachIdList" item="teachId" open="(" close=")" separator=",">
+            #{teachId}
+        </foreach>
+        or
+        <!--或者创建人是管理员列表中的-->
+        n.user_id in
+        <foreach collection="adminIdList" item="adminId" open="(" close=")" separator=",">
+            #{adminId}
+        </foreach>))
+        ORDER BY  n.create_time DESC
+
+    </select>
+    <select id="getNotice" resultType="cn.org.alan.exam.model.vo.NoticeVO">
+        SELECT n.id as id ,n.title as title,n.image as image,n.content as content,n.user_id as userId,
+        n.create_time as createTime,u.real_name as realName,n.is_public as isPublic
+        from t_notice n
+        left join t_user as u on n.user_id=u.id
+        <trim prefix="where" prefixOverrides="and">
+            n.is_deleted = 0
+            <if test="userId!=1">
+                and n.user_id = #{userId}
+            </if>
+            <if test='title!=null and title!=""'>
+                and n.title like concat('%',#{title},'%')
+            </if>
+        </trim>
     </select>
 </mapper>

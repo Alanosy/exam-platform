@@ -11,4 +11,9 @@
         limit 15
 
     </select>
+    <select id="getTodeyRecord" resultType="cn.org.alan.exam.model.entity.UserDailyLoginDuration">
+        select *
+        from t_user_daily_login_duration
+        where user_id = #{userId} and login_date = #{date}
+    </select>
 </mapper>

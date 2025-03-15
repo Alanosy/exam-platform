@@ -22,14 +22,17 @@ public interface UserExamsScoreMapper extends BaseMapper<UserExamsScore> {
 
     /**
      * 考试班级用户成绩分析
-     * @param page 分页信息
-     * @param gradeId 班级Id
-     * @param examTitle 考试名称
-     * @param userId 用户Id
-     * @param roleId 角色Id
+     *
+     * @param page       分页信息
+     * @param gradeId    班级Id
+     * @param examTitle  考试名称
+     * @param userId     用户Id
+     * @param roleId     角色Id
+     * @param userIdList
      * @return 结果
      */
-    IPage<GradeScoreVO> scoreStatistics(IPage<GradeScoreVO> page ,Integer gradeId, String examTitle,Integer userId,Integer roleId);
+    IPage<GradeScoreVO> scoreStatistics(IPage<GradeScoreVO> page , Integer gradeId, String examTitle, Integer userId,
+                                        Integer roleId, List<Integer> userIdList);
 
     /**
      * 成绩分页查询

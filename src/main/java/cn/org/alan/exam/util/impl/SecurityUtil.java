@@ -1,8 +1,10 @@
 package cn.org.alan.exam.util.impl;
 
+import cn.org.alan.exam.common.exception.AppException;
 import cn.org.alan.exam.security.SysUserDetails;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 
 import java.util.List;
@@ -33,6 +35,25 @@ public class SecurityUtil {
     public static String getRole(){
         List<? extends GrantedAuthority> list = SecurityContextHolder.getContext().getAuthentication().getAuthorities().stream().toList();
         return list.get(0).toString();
+    }
+    /**
+     * 获取当前用户角色代码 1：学生、2：教师、3管理员
+     * @return 角色
+     */
+    public static Integer getRoleCode(){
+        List<? extends GrantedAuthority> list = SecurityContextHolder.getContext().getAuthentication().getAuthorities().stream().toList();
+        String roleName = list.get(0).toString();
+        Integer roleCode;
+        if("role_admin".equals(roleName)){
+            roleCode=3;
+        } else if ("role_teacher".equals(roleName)) {
+            roleCode=2;
+        } else if ("role_student".equals(roleName)) {
+            roleCode=1;
+        }else {
+            throw new AppException("无法获取角色代码");
+        }
+        return roleCode;
     }
 
     /**

@@ -29,4 +29,8 @@ public interface GradeMapper extends BaseMapper<Grade> {
     List<GradeVO> batchSelectByIds(List<Integer> missIds);
 
     int countByCondition(Integer userId, String gradeName, Integer role);
+
+    Grade getGradeById(String code);
+
+    List<GradeVO> getAllGrade(Integer userId, Integer roleCode);
 }

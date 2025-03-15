@@ -33,7 +33,7 @@ public class UserBookController {
      * @return
      */
     @GetMapping("/paging")
-    @PreAuthorize("hasAnyAuthority('role_teacher','role_admin','role_student')")
+    @PreAuthorize("hasAnyAuthority('role_student')")
     public Result<IPage<UserPageBookVO>> getPage(@RequestParam(value = "pageNum",required = false, defaultValue = "1") Integer pageNum,
                                                  @RequestParam(value = "pageSize",required = false, defaultValue = "10") Integer pageSize,
                                                  @RequestParam(value = "examName",required = false) String examName){

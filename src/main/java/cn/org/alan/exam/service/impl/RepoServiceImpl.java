@@ -4,8 +4,10 @@ import cn.org.alan.exam.common.result.Result;
 import cn.org.alan.exam.mapper.ExerciseRecordMapper;
 import cn.org.alan.exam.mapper.QuestionMapper;
 import cn.org.alan.exam.mapper.RepoMapper;
+import cn.org.alan.exam.mapper.UserGradeMapper;
 import cn.org.alan.exam.model.entity.Question;
 import cn.org.alan.exam.model.entity.Repo;
+import cn.org.alan.exam.model.entity.UserGrade;
 import cn.org.alan.exam.model.vo.repo.RepoListVO;
 import cn.org.alan.exam.model.vo.repo.RepoVO;
 import cn.org.alan.exam.model.vo.exercise.ExerciseRepoVO;
@@ -36,6 +38,8 @@ public class RepoServiceImpl extends ServiceImpl<RepoMapper, Repo> implements IR
 
     @Resource
     private ExerciseRecordMapper exerciseRecordMapper;
+    @Resource
+    private UserGradeMapper userGradeMapper;
 
 
     @Override
@@ -104,18 +108,22 @@ public class RepoServiceImpl extends ServiceImpl<RepoMapper, Repo> implements IR
         return Result.success(null, page);
     }
 
+    /**
+     * 查询可以刷的题库
+     * @param pageNum  页码
+     * @param pageSize 每页记录数
+     * @param title    题库名
+     * @return
+     */
     @Override
     public Result<IPage<ExerciseRepoVO>> getRepo(Integer pageNum, Integer pageSize, String title) {
         IPage<ExerciseRepoVO> page = new Page<>(pageNum, pageSize);
-        page = repoMapper.selectRepo(page, title);
-//        page.getRecords().forEach(repoVO -> {
-//            //填充以刷题数
-//            LambdaQueryWrapper<ExerciseRecord> wrapper = new LambdaQueryWrapper<ExerciseRecord>().eq(ExerciseRecord::getRepoId, repoVO.getId())
-//                    .eq(ExerciseRecord::getUserId, SecurityUtil.getUserId());
-//
-//            repoVO.setExerciseCount(exerciseRecordMapper.selectCount(wrapper).intValue());
-
-//        });
-        return Result.success(null, page);
+        // 获取当前学生所在班级ID
+        Integer gradeId = SecurityUtil.getGradeId();
+        // 获取班级的所有老师用户ID
+        List<Integer> userList = userGradeMapper.getUserListByGradeId(gradeId);
+        // 查询可以刷的题库，条件是没有删除的公开的是班级内老师的题库
+        page = repoMapper.selectRepo(page, title,userList);
+        return Result.success("查询成功", page);
     }
 }

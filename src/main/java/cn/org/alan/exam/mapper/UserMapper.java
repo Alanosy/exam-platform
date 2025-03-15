@@ -72,4 +72,8 @@ public interface UserMapper extends BaseMapper<User> {
 
 
     Integer deleteByUserIds(List<Integer> userIds);
+
+    Integer userExitGrade(Integer gradeId, Integer userId);
+
+    List<Integer> getAdminList();
 }
