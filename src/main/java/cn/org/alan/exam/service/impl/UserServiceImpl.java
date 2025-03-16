@@ -50,31 +50,9 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
     @Resource
     private GradeMapper gradeMapper;
     @Resource
-    private CertificateUserMapper certificateUserMapper;
-    @Resource
-    private ExamMapper examMapper;
-    @Resource
-    private ExamQuAnswerMapper examQuAnswerMapper;
-    @Resource
-    private ExerciseRecordMapper exerciseRecordMapper;
-    @Resource
-    private GradeExerciseMapper gradeExerciseMapper;
-    @Resource
-    private ManualScoreMapper manualScoreMapper;
-    @Resource
-    private NoticeMapper noticeMapper;
-    @Resource
-    private QuestionMapper questionMapper;
-    @Resource
-    private RepoMapper repoMapper;
-    @Resource
-    private UserBookMapper userBookMapper;
-    @Resource
-    private OptionMapper optionMapper;
-    @Resource
-    private NoticeGradeMapper noticeGradeMapper;
-    @Resource
     private IQuestionService iQuestionService;
+    @Resource
+    private UserGradeMapper userGradeMapper;
 
 
     @Override
@@ -225,10 +203,12 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
     @Override
     public Result<IPage<UserVO>> pagingUser(Integer pageNum, Integer pageSize, Integer gradeId, String realName) {
         IPage<UserVO> page = new Page<>(pageNum, pageSize);
+        Integer userId = SecurityUtil.getUserId();
         if ("role_teacher".equals(SecurityUtil.getRole())) {
-            page = userMapper.pagingUser(page, gradeId, realName, SecurityUtil.getUserId(),1);
+            List<Integer> gradeIdList = userGradeMapper.getGradeIdListByUserId(userId);
+            page = userMapper.pagingUser(page, gradeId, realName, SecurityUtil.getUserId(),1,gradeIdList);
         } else {
-            page = userMapper.pagingUser(page, gradeId, realName, SecurityUtil.getUserId(),null);
+            page = userMapper.pagingUser(page, gradeId, realName, SecurityUtil.getUserId(),null,null);
         }
 
         return Result.success(null, page);

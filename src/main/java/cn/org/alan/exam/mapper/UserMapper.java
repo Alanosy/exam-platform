@@ -51,13 +51,14 @@ public interface UserMapper extends BaseMapper<User> {
     /**
      * 分页获取用户信息
      *
-     * @param page     分页信息
-     * @param gradeId  班级Id
-     * @param realName 真实姓名
-     * @param roleId   角色Id
+     * @param page        分页信息
+     * @param gradeId     班级Id
+     * @param realName    真实姓名
+     * @param roleId      角色Id
+     * @param gradeIdList
      * @return 查询结果集
      */
-    IPage<UserVO> pagingUser(IPage<UserVO> page, Integer gradeId, String realName,Integer userId, Integer roleId);
+    IPage<UserVO> pagingUser(IPage<UserVO> page, Integer gradeId, String realName, Integer userId, Integer roleId, List<Integer> gradeIdList);
 
     /**
      * 移除班级
