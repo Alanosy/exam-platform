@@ -53,7 +53,7 @@ public class CacheClient {
 
         String key = keyPrefix + id;
 
-        // TODO 1. 从Redis查询商铺缓存
+        // TODO 1. 从Redis查询考试缓存
         // 可以选择Hash结构，没问题，也能String
         String json = stringRedisTemplate.opsForValue().get(key);
 
@@ -126,7 +126,7 @@ public class CacheClient {
     public <R, ID> R queryWithLogicalExpire(String keyPrefix, ID id, Class<R> type, Function<ID, R> dbFallback, Long time, TimeUnit unit) {
         String key = keyPrefix + id;
 
-        //      TODO 1.从redis查询商铺缓存
+        //      TODO 1.从redis查询考试缓存
         String json = stringRedisTemplate.opsForValue().get(key);
         //      TODO 2. 判断时Redis是否命中
         if (StrUtil.isBlank(json)) {
@@ -142,7 +142,7 @@ public class CacheClient {
 
         //      TODO 5.判断是否过期
         if (expireTime.isAfter(LocalDateTime.now())) {
-            //          TODO 5.1 未过期,返回商铺信息
+            //          TODO 5.1 未过期,返回考试信息
             return r;
         }
 
@@ -161,7 +161,7 @@ public class CacheClient {
             r = JSONUtil.toBean(shopData, type);
             expireTime = redisData.getExpireTime();
             if (expireTime.isAfter(LocalDateTime.now())) {
-                //          TODO 未过期,返回商铺信息
+                //          TODO 未过期,返回考试信息
                 return r;
             }
 

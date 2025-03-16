@@ -38,6 +38,8 @@ public class StatServiceImpl extends ServiceImpl<ExamGradeMapper, ExamGrade> imp
     private QuestionMapper questionMapper;
     @Resource
     private UserDailyLoginDurationMapper userDailyLoginDurationMapper;
+    @Resource
+    private UserGradeMapper userGradeMapper;
 
 
     /**
@@ -49,10 +51,12 @@ public class StatServiceImpl extends ServiceImpl<ExamGradeMapper, ExamGrade> imp
     public Result<List<GradeStudentVO>> getStudentGradeCount() {
         //获取班级
         List<GradeStudentVO> gradeStudentVOs;
+        Integer userId = SecurityUtil.getUserId();
         if ("role_teacher".equals(SecurityUtil.getRole())) {
-            gradeStudentVOs = statMapper.StudentGradeCount(2, SecurityUtil.getUserId());
+            List<Integer> gradeIdList = userGradeMapper.getGradeIdListByUserId(userId);
+            gradeStudentVOs = statMapper.StudentGradeCount(2, userId,gradeIdList);
         } else {
-            gradeStudentVOs = statMapper.StudentGradeCount(3, SecurityUtil.getUserId());
+            gradeStudentVOs = statMapper.StudentGradeCount(3, userId,null);
         }
 
         return Result.success("查询成功", gradeStudentVOs);
@@ -67,10 +71,12 @@ public class StatServiceImpl extends ServiceImpl<ExamGradeMapper, ExamGrade> imp
     public Result<List<GradeExamVO>> getExamGradeCount() {
         //获取班级
         List<GradeExamVO> gradeExamVOs;
+        Integer userId = SecurityUtil.getUserId();
         if ("role_teacher".equals(SecurityUtil.getRole())) {
-            gradeExamVOs = statMapper.ExamGradeCount(2, SecurityUtil.getUserId());
+            List<Integer> gradeIdList = userGradeMapper.getGradeIdListByUserId(userId);
+            gradeExamVOs = statMapper.ExamGradeCount(2, userId,gradeIdList);
         } else {
-            gradeExamVOs = statMapper.ExamGradeCount(3, SecurityUtil.getUserId());
+            gradeExamVOs = statMapper.ExamGradeCount(3, userId, null);
         }
 
         return Result.success("查询成功", gradeExamVOs);
@@ -93,9 +99,8 @@ public class StatServiceImpl extends ServiceImpl<ExamGradeMapper, ExamGrade> imp
             allStatsVO.setQuestionCount(questionMapper.selectCount( new LambdaQueryWrapper<Question>()
                     .eq(Question::getIsDeleted,0)).intValue());
         }else if("role_teacher".equals(role)){
-            allStatsVO.setClassCount(gradeMapper.selectCount(new LambdaQueryWrapper<Grade>()
-                            .eq(Grade::getIsDeleted,0)
-                            .eq(Grade::getUserId, SecurityUtil.getUserId())).intValue());
+            allStatsVO.setClassCount(userGradeMapper.selectCount(new LambdaQueryWrapper<UserGrade>()
+                            .eq(UserGrade::getUId,SecurityUtil.getUserId())).intValue());
             allStatsVO.setExamCount(examMapper.selectCount(
                     new LambdaQueryWrapper<Exam>()
                             .eq(Exam::getIsDeleted,0)

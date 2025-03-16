@@ -28,6 +28,7 @@ public class StatController {
 
     @Resource
     private IStatService statService;
+
     /**
      * 各班级人数统计
      * @return
@@ -59,6 +60,10 @@ public class StatController {
         return statService.getAllCount();
     }
 
+    /**
+     * 获取用户登录时间统计
+     * @return
+     */
     @GetMapping("/daily")
     @PreAuthorize("hasAnyAuthority('role_teacher','role_admin','role_student')")
     public Result<List<DailyVO>> getDaily(){

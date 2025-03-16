@@ -59,8 +59,6 @@ public interface UserMapper extends BaseMapper<User> {
      */
     IPage<UserVO> pagingUser(IPage<UserVO> page, Integer gradeId, String realName,Integer userId, Integer roleId);
 
-
-
     /**
      * 移除班级
      * @param gradeIds 班级id列表
@@ -70,10 +68,24 @@ public interface UserMapper extends BaseMapper<User> {
 
     List<ClassCountResult> countAndGroupByGradeAndRoleId(Integer roleId);
 
-
+    /**
+     * 删除用户
+     * @param userIds
+     * @return
+     */
     Integer deleteByUserIds(List<Integer> userIds);
 
+    /**
+     * 用户退出班级
+     * @param gradeId
+     * @param userId
+     * @return
+     */
     Integer userExitGrade(Integer gradeId, Integer userId);
 
+    /**
+     * 获得管理员ID列表
+     * @return
+     */
     List<Integer> getAdminList();
 }

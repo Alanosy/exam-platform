@@ -39,7 +39,6 @@ public interface ICertificateService extends IService<Certificate> {
      * @param pageSize 每页记录数
      * @param certificateName    证书名
      * @param certificationUnit    认证单位
-     * @param image    证书背景图片
      * @return 返回结果响应  包含分页后的证书列表信息
      */
     //获取后台分页证书 实现类

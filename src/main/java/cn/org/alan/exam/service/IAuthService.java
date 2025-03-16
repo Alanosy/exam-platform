@@ -54,5 +54,10 @@ public interface IAuthService {
      */
     Result<String> register(HttpServletRequest request, UserForm userForm);
 
+    /**
+     * 记录学生登录时间
+     * @param request
+     * @return
+     */
     Result<String> sendHeartbeat(HttpServletRequest request);
 }

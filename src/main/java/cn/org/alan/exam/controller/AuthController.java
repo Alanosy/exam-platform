@@ -33,6 +33,7 @@ public class AuthController {
 
     @Resource
     private IAuthService iAuthService;
+
     @Value("${online-exam.login.captcha.enabled}")
     private boolean captchaEnabled;
 
@@ -45,7 +46,6 @@ public class AuthController {
     @PostMapping("/login")
     public Result<String> login(HttpServletRequest request,
                                 @Validated @RequestBody LoginForm loginForm) {
-
         return iAuthService.login(request, loginForm);
     }
 
@@ -99,7 +99,11 @@ public class AuthController {
         return iAuthService.verifyCode(request, code);
     }
 
-
+    /**
+     * 记录学生登录时间
+     * @param request
+     * @return
+     */
     @PostMapping("/track-presence")
     public Result<String> trackPresence(HttpServletRequest request) {
         return iAuthService.sendHeartbeat(request);

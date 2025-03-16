@@ -107,21 +107,6 @@ public class AuthServiceImpl implements IAuthService {
         }
         user.setPassword(null);
         // 根据用户角色代码
-        ///
-        // List<String> authList = jwtUtil.getAuthList(token);
-        // 反序列化jwtToken获取用户信息
-        // User sysUser = objectMapper.readValue(userInfo, User.class);
-        // // 权限转型
-        // // List<SimpleGrantedAuthority> permissions = authList.stream().map(SimpleGrantedAuthority::new).toList();
-        // // 创建登录用户
-        // SysUserDetails securityUser = new SysUserDetails(sysUser);
-        // securityUser.setPermissions(permissions);
-        // // 创建权限授权的token 参数：用户，密码，权限 不给密码因为已经登录了
-        // UsernamePasswordAuthenticationToken token1 =
-        //         new UsernamePasswordAuthenticationToken(securityUser, null, permissions);
-        // // 通过安全上下文设置授权token
-        // SecurityContextHolder.getContext().setAuthentication(token1);
-        ///
         List<String> permissions = roleMapper.selectCodeById(user.getRoleId());
 
         // 数据库获取的权限是字符串springSecurity需要实现GrantedAuthority接口类型，所有这里做一个类型转换
@@ -155,7 +140,11 @@ public class AuthServiceImpl implements IAuthService {
         return Result.success("登录成功", token);
     }
 
-
+    /**
+     * 注销
+     * @param request request对象，需要清除session里面的内容
+     * @return
+     */
     @Override
     public Result<String> logout(HttpServletRequest request) {
         // 清除session
@@ -169,7 +158,11 @@ public class AuthServiceImpl implements IAuthService {
         return Result.success("退出成功");
     }
 
-
+    /**
+     * 获取图形验证码
+     * @param request  request对象，获取sessionId
+     * @param response response对象，响应图片
+     */
     @SneakyThrows(IOException.class)
     @Override
     public void getCaptcha(HttpServletRequest request, HttpServletResponse response) {
@@ -189,6 +182,12 @@ public class AuthServiceImpl implements IAuthService {
         os.close();
     }
 
+    /**
+     * 验证验证码
+     * @param request request对象获取sessionId
+     * @param code    用户输入的验证码
+     * @return
+     */
     @Override
     public Result<String> verifyCode(HttpServletRequest request, String code) {
         String key = "code" + request.getSession().getId();
@@ -206,6 +205,12 @@ public class AuthServiceImpl implements IAuthService {
         return Result.success("验证码校验成功");
     }
 
+    /**
+     * 注册用户
+     * @param request  request对象，用于获取sessionId
+     * @param userForm 用户信息
+     * @return
+     */
     @Override
     public Result<String> register(HttpServletRequest request, UserForm userForm) {
         // 判断验证码

@@ -31,8 +31,6 @@ public class ScoreController {
     @Resource
     private IExamQuAnswerService iExamQuAnswerService;
 
-
-
     /**
      * 分页获取成绩信息
      * @param pageNum  页码
@@ -52,7 +50,6 @@ public class ScoreController {
         return iUserExamsScoreService.pagingScore(pageNum, pageSize, gradeId, examId, realName);
     }
 
-
     /**
      * 获取某场考试某题作答情况
      * @param examId     考试id
@@ -65,7 +62,6 @@ public class ScoreController {
                                                      @PathVariable("questionId") Integer questionId) {
         return iExamQuAnswerService.questionAnalyse(examId, questionId);
     }
-
 
     /**
      * 根据班级分析考试情况

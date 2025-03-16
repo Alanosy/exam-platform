@@ -27,9 +27,7 @@ import java.util.stream.Collectors;
 
 
 /**
- * <p>
- * 服务实现类
- * </p>
+ * 证书服务实现类
  *
  * @author Jinxin
  * @since 2024-03-21
@@ -145,7 +143,6 @@ public class CertificateServiceImpl extends ServiceImpl<CertificateMapper, Certi
         certificateLambdaUpdateWrapper.eq(Certificate::getId,id)
                 .set(Certificate::getIsDeleted,1);
         int affectedRows = certificateMapper.update(certificateLambdaUpdateWrapper);
-
         if (affectedRows > 0) {
             stringRedisTemplate.delete("cache:certificate:pagingCertificate:"+id);
             return Result.success("删除证书成功");
