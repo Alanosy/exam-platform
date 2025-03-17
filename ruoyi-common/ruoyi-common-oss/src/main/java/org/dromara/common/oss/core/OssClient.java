@@ -8,7 +8,7 @@ import org.dromara.common.core.utils.StringUtils;
 import org.dromara.common.core.utils.file.FileUtils;
 import org.dromara.common.oss.constant.OssConstant;
 import org.dromara.common.oss.entity.UploadResult;
-import org.dromara.common.oss.enumd.AccessPolicyType;
+import org.dromara.common.oss.enums.AccessPolicyType;
 import org.dromara.common.oss.exception.OssException;
 import org.dromara.common.oss.properties.OssProperties;
 import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;

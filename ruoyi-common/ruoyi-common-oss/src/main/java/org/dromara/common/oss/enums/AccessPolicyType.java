@@ -1,4 +1,4 @@
-package org.dromara.common.oss.enumd;
+package org.dromara.common.oss.enums;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
