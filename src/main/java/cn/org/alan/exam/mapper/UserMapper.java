@@ -34,9 +34,8 @@ public interface UserMapper extends BaseMapper<User> {
 
     /**
      * 获取用户信息
-     *
-     * @param userId 用户id
-     * @return 响应
+     * @param userId
+     * @return
      */
     UserVO info(Integer userId);
 

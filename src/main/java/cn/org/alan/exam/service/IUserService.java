@@ -17,62 +17,60 @@ public interface IUserService extends IService<User> {
 
     /**
      * 创建用户，教师只能创建学生，管理员可以创建教师和学生
-     *
-     * @param userForm 请求参数，用户名、真实姓名[、角色id]
-     * @return 响应结果
+     * @param userForm
+     * @return
      */
     Result<String> createUser(UserForm userForm);
 
-
     /**
-     * 修改密码
-     * @param userForm 入参
-     * @return 响应结果
+     * 用户修改密码
+     * @param userForm
+     * @return
      */
-    Result<String> updatePassword( UserForm userForm);
+    Result<String> updatePassword(UserForm userForm);
 
     /**
      * 批量删除用户
-     * @param ids 用户id
-     * @return 响应结果
+     * @param ids
+     * @return
      */
     Result<String> deleteBatchByIds(String ids);
 
     /**
-     * Excel导入用户信息
-     * @param file 文件
-     * @return 响应结果
+     * Excel导入用户数据
+     * @param file
+     * @return
      */
     Result<String> importUsers(MultipartFile file);
 
     /**
-     * 获取用户信息 用户id从session获取
+     * 获取用户个人信息
      * @return 响应结果
      */
     Result<UserVO> info();
 
     /**
      * 用户加入班级，只有学生才能加入班级
-     * @param code 班级口令
-     * @return 响应
+     * @param code
+     * @return
      */
     Result<String> joinGrade(String code);
 
     /**
-     * 分页获取用户信息
-     * @param pageNum 页码
-     * @param pageSize 每页记录数
-     * @param gradeId 班级Id
-     * @param realName 真实姓名
-     * @return 查询结果
+     * 教师和管理员 用户管理 分页获取用户信息
+     * @param pageNum
+     * @param pageSize
+     * @param gradeId
+     * @param realName
+     * @return
      */
     Result<IPage<UserVO>> pagingUser(Integer pageNum, Integer pageSize, Integer gradeId, String realName);
 
 
     /**
      * 用户上传头像
-     * @param file 文件
-     * @return 结果
+     * @param file
+     * @return
      */
     Result<String> uploadAvatar(MultipartFile file);
 }

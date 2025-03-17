@@ -40,15 +40,9 @@ public class GradeServiceImpl extends ServiceImpl<GradeMapper, Grade> implements
     @Resource
     private GradeMapper gradeMapper;
     @Resource
-    private ExamMapper examMapper;
-    @Resource
-    private QuestionMapper questionMapper;
-    @Resource
     private GradeConverter gradeConverter;
     @Resource
     private UserMapper userMapper;
-    @Resource
-    private IGradeService gradeService;
     @Resource
     private StringRedisTemplate stringRedisTemplate;
     @Resource
@@ -56,7 +50,11 @@ public class GradeServiceImpl extends ServiceImpl<GradeMapper, Grade> implements
     @Resource
     private UserGradeMapper userGradeMapper;
 
-
+    /**
+     * 新增班级
+     * @param gradeForm
+     * @return
+     */
     @Override
     @Transactional
     public Result<String> addGrade(GradeForm gradeForm) {
@@ -64,23 +62,20 @@ public class GradeServiceImpl extends ServiceImpl<GradeMapper, Grade> implements
         gradeForm.setCode(ClassTokenGenerator.generateClassToken(18));
         // 实体转换
         Grade grade = gradeConverter.formToEntity(gradeForm);
-        // 添加数据
+        // 开始添加数据
         int rows = gradeMapper.insert(grade);
         if (rows == 0) {
             return Result.failed("添加失败");
         }
-        // 更新缓存
-        if (grade.getId() != null) { // 确保ID有效
-            // 如果是更新操作，先从缓存中移除旧数据，然后重新放入最新的数据
-            stringRedisTemplate.delete("cache:grade:getPaging:"+grade.getId().toString()); // 删除旧缓存
-            // GradeVO updatedGradeVO = gradeConverter.GradeToGradeVO(grade); // 转换为视图对象
-            // Map<Integer, GradeVO> map = Map.of(updatedGradeVO.getId(), updatedGradeVO);
-            // cacheClient.batchPut("cache:grade:getPaging:",map,10L,TimeUnit.MINUTES); // 存储新数据
-        }
-        stringRedisTemplate.delete("cache:grade:getAllGrade:"+SecurityUtil.getUserId());
         return Result.success("添加成功");
     }
 
+    /**
+     * 修改班级
+     * @param id
+     * @param gradeForm
+     * @return
+     */
     @Override
     @Transactional
     public Result<String> updateGrade(Integer id, GradeForm gradeForm) {
@@ -95,87 +90,55 @@ public class GradeServiceImpl extends ServiceImpl<GradeMapper, Grade> implements
             return Result.failed("修改失败");
         }
         Grade byId = getById(id);
-        // 更新缓存
-        if (byId.getId() != null) { // 确保ID有效
-            // 如果是更新操作，先从缓存中移除旧数据，然后重新放入最新的数据
-            stringRedisTemplate.delete("cache:grade:getPaging:"+byId.getId().toString()); // 删除旧缓存
-            // GradeVO updatedGradeVO = gradeConverter.GradeToGradeVO(byId); // 转换为视图对象
-            // Map<Integer, GradeVO> map = Map.of(updatedGradeVO.getId(), updatedGradeVO);
-            // cacheClient.batchPut("cache:grade:getPaging:",map,10L,TimeUnit.MINUTES); // 存储新数据
-        }
-        stringRedisTemplate.delete("cache:grade:getAllGrade:"+SecurityUtil.getUserId());
         return Result.success("修改成功");
     }
 
+    /**
+     * 删除班级
+     * @param gradeId
+     * @return
+     */
     @Override
     @Transactional
-    public Result<String> deleteGrade(Integer id) {
-        // 删除班级
-        LambdaUpdateWrapper<Grade> gradeLambdaUpdateWrapper = new LambdaUpdateWrapper<>();
-        gradeLambdaUpdateWrapper.eq(Grade::getId,id)
-                .set(Grade::getIsDeleted,1);
-        int rows = gradeMapper.update(gradeLambdaUpdateWrapper);
+    public Result<String> deleteGrade(Integer gradeId) {
+        // 逻辑删除班级
+        int rows = gradeMapper.deleteGrade(gradeId);
         if (rows == 0) {
             return Result.failed("删除失败");
         }
-        userGradeMapper.deleteUserGrade(id);
-        // 删除缓存
-        stringRedisTemplate.delete("cache:grade:getPaging:"+id.toString());
-        stringRedisTemplate.delete("cache:grade:getAllGrade:"+SecurityUtil.getUserId());
+        // 逻辑删除教师与班级的关联
+        userGradeMapper.deleteUserGrade(gradeId);
         return Result.success("删除成功");
     }
 
+    /**
+     * 分页查询班级
+     * @param pageNum
+     * @param pageSize
+     * @param gradeName
+     * @return
+     */
     @Override
     public Result<IPage<GradeVO>> getPaging(Integer pageNum, Integer pageSize, String gradeName) {
-        // 获取角色
-        Integer role = 0;
-        if("role_teacher".equals(SecurityUtil.getRole())){
-            role = 2;
+        Page<GradeVO> page = new Page<>(pageNum, pageSize);
+        // 获取当前角色代码和用户ID
+        Integer roleCode = SecurityUtil.getRoleCode();
+        Integer userId = SecurityUtil.getUserId();
+        // 如果是教师获取教师加入班级的ID
+        List<Integer> gradeIdList = null;
+        if(roleCode==2){
+            gradeIdList = userGradeMapper.getGradeIdListByUserId(userId);
         }
-        // 查询满足条件的总记录数
-        int total = gradeMapper.countByCondition(SecurityUtil.getUserId(), gradeName,role); // 假设gradeMapper中实现了根据条件计数的方法
-        // 计算偏移量
-        int offset = (pageNum - 1) * pageSize;
-
-        // 查询分页ID列表
-        List<Integer> gradeIds = gradeMapper.selectGradeIdsPage(SecurityUtil.getUserId(), role ,gradeName, offset, pageSize);
-
-        // 批量从缓存中获取GradeVO对象
-        Map<Integer, GradeVO> cachedGradesMap = cacheClient.batchGet("cache:grade:getPaging:",gradeIds, GradeVO.class);
-
-        // 确定未命中的ID列表
-        List<Integer> missIds = new ArrayList<>();
-        for (Integer id : gradeIds) {
-            if (!cachedGradesMap.containsKey(id)) {
-                missIds.add(id);
-            }
-        }
-
-        // 如果有未命中的ID，从数据库批量查询并更新缓存
-        if (!missIds.isEmpty()) {
-            List<GradeVO> missedGrades = gradeMapper.batchSelectByIds(missIds);
-            // 假设GradeVO的ID为getId()，使用Collectors.toMap转换
-            Map<Integer, GradeVO> missedGradesMap = missedGrades.stream()
-                    .collect(Collectors.toMap(GradeVO::getId, Function.identity()));
-            // 更新缓存
-            cacheClient.batchPut("cache:grade:getPaging:",missedGradesMap,10L,TimeUnit.MINUTES);
-            // 合并缓存结果
-            cachedGradesMap.putAll(missedGradesMap);
-        }
-
-        // 根据ID列表从缓存中获取完整的GradeVO对象列表
-        List<GradeVO> finalResult = new ArrayList<>(gradeIds.size());
-        for (Integer id : gradeIds) {
-            finalResult.add(cachedGradesMap.get(id));
-        }
-
-        // 构建并返回IPage对象
-        IPage<GradeVO> resultPage = new Page<>(pageNum, pageSize, Long.valueOf(total));
-        resultPage.setRecords(finalResult);
-
-        return Result.success("查询成功", resultPage);
+        // 开始查询班级
+        page = gradeMapper.selectGradePage(page, userId, gradeName, roleCode,gradeIdList);
+        return Result.success("查询成功", page);
     }
 
+    /**
+     * 退出班级
+     * @param ids
+     * @return
+     */
     @Override
     public Result<String> removeUserGrade(String ids) {
         // 字符串转换为列表
@@ -187,51 +150,78 @@ public class GradeServiceImpl extends ServiceImpl<GradeMapper, Grade> implements
         if (rows == 0) {
             return Result.failed("移除失败");
         }
-        userIds.forEach(id->{
-            stringRedisTemplate.delete("cache:grade:getPaging:"+id.toString());
-        });
-
         return Result.success("移除成功");
     }
 
+    /**
+     * 获取所有班级列表
+     * @return
+     */
     @Override
     public Result<List<GradeVO>> getAllGrade() {
+        // 获取角色代码和用户ID
         Integer roleCode = SecurityUtil.getRoleCode();
         Integer userId = SecurityUtil.getUserId();
-        List<GradeVO> grades = gradeMapper.getAllGrade(userId,roleCode);
+        List<Integer> gradeIdList = null;
+        if(roleCode==2){
+            gradeIdList = userGradeMapper.getGradeIdListByUserId(userId);
+        }
+        // 开始查询当前用户管理的所有班级
+        List<GradeVO> grades = gradeMapper.getAllGrade(userId, roleCode,gradeIdList);
         return Result.success("查询成功", grades);
     }
 
+    /**
+     * 老师加入班级
+     * @param code
+     * @return
+     */
     @Override
     public Result teacherJoinClass(String code) {
+        // 获取班级信息 用户ID
         Grade grade = gradeMapper.getGradeById(code);
         Integer userId = SecurityUtil.getUserId();
+        // 设置教师和班级的联系
         UserGrade userGrade = new UserGrade();
         userGrade.setGId(grade.getId());
         userGrade.setUId(userId);
+        // 开始添加教师和班级的联系
         int insert = userGradeMapper.insert(userGrade);
-        if(insert>0){
+        if (insert > 0) {
             return Result.success("加入成功");
         }
         return Result.failed("加入失败");
     }
 
+    /**
+     * 老师退出班级
+     * @param gradeId
+     * @return
+     */
     @Override
     public Result teacherExitClass(String gradeId) {
+        // 获取用户ID
         Integer userId = SecurityUtil.getUserId();
-        Integer row = userGradeMapper.teacherExitClass(userId,gradeId);
-        if(row >0){
+        // 开始调用sql教师退出班级
+        Integer row = userGradeMapper.teacherExitClass(userId, gradeId);
+        if (row > 0) {
             return Result.success("退出成功");
         }
         return Result.failed("退出失败");
     }
 
+    /**
+     * 学生退出班级
+     * @return
+     */
     @Override
     public Result userExitGrade() {
+        // 获取班级和用户ID
         Integer gradeId = SecurityUtil.getGradeId();
         Integer userId = SecurityUtil.getUserId();
-        Integer row = userMapper.userExitGrade(gradeId,userId);
-        if(row>0){
+        // 开始调用sql用户退出班级
+        Integer row = userMapper.userExitGrade(gradeId, userId);
+        if (row > 0) {
             return Result.success("退出成功");
         }
         return Result.failed("退出失败");

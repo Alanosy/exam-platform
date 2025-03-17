@@ -28,9 +28,8 @@ public class UserController {
 
 
     /**
-     * 获取用户登录信息
-     *
-     * @return 响应结果
+     * 获取用户个人信息
+     * @return
      */
     @GetMapping("/info")
     @PreAuthorize("hasAnyAuthority('role_student','role_teacher','role_admin')")
@@ -41,9 +40,8 @@ public class UserController {
 
     /**
      * 创建用户，教师只能创建学生，管理员可以创建教师和学生
-     *
-     * @param userForm 请求参数，用户名、真实姓名[、角色id]
-     * @return 响应结果
+     * @param userForm
+     * @return
      */
     @PostMapping
     @PreAuthorize("hasAnyAuthority('role_teacher','role_admin')")
@@ -53,9 +51,8 @@ public class UserController {
 
     /**
      * 用户修改密码
-     *
-     * @param userForm 入参
-     * @return 响应结果
+     * @param userForm
+     * @return
      */
     @PutMapping
     @PreAuthorize("hasAnyAuthority('role_student','role_teacher','role_admin')")
@@ -65,9 +62,8 @@ public class UserController {
 
     /**
      * 批量删除用户
-     *
-     * @param ids 字符串ids
-     * @return 相应结果
+     * @param ids
+     * @return
      */
     @DeleteMapping("/{ids}")
     @PreAuthorize("hasAnyAuthority('role_teacher','role_admin')")
@@ -77,9 +73,8 @@ public class UserController {
 
     /**
      * Excel导入用户数据
-     *
-     * @param file 文件
-     * @return 响应结果
+     * @param file
+     * @return
      */
     @PostMapping("/import")
     @PreAuthorize("hasAnyAuthority('role_teacher','role_admin')")
@@ -90,9 +85,8 @@ public class UserController {
 
     /**
      * 用户加入班级，只有学生才能加入班级
-     *
-     * @param code 班级口令
-     * @return 响应
+     * @param code
+     * @return
      */
     @PutMapping("/grade/join")
     @PreAuthorize("hasAnyAuthority('role_student')")
@@ -101,13 +95,12 @@ public class UserController {
     }
 
     /**
-     * 分页获取用户信息
-     *
-     * @param pageNum  页码
-     * @param pageSize 每页记录数
-     * @param gradeId  班级Id
-     * @param realName 真实姓名
-     * @return 响应结果
+     * 教师和管理员 用户管理 分页获取用户信息
+     * @param pageNum
+     * @param pageSize
+     * @param gradeId
+     * @param realName
+     * @return
      */
     @GetMapping("/paging")
     @PreAuthorize("hasAnyAuthority('role_teacher','role_admin')")
@@ -120,9 +113,8 @@ public class UserController {
 
     /**
      * 用户上传头像
-     *
-     * @param file 文件
-     * @return 响应结果
+     * @param file
+     * @return
      */
     @PutMapping("/uploadAvatar")
     @PreAuthorize("hasAnyAuthority('role_student','role_teacher','role_admin')")

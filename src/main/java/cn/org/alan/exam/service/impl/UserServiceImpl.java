@@ -54,51 +54,78 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
     @Resource
     private UserGradeMapper userGradeMapper;
 
-
+    /**
+     * 创建用户，教师只能创建学生，管理员可以创建教师和学生
+     *
+     * @param userForm
+     * @return
+     */
     @Override
     public Result<String> createUser(UserForm userForm) {
+        // 设置默认密码
         userForm.setPassword(new BCryptPasswordEncoder().encode("123456"));
-        //教师只能创建学生
-        if ("role_teacher".equals(SecurityUtil.getRole())) {
+        // 获取角色
+        Integer roleCode = SecurityUtil.getRoleCode();
+        // 教师只能创建学生
+        if (roleCode == 2) {
             userForm.setRoleId(1);
         }
-        //避免管理员创建用户不传递角色
+        // 避免管理员创建用户不传递角色
         if (userForm.getRoleId() == null || userForm.getRoleId() == 0) {
             return Result.failed("请选择用户角色");
         }
         User user = userConverter.fromToEntity(userForm);
+        // 调用Mapper插入用户
         userMapper.insert(user);
         return Result.success("用户创建成功");
 
     }
 
+    /**
+     * 用户修改密码
+     *
+     * @param userForm
+     * @return
+     */
     @Override
     public Result<String> updatePassword(UserForm userForm) {
+        Integer userId = SecurityUtil.getUserId();
         if (!userForm.getNewPassword().equals(userForm.getCheckedPassword())) {
             return Result.failed("两次密码不一致");
         }
-        Integer userId = SecurityUtil.getUserId();
         if (!new BCryptPasswordEncoder()
-                .matches(userForm.getOriginPassword(),userMapper.selectById(userId).getPassword())) {
+                .matches(userForm.getOriginPassword(), userMapper.selectById(userId).getPassword())) {
             return Result.failed("旧密码错误");
         }
-        //密码加密
+        // 设置新加密后到密码配置好自己到userID
         userForm.setPassword(new BCryptPasswordEncoder().encode(userForm.getNewPassword()));
         userForm.setId(userId);
-        int updated = userMapper.updateById(userConverter.fromToEntity(userForm));
-        //密码修改成功清除redis的token，让用户重新登录
+        // 转还为User实体
+        User user = userConverter.fromToEntity(userForm);
+        // 调用mapper更新用户密码
+        int updated = userMapper.updateById(user);
+        // 密码修改成功清除redis的token，让用户重新登录
         if (updated > 0) {
-            stringRedisTemplate.delete(request.getSession().getId() + "token");
+            stringRedisTemplate.delete("token:" + request.getSession().getId());
             return Result.success("修改成功，请重新登录");
         }
         return Result.failed("旧密码错误");
 
     }
 
+    /**
+     * 批量删除用户
+     *
+     * @param ids
+     * @return
+     */
     @Override
     @Transactional
     public Result<String> deleteBatchByIds(String ids) {
         List<Integer> userIds = Arrays.stream(ids.split(",")).map(Integer::parseInt).toList();
+        if (userIds.isEmpty()) {
+            return Result.failed("未传入用户Id");
+        }
         // //删除用户证书
         // certificateUserMapper.deleteByUserIds(userIds);
         // //删除用户创建的考试
@@ -144,21 +171,29 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
         // userBookMapper.deleteByUserIds(userIds);
         // //删除用户
         Integer row = userMapper.deleteByUserIds(userIds);
-        // //
+        if (row < 1) {
+            return Result.failed("删除失败");
+        }
         return Result.success("删除成功");
     }
 
+    /**
+     * Excel导入用户数据
+     *
+     * @param file
+     * @return
+     */
     @SneakyThrows(Exception.class)
     @Override
     @Transactional
     public Result<String> importUsers(MultipartFile file) {
-        //文件类型判断
+        // 文件类型判断
         if (!ExcelUtils.isExcel(Objects.requireNonNull(file.getOriginalFilename()))) {
             return Result.failed("文件类型必须是xls或xlsx");
         }
-        //读取文件
+        // 读取文件
         List<UserForm> list = ExcelUtils.readMultipartFile(file, UserForm.class);
-        //参数补充
+        // 参数补充
         list.forEach(userForm -> {
             userForm.setPassword(new BCryptPasswordEncoder().encode("123456"));
             userForm.setCreateTime(DateTimeUtil.getDateTime());
@@ -166,7 +201,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
                 userForm.setRoleId(1);
             }
         });
-
+        // 判断条数是否过多
         if (list.size() > 300) {
             return Result.failed("表中最多存放300条数据");
         }
@@ -174,16 +209,29 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
         return Result.success("用户导入成功");
     }
 
+    /**
+     * 获取用户个人信息
+     *
+     * @return
+     */
     @Override
     public Result<UserVO> info() {
-        UserVO userVo = userMapper.info(SecurityUtil.getUserId());
+        // 获取用户信息
+        Integer userId = SecurityUtil.getUserId();
+        UserVO userVo = userMapper.info(userId);
+        // 将密码去除
         userVo.setPassword(null);
-        return Result.success(null, userVo);
+        return Result.success("获取用户信息成功", userVo);
     }
 
+    /**
+     * 用户加入班级，只有学生才能加入班级
+     * @param code
+     * @return
+     */
     @Override
     public Result<String> joinGrade(String code) {
-        //获取班级信息
+        // 获取班级信息
         LambdaQueryWrapper<Grade> wrapper = new LambdaQueryWrapper<Grade>().eq(Grade::getCode, code);
         Grade grade = gradeMapper.selectOne(wrapper);
         if (Objects.isNull(grade)) {
@@ -194,36 +242,47 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
         user.setGradeId(grade.getId());
         int updated = userMapper.updateById(user);
         if (updated > 0) {
-            stringRedisTemplate.delete("cache:grade:getPaging:"+SecurityUtil.getUserId().toString());
+            stringRedisTemplate.delete("cache:grade:getPaging:" + SecurityUtil.getUserId().toString());
             return Result.success("加入班级：" + grade.getGradeName() + "成功");
         }
         return Result.failed("加入失败");
     }
 
+    /**
+     * 教师和管理员 用户管理 分页获取用户信息
+     * @param pageNum
+     * @param pageSize
+     * @param gradeId
+     * @param realName
+     * @return
+     */
     @Override
     public Result<IPage<UserVO>> pagingUser(Integer pageNum, Integer pageSize, Integer gradeId, String realName) {
         IPage<UserVO> page = new Page<>(pageNum, pageSize);
         Integer userId = SecurityUtil.getUserId();
         if ("role_teacher".equals(SecurityUtil.getRole())) {
             List<Integer> gradeIdList = userGradeMapper.getGradeIdListByUserId(userId);
-            page = userMapper.pagingUser(page, gradeId, realName, SecurityUtil.getUserId(),1,gradeIdList);
+            page = userMapper.pagingUser(page, gradeId, realName, SecurityUtil.getUserId(), 1, gradeIdList);
         } else {
-            page = userMapper.pagingUser(page, gradeId, realName, SecurityUtil.getUserId(),null,null);
+            page = userMapper.pagingUser(page, gradeId, realName, SecurityUtil.getUserId(), null, null);
         }
 
         return Result.success(null, page);
     }
 
+    /**
+     * 用户上传头像
+     * @param file
+     * @return
+     */
     @Transactional
     @Override
     public Result<String> uploadAvatar(MultipartFile file) {
         Result<String> result = iQuestionService.uploadImage(file);
-        System.out.println(result);
         if (result.getCode() == 0) {
             return Result.failed("图片上传失败");
         }
         String url = result.getData();
-        System.out.println(url);
         User user = new User();
         user.setId(SecurityUtil.getUserId());
         user.setAvatar(url);

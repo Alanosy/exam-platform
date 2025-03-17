@@ -46,13 +46,15 @@
         where u.id = #{userId}
     </update>
 
-
     <!--获取用户信息-->
     <select id="info" resultType="cn.org.alan.exam.model.vo.UserVO">
         select
         <include refid="simpleFiled"/>
         ,r.role_name,g.grade_name,g.id as gradeId
-        from t_user u join t_role r on role_id = r.id left join t_grade g on grade_id = g.id
+        <!--用户表、角色表、班级表-->
+        from t_user u
+        join t_role r on u.role_id = r.id
+        left join t_grade g on u.grade_id = g.id
         where u.id = #{userId}
     </select>
 

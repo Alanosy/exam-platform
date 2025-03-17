@@ -22,7 +22,7 @@ public interface GradeMapper extends BaseMapper<Grade> {
 
     Integer deleteByUserId(List<Integer> userIds);
 
-    Page<GradeVO> selectGradePage(Page<GradeVO> page, Integer userId , String gradeName, Integer role);
+    Page<GradeVO> selectGradePage(Page<GradeVO> page, Integer userId , String gradeName, Integer roleCode, List<Integer> gradeIdList);
 
     List<Integer> selectGradeIdsPage(Integer userId, Integer role, String gradeName, int offset, Integer pageSize);
 
@@ -32,5 +32,12 @@ public interface GradeMapper extends BaseMapper<Grade> {
 
     Grade getGradeById(String code);
 
-    List<GradeVO> getAllGrade(Integer userId, Integer roleCode);
+    List<GradeVO> getAllGrade(Integer userId, Integer roleCode, List<Integer> gradeIdList);
+
+    /**
+     * 逻辑删除班级
+     * @param gradeId
+     * @return
+     */
+    int deleteGrade(Integer gradeId);
 }

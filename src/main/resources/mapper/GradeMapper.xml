@@ -18,6 +18,12 @@
             #{userId}
         </foreach>
     </delete>
+    <!--逻辑删除班级-->
+    <update id="deleteGrade">
+        update t_grade
+        set is_deleted = 1
+        where id = #{gradeId}
+    </update>
     <select id="selectIdsByUserIds" resultType="java.lang.Integer">
         select id from t_grade where user_id in
         <foreach collection="userIds" item="userId" open="(" close=")" separator=",">
@@ -25,22 +31,35 @@
         </foreach>
     </select>
     <select id="selectGradePage" resultType="cn.org.alan.exam.model.vo.GradeVO">
-        select g.id as id,g.grade_name as gradeName, g.user_id as userId,u.user_name as userName,
-        g.code as code,(SELECT count(*) FROM t_user k WHERE k.grade_id = g.id and k.is_deleted=0 ) as gradeCount
-        from t_grade g
-        join t_user u on g.user_id = u.id
-        <trim suffixOverrides="and" prefix="where">
-            <if test="role==2">
-                g.user_id = #{userId} and
-            </if>
-
-            <if test="gradeName!=null">
-                 g.grade_name like concat('%',#{gradeName},'%')  and
-            </if>
-
+        SELECT
+        g.id,
+        g.grade_name AS gradeName,
+        g.user_id AS userId,
+        u.user_name AS userName,
+        g.code,
+        (SELECT COUNT(*) FROM t_user k WHERE k.grade_id = g.id AND k.is_deleted = 0) AS gradeCount
+        FROM t_grade g
+        JOIN t_user u ON g.user_id = u.id
+        <where>
+            <!--班级未删除的-->
             g.is_deleted = 0
-
-        </trim>
+            <!--查询班级名-->
+            <if test="gradeName != null and gradeName != ''">
+                AND g.grade_name LIKE CONCAT('%', #{gradeName}, '%')
+            </if>
+            <if test="roleCode == 2 ">
+                <if test="gradeIdList != null and gradeIdList.size() > 0">
+                    and g.id IN
+                    <foreach collection="gradeIdList" item="gId" open="(" separator="," close=")">
+                        #{gId}
+                    </foreach>
+                </if>
+                <!-- 当 gradeIdList 为空时，添加一个条件使得结果为空 -->
+                <if test="gradeIdList == null or gradeIdList.size() == 0">
+                    and g.id IN ()
+                </if>
+            </if>
+        </where>
     </select>
     <select id="selectGradeIdsPage" resultType="java.lang.Integer">
         SELECT g.id
@@ -108,8 +127,17 @@
         </if>
         <where>
             g.is_deleted = 0
-            <if test="roleCode ==2">
-               and  ug.u_id = #{userId}
+            <if test="roleCode == 2 ">
+                <if test="gradeIdList != null and gradeIdList.size() > 0">
+                    and g.id IN
+                    <foreach collection="gradeIdList" item="gId" open="(" separator="," close=")">
+                        #{gId}
+                    </foreach>
+                </if>
+                <!-- 当 gradeIdList 为空时，添加一个条件使得结果为空 -->
+                <if test="gradeIdList == null or gradeIdList.size() == 0">
+                    and g.id IN ()
+                </if>
             </if>
         </where>
 

@@ -10,14 +10,15 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import java.util.List;
 
 /**
- *  错题本服务类
+ * 错题本服务类
  *
  * @author Alan
  * @since 2024-03-21
  */
 public interface IUserBookService extends IService<UserBook> {
     /**
-     * 分页查询错题考试
+     * 学生错题本分页查询
+     *
      * @param pageNum
      * @param pageSize
      * @param examName
@@ -27,6 +28,7 @@ public interface IUserBookService extends IService<UserBook> {
 
     /**
      * 查询错题本错题id列表
+     *
      * @param examId
      * @return
      */
@@ -34,6 +36,7 @@ public interface IUserBookService extends IService<UserBook> {
 
     /**
      * 查询单题
+     *
      * @param quId
      * @return
      */
@@ -41,6 +44,7 @@ public interface IUserBookService extends IService<UserBook> {
 
     /**
      * 填充答案
+     *
      * @return
      */
     Result<AddBookAnswerVO> addBookAnswer(ReUserBookForm reUserBookForm);

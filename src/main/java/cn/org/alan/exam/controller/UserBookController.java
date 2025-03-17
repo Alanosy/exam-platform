@@ -26,7 +26,8 @@ public class UserBookController {
     private IUserBookService userBookService;
 
     /**
-     * 分页查询错题考试
+     * 学生错题本分页查询
+     *
      * @param pageNum
      * @param pageSize
      * @param examName
@@ -34,43 +35,46 @@ public class UserBookController {
      */
     @GetMapping("/paging")
     @PreAuthorize("hasAnyAuthority('role_student')")
-    public Result<IPage<UserPageBookVO>> getPage(@RequestParam(value = "pageNum",required = false, defaultValue = "1") Integer pageNum,
-                                                 @RequestParam(value = "pageSize",required = false, defaultValue = "10") Integer pageSize,
-                                                 @RequestParam(value = "examName",required = false) String examName){
+    public Result<IPage<UserPageBookVO>> getPage(@RequestParam(value = "pageNum", required = false, defaultValue = "1") Integer pageNum,
+                                                 @RequestParam(value = "pageSize", required = false, defaultValue = "10") Integer pageSize,
+                                                 @RequestParam(value = "examName", required = false) String examName) {
 
-        return userBookService.getPage(pageNum,pageSize,examName);
+        return userBookService.getPage(pageNum, pageSize, examName);
     }
 
     /**
      * 查询错题本错题id列表
+     *
      * @param examId
      * @return
      */
     @GetMapping("/question/list/{examId}")
     @PreAuthorize("hasAnyAuthority('role_teacher','role_admin','role_student')")
-    public Result<List<ReUserExamBookVO>> getReUserExamBook(@PathVariable("examId") Integer examId){
+    public Result<List<ReUserExamBookVO>> getReUserExamBook(@PathVariable("examId") Integer examId) {
         return userBookService.getReUserExamBook(examId);
     }
 
     /**
      * 查询单题
+     *
      * @param quId
      * @return
      */
     @GetMapping("/question/single/{quId}")
     @PreAuthorize("hasAnyAuthority('role_teacher','role_admin','role_student')")
-    public Result<BookOneQuVO> getBookOne(@PathVariable("quId") Integer quId){
+    public Result<BookOneQuVO> getBookOne(@PathVariable("quId") Integer quId) {
         return userBookService.getBookOne(quId);
     }
 
     /**
      * 填充答案
+     *
      * @param reUserBookForm
      * @return
      */
     @PostMapping("/full-book")
     @PreAuthorize("hasAnyAuthority('role_teacher','role_admin','role_student')")
-    public Result<AddBookAnswerVO> addBookAnswer(@RequestBody ReUserBookForm reUserBookForm){
+    public Result<AddBookAnswerVO> addBookAnswer(@RequestBody ReUserBookForm reUserBookForm) {
         return userBookService.addBookAnswer(reUserBookForm);
     }
 }

@@ -47,10 +47,19 @@ public class UserBookServiceImpl extends ServiceImpl<UserBookMapper, UserBook> i
     @Resource
     private IOptionService optionService;
 
+    /**
+     * 学生错题本分页查询
+     * @param pageNum
+     * @param pageSize
+     * @param examName
+     * @return
+     */
     @Override
     public Result<IPage<UserPageBookVO>> getPage(Integer pageNum, Integer pageSize, String examName) {
         Page<UserPageBookVO> page = new Page<>(pageNum, pageSize);
+        // 获取userId
         Integer userId = SecurityUtil.getUserId();
+        // 开始查询有错题的考试
         Page<UserPageBookVO> userPageBookVOPage = userBookMapper.selectPageVo(page, examName,userId );
         return Result.success("查询成功", userPageBookVOPage);
     }
