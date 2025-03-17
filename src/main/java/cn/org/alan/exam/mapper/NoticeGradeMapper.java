@@ -41,4 +41,10 @@ public interface NoticeGradeMapper extends BaseMapper<NoticeGrade> {
      * @return
      */
     List<Integer> getGradeList(Integer noticeId);
+
+    /**
+     * 删除公告和班级关联
+     * @param noticeIds
+     */
+    void deleteNoticeGrade(List<Integer> noticeIds);
 }

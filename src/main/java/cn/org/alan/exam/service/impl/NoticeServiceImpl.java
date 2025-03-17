@@ -101,6 +101,7 @@ public class NoticeServiceImpl extends ServiceImpl<NoticeMapper, Notice> impleme
                 .toList();
         // 删除公告
         int rowsAffected = noticeMapper.removeNotice(noticeIds);
+        noticeGradeMapper.deleteNoticeGrade(noticeIds);
         if (rowsAffected == 0) {
             return Result.failed("删除失败");
         }

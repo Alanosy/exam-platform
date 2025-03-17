@@ -23,6 +23,7 @@
         FROM t_user_book ub
         JOIN t_exam e on ub.exam_id = e.id
         <trim prefix="where" prefixOverrides="and">
+            e.is_deleted = 0 and
             ub.user_id = #{userId}
             <if test='examName != null and examName!=""'>
                 and e.title like concat('%',#{examName},'%')

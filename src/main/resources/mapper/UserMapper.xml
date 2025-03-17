@@ -81,7 +81,7 @@
         </if>
 
         <if test="roleId != null and roleId == 1">
-            right join t_grade as g on u.grade_id = g.id and g.id in
+            left join t_grade as g on u.grade_id = g.id and g.id in
             <foreach collection="gradeIdList" item="gId" open="(" close=")" separator=",">
                 #{gId}
             </foreach>
@@ -95,7 +95,7 @@
                 and u.real_name like concat('%',#{realName},'%')
             </if>
             <if test="roleId != null and roleId == 1">
-                and u.role_id = 1
+                and u.role_id = 1 and g.is_deleted = 0
             </if>
             <if test="roleId == null ">
                 and u.role_id in(1,2)

@@ -6,6 +6,7 @@ import cn.org.alan.exam.model.vo.repo.RepoVO;
 import cn.org.alan.exam.model.vo.exercise.ExerciseRepoVO;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
@@ -49,4 +50,13 @@ public interface RepoMapper extends BaseMapper<Repo> {
                                      String title, List<Integer> userList);
 
     List<RepoListVO> selectRepoList(String repoTitle, int userId);
+
+    /**
+     * 查找刷题记录
+     * @param repoPage
+     * @param userId
+     * @param repoName
+     * @return
+     */
+    Page<Repo> selectUserExerciseRecord(Page<Repo> repoPage, Integer userId, String repoName);
 }

@@ -13,8 +13,16 @@
         delete from t_notice_grade
         where notice_id = #{noticeId}
     </delete>
+    <update id="deleteNoticeGrade">
+        update t_notice_grade
+        set is_deleted = 1
+        where notice_id in
+        <foreach collection="noticeIds" item="nId" open="(" separator="," close=")">
+            #{nId}
+        </foreach>
+    </update>
     <select id="getNoticeIdList" resultType="java.lang.Integer">
-        select notice_id from t_notice_grade where grade_id = #{gradeId}
+        select notice_id from t_notice_grade where is_deleted = 0 and grade_id = #{gradeId}
     </select>
     <select id="getGradeList" resultType="java.lang.Integer">
         select n.grade_id from t_notice_grade n where n.notice_id = #{noticeId}

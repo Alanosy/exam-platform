@@ -56,6 +56,7 @@ public class GradeServiceImpl extends ServiceImpl<GradeMapper, Grade> implements
     @Resource
     private UserGradeMapper userGradeMapper;
 
+
     @Override
     @Transactional
     public Result<String> addGrade(GradeForm gradeForm) {
@@ -117,6 +118,7 @@ public class GradeServiceImpl extends ServiceImpl<GradeMapper, Grade> implements
         if (rows == 0) {
             return Result.failed("删除失败");
         }
+        userGradeMapper.deleteUserGrade(id);
         // 删除缓存
         stringRedisTemplate.delete("cache:grade:getPaging:"+id.toString());
         stringRedisTemplate.delete("cache:grade:getAllGrade:"+SecurityUtil.getUserId());

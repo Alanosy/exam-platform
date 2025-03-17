@@ -35,6 +35,11 @@ public class NoticeGrade implements Serializable {
      */
     private Integer gradeId;
 
+    /**
+     * 逻辑删除字段
+     */
+    private Integer isDeleted;
+
     public Integer getId() {
         return id;
     }

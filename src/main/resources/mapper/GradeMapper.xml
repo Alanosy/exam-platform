@@ -107,7 +107,7 @@
             right join t_user_grade ug on ug.g_id = g.id
         </if>
         <where>
-            is_deleted = 0
+            g.is_deleted = 0
             <if test="roleCode ==2">
                and  ug.u_id = #{userId}
             </if>

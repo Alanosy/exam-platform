@@ -1,10 +1,7 @@
 package cn.org.alan.exam.service.impl;
 
 import cn.org.alan.exam.common.result.Result;
-import cn.org.alan.exam.mapper.ExerciseRecordMapper;
-import cn.org.alan.exam.mapper.QuestionMapper;
-import cn.org.alan.exam.mapper.RepoMapper;
-import cn.org.alan.exam.mapper.UserGradeMapper;
+import cn.org.alan.exam.mapper.*;
 import cn.org.alan.exam.model.entity.Question;
 import cn.org.alan.exam.model.entity.Repo;
 import cn.org.alan.exam.model.entity.UserGrade;
@@ -18,6 +15,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import jakarta.annotation.Resource;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -40,6 +38,8 @@ public class RepoServiceImpl extends ServiceImpl<RepoMapper, Repo> implements IR
     private ExerciseRecordMapper exerciseRecordMapper;
     @Resource
     private UserGradeMapper userGradeMapper;
+    @Resource
+    private UserMapper userMapper;
 
 
     @Override
@@ -120,8 +120,11 @@ public class RepoServiceImpl extends ServiceImpl<RepoMapper, Repo> implements IR
         IPage<ExerciseRepoVO> page = new Page<>(pageNum, pageSize);
         // 获取当前学生所在班级ID
         Integer gradeId = SecurityUtil.getGradeId();
+        // 获得管理员列表
+        List<Integer> adminList = userMapper.getAdminList();
         // 获取班级的所有老师用户ID
         List<Integer> userList = userGradeMapper.getUserListByGradeId(gradeId);
+        userList.addAll(adminList);
         // 查询可以刷的题库，条件是没有删除的公开的是班级内老师的题库
         page = repoMapper.selectRepo(page, title,userList);
         return Result.success("查询成功", page);

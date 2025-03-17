@@ -41,8 +41,9 @@
         select id as examId, title as examTitle, case when saq_count > 0 then 1 else 0 end as neededMark
         from t_exam
         <trim prefix="where"  prefixOverrides="and">
+            is_deleted = 0
             <if test="role == 'role_teacher'">
-                user_id = #{userId}
+                and user_id = #{userId}
             </if>
             <if test="examName != null">
                 and title like concat('%',#{examName},'%')
@@ -63,7 +64,7 @@
         u.limit_time as limitTime
         from t_exam e
         join t_user_exams_score as u on u.exam_id = e.id
-        where u.user_id = #{userId} and u.whether_mark in (-1,1)
+        where u.user_id = #{userId} and u.whether_mark in (-1,1) and e.is_deleted = 0
         <if test='examName!=null and examName!=""'>
             and e.title like concat('%',#{examName},'%')
         </if>

@@ -287,17 +287,8 @@ public class ExerciseRecordServiceImpl extends ServiceImpl<ExerciseRecordMapper,
         // 创建page对象
         Page<Repo> repoPage = new Page<>(pageNum, pageSize);
         // 查询该用户已考试的考试id
-        LambdaQueryWrapper<UserExerciseRecord> userExerciseRecordWrapper = new LambdaQueryWrapper<>();
-        userExerciseRecordWrapper.eq(UserExerciseRecord::getUserId, SecurityUtil.getUserId());
-        List<UserExerciseRecord> userExerciseRecord = userExerciseRecordMapper.selectList(userExerciseRecordWrapper);
-        List<Integer> repoIds = userExerciseRecord.stream()
-                .map(UserExerciseRecord::getRepoId)
-                .collect(Collectors.toList());
-        // 查询考试表的考试信息
-        LambdaQueryWrapper<Repo> examWrapper = new LambdaQueryWrapper<>();
-        examWrapper.in(Repo::getId, repoIds)
-                .like(StringUtils.isNotBlank(repoName),Repo::getTitle,repoName);
-        Page<Repo> exercisePageResult = repoMapper.selectPage(repoPage, examWrapper);
+        Integer userId = SecurityUtil.getUserId();
+        Page<Repo> exercisePageResult = repoMapper.selectUserExerciseRecord(repoPage,userId,repoName);
         // 实体转换
         Page<ExerciseRecordVO> exerciseRecordVOPage = recordConverter.pageRepoEntityToVo(exercisePageResult);
         return Result.success("查询成功", exerciseRecordVOPage);

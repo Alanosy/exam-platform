@@ -2,9 +2,8 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="cn.org.alan.exam.mapper.UserExamsScoreMapper">
 
-    <!--    根据用户Id列表，考试Id获取该考试的最高分、最低分、平均分、参考人数、及格人数-->
+    <!-- 根据用户Id列表，考试Id获取该考试的最高分、最低分、平均分、参考人数、及格人数-->
     <select id="scoreStatistics" resultType="cn.org.alan.exam.model.vo.score.GradeScoreVO">
-
         SELECT
         ug.grade_id AS gradeId,
         e.id AS exam_id,
@@ -25,7 +24,8 @@
         JOIN
         t_grade g ON ug.grade_id = g.id
         <trim prefixOverrides="and" prefix="where">
-            ues.user_id IS NOT NULL
+
+            e.is_deleted = 0 and ues.user_id IS NOT NULL
             <if test="gradeId != null and gradeId != 0">
                and ug.grade_id = #{gradeId}
             </if>

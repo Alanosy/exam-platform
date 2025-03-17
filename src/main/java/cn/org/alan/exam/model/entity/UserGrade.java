@@ -23,4 +23,8 @@ public class UserGrade {
     private Integer uId;
     // 班级id
     private Integer gId;
+    /**
+     * 逻辑删除字段
+     */
+    private Integer isDeleted;
 }

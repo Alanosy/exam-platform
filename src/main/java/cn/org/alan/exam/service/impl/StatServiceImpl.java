@@ -54,6 +54,9 @@ public class StatServiceImpl extends ServiceImpl<ExamGradeMapper, ExamGrade> imp
         Integer userId = SecurityUtil.getUserId();
         if ("role_teacher".equals(SecurityUtil.getRole())) {
             List<Integer> gradeIdList = userGradeMapper.getGradeIdListByUserId(userId);
+            if(gradeIdList.isEmpty()){
+                return Result.success("教师还没加入班级暂无数据",null);
+            }
             gradeStudentVOs = statMapper.StudentGradeCount(2, userId,gradeIdList);
         } else {
             gradeStudentVOs = statMapper.StudentGradeCount(3, userId,null);
@@ -74,6 +77,9 @@ public class StatServiceImpl extends ServiceImpl<ExamGradeMapper, ExamGrade> imp
         Integer userId = SecurityUtil.getUserId();
         if ("role_teacher".equals(SecurityUtil.getRole())) {
             List<Integer> gradeIdList = userGradeMapper.getGradeIdListByUserId(userId);
+            if(gradeIdList.isEmpty()){
+                return Result.success("教师还没加入班级暂无数据",null);
+            }
             gradeExamVOs = statMapper.ExamGradeCount(2, userId,gradeIdList);
         } else {
             gradeExamVOs = statMapper.ExamGradeCount(3, userId, null);
@@ -100,6 +106,7 @@ public class StatServiceImpl extends ServiceImpl<ExamGradeMapper, ExamGrade> imp
                     .eq(Question::getIsDeleted,0)).intValue());
         }else if("role_teacher".equals(role)){
             allStatsVO.setClassCount(userGradeMapper.selectCount(new LambdaQueryWrapper<UserGrade>()
+                            .eq(UserGrade::getIsDeleted,0)
                             .eq(UserGrade::getUId,SecurityUtil.getUserId())).intValue());
             allStatsVO.setExamCount(examMapper.selectCount(
                     new LambdaQueryWrapper<Exam>()
