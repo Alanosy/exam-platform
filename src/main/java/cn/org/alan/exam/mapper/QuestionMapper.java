@@ -71,4 +71,16 @@ public interface QuestionMapper extends BaseMapper<Question> {
     List<Integer> selectQuestionIdsPage(Integer userId, String title, Integer type, Integer repoId, int offset, Integer pageSize);
 
     List<QuestionVO> batchSelectByIds(List<Integer> missIds);
+
+    /**
+     * 分页查询试题
+     * @param page
+     * @param userId
+     * @param roleCode
+     * @param title
+     * @param type
+     * @param repoId
+     * @return
+     */
+    IPage<QuestionVO> selectQuestionPage(IPage<QuestionVO> page, Integer userId, Integer roleCode, String title, Integer type, Integer repoId);
 }

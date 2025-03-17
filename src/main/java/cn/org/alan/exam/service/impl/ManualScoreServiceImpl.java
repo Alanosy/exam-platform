@@ -48,11 +48,16 @@ public class ManualScoreServiceImpl extends ServiceImpl<ManualScoreMapper, Manua
     @Resource
     private CertificateUserMapper certificateUserMapper;
 
-
+    /**
+     * 试卷查询信息
+     * @param userId
+     * @param examId
+     * @return
+     */
     @Override
     public Result<List<UserAnswerDetailVO>> getDetail(Integer userId, Integer examId) {
         List<UserAnswerDetailVO> list = examQuAnswerMapper.selectUserAnswer(userId, examId);
-        return Result.success(null, list);
+        return Result.success("查询成功", list);
     }
 
 

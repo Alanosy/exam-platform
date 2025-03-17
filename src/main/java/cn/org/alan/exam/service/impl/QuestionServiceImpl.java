@@ -53,11 +53,12 @@ public class QuestionServiceImpl extends ServiceImpl<QuestionMapper, Question> i
     private FileService fileService;
     @Resource
     private ExerciseRecordMapper exerciseRecordMapper;
-    @Resource
-    private CacheClient cacheClient;
-    @Resource
-    private StringRedisTemplate stringRedisTemplate;
 
+    /**
+     * 单题添加
+     * @param questionFrom 传参
+     * @return
+     */
     @Override
     @Transactional
     public Result<String> addSingleQuestion(QuestionFrom questionFrom) {
@@ -66,13 +67,12 @@ public class QuestionServiceImpl extends ServiceImpl<QuestionMapper, Question> i
         if (questionFrom.getQuType() != 4 && (Objects.isNull(options) || options.size() < 2)) {
             return Result.failed("非简答题的试题选项不能少于两个");
         }
-
         Question question = questionConverter.fromToEntity(questionFrom);
-
+        // 开始添加题干
         questionMapper.insert(question);
+        // 根据试题类型添加选项
         if (question.getQuType() == 4) {
             // 简答题添加选项
-
             Option option = questionFrom.getOptions().get(0);
             option.setQuId(question.getId());
             optionMapper.insert(option);
@@ -84,24 +84,21 @@ public class QuestionServiceImpl extends ServiceImpl<QuestionMapper, Question> i
             });
             optionMapper.insertBatch(options);
         }
-        if (question.getId() != null) { // 确保ID有效
-            // 如果是更新操作，先从缓存中移除旧数据，然后重新放入最新的数据
-            stringRedisTemplate.delete("cache:question:pagingQuestion:"+question.getId().toString()); // 删除旧缓存
-            //
-            // QuestionVO questionVO = questionConverter.QuestionToQuestionVO(question); // 转换为视图对象
-            // Map<Integer, QuestionVO> map = Map.of(questionVO.getId(), questionVO);
-            // cacheClient.batchPut("cache:question:pagingQuestion:",map,10L,TimeUnit.MINUTES); // 存储新数据
-        }
         return Result.success("添加成功");
 
     }
 
+    /**
+     * 批量删除试题
+     * @param ids 试题id
+     * @return
+     */
     @Override
     @Transactional
     public Result<String> deleteBatchByIds(String ids) {
         List<Integer> list = Arrays.stream(ids.split(",")).map(Integer::parseInt).toList();
 
-        //删除用户刷题记录表
+        // 删除用户刷题记录表
         LambdaUpdateWrapper<ExerciseRecord> updateWrapper =
                 new LambdaUpdateWrapper<ExerciseRecord>().in(ExerciseRecord::getQuestionId, list);
         int delete = exerciseRecordMapper.delete(updateWrapper);
@@ -109,75 +106,49 @@ public class QuestionServiceImpl extends ServiceImpl<QuestionMapper, Question> i
         optionMapper.deleteBatchByQuIds(list);
         // 再删除试题
         questionMapper.deleteBatchIdsQu(list);
-        list.forEach(id->{
-            stringRedisTemplate.delete("cache:question:pagingQuestion:"+id);
-        });
-
         return Result.success("删除成功");
     }
 
+    /**
+     * 分页查询试题
+     * @param pageNum  页码
+     * @param pageSize 每页记录数
+     * @param title  试题名
+     * @param type     试题类型
+     * @param repoId   题库id
+     * @return
+     */
     @Override
     public Result<IPage<QuestionVO>> pagingQuestion(Integer pageNum, Integer pageSize, String title, Integer type, Integer repoId) {
-        Integer userId = null;
-        if ("role_teacher".equals(SecurityUtil.getRole())) {
-            userId = SecurityUtil.getUserId();
-        } else {
-            userId = 0;
-        }
-        // 查询满足条件的总记录数
-        int total = questionMapper.countByCondition(userId, title,type,repoId); // 假设gradeMapper中实现了根据条件计数的方法
-        // 计算偏移量
-        int offset = (pageNum - 1) * pageSize;
-
-        // 查询分页ID列表
-        List<Integer> quIds = questionMapper.selectQuestionIdsPage(userId, title,type,repoId, offset, pageSize);
-
-        // 批量从缓存中获取GradeVO对象
-        Map<Integer, QuestionVO> cachedQuestionsMap = cacheClient.batchGet("cache:question:pagingQuestion:",quIds, QuestionVO.class);
-
-        // 确定未命中的ID列表
-        List<Integer> missIds = new ArrayList<>();
-        for (Integer id : quIds) {
-            if (!cachedQuestionsMap.containsKey(id)) {
-                missIds.add(id);
-            }
-        }
-
-        // 如果有未命中的ID，从数据库批量查询并更新缓存
-        if (!missIds.isEmpty()) {
-            List<QuestionVO> missedGrades = questionMapper.batchSelectByIds(missIds);
-            // 假设GradeVO的ID为getId()，使用Collectors.toMap转换
-            Map<Integer, QuestionVO> missedGradesMap = missedGrades.stream()
-                    .collect(Collectors.toMap(QuestionVO::getId, Function.identity()));
-            // 更新缓存
-            cacheClient.batchPut("cache:question:pagingQuestion:",missedGradesMap,10L, TimeUnit.MINUTES);
-            // 合并缓存结果
-            cachedQuestionsMap.putAll(missedGradesMap);
-        }
-
-        // 根据ID列表从缓存中获取完整的GradeVO对象列表
-        List<QuestionVO> finalResult = new ArrayList<>(quIds.size());
-        for (Integer id : quIds) {
-            finalResult.add(cachedQuestionsMap.get(id));
-        }
-
-        // 构建并返回IPage对象
-        IPage<QuestionVO> resultPage = new Page<>(pageNum, pageSize, Long.valueOf(total));
-        resultPage.setRecords(finalResult);
-
-        return Result.success(null, resultPage);
+        IPage<QuestionVO> page = new Page<>(pageNum, pageSize);
+        // 获取用户和角色代码
+        Integer userId = SecurityUtil.getUserId();
+        Integer roleCode = SecurityUtil.getRoleCode();
+        // 查询分页试题
+        page = questionMapper.selectQuestionPage(page, userId, roleCode, title, type, repoId);
+        return Result.success("查询成功", page);
     }
 
+    /**
+     * 根据试题id获取单题详情
+     * @param id 试题id
+     * @return
+     */
     @Override
     public Result<QuestionVO> querySingle(Integer id) {
-        return Result.success(null, questionMapper.selectSingle(id));
+        QuestionVO result = questionMapper.selectSingle(id);
+        return Result.success("查询成功",result);
     }
 
+    /**
+     * 修改试题
+     * @param questionFrom 需要修改的试题
+     * @return
+     */
     @Override
     @Transactional
     public Result<String> updateQuestion(QuestionFrom questionFrom) {
         // 修改试题
-
         Question question = questionConverter.fromToEntity(questionFrom);
         questionMapper.updateById(question);
         // 修改选项
@@ -185,16 +156,15 @@ public class QuestionServiceImpl extends ServiceImpl<QuestionMapper, Question> i
         for (Option option : options) {
             optionMapper.updateById(option);
         }
-        if (question.getId() != null) { // 确保ID有效
-            // 如果是更新操作，先从缓存中移除旧数据，然后重新放入最新的数据
-            stringRedisTemplate.delete("cache:question:pagingQuestion:"+question.getId().toString()); // 删除旧缓存
-            // QuestionVO questionVO = questionConverter.QuestionToQuestionVO(question); // 转换为视图对象
-            // Map<Integer, QuestionVO> map = Map.of(questionVO.getId(), questionVO);
-            // cacheClient.batchPut("cache:question:pagingQuestion:",map,10L,TimeUnit.MINUTES); // 存储新数据
-        }
         return Result.success("修改成功");
     }
 
+    /**
+     * 批量导入试题
+     * @param id 题库Id
+     * @param file Excel文件
+     * @return
+     */
     @SneakyThrows(Exception.class)
     @Override
     @Transactional
@@ -205,7 +175,6 @@ public class QuestionServiceImpl extends ServiceImpl<QuestionMapper, Question> i
         List<QuestionExcelFrom> questionExcelFroms = ExcelUtils.readMultipartFile(file, QuestionExcelFrom.class);
         // 类型转换
         List<QuestionFrom> list = QuestionExcelFrom.converterQuestionFrom(questionExcelFroms);
-
         for (QuestionFrom questionFrom : list) {
             Question question = questionConverter.fromToEntity(questionFrom);
             question.setRepoId(id);
@@ -215,24 +184,16 @@ public class QuestionServiceImpl extends ServiceImpl<QuestionMapper, Question> i
             List<Option> options = questionFrom.getOptions();
             final int[] count = {0};
             options.forEach(option -> {
-                //简答题答案默认给正确
+                // 简答题答案默认给正确
                 if (question.getQuType() == 4) {
                     option.setIsRight(1);
                 }
                 option.setSort(++count[0]);
                 option.setQuId(question.getId());
             });
-
             // 避免简答题没有答案
             if (!options.isEmpty()) {
                 optionMapper.insertBatch(options);
-            }
-            if (question.getId() != null) { // 确保ID有效
-                // 如果是更新操作，先从缓存中移除旧数据，然后重新放入最新的数据
-                stringRedisTemplate.delete("cache:question:pagingQuestion:"+question.getId().toString()); // 删除旧缓存
-                // QuestionVO questionVO = questionConverter.QuestionToQuestionVO(question); // 转换为视图对象
-                // Map<Integer, QuestionVO> map = Map.of(questionVO.getId(), questionVO);
-                // cacheClient.batchPut("cache:question:pagingQuestion:",map,10L,TimeUnit.MINUTES); // 存储新数据
             }
 
         }

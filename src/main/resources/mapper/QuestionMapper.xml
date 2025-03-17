@@ -157,4 +157,29 @@
             #{id}
         </foreach>
     </select>
+    <select id="selectQuestionPage" resultType="cn.org.alan.exam.model.vo.QuestionVO">
+        select
+        q.id,
+        q.qu_type ,
+        q.content,
+        r.title as repoTitle,
+        q.create_time
+        from t_question q
+        join t_repo r on q.repo_id = r.id
+        <trim prefixOverrides="and" prefix="where">
+            q.is_deleted = 0
+            <if test='title != null and title != ""'>
+                and q.content like concat('%',#{title},'%')
+            </if>
+            <if test='repoId != null and repoId != 0'>
+                and q.repo_id = #{repoId}
+            </if>
+            <if test='type != null and type != 0'>
+                and q.qu_type = #{type}
+            </if>
+            <if test='roleCode == 2'>
+                and q.user_id = #{userId}
+            </if>
+        </trim>
+    </select>
 </mapper>
