@@ -19,7 +19,7 @@
         <java.version>17</java.version>
         <spring-boot.version>3.4.3</spring-boot.version>
         <spring-cloud.version>2024.0.0</spring-cloud.version>
-        <spring-boot-admin.version>3.4.2</spring-boot-admin.version>
+        <spring-boot-admin.version>3.4.5</spring-boot-admin.version>
         <mybatis.version>3.5.16</mybatis.version>
         <mybatis-plus.version>3.5.10.1</mybatis-plus.version>
         <p6spy.version>3.9.1</p6spy.version>
@@ -30,7 +30,7 @@
         <therapi-javadoc.version>0.15.0</therapi-javadoc.version>
         <easyexcel.version>4.0.3</easyexcel.version>
         <hutool.version>5.8.35</hutool.version>
-        <redisson.version>3.44.0</redisson.version>
+        <redisson.version>3.45.1</redisson.version>
         <lock4j.version>2.2.7</lock4j.version>
         <snailjob.version>1.4.0-beta2</snailjob.version>
         <satoken.version>1.40.0</satoken.version>
@@ -51,7 +51,7 @@
         <aws.sdk.version>2.28.22</aws.sdk.version>
 
         <!-- SMS 配置 -->
-        <sms4j.version>3.3.3</sms4j.version>
+        <sms4j.version>3.3.4</sms4j.version>
         <!-- 面向运行时的D-ORM依赖 -->
         <anyline.version>8.7.2-20250101</anyline.version>
         <!--工作流配置-->
