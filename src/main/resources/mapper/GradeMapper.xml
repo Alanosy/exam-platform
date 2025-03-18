@@ -56,7 +56,7 @@
                 </if>
                 <!-- 当 gradeIdList 为空时，添加一个条件使得结果为空 -->
                 <if test="gradeIdList == null or gradeIdList.size() == 0">
-                    and g.id IN ()
+                    and 1=3
                 </if>
             </if>
         </where>
@@ -136,7 +136,7 @@
                 </if>
                 <!-- 当 gradeIdList 为空时，添加一个条件使得结果为空 -->
                 <if test="gradeIdList == null or gradeIdList.size() == 0">
-                    and g.id IN ()
+                    and 1=3
                 </if>
             </if>
         </where>
