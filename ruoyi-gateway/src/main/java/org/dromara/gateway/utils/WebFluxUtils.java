@@ -88,8 +88,11 @@ public class WebFluxUtils {
         }
         DataBuffer buffer = (DataBuffer) obj;
         try (DataBuffer.ByteBufferIterator iterator = buffer.readableByteBuffers()) {
-            CharBuffer charBuffer = StandardCharsets.UTF_8.decode(iterator.next());
-            return charBuffer.toString();
+            StringBuilder sb = new StringBuilder();
+            iterator.forEachRemaining(e -> {
+                sb.append(StandardCharsets.UTF_8.decode(e));
+            });
+            return sb.toString();
         }
     }
 
