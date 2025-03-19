@@ -146,7 +146,8 @@ CREATE TABLE `flow_user`
     `del_flag`     char(1)     DEFAULT '0' COMMENT '删除标志',
     `tenant_id`    varchar(40) DEFAULT NULL COMMENT '租户id',
     PRIMARY KEY (`id`) USING BTREE,
-    KEY `user_processed_type` (`processed_by`, `type`)
+    KEY `user_processed_type` (`processed_by`, `type`),
+    KEY `user_associated` (`associated`) USING BTREE
 ) ENGINE = InnoDB COMMENT ='流程用户表';
 
 -- ----------------------------
