@@ -21,7 +21,7 @@ public class FlowNextNodeBo implements Serializable {
     /**
      * 任务id
      */
-    private String taskId;
+    private Long taskId;
 
     /**
      * 流程变量
