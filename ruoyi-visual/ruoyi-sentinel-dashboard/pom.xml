@@ -56,6 +56,14 @@
 
         <dependency>
             <groupId>com.alibaba.csp</groupId>
+            <artifactId>sentinel-dashboard</artifactId>
+            <version>${sentinel.version}</version>
+            <scope>system</scope>
+            <systemPath>${project.basedir}/src/main/resources/lib/sentinel-dashboard-${sentinel.version}.jar</systemPath>
+        </dependency>
+
+        <dependency>
+            <groupId>com.alibaba.csp</groupId>
             <artifactId>sentinel-core</artifactId>
         </dependency>
         <dependency>
@@ -167,6 +175,10 @@
                         </goals>
                     </execution>
                 </executions>
+                <configuration>
+                    <!-- 作用:项目打成jar的同时将本地jar包也引入进去 -->
+                    <includeSystemScope>true</includeSystemScope>
+                </configuration>
             </plugin>
         </plugins>
     </build>
