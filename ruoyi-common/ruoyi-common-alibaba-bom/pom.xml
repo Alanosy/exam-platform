@@ -17,7 +17,7 @@
         <revision>2.3.0-BETA</revision>
         <spring-cloud-alibaba.version>2023.0.1.2</spring-cloud-alibaba.version>
         <sentinel.version>1.8.8</sentinel.version>
-        <seata.version>1.7.1</seata.version>
+        <seata.version>2.3.0</seata.version>
         <nacos.client.version>2.5.1</nacos.client.version>
         <dubbo.version>3.3.4</dubbo.version>
         <dubbo-extensions.version>3.3.1</dubbo-extensions.version>
@@ -143,8 +143,13 @@
                 <version>${sentinel.version}</version>
             </dependency>
             <dependency>
-                <groupId>io.seata</groupId>
+                <groupId>org.apache.seata</groupId>
                 <artifactId>seata-spring-boot-starter</artifactId>
+                <version>${seata.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.seata</groupId>
+                <artifactId>seata-all</artifactId>
                 <version>${seata.version}</version>
             </dependency>
 
