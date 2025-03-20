@@ -319,6 +319,10 @@
                         </goals>
                     </execution>
                 </executions>
+                <configuration>
+                    <!-- 作用:项目打成jar的同时将本地jar包也引入进去 -->
+                    <includeSystemScope>true</includeSystemScope>
+                </configuration>
             </plugin>
         </plugins>
     </build>
