@@ -58,6 +58,13 @@
     <dependencies>
         <dependency>
             <groupId>com.alibaba.nacos</groupId>
+            <artifactId>nacos-console</artifactId>
+            <version>${nacos.version}</version>
+            <scope>system</scope>
+            <systemPath>${nacos.lib.path}/nacos-console-${nacos.version}.jar</systemPath>
+        </dependency>
+        <dependency>
+            <groupId>com.alibaba.nacos</groupId>
             <artifactId>nacos-auth</artifactId>
             <version>${nacos.version}</version>
             <scope>system</scope>
