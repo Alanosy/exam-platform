@@ -278,6 +278,7 @@ comment on column FLOW_USER.DEL_FLAG is '删除标志';
 comment on column FLOW_USER.TENANT_ID is '租户id';
 
 create index USER_PROCESSED_TYPE on FLOW_USER (PROCESSED_BY, TYPE);
+create index USER_ASSOCIATED_IDX on FLOW_USER (ASSOCIATED);
 
 -- ----------------------------
 -- 流程分类表

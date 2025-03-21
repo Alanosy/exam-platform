@@ -11,9 +11,7 @@ import org.dromara.system.api.domain.vo.RemoteDictDataVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -89,7 +87,12 @@ public class DictServiceImpl implements DictService {
     @Override
     public Map<String, String> getAllDictByDictType(String dictType) {
         List<RemoteDictDataVo> list = remoteDictService.selectDictDataByType(dictType);
-        return StreamUtils.toMap(list, RemoteDictDataVo::getDictValue, RemoteDictDataVo::getDictLabel);
+        // 保证顺序
+        LinkedHashMap<String, String> map = new LinkedHashMap<>();
+        for (RemoteDictDataVo vo : list) {
+            map.put(vo.getDictValue(), vo.getDictLabel());
+        }
+        return map;
     }
 
 }

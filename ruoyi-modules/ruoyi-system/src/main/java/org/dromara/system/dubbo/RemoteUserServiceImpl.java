@@ -313,8 +313,11 @@ public class RemoteUserServiceImpl implements RemoteUserService {
         if (CollUtil.isEmpty(userIds)) {
             return new ArrayList<>();
         }
-        List<SysUserVo> sysUserVos = userService.selectUserByIds(userIds, null);
-        return MapstructUtils.convert(sysUserVos, RemoteUserVo.class);
+        List<SysUserVo> list = userMapper.selectVoList(new LambdaQueryWrapper<SysUser>()
+            .select(SysUser::getUserId, SysUser::getUserName, SysUser::getNickName, SysUser::getEmail, SysUser::getPhonenumber)
+            .eq(SysUser::getStatus, SystemConstants.NORMAL)
+            .in(SysUser::getUserId, userIds));
+        return MapstructUtils.convert(list, RemoteUserVo.class);
     }
 
     /**

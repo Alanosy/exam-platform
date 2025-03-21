@@ -35,6 +35,7 @@ import org.springframework.expression.spel.standard.SpelExpressionParser;
 import org.springframework.expression.spel.support.StandardEvaluationContext;
 import org.springframework.util.ClassUtils;
 
+import java.lang.reflect.Method;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
@@ -229,14 +230,34 @@ public class PlusDataPermissionHandler {
                     // 获取资源对应的类对象
                     Class<?> clazz = Resources.classForName(classMetadata.getClassName());
                     // 查找类中的特定注解
-                    if (AnnotationUtil.hasAnnotation(clazz, DataPermission.class)) {
-                        DataPermission dataPermission = AnnotationUtil.getAnnotation(clazz, DataPermission.class);
-                        dataPermissionCacheMap.put(clazz.getName(), dataPermission);
-                    }
+                    findAnnotation(clazz);
                 }
             }
         } catch (Exception e) {
             log.error("初始化数据安全缓存时出错:{}", e.getMessage());
+        }
+    }
+
+    /**
+     * 在指定的类中查找特定的注解 DataPermission，并将带有这个注解的方法或类存储到 dataPermissionCacheMap 中
+     *
+     * @param clazz 要查找的类
+     */
+    private void findAnnotation(Class<?> clazz) {
+        DataPermission dataPermission;
+        for (Method method : clazz.getMethods()) {
+            if (method.isDefault() || method.isVarArgs()) {
+                continue;
+            }
+            String mappedStatementId = clazz.getName() + "." + method.getName();
+            if (AnnotationUtil.hasAnnotation(method, DataPermission.class)) {
+                dataPermission = AnnotationUtil.getAnnotation(method, DataPermission.class);
+                dataPermissionCacheMap.put(mappedStatementId, dataPermission);
+            }
+        }
+        if (AnnotationUtil.hasAnnotation(clazz, DataPermission.class)) {
+            dataPermission = AnnotationUtil.getAnnotation(clazz, DataPermission.class);
+            dataPermissionCacheMap.put(clazz.getName(), dataPermission);
         }
     }
 
@@ -250,6 +271,10 @@ public class PlusDataPermissionHandler {
         // 检查上下文中是否包含映射语句 ID 对应的 DataPermission 注解对象
         if (DataPermissionHelper.getPermission() != null) {
             return DataPermissionHelper.getPermission();
+        }
+        // 检查缓存中是否包含映射语句 ID 对应的 DataPermission 注解对象
+        if (dataPermissionCacheMap.containsKey(mapperId)) {
+            return dataPermissionCacheMap.get(mapperId);
         }
         // 如果缓存中不包含映射语句 ID 对应的 DataPermission 注解对象，则尝试使用类名作为键查找
         String clazzName = mapperId.substring(0, mapperId.lastIndexOf("."));

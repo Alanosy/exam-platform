@@ -1,6 +1,7 @@
 package org.dromara.workflow.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.StrUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -26,9 +27,7 @@ import org.dromara.workflow.common.enums.TaskAssigneeEnum;
 import org.dromara.workflow.service.IFlwTaskAssigneeService;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 /**
  * 流程设计器-获取办理人权限设置列表
@@ -137,15 +136,26 @@ public class FlwTaskAssigneeServiceImpl implements IFlwTaskAssigneeService, Hand
     @Override
     public List<RemoteUserVo> fetchUsersByStorageId(String storageId) {
         List<RemoteUserVo> list = new ArrayList<>();
+        Map<TaskAssigneeEnum, List<Long>> typeIdMap = new EnumMap<>(TaskAssigneeEnum.class);
         for (String str : storageId.split(StrUtil.COMMA)) {
             String[] parts = str.split(StrUtil.COLON, 2);
+            TaskAssigneeEnum type;
+            Long id;
             if (parts.length < 2) {
-                list.addAll(getUsersByType(TaskAssigneeEnum.USER, List.of(Long.valueOf(parts[0]))));
+                // 无前缀时默认是用户类型
+                type = TaskAssigneeEnum.USER;
+                id = Long.valueOf(parts[0]);
             } else {
-                list.addAll(getUsersByType(TaskAssigneeEnum.fromCode(parts[0] + StrUtil.COLON), List.of(Long.valueOf(parts[1]))));
+                // 根据前缀解析类型（如 "role:123" -> ROLE 类型）
+                type = TaskAssigneeEnum.fromCode(parts[0] + StrUtil.COLON);
+                id = Long.valueOf(parts[1]);
             }
+            typeIdMap.computeIfAbsent(type, k -> new ArrayList<>()).add(id);
         }
-        return list;
+        typeIdMap.entrySet().stream()
+            .filter(entry -> CollUtil.isNotEmpty(entry.getValue()))
+            .forEach(entry -> list.addAll(getUsersByType(entry.getKey(), entry.getValue())));
+        return list.stream().distinct().toList();
     }
 
     /**

@@ -1,6 +1,8 @@
 package org.dromara.system.service;
 
 import cn.hutool.core.lang.tree.Tree;
+import org.dromara.common.mybatis.core.page.PageQuery;
+import org.dromara.common.mybatis.core.page.TableDataInfo;
 import org.dromara.system.domain.bo.SysDeptBo;
 import org.dromara.system.domain.vo.SysDeptVo;
 
@@ -12,6 +14,16 @@ import java.util.List;
  * @author Lion Li
  */
 public interface ISysDeptService {
+
+    /**
+     * 分页查询部门管理数据
+     *
+     * @param dept      部门信息
+     * @param pageQuery 分页对象
+     * @return 部门信息集合
+     */
+    TableDataInfo<SysDeptVo> selectPageDeptList(SysDeptBo dept, PageQuery pageQuery);
+
     /**
      * 查询部门管理数据
      *

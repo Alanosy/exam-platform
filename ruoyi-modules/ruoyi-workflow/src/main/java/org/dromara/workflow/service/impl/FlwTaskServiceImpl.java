@@ -578,7 +578,7 @@ public class FlwTaskServiceImpl implements IFlwTaskService {
      */
     @Override
     public List<FlowNode> getNextNodeList(FlowNextNodeBo bo) {
-        String taskId = bo.getTaskId();
+        Long taskId = bo.getTaskId();
         Map<String, Object> variables = bo.getVariables();
         Task task = taskService.getById(taskId);
         Instance instance = insService.getById(task.getInstanceId());

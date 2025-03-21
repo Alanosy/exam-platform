@@ -58,6 +58,13 @@
     <dependencies>
         <dependency>
             <groupId>com.alibaba.nacos</groupId>
+            <artifactId>nacos-console</artifactId>
+            <version>${nacos.version}</version>
+            <scope>system</scope>
+            <systemPath>${nacos.lib.path}/nacos-console-${nacos.version}.jar</systemPath>
+        </dependency>
+        <dependency>
+            <groupId>com.alibaba.nacos</groupId>
             <artifactId>nacos-auth</artifactId>
             <version>${nacos.version}</version>
             <scope>system</scope>
@@ -201,6 +208,22 @@
                     <groupId>org.apache.logging.log4j</groupId>
                 </exclusion>
             </exclusions>
+        </dependency>
+        <!--  覆盖 tomcat version 避免CVE-2024-24549-->
+        <dependency>
+            <groupId>org.apache.tomcat.embed</groupId>
+            <artifactId>tomcat-embed-websocket</artifactId>
+            <version>9.0.98</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.tomcat.embed</groupId>
+            <artifactId>tomcat-embed-core</artifactId>
+            <version>9.0.98</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.tomcat.embed</groupId>
+            <artifactId>tomcat-embed-el</artifactId>
+            <version>9.0.98</version>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>

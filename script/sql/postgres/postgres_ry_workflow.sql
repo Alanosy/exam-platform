@@ -262,6 +262,8 @@ CREATE TABLE flow_user
     CONSTRAINT flow_user_pk PRIMARY KEY (id)
 );
 CREATE INDEX user_processed_type ON flow_user USING btree (processed_by, type);
+CREATE INDEX user_associated_idx ON FLOW_USER USING btree (associated);
+
 COMMENT ON TABLE flow_user IS '流程用户表';
 
 COMMENT ON COLUMN flow_user.id IS '主键id';

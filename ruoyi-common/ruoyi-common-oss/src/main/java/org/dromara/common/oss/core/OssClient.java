@@ -8,7 +8,7 @@ import org.dromara.common.core.utils.StringUtils;
 import org.dromara.common.core.utils.file.FileUtils;
 import org.dromara.common.oss.constant.OssConstant;
 import org.dromara.common.oss.entity.UploadResult;
-import org.dromara.common.oss.enumd.AccessPolicyType;
+import org.dromara.common.oss.enums.AccessPolicyType;
 import org.dromara.common.oss.exception.OssException;
 import org.dromara.common.oss.properties.OssProperties;
 import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
@@ -16,10 +16,10 @@ import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
 import software.amazon.awssdk.core.ResponseInputStream;
 import software.amazon.awssdk.core.async.AsyncResponseTransformer;
 import software.amazon.awssdk.core.async.BlockingInputStreamAsyncRequestBody;
+import software.amazon.awssdk.http.nio.netty.NettyNioAsyncHttpClient;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.s3.S3AsyncClient;
 import software.amazon.awssdk.services.s3.S3Configuration;
-import software.amazon.awssdk.services.s3.crt.S3CrtHttpConfiguration;
 import software.amazon.awssdk.services.s3.model.GetObjectResponse;
 import software.amazon.awssdk.services.s3.presigner.S3Presigner;
 import software.amazon.awssdk.transfer.s3.S3TransferManager;
@@ -84,18 +84,14 @@ public class OssClient {
             // MinIO 使用 HTTPS 限制使用域名访问，站点填域名。需要启用路径样式访问
             boolean isStyle = !StringUtils.containsAny(properties.getEndpoint(), OssConstant.CLOUD_SERVICE);
 
-            // 创建AWS基于 CRT 的 S3 客户端
-            this.client = S3AsyncClient.crtBuilder()
+            // 创建AWS基于 Netty 的 S3 客户端
+            this.client = S3AsyncClient.builder()
                 .credentialsProvider(credentialsProvider)
                 .endpointOverride(URI.create(getEndpoint()))
                 .region(of())
-                .targetThroughputInGbps(20.0)
-                .minimumPartSizeInBytes(10 * 1025 * 1024L)
-                .checksumValidationEnabled(false)
                 .forcePathStyle(isStyle)
-                .httpConfiguration(S3CrtHttpConfiguration.builder()
-                    .connectionTimeout(Duration.ofSeconds(60)) // 设置连接超时
-                    .build())
+                .httpClient(NettyNioAsyncHttpClient.builder()
+                    .connectionTimeout(Duration.ofSeconds(60)).build())
                 .build();
 
             //AWS基于 CRT 的 S3 AsyncClient 实例用作 S3 传输管理器的底层客户端

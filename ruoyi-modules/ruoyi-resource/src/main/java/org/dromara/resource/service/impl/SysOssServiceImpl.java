@@ -18,7 +18,7 @@ import org.dromara.common.mybatis.core.page.PageQuery;
 import org.dromara.common.mybatis.core.page.TableDataInfo;
 import org.dromara.common.oss.core.OssClient;
 import org.dromara.common.oss.entity.UploadResult;
-import org.dromara.common.oss.enumd.AccessPolicyType;
+import org.dromara.common.oss.enums.AccessPolicyType;
 import org.dromara.common.oss.factory.OssFactory;
 import org.dromara.resource.domain.SysOss;
 import org.dromara.resource.domain.bo.SysOssBo;

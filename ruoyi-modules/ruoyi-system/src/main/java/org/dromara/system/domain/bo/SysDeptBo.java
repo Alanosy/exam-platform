@@ -73,4 +73,9 @@ public class SysDeptBo extends BaseEntity {
      */
     private String status;
 
+    /**
+     * 归属部门id（部门树）
+     */
+    private Long belongDeptId;
+
 }

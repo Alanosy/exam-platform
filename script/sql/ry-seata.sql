@@ -1,11 +1,3 @@
-DROP DATABASE IF EXISTS `ry-seata`;
-
-CREATE DATABASE  `ry-seata` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
-
-SET NAMES utf8mb4;
-SET FOREIGN_KEY_CHECKS = 0;
-
-USE `ry-seata`;
 
 -- -------------------------------- The script used when storeMode is 'db' --------------------------------
 -- the table to store GlobalSession data
@@ -63,7 +55,7 @@ CREATE TABLE IF NOT EXISTS `lock_table`
     PRIMARY KEY (`row_key`),
     KEY `idx_status` (`status`),
     KEY `idx_branch_id` (`branch_id`),
-    KEY `idx_xid_and_branch_id` (`xid` , `branch_id`)
+    KEY `idx_xid` (`xid`)
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8mb4;
 
@@ -80,3 +72,13 @@ INSERT INTO `distributed_lock` (lock_key, lock_value, expire) VALUES ('AsyncComm
 INSERT INTO `distributed_lock` (lock_key, lock_value, expire) VALUES ('RetryCommitting', ' ', 0);
 INSERT INTO `distributed_lock` (lock_key, lock_value, expire) VALUES ('RetryRollbacking', ' ', 0);
 INSERT INTO `distributed_lock` (lock_key, lock_value, expire) VALUES ('TxTimeoutCheck', ' ', 0);
+
+
+CREATE TABLE IF NOT EXISTS `vgroup_table`
+(
+    `vGroup`    VARCHAR(255),
+    `namespace` VARCHAR(255),
+    `cluster`   VARCHAR(255),
+    UNIQUE KEY `idx_vgroup_namespace_cluster` (`vGroup`,`namespace`,`cluster`)
+) ENGINE = InnoDB
+  DEFAULT CHARSET = utf8mb4;

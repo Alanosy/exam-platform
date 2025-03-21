@@ -54,10 +54,10 @@
             </exclusions>
         </dependency>
 
-        <!-- 使用AWS基于 CRT 的 S3 客户端 -->
+        <!-- 将基于 Netty 的 HTTP 客户端从类路径中移除 -->
         <dependency>
-            <groupId>software.amazon.awssdk.crt</groupId>
-            <artifactId>aws-crt</artifactId>
+            <groupId>software.amazon.awssdk</groupId>
+            <artifactId>netty-nio-client</artifactId>
         </dependency>
 
         <!-- 基于 AWS CRT 的 S3 客户端的性能增强的 S3 传输管理器 -->

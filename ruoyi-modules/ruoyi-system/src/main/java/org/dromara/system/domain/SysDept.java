@@ -1,5 +1,6 @@
 package org.dromara.system.domain;
 
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableLogic;
 import com.baomidou.mybatisplus.annotation.TableName;
@@ -8,6 +9,8 @@ import lombok.EqualsAndHashCode;
 import org.dromara.common.tenant.core.TenantEntity;
 
 import java.io.Serial;
+import java.util.ArrayList;
+import java.util.List;
 
 
 /**
@@ -80,5 +83,11 @@ public class SysDept extends TenantEntity {
      * 祖级列表
      */
     private String ancestors;
+
+    /**
+     * 子菜单
+     */
+    @TableField(exist = false)
+    private List<SysDept> children = new ArrayList<>();
 
 }
