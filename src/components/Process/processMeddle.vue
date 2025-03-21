@@ -85,9 +85,13 @@ const task = ref<FlowTaskVO>({
   nodeName: undefined,
   flowCode: undefined,
   flowStatus: undefined,
+  formCustom: undefined,
+  formPath: undefined,
   nodeType: undefined,
   nodeRatio: undefined,
-  version: undefined
+  version: undefined,
+  applyNode: undefined,
+  buttonList: []
 });
 
 const open = (taskId: string) => {
@@ -171,7 +175,7 @@ const deleteMultiInstanceUser = async (row) => {
 };
 //获取办理人
 const handleTaskUser = async () => {
-  let data = await currentTaskAllUser(task.value.id);
+  const data = await currentTaskAllUser(task.value.id);
   deleteUserList.value = data.data;
   if (deleteUserList.value && deleteUserList.value.length > 0) {
     deleteUserList.value.forEach((e) => {
@@ -183,7 +187,7 @@ const handleTaskUser = async () => {
 
 //终止任务
 const handleTerminationTask = async () => {
-  let params = {
+  const params = {
     taskId: task.value.id,
     comment: ''
   };

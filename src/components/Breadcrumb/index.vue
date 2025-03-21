@@ -40,13 +40,8 @@ const getBreadcrumb = () => {
   levelList.value = matched.filter((item) => item.meta && item.meta.title && item.meta.breadcrumb !== false);
 };
 const findPathNum = (str, char = '/') => {
-  let index = str.indexOf(char);
-  let num = 0;
-  while (index !== -1) {
-    num++;
-    index = str.indexOf(char, index + 1);
-  }
-  return num;
+  if (typeof str !== 'string' || str.length === 0) return 0;
+  return str.split(char).length - 1;
 };
 const getMatched = (pathList, routeList, matched) => {
   let data = routeList.find((item) => item.path == pathList[0] || (item.name += '').toLowerCase() == pathList[0]);

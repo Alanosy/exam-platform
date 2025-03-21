@@ -171,6 +171,9 @@ export const handleTree = <T>(data: any[], id?: string, parentId?: string, child
   for (const d of data) {
     const id = d[config.id];
     childrenListMap[id] = d;
+    if (!d[config.childrenList]) {
+      d[config.childrenList] = [];
+    }
   }
 
   for (const d of data) {

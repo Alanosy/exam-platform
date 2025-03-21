@@ -2,7 +2,7 @@
   <div class="register">
     <el-form ref="registerRef" :model="registerForm" :rules="registerRules" class="register-form">
       <div class="title-box">
-        <h3 class="title">RuoYi-Vue-Plus多租户管理系统</h3>
+        <h3 class="title">{{ title }}</h3>
         <lang-select />
       </div>
       <el-form-item v-if="tenantEnabled" prop="tenantId">
@@ -80,6 +80,7 @@ import { useI18n } from 'vue-i18n';
 
 const { proxy } = getCurrentInstance() as ComponentInternalInstance;
 
+const title = import.meta.env.VITE_APP_TITLE;
 const router = useRouter();
 
 const { t } = useI18n();
