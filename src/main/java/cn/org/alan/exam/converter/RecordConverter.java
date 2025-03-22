@@ -1,10 +1,6 @@
 package cn.org.alan.exam.converter;
 
-import cn.org.alan.exam.model.entity.Exam;
-import cn.org.alan.exam.model.entity.Grade;
 import cn.org.alan.exam.model.entity.Repo;
-import cn.org.alan.exam.model.vo.GradeVO;
-import cn.org.alan.exam.model.vo.record.ExamRecordVO;
 import cn.org.alan.exam.model.vo.record.ExerciseRecordVO;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.mapstruct.Mapper;

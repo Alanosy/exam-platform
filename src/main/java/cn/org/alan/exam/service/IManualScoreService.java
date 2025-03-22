@@ -12,9 +12,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import java.util.List;
 
 /**
- * <p>
- *  服务类
- * </p>
+ * 答卷管理服务接口
  *
  * @author WeiJin
  * @since 2024-03-21
@@ -22,16 +20,17 @@ import java.util.List;
 public interface IManualScoreService extends IService<ManualScore> {
     /**
      * 试卷查询信息
-     * @param userId
-     * @param examId
+     *
+     * @param userId 用户ID
+     * @param examId 试卷ID
      * @return
      */
     Result<List<UserAnswerDetailVO>> getDetail(Integer userId, Integer examId);
 
 
-
     /**
      * 批改试卷
+     *
      * @param correctAnswerFroms
      * @return
      */
@@ -39,11 +38,20 @@ public interface IManualScoreService extends IService<ManualScore> {
 
     /**
      * 分页查找待阅卷考试
+     *
      * @return
      */
-    Result<IPage<AnswerExamVO>> examPage(Integer pageNum, Integer pageSize,String examName);
+    Result<IPage<AnswerExamVO>> examPage(Integer pageNum, Integer pageSize, String examName);
 
-
-    Result<IPage<UncorrectedUserVO>> stuExamPage(Integer pageNum, Integer pageSize, Integer examId,String realName);
+    /**
+     * 查询待批阅的用户
+     *
+     * @param pageNum 页码
+     * @param pageSize 每页大小
+     * @param examId 试卷ID
+     * @param realName 真实姓名
+     * @return
+     */
+    Result<IPage<UncorrectedUserVO>> stuExamPage(Integer pageNum, Integer pageSize, Integer examId, String realName);
 
 }

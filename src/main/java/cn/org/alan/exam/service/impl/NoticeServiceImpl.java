@@ -1,35 +1,26 @@
 package cn.org.alan.exam.service.impl;
 
+import cn.org.alan.exam.common.exception.ServiceRuntimeException;
 import cn.org.alan.exam.common.result.Result;
 import cn.org.alan.exam.converter.NoticeConverter;
 import cn.org.alan.exam.mapper.*;
-import cn.org.alan.exam.model.entity.Grade;
 import cn.org.alan.exam.model.entity.Notice;
-import cn.org.alan.exam.model.form.NoticeForm;
-import cn.org.alan.exam.model.vo.NoticeVO;
+import cn.org.alan.exam.model.form.notice.NoticeForm;
+import cn.org.alan.exam.model.vo.notice.NoticeVO;
 import cn.org.alan.exam.service.INoticeService;
-import cn.org.alan.exam.util.impl.CacheClient;
-import cn.org.alan.exam.util.impl.SecurityUtil;
-import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
+import cn.org.alan.exam.utils.SecurityUtil;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import jakarta.annotation.Resource;
-import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
+import javax.annotation.Resource;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
-import java.util.concurrent.TimeUnit;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 
 /**
- * 公告实现类
+ * 公告服务实现类
  *
  * @author Alan
  * @since 2024-03-21
@@ -55,6 +46,7 @@ public class NoticeServiceImpl extends ServiceImpl<NoticeMapper, Notice> impleme
     @Override
     @Transactional
     public Result<String> addNotice(NoticeForm noticeForm) {
+        String gradeIds = noticeForm.getGradeIds();
         // 设置创建人
         noticeForm.setUserId(SecurityUtil.getUserId());
         // 添加公告
@@ -64,27 +56,31 @@ public class NoticeServiceImpl extends ServiceImpl<NoticeMapper, Notice> impleme
         if(roleCode==3){
             notice.setIsPublic(1);
         }
-        int rowsAffected = noticeMapper.insert(notice);
-        if (rowsAffected == 0) {
-            return Result.failed("添加失败");
-        }
         // 判断是否不公开公告
         if(noticeForm.getIsPublic()==0){
+            if("".equals(gradeIds)|| gradeIds==null){
+                throw new ServiceRuntimeException("公开班级必须添入班级");
+            }
+            int addNotionRowOther = noticeMapper.insert(notice);
+            if (addNotionRowOther == 0) {
+                throw new ServiceRuntimeException("添加公告失败");
+            }
             //添加公告和班级对应关系
             Integer noticeId = notice.getId();
-            String gradeIds = noticeForm.getGradeIds();
-            if("".equals(gradeIds)|| gradeIds==null){
-                return Result.failed("公开班级必须添入班级");
-            }
             List<Integer> gradeIdList = Arrays.stream(gradeIds.split(","))
                     .map(Integer::parseInt)
-                    .toList();
+                    .collect(java.util.stream.Collectors.toList());
             int addNoticeGradeRow = noticeGradeMapper.addNoticeGrade(noticeId,gradeIdList);
             if (addNoticeGradeRow == 0) {
-                return Result.failed("添加失败");
+                throw new ServiceRuntimeException("添加公告条数=0失败");
+            }
+        }else{
+            int addNotionRowAdmin = noticeMapper.insert(notice);
+            if (addNotionRowAdmin == 0) {
+                throw new ServiceRuntimeException("添加公告失败");
             }
         }
-        return Result.success("添加成功");
+        return Result.success("添加公告成功");
     }
 
     /**
@@ -98,13 +94,10 @@ public class NoticeServiceImpl extends ServiceImpl<NoticeMapper, Notice> impleme
         // 转换为集合
         List<Integer> noticeIds = Arrays.stream(ids.split(","))
                 .map(Integer::parseInt)
-                .toList();
+                .collect(java.util.stream.Collectors.toList());
         // 删除公告
-        int rowsAffected = noticeMapper.removeNotice(noticeIds);
+        noticeMapper.deleteBatchIds(noticeIds);
         noticeGradeMapper.deleteNoticeGrade(noticeIds);
-        if (rowsAffected == 0) {
-            return Result.failed("删除失败");
-        }
         return Result.success("删除成功");
     }
 
@@ -123,7 +116,7 @@ public class NoticeServiceImpl extends ServiceImpl<NoticeMapper, Notice> impleme
         if(!"".equals(gradeIds)&&gradeIds!=null){
             gradeIsList = Arrays.stream(gradeIds.split(","))
                     .map(Integer::parseInt)
-                    .toList();
+                    .collect(java.util.stream.Collectors.toList());
         }
         if(isPublic!=noticeForm.getIsPublic()&&isPublic==0){
             // 从不公开改成公开，就是修改公告内容改变公开状态，删除公告班级对应关系

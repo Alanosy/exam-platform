@@ -13,10 +13,11 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 /**
+ * 题库表 Mapper 接口
+ *
  * @author WeiJin
  * @since 2024-03-21
  */
-@Repository
 public interface RepoMapper extends BaseMapper<Repo> {
 
     /**
@@ -31,14 +32,6 @@ public interface RepoMapper extends BaseMapper<Repo> {
                              @Param("userId") Integer userId);
 
     /**
-     * 删除用户创建的题库
-     *
-     * @param userIds 用户id列表
-     * @return 影响记录数
-     */
-    Integer deleteByUserIds(List<Integer> userIds);
-
-    /**
      * 分页获取可刷题库列表
      *
      * @param page     分页信息
@@ -49,6 +42,12 @@ public interface RepoMapper extends BaseMapper<Repo> {
     IPage<ExerciseRepoVO> selectRepo(IPage<ExerciseRepoVO> page,
                                      String title, List<Integer> userList);
 
+    /**
+     * 查询题库列表
+     * @param repoTitle 题库标题
+     * @param userId 用户ID
+     * @return
+     */
     List<RepoListVO> selectRepoList(String repoTitle, int userId);
 
     /**

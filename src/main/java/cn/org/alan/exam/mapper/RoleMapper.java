@@ -6,14 +6,16 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import java.util.List;
 
 /**
- * <p>
- *  Mapper 接口
- * </p>
+ * 角色表 Mapper 接口
  *
  * @author WeiJin
  * @since 2024-03-21
  */
 public interface RoleMapper extends BaseMapper<Role> {
-
+    /**
+     * 获取角色代码
+     * @param roleId 角色ID
+     * @return
+     */
     List<String> selectCodeById(Integer roleId);
 }

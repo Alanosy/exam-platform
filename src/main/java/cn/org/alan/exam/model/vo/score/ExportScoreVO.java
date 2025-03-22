@@ -1,6 +1,6 @@
 package cn.org.alan.exam.model.vo.score;
 
-import cn.org.alan.exam.util.excel.ExcelExport;
+import cn.org.alan.exam.utils.excel.ExcelExport;
 import lombok.Data;
 
 /**

@@ -7,7 +7,11 @@ import cn.org.alan.exam.model.vo.repo.RepoListVO;
 import cn.org.alan.exam.model.vo.repo.RepoVO;
 import cn.org.alan.exam.service.IRepoService;
 import com.baomidou.mybatisplus.core.metadata.IPage;
-import jakarta.annotation.Resource;
+
+import javax.annotation.Resource;
+
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -20,6 +24,7 @@ import java.util.List;
  * @author WeiJin
  * @since 2024-03-21
  */
+@Api(tags = "题库管理相关接口")
 @RestController
 @RequestMapping("/api/repo")
 public class RepoController {
@@ -34,9 +39,10 @@ public class RepoController {
      * @return 返回响应结果
      */
     @PostMapping
+    @ApiOperation("添加题库")
     @PreAuthorize("hasAnyAuthority('role_teacher','role_admin')")
     public Result<String> addRepo(@Validated @RequestBody Repo repo) {
-        //从token获取用户id，放入创建人id属性
+        // 从token获取用户id，放入创建人id属性
         return iRepoService.addRepo(repo);
     }
 
@@ -46,6 +52,7 @@ public class RepoController {
      * @param repo 传递参数
      * @return 返回响应
      */
+    @ApiOperation("修改题库")
     @PutMapping("/{id}")
     @PreAuthorize("hasAnyAuthority('role_teacher','role_admin')")
     public Result<String> updateRepo(@Validated @RequestBody Repo repo, @PathVariable("id") Integer id) {
@@ -58,6 +65,7 @@ public class RepoController {
      * @param id 题库id
      * @return 返回响应结果
      */
+    @ApiOperation("根据题库id删除题库")
     @DeleteMapping("/{id}")
     @PreAuthorize("hasAnyAuthority('role_teacher','role_admin')")
     public Result<String> deleteRepoById(@PathVariable("id") Integer id) {
@@ -66,12 +74,14 @@ public class RepoController {
 
     /**
      * 获取题库id和题库名，教师获取自己的题库，管理员获取所有题库
+     *
      * @param repoTitle 题库名称
      * @return 响应结果
      */
+    @ApiOperation("获取所有题库")
     @GetMapping("/list")
     @PreAuthorize("hasAnyAuthority('role_teacher','role_admin')")
-    public Result<List<RepoListVO>> getRepoList(@RequestParam(value = "repoTitle",required = false) String repoTitle) {
+    public Result<List<RepoListVO>> getRepoList(@RequestParam(value = "repoTitle", required = false) String repoTitle) {
         return iRepoService.getRepoList(repoTitle);
     }
 
@@ -83,6 +93,7 @@ public class RepoController {
      * @param title    题库名
      * @return 响应结果
      */
+    @ApiOperation("分页查询题库")
     @GetMapping("/paging")
     @PreAuthorize("hasAnyAuthority('role_teacher','role_admin')")
     public Result<IPage<RepoVO>> pagingRepo(@RequestParam(value = "pageNum", required = false, defaultValue = "1") Integer pageNum,

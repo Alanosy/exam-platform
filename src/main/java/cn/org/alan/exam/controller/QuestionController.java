@@ -4,10 +4,15 @@ package cn.org.alan.exam.controller;
 import cn.org.alan.exam.common.group.QuestionGroup;
 import cn.org.alan.exam.common.result.Result;
 import cn.org.alan.exam.model.form.question.QuestionFrom;
-import cn.org.alan.exam.model.vo.QuestionVO;
+import cn.org.alan.exam.model.vo.question.QuestionVO;
+import cn.org.alan.exam.service.IFileService;
 import cn.org.alan.exam.service.IQuestionService;
 import com.baomidou.mybatisplus.core.metadata.IPage;
-import jakarta.annotation.Resource;
+
+import javax.annotation.Resource;
+
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -19,6 +24,7 @@ import org.springframework.web.multipart.MultipartFile;
  * @author WeiJin
  * @since 2024-03-21
  */
+@Api(tags = "试题管理相关接口")
 @RestController
 @RequestMapping("/api/questions")
 public class QuestionController {
@@ -26,11 +32,16 @@ public class QuestionController {
     @Resource
     private IQuestionService iQuestionService;
 
+    @Resource
+    private IFileService fileService;
+
     /**
      * 单题添加
+     *
      * @param questionFrom 传参
      * @return 响应
      */
+    @ApiOperation("单题添加")
     @PostMapping("/single")
     @PreAuthorize("hasAnyAuthority('role_teacher','role_admin')")
     public Result<String> addSingleQuestion(@Validated(QuestionGroup.QuestionAddGroup.class) @RequestBody QuestionFrom questionFrom) {
@@ -39,9 +50,11 @@ public class QuestionController {
 
     /**
      * 批量删除试题
+     *
      * @param ids 试题id
      * @return 相应
      */
+    @ApiOperation("批量删除试题")
     @DeleteMapping("/batch/{ids}")
     @PreAuthorize("hasAnyAuthority('role_teacher','role_admin')")
     public Result<String> deleteBatchQuestion(@PathVariable("ids") String ids) {
@@ -50,13 +63,15 @@ public class QuestionController {
 
     /**
      * 分页查询试题
+     *
      * @param pageNum  页码
-     * @param pageSize 每页记录数
+     * @param pageSize 每页大小
      * @param content  试题名
      * @param repoId   题库id
      * @param type     试题类型
      * @return 响应
      */
+    @ApiOperation("分页查询试题")
     @GetMapping("/paging")
     @PreAuthorize("hasAnyAuthority('role_teacher','role_admin')")
     public Result<IPage<QuestionVO>> pagingQuestion(@RequestParam(value = "pageNum", required = false, defaultValue = "1") Integer pageNum,
@@ -69,9 +84,11 @@ public class QuestionController {
 
     /**
      * 根据试题id获取单题详情
+     *
      * @param id 试题id
      * @return 响应结果
      */
+    @ApiOperation("根据试题id获取单题详情")
     @GetMapping("/single/{id}")
     @PreAuthorize("hasAnyAuthority('role_teacher','role_admin')")
     public Result<QuestionVO> querySingle(@PathVariable("id") Integer id) {
@@ -80,10 +97,12 @@ public class QuestionController {
 
     /**
      * 修改试题
+     *
      * @param id           试题Id
      * @param questionFrom 入参
      * @return 响应结果
      */
+    @ApiOperation("修改试题")
     @PutMapping("/{id}")
     @PreAuthorize("hasAnyAuthority('role_teacher','role_admin')")
     public Result<String> updateQuestion(@PathVariable("id") Integer id, @RequestBody QuestionFrom questionFrom) {
@@ -93,24 +112,28 @@ public class QuestionController {
 
     /**
      * 批量导入试题
-     * @param id 题库Id
+     *
+     * @param id   题库Id
      * @param file Excel文件
      * @return 响应结果
      */
+    @ApiOperation("批量导入试题")
     @PostMapping("/import/{id}")
     @PreAuthorize("hasAnyAuthority('role_teacher','role_admin')")
     public Result<String> importQuestion(@PathVariable("id") Integer id, @RequestParam("file") MultipartFile file) {
-        return iQuestionService.importQuestion(id,file);
+        return iQuestionService.importQuestion(id, file);
     }
 
     /**
-     * 上传图片
+     * 上传试题图片
+     *
      * @param file 文件
      * @return 返回上传后的地址
      */
+    @ApiOperation("上传图片")
     @PostMapping("/uploadImage")
     @PreAuthorize("hasAnyAuthority('role_teacher','role_admin')")
-    public Result<String> uploadImage(@RequestPart("file") MultipartFile file){
-        return iQuestionService.uploadImage(file);
+    public Result<String> uploadImage(@RequestPart("file") MultipartFile file) {
+        return fileService.uploadImage(file);
     }
 }

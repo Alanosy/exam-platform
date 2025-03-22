@@ -1,154 +1,55 @@
 package cn.org.alan.exam.model.entity;
 
 import com.baomidou.mybatisplus.annotation.*;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
+import lombok.Data;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
 /**
- * <p>
- *
- * </p>
+ * 试题实体类
  *
  * @author WeiJin
  * @since 2024-03-21
  */
+@Data
+@ApiModel("试题实体类")
 @TableName("t_question")
 public class Question implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    /**
-     * id   试题表
-     */
+    @ApiModelProperty("试题ID")
     @TableId(value = "id", type = IdType.AUTO)
     private Integer id;
 
-    /**
-     * 试题类型
-     */
+    @ApiModelProperty("试题类型")
     private Integer quType;
 
-    /**
-     * 试题图片
-     */
+    @ApiModelProperty("试题图片")
     private String image;
 
-    /**
-     * 题干
-     */
+    @ApiModelProperty("题干")
     private String content;
 
-    /**
-     * 创建时间
-     */
+    @ApiModelProperty("创建时间")
     @TableField(fill = FieldFill.INSERT)
     private LocalDateTime createTime;
 
-    /**
-     * 题目分析
-     */
+    @ApiModelProperty("题目分析")
     private String analysis;
 
-    /**
-     * 题库id
-     */
+    @ApiModelProperty("题库ID")
     private Integer repoId;
-    /**
-     * 创建人id
-     */
+
+    @ApiModelProperty("创建人ID")
     @TableField(fill = FieldFill.INSERT)
     private Integer userId;
 
-    /**
-     * 逻辑删除字段
-     */
+    @TableLogic
+    @ApiModelProperty("逻辑删除字段")
     private Integer isDeleted;
-
-    public Integer getIsDeleted() {
-        return isDeleted;
-    }
-
-    public void setIsDeleted(Integer isDeleted) {
-        this.isDeleted = isDeleted;
-    }
-
-    public Integer getUserId() {
-        return userId;
-    }
-
-    public void setUserId(Integer userId) {
-        this.userId = userId;
-    }
-
-    public Integer getId() {
-        return id;
-    }
-
-    public void setId(Integer id) {
-        this.id = id;
-    }
-
-    public Integer getQuType() {
-        return quType;
-    }
-
-    public void setQuType(Integer quType) {
-        this.quType = quType;
-    }
-
-    public String getImage() {
-        return image;
-    }
-
-    public void setImage(String image) {
-        this.image = image;
-    }
-
-    public String getContent() {
-        return content;
-    }
-
-    public void setContent(String content) {
-        this.content = content;
-    }
-
-    public LocalDateTime getCreateTime() {
-        return createTime;
-    }
-
-    public void setCreateTime(LocalDateTime createTime) {
-        this.createTime = createTime;
-    }
-
-    public String getAnalysis() {
-        return analysis;
-    }
-
-    public void setAnalysis(String analysis) {
-        this.analysis = analysis;
-    }
-
-    public Integer getRepoId() {
-        return repoId;
-    }
-
-    public void setRepoId(Integer repoId) {
-        this.repoId = repoId;
-    }
-
-    @Override
-    public String toString() {
-        return "Question{" +
-                "id=" + id +
-                ", quType=" + quType +
-                ", image='" + image + '\'' +
-                ", content='" + content + '\'' +
-                ", createTime=" + createTime +
-                ", analysis='" + analysis + '\'' +
-                ", repoId=" + repoId +
-                ", userId=" + userId +
-                ", isDeleted=" + isDeleted +
-                '}';
-    }
 }

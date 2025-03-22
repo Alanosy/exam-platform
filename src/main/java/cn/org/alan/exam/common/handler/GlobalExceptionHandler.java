@@ -1,14 +1,7 @@
 package cn.org.alan.exam.common.handler;
 
-/**
- * @Author WeiJin
- * @Version 1.0
- * @Date 2024/3/29 16:10
- */
-
-import cn.org.alan.exam.common.exception.AppException;
+import cn.org.alan.exam.common.exception.ServiceRuntimeException;
 import cn.org.alan.exam.common.result.Result;
-import jakarta.validation.ConstraintViolationException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.http.converter.HttpMessageNotReadableException;
@@ -18,26 +11,33 @@ import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.multipart.MaxUploadSizeExceededException;
-import org.springframework.web.multipart.MultipartException;
 import org.springframework.web.multipart.support.MissingServletRequestPartException;
 
-import java.lang.reflect.InvocationTargetException;
+import javax.validation.ConstraintViolationException;
 import java.sql.SQLIntegrityConstraintViolationException;
 
-@RestControllerAdvice
+/**
+ * 全局异常拦截器
+ *
+ * @Author WeiJin
+ * @Version 1.0
+ * @Date 2024/3/29 16:10
+ */
 @Slf4j
+@RestControllerAdvice
 public class GlobalExceptionHandler {
 
     /**
-     * 处理自定义异常
+     * 处理自定义服务异常拦截处理
      *
      * @param e 异常
      * @return 响应
      */
-    @ExceptionHandler(AppException.class)
-    public Result<String> handleAppException(AppException e) {
-        log.error(e.getMessage(), e.getClass());
-        return Result.failed(e.getLocalizedMessage());
+    @ExceptionHandler(ServiceRuntimeException.class)
+    public Result<String> handleException(ServiceRuntimeException e) {
+        String message = e.getMessage();
+        log.error("接口调用异常: {}", message);
+        return Result.failed(message);
     }
 
     /**
@@ -64,7 +64,6 @@ public class GlobalExceptionHandler {
         log.error(e.getMessage(), e.getClass());
         return Result.failed("重复");
     }
-
 
     /**
      * 处理请求参数无法解析异常
@@ -151,17 +150,5 @@ public class GlobalExceptionHandler {
     public Result<String> handleConstraintViolationException(ConstraintViolationException e) {
         log.error(e.getMessage(), e.getClass());
         return Result.failed(e.getMessage());
-    }
-
-    /**
-     * 处理其他异常
-     *
-     * @param e 异常
-     * @return 响应
-     */
-    @ExceptionHandler(Exception.class)
-    public Result<String> handleException(Exception e) {
-        log.error(e.getMessage(), e.getClass(), e.getCause());
-        return Result.failed("未知异常");
     }
 }

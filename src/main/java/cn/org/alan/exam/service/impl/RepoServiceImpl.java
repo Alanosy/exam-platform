@@ -1,41 +1,38 @@
 package cn.org.alan.exam.service.impl;
 
+import cn.org.alan.exam.common.exception.ServiceRuntimeException;
 import cn.org.alan.exam.common.result.Result;
 import cn.org.alan.exam.mapper.*;
 import cn.org.alan.exam.model.entity.Question;
 import cn.org.alan.exam.model.entity.Repo;
-import cn.org.alan.exam.model.entity.UserGrade;
 import cn.org.alan.exam.model.vo.repo.RepoListVO;
 import cn.org.alan.exam.model.vo.repo.RepoVO;
 import cn.org.alan.exam.model.vo.exercise.ExerciseRepoVO;
 import cn.org.alan.exam.service.IRepoService;
-import cn.org.alan.exam.util.impl.SecurityUtil;
+import cn.org.alan.exam.utils.SecurityUtil;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import jakarta.annotation.Resource;
-import org.springframework.beans.factory.annotation.Value;
+import org.aspectj.weaver.ast.Var;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.annotation.Resource;
 import java.util.List;
 
 /**
+ * 题库管理服务实现类
+ *
  * @author WeiJin
  * @since 2024-03-21
  */
 @Service
 public class RepoServiceImpl extends ServiceImpl<RepoMapper, Repo> implements IRepoService {
-
-
     @Resource
     private RepoMapper repoMapper;
     @Resource
     private QuestionMapper questionMapper;
-
-    @Resource
-    private ExerciseRecordMapper exerciseRecordMapper;
     @Resource
     private UserGradeMapper userGradeMapper;
     @Resource
@@ -45,76 +42,70 @@ public class RepoServiceImpl extends ServiceImpl<RepoMapper, Repo> implements IR
     @Override
     public Result<String> addRepo(Repo repo) {
         int row = repoMapper.insert(repo);
-        if(row>0){
-            return Result.success("保存成功");
+        if (row > 0) {
+            return Result.success("新增题库成功");
         }
-        return Result.failed("保存失败");
+        throw new ServiceRuntimeException("添加题库条数<1");
     }
 
     @Override
     public Result<String> updateRepo(Repo repo, Integer id) {
-        //修改题库
+        // 修改题库
         LambdaUpdateWrapper<Repo> updateWrapper = new LambdaUpdateWrapper<Repo>()
-                .eq(Repo::getId, id).set(Repo::getTitle, repo.getTitle()).set(Repo::getIsExercise,repo.getIsExercise());
-
-        repoMapper.update(updateWrapper);
-        return Result.success("修改成功");
+                .eq(Repo::getId, id)
+                .set(Repo::getTitle, repo.getTitle())
+                .set(Repo::getIsExercise, repo.getIsExercise());
+        int row = repoMapper.update(updateWrapper);
+        if (row > 0) {
+            return Result.success("修改题库成功");
+        }
+        throw new ServiceRuntimeException("修改题库条数<1");
     }
 
     @Override
     @Transactional
     public Result<String> deleteRepoById(Integer id) {
-
-        //题库内试题清空所属题库id
+        // 题库内试题清空所属题库id
         LambdaUpdateWrapper<Question> wrapper = new LambdaUpdateWrapper<Question>()
                 .eq(Question::getRepoId, id)
                 .set(Question::getRepoId, null);
         questionMapper.update(wrapper);
-        //删除题库
-        LambdaUpdateWrapper<Repo> repoLambdaUpdateWrapper = new LambdaUpdateWrapper<>();
-        repoLambdaUpdateWrapper.eq(Repo::getId,id)
-                .set(Repo::getIsDeleted,1);
-        int result = repoMapper.update(repoLambdaUpdateWrapper);
-        if (result > 0) {
-            return Result.success("删除成功");
+        // 删除题库
+        boolean result = this.removeById(id);
+        if (result) {
+            return Result.success("删除题库成功");
         }
-        return Result.failed("删除失败");
+        throw new ServiceRuntimeException("删除题库条数<1");
     }
 
     @Override
     public Result<List<RepoListVO>> getRepoList(String repoTitle) {
         List<RepoListVO> list;
-        if ("role_teacher".equals(SecurityUtil.getRole())) {
-            list = repoMapper.selectRepoList(repoTitle, SecurityUtil.getUserId());
+        Integer roleCode = SecurityUtil.getRoleCode();
+        Integer userId = SecurityUtil.getUserId();
+        if (roleCode == 2) {
+            list = repoMapper.selectRepoList(repoTitle, userId);
         } else {
             list = repoMapper.selectRepoList(repoTitle, 0);
         }
-        return Result.success("获取成功", list);
+        return Result.success("根据用户id获取自己的题库获取成功", list);
     }
 
     @Override
     public Result<IPage<RepoVO>> pagingRepo(Integer pageNum, Integer pageSize, String title) {
-
         IPage<RepoVO> page = new Page<>(pageNum, pageSize);
-
-        if ("role_teacher".equals(SecurityUtil.getRole())) {
-            //教师只查询自己的题库
-            page = repoMapper.pagingRepo(page, title, SecurityUtil.getUserId());
+        Integer roleCode = SecurityUtil.getRoleCode();
+        Integer userId = SecurityUtil.getUserId();
+        if (roleCode == 2) {
+            // 教师只查询自己的题库
+            page = repoMapper.pagingRepo(page, title, userId);
         } else {
-            //管理员可以获取所有题库
+            // 管理员可以获取所有题库
             page = repoMapper.pagingRepo(page, title, 0);
         }
-
-        return Result.success(null, page);
+        return Result.success("题库分页查询成功", page);
     }
 
-    /**
-     * 查询可以刷的题库
-     * @param pageNum  页码
-     * @param pageSize 每页记录数
-     * @param title    题库名
-     * @return
-     */
     @Override
     public Result<IPage<ExerciseRepoVO>> getRepo(Integer pageNum, Integer pageSize, String title) {
         IPage<ExerciseRepoVO> page = new Page<>(pageNum, pageSize);
@@ -126,7 +117,7 @@ public class RepoServiceImpl extends ServiceImpl<RepoMapper, Repo> implements IR
         List<Integer> userList = userGradeMapper.getUserListByGradeId(gradeId);
         userList.addAll(adminList);
         // 查询可以刷的题库，条件是没有删除的公开的是班级内老师的题库
-        page = repoMapper.selectRepo(page, title,userList);
-        return Result.success("查询成功", page);
+        page = repoMapper.selectRepo(page, title, userList);
+        return Result.success("分页获取可刷题库列表成功", page);
     }
 }

@@ -12,19 +12,27 @@ import java.util.List;
  */
 @Data
 public class ExerciseRecordDetailVO {
-    // 1、题干 2、选项 3、自己的答案 4、正确的答案 5、是否正确 6、试题分析
+    // 题干
     private String title;
+
+    // 选项
     private List<Option> option;
+
+    // 自己的答案
     private String myOption;
+
+    // 正确的答案
     private String rightOption;
+
+    // 是否正确
     private Integer isRight;
+
+    // 试题分析
     private String analyse;
-    /**
-     * 题干图片
-     */
+
+    // 题干图片
     private String image;
-    /**
-     * 试题类型
-     */
+
+    // 试题类型
     private Integer quType;
 }

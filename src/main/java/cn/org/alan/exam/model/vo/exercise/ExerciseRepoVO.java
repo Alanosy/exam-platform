@@ -10,7 +10,9 @@ import lombok.Data;
 @Data
 public class ExerciseRepoVO {
     private Integer id;
+    // 题库标题
     private String repoTitle;
+    // 总题数
     private Integer totalCount;
     private Integer exerciseCount;
 }

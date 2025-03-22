@@ -2,7 +2,7 @@ package cn.org.alan.exam.converter;
 
 
 import cn.org.alan.exam.model.entity.User;
-import cn.org.alan.exam.model.form.UserForm;
+import cn.org.alan.exam.model.form.user.UserForm;
 import org.mapstruct.Mapper;
 import org.springframework.stereotype.Component;
 

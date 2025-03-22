@@ -1,8 +1,8 @@
 package cn.org.alan.exam.converter;
 
 import cn.org.alan.exam.model.entity.ExerciseRecord;
-import cn.org.alan.exam.model.form.ExerciseFillAnswerFrom;
-import cn.org.alan.exam.model.vo.QuestionVO;
+import cn.org.alan.exam.model.form.exercise.ExerciseFillAnswerFrom;
+import cn.org.alan.exam.model.vo.question.QuestionVO;
 import cn.org.alan.exam.model.vo.exercise.AnswerInfoVO;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;

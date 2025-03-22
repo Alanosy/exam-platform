@@ -1,59 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="cn.org.alan.exam.mapper.QuestionMapper">
-    <delete id="deleteByUserIds">
-        delete from t_question where user_id in
-        <foreach collection="userIds" item="userId" open="(" close=")" separator=",">
-            #{userId}
-        </foreach>
-    </delete>
-    <update id="deleteBatchIdsQu">
-        update t_question
-        set is_deleted = 1
-        where id in
-        <foreach collection="list" item="quId" separator="," open="(" close=")">
-            #{quId}
-        </foreach>
-    </update>
 
-
-    <!--    分页获取试题信息-->
-    <select id="pagingQuestion" resultType="cn.org.alan.exam.model.vo.QuestionVO">
-        select q.id,
-        q.qu_type ,
-        q.content,
-        r.title as repoTitle,
-        q.create_time
-        from t_question q join t_repo r on q.repo_id = r.id
-        <trim suffixOverrides="and" prefix="where">
-
-            <if test='content != null and content != ""'>
-                q.content like concat('%',#{content},'%') and
-            </if>
-            <if test='repoId != null and repoId != 0'>
-                q.repo_id = #{repoId} and
-            </if>
-            <if test='type != null and type != 0'>
-                q.qu_type = #{type} and
-            </if>
-            <if test='userId != null and userId != 0'>
-                q.user_id = #{userId} and
-            </if>
-            q.is_deleted = 0
-        </trim>
-    </select>
-
-
-    <resultMap id="singleQuestion" autoMapping="true" type="cn.org.alan.exam.model.vo.QuestionVO">
+    <resultMap id="singleQuestion" autoMapping="true" type="cn.org.alan.exam.model.vo.question.QuestionVO">
         <id column="id" property="id"/>
         <collection property="options" autoMapping="true" column="id" ofType="cn.org.alan.exam.model.entity.Option"
                     select="cn.org.alan.exam.mapper.OptionMapper.selectAllByQuestionId"/>
     </resultMap>
 
-    <resultMap id="singleExercise" autoMapping="true" type="cn.org.alan.exam.model.vo.QuestionVO">
+    <resultMap id="singleExercise" autoMapping="true" type="cn.org.alan.exam.model.vo.question.QuestionVO">
         <id column="id" property="id"/>
         <collection property="options" autoMapping="true" column="id" ofType="cn.org.alan.exam.model.entity.Option"
-                    select="cn.org.alan.exam.mapper.OptionMapper.selectByQuestionId"/>
+                    select="cn.org.alan.exam.mapper.OptionMapper.selectOptionByqId"/>
     </resultMap>
     <!--    根据试题id获取单题详情 一对多查询-->
     <select id="selectSingle" resultMap="singleQuestion">
@@ -68,12 +26,7 @@
         join t_repo as r on q.repo_id = r.id
         where q.id = #{id}
     </select>
-    <select id="selectIdsByUserIds" resultType="java.lang.Integer">
-        select id from t_question where user_id in
-        <foreach collection="userIds" item="userId" open="(" close=")" separator=",">
-            #{userId}
-        </foreach>
-    </select>
+
     <select id="selectQuestionSheet" resultType="cn.org.alan.exam.model.vo.exercise.QuestionSheetVO">
         select q.id as quId,q.qu_type,q.repo_id,IF(er.id IS NULL, 0, 1) AS exercised,
         er.is_right AS isRight from t_question as q left join
@@ -101,63 +54,10 @@
         join t_repo as r on q.repo_id = r.id
         where q.id = #{id}
     </select>
-    <select id="countByCondition" resultType="java.lang.Integer">
-        select count(*)
-        from t_question q join t_repo r on q.repo_id = r.id
-        <trim suffixOverrides="and" prefix="where">
-            <if test='title != null and title != ""'>
-                q.content like concat('%',#{title},'%') and
-            </if>
-            <if test='repoId != null and repoId != 0'>
-                q.repo_id = #{repoId} and
-            </if>
-            <if test='type != null and type != 0'>
-                q.qu_type = #{type} and
-            </if>
-            <if test='userId != null and userId != 0'>
-                q.user_id = #{userId} and
-            </if>
-            q.is_deleted = 0
-        </trim>
 
 
 
-
-    </select>
-    <select id="selectQuestionIdsPage" resultType="java.lang.Integer">
-        select q.id
-        from t_question q join t_repo r on q.repo_id = r.id
-        <trim suffixOverrides="and" prefix="where">
-            <if test='title != null and title != ""'>
-                q.content like concat('%',#{title},'%') and
-            </if>
-            <if test='repoId != null and repoId != 0'>
-                q.repo_id = #{repoId} and
-            </if>
-            <if test='type != null and type != 0'>
-                q.qu_type = #{type} and
-            </if>
-            <if test='userId != null and userId != 0'>
-                q.user_id = #{userId} and
-            </if>
-            q.is_deleted = 0
-            ORDER BY q.id
-            LIMIT #{offset}, #{pageSize}
-        </trim>
-    </select>
-    <select id="batchSelectByIds" resultType="cn.org.alan.exam.model.vo.QuestionVO">
-        select q.id,
-        q.qu_type ,
-        q.content,
-        r.title as repoTitle,
-        q.create_time
-        from t_question q join t_repo r on q.repo_id = r.id
-        WHERE q.is_deleted = 0 and q.id IN
-        <foreach item="id" index="index" collection="missIds" open="(" separator="," close=")">
-            #{id}
-        </foreach>
-    </select>
-    <select id="selectQuestionPage" resultType="cn.org.alan.exam.model.vo.QuestionVO">
+    <select id="selectQuestionPage" resultType="cn.org.alan.exam.model.vo.question.QuestionVO">
         select
         q.id,
         q.qu_type ,

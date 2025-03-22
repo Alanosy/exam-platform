@@ -2,16 +2,20 @@ package cn.org.alan.exam.model.form.question;
 
 import cn.org.alan.exam.common.group.QuestionGroup;
 import cn.org.alan.exam.model.entity.Option;
-import com.baomidou.mybatisplus.core.toolkit.StringUtils;
-import jakarta.validation.Valid;
-import jakarta.validation.constraints.*;
+
 import lombok.Data;
 
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
 
 /**
+ * 试卷请求体
+ *
  * @Author WeiJin
  * @Version 1.0
  * @Date 2024/4/1 11:12
@@ -46,20 +50,15 @@ public class QuestionFrom {
      */
     private LocalDateTime createTime;
 
+    /**
+     * 题库ID
+     */
     @NotNull(message = "题库id(repoId)不能为空", groups = QuestionGroup.QuestionAddGroup.class)
     private Integer repoId;
 
     /**
      * 选项列表
      */
-//    @NotNull(message = "选项列表(options)不能为空", groups = QuestionGroup.QuestionAddGroup.class)
-//    @Size(min = 2, message = "选项列表(options)至少需要两个选项", groups = QuestionGroup.QuestionAddGroup.class)
-//    @Valid
     private List<Option> options;
-
-
-
-
-
 
 }

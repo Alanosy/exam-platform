@@ -9,12 +9,27 @@ import java.time.LocalDate;
 import java.util.List;
 
 /**
+ * 用户登录时长日志表 Mapper 接口
+ *
  * @Author Alan
  * @Version
  * @Date 2024/5/28 10:47 PM
  */
 public interface UserDailyLoginDurationMapper extends BaseMapper<UserDailyLoginDuration> {
-    List<DailyVO>  getDaily(Integer userId);
+    /**
+     * 获取每条在线时长日志
+     *
+     * @param userId 用户ID
+     * @return
+     */
+    List<DailyVO> getDaily(Integer userId);
 
-    UserDailyLoginDuration getTodeyRecord(Integer userId, LocalDate date);
+    /**
+     * 获得当天记录
+     *
+     * @param userId 用户ID
+     * @param date   日期
+     * @return
+     */
+    UserDailyLoginDuration getTodayRecord(Integer userId, LocalDate date);
 }

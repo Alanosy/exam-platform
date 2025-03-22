@@ -7,6 +7,7 @@
         u.id,u.user_name,u.real_name,u.avatar,u.create_time,u.status
     </sql>
 
+    <!--批量添加用户-->
     <insert id="insertBatchUser">
         insert into t_user
         values
@@ -25,21 +26,8 @@
             #{userId}
         </foreach>
     </update>
-    
-    <update id="removeGradeIdByGradeIds">
-        update t_user set grade_id = null where grade_id in
-        <foreach collection="gradeIds" item="gradeId" open="(" close=")" separator=",">
-            #{gradeId}
-        </foreach>
-    </update>
-    <update id="deleteByUserIds">
-            update  t_user
-            set is_deleted = 1
-            where id in
-            <foreach collection="userIds" item="userId" open="(" close=")" separator=",">
-                #{userId}
-            </foreach>
-    </update>
+
+    <!--用户退出班级-->
     <update id="userExitGrade">
         update t_user u
         set u.grade_id = null
@@ -47,7 +35,7 @@
     </update>
 
     <!--获取用户信息-->
-    <select id="info" resultType="cn.org.alan.exam.model.vo.UserVO">
+    <select id="info" resultType="cn.org.alan.exam.model.vo.user.UserVO">
         select
         <include refid="simpleFiled"/>
         ,r.role_name,g.grade_name,g.id as gradeId
@@ -58,16 +46,9 @@
         where u.id = #{userId}
     </select>
 
-    <!--    根据班级Id获取该班级学生Id-->
-    <select id="selectIdsByClassId" resultType="java.lang.Integer">
-        select id
-        from t_user
-        where role_id = 1
-        and grade_id = #{classId}
-    </select>
 
-    <!--    分页获取用户信息-->
-    <select id="pagingUser" resultType="cn.org.alan.exam.model.vo.UserVO">
+    <!--分页获取用户信息-->
+    <select id="pagingUser" resultType="cn.org.alan.exam.model.vo.user.UserVO">
         select u.id,
         u.user_name,
         u.real_name,
@@ -81,7 +62,6 @@
         <if test="roleId == null || roleId == 0">
             left join t_grade as g on u.grade_id = g.id
         </if>
-
         <if test="roleId != null and roleId == 1">
             left join t_grade as g on u.grade_id = g.id and g.id in
             <foreach collection="gradeIdList" item="gId" open="(" close=")" separator=",">
@@ -106,18 +86,12 @@
         order by u.create_time desc
     </select>
     <select id="stuExamPage">
-        SELECT * FROM t_user WHERE id in (SELECT grade_id FROM t_exam_grade WHERE exam_id= #{exam_id})
+        SELECT *
+        FROM t_user
+        WHERE id in (SELECT grade_id FROM t_exam_grade WHERE exam_id= #{exam_id})
     </select>
 
-
-    <!--    统计每个班级的学生数量-->
-    <select id="countAndGroupByGradeAndRoleId" resultType="cn.org.alan.exam.model.form.count.ClassCountResult">
-        SELECT g.id AS gradeId, g.name AS gradeName, COUNT(u.id) AS count
-        FROM user u
-            INNER JOIN grade g ON u.grade_id = g.id
-        WHERE u.role_id = #{roleId}
-        GROUP BY g.id
-    </select>
+    <!--获得管理员ID列表-->
     <select id="getAdminList" resultType="java.lang.Integer">
         select id from t_user where role_id = 3
     </select>

@@ -1,42 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="cn.org.alan.exam.mapper.ExamMapper">
-    <update id="deleteExams">
-        update  t_exam
-        set is_deleted = 1
-        WHERE id IN
-        <foreach item="examId" collection="examIds" open="(" separator="," close=")">
-            #{examId}
-        </foreach>
-    </update>
-    <delete id="deleteExamGrades">
-        delete from t_exam_grade
-        WHERE exam_id IN
-        <foreach item="examId" collection="examIds" open="(" separator="," close=")">
-            #{examId}
-        </foreach>
-    </delete>
-    <delete id="deleteExamRepos">
-        delete from t_exam_repo
-        WHERE exam_id IN
-        <foreach item="examId" collection="examIds" open="(" separator="," close=")">
-            #{examId}
-        </foreach>
-    </delete>
-    <delete id="deleteExamQuestions">
-        delete from t_exam_question
-        WHERE exam_id IN
-        <foreach item="examId" collection="examIds" open="(" separator="," close=")">
-            #{examId}
-        </foreach>
-    </delete>
-    <delete id="deleteByUserIds">
-        delete from t_exam where user_id in
-        <foreach collection="userIds" item="userId" open="(" close=")" separator=",">
-            #{userId}
-        </foreach>
-    </delete>
 
+    <!--获取自己创建的考试，考试id，考试考试标题，是否需要阅卷-->
     <select id="selectMarkedList" resultType="cn.org.alan.exam.model.vo.answer.AnswerExamVO">
         select id as examId, title as examTitle, case when saq_count > 0 then 1 else 0 end as neededMark
         from t_exam
@@ -49,9 +15,6 @@
                 and title like concat('%',#{examName},'%')
             </if>
         </trim>
-
-
-
     </select>
 
     <!-- 查询学生的考试记录 -->

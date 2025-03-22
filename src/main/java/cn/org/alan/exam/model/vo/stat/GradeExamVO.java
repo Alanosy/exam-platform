@@ -10,6 +10,7 @@ import lombok.Data;
 @Data
 public class GradeExamVO {
     private Integer id;
+    // 班级名称
     private String gradeName;
     private Integer total;
 }

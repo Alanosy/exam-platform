@@ -10,11 +10,12 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 /**
+ * 统计数据 Mapper 接口
+ *
  * @ Author JinXi
  * @ Version 1.0
  * @ Date 2024/5/12 14:56
  */
-@Repository
 public interface  StatMapper extends BaseMapper<Grade> {
 
     /**

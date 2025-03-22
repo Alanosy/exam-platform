@@ -1,22 +1,28 @@
 package cn.org.alan.exam.common.result;
 
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import java.io.Serializable;
 
 /**
- * 统一响应结构体
+ * 标准响应结构体
  *
  * @author haoxr
  * @since 2022/1/30
  **/
 @Data
+@ApiModel("标准响应结构体")
 public class Result<T> implements Serializable {
 
+    @ApiModelProperty("状态码")
     private Integer code;
 
+    @ApiModelProperty("响应数据")
     private T data;
 
+    @ApiModelProperty("响应消息")
     private String msg;
 
     public static <T> Result<T> success() {

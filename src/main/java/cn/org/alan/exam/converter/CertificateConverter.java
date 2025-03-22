@@ -1,7 +1,7 @@
 package cn.org.alan.exam.converter;
 
 import cn.org.alan.exam.model.entity.Certificate;
-import cn.org.alan.exam.model.form.CertificateForm;
+import cn.org.alan.exam.model.form.cretificate.CertificateForm;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Mappings;

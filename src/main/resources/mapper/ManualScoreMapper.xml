@@ -10,10 +10,4 @@
         </foreach>
     </insert>
 
-    <delete id="deleteByUserIds">
-        delete from t_manual_score where user_id in
-        <foreach collection="userIds" item="userId" open="(" close=")" separator=",">
-            #{userId}
-        </foreach>
-    </delete>
 </mapper>

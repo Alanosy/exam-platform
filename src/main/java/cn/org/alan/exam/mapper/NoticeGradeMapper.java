@@ -15,36 +15,36 @@ public interface NoticeGradeMapper extends BaseMapper<NoticeGrade> {
 
     /**
      * 添加公告和班级关系
-     * @param noticeId
-     * @param gradeIdList
+     * @param noticeId 公告ID
+     * @param gradeIdList 班级ID列表
      * @return
      */
     int addNoticeGrade(Integer noticeId, List<Integer> gradeIdList);
 
     /**
      * 删除公告班级关系
-     * @param noticeId
+     * @param noticeId 公告ID
      * @return
      */
     Integer delNoticeGrade(Integer noticeId);
 
     /**
      * 获得班级关联的公告id
-     * @param gradeId
+     * @param gradeId 公告ID
      * @return
      */
     List<Integer> getNoticeIdList(Integer gradeId);
 
     /**
      * 获得班级关联的班级id
-     * @param noticeId
+     * @param noticeId 公告ID
      * @return
      */
     List<Integer> getGradeList(Integer noticeId);
 
     /**
      * 删除公告和班级关联
-     * @param noticeIds
+     * @param noticeIds 公告ID
      */
     void deleteNoticeGrade(List<Integer> noticeIds);
 }

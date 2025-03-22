@@ -2,14 +2,6 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="cn.org.alan.exam.mapper.NoticeMapper">
 
-    <update id="removeNotice">
-        update t_notice
-        set is_deleted = 1
-        where id IN
-        <foreach item="noticeId" collection="noticeIds" open="(" separator="," close=")">
-            #{noticeId}
-        </foreach>
-    </update>
     <update id="updateNotice">
         update t_notice
         <set>
@@ -26,80 +18,13 @@
         where id = #{noticeId}
 
     </update>
-    <delete id="deleteByUserIds">
-        delete from t_notice where user_id in
-        <foreach collection="userIds" item="userId" open="(" close=")" separator=",">
-            #{userId}
-        </foreach>
-    </delete>
-    <select id="selectIdsByUserIds" resultType="java.lang.Integer">
-        select id from t_notice where user_id in
-        <foreach collection="userIds" item="userId" open="(" close=")" separator=",">
-            #{userId}
-        </foreach>
-    </select>
-    <select id="selectNewNoticePage" resultType="cn.org.alan.exam.model.vo.NoticeVO">
-        select n.id as id ,n.title as title,n.image as image,n.content as content,n.user_id as userId,
-        n.create_time as createTime,u.real_name as realName
-        from t_notice as n
-        join t_user as u on n.user_id=u.id
-        WHERE
-        n.id in (select notice_id from t_notice_grade where grade_id=(select grade_id from t_user where id = #{userId}))
-        or n.user_id = 1
-        ORDER BY  n.create_time DESC
-    </select>
-    <select id="countByCondition" resultType="java.lang.Integer">
-        select count(*)
-        from t_notice
-        <trim prefix="where" prefixOverrides="and">
-            is_deleted = 0
-            <if test="userId!=1">
-                and user_id = #{userId}
-            </if>
-            <if test='title!=null and title!=""'>
-                and title like concat('%',#{title},'%')
-            </if>
-        </trim>
-    </select>
-    <select id="selectNoticeIdsPage" resultType="java.lang.Integer">
 
 
-        SELECT id
-        FROM t_notice
-        WHERE is_deleted = 0
-        <if test="userId!=1">
-            and user_id = #{userId}
-        </if>
-        <if test='title!=null and title!=""'>
-            AND title LIKE CONCAT('%', #{title}, '%')
-        </if>
-        ORDER BY id
-        LIMIT #{offset}, #{pageSize}
-    </select>
-    <select id="batchSelectByIds" resultType="cn.org.alan.exam.model.vo.NoticeVO">
-        SELECT n.id as id ,n.title as title,n.image as image,n.content as content,n.user_id as userId,
-        n.create_time as createTime,u.real_name as realName
-        FROM t_notice as n
-        join t_user as u on n.user_id=u.id
-        WHERE n.is_deleted = 0 and n.id IN
-        <foreach item="id" index="index" collection="missIds" open="(" separator="," close=")">
-            #{id}
-        </foreach>
-    </select>
-    <select id="selectNewNoticeIdsPage" resultType="java.lang.Integer">
-        select n.id
-        from t_notice as n
-        join t_user as u on n.user_id=u.id
-        WHERE
-        n.id in (select notice_id from t_notice_grade where grade_id=(select grade_id from t_user where id = #{userId}))
-        or n.user_id = 1
-        ORDER BY  n.create_time DESC
-    </select>
     <select id="getIsPublic" resultType="java.lang.Integer">
         select is_public from t_notice
         where id = #{noticeId}
     </select>
-    <select id="getNewNotice" resultType="cn.org.alan.exam.model.vo.NoticeVO">
+    <select id="getNewNotice" resultType="cn.org.alan.exam.model.vo.notice.NoticeVO">
         select n.id as id ,n.title as title,n.image as image,n.content as content,n.user_id as userId,
         n.create_time as createTime,u.real_name as realName,n.is_public as isPublic
         from t_notice n
@@ -153,44 +78,7 @@
         )
         ORDER BY  n.create_time DESC
     </select>
-    <!--<select id="getNewNotice" resultType="cn.org.alan.exam.model.vo.NoticeVO">-->
-    <!--    select n.id as id ,n.title as title,n.image as image,n.content as content,n.user_id as userId,-->
-    <!--    n.create_time as createTime,u.real_name as realName,n.is_public as isPublic-->
-    <!--    from t_notice n-->
-    <!--    left join t_user as u on n.user_id=u.id-->
-    <!--    where-->
-    <!--    &lt;!&ndash;非公开的&ndash;&gt;-->
-    <!--    (n.is_public = 0 and-->
-    <!--    &lt;!&ndash;创建人是班级老师列表中的&ndash;&gt;-->
-    <!--    n.user_id in-->
-    <!--    <foreach collection="teachIdList" item="teachId" open="(" close=")" separator=",">-->
-    <!--        #{teachId}-->
-    <!--    </foreach>-->
-    <!--    and-->
-    <!--    &lt;!&ndash;公告并且是和班级关联的&ndash;&gt;-->
-    <!--    n.id in-->
-    <!--    <foreach collection="noticeIdList" item="noticeId" open="(" close=")" separator=",">-->
-    <!--        #{noticeId}-->
-    <!--    </foreach>)-->
-    <!--    or-->
-    <!--    &lt;!&ndash;或者公告是公开的&ndash;&gt;-->
-    <!--    (n.is_public = 1-->
-    <!--    and-->
-    <!--    &lt;!&ndash;创建人是班级老师列表中的&ndash;&gt;-->
-    <!--    (n.user_id in-->
-    <!--    <foreach collection="teachIdList" item="teachId" open="(" close=")" separator=",">-->
-    <!--        #{teachId}-->
-    <!--    </foreach>-->
-    <!--    or-->
-    <!--    &lt;!&ndash;或者创建人是管理员列表中的&ndash;&gt;-->
-    <!--    n.user_id in-->
-    <!--    <foreach collection="adminIdList" item="adminId" open="(" close=")" separator=",">-->
-    <!--        #{adminId}-->
-    <!--    </foreach>))-->
-    <!--    ORDER BY  n.create_time DESC-->
-
-    <!--</select>-->
-    <select id="getNotice" resultType="cn.org.alan.exam.model.vo.NoticeVO">
+    <select id="getNotice" resultType="cn.org.alan.exam.model.vo.notice.NoticeVO">
         SELECT n.id as id ,n.title as title,n.image as image,n.content as content,n.user_id as userId,
         n.create_time as createTime,u.real_name as realName,n.is_public as isPublic
         from t_notice n

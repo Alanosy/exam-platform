@@ -1,108 +1,47 @@
 package cn.org.alan.exam.model.entity;
 
 import com.baomidou.mybatisplus.annotation.*;
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
+import lombok.Data;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
 /**
- * <p>
- * 
- * </p>
+ * 用户证书关联实体类
  *
  * @author WeiJin
  * @since 2024-03-21
  */
+@Data
+@ApiModel("用户证书关联实体类")
 @TableName("t_certificate_user")
 public class CertificateUser implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    /**
-     * ID   证书与用户关系表
-     */
+    @ApiModelProperty("证书与用户关系表ID")
     @TableId(value = "id", type = IdType.AUTO)
     private Integer id;
 
-    /**
-     * 用户id
-     */
+    @ApiModelProperty("用户ID")
     @TableField(fill = FieldFill.INSERT)
     private Integer userId;
 
-    /**
-     * 考试id
-     */
+    @ApiModelProperty("考试ID")
     private Integer examId;
 
-    /**
-     * 证书编号
-     */
+    @ApiModelProperty("证书编号")
     private String code;
 
-    /**
-     * 证书id
-     */
+    @ApiModelProperty("证书ID")
     private Integer certificateId;
 
     /**
-     * 获奖时间      YYYY-MM-DD hh:mm:ss
+     * YYYY-MM-DD hh:mm:ss
      */
+    @ApiModelProperty("获奖时间")
     @TableField(fill = FieldFill.INSERT)
     private LocalDateTime createTime;
-
-    public Integer getId() {
-        return id;
-    }
-
-    public void setId(Integer id) {
-        this.id = id;
-    }
-    public Integer getUserId() {
-        return userId;
-    }
-
-    public void setUserId(Integer userId) {
-        this.userId = userId;
-    }
-    public Integer getExamId() {
-        return examId;
-    }
-
-    public void setExamId(Integer examId) {
-        this.examId = examId;
-    }
-    public String getCode() {
-        return code;
-    }
-
-    public void setCode(String code) {
-        this.code = code;
-    }
-    public Integer getCertificateId() {
-        return certificateId;
-    }
-
-    public void setCertificateId(Integer certificateId) {
-        this.certificateId = certificateId;
-    }
-    public LocalDateTime getCreateTime() {
-        return createTime;
-    }
-
-    public void setCreateTime(LocalDateTime createTime) {
-        this.createTime = createTime;
-    }
-
-    @Override
-    public String toString() {
-        return "CertificateUser{" +
-            "id=" + id +
-            ", userId=" + userId +
-            ", examId=" + examId +
-            ", code=" + code +
-            ", certificateId=" + certificateId +
-            ", createTime=" + createTime +
-        "}";
-    }
 }

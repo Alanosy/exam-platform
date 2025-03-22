@@ -10,33 +10,18 @@
         </foreach>
     </insert>
 
-    <!--    根据试题id列表删除所有试题的选项-->
-    <update id="deleteBatchByQuIds">
-        update t_option
-        set is_deleted = 1
-        where qu_id in
-        <foreach collection="quIdList" item="quId" separator="," open="(" close=")">
-            #{quId}
-        </foreach>
-    </update>
-
     <!--    根据试题id获取所有选项-->
     <select id="selectAllByQuestionId" resultType="cn.org.alan.exam.model.entity.Option">
         select id, qu_id, is_right, image, content, sort
         from t_option
         where qu_id = #{id}
     </select>
-    <!--根据试题Id获取正确个数-->
-    <select id="selectRightCountByIds" resultType="java.lang.Integer">
-        select count(*) from t_option where id in
-        <foreach collection="optionIds" item="optionId" separator="," open="(" close=")">
-            #{optionId}
-        </foreach>
-        and is_right = 1
-    </select>
-    <select id="selectByQuestionId" resultType="cn.org.alan.exam.model.entity.Option">
+
+    <!--获取单题选项-->
+    <select id="selectOptionByqId" resultType="cn.org.alan.exam.model.entity.Option">
         select id, qu_id, image, content, sort
         from t_option
         where qu_id = #{id}
     </select>
+
 </mapper>

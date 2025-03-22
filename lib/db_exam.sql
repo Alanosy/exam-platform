@@ -11,7 +11,7 @@
  Target Server Version : 50744 (5.7.44)
  File Encoding         : 65001
 
- Date: 17/03/2025 20:39:41
+ Date: 22/03/2025 11:39:47
 */
 
 SET NAMES utf8mb4;
@@ -35,7 +35,6 @@ CREATE TABLE `t_certificate` (
 -- Records of t_certificate
 -- ----------------------------
 BEGIN;
-INSERT INTO `t_certificate` (`id`, `certificate_name`, `image`, `certification_nuit`, `create_time`, `is_deleted`) VALUES (72, 'admin证书', NULL, 'admin证书', '2025-03-17 20:10:17', 0);
 COMMIT;
 
 -- ----------------------------
@@ -50,7 +49,7 @@ CREATE TABLE `t_certificate_user` (
   `certificate_id` int(11) DEFAULT NULL COMMENT '证书id',
   `create_time` datetime DEFAULT NULL COMMENT '获奖时间      YYYY-MM-DD hh:mm:ss',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=15 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin ROW_FORMAT=DYNAMIC;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin ROW_FORMAT=DYNAMIC;
 
 -- ----------------------------
 -- Records of t_certificate_user
@@ -84,13 +83,12 @@ CREATE TABLE `t_exam` (
   `create_time` datetime DEFAULT NULL COMMENT '创建时间     YYYY-MM-DD hh:mm:ss  ',
   `is_deleted` int(11) NOT NULL DEFAULT '0' COMMENT '逻辑删除：0代表未删除，1代表删除',
   PRIMARY KEY (`id`,`passed_score`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=113 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin ROW_FORMAT=DYNAMIC;
+) ENGINE=InnoDB AUTO_INCREMENT=116 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin ROW_FORMAT=DYNAMIC;
 
 -- ----------------------------
 -- Records of t_exam
 -- ----------------------------
 BEGIN;
-INSERT INTO `t_exam` (`id`, `title`, `exam_duration`, `passed_score`, `gross_score`, `max_count`, `user_id`, `certificate_id`, `radio_count`, `radio_score`, `multi_count`, `multi_score`, `judge_count`, `judge_score`, `saq_count`, `saq_score`, `start_time`, `end_time`, `create_time`, `is_deleted`) VALUES (112, '111', 100, 1, 2, 100, 1, 72, 0, 0, 0, 0, 1, 2, 0, 0, '2025-03-11 16:00:00', '2025-04-29 16:00:00', '2025-03-17 20:33:03', 1);
 COMMIT;
 
 -- ----------------------------
@@ -102,13 +100,12 @@ CREATE TABLE `t_exam_grade` (
   `exam_id` int(11) DEFAULT NULL COMMENT '考试id  唯一',
   `grade_id` int(11) DEFAULT NULL COMMENT '班级id  唯一',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=198 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin ROW_FORMAT=DYNAMIC;
+) ENGINE=InnoDB AUTO_INCREMENT=202 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin ROW_FORMAT=DYNAMIC;
 
 -- ----------------------------
 -- Records of t_exam_grade
 -- ----------------------------
 BEGIN;
-INSERT INTO `t_exam_grade` (`id`, `exam_id`, `grade_id`) VALUES (197, 112, 121);
 COMMIT;
 
 -- ----------------------------
@@ -128,13 +125,12 @@ CREATE TABLE `t_exam_qu_answer` (
   `is_right` int(11) DEFAULT NULL COMMENT '是否正确   用于客观题，0错误 1正确',
   PRIMARY KEY (`id`) USING BTREE,
   UNIQUE KEY `user_id` (`user_id`,`exam_id`,`question_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=282 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin ROW_FORMAT=DYNAMIC;
+) ENGINE=InnoDB AUTO_INCREMENT=284 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin ROW_FORMAT=DYNAMIC;
 
 -- ----------------------------
 -- Records of t_exam_qu_answer
 -- ----------------------------
 BEGIN;
-INSERT INTO `t_exam_qu_answer` (`id`, `user_id`, `exam_id`, `question_id`, `question_type`, `answer_id`, `answer_content`, `checkout`, `is_sign`, `is_right`) VALUES (281, 155, 112, 712, 3, '2632', NULL, NULL, NULL, 0);
 COMMIT;
 
 -- ----------------------------
@@ -149,13 +145,12 @@ CREATE TABLE `t_exam_question` (
   `sort` int(11) DEFAULT NULL COMMENT '排序',
   `type` int(11) DEFAULT NULL COMMENT '试题类型',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=506 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin ROW_FORMAT=DYNAMIC;
+) ENGINE=InnoDB AUTO_INCREMENT=509 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin ROW_FORMAT=DYNAMIC;
 
 -- ----------------------------
 -- Records of t_exam_question
 -- ----------------------------
 BEGIN;
-INSERT INTO `t_exam_question` (`id`, `exam_id`, `question_id`, `score`, `sort`, `type`) VALUES (505, 112, 712, 2, 0, 3);
 COMMIT;
 
 -- ----------------------------
@@ -167,13 +162,12 @@ CREATE TABLE `t_exam_repo` (
   `exam_id` int(11) NOT NULL COMMENT '考试id  唯一',
   `repo_id` int(11) DEFAULT NULL COMMENT '题库id  唯一',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=101 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin ROW_FORMAT=DYNAMIC;
+) ENGINE=InnoDB AUTO_INCREMENT=104 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin ROW_FORMAT=DYNAMIC;
 
 -- ----------------------------
 -- Records of t_exam_repo
 -- ----------------------------
 BEGIN;
-INSERT INTO `t_exam_repo` (`id`, `exam_id`, `repo_id`) VALUES (100, 112, 93);
 COMMIT;
 
 -- ----------------------------
@@ -191,13 +185,12 @@ CREATE TABLE `t_exercise_record` (
   `is_right` int(11) DEFAULT NULL COMMENT '客观题是否正确',
   PRIMARY KEY (`id`) USING BTREE,
   UNIQUE KEY `repo_id` (`repo_id`,`question_id`,`user_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=164 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin ROW_FORMAT=DYNAMIC;
+) ENGINE=InnoDB AUTO_INCREMENT=165 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin ROW_FORMAT=DYNAMIC;
 
 -- ----------------------------
 -- Records of t_exercise_record
 -- ----------------------------
 BEGIN;
-INSERT INTO `t_exercise_record` (`id`, `repo_id`, `question_id`, `user_id`, `answer`, `question_type`, `options`, `is_right`) VALUES (163, 94, 713, 155, '2634', 3, NULL, 0);
 COMMIT;
 
 -- ----------------------------
@@ -213,13 +206,13 @@ CREATE TABLE `t_grade` (
   PRIMARY KEY (`id`) USING BTREE,
   UNIQUE KEY `grade_name` (`grade_name`) USING BTREE,
   UNIQUE KEY `code` (`code`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=122 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin ROW_FORMAT=DYNAMIC;
+) ENGINE=InnoDB AUTO_INCREMENT=125 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin ROW_FORMAT=DYNAMIC;
 
 -- ----------------------------
 -- Records of t_grade
 -- ----------------------------
 BEGIN;
-INSERT INTO `t_grade` (`id`, `grade_name`, `user_id`, `code`, `is_deleted`) VALUES (121, 'g1', 1, 'ss41o5UJysARs8wdvs', 0);
+INSERT INTO `t_grade` (`id`, `grade_name`, `user_id`, `code`, `is_deleted`) VALUES (124, '测试班级', 1, 'OQPr7cXFdLxUPq0ZpJ', 0);
 COMMIT;
 
 -- ----------------------------
@@ -252,7 +245,7 @@ CREATE TABLE `t_manual_score` (
   `score` int(11) DEFAULT NULL COMMENT '得分',
   `create_time` datetime DEFAULT NULL COMMENT '批改时间',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=45 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin ROW_FORMAT=DYNAMIC;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin ROW_FORMAT=DYNAMIC;
 
 -- ----------------------------
 -- Records of t_manual_score
@@ -274,14 +267,12 @@ CREATE TABLE `t_notice` (
   `is_deleted` int(11) NOT NULL DEFAULT '0' COMMENT '逻辑删除：0代表未删除，1代表删除',
   `is_public` int(11) DEFAULT NULL COMMENT '是否公开所有用户，老师为所有班级，管理员为所有用户',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=109 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin ROW_FORMAT=DYNAMIC;
+) ENGINE=InnoDB AUTO_INCREMENT=115 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin ROW_FORMAT=DYNAMIC;
 
 -- ----------------------------
 -- Records of t_notice
 -- ----------------------------
 BEGIN;
-INSERT INTO `t_notice` (`id`, `title`, `image`, `content`, `user_id`, `create_time`, `is_deleted`, `is_public`) VALUES (107, 'admin公告', NULL, '<p>admin公告</p>', 1, '2025-03-17 20:10:08', 0, 1);
-INSERT INTO `t_notice` (`id`, `title`, `image`, `content`, `user_id`, `create_time`, `is_deleted`, `is_public`) VALUES (108, 't1公告', NULL, '<p>t1公告</p>', 156, '2025-03-17 20:30:28', 0, 0);
 COMMIT;
 
 -- ----------------------------
@@ -294,13 +285,12 @@ CREATE TABLE `t_notice_grade` (
   `grade_id` int(11) DEFAULT NULL COMMENT '班级',
   `is_deleted` int(11) DEFAULT '0' COMMENT '逻辑删除',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=196 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin ROW_FORMAT=DYNAMIC;
+) ENGINE=InnoDB AUTO_INCREMENT=199 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin ROW_FORMAT=DYNAMIC;
 
 -- ----------------------------
 -- Records of t_notice_grade
 -- ----------------------------
 BEGIN;
-INSERT INTO `t_notice_grade` (`id`, `notice_id`, `grade_id`, `is_deleted`) VALUES (195, 108, 121, 0);
 COMMIT;
 
 -- ----------------------------
@@ -316,21 +306,12 @@ CREATE TABLE `t_option` (
   `sort` int(11) DEFAULT NULL COMMENT '排序',
   `is_deleted` int(11) NOT NULL DEFAULT '0' COMMENT '逻辑删除：0代表未删除，1代表删除',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=2640 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin ROW_FORMAT=DYNAMIC;
+) ENGINE=InnoDB AUTO_INCREMENT=2642 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin ROW_FORMAT=DYNAMIC;
 
 -- ----------------------------
 -- Records of t_option
 -- ----------------------------
 BEGIN;
-INSERT INTO `t_option` (`id`, `qu_id`, `is_right`, `image`, `content`, `sort`, `is_deleted`) VALUES (2631, 712, 1, NULL, '正确', 0, 0);
-INSERT INTO `t_option` (`id`, `qu_id`, `is_right`, `image`, `content`, `sort`, `is_deleted`) VALUES (2632, 712, 0, NULL, '错误', 1, 0);
-INSERT INTO `t_option` (`id`, `qu_id`, `is_right`, `image`, `content`, `sort`, `is_deleted`) VALUES (2633, 713, 1, NULL, '正确', 0, 0);
-INSERT INTO `t_option` (`id`, `qu_id`, `is_right`, `image`, `content`, `sort`, `is_deleted`) VALUES (2634, 713, 0, NULL, '错误', 1, 0);
-INSERT INTO `t_option` (`id`, `qu_id`, `is_right`, `image`, `content`, `sort`, `is_deleted`) VALUES (2635, 714, 1, NULL, '1', NULL, 0);
-INSERT INTO `t_option` (`id`, `qu_id`, `is_right`, `image`, `content`, `sort`, `is_deleted`) VALUES (2636, 715, 1, NULL, '正确', 0, 0);
-INSERT INTO `t_option` (`id`, `qu_id`, `is_right`, `image`, `content`, `sort`, `is_deleted`) VALUES (2637, 715, 0, NULL, '错误', 1, 0);
-INSERT INTO `t_option` (`id`, `qu_id`, `is_right`, `image`, `content`, `sort`, `is_deleted`) VALUES (2638, 716, 1, NULL, '正确', 0, 0);
-INSERT INTO `t_option` (`id`, `qu_id`, `is_right`, `image`, `content`, `sort`, `is_deleted`) VALUES (2639, 716, 0, NULL, '错误', 1, 0);
 COMMIT;
 
 -- ----------------------------
@@ -348,17 +329,12 @@ CREATE TABLE `t_question` (
   `user_id` int(11) DEFAULT NULL COMMENT '用户id',
   `is_deleted` int(11) NOT NULL DEFAULT '0' COMMENT '逻辑删除：0代表未删除，1代表删除',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=717 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin ROW_FORMAT=DYNAMIC;
+) ENGINE=InnoDB AUTO_INCREMENT=718 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin ROW_FORMAT=DYNAMIC;
 
 -- ----------------------------
 -- Records of t_question
 -- ----------------------------
 BEGIN;
-INSERT INTO `t_question` (`id`, `qu_type`, `image`, `content`, `create_time`, `analysis`, `repo_id`, `user_id`, `is_deleted`) VALUES (712, '3', NULL, 'admin判断', '2025-03-17 20:15:44', NULL, 93, 1, 0);
-INSERT INTO `t_question` (`id`, `qu_type`, `image`, `content`, `create_time`, `analysis`, `repo_id`, `user_id`, `is_deleted`) VALUES (713, '3', NULL, 'admin判断', '2025-03-17 20:15:54', NULL, 94, 1, 0);
-INSERT INTO `t_question` (`id`, `qu_type`, `image`, `content`, `create_time`, `analysis`, `repo_id`, `user_id`, `is_deleted`) VALUES (714, '4', NULL, 'admin填空', '2025-03-17 20:16:15', NULL, 94, 1, 0);
-INSERT INTO `t_question` (`id`, `qu_type`, `image`, `content`, `create_time`, `analysis`, `repo_id`, `user_id`, `is_deleted`) VALUES (715, '3', NULL, 't1题库', '2025-03-17 20:35:47', NULL, 95, 156, 0);
-INSERT INTO `t_question` (`id`, `qu_type`, `image`, `content`, `create_time`, `analysis`, `repo_id`, `user_id`, `is_deleted`) VALUES (716, '3', NULL, 't1题库', '2025-03-17 20:36:14', NULL, 96, 156, 0);
 COMMIT;
 
 -- ----------------------------
@@ -373,16 +349,12 @@ CREATE TABLE `t_repo` (
   `is_deleted` int(11) NOT NULL DEFAULT '0' COMMENT '逻辑删除：0代表未删除，1代表删除',
   `is_exercise` int(11) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=97 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin ROW_FORMAT=DYNAMIC;
+) ENGINE=InnoDB AUTO_INCREMENT=99 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin ROW_FORMAT=DYNAMIC;
 
 -- ----------------------------
 -- Records of t_repo
 -- ----------------------------
 BEGIN;
-INSERT INTO `t_repo` (`id`, `user_id`, `title`, `create_time`, `is_deleted`, `is_exercise`) VALUES (93, 1, 'admin题库不开启刷题', '2025-03-17 20:15:08', 0, 0);
-INSERT INTO `t_repo` (`id`, `user_id`, `title`, `create_time`, `is_deleted`, `is_exercise`) VALUES (94, 1, 'admin题库开启刷题', '2025-03-17 20:15:16', 0, 1);
-INSERT INTO `t_repo` (`id`, `user_id`, `title`, `create_time`, `is_deleted`, `is_exercise`) VALUES (95, 156, 't1题库', '2025-03-17 20:35:23', 0, 0);
-INSERT INTO `t_repo` (`id`, `user_id`, `title`, `create_time`, `is_deleted`, `is_exercise`) VALUES (96, 156, 't1题库开启刷题', '2025-03-17 20:35:26', 0, 1);
 COMMIT;
 
 -- ----------------------------
@@ -422,15 +394,15 @@ CREATE TABLE `t_user` (
   `is_deleted` int(11) NOT NULL DEFAULT '0' COMMENT '逻辑删除：0代表未删除，1代表删除',
   PRIMARY KEY (`id`) USING BTREE,
   UNIQUE KEY `user_name` (`user_name`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=157 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin ROW_FORMAT=DYNAMIC;
+) ENGINE=InnoDB AUTO_INCREMENT=165 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin ROW_FORMAT=DYNAMIC;
 
 -- ----------------------------
 -- Records of t_user
 -- ----------------------------
 BEGIN;
 INSERT INTO `t_user` (`id`, `user_name`, `real_name`, `password`, `avatar`, `role_id`, `grade_id`, `create_time`, `status`, `is_deleted`) VALUES (1, 'admin', '管理员', '$2a$10$/ZdKFY15AWNLOeTqAp91a.uDa0JDioj1wVYGgpn.HKMYh9vq0Uh4S', 'https://online-exam-system-backend.oss-cn-beijing.aliyuncs.com/27eb3a59-4d05-4bce-90ec-4a2457452886.png', 3, 106, '2024-05-23 16:06:07', 1, 0);
-INSERT INTO `t_user` (`id`, `user_name`, `real_name`, `password`, `avatar`, `role_id`, `grade_id`, `create_time`, `status`, `is_deleted`) VALUES (155, 'u1', 'u1', '$2a$10$CTBtpxaUSLgqlKC8NsUYkegQeDcs6zxZtaIHtzC3q729JaBX95bnq', 'https://online-exam-system-backend.oss-cn-beijing.aliyuncs.com/da93c2a6-6879-46c3-b38f-a99956f70d22.jpg', 1, 121, '2025-03-17 20:10:33', 1, 0);
-INSERT INTO `t_user` (`id`, `user_name`, `real_name`, `password`, `avatar`, `role_id`, `grade_id`, `create_time`, `status`, `is_deleted`) VALUES (156, 't1', 't1', '$2a$10$jTckSAL20BxQrLXUqxO7uefVpZNAz2uohDihQdtfhNlXlLEObtdDy', 'https://online-exam-system-backend.oss-cn-beijing.aliyuncs.com/da93c2a6-6879-46c3-b38f-a99956f70d22.jpg', 2, NULL, '2025-03-17 20:10:40', 1, 0);
+INSERT INTO `t_user` (`id`, `user_name`, `real_name`, `password`, `avatar`, `role_id`, `grade_id`, `create_time`, `status`, `is_deleted`) VALUES (163, 'teacher', '教师测试账号', '$2a$10$odROzQ2vFaHRomD9UG4uWO65twiqI33Y1RktzqtxWNLaVf5.luivy', 'https://online-exam-system-backend.oss-cn-beijing.aliyuncs.com/da93c2a6-6879-46c3-b38f-a99956f70d22.jpg', 2, NULL, '2025-03-22 11:38:18', 1, 0);
+INSERT INTO `t_user` (`id`, `user_name`, `real_name`, `password`, `avatar`, `role_id`, `grade_id`, `create_time`, `status`, `is_deleted`) VALUES (164, 'student', '学生测试账号', '$2a$10$vcnsGkVJdeH0tdKiLa1.d.qbPD/.5B5Ah3qYzeN6rem5P/U8jGiMS', 'https://online-exam-system-backend.oss-cn-beijing.aliyuncs.com/da93c2a6-6879-46c3-b38f-a99956f70d22.jpg', 1, 124, '2025-03-22 11:38:36', 1, 0);
 COMMIT;
 
 -- ----------------------------
@@ -444,13 +416,12 @@ CREATE TABLE `t_user_book` (
   `qu_id` int(11) DEFAULT NULL COMMENT '题目id    唯一',
   `create_time` datetime DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP COMMENT '创建时间    YYYY-MM-DD hh:mm:ss',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=212 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin ROW_FORMAT=DYNAMIC;
+) ENGINE=InnoDB AUTO_INCREMENT=213 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin ROW_FORMAT=DYNAMIC;
 
 -- ----------------------------
 -- Records of t_user_book
 -- ----------------------------
 BEGIN;
-INSERT INTO `t_user_book` (`id`, `exam_id`, `user_id`, `qu_id`, `create_time`) VALUES (211, 112, 155, 712, '2025-03-17 20:33:36');
 COMMIT;
 
 -- ----------------------------
@@ -463,13 +434,13 @@ CREATE TABLE `t_user_daily_login_duration` (
   `login_date` date DEFAULT NULL COMMENT '登录日期，记录用户在哪一天的登录时长',
   `total_seconds` int(11) DEFAULT NULL COMMENT '累积在线秒数，每日登录总时长，单位为秒',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=120 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin;
+) ENGINE=InnoDB AUTO_INCREMENT=127 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin;
 
 -- ----------------------------
 -- Records of t_user_daily_login_duration
 -- ----------------------------
 BEGIN;
-INSERT INTO `t_user_daily_login_duration` (`id`, `user_id`, `login_date`, `total_seconds`) VALUES (119, 155, '2025-03-17', 1603);
+INSERT INTO `t_user_daily_login_duration` (`id`, `user_id`, `login_date`, `total_seconds`) VALUES (126, 164, '2025-03-22', 0);
 COMMIT;
 
 -- ----------------------------
@@ -490,13 +461,12 @@ CREATE TABLE `t_user_exams_score` (
   `whether_mark` int(11) DEFAULT NULL COMMENT '是否阅卷-1无简答题、0未阅卷、1阅卷',
   PRIMARY KEY (`id`) USING BTREE,
   UNIQUE KEY `user_id` (`user_id`,`exam_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=200 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin ROW_FORMAT=DYNAMIC;
+) ENGINE=InnoDB AUTO_INCREMENT=202 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin ROW_FORMAT=DYNAMIC;
 
 -- ----------------------------
 -- Records of t_user_exams_score
 -- ----------------------------
 BEGIN;
-INSERT INTO `t_user_exams_score` (`id`, `user_id`, `exam_id`, `total_time`, `user_time`, `user_score`, `limit_time`, `count`, `state`, `create_time`, `whether_mark`) VALUES (199, 155, 112, 100, 13, 0, '2025-03-17 20:33:36', 0, 1, '2025-03-17 20:33:23', -1);
 COMMIT;
 
 -- ----------------------------
@@ -517,7 +487,6 @@ CREATE TABLE `t_user_exercise_record` (
 -- Records of t_user_exercise_record
 -- ----------------------------
 BEGIN;
-INSERT INTO `t_user_exercise_record` (`id`, `user_id`, `repo_id`, `total_count`, `exercise_count`, `create_time`) VALUES (30, 155, 94, 2, 1, '2025-03-17 20:26:11');
 COMMIT;
 
 -- ----------------------------
@@ -530,13 +499,13 @@ CREATE TABLE `t_user_grade` (
   `g_id` int(11) DEFAULT NULL COMMENT '教师id',
   `is_deleted` int(11) DEFAULT '0' COMMENT '逻辑删除',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin;
+) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin;
 
 -- ----------------------------
 -- Records of t_user_grade
 -- ----------------------------
 BEGIN;
-INSERT INTO `t_user_grade` (`id`, `u_id`, `g_id`, `is_deleted`) VALUES (7, 156, 121, 0);
+INSERT INTO `t_user_grade` (`id`, `u_id`, `g_id`, `is_deleted`) VALUES (10, 163, 124, 0);
 COMMIT;
 
 SET FOREIGN_KEY_CHECKS = 1;

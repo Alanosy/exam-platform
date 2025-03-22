@@ -1,10 +1,8 @@
 package cn.org.alan.exam.model.form.question;
 
 import cn.org.alan.exam.model.entity.Option;
-import cn.org.alan.exam.util.excel.ExcelImport;
-import com.alibaba.excel.annotation.ExcelProperty;
+import cn.org.alan.exam.utils.excel.ExcelImport;
 import lombok.Data;
-import lombok.experimental.PackagePrivate;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -1,7 +1,7 @@
 package cn.org.alan.exam.mapper;
 
 import cn.org.alan.exam.model.entity.Grade;
-import cn.org.alan.exam.model.vo.GradeVO;
+import cn.org.alan.exam.model.vo.grade.GradeVO;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.springframework.stereotype.Repository;
@@ -9,35 +9,39 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 /**
- * <p>
- *  Mapper 接口
- * </p>
+ * 班级表 Mapper 接口
  *
  * @author WeiJin
  * @since 2024-03-21
  */
-@Repository
 public interface GradeMapper extends BaseMapper<Grade> {
-    List<Integer> selectIdsByUserIds(List<Integer> userIds);
+    /**
+     * 分页查找班级
+     *
+     * @param page        分页对象
+     * @param userId      用户ID
+     * @param gradeName   班级名称
+     * @param roleCode    角色代码
+     * @param gradeIdList 班级ID列表
+     * @return
+     */
+    Page<GradeVO> selectGradePage(Page<GradeVO> page, Integer userId, String gradeName, Integer roleCode, List<Integer> gradeIdList);
 
-    Integer deleteByUserId(List<Integer> userIds);
-
-    Page<GradeVO> selectGradePage(Page<GradeVO> page, Integer userId , String gradeName, Integer roleCode, List<Integer> gradeIdList);
-
-    List<Integer> selectGradeIdsPage(Integer userId, Integer role, String gradeName, int offset, Integer pageSize);
-
-    List<GradeVO> batchSelectByIds(List<Integer> missIds);
-
-    int countByCondition(Integer userId, String gradeName, Integer role);
-
-    Grade getGradeById(String code);
-
+    /**
+     * 获得所有班级
+     *
+     * @param userId      用户ID
+     * @param roleCode    觉得代码
+     * @param gradeIdList 班级ID列表
+     * @return
+     */
     List<GradeVO> getAllGrade(Integer userId, Integer roleCode, List<Integer> gradeIdList);
 
     /**
-     * 逻辑删除班级
-     * @param gradeId
+     * 根据班级代码获取班级对象
+     *
+     * @param code 班级代码
      * @return
      */
-    int deleteGrade(Integer gradeId);
+    Grade getGradeByCode(String code);
 }

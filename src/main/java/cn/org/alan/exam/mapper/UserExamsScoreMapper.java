@@ -11,9 +11,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import java.util.List;
 
 /**
- * <p>
- * Mapper 接口
- * </p>
+ * 试卷分数表 Mapper 接口
  *
  * @author WeiJin
  * @since 2024-03-21
@@ -23,16 +21,16 @@ public interface UserExamsScoreMapper extends BaseMapper<UserExamsScore> {
     /**
      * 考试班级用户成绩分析
      *
-     * @param page       分页信息
-     * @param gradeId    班级Id
-     * @param examTitle  考试名称
-     * @param userId     用户Id
-     * @param roleId     角色Id
-     * @param userIdList
+     * @param page        分页信息
+     * @param gradeId     班级Id
+     * @param examTitle   考试名称
+     * @param userId      用户Id
+     * @param roleId      角色Id
+     * @param gradeIdList 班级ID集合
      * @return 结果
      */
-    IPage<GradeScoreVO> scoreStatistics(IPage<GradeScoreVO> page , Integer gradeId, String examTitle, Integer userId,
-                                        Integer roleId, List<Integer> userIdList);
+    IPage<GradeScoreVO> scoreStatistics(IPage<GradeScoreVO> page, Integer gradeId, String examTitle, Integer userId,
+                                        Integer roleId, List<Integer> gradeIdList);
 
     /**
      * 成绩分页查询
@@ -44,10 +42,6 @@ public interface UserExamsScoreMapper extends BaseMapper<UserExamsScore> {
      * @return 查询结果集
      */
     IPage<UserScoreVO> pagingScore(IPage<UserScoreVO> page, Integer gradeId, Integer examId, String realName);
-
-    Integer getNumberOfApplicants(Integer examId);
-
-    Integer getCorrectedPaper(Integer examId);
 
     /**
      * 获取成绩
@@ -65,5 +59,5 @@ public interface UserExamsScoreMapper extends BaseMapper<UserExamsScore> {
      * @param examId 考试id
      * @return 查询结果
      */
-    IPage<UncorrectedUserVO> uncorrectedUser(IPage<UncorrectedUserVO> page, Integer examId,String realName);
+    IPage<UncorrectedUserVO> uncorrectedUser(IPage<UncorrectedUserVO> page, Integer examId, String realName);
 }

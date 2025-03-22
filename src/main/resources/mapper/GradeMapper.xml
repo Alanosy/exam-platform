@@ -12,25 +12,9 @@
     <select id="getGradeCount" resultType="java.lang.Integer">
         SELECT COUNT(*) FROM t_grade WHERE id in (SELECT grade_id FROM t_exam_grade WHERE exam_id= #{exam_id})
     </select>
-    <delete id="deleteByUserId">
-        delete from t_grade where user_id in
-        <foreach collection="userIds" item="userId" open="(" close=")" separator=",">
-            #{userId}
-        </foreach>
-    </delete>
-    <!--逻辑删除班级-->
-    <update id="deleteGrade">
-        update t_grade
-        set is_deleted = 1
-        where id = #{gradeId}
-    </update>
-    <select id="selectIdsByUserIds" resultType="java.lang.Integer">
-        select id from t_grade where user_id in
-        <foreach collection="userIds" item="userId" open="(" close=")" separator=",">
-            #{userId}
-        </foreach>
-    </select>
-    <select id="selectGradePage" resultType="cn.org.alan.exam.model.vo.GradeVO">
+
+
+    <select id="selectGradePage" resultType="cn.org.alan.exam.model.vo.grade.GradeVO">
         SELECT
         g.id,
         g.grade_name AS gradeName,
@@ -61,65 +45,15 @@
             </if>
         </where>
     </select>
-    <select id="selectGradeIdsPage" resultType="java.lang.Integer">
-        SELECT g.id
-        FROM t_grade g
-        <if test="role==2">
-            right join t_user_grade ub on ub.g_id = g.id
-        </if>
-        WHERE  g.is_deleted = 0
-        <!--<if test="userId!=1">-->
-        <!--    and user_id = #{userId}-->
-        <!--</if>-->
-        <if test="role==2">
-            and ub.u_id = #{userId}
-        </if>
-        <if test='gradeName!=null and gradeName!=""'>
-            AND g.grade_name LIKE CONCAT('%', #{gradeName}, '%')
-        </if>
-        ORDER BY g.id
-        LIMIT #{offset}, #{pageSize}
-    </select>
-    <select id="batchSelectByIds" resultType="cn.org.alan.exam.model.vo.GradeVO">
-        select g.id as id,g.grade_name as gradeName, g.user_id as userId,u.user_name as userName,
-        g.code as code,(SELECT count(*) FROM t_user k WHERE k.grade_id = g.id and k.is_deleted=0 ) as gradeCount
-        from t_grade g
-        join t_user u on g.user_id = u.id
-        <trim  prefixOverrides="and" prefix="where">
-            g.id IN
-            <foreach item="id" index="index" collection="missIds" open="(" separator="," close=")">
-                #{id}
-            </foreach>
-            and g.is_deleted = 0
-        </trim>
 
-    </select>
-    <select id="countByCondition" resultType="java.lang.Integer">
-        select count(*)
-        from t_grade g
-        <if test="role==2">
-            right join t_user_grade ub on ub.g_id = g.id
-        </if>
-        <trim prefix="where" prefixOverrides="and">
-            g.is_deleted = 0
-            <if test="userId==3">
-                and g.user_id = #{userId}
-            </if>
-            <if test="role==2">
-                and ub.u_id = #{userId}
-            </if>
-            <if test='gradeName!=null and gradeName!=""'>
-                and g.grade_name like concat('%',#{gradeName},'%')
-            </if>
-        </trim>
-    </select>
-    <select id="getGradeById" resultType="cn.org.alan.exam.model.entity.Grade">
+
+    <select id="getGradeByCode" resultType="cn.org.alan.exam.model.entity.Grade">
         select *
         from t_grade
         where
         code = #{code}
     </select>
-    <select id="getAllGrade" resultType="cn.org.alan.exam.model.vo.GradeVO">
+    <select id="getAllGrade" resultType="cn.org.alan.exam.model.vo.grade.GradeVO">
         select *
         from t_grade g
         <if test="roleCode == 2">

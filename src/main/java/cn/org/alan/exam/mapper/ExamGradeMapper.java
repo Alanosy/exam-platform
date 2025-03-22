@@ -13,27 +13,20 @@ import org.apache.ibatis.annotations.Param;
 import java.util.List;
 
 /**
- * <p>
- *  Mapper 接口
- * </p>
+ *  考试与班级关联表 Mapper 接口
  *
  * @author WeiJin
  * @since 2024-03-21
  */
 public interface ExamGradeMapper extends BaseMapper<ExamGrade> {
 
-    Integer addExamGrade(Integer id, List<Integer> gradeIds);
-
-    Integer delExamGrade(Integer id);
-
     /**
-     * 分页获取考试班级用户信息
-     * @param page
-     * @param roleId
+     * 添加试卷与班级的关联
+     * @param examId 试卷ID
+     * @param gradeIds 班级ID集合
      * @return
      */
-    IPage<GradeScoreVO> getExamGrade(IPage<GradeScoreVO> page,String examTitle,Integer userId,Integer gradeId,Integer roleId);
-
+    Integer addExamGrade(Integer examId, List<Integer> gradeIds);
 
     /**
      * 根据开始id获取所有需要参加该考试的人数
@@ -42,9 +35,24 @@ public interface ExamGradeMapper extends BaseMapper<ExamGrade> {
      */
     Integer selectClassSize(Integer id);
 
-
+    /**
+     * 查询考试班级关联列表
+     * @param examPage 分页page对象
+     * @param userId 用户ID
+     * @param title 标题
+     * @param isASC 是否排序
+     * @return
+     */
     IPage<ExamGradeListVO> selectClassExam(IPage<ExamGradeListVO> examPage, Integer userId, String title, Boolean isASC);
 
+    /**
+     * 获取管理员的试卷列表
+     * @param examPage 分页page对象
+     * @param userId 用户ID
+     * @param title 标题
+     * @param isASC 是否排序
+     * @return
+     */
     IPage<ExamGradeListVO> selectAdminClassExam(IPage<ExamGradeListVO> examPage, Integer userId, String title, Boolean isASC);
 
 }

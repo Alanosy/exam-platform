@@ -1,5 +1,6 @@
 package cn.org.alan.exam.service.impl;
 
+import cn.org.alan.exam.common.exception.ServiceRuntimeException;
 import cn.org.alan.exam.common.result.Result;
 import cn.org.alan.exam.converter.UserBookConverter;
 import cn.org.alan.exam.mapper.ExamQuAnswerMapper;
@@ -12,15 +13,15 @@ import cn.org.alan.exam.model.vo.userbook.*;
 import cn.org.alan.exam.service.IOptionService;
 import cn.org.alan.exam.service.IQuestionService;
 import cn.org.alan.exam.service.IUserBookService;
-import cn.org.alan.exam.util.impl.SecurityUtil;
+import cn.org.alan.exam.utils.SecurityUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.Resource;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -39,41 +40,33 @@ public class UserBookServiceImpl extends ServiceImpl<UserBookMapper, UserBook> i
     @Resource
     private OptionMapper optionMapper;
     @Resource
-    private ExamQuAnswerMapper examQuAnswerMapper;
-    @Resource
     private UserBookConverter userBookConverter;
     @Resource
     private IQuestionService questionService;
     @Resource
     private IOptionService optionService;
 
-    /**
-     * 学生错题本分页查询
-     * @param pageNum
-     * @param pageSize
-     * @param examName
-     * @return
-     */
     @Override
     public Result<IPage<UserPageBookVO>> getPage(Integer pageNum, Integer pageSize, String examName) {
         Page<UserPageBookVO> page = new Page<>(pageNum, pageSize);
         // 获取userId
         Integer userId = SecurityUtil.getUserId();
         // 开始查询有错题的考试
-        Page<UserPageBookVO> userPageBookVOPage = userBookMapper.selectPageVo(page, examName,userId );
+        Page<UserPageBookVO> userPageBookVOPage = userBookMapper.selectPageVo(page, examName, userId);
         return Result.success("查询成功", userPageBookVOPage);
     }
 
     @Override
     public Result<List<ReUserExamBookVO>> getReUserExamBook(Integer examId) {
         // 根据考试id查询考试试题表
+        Integer userId = SecurityUtil.getUserId();
         LambdaQueryWrapper<UserBook> userBookLambdaQueryWrapper = new LambdaQueryWrapper<>();
         userBookLambdaQueryWrapper.eq(UserBook::getExamId, examId)
-                .eq(UserBook::getUserId, SecurityUtil.getUserId());
+                .eq(UserBook::getUserId, userId);
         List<UserBook> userBook = userBookMapper.selectList(userBookLambdaQueryWrapper);
         // 实体转换
         List<ReUserExamBookVO> reUserExamBookVOS = userBookConverter.listEntityToVo(userBook);
-        return Result.success("查询成功", reUserExamBookVOS);
+        return Result.success("查询错题本错题id列表成功", reUserExamBookVOS);
     }
 
     @Override
@@ -81,10 +74,9 @@ public class UserBookServiceImpl extends ServiceImpl<UserBookMapper, UserBook> i
         BookOneQuVO bookOneQuVO = new BookOneQuVO();
         // 问题
         Question quById = questionService.getById(quId);
-        if( quById==null){
-            return Result.failed("该题不存在");
+        if (quById == null) {
+            throw new ServiceRuntimeException("该题不存在");
         }
-
         // 基本信息
         bookOneQuVO.setImage(quById.getImage());
         bookOneQuVO.setContent(quById.getContent());
@@ -96,8 +88,10 @@ public class UserBookServiceImpl extends ServiceImpl<UserBookMapper, UserBook> i
         bookOneQuVO.setAnswerList(list);
         return Result.success("获取成功", bookOneQuVO);
     }
+
     @Override
     public Result<AddBookAnswerVO> addBookAnswer(ReUserBookForm reUserBookForm) {
+        Integer userId = SecurityUtil.getUserId();
         // 创建返回视图
         AddBookAnswerVO addBookAnswerVO = new AddBookAnswerVO();
         // 未作答
@@ -124,31 +118,29 @@ public class UserBookServiceImpl extends ServiceImpl<UserBookMapper, UserBook> i
         }
         List<String> stringList = strings.stream().map(String::valueOf).collect(Collectors.toList());
         String result = String.join(",", stringList);
-        if(quType ==4){
+        if (quType == 4) {
             addBookAnswerVO.setRightAnswers(options.get(0).getContent());
-        }else{
+        } else {
             addBookAnswerVO.setRightAnswers(result);
         }
 
         // 判断是否正确并移除正确试题
-        return switch (quType) {
-            case 1 -> {
-                Option byId = optionService.getById(reUserBookForm.getAnswer());
-                if (byId.getIsRight() == 1) {
-                    LambdaQueryWrapper<UserBook> userBookLambdaQueryWrapper = new LambdaQueryWrapper<>();
-                    userBookLambdaQueryWrapper.eq(UserBook::getUserId, SecurityUtil.getUserId())
+        switch (quType) {
+            case 1:
+                Option byId1 = optionService.getById(reUserBookForm.getAnswer());
+                if (byId1.getIsRight() == 1) {
+                    LambdaQueryWrapper<UserBook> userBookLambdaQueryWrapper1 = new LambdaQueryWrapper<>();
+                    userBookLambdaQueryWrapper1.eq(UserBook::getUserId, userId)
                             .eq(UserBook::getExamId, reUserBookForm.getExamId())
                             .eq(UserBook::getQuId, reUserBookForm.getQuId());
-                    int row = userBookMapper.delete(userBookLambdaQueryWrapper);
+                    int row = userBookMapper.delete(userBookLambdaQueryWrapper1);
                     addBookAnswerVO.setCorrect(1);
-                    yield Result.success("回答正确，已移出错题本", addBookAnswerVO);
+                    return Result.success("回答正确，已移出错题本", addBookAnswerVO);
                 } else {
                     addBookAnswerVO.setCorrect(0);
-                    yield Result.success("回答错误", addBookAnswerVO);
+                    return Result.success("回答错误", addBookAnswerVO);
                 }
-
-            }
-            case 2 -> {
+            case 2:
                 // 查找正确答案
                 LambdaQueryWrapper<Option> optionWrapper = new LambdaQueryWrapper<>();
                 optionWrapper.eq(Option::getIsRight, 1)
@@ -157,52 +149,51 @@ public class UserBookServiceImpl extends ServiceImpl<UserBookMapper, UserBook> i
                 // 解析用户作答
                 List<Integer> quIds = Arrays.stream(reUserBookForm.getAnswer().split(","))
                         .map(Integer::parseInt)
-                        .toList();
-                // 判读啊是否正确
+                        .collect(Collectors.toList());
+                // 判断是否正确
+                boolean isWrong = false;
                 for (Option temp : examQuAnswers) {
-                    boolean containsBanana = quIds.contains(temp.getId());
-                    if (containsBanana) {
-                        yield Result.success("回答错误");
+                    if (!quIds.contains(temp.getId())) {
+                        isWrong = true;
+                        break;
                     }
                 }
+                if (isWrong) {
+                    return Result.success("回答错误");
+                }
                 LambdaQueryWrapper<UserBook> userBookWrapper = new LambdaQueryWrapper<>();
-                userBookWrapper.eq(UserBook::getUserId, SecurityUtil.getUserId())
+                userBookWrapper.eq(UserBook::getUserId, userId)
                         .eq(UserBook::getExamId, reUserBookForm.getExamId())
                         .eq(UserBook::getQuId, reUserBookForm.getQuId());
                 userBookMapper.delete(userBookWrapper);
-                yield Result.success("回答正确");
-            }
-            case 3 -> {
-                Option byId = optionService.getById(reUserBookForm.getAnswer());
-                if (byId.getIsRight() == 1) {
-                    LambdaQueryWrapper<UserBook> userBookLambdaQueryWrapper = new LambdaQueryWrapper<>();
-                    userBookLambdaQueryWrapper.eq(UserBook::getUserId, SecurityUtil.getUserId())
+                return Result.success("回答正确");
+            case 3:
+                Option byId3 = optionService.getById(reUserBookForm.getAnswer());
+                if (byId3.getIsRight() == 1) {
+                    LambdaQueryWrapper<UserBook> userBookLambdaQueryWrapper3 = new LambdaQueryWrapper<>();
+                    userBookLambdaQueryWrapper3.eq(UserBook::getUserId, userId)
                             .eq(UserBook::getExamId, reUserBookForm.getExamId())
                             .eq(UserBook::getQuId, reUserBookForm.getQuId());
-                    userBookMapper.delete(userBookLambdaQueryWrapper);
+                    userBookMapper.delete(userBookLambdaQueryWrapper3);
                     addBookAnswerVO.setCorrect(1);
-                    yield Result.success("回答正确，已移除错题本", addBookAnswerVO);
+                    return Result.success("回答正确，已移除错题本", addBookAnswerVO);
                 } else {
                     addBookAnswerVO.setCorrect(0);
-                    yield Result.success("回答错误", addBookAnswerVO);
+                    return Result.success("回答错误", addBookAnswerVO);
                 }
-            }
-            case 4 -> {
-                if("1".equals(reUserBookForm.getAnswer())){
-                    LambdaQueryWrapper<UserBook> userBookLambdaQueryWrapper = new LambdaQueryWrapper<>();
-                    userBookLambdaQueryWrapper.eq(UserBook::getUserId, SecurityUtil.getUserId())
+            case 4:
+                if ("1".equals(reUserBookForm.getAnswer())) {
+                    LambdaQueryWrapper<UserBook> userBookLambdaQueryWrapper4 = new LambdaQueryWrapper<>();
+                    userBookLambdaQueryWrapper4.eq(UserBook::getUserId, userId)
                             .eq(UserBook::getExamId, reUserBookForm.getExamId())
                             .eq(UserBook::getQuId, reUserBookForm.getQuId());
-                    userBookMapper.delete(userBookLambdaQueryWrapper);
-                    yield Result.success("回答正确，已移除错题本", addBookAnswerVO);
+                    userBookMapper.delete(userBookLambdaQueryWrapper4);
+                    return Result.success("回答正确，已移除错题本", addBookAnswerVO);
                 }
                 addBookAnswerVO.setCorrect(0);
-                yield Result.success("回答错误", addBookAnswerVO);
-
-            }
-            default -> {
-                yield Result.failed("请求错误，请联系管理员解决");
-            }
-        };
+                return Result.success("回答错误", addBookAnswerVO);
+            default:
+                throw new ServiceRuntimeException("填充答案请求错误");
+        }
     }
 }

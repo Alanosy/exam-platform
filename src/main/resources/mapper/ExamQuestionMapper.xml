@@ -10,4 +10,11 @@
             (#{examId}, #{item.questionId}, #{quScore}, #{item.sort}, #{quType})
         </foreach>
     </insert>
+    <select id="getExamQuByExamIdAndQuType" resultType="cn.org.alan.exam.model.entity.ExamQuestion">
+        SELECT *
+        FROM t_exam_question
+        WHERE exam_id = #{examId}
+        AND type = #{quType}
+        ORDER BY sort ASC
+    </select>
 </mapper>

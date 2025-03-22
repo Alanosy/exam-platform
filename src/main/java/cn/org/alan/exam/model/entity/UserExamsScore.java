@@ -1,6 +1,9 @@
 package cn.org.alan.exam.model.entity;
 
 import com.baomidou.mybatisplus.annotation.*;
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
+import lombok.Data;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
@@ -13,160 +16,59 @@ import java.time.LocalDateTime;
  * @author WeiJin
  * @since 2024-03-21
  */
+@Data
+@ApiModel("用户考试分数记录实体类")
 @TableName("t_user_exams_score")
 public class UserExamsScore implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    /**
-     * id  用户考试成绩表
-     */
+    @ApiModelProperty("用户考试成绩表ID")
     @TableId(value = "id", type = IdType.AUTO)
     private Integer id;
 
-    /**
-     * 用户id  唯一
-     */
+    @ApiModelProperty("用户id")
     @TableField(fill = FieldFill.INSERT)
     private Integer userId;
 
-    /**
-     * 试卷id  唯一
-     */
+    @ApiModelProperty("试卷id")
     private Integer examId;
 
-    /**
-     * 总时长  YYYY-MM-DD hh:mm:ss
-     */
+    @ApiModelProperty("总时长")
     private Integer totalTime;
 
-    /**
-     * 用户用时  YYYY-MM-DD hh:mm:ss
-     */
+    @ApiModelProperty("用户用时")
     private Integer userTime;
 
-    /**
-     * 用户得分
-     */
+    @ApiModelProperty("用户得分")
     private Integer userScore;
 
     /**
-     * 交卷时间  YYYY-MM-DD hh:mm:ss
+     * YYYY-MM-DD hh:mm:ss
      */
+    @ApiModelProperty("交卷时间")
     private LocalDateTime limitTime;
 
-    /**
-     * 切屏次数
-     */
+    @ApiModelProperty("切屏次数")
     private Integer count;
 
     /**
-     * 状态   0正在考试 1考试完成
+     * 0正在考试 1考试完成
      */
+    @ApiModelProperty("状态")
     private Integer state;
+
     /**
-     * 是否阅卷-1 未简答题 0 未阅卷 1已阅卷
+     * -1 未简答题 0 未阅卷 1已阅卷
      */
+    @ApiModelProperty("是否阅卷")
     private Integer whetherMark;
 
-    public Integer getWhetherMark() {
-        return whetherMark;
-    }
-
-    public void setWhetherMark(Integer whetherMark) {
-        this.whetherMark = whetherMark;
-    }
-
     /**
-     * 创建时间  YYYY-MM-DD hh:mm:ss
+     * YYYY-MM-DD hh:mm:ss
      */
+    @ApiModelProperty("创建时间")
     @TableField(fill = FieldFill.INSERT)
     private LocalDateTime createTime;
 
-    public Integer getId() {
-        return id;
-    }
-
-    public void setId(Integer id) {
-        this.id = id;
-    }
-    public Integer getUserId() {
-        return userId;
-    }
-
-    public void setUserId(Integer userId) {
-        this.userId = userId;
-    }
-    public Integer getExamId() {
-        return examId;
-    }
-
-    public void setExamId(Integer examId) {
-        this.examId = examId;
-    }
-    public Integer getTotalTime() {
-        return totalTime;
-    }
-
-    public void setTotalTime(Integer totalTime) {
-        this.totalTime = totalTime;
-    }
-    public Integer getUserTime() {
-        return userTime;
-    }
-
-    public void setUserTime(Integer userTime) {
-        this.userTime = userTime;
-    }
-    public Integer getUserScore() {
-        return userScore;
-    }
-
-    public void setUserScore(Integer userScore) {
-        this.userScore = userScore;
-    }
-    public LocalDateTime getLimitTime() {
-        return limitTime;
-    }
-
-    public void setLimitTime(LocalDateTime limitTime) {
-        this.limitTime = limitTime;
-    }
-    public Integer getCount() {
-        return count;
-    }
-
-    public void setCount(Integer count) {
-        this.count = count;
-    }
-    public Integer getState() {
-        return state;
-    }
-
-    public void setState(Integer state) {
-        this.state = state;
-    }
-    public LocalDateTime getCreateTime() {
-        return createTime;
-    }
-
-    public void setCreateTime(LocalDateTime createTime) {
-        this.createTime = createTime;
-    }
-
-    @Override
-    public String toString() {
-        return "UserExamsScore{" +
-            "id=" + id +
-            ", userId=" + userId +
-            ", examId=" + examId +
-            ", totalTime=" + totalTime +
-            ", userTime=" + userTime +
-            ", userScore=" + userScore +
-            ", limitTime=" + limitTime +
-            ", count=" + count +
-            ", state=" + state +
-            ", createTime=" + createTime +
-        "}";
-    }
 }

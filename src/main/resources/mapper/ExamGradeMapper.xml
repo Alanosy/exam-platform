@@ -1,21 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="cn.org.alan.exam.mapper.ExamGradeMapper">
-
+    <!--添加试卷与班级的关联-->
     <insert id="addExamGrade">
         insert into t_exam_grade (exam_id, grade_id)
         VALUES
         <foreach collection="gradeIds" item="gId" separator=",">
-            (#{id},#{gId})
+            (#{examId},#{gId})
         </foreach>
     </insert>
 
-
-    <delete id="delExamGrade">
-        delete from t_exam_grade
-        where
-        exam_id=#{id}
-    </delete>
     <!--    根据考试id获取所有需要参加考试的人数-->
     <select id="selectClassSize" resultType="java.lang.Integer">
         select count(*)
@@ -46,27 +40,6 @@
         <id column="id" property="id"/>
         <result column="passed_score" property="passedScore"/>
     </resultMap>
-    <select id="getExamGrade" resultMap="examGrade">
-        select eg.id, eg.exam_id,eg.grade_id,e.create_time, e.title as examTitle,e.passed_score as passedScore
-        ,g.grade_name
-        from t_exam as e
-        left join t_exam_grade as eg on eg.exam_id = e.id
-        join t_grade as g on eg.grade_id = g.id
-        <trim prefix="where" prefixOverrides="and">
-            <if test='examTitle != null and examTitle != ""'>
-                e.title like concat('%',#{examTitle},'%')
-            </if>
-            <if test="roleId == 2">
-                and e.user_id = #{userId}
-            </if>
-            <if test="gradeId != null and gradeId != 0">
-                and eg.grade_id = #{gradeId}
-            </if>
-        </trim>
-        order by e.create_time desc
-
-
-    </select>
     <select id="selectAdminClassExam" resultType="cn.org.alan.exam.model.vo.exam.ExamGradeListVO">
         select *
         from t_exam

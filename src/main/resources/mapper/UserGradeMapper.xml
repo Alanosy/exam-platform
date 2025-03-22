@@ -7,13 +7,6 @@
         delete from t_user_grade
         where u_id = #{userId} and g_id = #{gradeId}
     </delete>
-    <update id="deleteUserGrade">
-        update t_user_grade
-        <!--逻辑删除-->
-        set is_deleted = 1
-        where g_id = #{gradeId}
-    </update>
-
     <select id="getUserListByGradeId" resultType="java.lang.Integer">
         select ug.u_id
         from t_user_grade ug

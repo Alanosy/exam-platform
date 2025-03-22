@@ -3,15 +3,13 @@ package cn.org.alan.exam.service;
 import cn.org.alan.exam.common.result.Result;
 import cn.org.alan.exam.model.entity.Question;
 import cn.org.alan.exam.model.form.question.QuestionFrom;
-import cn.org.alan.exam.model.vo.QuestionVO;
+import cn.org.alan.exam.model.vo.question.QuestionVO;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.IService;
 import org.springframework.web.multipart.MultipartFile;
 
 /**
- * <p>
- * 服务类
- * </p>
+ * 试题管理服务接口
  *
  * @author WeiJin
  * @since 2024-03-21
@@ -39,7 +37,7 @@ public interface IQuestionService extends IService<Question> {
      * 分页查询试题
      *
      * @param pageNum  页码
-     * @param pageSize 每页记录数
+     * @param pageSize 每页大小
      * @param content  试题名
      * @param type     试题类型
      * @param repoId   题库id
@@ -49,6 +47,7 @@ public interface IQuestionService extends IService<Question> {
 
     /**
      * 根据试题id获取单题详情
+     *
      * @param id 试题id
      * @return 结果集
      */
@@ -56,6 +55,7 @@ public interface IQuestionService extends IService<Question> {
 
     /**
      * 修改试题
+     *
      * @param questionFrom 需要修改的试题
      * @return 结果
      */
@@ -63,16 +63,11 @@ public interface IQuestionService extends IService<Question> {
 
     /**
      * 批量导入试题
-     * @param id 题库Id
+     *
+     * @param id   题库Id
      * @param file Excel文件
      * @return 响应结果
      */
     Result<String> importQuestion(Integer id, MultipartFile file);
 
-    /**
-     * 上传图片
-     * @param file 文件
-     * @return 返回上传后的地址
-     */
-    Result<String> uploadImage(MultipartFile file);
 }

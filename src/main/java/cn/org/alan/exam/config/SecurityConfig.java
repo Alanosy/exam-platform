@@ -1,103 +1,83 @@
 package cn.org.alan.exam.config;
 
-
 import cn.org.alan.exam.filter.VerifyTokenFilter;
 import cn.org.alan.exam.common.result.Result;
-import cn.org.alan.exam.util.impl.ResponseUtil;
-import jakarta.annotation.Resource;
-import lombok.RequiredArgsConstructor;
-import org.springframework.context.annotation.Bean;
+import cn.org.alan.exam.utils.ResponseUtil;
+
+import javax.annotation.Resource;
+
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
-import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
+import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
-import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
-
 /**
- * Spring Security 权限配置
+ * Spring Security 权限配置类
+ * 该类用于配置 Spring Security 的相关规则，包括请求授权、异常处理、过滤器等
  *
  * @author Alan
  * @since 2024/4/17
  */
 @Configuration
-@EnableWebSecurity
-@EnableMethodSecurity
-@RequiredArgsConstructor
-public class SecurityConfig {
+@EnableWebSecurity // 启用 Spring Security 的 Web 安全功能，会自动配置一个过滤器链来处理安全相关的事务
+@EnableGlobalMethodSecurity(prePostEnabled = true) // 启用全局方法级别的安全控制，允许使用 @PreAuthorize 和 @PostAuthorize 等注解进行方法级别的权限验证
+public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
+    // 响应体封装工具类
     @Resource
     private ResponseUtil responseUtil;
+
+    // 验证 token 的过滤器
     @Resource
     private VerifyTokenFilter verifyTokenFilter;
 
-    @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-
-        http.authorizeHttpRequests(request -> {
-            //放开认证
-            request.requestMatchers("/api/auths/**").permitAll();
-            request.requestMatchers("/api/auths/logout").authenticated();
-            //所有请求的授权都需要认证
-            request.anyRequest().authenticated();
-
-        });
-
-        //关闭表单功能，使用自定义登录和退出
-        http.formLogin(AbstractHttpConfigurer::disable);
-
-        // 配置拒绝访问处理器
-        http.exceptionHandling(exceptionHandling -> exceptionHandling
-                .accessDeniedHandler((request, response, accessDeniedException) ->
-                        responseUtil.response(response, Result.failed("你没有该资源的访问权限"))));
-        // 配置请求拦截前处理器，验证token
-        http.addFilterBefore(verifyTokenFilter, UsernamePasswordAuthenticationFilter.class);
-        // 放开跨域请求
-        http.csrf(AbstractHttpConfigurer::disable);
-        return http.build();
-    }
-
     /**
-     * 不走过滤器链的放行配置
+     * 配置 HttpSecurity 对象，定义请求的授权规则、异常处理方式、过滤器链等
+     *
+     * @param http HttpSecurity 对象，用于配置 Spring Security 的 HTTP 请求相关规则
+     * @throws Exception 配置过程中可能出现的异常
      */
-    @Bean
-    public WebSecurityCustomizer webSecurityCustomizer() {
-        return (web) -> web.ignoring()
-                .requestMatchers(
-                       // "/api/auths/**",
+    @Override
+    protected void configure(HttpSecurity http) throws Exception {
+        // 开启 CORS（跨域资源共享）支持，并禁用 CSRF（跨站请求伪造）保护
+        http.cors().and().csrf().disable();
+
+        // 开始配置请求的授权规则
+        http.authorizeRequests()
+                // 定义一系列允许匿名访问（即无需身份验证即可访问）的请求路径
+                .antMatchers(
+                        // 用户登录相关的接口，例如登录、注册等接口
+                        "/api/auths/**",
+                        // Swagger2 相关的资源路径，用于提供 API 文档的访问
                         "/webjars/**",
-                        "/doc.html",
-                        "/swagger-resources/**",
-                        "/v3/api-docs/**",
-                        "/swagger-ui/**",
                         "/swagger-ui.html",
+                        "/swagger-resources/**",
+                        "/v2/api-docs",
+                        "/swagger-resources/configuration/ui",
+                        "/swagger-resources/configuration/security",
+                        // 其他需要允许匿名访问的路径，如文档页面、WebSocket 相关路径等
+                        "/doc.html",
                         "/ws/**",
                         "/ws-app/**"
+                )
+                // 这些路径允许所有请求访问，无需进行身份验证
+                .permitAll()
+                // 除了上述允许匿名访问的路径外，其他任何请求都必须经过身份验证才能访问
+                .anyRequest().authenticated();
+
+        // 配置异常处理器，当用户访问没有权限的资源时，会调用该处理器进行处理
+        http.exceptionHandling()
+                .accessDeniedHandler((request, response, accessDeniedException) ->
+                        // 使用响应体封装工具类将错误信息封装成特定的结果返回给客户端
+                        responseUtil.response(response, Result.failed("你没有该资源的访问权限"))
                 );
-    }
 
-    /**
-     * 密码编码器
-     */
-    @Bean
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
-    }
+        // 禁用 Spring Security 自带的基于表单的登录页面
+        http.formLogin().disable();
 
-    /**
-     * AuthenticationManager 手动注入
-     *
-     * @param authenticationConfiguration 认证配置
-     */
-    @Bean
-    public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
-        return authenticationConfiguration.getAuthenticationManager();
+        // 将自定义的验证 token 过滤器添加到 Spring Security 的过滤器链中，并且在 UsernamePasswordAuthenticationFilter 之前执行
+        http.addFilterBefore(verifyTokenFilter, UsernamePasswordAuthenticationFilter.class);
     }
 }

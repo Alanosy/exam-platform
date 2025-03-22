@@ -1,113 +1,50 @@
 package cn.org.alan.exam.model.entity;
 
 import com.baomidou.mybatisplus.annotation.*;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
+
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
+import lombok.Data;
 import net.sf.jsqlparser.expression.MySQLGroupConcat;
 
+import javax.validation.constraints.NotBlank;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
 /**
- * <p>
- * 
- * </p>
+ * 题库实体类
  *
  * @author WeiJin
  * @since 2024-03-21
  */
+@Data
+@ApiModel("题库实体类")
 @TableName("t_repo")
 public class Repo implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    /**
-     * id   题库表
-     */
+    @ApiModelProperty("题库ID")
     @TableId(value = "id", type = IdType.AUTO)
     private Integer id;
 
-    /**
-     * 创建人id
-     */
+    @ApiModelProperty("创建人ID")
     @TableField(fill = FieldFill.INSERT)
     private Integer userId;
 
-    /**
-     * 题库标题
-     */
+    @ApiModelProperty("题库标题")
     @NotBlank(message = "题库名不能为空")
     private String title;
 
-    /**
-     * 是否可以刷题
-     */
+    @ApiModelProperty("是否可以刷题")
     private Integer isExercise;
 
-    /**
-     * 创建时间
-     */
+    @ApiModelProperty("创建时间")
     @TableField(fill = FieldFill.INSERT)
     private LocalDateTime createTime;
 
-    /**
-     * 逻辑删除字段
-     */
+    @TableLogic
+    @ApiModelProperty("逻辑删除字段")
     private Integer isDeleted;
 
-    public Integer getIsDeleted() {
-        return isDeleted;
-    }
-
-    public void setIsDeleted(Integer isDeleted) {
-        this.isDeleted = isDeleted;
-    }
-
-    public Integer getIsExercise() {
-        return isExercise;
-    }
-
-    public void setIsExercise(Integer isExercise) {
-        this.isExercise = isExercise;
-    }
-
-    public Integer getId() {
-        return id;
-    }
-
-    public void setId(Integer id) {
-        this.id = id;
-    }
-    public Integer getUserId() {
-        return userId;
-    }
-
-    public void setUserId(Integer userId) {
-        this.userId = userId;
-    }
-    public String getTitle() {
-        return title;
-    }
-
-    public void setTitle(String title) {
-        this.title = title;
-    }
-    public LocalDateTime getCreateTime() {
-        return createTime;
-    }
-
-    public void setCreateTime(LocalDateTime createTime) {
-        this.createTime = createTime;
-    }
-
-    @Override
-    public String toString() {
-        return "Repo{" +
-                "id=" + id +
-                ", userId=" + userId +
-                ", title='" + title + '\'' +
-                ", createTime=" + createTime +
-                ", isDeleted=" + isDeleted +
-                '}';
-    }
 }

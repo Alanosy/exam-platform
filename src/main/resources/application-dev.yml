@@ -1,41 +1,35 @@
 server:
-  port: 8080
-
+  port: 8080 # 允许端口号
 spring:
   main:
     # 关闭banner
-    banner-mode: off
+    banner-mode: console
     # 允许循环引用
     allow-circular-references: true
   # mysql配置
   datasource:
-    url: jdbc:mysql://127.0.0.1:3306/db_exam?useSSL=false&serverTimezone=UTC
+    url: jdbc:mysql://127.0.0.1:3306/db_exam?useSSL=false&serverTimezone=Asia/Shanghai&characterEncoding=utf8
     username: root
     password: Aa112211
     driver-class-name: com.mysql.cj.jdbc.Driver
-
   # redis配置
-  data:
-    redis:
-#      cluster:
-#        nodes: 127.0.0.1:6381,127.0.0.1:6382, 127.0.0.1:6383, 127.0.0.1:6384, 127.0.0.1:6385, 127.0.0.1:6386
-#        max-redirects: 3
-#      password: 123456
-      database: 0
-      host: 127.0.0.1
-      port: 6379
-      password: Aa112211
-      timeout: 10s
-      lettuce:
-        pool:
-          # 连接池最大连接数 默认8 ，负数表示没有限制
-          max-active: 8
-          # 连接池最大阻塞等待时间（使用负值表示没有限制） 默认-1
-          max-wait: -1
-          # 连接池中的最大空闲连接 默认8
-          max-idle: 8
-          # 连接池中的最小空闲连接 默认0
-          min-idle: 0
+#  data:
+  redis:
+    database: 0
+    host: 127.0.0.1
+    port: 6379
+    password: Aa112211
+    timeout: 10s
+    lettuce: # Redis连接池配置
+      pool:
+        # 连接池最大连接数 默认8 ，负数表示没有限制
+        max-active: 8
+        # 连接池最大阻塞等待时间（使用负值表示没有限制） 默认-1
+        max-wait: -1
+        # 连接池中的最大空闲连接 默认8
+        max-idle: 8
+        # 连接池中的最小空闲连接 默认0
+        min-idle: 0
   servlet:
     multipart:
       max-file-size: 5MB
@@ -44,6 +38,10 @@ mybatis-plus:
   global-config:
     # 关闭banner
     banner: false
+    db-config:
+      # 逻辑删除配置
+      logic-not-delete-value: 0  # 未删除值
+      logic-delete-value: 1      # 已删除值
   configuration:
     log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
     map-underscore-to-camel-case:
@@ -62,7 +60,7 @@ oss:
   access-key-secret: 4hFcObCh2ArA0wZZYbBP9mRy4BD2NO
   bucket-name: online-exam-system-backend
 
-# 本地文件存储服务
+# Minio本地文件存储服务
 minio:
   endpoint: http://127.0.0.1:9000 # minio服务地址
   accesskey: admin # minio用户名
@@ -85,7 +83,3 @@ online-exam:
 system:
   register:
     enabled: true  # 控制是否开放注册功能
-# 通用配置
-common:
-
-  adminId: 1 #  管理员id

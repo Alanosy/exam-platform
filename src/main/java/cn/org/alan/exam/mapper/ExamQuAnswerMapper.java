@@ -9,16 +9,12 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import java.util.List;
 
 /**
- * <p>
- *  Mapper 接口
- * </p>
+ * 试卷试题回答情况表 Mapper 接口
  *
  * @author WeiJin
  * @since 2024-03-21
  */
 public interface ExamQuAnswerMapper extends BaseMapper<ExamQuAnswer> {
-
-    List<ExamQuAnswerExtVO> list(String examId, String questionId);
 
     /**
      * 获取单题作答信息
@@ -27,13 +23,6 @@ public interface ExamQuAnswerMapper extends BaseMapper<ExamQuAnswer> {
      * @return 查询结果
      */
     QuestionAnalyseVO questionAnalyse(Integer examId, Integer questionId);
-
-    /**
-     * 删除用户考试作答记录
-     * @param userIds 用户id列表
-     * @return 影响记录数
-     */
-    Integer deleteByUserIds(List<Integer> userIds);
 
     /**
      * 获取用户回答主观题信息

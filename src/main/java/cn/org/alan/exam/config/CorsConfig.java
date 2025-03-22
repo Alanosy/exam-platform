@@ -18,25 +18,26 @@ import java.util.Collections;
 @Configuration
 public class CorsConfig {
 
+    /**
+     * 配置允许跨域
+     *
+     * @return
+     */
     @Bean
-    public FilterRegistrationBean filterRegistrationBean() {
-        CorsConfiguration corsConfiguration = new CorsConfiguration();
-        //1.允许任何来源
-        corsConfiguration.setAllowedOriginPatterns(Collections.singletonList("*"));
-        //2.允许任何请求头
-        corsConfiguration.addAllowedHeader(CorsConfiguration.ALL);
-        //3.允许任何方法
-        corsConfiguration.addAllowedMethod(CorsConfiguration.ALL);
-        //4.允许凭证
-        corsConfiguration.setAllowCredentials(true);
-
-        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", corsConfiguration);
-        CorsFilter corsFilter = new CorsFilter(source);
-
-        FilterRegistrationBean<CorsFilter> filterRegistrationBean=new FilterRegistrationBean<>(corsFilter);
-        filterRegistrationBean.setOrder(-101);  // 小于 SpringSecurity Filter的 Order(-100) 即可
-
-        return filterRegistrationBean;
+    public CorsFilter corsFilter() {
+        CorsConfiguration config = new CorsConfiguration();
+        config.addAllowedOrigin("*");
+        config.setAllowCredentials(true);
+        config.addAllowedMethod("OPTIONS");
+        config.addAllowedMethod("HEAD");
+        config.addAllowedMethod("GET");
+        config.addAllowedMethod("PUT");
+        config.addAllowedMethod("POST");
+        config.addAllowedMethod("DELETE");
+        config.addAllowedMethod("PATCH");
+        config.addAllowedHeader("*");
+        UrlBasedCorsConfigurationSource configurationSource = new UrlBasedCorsConfigurationSource();
+        configurationSource.registerCorsConfiguration("/**", config);
+        return new CorsFilter(configurationSource);
     }
 }

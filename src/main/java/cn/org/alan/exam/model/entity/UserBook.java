@@ -1,95 +1,44 @@
 package cn.org.alan.exam.model.entity;
 
 import com.baomidou.mybatisplus.annotation.*;
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
+import lombok.Data;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
 /**
- * <p>
- * 
- * </p>
+ * 错题本实体类
  *
  * @author WeiJin
  * @since 2024-03-21
  */
+@Data
+@ApiModel("错题本实体类")
 @TableName("t_user_book")
 public class UserBook implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    /**
-     * ID   错题本
-     */
+    @ApiModelProperty("错题本ID")
     @TableId(value = "id", type = IdType.AUTO)
     private Integer id;
 
-    /**
-     * 考试id  唯一
-     */
+    @ApiModelProperty("考试ID")
     private Integer examId;
 
-    /**
-     * 用户id    唯一
-     */
+    @ApiModelProperty("用户ID")
     @TableField(fill = FieldFill.INSERT)
     private Integer userId;
 
-    /**
-     * 题目id    唯一
-     */
+    @ApiModelProperty("题目ID")
     private Integer quId;
 
     /**
-     * 创建时间    YYYY-MM-DD hh:mm:ss
+     * YYYY-MM-DD hh:mm:ss
      */
+    @ApiModelProperty("创建时间")
     @TableField(fill = FieldFill.INSERT)
     private LocalDateTime createTime;
-
-    public Integer getId() {
-        return id;
-    }
-
-    public void setId(Integer id) {
-        this.id = id;
-    }
-    public Integer getExamId() {
-        return examId;
-    }
-
-    public void setExamId(Integer examId) {
-        this.examId = examId;
-    }
-    public Integer getUserId() {
-        return userId;
-    }
-
-    public void setUserId(Integer userId) {
-        this.userId = userId;
-    }
-    public Integer getQuId() {
-        return quId;
-    }
-
-    public void setQuId(Integer quId) {
-        this.quId = quId;
-    }
-    public LocalDateTime getCreateTime() {
-        return createTime;
-    }
-
-    public void setCreateTime(LocalDateTime createTime) {
-        this.createTime = createTime;
-    }
-
-    @Override
-    public String toString() {
-        return "UserBook{" +
-            "id=" + id +
-            ", examId=" + examId +
-            ", userId=" + userId +
-            ", quId=" + quId +
-            ", createTime=" + createTime +
-        "}";
-    }
 }

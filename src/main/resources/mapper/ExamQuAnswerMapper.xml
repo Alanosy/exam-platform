@@ -8,20 +8,7 @@
         <result column="image" property="image"/>
         <result column="content" property="content"/>
     </resultMap>
-    <delete id="deleteByUserIds">
-        delete from t_exam_qu_answer where user_id in
-        <foreach collection="userIds" item="userId" open="(" close=")" separator=",">
-            #{userId}
-        </foreach>
-    </delete>
-    <select id="list" resultMap="ListResultMap">
-        SELECT op.`id`, eq.`sort`, op.'content', op.'image'
-        FROM t_exam_question eq
-        LEFT JOIN t_option op ON eq.question_id = op.qu_id
-        WHERE op.exam_id = #{examId}
-        AND op.question_id = #{questionId}
-        ORDER BY eq.sort ASC
-    </select>
+
     <!-- 获取单题作答信息 -->
     <select id="questionAnalyse" resultType="cn.org.alan.exam.model.vo.score.QuestionAnalyseVO">
         select count(case where is_right = 1 then 1 end) as rightCount, count(*) as totalCount

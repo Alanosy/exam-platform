@@ -19,9 +19,9 @@ public interface IUserBookService extends IService<UserBook> {
     /**
      * 学生错题本分页查询
      *
-     * @param pageNum
-     * @param pageSize
-     * @param examName
+     * @param pageNum  页码
+     * @param pageSize 每页大小
+     * @param examName 考试标题
      * @return
      */
     Result<IPage<UserPageBookVO>> getPage(Integer pageNum, Integer pageSize, String examName);
@@ -29,7 +29,7 @@ public interface IUserBookService extends IService<UserBook> {
     /**
      * 查询错题本错题id列表
      *
-     * @param examId
+     * @param examId 考试ID
      * @return
      */
     Result<List<ReUserExamBookVO>> getReUserExamBook(Integer examId);
@@ -37,7 +37,7 @@ public interface IUserBookService extends IService<UserBook> {
     /**
      * 查询单题
      *
-     * @param quId
+     * @param quId 试题ID
      * @return
      */
     Result<BookOneQuVO> getBookOne(Integer quId);
@@ -48,6 +48,4 @@ public interface IUserBookService extends IService<UserBook> {
      * @return
      */
     Result<AddBookAnswerVO> addBookAnswer(ReUserBookForm reUserBookForm);
-
-
 }

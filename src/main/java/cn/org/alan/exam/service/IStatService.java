@@ -11,9 +11,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import java.util.List;
 
 /**
- * <p>
- * 服务类
- * </p>
+ * 统计管理服务接口
  *
  * @author WeiJin
  * @since 2024-03-21
@@ -41,5 +39,10 @@ public interface IStatService extends IService<ExamGrade> {
      */
     Result<AllStatsVO> getAllCount();
 
+    /**
+     * 获取用户登录时间统计
+     *
+     * @return
+     */
     Result<List<DailyVO>> getDaily();
 }

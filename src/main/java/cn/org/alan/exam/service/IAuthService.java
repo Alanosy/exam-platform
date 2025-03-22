@@ -1,12 +1,16 @@
 package cn.org.alan.exam.service;
 
 import cn.org.alan.exam.common.result.Result;
-import cn.org.alan.exam.model.form.Auth.LoginForm;
-import cn.org.alan.exam.model.form.UserForm;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
+import cn.org.alan.exam.model.form.auth.LoginForm;
+import cn.org.alan.exam.model.form.user.UserForm;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 
 /**
+ * 权限管理接口
+ *
  * @Author Alan
  * @Version
  * @Date 2024/3/28 1:33 PM
@@ -15,6 +19,7 @@ public interface IAuthService {
 
     /**
      * 登录
+     *
      * @param request
      * @param loginForm
      * @return
@@ -23,6 +28,7 @@ public interface IAuthService {
 
     /**
      * 用户注销
+     *
      * @param request request对象，需要清除session里面的内容
      * @return 响应结果
      */
@@ -56,6 +62,7 @@ public interface IAuthService {
 
     /**
      * 记录学生登录时间
+     *
      * @param request
      * @return
      */

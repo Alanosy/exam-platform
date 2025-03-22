@@ -4,218 +4,209 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
+    <!-- 继承 Spring Boot 父项目，提供默认的依赖管理和插件配置 -->
     <parent>
-        <version>3.1.0</version>
+        <version>2.1.3.RELEASE</version>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
     </parent>
 
+    <!-- 项目的基本信息 -->
     <groupId>cn.org.alan</groupId>
     <artifactId>exam</artifactId>
     <version>1.0-SNAPSHOT</version>
 
+    <!-- 项目属性配置 -->
     <properties>
-        <java.version>17</java.version>
-        <maven.compiler.source>17</maven.compiler.source>
-        <maven.compiler.target>17</maven.compiler.target>
+        <!-- Java 版本 -->
+        <java.version>1.8</java.version>
+        <!-- Maven 编译器源文件版本 -->
+        <maven.compiler.source>1.8</maven.compiler.source>
+        <!-- Maven 编译器目标文件版本 -->
+        <maven.compiler.target>1.8</maven.compiler.target>
+        <!-- 项目构建源文件编码 -->
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <!-- 项目报告输出编码 -->
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+        <!-- Maven 编译器编码 -->
         <maven.compiler.encoding>UTF-8</maven.compiler.encoding>
         <!-- 自定义管理版本号 -->
         <druid.version>1.2.20</druid.version>
         <lombok.version>1.18.30</lombok.version>
-        <mybatis-plus.version>3.5.5</mybatis-plus.version>
         <mysql-connector>8.0.33</mysql-connector>
-        <java-jwt>4.3.0</java-jwt>
+        <java-jwt>3.10.3</java-jwt>
         <mapstruct.version>1.5.5.Final</mapstruct.version>
         <lombok-mapstruct-binding.version>0.2.0</lombok-mapstruct-binding.version>
         <minio.version>7.0.1</minio.version>
     </properties>
 
+    <!-- 项目依赖配置 -->
     <dependencies>
+        <!-- Spring Boot Web 依赖，用于构建 Web 应用 -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+        <!-- MyBatis-Plus 主工具类，简化 MyBatis 开发 -->
+        <dependency>
+            <groupId>com.baomidou</groupId>
+            <artifactId>mybatis-plus-boot-starter</artifactId>
+            <version>3.5.5</version>
+        </dependency>
+        <dependency>
+            <groupId>com.baomidou</groupId>
+            <artifactId>mybatis-plus-extension</artifactId>
+            <version>3.5.5</version>
+        </dependency>
+        <!-- 阿里巴巴数据库连接池，提供高性能的数据库连接管理 -->
+        <dependency>
+            <groupId>com.alibaba</groupId>
+            <artifactId>druid-spring-boot-3-starter</artifactId>
+            <version>${druid.version}</version>
+        </dependency>
+        <!-- MySQL 数据库驱动，用于连接 MySQL 数据库 -->
+        <dependency>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
+        </dependency>
+        <!-- 阿里巴巴 JSON 处理工具，用于处理 JSON 数据 -->
+        <dependency>
+            <groupId>com.alibaba</groupId>
+            <artifactId>fastjson</artifactId>
+            <version>1.2.83</version>
+        </dependency>
+        <!-- Lombok 工具类，简化 Java 代码编写，如自动生成 getter、setter 等 -->
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <version>${lombok.version}</version>
+        </dependency>
+        <!-- Spring Boot 参数校验工具，用于校验请求参数的合法性 -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-validation</artifactId>
+        </dependency>
+        <!-- 阿里巴巴 EasyExcel，用于处理 Excel 文件 -->
+        <dependency>
+            <groupId>com.alibaba</groupId>
+            <artifactId>easyexcel</artifactId>
+            <version>3.3.4</version>
+        </dependency>
+        <!-- MapStruct 注解处理器，用于自动生成 Bean 映射代码 -->
         <dependency>
             <groupId>org.mapstruct</groupId>
             <artifactId>mapstruct-processor</artifactId>
             <version>${mapstruct.version}</version>
         </dependency>
+        <!-- MapStruct 核心库，用于 Bean 映射 -->
+        <dependency>
+            <groupId>org.mapstruct</groupId>
+            <artifactId>mapstruct</artifactId>
+            <version>${mapstruct.version}</version>
+        </dependency>
+        <!-- Lombok 和 MapStruct 绑定库，解决两者之间的兼容性问题 -->
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok-mapstruct-binding</artifactId>
             <version>${lombok-mapstruct-binding.version}</version>
             <scope>provided</scope>
         </dependency>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-validation</artifactId>
-        </dependency>
-        <!--excel处理-->
-        <dependency>
-            <groupId>com.alibaba</groupId>
-            <artifactId>easyexcel</artifactId>
-            <version>3.3.4</version>
-        </dependency>
+        <!-- Apache POI OOXML 库，用于处理 Office Open XML 文件 -->
         <dependency>
             <groupId>org.apache.poi</groupId>
             <artifactId>poi-ooxml</artifactId>
             <version>3.16</version>
         </dependency>
-        <dependency>
-            <groupId>com.alibaba</groupId>
-            <artifactId>fastjson</artifactId>
-            <version>1.2.83</version>
-        </dependency>
-        <dependency>
-            <groupId>org.mapstruct</groupId>
-            <artifactId>mapstruct</artifactId>
-            <version>${mapstruct.version}</version>
-        </dependency>
-        <!-- 标记当前项目为web项目 -->
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-web</artifactId>
-        </dependency>
+        <!-- Spring Boot 测试工具，用于编写和运行单元测试和集成测试 -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
             <scope>test</scope>
         </dependency>
-        <!-- lombok 工具类 -->
-        <dependency>
-            <groupId>org.projectlombok</groupId>
-            <artifactId>lombok</artifactId>
-            <version>${lombok.version}</version>
-        </dependency>
-        <!-- mybatis-plus主工具类 -->
-        <dependency>
-            <groupId>com.baomidou</groupId>
-            <artifactId>mybatis-plus-boot-starter</artifactId>
-            <version>${mybatis-plus.version}</version>
-        </dependency>
-        <!-- 阿里巴巴数据库连接池 -->
-        <dependency>
-            <groupId>com.alibaba</groupId>
-            <artifactId>druid-spring-boot-3-starter</artifactId>
-            <version>${druid.version}</version>
-        </dependency>
-        <!-- mysql 驱动 -->
-        <dependency>
-            <groupId>mysql</groupId>
-            <artifactId>mysql-connector-java</artifactId>
-            <version>${mysql-connector}</version>
-            <scope>runtime</scope>
-        </dependency>
+        <!-- Spring Security 安全框架，用于实现应用的安全认证和授权 -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-security</artifactId>
         </dependency>
-        <!--devtools热部署-->
+        <!-- Spring Boot 热部署工具，修改代码后无需重启应用 -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-devtools</artifactId>
             <optional>true</optional>
             <scope>true</scope>
         </dependency>
+        <!-- Spring Boot Redis 依赖，用于与 Redis 数据库交互 -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-data-redis</artifactId>
         </dependency>
+        <!-- Swagger 接口文档生成工具，用于生成 API 文档 -->
+        <dependency>
+            <groupId>io.springfox</groupId>
+            <artifactId>springfox-swagger2</artifactId>
+            <version>2.9.2</version>
+        </dependency>
+        <dependency>
+            <groupId>io.springfox</groupId>
+            <artifactId>springfox-swagger-ui</artifactId>
+            <version>2.9.2</version>
+        </dependency>
+        <dependency>
+            <groupId>com.github.xiaoymin</groupId>
+            <artifactId>swagger-bootstrap-ui</artifactId>
+            <version>1.9.3</version>
+        </dependency>
+        <!-- JWT 工具包，用于生成和验证 JSON Web Token -->
         <dependency>
             <groupId>com.auth0</groupId>
             <artifactId>java-jwt</artifactId>
             <version>${java-jwt}</version>
         </dependency>
+        <!-- Hutool 工具包，包含大量常用的 Java 工具方法 -->
         <dependency>
             <groupId>cn.hutool</groupId>
             <artifactId>hutool-all</artifactId>
             <version>5.8.23</version>
         </dependency>
-        <!--<dependency>-->
-        <!--    <groupId>cn.hutool</groupId>-->
-        <!--    <artifactId>hutool-all</artifactId>-->
-        <!--    <version>5.8.23</version>-->
-        <!--</dependency>-->
-        <!-- aop切面 -->
+        <!-- Spring Boot AOP 依赖，用于实现面向切面编程 -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-aop</artifactId>
         </dependency>
+        <!-- 阿里云 OSS 依赖库，用于与阿里云对象存储服务交互 -->
         <dependency>
             <groupId>com.aliyun.oss</groupId>
             <artifactId>aliyun-sdk-oss</artifactId>
             <version>3.10.2</version>
         </dependency>
-        <dependency>
-            <groupId>javax.xml.bind</groupId>
-            <artifactId>jaxb-api</artifactId>
-            <version>2.3.1</version>
-        </dependency>
-        <!--<dependency>-->
-        <!--    <groupId>org.springframework.boot</groupId>-->
-        <!--    <artifactId>spring-boot-starter-websocket</artifactId>-->
-        <!--</dependency>-->
-
-        <!--密码解密-->
+        <!-- Bouncy Castle 密码学库，用于密码解密等操作 -->
         <dependency>
             <groupId>org.bouncycastle</groupId>
             <artifactId>bcprov-jdk15on</artifactId>
             <version>1.60</version>
         </dependency>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-web</artifactId>
-            <version>2.5.12</version>
-            <scope>compile</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.alibaba.fastjson2</groupId>
-            <artifactId>fastjson2</artifactId>
-            <version>2.0.23</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.commons</groupId>
-            <artifactId>commons-lang3</artifactId>
-            <version>3.12.0</version> <!-- 请检查最新版本并替换 -->
-        </dependency>
-
-        <!-- minio -->
+        <!-- Minio 文件存储服务客户端，用于与 Minio 对象存储服务交互 -->
         <dependency>
             <groupId>io.minio</groupId>
             <artifactId>minio</artifactId>
             <version>${minio.version}</version>
         </dependency>
-
-        <!-- sharding-jdbc -->
-        <dependency>
-            <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-jdbc</artifactId>
-            <version>5.5.0</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.apache.shardingsphere</groupId>
-                    <artifactId>shardingsphere-test-util</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-        <!-- Spring Session Redis 依赖-->
+        <!-- Spring Session Redis 依赖，用于实现基于 Redis 的会话管理 -->
         <dependency>
             <groupId>org.springframework.session</groupId>
             <artifactId>spring-session-data-redis</artifactId>
         </dependency>
-
-        <!--<dependency>-->
-        <!--    <groupId>org.apache.shardingsphere</groupId>-->
-        <!--    <artifactId>sharding-jdbc-spring-boot-starter</artifactId>-->
-        <!--    <version>4.1.1</version>-->
-        <!--    <exclusions>-->
-        <!--        <exclusion>-->
-        <!--            <groupId>com.google.guava</groupId>-->
-        <!--            <artifactId>guava</artifactId>-->
-        <!--        </exclusion>-->
-        <!--    </exclusions>-->
-        <!--</dependency>-->
-       </dependencies>
+        <!--对象池管理工具类 redis连接池配置所需 -->
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-pool2</artifactId>
+            <version>2.8.0</version>
+        </dependency>
+    </dependencies>
+    <!-- 项目构建配置 -->
     <build>
         <plugins>
+            <!-- Spring Boot Maven 插件，用于打包和运行 Spring Boot 应用 -->
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>

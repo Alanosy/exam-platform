@@ -1,5 +1,7 @@
 spring:
   application:
+    # 服务名
     name: exam
   profiles:
+    # 使用那个配置文件
     active: dev

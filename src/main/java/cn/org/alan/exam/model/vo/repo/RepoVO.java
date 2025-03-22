@@ -12,12 +12,17 @@ import java.time.LocalDateTime;
  */
 @Data
 public class RepoVO {
-
+    // 题库ID
     private Integer id;
+    // 用户ID
     private Integer userId;
+    // 题库标题
     private String title;
+    // 是否可以刷题
     private Integer isExercise;
+    // 创建试卷
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime createTime;
+    // 创建人真实姓名
     private String realName;
 }

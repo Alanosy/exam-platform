@@ -1,55 +1,51 @@
 package cn.org.alan.exam.mapper;
 
 import cn.org.alan.exam.model.entity.Notice;
-import cn.org.alan.exam.model.form.NoticeForm;
-import cn.org.alan.exam.model.vo.NoticeVO;
+import cn.org.alan.exam.model.form.notice.NoticeForm;
+import cn.org.alan.exam.model.vo.notice.NoticeVO;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 
 import java.util.List;
 
 /**
- * <p>
- *  Mapper 接口
- * </p>
+ * 公告表 Mapper 接口
  *
  * @author WeiJin
  * @since 2024-03-21
  */
 public interface NoticeMapper extends BaseMapper<Notice> {
 
-    int removeNotice(List<Integer> noticeIds);
-
     /**
-     * 删除用户创建的公告
-     * @param userIds 用户id列表
-     * @return 影响记录数
+     * 获取公告是否公开
+     * @param noticeId 公告ID
+     * @return
      */
-    Integer deleteByUserIds(List<Integer> userIds);
-
-    /**
-     * 根据用户id获取公告ids
-     * @param userIds 用户id列表
-     * @return 查询结果
-     */
-    List<Integer> selectIdsByUserIds(List<Integer> userIds);
-
-    Page<NoticeVO> selectNewNoticePage(Page<NoticeVO> page, Integer userId);
-
-    int countByCondition(Integer userId, String title);
-
-    List<Integer> selectNoticeIdsPage(Integer userId, String title, int offset, Integer pageSize);
-
-    List<NoticeVO> batchSelectByIds(List<Integer> missIds);
-
-    List<Integer> selectNewNoticeIdsPage(Integer userId, int offset, Integer pageSize);
-
     Integer getIsPublic(Integer noticeId);
 
+    /**
+     * 更新公告
+     * @param noticeId 公告ID
+     * @param noticeForm 公告表单
+     * @return
+     */
     Integer updateNotice(Integer noticeId, NoticeForm noticeForm);
 
+    /**
+     * 获取最新公告
+     * @param page 分页对象
+     * @param teachIdList 老师ID列表
+     * @param noticeIdList 公告ID列表
+     * @param adminIdList 管理员ID列表
+     * @return
+     */
     Page<NoticeVO> getNewNotice(Page<NoticeVO> page, List<Integer> teachIdList, List<Integer> noticeIdList, List<Integer> adminIdList);
 
+    /**
+     * 教师管理员获取公告
+     * @param userId 用户ID
+     * @param title 公告标题
+     * @return
+     */
     List<NoticeVO> getNotice( Integer userId, String title);
 }

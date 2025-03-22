@@ -3,66 +3,33 @@ package cn.org.alan.exam.model.entity;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
+import lombok.Data;
 
 import java.io.Serializable;
 
 /**
- * <p>
- * 
- * </p>
+ * 考试题库关联实体类
  *
  * @author WeiJin
  * @since 2024-03-21
  */
+@Data
+@ApiModel("考试题库关联实体类")
 @TableName("t_exam_repo")
 public class ExamRepo implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    /**
-     * id  考试与题库
-     */
+    @ApiModelProperty("考试与题库ID")
     @TableId(value = "id", type = IdType.AUTO)
     private Integer id;
 
-    /**
-     * 考试id  唯一
-     */
+    @ApiModelProperty("考试ID")
     private Integer examId;
 
-    /**
-     * 题库id  唯一
-     */
+    @ApiModelProperty("题库ID")
     private Integer repoId;
 
-    public Integer getId() {
-        return id;
-    }
-
-    public void setId(Integer id) {
-        this.id = id;
-    }
-    public Integer getExamId() {
-        return examId;
-    }
-
-    public void setExamId(Integer examId) {
-        this.examId = examId;
-    }
-    public Integer getRepoId() {
-        return repoId;
-    }
-
-    public void setRepoId(Integer repoId) {
-        this.repoId = repoId;
-    }
-
-    @Override
-    public String toString() {
-        return "ExamRepo{" +
-            "id=" + id +
-            ", examId=" + examId +
-            ", repoId=" + repoId +
-        "}";
-    }
 }
