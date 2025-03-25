@@ -41,6 +41,9 @@ public class UserForm {
     @ExcelImport(value = "角色")
     private Integer roleId;
 
+    // 班级ID
+    private Integer gradeId;
+
     // 旧密码
     @NotBlank(groups = {UserGroup.UpdatePasswordGroup.class}, message = "原密码不能为空")
     private String originPassword;

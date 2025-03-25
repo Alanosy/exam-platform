@@ -79,6 +79,9 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
         if (roleCode == 2) {
             userForm.setRoleId(1);
         }
+        if(userForm.getRoleId()==2&&userForm.getGradeId()!=null){
+            throw new ServiceRuntimeException("教师无法设置单一班级");
+        }
         // 避免管理员创建用户不传递角色
         if (userForm.getRoleId() == null || userForm.getRoleId() == 0) {
             throw new ServiceRuntimeException("未选择用户角色");
