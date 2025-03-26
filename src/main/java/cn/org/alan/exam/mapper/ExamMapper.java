@@ -23,36 +23,40 @@ public interface ExamMapper extends BaseMapper<Exam> {
      * 获取自己创建的考试，考试id，考试考试标题，是否需要阅卷
      *
      * @param userId 用户ID
-     * @return
+     * @return 分页结果
      */
-    IPage<AnswerExamVO> selectMarkedList(@Param("page") IPage<AnswerExamVO> page, @Param("userId") Integer userId,String role,String examName);
+    IPage<AnswerExamVO> selectMarkedList(@Param("page") IPage<AnswerExamVO> page, @Param("userId") Integer userId, String role, String examName);
 
     /**
      * 查询学生的考试记录
-     * @param page 分页对象
-     * @param userId 用户ID
+     *
+     * @param page     分页对象
+     * @param userId   用户ID
      * @param examName 考试名称
-     * @param isASC 是否升序
+     * @param isASC    是否升序
      * @return 分页结果
      */
     Page<ExamRecordVO> getExamRecordPage(Page<ExamRecordVO> page, Integer userId, String examName, Boolean isASC);
-    
+
     /**
      * 查询教师创建的考试记录
-     * @param page 分页对象
-     * @param userId 用户ID
+     *
+     * @param page     分页对象
+     * @param userId   用户ID
      * @param examName 考试名称
-     * @param isASC 是否升序
+     * @param isASC    是否升序
      * @return 分页结果
      */
     Page<ExamRecordVO> getTeacherExamRecordPage(Page<ExamRecordVO> page, Integer userId, String examName, Boolean isASC);
-    
+
     /**
      * 查询所有考试记录（管理员）
-     * @param page 分页对象
+     *
+     * @param page     分页对象
      * @param examName 考试名称
-     * @param isASC 是否升序
+     * @param isASC    是否升序
      * @return 分页结果
      */
     Page<ExamRecordVO> getAllExamRecordPage(Page<ExamRecordVO> page, String examName, Boolean isASC);
+
 }

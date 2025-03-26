@@ -2,7 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="cn.org.alan.exam.mapper.CertificateMapper">
 
-    <!--分页查找学生自己获得的证书-->
+    <!-- 分页查找学生自己获得的证书 -->
     <select id="selectMyCertificate" resultType="cn.org.alan.exam.model.vo.certificate.MyCertificateVO">
         SELECT tcu.code as code,tcu.create_time as createTime,tc.certification_nuit as certificationNuit,tc.image as
         image,
@@ -19,8 +19,8 @@
         ORDER BY tcu.create_time ASC
     </select>
 
-    <!--教师和管理员分页查询证书-->
-    <select id="selectCretificatePage" resultType="cn.org.alan.exam.model.entity.Certificate">
+    <!-- 教师和管理员分页查询证书 -->
+    <select id="selectCertificatePage" resultType="cn.org.alan.exam.model.entity.Certificate">
         SELECT *
         FROM t_certificate
         <trim prefix="where" prefixOverrides="and">
@@ -33,4 +33,5 @@
             </if>
         </trim>
     </select>
+
 </mapper>

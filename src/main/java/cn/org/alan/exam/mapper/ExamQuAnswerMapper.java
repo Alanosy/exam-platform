@@ -18,7 +18,8 @@ public interface ExamQuAnswerMapper extends BaseMapper<ExamQuAnswer> {
 
     /**
      * 获取单题作答信息
-     * @param examId 考试id
+     *
+     * @param examId     考试id
      * @param questionId 试题id
      * @return 查询结果
      */
@@ -26,9 +27,11 @@ public interface ExamQuAnswerMapper extends BaseMapper<ExamQuAnswer> {
 
     /**
      * 获取用户回答主观题信息
+     *
      * @param userId 用户id
      * @param examId 考试id
      * @return 结果集
      */
     List<UserAnswerDetailVO> selectUserAnswer(Integer userId, Integer examId);
+
 }

@@ -36,7 +36,7 @@ public interface RepoMapper extends BaseMapper<Repo> {
      *
      * @param page     分页信息
      * @param title    题库名
-     * @param userList
+     * @param userList 用户Id集
      * @return 结果
      */
     IPage<ExerciseRepoVO> selectRepo(IPage<ExerciseRepoVO> page,
@@ -44,18 +44,21 @@ public interface RepoMapper extends BaseMapper<Repo> {
 
     /**
      * 查询题库列表
+     *
      * @param repoTitle 题库标题
-     * @param userId 用户ID
-     * @return
+     * @param userId    用户ID
+     * @return 结果集
      */
     List<RepoListVO> selectRepoList(String repoTitle, int userId);
 
     /**
      * 查找刷题记录
-     * @param repoPage
-     * @param userId
-     * @param repoName
-     * @return
+     *
+     * @param repoPage 分页page对象
+     * @param userId   用户Id
+     * @param repoName 题库名称
+     * @return 分页结果
      */
     Page<Repo> selectUserExerciseRecord(Page<Repo> repoPage, Integer userId, String repoName);
+
 }

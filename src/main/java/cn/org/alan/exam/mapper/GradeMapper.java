@@ -15,6 +15,7 @@ import java.util.List;
  * @since 2024-03-21
  */
 public interface GradeMapper extends BaseMapper<Grade> {
+
     /**
      * 分页查找班级
      *
@@ -23,7 +24,7 @@ public interface GradeMapper extends BaseMapper<Grade> {
      * @param gradeName   班级名称
      * @param roleCode    角色代码
      * @param gradeIdList 班级ID列表
-     * @return
+     * @return 分页结果
      */
     Page<GradeVO> selectGradePage(Page<GradeVO> page, Integer userId, String gradeName, Integer roleCode, List<Integer> gradeIdList);
 
@@ -33,7 +34,7 @@ public interface GradeMapper extends BaseMapper<Grade> {
      * @param userId      用户ID
      * @param roleCode    觉得代码
      * @param gradeIdList 班级ID列表
-     * @return
+     * @return 结果集
      */
     List<GradeVO> getAllGrade(Integer userId, Integer roleCode, List<Integer> gradeIdList);
 
@@ -41,7 +42,8 @@ public interface GradeMapper extends BaseMapper<Grade> {
      * 根据班级代码获取班级对象
      *
      * @param code 班级代码
-     * @return
+     * @return 班级对象
      */
     Grade getGradeByCode(String code);
+
 }

@@ -2,6 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="cn.org.alan.exam.mapper.NoticeMapper">
 
+    <!-- 更新公告 -->
     <update id="updateNotice">
         update t_notice
         <set>
@@ -16,14 +17,15 @@
             </if>
         </set>
         where id = #{noticeId}
-
     </update>
 
-
+    <!-- 获取公告是否公开 -->
     <select id="getIsPublic" resultType="java.lang.Integer">
         select is_public from t_notice
         where id = #{noticeId}
     </select>
+
+    <!-- 获取最新公告 -->
     <select id="getNewNotice" resultType="cn.org.alan.exam.model.vo.notice.NoticeVO">
         select n.id as id ,n.title as title,n.image as image,n.content as content,n.user_id as userId,
         n.create_time as createTime,u.real_name as realName,n.is_public as isPublic
@@ -31,17 +33,17 @@
         left join t_user as u on n.user_id=u.id
         where  n.is_deleted = 0 and
         ((
-        <!--非公开的-->
+        <!-- 非公开的 -->
         (n.is_public = 0)
         <if test="teachIdList != null and teachIdList.size() > 0">
-            <!--创建人是班级老师列表中的-->
+            <!-- 创建人是班级老师列表中的 -->
             and n.user_id in
             <foreach collection="teachIdList" item="teachId" open="(" close=")" separator=",">
                 #{teachId}
             </foreach>
         </if>
         <if test="noticeIdList != null and noticeIdList.size() > 0">
-            <!--公告并且是和班级关联的-->
+            <!-- 公告并且是和班级关联的 -->
             and n.id in
             <foreach collection="noticeIdList" item="noticeId" open="(" close=")" separator=",">
                 #{noticeId}
@@ -56,17 +58,17 @@
         )
         or
         (
-        <!--或者公告是公开的-->
+        <!-- 或者公告是公开的 -->
         (n.is_public = 1)
         <if test="teachIdList != null and teachIdList.size() > 0">
-            <!--创建人是班级老师列表中的-->
+            <!-- 创建人是班级老师列表中的 -->
             and (n.user_id in
             <foreach collection="teachIdList" item="teachId" open="(" close=")" separator=",">
                 #{teachId}
             </foreach>)
         </if>
         <if test="adminIdList != null and adminIdList.size() > 0">
-            <!--或者创建人是管理员列表中的-->
+            <!-- 或者创建人是管理员列表中的 -->
             or n.user_id in
             <foreach collection="adminIdList" item="adminId" open="(" close=")" separator=",">
                 #{adminId}
@@ -78,6 +80,8 @@
         ))
         ORDER BY  n.create_time DESC
     </select>
+
+    <!-- 教师管理员获取公告 -->
     <select id="getNotice" resultType="cn.org.alan.exam.model.vo.notice.NoticeVO">
         SELECT n.id as id ,n.title as title,n.image as image,n.content as content,n.user_id as userId,
         n.create_time as createTime,u.real_name as realName,n.is_public as isPublic
@@ -93,4 +97,5 @@
             </if>
         </trim>
     </select>
+
 </mapper>

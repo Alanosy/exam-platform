@@ -2,7 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="cn.org.alan.exam.mapper.UserBookMapper">
 
-    <!--添加用户错题本-->
+    <!-- 添加用户错题本 -->
     <insert id="addUserBookList">
         insert into t_user_book
         (exam_id,user_id,qu_id,create_time)
@@ -12,7 +12,7 @@
         </foreach>
     </insert>
 
-    <!--分页查询错题本-->
+    <!-- 分页查询错题本 -->
     <select id="selectPageVo" resultType="cn.org.alan.exam.model.vo.userbook.UserPageBookVO">
         SELECT ub.exam_id as examId,count(*) as numberOfErrors,MIN(ub.create_time) as createTime,e.title
         FROM t_user_book ub
@@ -26,4 +26,5 @@
         </trim>
         GROUP BY ub.exam_id,e.title
     </select>
+
 </mapper>
