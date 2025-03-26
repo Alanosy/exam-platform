@@ -18,7 +18,7 @@ spring:
     database: 0
     host: 127.0.0.1
     port: 6379
-    password: Aa112211
+#    password: Aa112211
     timeout: 10s
     lettuce: # Redis连接池配置
       pool:

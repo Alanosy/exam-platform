@@ -123,6 +123,12 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
     @Transactional
     public Result<String> deleteBatchByIds(String ids) {
         List<Integer> userIds = Arrays.stream(ids.split(",")).map(Integer::parseInt).collect(java.util.stream.Collectors.toList());
+        List<Integer> adminList = userMapper.getAdminList();
+        // 判断删除用户列表集合是否包含管理员列表中的id
+        boolean containsAdminId = userIds.stream().anyMatch(adminList::contains);
+        if(containsAdminId){
+            throw new ServiceRuntimeException("无法删除管理员用户");
+        }
         if (userIds.isEmpty()) {
             throw new ServiceRuntimeException("删除数据库时未传入用户Id");
         }

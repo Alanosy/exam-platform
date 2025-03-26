@@ -18,8 +18,8 @@ public class UserVO {
     private String userName;
     // 真实姓名
     private String realName;
-    // 角色名称
-    private String roleName;
+    // 用户角色
+    private Integer roleId;
     // 密码
     private String password;
     // 头像

@@ -52,9 +52,7 @@
         select u.id,
         u.user_name,
         u.real_name,
-        case u.role_id
-        when 1 then '学生'
-        when 2 then '教师' end roleName,
+        u.role_id as roleId,
         u.create_time,
         g.grade_name,
         g.user_id
@@ -80,7 +78,7 @@
                 and u.role_id = 1 and g.is_deleted = 0
             </if>
             <if test="roleId == null ">
-                and u.role_id in(1,2)
+                and u.role_id in(1,2,3)
             </if>
         </trim>
         order by u.create_time desc
