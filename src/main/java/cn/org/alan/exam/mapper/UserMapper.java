@@ -49,7 +49,7 @@ public interface UserMapper extends BaseMapper<User> {
      * @param gradeId     班级Id
      * @param realName    真实姓名
      * @param roleId      角色Id
-     * @param gradeIdList
+     * @param gradeIdList 班级Id集
      * @return 查询结果集
      */
     IPage<UserVO> pagingUser(IPage<UserVO> page, Integer gradeId, String realName, Integer userId, Integer roleId, List<Integer> gradeIdList);
@@ -69,4 +69,5 @@ public interface UserMapper extends BaseMapper<User> {
      * @return 返回管理员id列表
      */
     List<Integer> getAdminList();
+
 }

@@ -16,11 +16,12 @@ import java.util.List;
  * @Date 2024/5/28 10:47 PM
  */
 public interface UserDailyLoginDurationMapper extends BaseMapper<UserDailyLoginDuration> {
+
     /**
-     * 获取每条在线时长日志
+     * 获取每天在线时长日志
      *
      * @param userId 用户ID
-     * @return
+     * @return 结果集
      */
     List<DailyVO> getDaily(Integer userId);
 
@@ -29,7 +30,7 @@ public interface UserDailyLoginDurationMapper extends BaseMapper<UserDailyLoginD
      *
      * @param userId 用户ID
      * @param date   日期
-     * @return
+     * @return 结果
      */
     UserDailyLoginDuration getTodayRecord(Integer userId, LocalDate date);
 }

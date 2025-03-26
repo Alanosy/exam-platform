@@ -1,13 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE mapper
-        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
-        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="cn.org.alan.exam.mapper.UserMapper">
+
     <sql id="simpleFiled">
         u.id,u.user_name,u.real_name,u.avatar,u.create_time,u.status
     </sql>
 
-    <!--批量添加用户-->
+    <!-- 批量添加用户 -->
     <insert id="insertBatchUser">
         insert into t_user
         values
@@ -17,7 +16,7 @@
         </foreach>
     </insert>
 
-    <!--批量移除班级-->
+    <!-- 批量移除班级 -->
     <update id="removeUserGrade">
         UPDATE t_user
         SET grade_id = null
@@ -27,14 +26,14 @@
         </foreach>
     </update>
 
-    <!--用户退出班级-->
+    <!-- 用户退出班级 -->
     <update id="userExitGrade">
         update t_user u
         set u.grade_id = null
         where u.id = #{userId}
     </update>
 
-    <!--获取用户信息-->
+    <!-- 获取用户信息 -->
     <select id="info" resultType="cn.org.alan.exam.model.vo.user.UserVO">
         select
         <include refid="simpleFiled"/>
@@ -47,7 +46,7 @@
     </select>
 
 
-    <!--分页获取用户信息-->
+    <!-- 分页获取用户信息 -->
     <select id="pagingUser" resultType="cn.org.alan.exam.model.vo.user.UserVO">
         select u.id,
         u.user_name,
@@ -83,14 +82,16 @@
         </trim>
         order by u.create_time desc
     </select>
+
     <select id="stuExamPage">
         SELECT *
         FROM t_user
         WHERE id in (SELECT grade_id FROM t_exam_grade WHERE exam_id= #{exam_id})
     </select>
 
-    <!--获得管理员ID列表-->
+    <!-- 获得管理员ID列表 -->
     <select id="getAdminList" resultType="java.lang.Integer">
         select id from t_user where role_id = 3
     </select>
+
 </mapper>

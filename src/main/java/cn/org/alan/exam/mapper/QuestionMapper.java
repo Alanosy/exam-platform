@@ -37,21 +37,22 @@ public interface QuestionMapper extends BaseMapper<Question> {
     /**
      * 查询试题详细信息
      *
-     * @param id
-     * @return
+     * @param id 试题Id
+     * @return 结果
      */
     QuestionVO selectDetail(Integer id);
 
     /**
      * 分页查询试题
      *
-     * @param page
-     * @param userId
-     * @param roleCode
-     * @param title
-     * @param type
-     * @param repoId
-     * @return
+     * @param page     分页对象
+     * @param userId   用户Id
+     * @param roleCode 用户角色代码
+     * @param title    试题名称
+     * @param type     试题类型
+     * @param repoId   题库Id
+     * @return 分页结果
      */
     IPage<QuestionVO> selectQuestionPage(IPage<QuestionVO> page, Integer userId, Integer roleCode, String title, Integer type, Integer repoId);
+
 }

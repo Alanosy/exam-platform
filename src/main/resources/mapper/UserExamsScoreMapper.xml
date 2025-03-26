@@ -2,7 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="cn.org.alan.exam.mapper.UserExamsScoreMapper">
 
-    <!-- 根据用户Id列表，考试Id获取该考试的最高分、最低分、平均分、参考人数、及格人数-->
+    <!-- 根据用户Id列表，考试Id获取该考试的最高分、最低分、平均分、参考人数、及格人数 -->
     <select id="scoreStatistics" resultType="cn.org.alan.exam.model.vo.score.GradeScoreVO">
         SELECT
         ug.grade_id AS gradeId,
@@ -43,7 +43,7 @@
         ug.grade_id, e.id, e.title
     </select>
 
-    <!--    成绩分页查询-->
+    <!-- 成绩分页查询 -->
     <select id="pagingScore" resultType="cn.org.alan.exam.model.vo.score.UserScoreVO">
         select ues.id, e.title, u.real_name, ues.user_time, ues.user_score, ues.limit_time, ues.count
         from t_user_exams_score as ues
@@ -57,7 +57,7 @@
         </trim>
     </select>
 
-    <!--查询成绩-->
+    <!-- 查询成绩 -->
     <select id="selectScores" resultType="cn.org.alan.exam.model.vo.score.ExportScoreVO">
         select u.real_name, g.grade_name, ues.user_score as score
         from t_user_exams_score as ues
@@ -68,7 +68,7 @@
         order by ues.user_score desc;
     </select>
 
-    <!--获取未批改用户信息-->
+    <!-- 获取未批改用户信息 -->
     <select id="uncorrectedUser" resultType="cn.org.alan.exam.model.vo.answer.UncorrectedUserVO">
         select u.id as userId,
         u.real_name as userName,
@@ -88,4 +88,5 @@
             and u.real_name like concat('%',#{realName},'%')
         </if>
     </select>
+
 </mapper>

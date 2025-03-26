@@ -6,7 +6,7 @@
     <select id="selectMarkedList" resultType="cn.org.alan.exam.model.vo.answer.AnswerExamVO">
         select id as examId, title as examTitle, case when saq_count > 0 then 1 else 0 end as neededMark
         from t_exam
-        <trim prefix="where"  prefixOverrides="and">
+        <trim prefix="where" prefixOverrides="and">
             is_deleted = 0
             <if test="role == 'role_teacher'">
                 and user_id = #{userId}
@@ -21,9 +21,11 @@
     <select id="getExamRecordPage" resultType="cn.org.alan.exam.model.vo.record.ExamRecordVO">
         select e.id as id,e.title as title,e.exam_duration as examDuration,e.passed_score as passedScore,
         e.gross_score as grossScore,e.max_count as maxCount,e.user_id as userId,e.certificate_id as certificateId,
-        e.radio_count as radioCount,e.radio_score as radioScore,e.multi_count as multi_count,e.multi_score as multiScore,
+        e.radio_count as radioCount,e.radio_score as radioScore,e.multi_count as multi_count,e.multi_score as
+        multiScore,
         e.judge_count as judgeCount,e.judge_score as judgeScore,e.saq_count as saqCount,e.saq_score as saqScore,
-        e.start_time as startTime,e.end_time as endTime,e.create_time as createTime,u.user_time as userTime,u.user_score as userScore,
+        e.start_time as startTime,e.end_time as endTime,e.create_time as createTime,u.user_time as userTime,u.user_score
+        as userScore,
         u.limit_time as limitTime
         from t_exam e
         join t_user_exams_score as u on u.exam_id = e.id
@@ -44,9 +46,11 @@
     <select id="getTeacherExamRecordPage" resultType="cn.org.alan.exam.model.vo.record.ExamRecordVO">
         select e.id as id,e.title as title,e.exam_duration as examDuration,e.passed_score as passedScore,
         e.gross_score as grossScore,e.max_count as maxCount,e.user_id as userId,e.certificate_id as certificateId,
-        e.radio_count as radioCount,e.radio_score as radioScore,e.multi_count as multi_count,e.multi_score as multiScore,
+        e.radio_count as radioCount,e.radio_score as radioScore,e.multi_count as multi_count,e.multi_score as
+        multiScore,
         e.judge_count as judgeCount,e.judge_score as judgeScore,e.saq_count as saqCount,e.saq_score as saqScore,
-        e.start_time as startTime,e.end_time as endTime,e.create_time as createTime,u.user_time as userTime,u.user_score as userScore,
+        e.start_time as startTime,e.end_time as endTime,e.create_time as createTime,u.user_time as userTime,u.user_score
+        as userScore,
         u.limit_time as limitTime
         from t_exam e
         join t_user_exams_score as u on u.exam_id = e.id
@@ -67,9 +71,11 @@
     <select id="getAllExamRecordPage" resultType="cn.org.alan.exam.model.vo.record.ExamRecordVO">
         select e.id as id,e.title as title,e.exam_duration as examDuration,e.passed_score as passedScore,
         e.gross_score as grossScore,e.max_count as maxCount,e.user_id as userId,e.certificate_id as certificateId,
-        e.radio_count as radioCount,e.radio_score as radioScore,e.multi_count as multi_count,e.multi_score as multiScore,
+        e.radio_count as radioCount,e.radio_score as radioScore,e.multi_count as multi_count,e.multi_score as
+        multiScore,
         e.judge_count as judgeCount,e.judge_score as judgeScore,e.saq_count as saqCount,e.saq_score as saqScore,
-        e.start_time as startTime,e.end_time as endTime,e.create_time as createTime,u.user_time as userTime,u.user_score as userScore,
+        e.start_time as startTime,e.end_time as endTime,e.create_time as createTime,u.user_time as userTime,u.user_score
+        as userScore,
         u.limit_time as limitTime
         from t_exam e
         join t_user_exams_score as u on u.exam_id = e.id

@@ -2,6 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="cn.org.alan.exam.mapper.ExamQuestionMapper">
 
+    <!-- 添加试题 -->
     <insert id="insertQuestion">
         insert into t_exam_question (exam_id,question_id,score,sort,type)
         VALUES
@@ -10,6 +11,8 @@
             (#{examId}, #{item.questionId}, #{quScore}, #{item.sort}, #{quType})
         </foreach>
     </insert>
+
+    <!-- 根据试卷ID和试题类型查询试卷与试题的联系 -->
     <select id="getExamQuByExamIdAndQuType" resultType="cn.org.alan.exam.model.entity.ExamQuestion">
         SELECT *
         FROM t_exam_question
@@ -17,4 +20,5 @@
         AND type = #{quType}
         ORDER BY sort ASC
     </select>
+
 </mapper>

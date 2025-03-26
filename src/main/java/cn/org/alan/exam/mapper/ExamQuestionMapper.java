@@ -15,14 +15,14 @@ import java.util.Map;
  */
 public interface ExamQuestionMapper extends BaseMapper<ExamQuestion> {
 
-
     /**
      * 添加试题
-     * @param examId 试卷ID
-     * @param quType 试题类型
-     * @param quScore 试题分数
-     * @param questionIdsAndSorts
-     * @return
+     *
+     * @param examId              试卷ID
+     * @param quType              试题类型
+     * @param quScore             试题分数
+     * @param questionIdsAndSorts 试题Id与Sort集
+     * @return 添加记录数
      */
     int insertQuestion(Integer examId, Integer quType, Integer quScore, List<Map<String, Object>> questionIdsAndSorts);
 
@@ -34,4 +34,5 @@ public interface ExamQuestionMapper extends BaseMapper<ExamQuestion> {
      * @return 试卷试题关联列表
      */
     List<ExamQuestion> getExamQuByExamIdAndQuType(Integer examId, Integer quType);
+
 }

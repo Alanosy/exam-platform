@@ -56,7 +56,7 @@ public class CertificateServiceImpl extends ServiceImpl<CertificateMapper, Certi
     public Result<IPage<Certificate>> pagingCertificate(Integer pageNum, Integer pageSize, String certificateName, String certificationUnit) {
         IPage<Certificate> page = new Page<>(pageNum, pageSize);
         Integer userId = SecurityUtil.getUserId();
-        page = certificateMapper.selectCretificatePage(page, userId, certificateName, certificationUnit);
+        page = certificateMapper.selectCertificatePage(page, userId, certificateName, certificationUnit);
         return Result.success("查询成功", page);
     }
 

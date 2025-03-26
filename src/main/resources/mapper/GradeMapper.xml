@@ -2,9 +2,6 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="cn.org.alan.exam.mapper.GradeMapper">
 
-
-    <select id="selectMaps" resultType="java.util.Map"></select>
-
     <select id="countAllGrades" resultType="long">
         SELECT COUNT(*) FROM t_grade
     </select>
@@ -13,7 +10,7 @@
         SELECT COUNT(*) FROM t_grade WHERE id in (SELECT grade_id FROM t_exam_grade WHERE exam_id= #{exam_id})
     </select>
 
-
+    <!-- 分页查找班级 -->
     <select id="selectGradePage" resultType="cn.org.alan.exam.model.vo.grade.GradeVO">
         SELECT
         g.id,
@@ -46,13 +43,15 @@
         </where>
     </select>
 
-
+    <!-- 根据班级代码获取班级对象 -->
     <select id="getGradeByCode" resultType="cn.org.alan.exam.model.entity.Grade">
         select *
         from t_grade
         where
         code = #{code}
     </select>
+
+    <!-- 获得所有班级 -->
     <select id="getAllGrade" resultType="cn.org.alan.exam.model.vo.grade.GradeVO">
         select *
         from t_grade g
@@ -74,7 +73,6 @@
                 </if>
             </if>
         </where>
-
-
     </select>
+
 </mapper>

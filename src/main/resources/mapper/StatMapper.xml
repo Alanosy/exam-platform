@@ -24,7 +24,7 @@
         GROUP BY g.id
     </select>
 
-    <!--    各班试卷统计-->
+    <!-- 各班试卷统计 -->
     <select id="ExamGradeCount" resultType="cn.org.alan.exam.model.vo.stat.GradeExamVO">
         select g.id as id ,g.grade_name ,count(e.id) as total
         from t_exam_grade as eg
@@ -44,6 +44,5 @@
         group by g.id,
         g.grade_name
     </select>
-
 
 </mapper>

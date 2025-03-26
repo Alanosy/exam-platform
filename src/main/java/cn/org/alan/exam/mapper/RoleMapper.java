@@ -12,10 +12,13 @@ import java.util.List;
  * @since 2024-03-21
  */
 public interface RoleMapper extends BaseMapper<Role> {
+
     /**
      * 获取角色代码
+     *
      * @param roleId 角色ID
-     * @return
+     * @return 结果集
      */
     List<String> selectCodeById(Integer roleId);
+
 }

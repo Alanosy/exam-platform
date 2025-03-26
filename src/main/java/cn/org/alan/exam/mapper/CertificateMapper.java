@@ -17,6 +17,7 @@ import java.util.List;
  * @since 2024-03-21
  */
 public interface CertificateMapper extends BaseMapper<Certificate> {
+
     /**
      * 分页查找学生自己获得的证书
      *
@@ -25,7 +26,7 @@ public interface CertificateMapper extends BaseMapper<Certificate> {
      * @param pageSize            每页大小
      * @param userId              用户ID
      * @param examName            试卷名称
-     * @return
+     * @return 分页结果
      */
     Page<MyCertificateVO> selectMyCertificate(Page<MyCertificateVO> myCertificateVOPage, Integer pageNum, Integer pageSize, Integer userId, String examName);
 
@@ -38,5 +39,6 @@ public interface CertificateMapper extends BaseMapper<Certificate> {
      * @param certificationUnit 证书单位名称
      * @return 证书相关Page对象
      */
-    IPage<Certificate> selectCretificatePage(IPage<Certificate> page, Integer userId, String certificateName, String certificationUnit);
+    IPage<Certificate> selectCertificatePage(IPage<Certificate> page, Integer userId, String certificateName, String certificationUnit);
+
 }

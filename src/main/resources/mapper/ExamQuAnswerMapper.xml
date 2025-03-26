@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="cn.org.alan.exam.mapper.ExamQuAnswerMapper">
+
     <resultMap id="ListResultMap"
                type="cn.org.alan.exam.model.vo.exam.ExamQuAnswerExtVO">
         <result column="id" property="id"/>
@@ -29,4 +30,5 @@
         and eqa.user_id = #{userId}
         and eqa.exam_id = #{examId}
     </select>
+
 </mapper>
