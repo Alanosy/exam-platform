@@ -27,7 +27,7 @@ services:
     network_mode: "host"
 
   nacos:
-    image: ruoyi/ruoyi-nacos:2.3.0-BETA2
+    image: ruoyi/ruoyi-nacos:2.3.0
     container_name: nacos
     ports:
       - "8848:8848"
@@ -94,7 +94,7 @@ services:
     network_mode: "host"
 
   seata-server:
-    image: ruoyi/ruoyi-seata-server:2.3.0-BETA2
+    image: ruoyi/ruoyi-seata-server:2.3.0
     container_name: seata-server
     ports:
       - "7091:7091"
@@ -133,7 +133,7 @@ services:
     network_mode: "host"
 
   sentinel:
-    image: ruoyi/ruoyi-sentinel-dashboard:2.3.0-BETA2
+    image: ruoyi/ruoyi-sentinel-dashboard:2.3.0
     container_name: sentinel
     environment:
       TZ: Asia/Shanghai
@@ -148,7 +148,7 @@ services:
     network_mode: "host"
 
   ruoyi-monitor:
-    image: ruoyi/ruoyi-monitor:2.3.0-BETA2
+    image: ruoyi/ruoyi-monitor:2.3.0
     container_name: ruoyi-monitor
     environment:
       # 时区上海
@@ -164,7 +164,7 @@ services:
     network_mode: "host"
 
   ruoyi-snailjob-server:
-    image: ruoyi/ruoyi-snailjob-server:2.3.0-BETA2
+    image: ruoyi/ruoyi-snailjob-server:2.3.0
     container_name: ruoyi-snailjob-server
     environment:
       # 时区上海
@@ -178,7 +178,7 @@ services:
     network_mode: "host"
 
   ruoyi-gateway:
-    image: ruoyi/ruoyi-gateway:2.3.0-BETA2
+    image: ruoyi/ruoyi-gateway:2.3.0
     container_name: ruoyi-gateway
     environment:
       # 时区上海
@@ -194,7 +194,7 @@ services:
     network_mode: "host"
 
   ruoyi-auth:
-    image: ruoyi/ruoyi-auth:2.3.0-BETA2
+    image: ruoyi/ruoyi-auth:2.3.0
     container_name: ruoyi-auth
     environment:
       # 时区上海
@@ -210,7 +210,7 @@ services:
     network_mode: "host"
 
   ruoyi-system:
-    image: ruoyi/ruoyi-system:2.3.0-BETA2
+    image: ruoyi/ruoyi-system:2.3.0
     container_name: ruoyi-system
     environment:
       # 时区上海
@@ -226,7 +226,7 @@ services:
     network_mode: "host"
 
   ruoyi-gen:
-    image: ruoyi/ruoyi-gen:2.3.0-BETA2
+    image: ruoyi/ruoyi-gen:2.3.0
     container_name: ruoyi-gen
     environment:
       # 时区上海
@@ -242,7 +242,7 @@ services:
     network_mode: "host"
 
   ruoyi-job:
-    image: ruoyi/ruoyi-job:2.3.0-BETA2
+    image: ruoyi/ruoyi-job:2.3.0
     container_name: ruoyi-job
     environment:
       # 时区上海
@@ -258,7 +258,7 @@ services:
     network_mode: "host"
 
   ruoyi-resource:
-    image: ruoyi/ruoyi-resource:2.3.0-BETA2
+    image: ruoyi/ruoyi-resource:2.3.0
     container_name: ruoyi-resource
     environment:
       # 时区上海
@@ -274,7 +274,7 @@ services:
     network_mode: "host"
 
   ruoyi-workflow:
-    image: ruoyi/ruoyi-workflow:2.3.0-BETA2
+    image: ruoyi/ruoyi-workflow:2.3.0
     container_name: ruoyi-workflow
     environment:
       # 时区上海

@@ -1,5 +1,6 @@
 package org.dromara.common.dubbo.config;
 
+import org.apache.dubbo.common.constants.CommonConstants;
 import org.dromara.common.core.utils.StringUtils;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
@@ -35,7 +36,7 @@ public class CustomBeanFactoryPostProcessor implements BeanFactoryPostProcessor,
      */
     @Override
     public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) throws BeansException {
-        String property = System.getProperty("DUBBO_IP_TO_REGISTRY");
+        String property = System.getProperty(CommonConstants.DubboProperty.DUBBO_IP_TO_REGISTRY);
         if (StringUtils.isNotBlank(property)) {
             return;
         }
@@ -59,6 +60,6 @@ public class CustomBeanFactoryPostProcessor implements BeanFactoryPostProcessor,
             }
         }
         // 设置系统属性 DUBBO_IP_TO_REGISTRY 为获取到的 IP 地址
-        System.setProperty("DUBBO_IP_TO_REGISTRY", ip);
+        System.setProperty(CommonConstants.DubboProperty.DUBBO_IP_TO_REGISTRY, ip);
     }
 }

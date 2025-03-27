@@ -264,7 +264,7 @@ springdoc:
 # seata配置
 seata:
   # 是否启用
-  enabled: true
+  enabled: false
   # Seata 应用编号，默认为应用名
   application-id: ${spring.application.name}
   # Seata 事务组编号，用于 TC 集群名
