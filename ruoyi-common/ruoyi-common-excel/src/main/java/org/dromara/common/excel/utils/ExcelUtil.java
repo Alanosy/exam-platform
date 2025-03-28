@@ -23,6 +23,7 @@ import org.dromara.common.excel.handler.DataWriteHandler;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.UnsupportedEncodingException;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -83,6 +84,7 @@ public class ExcelUtil {
      */
     public static <T> void exportExcel(List<T> list, String sheetName, Class<T> clazz, HttpServletResponse response) {
         try {
+            resetResponse(sheetName, response);
             ServletOutputStream os = response.getOutputStream();
             exportExcel(list, sheetName, clazz, false, os, null);
         } catch (IOException e) {
@@ -101,6 +103,7 @@ public class ExcelUtil {
      */
     public static <T> void exportExcel(List<T> list, String sheetName, Class<T> clazz, HttpServletResponse response, List<DropDownOptions> options) {
         try {
+            resetResponse(sheetName, response);
             ServletOutputStream os = response.getOutputStream();
             exportExcel(list, sheetName, clazz, false, os, options);
         } catch (IOException e) {
@@ -119,6 +122,7 @@ public class ExcelUtil {
      */
     public static <T> void exportExcel(List<T> list, String sheetName, Class<T> clazz, boolean merge, HttpServletResponse response) {
         try {
+            resetResponse(sheetName, response);
             ServletOutputStream os = response.getOutputStream();
             exportExcel(list, sheetName, clazz, merge, os, null);
         } catch (IOException e) {
@@ -138,6 +142,7 @@ public class ExcelUtil {
      */
     public static <T> void exportExcel(List<T> list, String sheetName, Class<T> clazz, boolean merge, HttpServletResponse response, List<DropDownOptions> options) {
         try {
+            resetResponse(sheetName, response);
             ServletOutputStream os = response.getOutputStream();
             exportExcel(list, sheetName, clazz, merge, os, options);
         } catch (IOException e) {
@@ -181,12 +186,6 @@ public class ExcelUtil {
      */
     public static <T> void exportExcel(List<T> list, String sheetName, Class<T> clazz, boolean merge,
                                        OutputStream os, List<DropDownOptions> options) {
-        if (CollUtil.isEmpty(list)) {
-            throw new IllegalArgumentException("数据为空");
-        }
-        if (os instanceof HttpServletResponse response) {
-            resetResponse(sheetName, response);
-        }
         ExcelWriterSheetBuilder builder = EasyExcel.write(os, clazz)
             .autoCloseStream(false)
             // 自动适配
@@ -216,8 +215,9 @@ public class ExcelUtil {
      */
     public static <T> void exportTemplate(List<T> data, String filename, String templatePath, HttpServletResponse response) {
         try {
+            resetResponse(filename, response);
             ServletOutputStream os = response.getOutputStream();
-            exportTemplate(data, filename, templatePath, os);
+            exportTemplate(data, templatePath, os);
         } catch (IOException e) {
             throw new RuntimeException("导出Excel异常");
         }
@@ -232,12 +232,9 @@ public class ExcelUtil {
      * @param data         模板需要的数据
      * @param os           输出流
      */
-    public static <T> void exportTemplate(List<T> data, String filename, String templatePath, OutputStream os) {
+    public static <T> void exportTemplate(List<T> data, String templatePath, OutputStream os) {
         if (CollUtil.isEmpty(data)) {
             throw new IllegalArgumentException("数据为空");
-        }
-        if (os instanceof HttpServletResponse response) {
-            resetResponse(filename, response);
         }
         ClassPathResource templateResource = new ClassPathResource(templatePath);
         ExcelWriter excelWriter = EasyExcel.write(os)
@@ -270,7 +267,7 @@ public class ExcelUtil {
         try {
             resetResponse(filename, response);
             ServletOutputStream os = response.getOutputStream();
-            exportTemplateMultiList(data, filename, templatePath, os);
+            exportTemplateMultiList(data, templatePath, os);
         } catch (IOException e) {
             throw new RuntimeException("导出Excel异常");
         }
@@ -288,8 +285,9 @@ public class ExcelUtil {
      */
     public static void exportTemplateMultiSheet(List<Map<String, Object>> data, String filename, String templatePath, HttpServletResponse response) {
         try {
+            resetResponse(filename, response);
             ServletOutputStream os = response.getOutputStream();
-            exportTemplateMultiSheet(data, filename, templatePath, os);
+            exportTemplateMultiSheet(data, templatePath, os);
         } catch (IOException e) {
             throw new RuntimeException("导出Excel异常");
         }
@@ -304,12 +302,9 @@ public class ExcelUtil {
      * @param data         模板需要的数据
      * @param os           输出流
      */
-    public static void exportTemplateMultiList(Map<String, Object> data, String filename, String templatePath, OutputStream os) {
+    public static void exportTemplateMultiList(Map<String, Object> data, String templatePath, OutputStream os) {
         if (CollUtil.isEmpty(data)) {
             throw new IllegalArgumentException("数据为空");
-        }
-        if (os instanceof HttpServletResponse response) {
-            resetResponse(filename, response);
         }
         ClassPathResource templateResource = new ClassPathResource(templatePath);
         ExcelWriter excelWriter = EasyExcel.write(os)
@@ -341,12 +336,9 @@ public class ExcelUtil {
      * @param data         模板需要的数据
      * @param os           输出流
      */
-    public static void exportTemplateMultiSheet(List<Map<String, Object>> data, String filename, String templatePath, OutputStream os) {
+    public static void exportTemplateMultiSheet(List<Map<String, Object>> data, String templatePath, OutputStream os) {
         if (CollUtil.isEmpty(data)) {
             throw new IllegalArgumentException("数据为空");
-        }
-        if (os instanceof HttpServletResponse response) {
-            resetResponse(filename, response);
         }
         ClassPathResource templateResource = new ClassPathResource(templatePath);
         ExcelWriter excelWriter = EasyExcel.write(os)
@@ -374,7 +366,7 @@ public class ExcelUtil {
     /**
      * 重置响应体
      */
-    private static void resetResponse(String sheetName, HttpServletResponse response) {
+    private static void resetResponse(String sheetName, HttpServletResponse response) throws UnsupportedEncodingException {
         String filename = encodingFilename(sheetName);
         FileUtils.setAttachmentResponseHeader(response, filename);
         response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8");
