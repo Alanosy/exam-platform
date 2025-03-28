@@ -191,7 +191,8 @@ export function download(url: string, params: any, fileName: string) {
         const blob = new Blob([resp]);
         FileSaver.saveAs(blob, fileName);
       } else {
-        const resText = await resp.data.text();
+        const blob = new Blob([resp]);
+        const resText = await blob.text();
         const rspObj = JSON.parse(resText);
         const errMsg = errorCode[rspObj.code] || rspObj.msg || errorCode['default'];
         ElMessage.error(errMsg);
