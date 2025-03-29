@@ -81,11 +81,6 @@
             <artifactId>lombok</artifactId>
             <version>${lombok.version}</version>
         </dependency>
-        <!-- Spring Boot 参数校验工具，用于校验请求参数的合法性 -->
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-validation</artifactId>
-        </dependency>
         <!-- 阿里巴巴 EasyExcel，用于处理 Excel 文件 -->
         <dependency>
             <groupId>com.alibaba</groupId>
