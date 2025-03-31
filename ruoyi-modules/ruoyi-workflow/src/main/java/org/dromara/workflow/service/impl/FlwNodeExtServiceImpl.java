@@ -28,33 +28,15 @@ import java.util.*;
 public class FlwNodeExtServiceImpl implements NodeExtService {
 
     /**
-     * 权限页code
-     */
-    private static final String PERMISSION_TAB = "wf_button_tab";
-
-    /**
-     * 权限页名称
-     */
-    private static final String PERMISSION_TAB_NAME = "权限";
-
-    /**
-     * 基础设置
-     */
-    private static final int TYPE_BASE_SETTING = 1;
-
-    /**
-     * 新页签
-     */
-    private static final int TYPE_NEW_TAB = 2;
-
-    /**
      * 存储不同 dictType 对应的配置信息
      */
-    private static final Map<String, Map<String, Object>> CHILD_NODE_MAP = new HashMap<>();
+    private static final Map<String, ButtonPermission> CHILD_NODE_MAP = new HashMap<>();
+
+    record ButtonPermission(String label, Integer type, Boolean must, Boolean multiple) {}
 
     static {
         CHILD_NODE_MAP.put(ButtonPermissionEnum.class.getSimpleName(),
-            Map.of("label", "权限按钮", "type", 4, "must", false, "multiple", true));
+            new ButtonPermission("权限按钮", 4, false, true));
     }
 
     @DubboReference
@@ -69,8 +51,10 @@ public class FlwNodeExtServiceImpl implements NodeExtService {
     public List<NodeExt> getNodeExt() {
         List<NodeExt> nodeExtList = new ArrayList<>();
         // 构建按钮权限页面
-        nodeExtList.add(buildNodeExt(PERMISSION_TAB, PERMISSION_TAB_NAME, TYPE_NEW_TAB,
+        nodeExtList.add(buildNodeExt("wf_button_tab", "权限", 2,
             List.of(ButtonPermissionEnum.class)));
+        // 自定义构建 规则参考 NodeExt 与 warm-flow文档说明
+        // nodeExtList.add(buildNodeExt("xxx_xxx", "xxx", 1, List);
         return nodeExtList;
     }
 
@@ -162,15 +146,21 @@ public class FlwNodeExtServiceImpl implements NodeExtService {
      */
     private NodeExt.ChildNode buildChildNodeMap(String key) {
         NodeExt.ChildNode childNode = new NodeExt.ChildNode();
-        Map<String, Object> map = CHILD_NODE_MAP.get(key);
+        ButtonPermission bp = CHILD_NODE_MAP.get(key);
+        if (bp == null) {
+            childNode.setType(1);
+            childNode.setMust(false);
+            childNode.setMultiple(true);
+            return childNode;
+        }
         // label名称
-        childNode.setLabel((String) map.get("label"));
+        childNode.setLabel(bp.label());
         // 1：输入框 2：输入框 3：下拉框 4：选择框
-        childNode.setType(Convert.toInt(map.get("type"), 1));
+        childNode.setType(bp.type());
         // 是否必填
-        childNode.setMust(Convert.toBool(map.get("must"), false));
+        childNode.setMust(bp.must());
         // 是否多选
-        childNode.setMultiple(Convert.toBool(map.get("multiple"), true));
+        childNode.setMultiple(bp.multiple());
         return childNode;
     }
 
