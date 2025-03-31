@@ -171,6 +171,7 @@ const logout = async () => {
         redirect: encodeURIComponent(router.currentRoute.value.fullPath || '/')
       }
     });
+    proxy?.$tab.closeAllPage();
   });
 };
 
