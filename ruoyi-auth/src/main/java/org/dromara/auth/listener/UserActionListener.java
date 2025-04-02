@@ -1,6 +1,5 @@
 package org.dromara.auth.listener;
 
-import cn.dev33.satoken.config.SaTokenConfig;
 import cn.dev33.satoken.listener.SaTokenListener;
 import cn.dev33.satoken.stp.SaLoginModel;
 import cn.dev33.satoken.stp.StpUtil;
@@ -37,7 +36,6 @@ import java.time.Duration;
 @Slf4j
 public class UserActionListener implements SaTokenListener {
 
-    private final SaTokenConfig tokenConfig;
     @DubboReference
     private RemoteUserService remoteUserService;
     @DubboReference
@@ -64,10 +62,10 @@ public class UserActionListener implements SaTokenListener {
         userOnline.setDeviceType(loginModel.getDevice());
         userOnline.setDeptName((String) loginModel.getExtra(LoginHelper.DEPT_NAME_KEY));
         TenantHelper.dynamic(tenantId, () -> {
-            if (tokenConfig.getTimeout() == -1) {
+            if (loginModel.getTimeout() == -1) {
                 RedisUtils.setCacheObject(CacheConstants.ONLINE_TOKEN_KEY + tokenValue, userOnline);
             } else {
-                RedisUtils.setCacheObject(CacheConstants.ONLINE_TOKEN_KEY + tokenValue, userOnline, Duration.ofSeconds(tokenConfig.getTimeout()));
+                RedisUtils.setCacheObject(CacheConstants.ONLINE_TOKEN_KEY + tokenValue, userOnline, Duration.ofSeconds(loginModel.getTimeout()));
             }
         });
         // 记录登录日志
