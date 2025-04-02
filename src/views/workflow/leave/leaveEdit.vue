@@ -20,7 +20,7 @@
             <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value" />
           </el-select>
         </el-form-item>
-        <el-form-item label="请假时间">
+        <el-form-item label="请假时间" required>
           <el-date-picker
             v-model="leaveTime"
             value-format="YYYY-MM-DD HH:mm:ss"
