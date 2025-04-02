@@ -291,9 +291,11 @@ public class ExcelDownHandler implements SheetWriteHandler {
      * @param value    下拉选可选值
      */
     private void dropDownWithSheet(DataValidationHelper helper, Workbook workbook, Sheet sheet, Integer celIndex, List<String> value) {
+        //由于poi的写出相关问题，超过100个会被临时写进硬盘，导致后续内存合并会出Attempting to write a row[] in the range [] that is already written to disk
+        String tmpOptionsSheetName = OPTIONS_SHEET_NAME + "_" + currentOptionsColumnIndex;
         // 创建下拉数据表
-        Sheet simpleDataSheet = Optional.ofNullable(workbook.getSheet(WorkbookUtil.createSafeSheetName(OPTIONS_SHEET_NAME)))
-            .orElseGet(() -> workbook.createSheet(WorkbookUtil.createSafeSheetName(OPTIONS_SHEET_NAME)));
+        Sheet simpleDataSheet = Optional.ofNullable(workbook.getSheet(WorkbookUtil.createSafeSheetName(tmpOptionsSheetName)))
+            .orElseGet(() -> workbook.createSheet(WorkbookUtil.createSafeSheetName(tmpOptionsSheetName)));
         // 将下拉表隐藏
         workbook.setSheetHidden(workbook.getSheetIndex(simpleDataSheet), true);
         // 完善纵向的一级选项数据表
@@ -302,9 +304,9 @@ public class ExcelDownHandler implements SheetWriteHandler {
             // 获取每一选项行，如果没有则创建
             Row row = Optional.ofNullable(simpleDataSheet.getRow(i))
                 .orElseGet(() -> simpleDataSheet.createRow(finalI));
-            // 获取本级选项对应的选项列，如果没有则创建
-            Cell cell = Optional.ofNullable(row.getCell(currentOptionsColumnIndex))
-                .orElseGet(() -> row.createCell(currentOptionsColumnIndex));
+            // 获取本级选项对应的选项列，如果没有则创建。上述采用多个sheet,默认索引为1列
+            Cell cell = Optional.ofNullable(row.getCell(0))
+                .orElseGet(() -> row.createCell(0));
             // 设置值
             cell.setCellValue(value.get(i));
         }
@@ -312,13 +314,13 @@ public class ExcelDownHandler implements SheetWriteHandler {
         // 创建名称管理器
         Name name = workbook.createName();
         // 设置名称管理器的别名
-        String nameName = String.format("%s_%d", OPTIONS_SHEET_NAME, celIndex);
+        String nameName = String.format("%s_%d", tmpOptionsSheetName, celIndex);
         name.setNameName(nameName);
         // 以纵向第一列创建一级下拉拼接引用位置
         String function = String.format("%s!$%s$1:$%s$%d",
-            OPTIONS_SHEET_NAME,
-            getExcelColumnName(currentOptionsColumnIndex),
-            getExcelColumnName(currentOptionsColumnIndex),
+            tmpOptionsSheetName,
+            getExcelColumnName(0),
+            getExcelColumnName(0),
             value.size());
         // 设置名称管理器的引用位置
         name.setRefersToFormula(function);
