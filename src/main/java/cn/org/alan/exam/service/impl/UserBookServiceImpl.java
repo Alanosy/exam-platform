@@ -159,14 +159,16 @@ public class UserBookServiceImpl extends ServiceImpl<UserBookMapper, UserBook> i
                     }
                 }
                 if (isWrong) {
-                    return Result.success("回答错误");
+                    addBookAnswerVO.setCorrect(0);
+                    return Result.success("回答错误",addBookAnswerVO);
                 }
                 LambdaQueryWrapper<UserBook> userBookWrapper = new LambdaQueryWrapper<>();
                 userBookWrapper.eq(UserBook::getUserId, userId)
                         .eq(UserBook::getExamId, reUserBookForm.getExamId())
                         .eq(UserBook::getQuId, reUserBookForm.getQuId());
                 userBookMapper.delete(userBookWrapper);
-                return Result.success("回答正确");
+                addBookAnswerVO.setCorrect(1);
+                return Result.success("回答正确",addBookAnswerVO);
             case 3:
                 Option byId3 = optionService.getById(reUserBookForm.getAnswer());
                 if (byId3.getIsRight() == 1) {
