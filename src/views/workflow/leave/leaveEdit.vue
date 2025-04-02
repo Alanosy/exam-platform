@@ -212,9 +212,9 @@ const submitForm = (status: string) => {
         buttonLoading.value = true;
         let res: AxiosResponse<LeaveVO>;
         if (form.value.id) {
-          res = await updateLeave(form.value);
+          res = await updateLeave(form.value).finally(() => (buttonLoading.value = false));
         } else {
-          res = await addLeave(form.value);
+          res = await addLeave(form.value).finally(() => (buttonLoading.value = false));
         }
         form.value = res.data;
         if (status === 'draft') {
