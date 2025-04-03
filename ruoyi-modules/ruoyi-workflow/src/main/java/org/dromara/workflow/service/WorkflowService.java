@@ -83,4 +83,13 @@ public interface WorkflowService {
      * @return 结果
      */
     boolean completeTask(RemoteCompleteTask completeTask);
+
+    /**
+     * 办理任务
+     *
+     * @param taskId  任务ID
+     * @param message 办理意见
+     */
+    boolean completeTask(Long taskId, String message);
+
 }
