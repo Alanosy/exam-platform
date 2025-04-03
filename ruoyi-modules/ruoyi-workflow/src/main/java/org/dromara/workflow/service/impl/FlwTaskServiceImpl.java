@@ -186,7 +186,7 @@ public class FlwTaskServiceImpl implements IFlwTaskService {
             // 消息通知
             flwCommonService.sendMessage(definition.getFlowName(), ins.getId(), messageType, notice);
             //设置下一环节处理人
-            setNextHandler(ins.getId());
+            setNextHandler(ins.getId(), completeTaskBo.getAssigneeMap());
             return true;
         } catch (Exception e) {
             log.error(e.getMessage(), e);
@@ -198,8 +198,12 @@ public class FlwTaskServiceImpl implements IFlwTaskService {
      * 设置下一环节处理人
      *
      * @param instanceId 实例ID
+     * @param assigneeMap 办理人
      */
-    private void setNextHandler(Long instanceId) {
+    private void setNextHandler(Long instanceId, Map<String, Object> assigneeMap) {
+        if (CollUtil.isEmpty(assigneeMap)) {
+            return;
+        }
         Instance inst = insService.getById(instanceId);
         List<FlowTask> flowTaskList = selectByInstId(instanceId);
         Map<String, Object> variableMap = inst.getVariableMap();
