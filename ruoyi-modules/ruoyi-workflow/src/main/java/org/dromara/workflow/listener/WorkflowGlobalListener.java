@@ -47,12 +47,10 @@ public class WorkflowGlobalListener implements GlobalListener {
     public void create(ListenerVariable listenerVariable) {
         Instance instance = listenerVariable.getInstance();
         Definition definition = listenerVariable.getDefinition();
-        String businessId = instance.getBusinessId();
-        String flowStatus = instance.getFlowStatus();
         Task task = listenerVariable.getTask();
-        if (task != null && BusinessStatusEnum.WAITING.getStatus().equals(flowStatus)) {
+        if (task != null && BusinessStatusEnum.WAITING.getStatus().equals(instance.getFlowStatus())) {
             // 判断流程状态（发布审批中事件）
-            flowProcessEventHandler.processCreateTaskHandler(definition.getFlowCode(), task.getNodeCode(), task.getId(), businessId);
+            flowProcessEventHandler.processCreateTaskHandler(definition.getFlowCode(), instance, task.getId());
         }
     }
 
@@ -96,20 +94,20 @@ public class WorkflowGlobalListener implements GlobalListener {
             params.put("message", flowParams.getMessage());
         }
         // 判断流程状态（发布：撤销，退回，作废，终止，已完成事件）
-        String status = determineFlowStatus(instance, flowStatus);
+        String status = determineFlowStatus(instance);
         if (StringUtils.isNotBlank(status)) {
-            flowProcessEventHandler.processHandler(definition.getFlowCode(), businessId, status, params, false);
+            flowProcessEventHandler.processHandler(definition.getFlowCode(), instance, status, params, false);
         }
     }
 
     /**
-     * 根据流程实例和当前流程状态确定最终状态
+     * 根据流程实例确定最终状态
      *
-     * @param instance   流程实例
-     * @param flowStatus 流程实例当前状态
+     * @param instance 流程实例
      * @return 流程最终状态
      */
-    private String determineFlowStatus(Instance instance, String flowStatus) {
+    private String determineFlowStatus(Instance instance) {
+        String flowStatus = instance.getFlowStatus();
         if (StringUtils.isNotBlank(flowStatus) && BusinessStatusEnum.initialState(flowStatus)) {
             log.info("流程实例当前状态: {}", flowStatus);
             return flowStatus;
