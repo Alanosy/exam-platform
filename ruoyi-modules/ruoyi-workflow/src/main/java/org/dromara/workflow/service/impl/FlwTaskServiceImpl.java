@@ -120,10 +120,10 @@ public class FlwTaskServiceImpl implements IFlwTaskService {
             dto.setTaskId(taskList.get(0).getId());
             return dto;
         }
-        FlowParams flowParams = new FlowParams();
-        flowParams.flowCode(startProcessBo.getFlowCode());
-        flowParams.variable(startProcessBo.getVariables());
-        flowParams.flowStatus(BusinessStatusEnum.DRAFT.getStatus());
+        FlowParams flowParams = FlowParams.build()
+            .flowCode(startProcessBo.getFlowCode())
+            .variable(startProcessBo.getVariables())
+            .flowStatus(BusinessStatusEnum.DRAFT.getStatus());
         Instance instance;
         try {
             instance = insService.start(businessId, flowParams);
@@ -173,13 +173,13 @@ public class FlwTaskServiceImpl implements IFlwTaskService {
                 completeTaskBo.getVariables().putAll(assigneeMap);
             }
             // 构建流程参数，包括变量、跳转类型、消息、处理人、权限等信息
-            FlowParams flowParams = new FlowParams();
-            flowParams.variable(completeTaskBo.getVariables());
-            flowParams.skipType(SkipType.PASS.getKey());
-            flowParams.message(completeTaskBo.getMessage());
-            flowParams.flowStatus(BusinessStatusEnum.WAITING.getStatus()).hisStatus(TaskStatusEnum.PASS.getStatus());
-
-            flowParams.hisTaskExt(completeTaskBo.getFileId());
+            FlowParams flowParams = FlowParams.build()
+                .variable(completeTaskBo.getVariables())
+                .skipType(SkipType.PASS.getKey())
+                .message(completeTaskBo.getMessage())
+                .flowStatus(BusinessStatusEnum.WAITING.getStatus())
+                .hisStatus(TaskStatusEnum.PASS.getStatus())
+                .hisTaskExt(completeTaskBo.getFileId());
             // 执行任务跳转，并根据返回的处理人设置下一步处理人
             Instance instance = taskService.skip(taskId, flowParams);
             this.setHandler(instance, flowTask, flowCopyList);
@@ -313,10 +313,10 @@ public class FlwTaskServiceImpl implements IFlwTaskService {
         task.setId(taskId);
         task.setNodeName("【抄送】" + task.getNodeName());
         Date updateTime = new Date(flowHisTask.getUpdateTime().getTime() - 1000);
-        FlowParams flowParams = FlowParams.build();
-        flowParams.skipType(SkipType.NONE.getKey());
-        flowParams.hisStatus(TaskStatusEnum.COPY.getStatus());
-        flowParams.message("【抄送给】" + StreamUtils.join(flowCopyList, FlowCopyBo::getUserName));
+        FlowParams flowParams = FlowParams.build()
+            .skipType(SkipType.NONE.getKey())
+            .hisStatus(TaskStatusEnum.COPY.getStatus())
+            .message("【抄送给】" + StreamUtils.join(flowCopyList, FlowCopyBo::getUserName));
         HisTask hisTask = hisTaskService.setSkipHisTask(task, flowNode, flowParams);
         hisTask.setCreateTime(updateTime);
         hisTask.setUpdateTime(updateTime);
@@ -459,13 +459,13 @@ public class FlwTaskServiceImpl implements IFlwTaskService {
             Long definitionId = task.getDefinitionId();
             Definition definition = defService.getById(definitionId);
             String applyNodeCode = flwCommonService.applyNodeCode(definitionId);
-            FlowParams flowParams = FlowParams.build();
-            flowParams.nodeCode(bo.getNodeCode());
-            flowParams.message(message);
-            flowParams.skipType(SkipType.REJECT.getKey());
-            flowParams.flowStatus(applyNodeCode.equals(bo.getNodeCode()) ? TaskStatusEnum.BACK.getStatus() : TaskStatusEnum.WAITING.getStatus())
-                .hisStatus(TaskStatusEnum.BACK.getStatus());
-            flowParams.hisTaskExt(bo.getFileId());
+            FlowParams flowParams = FlowParams.build()
+                .nodeCode(bo.getNodeCode())
+                .message(message)
+                .skipType(SkipType.REJECT.getKey())
+                .flowStatus(applyNodeCode.equals(bo.getNodeCode()) ? TaskStatusEnum.BACK.getStatus() : TaskStatusEnum.WAITING.getStatus())
+                .hisStatus(TaskStatusEnum.BACK.getStatus())
+                .hisTaskExt(bo.getFileId());
             taskService.skip(task.getId(), flowParams);
 
             Instance instance = insService.getById(inst.getId());
@@ -522,9 +522,9 @@ public class FlwTaskServiceImpl implements IFlwTaskService {
             if (ObjectUtil.isNotNull(instance)) {
                 BusinessStatusEnum.checkInvalidStatus(instance.getFlowStatus());
             }
-            FlowParams flowParams = new FlowParams();
-            flowParams.message(bo.getComment());
-            flowParams.flowStatus(BusinessStatusEnum.TERMINATION.getStatus())
+            FlowParams flowParams = FlowParams.build()
+                .message(bo.getComment())
+                .flowStatus(BusinessStatusEnum.TERMINATION.getStatus())
                 .hisStatus(TaskStatusEnum.TERMINATION.getStatus());
             taskService.termination(taskId, flowParams);
             return true;
@@ -665,8 +665,8 @@ public class FlwTaskServiceImpl implements IFlwTaskService {
     @Override
     @Transactional(rollbackFor = Exception.class)
     public boolean taskOperation(TaskOperationBo bo, String taskOperation) {
-        FlowParams flowParams = new FlowParams();
-        flowParams.message(bo.getMessage());
+        FlowParams flowParams = FlowParams.build()
+            .message(bo.getMessage());
         if (LoginHelper.isSuperAdmin() || LoginHelper.isTenantAdmin()) {
             flowParams.ignore(true);
         }

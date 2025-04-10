@@ -201,12 +201,13 @@ public class FlwCommonServiceImpl implements IFlwCommonService {
         }
         for (FlowTask task : list) {
             List<RemoteUserVo> userList = flwTaskService.currentTaskAllUser(task.getId());
-            FlowParams flowParams = FlowParams.build();
-            flowParams.nodeCode(targetNodeCode);
-            flowParams.message(message);
-            flowParams.skipType(SkipType.PASS.getKey());
-            flowParams.flowStatus(flowStatus).hisStatus(flowHisStatus);
-            flowParams.ignore(true);
+            FlowParams flowParams = FlowParams.build()
+                .nodeCode(targetNodeCode)
+                .message(message)
+                .skipType(SkipType.PASS.getKey())
+                .flowStatus(flowStatus)
+                .hisStatus(flowHisStatus)
+                .ignore(true);
             //解决会签没权限问题
             if (CollUtil.isNotEmpty(userList)) {
                 flowParams.handler(userList.get(0).getUserId().toString());

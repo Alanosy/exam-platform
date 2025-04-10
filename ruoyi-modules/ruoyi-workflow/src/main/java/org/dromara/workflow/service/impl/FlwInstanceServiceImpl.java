@@ -437,11 +437,11 @@ public class FlwInstanceServiceImpl implements IFlwInstanceService {
             }
             List<FlowTask> flowTaskList = flwTaskService.selectByInstId(bo.getId());
             for (FlowTask flowTask : flowTaskList) {
-                FlowParams flowParams = new FlowParams();
-                flowParams.message(bo.getComment());
-                flowParams.flowStatus(BusinessStatusEnum.INVALID.getStatus())
-                    .hisStatus(TaskStatusEnum.INVALID.getStatus());
-                flowParams.ignore(true);
+                FlowParams flowParams = FlowParams.build()
+                    .message(bo.getComment())
+                    .flowStatus(BusinessStatusEnum.INVALID.getStatus())
+                    .hisStatus(TaskStatusEnum.INVALID.getStatus())
+                    .ignore(true);
                 taskService.termination(flowTask.getId(), flowParams);
             }
             return true;
