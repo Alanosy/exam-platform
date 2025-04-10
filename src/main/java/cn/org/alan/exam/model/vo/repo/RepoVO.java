@@ -25,4 +25,8 @@ public class RepoVO {
     private LocalDateTime createTime;
     // 创建人真实姓名
     private String realName;
+    // 分类ID
+    private Integer categoryId;
+    // 分类名称
+    private String categoryName;
 }

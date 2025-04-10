@@ -70,4 +70,10 @@ public interface IRepoService extends IService<Repo> {
      * @return 响应结果
      */
     Result<IPage<ExerciseRepoVO>> getRepo(Integer pageNum, Integer pageSize, String title);
+    
+    /**
+     * 按分类查询题库的方法
+     */
+    Result<IPage<RepoVO>> getReposByCategory(Integer categoryId, Integer pageNum, Integer pageSize);
+    
 }

@@ -46,5 +46,7 @@ public class Repo implements Serializable {
     @TableLogic
     @ApiModelProperty("逻辑删除字段")
     private Integer isDeleted;
-
+    
+    @ApiModelProperty(value = "分类ID")
+    private Integer categoryId;
 }

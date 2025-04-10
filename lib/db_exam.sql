@@ -338,6 +338,31 @@ BEGIN;
 COMMIT;
 
 -- ----------------------------
+-- Table structure for t_category
+-- ----------------------------
+DROP TABLE IF EXISTS `t_category`;
+CREATE TABLE `t_category` (
+  `id` int(11) NOT NULL AUTO_INCREMENT COMMENT '分类ID',
+  `name` varchar(50) COLLATE utf8mb4_bin NOT NULL COMMENT '分类名称',
+  `parent_id` int(11) DEFAULT 0 COMMENT '父分类ID，0表示一级分类',
+  `sort` int(11) DEFAULT 0 COMMENT '排序',
+  `create_time` datetime DEFAULT NULL COMMENT '创建时间',
+  `is_deleted` int(11) NOT NULL DEFAULT '0' COMMENT '逻辑删除：0代表未删除，1代表删除',
+  PRIMARY KEY (`id`) USING BTREE
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin ROW_FORMAT=DYNAMIC;
+
+-- ----------------------------
+-- Records of t_category
+-- ----------------------------
+BEGIN;
+INSERT INTO `t_category` (`id`, `name`, `parent_id`, `sort`, `create_time`, `is_deleted`) VALUES (1, '语文', 0, 1, NOW(), 0);
+INSERT INTO `t_category` (`id`, `name`, `parent_id`, `sort`, `create_time`, `is_deleted`) VALUES (2, '数学', 0, 2, NOW(), 0);
+INSERT INTO `t_category` (`id`, `name`, `parent_id`, `sort`, `create_time`, `is_deleted`) VALUES (3, '英语', 0, 3, NOW(), 0);
+INSERT INTO `t_category` (`id`, `name`, `parent_id`, `sort`, `create_time`, `is_deleted`) VALUES (4, '模拟试题', 1, 1, NOW(), 0);
+INSERT INTO `t_category` (`id`, `name`, `parent_id`, `sort`, `create_time`, `is_deleted`) VALUES (5, '历年真题', 1, 2, NOW(), 0);
+COMMIT;
+
+-- ----------------------------
 -- Table structure for t_repo
 -- ----------------------------
 DROP TABLE IF EXISTS `t_repo`;
@@ -345,6 +370,7 @@ CREATE TABLE `t_repo` (
   `id` int(11) NOT NULL AUTO_INCREMENT COMMENT 'id   题库表',
   `user_id` int(11) NOT NULL COMMENT '创建人id',
   `title` varchar(255) COLLATE utf8mb4_bin NOT NULL COMMENT '题库标题',
+  `category_id` int(11) DEFAULT NULL COMMENT '分类ID',
   `create_time` datetime DEFAULT NULL COMMENT '创建时间',
   `is_deleted` int(11) NOT NULL DEFAULT '0' COMMENT '逻辑删除：0代表未删除，1代表删除',
   `is_exercise` int(11) NOT NULL DEFAULT '0',
