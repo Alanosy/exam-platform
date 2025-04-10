@@ -466,8 +466,9 @@ const reset = () => {
  */
 const handleAdd = async () => {
   reset();
-  if (queryParams.value.category != '')
+  if (queryParams.value.category != '') {
     form.value.category = `${queryParams.value.category}`
+  }
   modelDialog.visible = true;
   modelDialog.title = '新增流程';
 };
