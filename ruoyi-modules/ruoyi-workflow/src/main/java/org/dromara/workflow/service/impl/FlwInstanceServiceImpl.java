@@ -42,7 +42,6 @@ import org.dromara.workflow.domain.bo.FlowInstanceBo;
 import org.dromara.workflow.domain.bo.FlowInvalidBo;
 import org.dromara.workflow.domain.vo.FlowHisTaskVo;
 import org.dromara.workflow.domain.vo.FlowInstanceVo;
-import org.dromara.workflow.domain.vo.FlowVariableVo;
 import org.dromara.workflow.handler.FlowProcessEventHandler;
 import org.dromara.workflow.mapper.FlwCategoryMapper;
 import org.dromara.workflow.mapper.FlwInstanceMapper;
@@ -346,21 +345,12 @@ public class FlwInstanceServiceImpl implements IFlwInstanceService {
      */
     @Override
     public Map<String, Object> instanceVariable(Long instanceId) {
-        Map<String, Object> map = new HashMap<>();
         FlowInstance flowInstance = flowInstanceMapper.selectById(instanceId);
-        Map<String, Object> variableMap = flowInstance.getVariableMap();
-        List<FlowVariableVo> list = new ArrayList<>();
-        if (CollUtil.isNotEmpty(variableMap)) {
-            for (Map.Entry<String, Object> entry : variableMap.entrySet()) {
-                FlowVariableVo flowVariableVo = new FlowVariableVo();
-                flowVariableVo.setKey(entry.getKey());
-                flowVariableVo.setValue(entry.getValue().toString());
-                list.add(flowVariableVo);
-            }
-        }
-        map.put("variableList", list);
-        map.put("variable", flowInstance.getVariable());
-        return map;
+        Map<String, Object> variableMap = Optional.ofNullable(flowInstance.getVariableMap()).orElse(Collections.emptyMap());
+        List<Map<String, Object>> variableList = variableMap.entrySet().stream()
+            .map(entry -> Map.of("key", entry.getKey(), "value", entry.getValue()))
+            .toList();
+        return Map.of("variableList", variableList, "variable", flowInstance.getVariable());
     }
 
     /**
