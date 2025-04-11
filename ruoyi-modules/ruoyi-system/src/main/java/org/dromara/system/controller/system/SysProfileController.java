@@ -1,6 +1,6 @@
 package org.dromara.system.controller.system;
 
-import cn.dev33.satoken.secure.BCrypt;
+import cn.hutool.crypto.digest.BCrypt;
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.io.FileUtil;
 import lombok.RequiredArgsConstructor;

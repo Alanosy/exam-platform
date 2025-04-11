@@ -1,6 +1,6 @@
 package org.dromara.system.service.impl;
 
-import cn.dev33.satoken.secure.BCrypt;
+import cn.hutool.crypto.digest.BCrypt;
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.convert.Convert;

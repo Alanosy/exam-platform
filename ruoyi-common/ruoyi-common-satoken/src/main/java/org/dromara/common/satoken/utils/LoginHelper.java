@@ -1,15 +1,15 @@
 package org.dromara.common.satoken.utils;
 
 import cn.dev33.satoken.session.SaSession;
-import cn.dev33.satoken.stp.SaLoginModel;
 import cn.dev33.satoken.stp.StpUtil;
+import cn.dev33.satoken.stp.parameter.SaLoginParameter;
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.convert.Convert;
 import cn.hutool.core.util.ObjectUtil;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.dromara.common.core.constant.TenantConstants;
 import org.dromara.common.core.constant.SystemConstants;
+import org.dromara.common.core.constant.TenantConstants;
 import org.dromara.common.core.enums.UserType;
 import org.dromara.system.api.model.LoginUser;
 
@@ -46,8 +46,8 @@ public class LoginHelper {
      * @param loginUser 登录用户信息
      * @param model     配置参数
      */
-    public static void login(LoginUser loginUser, SaLoginModel model) {
-        model = ObjectUtil.defaultIfNull(model, new SaLoginModel());
+    public static void login(LoginUser loginUser, SaLoginParameter model) {
+        model = ObjectUtil.defaultIfNull(model, new SaLoginParameter());
         StpUtil.login(loginUser.getLoginId(),
             model.setExtra(TENANT_KEY, loginUser.getTenantId())
                 .setExtra(USER_KEY, loginUser.getUserId())
