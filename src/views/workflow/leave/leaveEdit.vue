@@ -252,7 +252,9 @@ const handleStartWorkFlow = async (data: LeaveForm) => {
     submitFormData.value.businessId = data.id;
     //流程变量
     taskVariables.value = {
+      // leave2/6 使用的流程变量
       leaveDays: data.leaveDays,
+      // leave4/5 使用的流程变量
       userList: ['1', '3', '4']
     };
     submitFormData.value.variables = taskVariables.value;
