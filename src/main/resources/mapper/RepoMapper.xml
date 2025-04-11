@@ -21,6 +21,9 @@
             <if test='userId != 0'>
                 and r.user_id = #{userId}
             </if>
+            <if test='categoryId != null'>
+                and r.category_id = #{categoryId}
+            </if>
         </trim>
     </select>
 

@@ -115,22 +115,22 @@ public class RepoServiceImpl extends ServiceImpl<RepoMapper, Repo> implements IR
     }
 
     @Override
-    public Result<IPage<RepoVO>> pagingRepo(Integer pageNum, Integer pageSize, String title) {
+    public Result<IPage<RepoVO>> pagingRepo(Integer pageNum, Integer pageSize, String title, Integer categoryId) {
         IPage<RepoVO> page = new Page<>(pageNum, pageSize);
         Integer roleCode = SecurityUtil.getRoleCode();
         Integer userId = SecurityUtil.getUserId();
         if (roleCode == 2) {
-            // 教师只查询自己的题库
-            page = repoMapper.pagingRepo(page, title, userId);
+            page = repoMapper.pagingRepo(page, title, userId, categoryId);
         } else {
-            // 管理员可以获取所有题库
-            page = repoMapper.pagingRepo(page, title, 0);
+            // 管理员可以查看所有题库
+            page = repoMapper.pagingRepo(page, title, 0, categoryId);
         }
         
-        // 为每个题库设置分类名称
+        // 为每个题库设置分类信息
         List<RepoVO> records = page.getRecords();
         for (RepoVO vo : records) {
             if (vo.getCategoryId() != null) {
+                // 查询分类信息
                 Category category = categoryService.getById(vo.getCategoryId());
                 if (category != null) {
                     vo.setCategoryName(category.getName());
