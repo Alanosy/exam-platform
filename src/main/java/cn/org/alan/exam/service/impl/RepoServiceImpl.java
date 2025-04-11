@@ -153,6 +153,36 @@ public class RepoServiceImpl extends ServiceImpl<RepoMapper, Repo> implements IR
         userList.addAll(adminList);
         // 查询可以刷的题库，条件是没有删除的公开的是班级内老师的题库
         page = repoMapper.selectRepo(page, title, userList);
+        
+        // 为每个题库设置分类信息
+        List<ExerciseRepoVO> records = page.getRecords();
+        for (ExerciseRepoVO vo : records) {
+            // 查询题库对应的分类信息
+            Repo repo = this.getById(vo.getId());
+            if (repo != null && repo.getCategoryId() != null) {
+                // 设置分类ID
+                vo.setCategoryId(repo.getCategoryId());
+                
+                // 查询分类信息
+                Category category = categoryService.getById(repo.getCategoryId());
+                if (category != null) {
+                    // 设置分类名称
+                    vo.setCategoryName(category.getName());
+                    
+                    // 如果有父分类，设置父分类信息
+                    if (category.getParentId() != null && category.getParentId() > 0) {
+                        vo.setParentCategoryId(category.getParentId());
+                        
+                        // 查询父分类信息
+                        Category parentCategory = categoryService.getById(category.getParentId());
+                        if (parentCategory != null) {
+                            vo.setParentCategoryName(parentCategory.getName());
+                        }
+                    }
+                }
+            }
+        }
+        
         return Result.success("分页获取可刷题库列表成功", page);
     }
     
