@@ -39,10 +39,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
-import java.time.Duration;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.ZoneOffset;
+import java.time.*;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
@@ -115,7 +112,6 @@ public class AuthServiceImpl implements IAuthService {
         // 数据库获取的权限是字符串springSecurity需要实现GrantedAuthority接口类型，所有这里做一个类型转换
         List<SimpleGrantedAuthority> userPermissions = permissions.stream()
                 .map(permission -> new SimpleGrantedAuthority("role_" + permission)).collect(java.util.stream.Collectors.toList());
-        ;
 
         // 创建一个sysUserDetails对象，该类实现了UserDetails接口
         SysUserDetails sysUserDetails = new SysUserDetails(user);
@@ -252,7 +248,8 @@ public class AuthServiceImpl implements IAuthService {
             // 删除该键值并获取上一次的心跳时间
             String lastHeartbeatStr = stringRedisTemplate.opsForValue().get(key);
             // 获取当前时间
-            LocalDateTime now = LocalDateTime.now(ZoneOffset.UTC);
+            LocalDateTime utcTime = LocalDateTime.now(ZoneOffset.UTC);
+            LocalDateTime now = utcTime.atZone(ZoneOffset.UTC).withZoneSameInstant(ZoneId.of("Asia/Shanghai")).toLocalDateTime();
             // 设置新的时间
             stringRedisTemplate.opsForValue().set(key, now.toString());
             LocalDateTime lastHeartbeat = null;
