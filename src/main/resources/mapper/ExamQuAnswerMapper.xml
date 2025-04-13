@@ -20,8 +20,16 @@
 
     <!--获取用户回答主观题信息-->
     <select id="selectUserAnswer" resultType="cn.org.alan.exam.model.vo.answer.UserAnswerDetailVO">
-        select q.id as quId, q.content as quTitle, q.image as quImg, eqa.user_id,eqa.exam_id, eqa.answer_content as
-        answer, o.content as refAnswer,e.saq_score as totalScore
+        select q.id as quId,
+            q.content as quTitle,
+            q.image as quImg,
+            eqa.user_id,
+            eqa.exam_id,
+            eqa.answer_content as answer,
+            o.content as refAnswer,
+            eqa.ai_score as  correctScore,
+            eqa.ai_reason as aiReason,
+            e.saq_score as totalScore
         from t_exam_qu_answer as eqa
         left join t_question as q on eqa.question_id = q.id
         left join t_option as o on q.id = o.qu_id
@@ -30,5 +38,30 @@
         and eqa.user_id = #{userId}
         and eqa.exam_id = #{examId}
     </select>
+
+    <select id="getQuestionsForGrading" resultType="cn.org.alan.exam.model.vo.question.QuestionScoreVO">
+        SELECT
+        q.id as questionId,
+        q.content as questionContent,
+        eq.score as totalScore,
+        o.content as qusetionAnswer,
+        eqa.answer_content as userAnswer
+        FROM t_exam_qu_answer eqa
+        JOIN t_exam_question eq ON eqa.question_id = eq.question_id
+        JOIN t_question q ON eq.question_id = q.id AND q.is_deleted = 0
+        JOIN t_option o ON o.qu_id = q.id and o.is_deleted = 0 and o.is_right = 1
+        WHERE eqa.exam_id = #{examId}
+        AND eqa.user_id = #{userId}
+        AND q.qu_type = '4'
+    </select>
+
+    <update id="updateQuestionScore">
+        UPDATE t_exam_qu_answer
+        SET is_right = 1,
+        score = #{score}
+        WHERE exam_id = #{examId}
+        AND user_id = #{userId}
+        AND question_id = #{questionId}
+    </update>
 
 </mapper>
