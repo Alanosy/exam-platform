@@ -49,6 +49,7 @@ import org.dromara.workflow.handler.WorkflowPermissionHandler;
 import org.dromara.workflow.mapper.FlwCategoryMapper;
 import org.dromara.workflow.mapper.FlwTaskMapper;
 import org.dromara.workflow.service.IFlwCommonService;
+import org.dromara.workflow.service.IFlwNodeExtService;
 import org.dromara.workflow.service.IFlwTaskAssigneeService;
 import org.dromara.workflow.service.IFlwTaskService;
 import org.springframework.stereotype.Service;
@@ -86,6 +87,7 @@ public class FlwTaskServiceImpl implements IFlwTaskService {
     private final FlowNodeMapper flowNodeMapper;
     private final IFlwTaskAssigneeService flwTaskAssigneeService;
     private final IFlwCommonService flwCommonService;
+    private final IFlwNodeExtService flwNodeExtService;
 
     @DubboReference
     private RemoteUserService remoteUserService;
@@ -564,12 +566,12 @@ public class FlwTaskServiceImpl implements IFlwTaskService {
         flowTaskVo.setFlowCode(definition.getFlowCode());
         flowTaskVo.setFlowName(definition.getFlowName());
         flowTaskVo.setBusinessId(instance.getBusinessId());
-        //设置按钮权限
-        FlowNode flowNode = getByNodeCode(flowTaskVo.getNodeCode(), instance.getDefinitionId());
+        FlowNode flowNode = this.getByNodeCode(flowTaskVo.getNodeCode(), instance.getDefinitionId());
         if (ObjectUtil.isNull(flowNode)) {
             throw new NullPointerException("当前【" + flowTaskVo.getNodeCode() + "】节点编码不存在");
         }
-        flowTaskVo.setButtonList(flowTaskVo.getButtonList(flowNode.getExt()));
+        //设置按钮权限
+        flowTaskVo.setButtonList(flwNodeExtService.buildButtonPermissionsFromExt(flowNode.getExt()));
         flowTaskVo.setNodeRatio(flowNode.getNodeRatio());
         flowTaskVo.setApplyNode(flowNode.getNodeCode().equals(flwCommonService.applyNodeCode(task.getDefinitionId())));
         return flowTaskVo;
