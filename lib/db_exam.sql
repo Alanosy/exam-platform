@@ -123,6 +123,8 @@ CREATE TABLE `t_exam_qu_answer` (
   `checkout` int(11) DEFAULT NULL COMMENT '是否选中   0未选中  1选中',
   `is_sign` int(11) DEFAULT NULL COMMENT '是否标记   0未标记  1标记',
   `is_right` int(11) DEFAULT NULL COMMENT '是否正确   用于客观题，0错误 1正确',
+  ai_score       int          null comment 'ai评分',
+  ai_reason      varchar(255) null comment 'ai评分原因',
   PRIMARY KEY (`id`) USING BTREE,
   UNIQUE KEY `user_id` (`user_id`,`exam_id`,`question_id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=284 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin ROW_FORMAT=DYNAMIC;
