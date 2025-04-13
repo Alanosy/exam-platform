@@ -36,10 +36,7 @@ import org.dromara.workflow.service.IFlwTaskAssigneeService;
 import org.dromara.workflow.service.IFlwTaskService;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 
@@ -88,16 +85,19 @@ public class FlwCommonServiceImpl implements IFlwCommonService {
         Set<User> list = new HashSet<>();
         Set<String> processedBySet = new HashSet<>();
         IFlwTaskAssigneeService taskAssigneeService = SpringUtils.getBean(IFlwTaskAssigneeService.class);
-        for (User user : userList) {
+        Map<String, List<User>> userListMap = StreamUtils.groupByKey(userList, User::getType);
+        for (Map.Entry<String, List<User>> entry : userListMap.entrySet()) {
+            List<User> entryValue = entry.getValue();
+            String processedBys = StreamUtils.join(entryValue, User::getProcessedBy);
             // 根据 processedBy 前缀判断处理人类型，分别获取用户列表
-            List<RemoteUserVo> users = taskAssigneeService.fetchUsersByStorageId(user.getProcessedBy());
+            List<RemoteUserVo> users = taskAssigneeService.fetchUsersByStorageId(processedBys);
             // 转换为 FlowUser 并添加到结果集合
             if (CollUtil.isNotEmpty(users)) {
                 users.forEach(dto -> {
                     String processedBy = String.valueOf(dto.getUserId());
                     if (!processedBySet.contains(processedBy)) {
                         FlowUser flowUser = new FlowUser();
-                        flowUser.setType(user.getType());
+                        flowUser.setType(entry.getKey());
                         flowUser.setProcessedBy(processedBy);
                         flowUser.setAssociated(taskId);
                         list.add(flowUser);
