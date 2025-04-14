@@ -50,7 +50,13 @@ public class AliOSSUtil implements FileService {
         ossClient.putObject(bucketName, fileName, inputStream);
 
         //文件访问路径
-        String url = endpoint.split("//")[0] + "//" + bucketName + "." + endpoint.split("//")[1] + "/" + fileName;
+        String url;
+        if (endpoint.startsWith("http")) {
+            url = endpoint.split("//")[0] + "//" + bucketName + "." + endpoint.split("//")[1] + "/" + fileName;
+        } else {
+            url = "https://" + bucketName + "." + endpoint + "/" + fileName;
+        }
+        
         // 关闭ossClient
         ossClient.shutdown();
         // 把上传到oss的路径返回

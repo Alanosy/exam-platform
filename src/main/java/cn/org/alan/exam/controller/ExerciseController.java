@@ -75,9 +75,10 @@ public class ExerciseController {
     /**
      * 分页获取可刷题库列表
      *
-     * @param pageNum  页码
-     * @param pageSize 每页大小
-     * @param title    题库名
+     * @param pageNum    页码
+     * @param pageSize   每页大小
+     * @param title      题库名
+     * @param categoryId 分类ID
      * @return 响应结果
      */
     @ApiOperation("分页获取可刷题库列表")
@@ -86,8 +87,9 @@ public class ExerciseController {
     public Result<IPage<ExerciseRepoVO>> getRepo(
             @RequestParam(value = "pageNum", required = false, defaultValue = "1") Integer pageNum,
             @RequestParam(value = "pageSize", required = false, defaultValue = "10") Integer pageSize,
-            @RequestParam(value = "title", required = false) String title) {
-        return iRepoService.getRepo(pageNum, pageSize, title);
+            @RequestParam(value = "title", required = false) String title,
+            @RequestParam(value = "categoryId", required = false) Integer categoryId) {
+        return iRepoService.getRepo(pageNum, pageSize, title, categoryId);
     }
 
     /**

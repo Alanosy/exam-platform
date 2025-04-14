@@ -88,9 +88,10 @@ public class RepoController {
     /**
      * 分页查询题库
      *
-     * @param pageNum  页码
-     * @param pageSize 每页记录数
-     * @param title    题库名
+     * @param pageNum    页码
+     * @param pageSize   每页记录数
+     * @param title      题库名
+     * @param categoryId 分类ID
      * @return 响应结果
      */
     @ApiOperation("分页查询题库")
@@ -98,9 +99,27 @@ public class RepoController {
     @PreAuthorize("hasAnyAuthority('role_teacher','role_admin')")
     public Result<IPage<RepoVO>> pagingRepo(@RequestParam(value = "pageNum", required = false, defaultValue = "1") Integer pageNum,
                                             @RequestParam(value = "pageSize", required = false, defaultValue = "10") Integer pageSize,
-                                            @RequestParam(value = "title", required = false) String title) {
-        return iRepoService.pagingRepo(pageNum, pageSize, title);
+                                            @RequestParam(value = "title", required = false) String title,
+                                            @RequestParam(value = "categoryId", required = false) Integer categoryId) {
+        return iRepoService.pagingRepo(pageNum, pageSize, title, categoryId);
     }
-
+    
+    /**
+     * 根据分类ID查询题库
+     *
+     * @param categoryId 分类ID
+     * @param pageNum 页码
+     * @param pageSize 每页记录数
+     * @return 响应结果
+     */
+    @ApiOperation("根据分类ID查询题库")
+    @GetMapping("/category/{categoryId}")
+    @PreAuthorize("hasAnyAuthority('role_teacher','role_admin')")
+    public Result<IPage<RepoVO>> getReposByCategory(
+            @PathVariable("categoryId") Integer categoryId,
+            @RequestParam(value = "pageNum", required = false, defaultValue = "1") Integer pageNum,
+            @RequestParam(value = "pageSize", required = false, defaultValue = "10") Integer pageSize) {
+        return iRepoService.getReposByCategory(categoryId, pageNum, pageSize);
+    }
 
 }

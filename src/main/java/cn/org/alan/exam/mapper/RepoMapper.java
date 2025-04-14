@@ -23,13 +23,16 @@ public interface RepoMapper extends BaseMapper<Repo> {
     /**
      * 分页查询题库
      *
-     * @param page   分页项
-     * @param title  题库名
-     * @param userId 用户名
+     * @param page       分页项
+     * @param title      题库名
+     * @param userId     用户名
+     * @param categoryId 分类ID
      * @return 响应结果
      */
-    IPage<RepoVO> pagingRepo(@Param("page") IPage<RepoVO> page, @Param("title") String title,
-                             @Param("userId") Integer userId);
+    IPage<RepoVO> pagingRepo(@Param("page") IPage<RepoVO> page, 
+                             @Param("title") String title,
+                             @Param("userId") Integer userId,
+                             @Param("categoryId") Integer categoryId);
 
     /**
      * 分页获取可刷题库列表
@@ -37,10 +40,13 @@ public interface RepoMapper extends BaseMapper<Repo> {
      * @param page     分页信息
      * @param title    题库名
      * @param userList 用户Id集
+     * @param categoryId 分类ID
      * @return 结果
      */
     IPage<ExerciseRepoVO> selectRepo(IPage<ExerciseRepoVO> page,
-                                     String title, List<Integer> userList);
+                                     String title, 
+                                     List<Integer> userList,
+                                     Integer categoryId);
 
     /**
      * 查询题库列表
