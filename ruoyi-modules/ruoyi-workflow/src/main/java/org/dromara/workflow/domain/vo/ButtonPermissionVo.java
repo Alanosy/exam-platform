@@ -30,12 +30,12 @@ public class ButtonPermissionVo implements Serializable {
     /**
      * 是否显示
      */
-    private boolean show;
+    private Boolean show;
 
     public ButtonPermissionVo() {
     }
 
-    public ButtonPermissionVo(String code, boolean show) {
+    public ButtonPermissionVo(String code, Boolean show) {
         this.code = code;
         this.show = show;
     }

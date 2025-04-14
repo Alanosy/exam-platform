@@ -159,7 +159,7 @@ public class TestLeaveServiceImpl implements ITestLeaveService {
                 // 办理意见
                 String message = Convert.toStr(params.get("message"));
             }
-            if (processEvent.isSubmit()) {
+            if (processEvent.getSubmit()) {
                 testLeave.setStatus(BusinessStatusEnum.WAITING.getStatus());
             }
             baseMapper.updateById(testLeave);

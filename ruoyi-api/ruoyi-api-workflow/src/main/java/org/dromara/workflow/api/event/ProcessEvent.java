@@ -63,7 +63,7 @@ public class ProcessEvent extends RemoteApplicationEvent {
     /**
      * 当为true时为申请人节点办理
      */
-    private boolean submit;
+    private Boolean submit;
 
     public ProcessEvent() {
         super(new Object(), SpringUtils.getApplicationName(), DEFAULT_DESTINATION_FACTORY.getDestination(null));
