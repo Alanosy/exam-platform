@@ -142,7 +142,7 @@ public class RepoServiceImpl extends ServiceImpl<RepoMapper, Repo> implements IR
     }
 
     @Override
-    public Result<IPage<ExerciseRepoVO>> getRepo(Integer pageNum, Integer pageSize, String title) {
+    public Result<IPage<ExerciseRepoVO>> getRepo(Integer pageNum, Integer pageSize, String title, Integer categoryId) {
         IPage<ExerciseRepoVO> page = new Page<>(pageNum, pageSize);
         // 获取当前学生所在班级ID
         Integer gradeId = SecurityUtil.getGradeId();
@@ -152,19 +152,15 @@ public class RepoServiceImpl extends ServiceImpl<RepoMapper, Repo> implements IR
         List<Integer> userList = userGradeMapper.getUserListByGradeId(gradeId);
         userList.addAll(adminList);
         // 查询可以刷的题库，条件是没有删除的公开的是班级内老师的题库
-        page = repoMapper.selectRepo(page, title, userList);
+        page = repoMapper.selectRepo(page, title, userList, categoryId);
         
         // 为每个题库设置分类信息
         List<ExerciseRepoVO> records = page.getRecords();
         for (ExerciseRepoVO vo : records) {
             // 查询题库对应的分类信息
-            Repo repo = this.getById(vo.getId());
-            if (repo != null && repo.getCategoryId() != null) {
-                // 设置分类ID
-                vo.setCategoryId(repo.getCategoryId());
-                
+            if (vo.getCategoryId() != null) {
                 // 查询分类信息
-                Category category = categoryService.getById(repo.getCategoryId());
+                Category category = categoryService.getById(vo.getCategoryId());
                 if (category != null) {
                     // 设置分类名称
                     vo.setCategoryName(category.getName());

@@ -74,6 +74,7 @@ public class CategoryController {
      */
     @GetMapping("/tree")
     @ApiOperation("获取分类树")
+    @PreAuthorize("hasAnyAuthority('role_student','role_teacher','role_admin')")
     public Result<List<CategoryVO>> getCategoryTree() {
         return categoryService.getCategoryTree();
     }
@@ -85,6 +86,7 @@ public class CategoryController {
      */
     @GetMapping("/first-level")
     @ApiOperation("获取一级分类")
+    @PreAuthorize("hasAnyAuthority('role_student','role_teacher','role_admin')")
     public Result<List<CategoryVO>> getFirstLevelCategories() {
         return categoryService.getFirstLevelCategories();
     }
@@ -97,6 +99,7 @@ public class CategoryController {
      */
     @GetMapping("/children/{parentId}")
     @ApiOperation("获取子分类")
+    @PreAuthorize("hasAnyAuthority('role_student','role_teacher','role_admin')")
     public Result<List<CategoryVO>> getChildCategories(@PathVariable("parentId") Integer parentId) {
         return categoryService.getChildCategories(parentId);
     }

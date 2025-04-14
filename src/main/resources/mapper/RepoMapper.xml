@@ -29,7 +29,7 @@
 
     <!-- 分页获取可刷题库信息 -->
     <select id="selectRepo" resultType="cn.org.alan.exam.model.vo.exercise.ExerciseRepoVO">
-        select r.id, r.title as repoTitle, count(q.id) as totalCount
+        select r.id, r.title as repoTitle, count(q.id) as totalCount, r.category_id as categoryId
         from t_repo as r
         join t_question as q on q.repo_id = r.id
         <where>
@@ -46,6 +46,9 @@
             </if>
             <if test="title != null and title != ''">
                 and r.title like concat('%', #{title}, '%')
+            </if>
+            <if test="categoryId != null">
+                and r.category_id = #{categoryId}
             </if>
         </where>
         group by r.id

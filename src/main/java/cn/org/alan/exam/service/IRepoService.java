@@ -65,12 +65,13 @@ public interface IRepoService extends IService<Repo> {
     /**
      * 分页获取可刷题库列表
      *
-     * @param pageNum  页码
-     * @param pageSize 每页记录数
-     * @param title    题库名
+     * @param pageNum    页码
+     * @param pageSize   每页记录数
+     * @param title      题库名
+     * @param categoryId 分类ID
      * @return 响应结果
      */
-    Result<IPage<ExerciseRepoVO>> getRepo(Integer pageNum, Integer pageSize, String title);
+    Result<IPage<ExerciseRepoVO>> getRepo(Integer pageNum, Integer pageSize, String title, Integer categoryId);
     
     /**
      * 按分类查询题库的方法

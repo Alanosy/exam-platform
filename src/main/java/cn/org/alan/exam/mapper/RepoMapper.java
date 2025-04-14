@@ -40,10 +40,13 @@ public interface RepoMapper extends BaseMapper<Repo> {
      * @param page     分页信息
      * @param title    题库名
      * @param userList 用户Id集
+     * @param categoryId 分类ID
      * @return 结果
      */
     IPage<ExerciseRepoVO> selectRepo(IPage<ExerciseRepoVO> page,
-                                     String title, List<Integer> userList);
+                                     String title, 
+                                     List<Integer> userList,
+                                     Integer categoryId);
 
     /**
      * 查询题库列表
