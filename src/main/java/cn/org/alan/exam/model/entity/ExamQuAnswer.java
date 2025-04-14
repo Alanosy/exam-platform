@@ -67,4 +67,16 @@ public class ExamQuAnswer implements Serializable {
      */
     @ApiModelProperty("是否正确")
     private Integer isRight;
+
+    /**
+     * 用于客观题, ai评分
+     */
+    @ApiModelProperty("是否正确")
+    private Integer aiScore;
+
+    /**
+     * 用于客观题，ai评分原因
+     */
+    @ApiModelProperty("ai评分原因")
+    private String aiReason;
 }

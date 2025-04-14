@@ -10,6 +10,7 @@ import cn.org.alan.exam.model.form.exam.ExamAddForm;
 import cn.org.alan.exam.model.form.exam.ExamUpdateForm;
 import cn.org.alan.exam.model.form.exam_qu_answer.ExamQuAnswerAddForm;
 import cn.org.alan.exam.model.vo.exam.*;
+import cn.org.alan.exam.service.IAutoScoringService;
 import cn.org.alan.exam.service.IExamService;
 import cn.org.alan.exam.service.IOptionService;
 import cn.org.alan.exam.service.IQuestionService;
@@ -21,7 +22,6 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -71,6 +71,8 @@ public class ExamServiceImpl extends ServiceImpl<ExamMapper, Exam> implements IE
     private UserMapper userMapper;
     @Resource
     private CertificateUserMapper certificateUserMapper;
+    @Resource
+    private IAutoScoringService autoScoringService;
 
     @Override
     @Transactional
@@ -817,6 +819,7 @@ public class ExamServiceImpl extends ServiceImpl<ExamMapper, Exam> implements IE
                     .eq(UserExamsScore::getExamId, examId)
                     .eq(UserExamsScore::getUserId, SecurityUtil.getUserId());
             userExamsScoreMapper.update(userExamsScoreLambdaUpdateWrapper);
+            autoScoringService.autoScoringExam(examId,SecurityUtil.getUserId());
             return Result.success("提交成功，待老师阅卷");
         }
         if (userExamsScore.getUserScore() >= examOne.getPassedScore()) {

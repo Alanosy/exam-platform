@@ -24,6 +24,7 @@ public class UserAnswerDetailVO {
     private String answer;
     private String refAnswer;
     private Integer correctScore;
+    private String aiReason;
     private Integer totalScore;
 
 }
