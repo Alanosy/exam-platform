@@ -73,7 +73,7 @@
     "unplugin-icons": "0.18.5",
     "unplugin-vue-components": "28.0.0",
     "unplugin-vue-setup-extend-plus": "1.0.1",
-    "vite": "5.4.11",
+    "vite": "5.4.18",
     "vite-plugin-compression": "0.5.1",
     "vite-plugin-svg-icons-ng": "^1.2.2",
     "vite-plugin-vue-devtools": "7.7.1",
