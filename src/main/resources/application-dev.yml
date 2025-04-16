@@ -74,6 +74,24 @@ coze:
     token: pat_Llg2ljT7ys05CspdfZjOoAlz6Tw6GrHKbFyODI2nWiChK3GeGkBLLJOiV4CwUvVz
     bot: 7485788594561564723
 
+# llm 大语言模型配置
+llm:
+  api-key: "sk-wqthdmjnsejsxnliduuhbjgvoogipfrzjjtgomyoizwzcwrk"
+  base-url: "https://api.siliconflow.cn/v1"
+  model: "deepseek-ai/DeepSeek-V3"
+
+# embedding 模型配置
+embedding:
+  api-key: "sk-wqthdmjnsejsxnliduuhbjgvoogipfrzjjtgomyoizwzcwrk"
+  base-url: "https://api.siliconflow.cn/v1/embeddings"
+  model: "BAAI/bge-large-zh-v1.5"
+
+# Milvus向量数据库配置
+milvus:
+  username: root
+  password: 123456
+  host: 192.168.49.130
+  port: 19530
 
 # 日志配置
 logging:
@@ -84,7 +102,7 @@ logging:
 #自定义配置
 online-exam:
   chat-platform:
-    type: coze
+    type: llm #ai调用方式配置 coze、llm
   storage:
     type: minio # 存储方式的配置 aliyun、minio
   login:
