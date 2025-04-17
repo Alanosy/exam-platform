@@ -33,7 +33,7 @@
               <span>{{ (pageNum - 1) * pageSize + scope.$index + 1 }}</span>
             </template>
           </el-table-column>
-          <el-table-column type="selection" :reserve-selection="true" width="55"></el-table-column>
+          <el-table-column type="selection" :reserve-selection="true" :selectable="checkSelectable" width="55"></el-table-column>
           <el-table-column label="角色编号" align="center" prop="roleId" />
           <el-table-column label="角色名称" align="center" prop="roleName" />
           <el-table-column label="权限字符" align="center" prop="roleKey" />
@@ -80,8 +80,10 @@ const tableRef = ref<ElTableInstance>();
 
 /** 单击选中行数据 */
 const clickRow = (row: RoleVO) => {
-  row.flag = !row.flag;
-  tableRef.value?.toggleRowSelection(row, row.flag);
+  if (checkSelectable(row)) {
+    row.flag = !row.flag;
+    tableRef.value?.toggleRowSelection(row, row.flag);
+  }
 };
 /** 多选框选中数据 */
 const handleSelectionChange = (selection: RoleVO[]) => {
@@ -90,6 +92,10 @@ const handleSelectionChange = (selection: RoleVO[]) => {
 /** 保存选中的数据编号 */
 const getRowKey = (row: RoleVO): string => {
   return String(row.roleId);
+};
+/** 检查角色状态 */
+const checkSelectable = (row: RoleVO): boolean => {
+  return row.status === "0";
 };
 /** 关闭按钮 */
 const close = () => {
