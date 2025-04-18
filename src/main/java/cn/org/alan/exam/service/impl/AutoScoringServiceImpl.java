@@ -103,7 +103,7 @@ public class AutoScoringServiceImpl extends ServiceImpl<ExamQuAnswerMapper, Exam
 
                 // ai评分成功，提交事务，跳出重试循环
                 platformTransactionManager.commit(status);
-                break;
+                return;
             } catch (Exception e) {
                 // 回滚事务
                 platformTransactionManager.rollback(status);

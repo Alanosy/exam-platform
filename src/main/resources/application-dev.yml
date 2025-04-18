@@ -74,6 +74,10 @@ coze:
     token: pat_Llg2ljT7ys05CspdfZjOoAlz6Tw6GrHKbFyODI2nWiChK3GeGkBLLJOiV4CwUvVz
     bot: 7485788594561564723
 
+# Dify Api
+dify:
+  base-url: "https://api.dify.ai/v1/chat-messages"
+  api-key: "app-d507n9i6xIstuiQnuYwX9nGJ"
 # llm 大语言模型配置
 llm:
   api-key: "sk-wqthdmjnsejsxnliduuhbjgvoogipfrzjjtgomyoizwzcwrk"
@@ -102,7 +106,7 @@ logging:
 #自定义配置
 online-exam:
   chat-platform:
-    type: llm #ai调用方式配置 coze、llm
+    type: coze #ai调用方式配置 coze、llm、dify
   storage:
     type: minio # 存储方式的配置 aliyun、minio
   login:
