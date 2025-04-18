@@ -78,7 +78,6 @@ coze:
 dify:
   base-url: "https://api.dify.ai/v1/chat-messages"
   api-key: "app-d507n9i6xIstuiQnuYwX9nGJ"
-
 # llm 大语言模型配置
 llm:
   api-key: "sk-wqthdmjnsejsxnliduuhbjgvoogipfrzjjtgomyoizwzcwrk"

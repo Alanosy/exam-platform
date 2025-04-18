@@ -19,8 +19,11 @@ import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionDefinition;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.DefaultTransactionDefinition;
+
 import java.util.List;
 import java.util.concurrent.TimeUnit;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @Service
 public class AutoScoringServiceImpl extends ServiceImpl<ExamQuAnswerMapper, ExamQuAnswer> implements IAutoScoringService {
@@ -56,10 +59,15 @@ public class AutoScoringServiceImpl extends ServiceImpl<ExamQuAnswerMapper, Exam
 
                 // 调用 AI 聊天接口，返回结果是 JSON 格式
                 String scoringResult = null; // 去掉 Markdown 标记
-                scoringResult = aiChat.getChatResponse(scoringRequest)
-                        .trim()
-                        .replaceAll("^```json|```$", "");
-
+                String response = aiChat.getChatResponse(scoringRequest).trim();
+                System.out.println(response);
+                Pattern pattern = Pattern.compile("```json\\r?\\n(.*?)```", Pattern.DOTALL | Pattern.MULTILINE);
+                Matcher matcher = pattern.matcher(response);
+                if (matcher.find()) {
+                    scoringResult = matcher.group(1).trim();
+                } else {
+                    System.out.println("JSON内容未匹配");
+                }
 
                 // 4. 解析评分结果
                 JSONArray scoreArray = JSONUtil

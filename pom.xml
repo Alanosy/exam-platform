@@ -197,14 +197,36 @@
             <artifactId>commons-pool2</artifactId>
             <version>2.8.0</version>
         </dependency>
-
         <!-- Coze SDK -->
         <dependency>
             <groupId>com.coze</groupId>
             <artifactId>coze-api</artifactId>
-            <version>LATEST</version>
+            <version>0.3.0</version>
         </dependency>
-
+        <!-- 用于与 OpenAI 集成的模块 -->
+        <dependency>
+            <groupId>dev.langchain4j</groupId>
+            <artifactId>langchain4j-open-ai</artifactId>
+            <version>0.29.1</version>
+        </dependency>
+        <!-- 构建基于语言模型的应用程序 -->
+        <dependency>
+            <groupId>dev.langchain4j</groupId>
+            <artifactId>langchain4j</artifactId>
+            <version>0.29.1</version>
+        </dependency>
+        <!-- 构建 RAG 知识库框架 -->
+        <dependency>
+            <groupId>dev.langchain4j</groupId>
+            <artifactId>langchain4j-easy-rag</artifactId>
+            <version>1.0.0-beta3</version>
+        </dependency>
+        <!-- milvus 向量数据库 -->
+        <dependency>
+            <groupId>dev.langchain4j</groupId>
+            <artifactId>langchain4j-milvus</artifactId>
+            <version>1.0.0-beta3</version>
+        </dependency>
 
     </dependencies>
     <!-- 项目构建配置 -->
