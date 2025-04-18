@@ -26,7 +26,7 @@
           * 文件存储 七牛、阿里、腾讯 云存储<br />
           * 监控框架 SpringBoot-Admin 全方位服务监控<br />
           * 校验框架 Validation 增强接口安全性 严谨性<br />
-          * Excel框架 Alibaba EasyExcel 性能优异 扩展性强<br />
+          * Excel框架 FastExcel(原Alibaba EasyExcel) 性能优异 扩展性强<br />
           * 文档框架 SpringDoc、javadoc 无注解零入侵基于java注释<br />
           * 工具类框架 Hutool、Lombok 减少代码冗余 增加安全性<br />
           * 代码生成器 适配MP、SpringDoc规范化代码 一键生成前后端代码<br />
