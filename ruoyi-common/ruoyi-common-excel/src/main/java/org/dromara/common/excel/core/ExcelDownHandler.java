@@ -5,12 +5,12 @@ import cn.hutool.core.util.ArrayUtil;
 import cn.hutool.core.util.EnumUtil;
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.StrUtil;
-import com.alibaba.excel.metadata.FieldCache;
-import com.alibaba.excel.metadata.FieldWrapper;
-import com.alibaba.excel.util.ClassUtils;
-import com.alibaba.excel.write.handler.SheetWriteHandler;
-import com.alibaba.excel.write.metadata.holder.WriteSheetHolder;
-import com.alibaba.excel.write.metadata.holder.WriteWorkbookHolder;
+import cn.idev.excel.metadata.FieldCache;
+import cn.idev.excel.metadata.FieldWrapper;
+import cn.idev.excel.util.ClassUtils;
+import cn.idev.excel.write.handler.SheetWriteHandler;
+import cn.idev.excel.write.metadata.holder.WriteSheetHolder;
+import cn.idev.excel.write.metadata.holder.WriteWorkbookHolder;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.ss.util.CellRangeAddressList;
@@ -175,7 +175,7 @@ public class ExcelDownHandler implements SheetWriteHandler {
         List<String> firstOptions = options.getOptions();
         Map<String, List<String>> secoundOptionsMap = options.getNextOptions();
 
-        // 采用按行填充数据的方式，避免EasyExcel出现数据无法写入的问题
+        // 采用按行填充数据的方式，避免出现数据无法写入的问题
         // Attempting to write a row in the range that is already written to disk
 
         // 使用ArrayList记载数据，防止乱序
