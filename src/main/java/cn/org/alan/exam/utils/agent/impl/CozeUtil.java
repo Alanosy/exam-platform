@@ -17,6 +17,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
 
 /**
+ * coze 平台实现 AIChat
  *
  * @author 赵浩森
  * @since 2025/4/12 21:23
