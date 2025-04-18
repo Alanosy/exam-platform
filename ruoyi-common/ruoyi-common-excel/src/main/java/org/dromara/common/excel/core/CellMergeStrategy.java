@@ -112,7 +112,13 @@ public class CellMergeStrategy extends AbstractMergeStrategy implements Workbook
                         }
                         map.put(field, new RepeatCell(val, i));
                     } else if (i == list.size() - 1) {
-                        if (i > repeatCell.getCurrent() && isMerge(list, i, field)) {
+                        if (!isMerge(list, i, field)) {
+                            // 如果最后一行不能合并，检查之前的数据是否需要合并
+                            if (i - repeatCell.getCurrent() > 1) {
+                                cellList.add(new CellRangeAddress(repeatCell.getCurrent() + rowIndex, i + rowIndex - 1, colNum, colNum));
+                            }
+                        } else if (i > repeatCell.getCurrent()) {
+                            // 如果最后一行可以合并，则直接合并到最后
                             cellList.add(new CellRangeAddress(repeatCell.getCurrent() + rowIndex, i + rowIndex, colNum, colNum));
                         }
                     } else if (!isMerge(list, i, field)) {
