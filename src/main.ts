@@ -34,7 +34,7 @@ import i18n from '@/lang/index';
 // vxeTable
 import VXETable from 'vxe-table';
 import 'vxe-table/lib/style.css';
-VXETable.config({
+VXETable.setConfig({
   zIndex: 999999
 });
 

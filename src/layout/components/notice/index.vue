@@ -24,10 +24,9 @@
 </template>
 
 <script setup lang="ts" name="layoutBreadcrumbUserNews">
-import { storeToRefs } from 'pinia';
 import { useNoticeStore } from '@/store/modules/notice';
 
-const noticeStore = storeToRefs(useNoticeStore());
+const noticeStore = useNoticeStore();
 const { readAll } = useNoticeStore();
 
 // 定义变量内容
@@ -42,7 +41,7 @@ const newsList = ref([]) as any;
  */
 const getTableData = async () => {
   state.loading = true;
-  newsList.value = noticeStore.state.value.notices;
+  newsList.value = noticeStore.state.notices;
   state.loading = false;
 };
 
@@ -50,7 +49,7 @@ const getTableData = async () => {
 const onNewsClick = (item: any) => {
   newsList.value[item].read = true;
   //并且写入pinia
-  noticeStore.state.value.notices = newsList.value;
+  noticeStore.state.notices = newsList.value;
 };
 
 // 前往通知中心点击
