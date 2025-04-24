@@ -78,13 +78,13 @@ public class AliOSSUtil implements FileService {
     }
 
     /**
-     * 判断文件是否大于50KB
+     * 判断文件是否大于10MB
      *
      * @param file 文件
      * @return 结果
      */
     @Override
     public boolean isOverSize(MultipartFile file) {
-        return file.getSize() > 20 * 1024 * 1024;
+        return file.getSize() > 10 * 1024 * 1024;
     }
 }

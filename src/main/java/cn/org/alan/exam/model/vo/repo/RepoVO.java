@@ -29,4 +29,6 @@ public class RepoVO {
     private Integer categoryId;
     // 分类名称
     private String categoryName;
+    // 题目数量
+    private Integer questionCount;
 }

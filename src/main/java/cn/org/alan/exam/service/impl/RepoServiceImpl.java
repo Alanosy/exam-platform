@@ -126,9 +126,10 @@ public class RepoServiceImpl extends ServiceImpl<RepoMapper, Repo> implements IR
             page = repoMapper.pagingRepo(page, title, 0, categoryId);
         }
         
-        // 为每个题库设置分类信息
+        // 为每个题库设置分类信息和题目数量
         List<RepoVO> records = page.getRecords();
         for (RepoVO vo : records) {
+            // 设置分类信息
             if (vo.getCategoryId() != null) {
                 // 查询分类信息
                 Category category = categoryService.getById(vo.getCategoryId());
@@ -136,6 +137,12 @@ public class RepoServiceImpl extends ServiceImpl<RepoMapper, Repo> implements IR
                     vo.setCategoryName(category.getName());
                 }
             }
+            
+            // 查询题库中的题目数量
+            LambdaQueryWrapper<Question> questionWrapper = new LambdaQueryWrapper<>();
+            questionWrapper.eq(Question::getRepoId, vo.getId());
+            int count = questionMapper.selectCount(questionWrapper).intValue();
+            vo.setQuestionCount(count);
         }
         
         return Result.success("题库分页查询成功", page);
