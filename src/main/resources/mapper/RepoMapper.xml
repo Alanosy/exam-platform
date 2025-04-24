@@ -10,7 +10,8 @@
             r.title,
             r.create_time,
             r.is_exercise as isExercise,
-            r.category_id as categoryId
+            r.category_id as categoryId,
+            (select count(q.id) from t_question q where q.repo_id = r.id and q.is_deleted = 0) as questionCount
         from t_repo r 
         join t_user u on r.user_id = u.id
         <trim prefix="where" prefixOverrides=" and ">
