@@ -59,6 +59,7 @@ public class VerifyTokenFilter extends OncePerRequestFilter {
             // responseUtil.response(response, Result.failed("Authorization为空，请先登录"), 401);
             return;
         }
+
         // 去除 "Bearer " 前缀
         if (token.startsWith("Bearer ")) {
             token = token.substring(7);

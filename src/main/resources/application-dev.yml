@@ -13,12 +13,11 @@ spring:
     password: Aa112211
     driver-class-name: com.mysql.cj.jdbc.Driver
   # redis配置
-#  data:
   redis:
     database: 0
     host: 127.0.0.1
     port: 6379
-#    password: Aa112211
+    # password:
     timeout: 10s
     lettuce: # Redis连接池配置
       pool:
@@ -78,6 +77,7 @@ coze:
 dify:
   base-url: "https://api.dify.ai/v1/chat-messages"
   api-key: "app-d507n9i6xIstuiQnuYwX9nGJ"
+
 # llm 大语言模型配置
 llm:
   api-key: "sk-wqthdmjnsejsxnliduuhbjgvoogipfrzjjtgomyoizwzcwrk"

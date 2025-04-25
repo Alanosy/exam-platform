@@ -227,7 +227,6 @@
             <artifactId>langchain4j-milvus</artifactId>
             <version>1.0.0-beta3</version>
         </dependency>
-
     </dependencies>
     <!-- 项目构建配置 -->
     <build>
