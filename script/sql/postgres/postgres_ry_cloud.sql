@@ -1398,15 +1398,6 @@ insert into test_tree values (11, '000000', 7, 108, 3, '子节点77', 0, 103, no
 insert into test_tree values (12, '000000', 10, 108, 3, '子节点88', 0, 103, now(), 1, NULL, NULL, 0);
 insert into test_tree values (13, '000000', 10, 108, 3, '子节点99', 0, 103, now(), 1, NULL, NULL, 0);
 
-
--- 字符串自动转时间 避免框架时间查询报错问题
-create or replace function cast_varchar_to_timestamp(varchar) returns timestamptz as $$
-select to_timestamp($1, 'yyyy-mm-dd hh24:mi:ss');
-$$ language sql strict ;
-
-create cast (varchar as timestamptz) with function cast_varchar_to_timestamp as IMPLICIT;
-
-
 -- for AT mode you must to init this sql for you business database. the seata server not need it.
 CREATE TABLE IF NOT EXISTS public.undo_log
 (
@@ -1433,3 +1424,11 @@ COMMENT ON COLUMN public.undo_log.log_created IS 'create datetime';
 COMMENT ON COLUMN public.undo_log.log_modified IS 'modify datetime';
 
 CREATE SEQUENCE IF NOT EXISTS undo_log_id_seq INCREMENT BY 1 MINVALUE 1 ;
+
+
+-- 字符串自动转时间 避免框架时间查询报错问题
+create or replace function cast_varchar_to_timestamp(varchar) returns timestamptz as $$
+select to_timestamp($1, 'yyyy-mm-dd hh24:mi:ss');
+$$ language sql strict ;
+
+create cast (varchar as timestamptz) with function cast_varchar_to_timestamp as IMPLICIT;

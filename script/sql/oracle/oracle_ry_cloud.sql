@@ -1405,18 +1405,6 @@ insert into test_tree values (11, '000000', 7, 108, 3, '子节点77', 0, 103, sy
 insert into test_tree values (12, '000000', 10, 108, 3, '子节点88', 0, 103, sysdate, 1, null, null, 0);
 insert into test_tree values (13, '000000', 10, 108, 3, '子节点99', 0, 103, sysdate, 1, null, null, 0);
 
-
--- ----------------------------
--- 钩子 ，用于session连接之后 自动设置默认的date类型格式化 简化时间查询
--- 如需设置其它配置 可在此钩子内任意增加处理语句
--- 例如： SELECT * FROM sys_user WHERE create_time BETWEEN '2022-03-01 00:00:00' AND '2022-04-01 00:00:00'
--- ----------------------------
-create or replace trigger login_trg
-after logon on database
-begin
-execute immediate 'alter session set nls_date_format=''YYYY-MM-DD HH24:MI:SS''';
-end;
-
 -- for AT mode you must to init this sql for you business database. the seata server not need it.
 CREATE TABLE undo_log
 (
@@ -1443,3 +1431,14 @@ COMMENT ON COLUMN undo_log.log_modified is 'modify datetime';
 
 -- Generate ID using sequence and trigger
 CREATE SEQUENCE UNDO_LOG_SEQ START WITH 1 INCREMENT BY 1;
+
+-- ----------------------------
+-- 钩子 ，用于session连接之后 自动设置默认的date类型格式化 简化时间查询
+-- 如需设置其它配置 可在此钩子内任意增加处理语句
+-- 例如： SELECT * FROM sys_user WHERE create_time BETWEEN '2022-03-01 00:00:00' AND '2022-04-01 00:00:00'
+-- ----------------------------
+create or replace trigger login_trg
+after logon on database
+begin
+execute immediate 'alter session set nls_date_format=''YYYY-MM-DD HH24:MI:SS''';
+end;
