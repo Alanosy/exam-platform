@@ -728,6 +728,7 @@ public class ExamServiceImpl extends ServiceImpl<ExamMapper, Exam> implements IE
 
     @Override
     public Result<List<ExamRecordDetailVO>> details(Integer examId) {
+
         // 1、题干 2、选项 3、自己的答案 4、正确的答案 5、是否正确 6、试题分析
         List<ExamRecordDetailVO> examRecordDetailVOS = new ArrayList<>();
         // 查询该考试的试题
@@ -784,19 +785,7 @@ public class ExamServiceImpl extends ServiceImpl<ExamMapper, Exam> implements IE
 
                 examRecordDetailVO.setRightOption(result);
             }
-            // 设置是否正确
-            LambdaQueryWrapper<ExamQuAnswer> examQuAnswerWrapper = new LambdaQueryWrapper<>();
-            examQuAnswerWrapper.eq(ExamQuAnswer::getUserId, SecurityUtil.getUserId())
-                    .eq(ExamQuAnswer::getExamId, examId)
-                    .eq(ExamQuAnswer::getQuestionId, temp.getId());
-            ExamQuAnswer examQuAnswer = examQuAnswerMapper.selectOne(examQuAnswerWrapper);
-            // 如果某题没有作答
-            if (examQuAnswer == null) {
-                examRecordDetailVO.setMyOption(null);
-                examRecordDetailVO.setIsRight(-1);
-                examRecordDetailVOS.add(examRecordDetailVO);
-                continue;
-            }
+            examRecordDetailVOS.add(examRecordDetailVO);
         }
         if (examRecordDetailVOS == null) {
             throw new ServiceRuntimeException("查询考试的信息失败");
