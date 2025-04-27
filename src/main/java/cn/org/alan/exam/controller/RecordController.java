@@ -62,8 +62,9 @@ public class RecordController {
     @ApiOperation("查询试卷详情")
     @GetMapping("/exam/detail")
     @PreAuthorize("hasAnyAuthority('role_teacher','role_admin','role_student')")
-    public Result<List<ExamRecordDetailVO>> getExamRecordDetail(@RequestParam("examId") Integer examId) {
-        return exerciseRecordService.getExamRecordDetail(examId);
+    public Result<List<ExamRecordDetailVO>> getExamRecordDetail(@RequestParam("examId") Integer examId,
+                                                                @RequestParam("userId") Integer userId) {
+        return exerciseRecordService.getExamRecordDetail(examId,userId);
     }
 
     /**

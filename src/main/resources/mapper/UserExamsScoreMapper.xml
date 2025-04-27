@@ -45,7 +45,7 @@
 
     <!-- 成绩分页查询 -->
     <select id="pagingScore" resultType="cn.org.alan.exam.model.vo.score.UserScoreVO">
-        select ues.id, e.title, u.real_name, ues.user_time, ues.user_score, ues.limit_time, ues.count
+        select ues.id,u.id as userId ,e.title, u.real_name, ues.user_time, ues.user_score, ues.limit_time, ues.count,e.id as examId
         from t_user_exams_score as ues
         join t_user as u on ues.user_id = u.id
         join t_exam as e on ues.exam_id = e.id

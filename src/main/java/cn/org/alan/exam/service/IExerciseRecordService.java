@@ -48,9 +48,11 @@ public interface IExerciseRecordService extends IService<ExerciseRecord> {
      * 查询某场考试的信息
      *
      * @param examId 试卷ID
+     * @param userId
      * @return
      */
-    Result<List<ExamRecordDetailVO>> getExamRecordDetail(Integer examId);
+    Result<List<ExamRecordDetailVO>> getExamRecordDetail(Integer examId, Integer userId);
+
 
     /**
      * 查询所考过的刷题

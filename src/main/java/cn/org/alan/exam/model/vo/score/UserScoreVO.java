@@ -24,4 +24,6 @@ public class UserScoreVO {
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime limitTime;
     private Integer count;
+    private Integer examId;
+
 }

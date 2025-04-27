@@ -6,6 +6,7 @@ import cn.org.alan.exam.model.form.exam.ExamAddForm;
 import cn.org.alan.exam.model.form.exam.ExamUpdateForm;
 import cn.org.alan.exam.model.form.exam_qu_answer.ExamQuAnswerAddForm;
 import cn.org.alan.exam.model.vo.exam.*;
+import cn.org.alan.exam.model.vo.record.ExamRecordDetailVO;
 import cn.org.alan.exam.service.IExamService;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 
@@ -217,5 +218,18 @@ public class ExamController {
     @PreAuthorize("hasAnyAuthority('role_teacher','role_admin','role_student')")
     public Result<ExamQuDetailVO> handleExam(@PathVariable("examId") @NotNull Integer examId) {
         return examService.handExam(examId);
+    }
+
+    /**
+     * 查看详情
+     *
+     * @param examId 试卷ID
+     * @return
+     */
+    @ApiOperation("交卷操作")
+    @GetMapping(value = "/details/{examId}")
+    @PreAuthorize("hasAnyAuthority('role_teacher','role_admin','role_student')")
+    public Result<List<ExamRecordDetailVO>> details(@PathVariable("examId") @NotNull Integer examId) {
+        return examService.details(examId);
     }
 }

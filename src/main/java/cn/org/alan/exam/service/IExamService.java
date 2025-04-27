@@ -7,6 +7,7 @@ import cn.org.alan.exam.model.form.exam.ExamAddForm;
 import cn.org.alan.exam.model.form.exam.ExamUpdateForm;
 import cn.org.alan.exam.model.form.exam_qu_answer.ExamQuAnswerAddForm;
 import cn.org.alan.exam.model.vo.exam.*;
+import cn.org.alan.exam.model.vo.record.ExamRecordDetailVO;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.IService;
 
@@ -160,4 +161,11 @@ public interface IExamService extends IService<Exam> {
      * @return
      */
     boolean isUserTakingExam(Integer examId);
+
+    /**
+     * 查看考试详情
+     * @param examId
+     * @return
+     */
+    Result<List<ExamRecordDetailVO>> details(Integer examId);
 }

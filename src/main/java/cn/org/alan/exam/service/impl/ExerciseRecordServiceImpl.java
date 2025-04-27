@@ -93,7 +93,10 @@ public class ExerciseRecordServiceImpl extends ServiceImpl<ExerciseRecordMapper,
     }
 
     @Override
-    public Result<List<ExamRecordDetailVO>> getExamRecordDetail(Integer examId) {
+    public Result<List<ExamRecordDetailVO>> getExamRecordDetail(Integer examId, Integer userId) {
+        if(userId==null){
+            userId =SecurityUtil.getUserId();
+        }
         // 1、题干 2、选项 3、自己的答案 4、正确的答案 5、是否正确 6、试题分析
         List<ExamRecordDetailVO> examRecordDetailVOS = new ArrayList<>();
         // 查询该考试的试题
@@ -152,7 +155,7 @@ public class ExerciseRecordServiceImpl extends ServiceImpl<ExerciseRecordMapper,
             }
             // 设置是否正确
             LambdaQueryWrapper<ExamQuAnswer> examQuAnswerWrapper = new LambdaQueryWrapper<>();
-            examQuAnswerWrapper.eq(ExamQuAnswer::getUserId, SecurityUtil.getUserId())
+            examQuAnswerWrapper.eq(ExamQuAnswer::getUserId, userId)
                     .eq(ExamQuAnswer::getExamId, examId)
                     .eq(ExamQuAnswer::getQuestionId, temp.getId());
             ExamQuAnswer examQuAnswer = examQuAnswerMapper.selectOne(examQuAnswerWrapper);
