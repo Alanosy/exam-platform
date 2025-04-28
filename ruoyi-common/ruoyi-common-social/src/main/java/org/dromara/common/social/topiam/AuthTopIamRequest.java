@@ -58,17 +58,6 @@ public class AuthTopIamRequest extends AuthDefaultRequest {
     }
 
     @Override
-    protected String doPostAuthorizationCode(String code) {
-        HttpRequest request = HttpRequest.post(source.accessToken())
-            .header("Authorization", "Basic " + Base64.encode("%s:%s".formatted(config.getClientId(), config.getClientSecret())))
-            .form("grant_type", "authorization_code")
-            .form("code", code)
-            .form("redirect_uri", config.getRedirectUri());
-        HttpResponse response = request.execute();
-        return response.body();
-    }
-
-    @Override
     public AuthUser getUserInfo(AuthToken authToken) {
         String body = doGetUserInfo(authToken);
         Dict object = JsonUtils.parseMap(body);
@@ -84,6 +73,16 @@ public class AuthTopIamRequest extends AuthDefaultRequest {
             .build();
     }
 
+    @Override
+    protected String doPostAuthorizationCode(String code) {
+        HttpRequest request = HttpRequest.post(source.accessToken())
+            .header("Authorization", "Basic " + Base64.encode("%s:%s".formatted(config.getClientId(), config.getClientSecret())))
+            .form("grant_type", "authorization_code")
+            .form("code", code)
+            .form("redirect_uri", config.getRedirectUri());
+        HttpResponse response = request.execute();
+        return response.body();
+    }
 
     @Override
     protected String doGetUserInfo(AuthToken authToken) {
@@ -100,7 +99,7 @@ public class AuthTopIamRequest extends AuthDefaultRequest {
             .build();
     }
 
-    public static void checkResponse(Dict object) {
+    private static void checkResponse(Dict object) {
         // oauth/token 验证异常
         if (object.containsKey("error")) {
             throw new AuthException(object.getStr("error_description"));
