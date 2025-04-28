@@ -17,6 +17,7 @@ import cn.org.alan.exam.service.IOptionService;
 import cn.org.alan.exam.service.IQuestionService;
 import cn.org.alan.exam.utils.ClassTokenGenerator;
 import cn.org.alan.exam.utils.SecurityUtil;
+import com.aliyun.oss.ServiceException;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -113,61 +114,97 @@ public class ExamServiceImpl extends ServiceImpl<ExamMapper, Exam> implements IE
         if (examRepoRows < 1) {
             throw new ServiceRuntimeException("创建失败!");
         }
-        // 开始抽题
-        // <"试题类型"，"题目数量">
-        Map<Integer, Integer> quTypeToCount = new HashMap<>();
-        quTypeToCount.put(1, exam.getRadioCount());
-        quTypeToCount.put(2, exam.getMultiCount());
-        quTypeToCount.put(3, exam.getJudgeCount());
-        quTypeToCount.put(4, exam.getSaqCount());
         // <"试题类型"，"试题分数">
         Map<Integer, Integer> quTypeToScore = new HashMap<>();
         quTypeToScore.put(1, exam.getRadioScore());
         quTypeToScore.put(2, exam.getMultiScore());
         quTypeToScore.put(3, exam.getJudgeScore());
         quTypeToScore.put(4, exam.getSaqScore());
+        // <"试题类型"，"题目数量">
+        Map<Integer, Integer> quTypeToCount = new HashMap<>();
+        quTypeToCount.put(1, exam.getRadioCount());
+        quTypeToCount.put(2, exam.getMultiCount());
+        quTypeToCount.put(3, exam.getJudgeCount());
+        quTypeToCount.put(4, exam.getSaqCount());
         int sortCounter = 0;
-        for (Map.Entry<Integer, Integer> entry : quTypeToCount.entrySet()) {
-            Map<Integer, Integer> questionSortMap = new HashMap<>();
-            // 获取当前试题类型、试题数量、考试id、试题分数
-            Integer quType = entry.getKey();
-            Integer count = entry.getValue();
-            Integer examId = exam.getId();
-            Integer quScore = quTypeToScore.get(quType);
-            // 查询设置题库中，对应类型的试题id
-            LambdaQueryWrapper<Question> typeQueryWrapper = new LambdaQueryWrapper<>();
-            typeQueryWrapper.select(Question::getId)
-                    .eq(Question::getQuType, quType)
-                    .eq(Question::getIsDeleted, 0)
-                    .eq(Question::getRepoId, examAddForm.getRepoId());
-            List<Question> questionsByType = questionMapper.selectList(typeQueryWrapper);
-            if (questionsByType.size() < count) {
-                throw new ServiceRuntimeException("题库中类型为" + quType + "的题目数量不足" + count + "个！");
+        // 自己选题
+        if("0".equals(examAddForm.getAddQuype())){
+
+            if(StringUtils.isBlank(examAddForm.getQuIds())){
+                throw new ServiceException("自己选题的时候不能不选试题");
             }
-            List<Integer> typeQuestionIds = questionsByType.stream().map(Question::getId).collect(Collectors.toList());
-            Collections.shuffle(typeQuestionIds);
-            List<Integer> sampledIds = typeQuestionIds.subList(0, count);
-            // 插入试题
-            if (!sampledIds.isEmpty()) {
-                for (Integer qId : sampledIds) {
-                    questionSortMap.put(qId, sortCounter); // 为每个问题ID分配sort值
-                    sortCounter++; // 每插入一题，sort计数器增加
+            Integer examId = exam.getId();
+            List<String> collect = Arrays.stream(examAddForm.getQuIds().split(",")).collect(Collectors.toList());
+            List<Question> questions = questionMapper.selectBatchIds(collect);
+            for (String quId : collect) {
+                Integer quType =null;
+                for (Question question : questions) {
+                    if(question.getId().equals(Integer.parseInt(quId))){
+                        quType=question.getQuType();
+                    }
                 }
-                // 准备数据结构以符合Mapper方法的输入要求
-                List<Map<String, Object>> questionDetails = new ArrayList<>();
-                for (Map.Entry<Integer, Integer> sortEntry : questionSortMap.entrySet()) {
-                    Map<String, Object> detail = new HashMap<>();
-                    detail.put("questionId", sortEntry.getKey());
-                    detail.put("sort", sortEntry.getValue());
-                    questionDetails.add(detail);
+                if(quType==null){
+                    throw new ServiceException("没有查找到id:"+quId+"的试题没有查找到类型");
                 }
+                Integer quScore = quTypeToScore.get(quType);
+                Map<String, Object> detail = new HashMap<>();
+                detail.put("questionId", quId);
+                detail.put("sort", sortCounter);
+                sortCounter++; // 每插入一题，sort计数器增加
                 // 调整Mapper方法以接受新的参数结构
-                int examQueRows = examQuestionMapper.insertQuestion(examId, quType, quScore, questionDetails);
+                int examQueRows = examQuestionMapper.insertSingleQuestion(examId, quType, quScore, detail);
                 if (examQueRows < 1) {
                     throw new ServiceRuntimeException("创建考试失败");
                 }
+
             }
 
+        }
+        // 随机抽题
+        if("1".equals(examAddForm.getAddQuype())){
+            // 开始抽题
+            for (Map.Entry<Integer, Integer> entry : quTypeToCount.entrySet()) {
+                Map<Integer, Integer> questionSortMap = new HashMap<>();
+                // 获取当前试题类型、试题数量、考试id、试题分数
+                Integer quType = entry.getKey();
+                Integer count = entry.getValue();
+                Integer examId = exam.getId();
+                Integer quScore = quTypeToScore.get(quType);
+                // 查询设置题库中，对应类型的试题id
+                LambdaQueryWrapper<Question> typeQueryWrapper = new LambdaQueryWrapper<>();
+                typeQueryWrapper.select(Question::getId)
+                        .eq(Question::getQuType, quType)
+                        .eq(Question::getIsDeleted, 0)
+                        .eq(Question::getRepoId, examAddForm.getRepoId());
+                List<Question> questionsByType = questionMapper.selectList(typeQueryWrapper);
+                if (questionsByType.size() < count) {
+                    throw new ServiceRuntimeException("题库中类型为" + quType + "的题目数量不足" + count + "个！");
+                }
+                List<Integer> typeQuestionIds = questionsByType.stream().map(Question::getId).collect(Collectors.toList());
+                Collections.shuffle(typeQuestionIds);
+                List<Integer> sampledIds = typeQuestionIds.subList(0, count);
+                // 插入试题
+                if (!sampledIds.isEmpty()) {
+                    for (Integer qId : sampledIds) {
+                        questionSortMap.put(qId, sortCounter); // 为每个问题ID分配sort值
+                        sortCounter++; // 每插入一题，sort计数器增加
+                    }
+                    // 准备数据结构以符合Mapper方法的输入要求
+                    List<Map<String, Object>> questionDetails = new ArrayList<>();
+                    for (Map.Entry<Integer, Integer> sortEntry : questionSortMap.entrySet()) {
+                        Map<String, Object> detail = new HashMap<>();
+                        detail.put("questionId", sortEntry.getKey());
+                        detail.put("sort", sortEntry.getValue());
+                        questionDetails.add(detail);
+                    }
+                    // 调整Mapper方法以接受新的参数结构
+                    int examQueRows = examQuestionMapper.insertQuestion(examId, quType, quScore, questionDetails);
+                    if (examQueRows < 1) {
+                        throw new ServiceRuntimeException("创建考试失败");
+                    }
+                }
+
+            }
         }
         return Result.success("创建考试成功");
     }

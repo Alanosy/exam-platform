@@ -11,7 +11,12 @@
             (#{examId}, #{item.questionId}, #{quScore}, #{item.sort}, #{quType})
         </foreach>
     </insert>
-
+    <!-- 添加单个试题 自己选择试题时 -->
+    <insert id="insertSingleQuestion">
+        insert into t_exam_question (exam_id,question_id,score,sort,type)
+        VALUES
+        (#{examId}, #{questionIdsAndSorts.questionId}, #{quScore}, #{questionIdsAndSorts.sort}, #{quType})
+    </insert>
     <!-- 根据试卷ID和试题类型查询试卷与试题的联系 -->
     <select id="getExamQuByExamIdAndQuType" resultType="cn.org.alan.exam.model.entity.ExamQuestion">
         SELECT *

@@ -27,6 +27,18 @@ public interface ExamQuestionMapper extends BaseMapper<ExamQuestion> {
     int insertQuestion(Integer examId, Integer quType, Integer quScore, List<Map<String, Object>> questionIdsAndSorts);
 
     /**
+     * 添加试题 自己选择
+     *
+     * @param examId              试卷ID
+     * @param quType              试题类型
+     * @param quScore             试题分数
+     * @param questionIdsAndSorts 试题Id与Sort集
+     * @return 添加记录数
+     */
+    int insertSingleQuestion(Integer examId, Integer quType, Integer quScore, Map<String, Object> questionIdsAndSorts);
+
+
+    /**
      * 根据试卷ID和试题类型查询试卷与试题的联系
      *
      * @param examId 试卷ID

@@ -46,7 +46,6 @@ public class ExamAddForm {
     private String gradeIds;
 
     // 题库ID
-    @NotNull(message = "题库不能为空")
     private Integer repoId;
 
     // 证书id
@@ -91,4 +90,10 @@ public class ExamAddForm {
     @NotNull(message = "简答题分数不能为空")
     @Min(value = 0)
     private Integer saqScore;
+
+    // 简答题分数
+    @NotBlank(message = "添加试题类型不能为空")
+    private String addQuype;
+    // 简答题分数
+    private String quIds;
 }
