@@ -861,11 +861,13 @@ public class ExamServiceImpl extends ServiceImpl<ExamMapper, Exam> implements IE
         LocalDateTime nowTime = LocalDateTime.now();
         // 查询考试表记录
         Exam examOne = this.getById(examId);
+
         // 判断交卷是否超时
-        LocalDateTime endTime = examOne.getEndTime();
-        if (endTime.isBefore(nowTime)) {
-            return Result.failed("提交失败，已过交卷时间");
+        LocalDateTime endTime = examOne.getCreateTime().plusMinutes(examOne.getExamDuration());
+        if (nowTime.isAfter(endTime)) {
+            throw new ServiceException("提交失败，已过交卷时间");
         }
+
         // 设置考试状态
         UserExamsScore userExamsScore = new UserExamsScore();
         userExamsScore.setUserScore(0);

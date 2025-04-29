@@ -17,7 +17,9 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.annotation.Resource;
 import java.time.Duration;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -54,32 +56,34 @@ public class ExamTask {
         LambdaQueryWrapper<UserExamsScore> query = new LambdaQueryWrapper<>();
         query.eq(UserExamsScore::getState, ExamState.ONGOING.getCode());
         List<UserExamsScore> userExamsScores = userExamsScoreMapper.selectList(query);
-        // 2. 获取当前时间
+        // 获取当前时间
         LocalDateTime now = LocalDateTime.now();
-        if(userExamsScores.size()>0){
-            for (UserExamsScore userExamsScore : userExamsScores) {
-                try {
-                    // 查找到具体考试到信息
-                    Integer examId = userExamsScore.getExamId();
-                    Exam exam = examMapper.selectById(examId);
-                    // 3. 获取考试信息
-                    if(exam == null) {
-                        log.error("考试不存在，examId: {}", exam.getId());
-                        continue;
-                    }
 
-                    LocalDateTime endTime = exam.getEndTime();
-                    // 4. 检查是否超时
-                    if(now.isAfter(exam.getEndTime())) {
-                        // 5. 调用交卷函数
-                        handExam(userExamsScore);
+        for (UserExamsScore userExamsScore : userExamsScores) {
+            try {
+                // 查找到具体考试的信息
+                Integer examId = userExamsScore.getExamId();
+                Exam exam = examMapper.selectById(examId);
 
-                        log.info("自动交卷成功，用户ID: {}, 考试ID: {}",
-                                userExamsScore.getUserId(), userExamsScore.getExamId());
-                    }
-                } catch (Exception e) {
-                    log.error("自动交卷处理异常，用户考试记录ID: {}", userExamsScore.getId(), e);
+                if (exam == null) {
+                    log.error("考试不存在，examId: {}", examId);
+                    continue;
                 }
+
+                // 计算考试结束时间
+                LocalDateTime startTime = exam.getCreateTime();
+                LocalDateTime endTime = startTime.plusMinutes(exam.getExamDuration());
+
+                // 检查是否超时
+                if (now.isAfter(endTime)) {
+                    // 调用交卷函数
+                    handExam(userExamsScore);
+
+                    log.info("自动交卷成功，用户ID: {}, 考试ID: {}",
+                            userExamsScore.getUserId(), userExamsScore.getExamId());
+                }
+            } catch (Exception e) {
+                log.error("自动交卷处理异常，用户考试记录ID: {}", userExamsScore.getId(), e);
             }
         }
     }
@@ -91,7 +95,6 @@ public class ExamTask {
     @Transactional
     public Result<ExamQuDetailVO> handExam(UserExamsScore ues) {
         // 获取当前时间
-
         LocalDateTime nowTime = LocalDateTime.now();
         // 查询考试表记录
         Exam examOne = examMapper.selectById(ues.getExamId());
