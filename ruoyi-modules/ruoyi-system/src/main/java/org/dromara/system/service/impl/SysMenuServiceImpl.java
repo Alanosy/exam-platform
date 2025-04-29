@@ -71,6 +71,8 @@ public class SysMenuServiceImpl implements ISysMenuService {
                 .like(StringUtils.isNotBlank(menu.getMenuName()), SysMenu::getMenuName, menu.getMenuName())
                 .eq(StringUtils.isNotBlank(menu.getVisible()), SysMenu::getVisible, menu.getVisible())
                 .eq(StringUtils.isNotBlank(menu.getStatus()), SysMenu::getStatus, menu.getStatus())
+                .eq(StringUtils.isNotBlank(menu.getMenuType()), SysMenu::getMenuType, menu.getMenuType())
+                .eq(ObjectUtil.isNotNull(menu.getParentId()), SysMenu::getParentId, menu.getParentId())
                 .orderByAsc(SysMenu::getParentId)
                 .orderByAsc(SysMenu::getOrderNum));
         } else {
@@ -79,6 +81,8 @@ public class SysMenuServiceImpl implements ISysMenuService {
                 .like(StringUtils.isNotBlank(menu.getMenuName()), "m.menu_name", menu.getMenuName())
                 .eq(StringUtils.isNotBlank(menu.getVisible()), "m.visible", menu.getVisible())
                 .eq(StringUtils.isNotBlank(menu.getStatus()), "m.status", menu.getStatus())
+                .eq(StringUtils.isNotBlank(menu.getMenuType()), "m.menu_type", menu.getMenuType())
+                .eq(ObjectUtil.isNotNull(menu.getParentId()), "m.parent_id", menu.getParentId())
                 .orderByAsc("m.parent_id")
                 .orderByAsc("m.order_num");
             List<SysMenu> list = baseMapper.selectMenuListByUserId(wrapper);
