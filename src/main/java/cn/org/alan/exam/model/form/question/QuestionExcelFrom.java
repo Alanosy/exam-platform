@@ -1,5 +1,6 @@
 package cn.org.alan.exam.model.form.question;
 
+import cn.org.alan.exam.common.exception.ServiceRuntimeException;
 import cn.org.alan.exam.model.entity.Option;
 import cn.org.alan.exam.utils.excel.ExcelImport;
 import lombok.Data;
@@ -90,6 +91,53 @@ public class QuestionExcelFrom {
             questionFrom.setImage(questionExcelFrom.getImage());
             
             List<Option> options = new ArrayList<>();
+            
+            // 验证选项内容和是否正确的一致性
+            if (questionExcelFrom.getQuType() != 4) { // 非简答题需要验证选项
+                // 检查选项一
+                if (questionExcelFrom.getOption1() != null && !questionExcelFrom.getOption1().isEmpty() 
+                    && questionExcelFrom.getRighted1() == null) {
+                    String errorMsg = String.format("导入错误 - 题干为「%s」的试题：选项一内容存在但未设置是否正确，请检查Excel文件中对应行的「选项一是否正确」列", 
+                            questionExcelFrom.getContent());
+                    throw new ServiceRuntimeException(errorMsg);
+                }
+                // 检查选项二
+                if (questionExcelFrom.getOption2() != null && !questionExcelFrom.getOption2().isEmpty() 
+                    && questionExcelFrom.getRighted2() == null) {
+                    String errorMsg = String.format("导入错误 - 题干为「%s」的试题：选项二内容存在但未设置是否正确，请检查Excel文件中对应行的「选项二是否正确」列", 
+                            questionExcelFrom.getContent());
+                    throw new ServiceRuntimeException(errorMsg);
+                }
+                // 检查选项三
+                if (questionExcelFrom.getOption3() != null && !questionExcelFrom.getOption3().isEmpty() 
+                    && questionExcelFrom.getRighted3() == null) {
+                    String errorMsg = String.format("导入错误 - 题干为「%s」的试题：选项三内容存在但未设置是否正确，请检查Excel文件中对应行的「选项三是否正确」列", 
+                            questionExcelFrom.getContent());
+                    throw new ServiceRuntimeException(errorMsg);
+                }
+                // 检查选项四
+                if (questionExcelFrom.getOption4() != null && !questionExcelFrom.getOption4().isEmpty() 
+                    && questionExcelFrom.getRighted4() == null) {
+                    String errorMsg = String.format("导入错误 - 题干为「%s」的试题：选项四内容存在但未设置是否正确，请检查Excel文件中对应行的「选项四是否正确」列", 
+                            questionExcelFrom.getContent());
+                    throw new ServiceRuntimeException(errorMsg);
+                }
+                // 检查选项五
+                if (questionExcelFrom.getOption5() != null && !questionExcelFrom.getOption5().isEmpty() 
+                    && questionExcelFrom.getRighted5() == null) {
+                    String errorMsg = String.format("导入错误 - 题干为「%s」的试题：选项五内容存在但未设置是否正确，请检查Excel文件中对应行的「选项五是否正确」列", 
+                            questionExcelFrom.getContent());
+                    throw new ServiceRuntimeException(errorMsg);
+                }
+                // 检查选项六
+                if (questionExcelFrom.getOption6() != null && !questionExcelFrom.getOption6().isEmpty() 
+                    && questionExcelFrom.getRighted6() == null) {
+                    String errorMsg = String.format("导入错误 - 题干为「%s」的试题：选项六内容存在但未设置是否正确，请检查Excel文件中对应行的「选项六是否正确」列", 
+                            questionExcelFrom.getContent());
+                    throw new ServiceRuntimeException(errorMsg);
+                }
+            }
+            
             if (questionExcelFrom.getOption1() != null && !questionExcelFrom.getOption1().isEmpty()) {
                 Option option = new Option();
                 option.setContent(questionExcelFrom.getOption1());

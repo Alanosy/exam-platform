@@ -130,32 +130,42 @@ public class QuestionServiceImpl extends ServiceImpl<QuestionMapper, Question> i
         if (!ExcelUtils.isExcel(Objects.requireNonNull(file.getOriginalFilename()))) {
             throw new ServiceRuntimeException("该文件不是一个合法的Excel文件");
         }
-        List<QuestionExcelFrom> questionExcelFroms = ExcelUtils.readMultipartFile(file, QuestionExcelFrom.class);
-        // 类型转换
-        List<QuestionFrom> list = QuestionExcelFrom.converterQuestionFrom(questionExcelFroms);
-        for (QuestionFrom questionFrom : list) {
-            Question question = questionConverter.fromToEntity(questionFrom);
-            question.setRepoId(id);
-            // 添加单题获取Id
-            questionMapper.insert(question);
-            // 批量添加选项
-            List<Option> options = questionFrom.getOptions();
-            final int[] count = {0};
-            options.forEach(option -> {
-                // 简答题答案默认给正确
-                if (question.getQuType() == 4) {
-                    option.setIsRight(1);
+        
+        try {
+            List<QuestionExcelFrom> questionExcelFroms = ExcelUtils.readMultipartFile(file, QuestionExcelFrom.class);
+            // 类型转换
+            List<QuestionFrom> list = QuestionExcelFrom.converterQuestionFrom(questionExcelFroms);
+            
+            for (QuestionFrom questionFrom : list) {
+                Question question = questionConverter.fromToEntity(questionFrom);
+                question.setRepoId(id);
+                // 添加单题获取Id
+                questionMapper.insert(question);
+                // 批量添加选项
+                List<Option> options = questionFrom.getOptions();
+                final int[] count = {0};
+                options.forEach(option -> {
+                    // 简答题答案默认给正确
+                    if (question.getQuType() == 4) {
+                        option.setIsRight(1);
+                    }
+                    option.setSort(++count[0]);
+                    option.setQuId(question.getId());
+                });
+                // 避免简答题没有答案
+                if (!options.isEmpty()) {
+                    optionMapper.insertBatch(options);
                 }
-                option.setSort(++count[0]);
-                option.setQuId(question.getId());
-            });
-            // 避免简答题没有答案
-            if (!options.isEmpty()) {
-                optionMapper.insertBatch(options);
             }
-
+            
+            return Result.success("导入试题成功");
+        } catch (ServiceRuntimeException e) {
+            // 捕获并返回业务异常，保留详细错误信息
+            return Result.failed(e.getMessage());
+        } catch (Exception e) {
+            // 捕获其他异常
+            return Result.failed("导入试题失败：" + e.getMessage());
         }
-        return Result.success("导入试题成功");
     }
 
 }
