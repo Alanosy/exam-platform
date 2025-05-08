@@ -247,6 +247,8 @@ services:
     environment:
       # 时区上海
       TZ: Asia/Shanghai
+      SERVER_PORT: 9203
+      SNAIL_PORT: 19203
     ports:
       - "9203:9203"
     volumes:
