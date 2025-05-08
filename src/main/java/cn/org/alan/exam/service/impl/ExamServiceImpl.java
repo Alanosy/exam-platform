@@ -239,6 +239,7 @@ public class ExamServiceImpl extends ServiceImpl<ExamMapper, Exam> implements IE
         Integer grossScore = getGrossScore(examTemp);
         // Form转换为实体类
         Exam exam = examConverter.formToEntity(examUpdateForm);
+        exam.setId(examId);
         // 设置总分
         exam.setGrossScore(grossScore);
         // 更新试卷

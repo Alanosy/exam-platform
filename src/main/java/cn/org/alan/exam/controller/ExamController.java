@@ -155,12 +155,12 @@ public class ExamController {
      * @param examId 试卷ID
      * @return
      */
-    // @ApiOperation("获取考试详情信息")
-    // @GetMapping("/detail")
-    // @PreAuthorize("hasAnyAuthority('role_teacher','role_admin','role_student')")
-    // public Result<ExamDetailVO> getDetail(@RequestParam("examId") @NotBlank Integer examId) {
-    //     return examService.getDetail(examId);
-    // }
+    @ApiOperation("获取考试详情信息")
+    @GetMapping("/detail")
+    @PreAuthorize("hasAnyAuthority('role_teacher','role_admin','role_student')")
+    public Result<ExamDetailVO> getDetail(@RequestParam("examId") @NotBlank Integer examId) {
+        return examService.getDetail(examId);
+    }
 
     /**
      * 根据班级获得考试
