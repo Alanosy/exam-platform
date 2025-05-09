@@ -25,7 +25,7 @@
 > 官方前端项目地址: [gitee](https://gitee.com/JavaLionLi/plus-ui) - [github](https://github.com/JavaLionLi/plus-ui) - [gitcode](https://gitcode.com/dromara/plus-ui)<br>
 > 成员前端项目地址: 基于vben5 [ruoyi-plus-vben5](https://gitee.com/dapppp/ruoyi-plus-vben5)
 
-> 文档地址: [plus-doc](https://plus-doc.dromara.org)
+> 文档地址: [plus-doc](https://plus-doc.dromara.org) 文档在华为云上如果打不开大概率是DNS问题 可以尝试切换网络等方式(或者科学上网)
 
 ## 赞助商
 
