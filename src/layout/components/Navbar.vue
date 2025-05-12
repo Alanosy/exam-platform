@@ -33,7 +33,7 @@
             <el-popover placement="bottom" trigger="click" transition="el-zoom-in-top" :width="300" :persistent="false">
               <template #reference>
                 <el-badge :value="newNotice > 0 ? newNotice : ''" :max="99">
-                  <svg-icon icon-class="message" />
+                  <div class="right-menu-item hover-effect" style="display: block"><svg-icon icon-class="message" /></div>
                 </el-badge>
               </template>
               <template #default>
