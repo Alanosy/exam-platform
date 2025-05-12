@@ -10,6 +10,7 @@ import me.zhyd.oauth.request.*;
 import org.dromara.common.core.utils.SpringUtils;
 import org.dromara.common.social.config.properties.SocialLoginConfigProperties;
 import org.dromara.common.social.config.properties.SocialProperties;
+import org.dromara.common.social.gitea.AuthGiteaRequest;
 import org.dromara.common.social.maxkey.AuthMaxKeyRequest;
 import org.dromara.common.social.topiam.AuthTopIamRequest;
 
@@ -66,6 +67,7 @@ public class SocialUtils  {
             case "aliyun" -> new AuthAliyunRequest(builder.build(), STATE_CACHE);
             case "maxkey" -> new AuthMaxKeyRequest(builder.build(), STATE_CACHE);
             case "topiam" -> new AuthTopIamRequest(builder.build(), STATE_CACHE);
+            case "gitea" -> new AuthGiteaRequest(builder.build(), STATE_CACHE);
             default -> throw new AuthException("未获取到有效的Auth配置");
         };
     }
