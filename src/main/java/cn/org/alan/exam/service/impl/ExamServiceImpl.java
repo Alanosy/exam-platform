@@ -37,8 +37,6 @@ import java.util.stream.Collectors;
 /**
  * 考试服务实现类
  *
- * @author Alan
- * @since 2024-03-21
  */
 @Service
 public class ExamServiceImpl extends ServiceImpl<ExamMapper, Exam> implements IExamService {
@@ -114,6 +112,7 @@ public class ExamServiceImpl extends ServiceImpl<ExamMapper, Exam> implements IE
         if (examRepoRows < 1) {
             throw new ServiceRuntimeException("创建失败!");
         }
+
         // <"试题类型"，"试题分数">
         Map<Integer, Integer> quTypeToScore = new HashMap<>();
         quTypeToScore.put(1, exam.getRadioScore());
@@ -134,31 +133,67 @@ public class ExamServiceImpl extends ServiceImpl<ExamMapper, Exam> implements IE
                 throw new ServiceException("自己选题的时候不能不选试题");
             }
             Integer examId = exam.getId();
-            List<String> collect = Arrays.stream(examAddForm.getQuIds().split(",")).collect(Collectors.toList());
-            List<Question> questions = questionMapper.selectBatchIds(collect);
-            for (String quId : collect) {
-                Integer quType =null;
-                for (Question question : questions) {
-                    if(question.getId().equals(Integer.parseInt(quId))){
-                        quType=question.getQuType();
-                    }
-                }
-                if(quType==null){
-                    throw new ServiceException("没有查找到id:"+quId+"的试题没有查找到类型");
-                }
-                Integer quScore = quTypeToScore.get(quType);
-                Map<String, Object> detail = new HashMap<>();
-                detail.put("questionId", quId);
-                detail.put("sort", sortCounter);
-                sortCounter++; // 每插入一题，sort计数器增加
-                // 调整Mapper方法以接受新的参数结构
-                int examQueRows = examQuestionMapper.insertSingleQuestion(examId, quType, quScore, detail);
-                if (examQueRows < 1) {
-                    throw new ServiceRuntimeException("创建考试失败");
-                }
+            // 1. 获取所有选中的题目 ID 列表 (保持原始选择顺序)
+            List<String> selectedQuIdStrings = Arrays.asList(examAddForm.getQuIds().split(","));
+            List<Integer> selectedQuIds = selectedQuIdStrings.stream()
+                    .map(Integer::parseInt)
+                    .collect(Collectors.toList());
 
+            // 2. 批量查询选中的题目详情
+            List<Question> selectedQuestions = questionMapper.selectBatchIds(selectedQuIds);
+            if (selectedQuestions.size() != selectedQuIds.size()) {
+                // 处理可能存在的无效ID情况，可以记录日志或抛出更具体的异常
+                // 或者根据需求决定是否继续或抛出异常
+                // throw new ServiceRuntimeException("部分选择的题目ID无效");
             }
 
+            // 3. 按题型分组，并保持组内相对顺序
+            Map<Integer, List<Question>> groupedQuestions = new LinkedHashMap<>(); // 使用 LinkedHashMap 保持插入顺序
+            groupedQuestions.put(1, new ArrayList<>()); // 单选
+            groupedQuestions.put(2, new ArrayList<>()); // 多选
+            groupedQuestions.put(3, new ArrayList<>()); // 判断
+            groupedQuestions.put(4, new ArrayList<>()); // 简答
+
+            // 为了保持组内相对顺序，我们需要遍历原始选择ID列表
+            Map<Integer, Question> questionMap = selectedQuestions.stream()
+                    .collect(Collectors.toMap(Question::getId, q -> q));
+
+            for (Integer quId : selectedQuIds) {
+                Question question = questionMap.get(quId);
+                if (question != null && groupedQuestions.containsKey(question.getQuType())) {
+                    groupedQuestions.get(question.getQuType()).add(question);
+                } else {
+//                    log.warn("无法处理题目 ID: {}，可能类型未知或题目不存在, Exam ID: {}", quId, examId);
+                }
+            }
+
+
+            // 4. 按题型顺序 (1->2->3->4) 插入题目，并分配 sort 值
+            for (Map.Entry<Integer, List<Question>> entry : groupedQuestions.entrySet()) {
+                Integer quType = entry.getKey();
+                List<Question> questionsInGroup = entry.getValue();
+                Integer quScore = quTypeToScore.get(quType); // 获取该类型题目的分数
+
+                if (quScore == null) {
+//                     log.error("无法找到题型 {} 的分数配置, Exam ID: {}", quType, examId);
+                    // 根据业务决定是跳过还是抛异常
+                    continue; // 跳过此类型
+                }
+
+                for (Question question : questionsInGroup) {
+                    Map<String, Object> detail = new HashMap<>();
+                    detail.put("questionId", question.getId());
+                    detail.put("sort", sortCounter);
+                    sortCounter++; // 递增 sort 值
+
+                    // 调用插入数据库的方法
+                    int examQueRows = examQuestionMapper.insertSingleQuestion(examId, quType, quScore, detail);
+                    if (examQueRows < 1) {
+                        // 考虑事务回滚
+                        throw new ServiceRuntimeException("创建考试失败，插入题目关联时出错, Question ID: " + question.getId());
+                    }
+                }
+            }
         }
         // 随机抽题
         if("1".equals(examAddForm.getAddQuype())){
@@ -766,7 +801,6 @@ public class ExamServiceImpl extends ServiceImpl<ExamMapper, Exam> implements IE
 
     @Override
     public Result<List<ExamRecordDetailVO>> details(Integer examId) {
-
         // 1、题干 2、选项 3、自己的答案 4、正确的答案 5、是否正确 6、试题分析
         List<ExamRecordDetailVO> examRecordDetailVOS = new ArrayList<>();
         // 查询该考试的试题
@@ -862,76 +896,117 @@ public class ExamServiceImpl extends ServiceImpl<ExamMapper, Exam> implements IE
         LocalDateTime nowTime = LocalDateTime.now();
         // 查询考试表记录
         Exam examOne = this.getById(examId);
-
-        // 判断交卷是否超时
-        LocalDateTime endTime = examOne.getCreateTime().plusMinutes(examOne.getExamDuration());
-        if (nowTime.isAfter(endTime)) {
-            throw new ServiceException("提交失败，已过交卷时间");
+        if (examOne == null) {
+            return Result.failed("考试不存在: " + examId);
         }
 
-        // 设置考试状态
-        UserExamsScore userExamsScore = new UserExamsScore();
-        userExamsScore.setUserScore(0);
-        userExamsScore.setState(1);
+        // 1. 获取用户的考试记录以得到实际开始时间
+        LambdaQueryWrapper<UserExamsScore> userScoreQuery = new LambdaQueryWrapper<>();
+        userScoreQuery.eq(UserExamsScore::getUserId, SecurityUtil.getUserId())
+                .eq(UserExamsScore::getExamId, examId)
+                .eq(UserExamsScore::getState, 0); // 确保获取的是正在进行的记录
+        UserExamsScore userExamsScore1 = userExamsScoreMapper.selectOne(userScoreQuery);
+
+        // 2. 检查是否找到了进行中的记录以及开始时间
+        if (userExamsScore1 == null || userExamsScore1.getCreateTime() == null) {
+            // 如果找不到进行中的记录（可能状态已被意外修改）或开始时间为空，则不能继续交卷
+            return Result.failed("交卷失败，无法确定考试开始时间或状态异常。");
+        }
+
+        // 3. 使用用户的实际开始时间计算用户的截止时间
+        LocalDateTime userStartTime = userExamsScore1.getCreateTime();
+        LocalDateTime userEndTime = userStartTime.plusMinutes(examOne.getExamDuration());
+
+        // 4. 检查当前时间是否超过了用户的截止时间
+        if (nowTime.isAfter(userEndTime)) {
+            return Result.failed("提交失败，已过交卷时间");
+        }
+
+        // 设置考试状态 (应该在所有检查和计算之后，准备更新数据库之前)
+        UserExamsScore userExamsScoreToUpdate = new UserExamsScore(); // 创建一个新的对象用于更新
+        userExamsScoreToUpdate.setUserScore(0); // 初始化分数
+        userExamsScoreToUpdate.setState(1); // 标记为完成
+        userExamsScoreToUpdate.setLimitTime(nowTime); // 记录交卷时间
 
         // 查询用户答题记录
         LambdaQueryWrapper<ExamQuAnswer> examQuAnswerLambdaQuery = new LambdaQueryWrapper<>();
         examQuAnswerLambdaQuery.eq(ExamQuAnswer::getUserId, SecurityUtil.getUserId())
                 .eq(ExamQuAnswer::getExamId, examId);
         List<ExamQuAnswer> examQuAnswer = examQuAnswerMapper.selectList(examQuAnswerLambdaQuery);
-        // 客观分
+
+        // 计算客观分 & 收集错题
         List<UserBook> userBookArrayList = new ArrayList<>();
+        int calculatedScore = 0; // 使用局部变量计算分数
         for (ExamQuAnswer temp : examQuAnswer) {
-            if (temp.getIsRight() == 1) {
-                if (temp.getQuestionType() == 1) {
-                    userExamsScore.setUserScore(userExamsScore.getUserScore() + examOne.getRadioScore());
-                } else if (temp.getQuestionType() == 2) {
-                    userExamsScore.setUserScore(userExamsScore.getUserScore() + examOne.getMultiScore());
-                } else if (temp.getQuestionType() == 3) {
-                    userExamsScore.setUserScore(userExamsScore.getUserScore() + examOne.getJudgeScore());
+            // 添加 null 检查防止 NPE
+            if (temp.getIsRight() != null && temp.getIsRight() == 1) {
+                Integer questionType = temp.getQuestionType();
+                if (questionType != null) {
+                    if (questionType == 1 && examOne.getRadioScore() != null) {
+                        calculatedScore += examOne.getRadioScore();
+                    } else if (questionType == 2 && examOne.getMultiScore() != null) {
+                        calculatedScore += examOne.getMultiScore();
+                    } else if (questionType == 3 && examOne.getJudgeScore() != null) {
+                        calculatedScore += examOne.getJudgeScore();
+                    }
                 }
-            } else if (temp.getIsRight() == 0) {
+            } else if (temp.getIsRight() != null && temp.getIsRight() == 0) { // 只记录明确回答错误的
                 UserBook userBook = new UserBook();
                 userBook.setExamId(examId);
                 userBook.setUserId(SecurityUtil.getUserId());
                 userBook.setQuId(temp.getQuestionId());
-                userBook.setCreateTime(nowTime);
+                userBook.setCreateTime(nowTime); // Use consistent time
                 userBookArrayList.add(userBook);
             }
         }
+
+        // 插入错题本记录 (如果存在)
         if (!userBookArrayList.isEmpty()) {
-            // 把打错的问题加入错题本
             userBookMapper.addUserBookList(userBookArrayList);
         }
-        // 设置用户用时和提交试卷
-        userExamsScore.setLimitTime(nowTime);
-        // 开始时间
-        LambdaQueryWrapper<UserExamsScore> userExamsScoreLambdaQueryWrapper = new LambdaQueryWrapper<>();
-        userExamsScoreLambdaQueryWrapper.eq(UserExamsScore::getUserId, SecurityUtil.getUserId())
-                .eq(UserExamsScore::getExamId, examId);
-        UserExamsScore userExamsScore1 = userExamsScoreMapper.selectOne(userExamsScoreLambdaQueryWrapper);
-        LocalDateTime createTime = userExamsScore1.getCreateTime();
-        long secondsDifference = Duration.between(createTime, nowTime).getSeconds();
-        int differenceAsInteger = (int) secondsDifference;
-        // 检查是否在Integer范围内
-        // if (secondsDifference <= Integer.MAX_VALUE && secondsDifference >= Integer.MIN_VALUE)
-        userExamsScore.setUserTime(differenceAsInteger);
-        // 添加总分和状态
+
+        // 计算用户用时
+        long secondsDifference = Duration.between(userStartTime, nowTime).getSeconds();
+        int userTime = (int) secondsDifference; // 注意 long 转 int 可能的溢出
+
+        // 确定是否需要人工阅卷
+        int whetherMark = -1; // 默认无需阅卷
+        if (examOne.getSaqCount() != null && examOne.getSaqCount() > 0) {
+            whetherMark = 0; // 有简答题，设置为待阅卷
+        }
+
         LambdaUpdateWrapper<UserExamsScore> userExamsScoreLambdaUpdate = new LambdaUpdateWrapper<>();
         userExamsScoreLambdaUpdate.eq(UserExamsScore::getUserId, SecurityUtil.getUserId())
-                .eq(UserExamsScore::getExamId, examId);
-        userExamsScoreMapper.update(userExamsScore, userExamsScoreLambdaUpdate);
-        // 判断是否有简答题
-        if (examOne.getSaqCount() != 0) {
-            LambdaUpdateWrapper<UserExamsScore> userExamsScoreLambdaUpdateWrapper = new LambdaUpdateWrapper<>();
-            userExamsScoreLambdaUpdateWrapper.set(UserExamsScore::getWhetherMark, 0)
-                    .eq(UserExamsScore::getExamId, examId)
-                    .eq(UserExamsScore::getUserId, SecurityUtil.getUserId());
-            userExamsScoreMapper.update(userExamsScoreLambdaUpdateWrapper);
-            autoScoringService.autoScoringExam(examId, SecurityUtil.getUserId());
+                .eq(UserExamsScore::getExamId, examId)
+                .eq(UserExamsScore::getState, 0); // **重要：只更新状态为0的记录**
+
+        userExamsScoreLambdaUpdate.set(UserExamsScore::getUserScore, calculatedScore); // 设置计算出的分数
+        userExamsScoreLambdaUpdate.set(UserExamsScore::getState, 1); // 标记为完成
+        userExamsScoreLambdaUpdate.set(UserExamsScore::getLimitTime, nowTime); // 记录交卷时间
+        userExamsScoreLambdaUpdate.set(UserExamsScore::getUserTime, userTime); // 设置用时
+        userExamsScoreLambdaUpdate.set(UserExamsScore::getWhetherMark, whetherMark); // 设置是否待阅卷状态
+
+        // 执行更新
+        int updateRows = userExamsScoreMapper.update(null, userExamsScoreLambdaUpdate); // 使用 update(null, wrapper)
+
+        // 检查更新是否成功
+        if (updateRows == 0) {
+            // 尝试查询当前记录状态以提供更具体的错误信息
+            UserExamsScore latestScore = userExamsScoreMapper.selectOne(userScoreQuery.last("limit 1")); // 重新查询一次确保状态
+            if (latestScore != null && latestScore.getState() != 0) {
+                return Result.failed("交卷失败，考试已被提交或状态异常。");
+            } else {
+                return Result.failed("交卷失败，更新记录时发生未知错误。");
+            }
+        }
+
+        // 如果需要阅卷，调用自动评分
+        if (whetherMark == 0) {
             return Result.success("提交成功，待老师阅卷");
         }
-        if (userExamsScore.getUserScore() >= examOne.getPassedScore()) {
+
+        // 如果无需阅卷，检查是否需要发放证书
+        if (whetherMark == -1 && examOne.getCertificateId() != null && examOne.getPassedScore() != null && calculatedScore >= examOne.getPassedScore()) {
             CertificateUser certificateUser = new CertificateUser();
             certificateUser.setCertificateId(examOne.getCertificateId());
             certificateUser.setUserId(SecurityUtil.getUserId());
@@ -939,37 +1014,6 @@ public class ExamServiceImpl extends ServiceImpl<ExamMapper, Exam> implements IE
             certificateUser.setCode(ClassTokenGenerator.generateClassToken(18));
             certificateUserMapper.insert(certificateUser);
         }
-        // 查询有简答题是否回答
-        Exam byId = this.getById(examId);
-        if (byId.getSaqCount() > 0) {
-            LambdaQueryWrapper<ExamQuAnswer> examQuAnswerLambdaQueryWrapper = new LambdaQueryWrapper<>();
-            examQuAnswerLambdaQueryWrapper.eq(ExamQuAnswer::getUserId, SecurityUtil.getUserId())
-                    .eq(ExamQuAnswer::getExamId, examId)
-                    .eq(ExamQuAnswer::getQuestionType, 4);
-            List<ExamQuAnswer> examQuAnswers = examQuAnswerMapper.selectList(examQuAnswerLambdaQueryWrapper);
-            if (examQuAnswers.isEmpty()) {
-                LambdaQueryWrapper<ExamQuestion> examQuestionLambdaQueryWrapper = new LambdaQueryWrapper<>();
-                examQuestionLambdaQueryWrapper.eq(ExamQuestion::getExamId, examId)
-                        .eq(ExamQuestion::getType, 4);
-                List<ExamQuestion> examQuestions = examQuestionMapper.selectList(examQuestionLambdaQueryWrapper);
-                examQuestions.forEach(temp -> {
-                    ExamQuAnswer examQuAnswer1 = new ExamQuAnswer();
-                    examQuAnswer1.setExamId(examId);
-                    examQuAnswer1.setUserId(SecurityUtil.getUserId());
-                    examQuAnswer1.setQuestionId(temp.getQuestionId());
-                    examQuAnswer1.setQuestionType(temp.getType());
-                    examQuAnswer1.setIsRight(-1);
-                    examQuAnswerMapper.insert(examQuAnswer1);
-                });
-            }
-
-        }
-
-        LambdaUpdateWrapper<UserExamsScore> userExamsScoreLambdaUpdateWrapper = new LambdaUpdateWrapper<>();
-        userExamsScoreLambdaUpdateWrapper.set(UserExamsScore::getWhetherMark, -1)
-                .eq(UserExamsScore::getExamId, examId)
-                .eq(UserExamsScore::getUserId, SecurityUtil.getUserId());
-        userExamsScoreMapper.update(userExamsScoreLambdaUpdateWrapper);
         return Result.success("交卷成功");
     }
 

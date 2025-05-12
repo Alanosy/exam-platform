@@ -37,7 +37,7 @@ public class ExamAddForm {
     private LocalDateTime startTime;
 
     // 结束时间
-    @Future(message = "结束时间必须是一个必须是一个将来的日期")
+    // @Future(message = "结束时间必须是一个必须是一个将来的日期")
     @DateTimeFormat(pattern = "yyyy-MM-dd hh:mm:ss")
     private LocalDateTime endTime;
     // 考试班级
