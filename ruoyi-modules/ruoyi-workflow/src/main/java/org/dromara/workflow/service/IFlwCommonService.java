@@ -1,9 +1,11 @@
 package org.dromara.workflow.service;
 
+import org.dromara.warm.flow.core.entity.Instance;
 import org.dromara.warm.flow.core.entity.User;
 import org.dromara.warm.flow.core.service.UserService;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -46,17 +48,6 @@ public interface IFlwCommonService {
     void sendMessage(String flowName, Long instId, List<String> messageType, String message);
 
     /**
-     * 驳回
-     *
-     * @param message        审批意见
-     * @param instanceId     流程实例id
-     * @param targetNodeCode 目标节点
-     * @param flowStatus     流程状态
-     * @param flowHisStatus  节点操作状态
-     */
-    void backTask(String message, Long instanceId, String targetNodeCode, String flowStatus, String flowHisStatus);
-
-    /**
      * 申请人节点编码
      *
      * @param definitionId 流程定义id
@@ -65,9 +56,11 @@ public interface IFlwCommonService {
     String applyNodeCode(Long definitionId);
 
     /**
-     * 删除运行中的任务
+     * 合并变量
      *
-     * @param taskIds 任务id
+     * @param instance 流程实例
+     * @param variable 变量
      */
-    void deleteRunTask(List<Long> taskIds);
+    void mergeVariable(Instance instance, Map<String, Object> variable);
+
 }

@@ -2,7 +2,6 @@ package org.dromara.workflow.service.impl;
 
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.ObjectUtil;
-import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.dubbo.config.annotation.DubboReference;
@@ -12,22 +11,17 @@ import org.dromara.common.core.utils.StringUtils;
 import org.dromara.resource.api.RemoteMailService;
 import org.dromara.resource.api.RemoteMessageService;
 import org.dromara.system.api.domain.vo.RemoteUserVo;
-import org.dromara.warm.flow.core.constant.ExceptionCons;
-import org.dromara.warm.flow.core.dto.FlowParams;
+import org.dromara.warm.flow.core.FlowEngine;
+import org.dromara.warm.flow.core.entity.Instance;
 import org.dromara.warm.flow.core.entity.Node;
 import org.dromara.warm.flow.core.entity.Task;
 import org.dromara.warm.flow.core.entity.User;
-import org.dromara.warm.flow.core.enums.NodeType;
 import org.dromara.warm.flow.core.enums.SkipType;
 import org.dromara.warm.flow.core.service.NodeService;
-import org.dromara.warm.flow.core.service.TaskService;
 import org.dromara.warm.flow.core.service.UserService;
-import org.dromara.warm.flow.core.utils.AssertUtil;
-import org.dromara.warm.flow.orm.entity.FlowNode;
+import org.dromara.warm.flow.core.utils.MapUtil;
 import org.dromara.warm.flow.orm.entity.FlowTask;
 import org.dromara.warm.flow.orm.entity.FlowUser;
-import org.dromara.warm.flow.orm.mapper.FlowNodeMapper;
-import org.dromara.warm.flow.orm.mapper.FlowTaskMapper;
 import org.dromara.workflow.common.ConditionalOnEnable;
 import org.dromara.workflow.common.enums.MessageTypeEnum;
 import org.dromara.workflow.common.enums.TaskAssigneeType;
@@ -51,10 +45,7 @@ import java.util.stream.Collectors;
 @Service
 public class FlwCommonServiceImpl implements IFlwCommonService {
 
-    private final FlowNodeMapper flowNodeMapper;
-    private final FlowTaskMapper flowTaskMapper;
     private final UserService userService;
-    private final TaskService taskService;
     private final NodeService nodeService;
 
     @DubboReference
@@ -181,44 +172,6 @@ public class FlwCommonServiceImpl implements IFlwCommonService {
     }
 
     /**
-     * 驳回
-     *
-     * @param message        审批意见
-     * @param instanceId     流程实例id
-     * @param targetNodeCode 目标节点
-     * @param flowStatus     流程状态
-     * @param flowHisStatus  节点操作状态
-     */
-    @Override
-    public void backTask(String message, Long instanceId, String targetNodeCode, String flowStatus, String flowHisStatus) {
-        IFlwTaskService flwTaskService = SpringUtils.getBean(IFlwTaskService.class);
-        List<FlowTask> list = flwTaskService.selectByInstId(instanceId);
-        if (CollUtil.isNotEmpty(list)) {
-            List<FlowTask> tasks = StreamUtils.filter(list, e -> e.getNodeCode().equals(targetNodeCode));
-            if (list.size() == tasks.size()) {
-                return;
-            }
-        }
-        for (FlowTask task : list) {
-            List<RemoteUserVo> userList = flwTaskService.currentTaskAllUser(task.getId());
-            FlowParams flowParams = FlowParams.build()
-                .nodeCode(targetNodeCode)
-                .message(message)
-                .skipType(SkipType.PASS.getKey())
-                .flowStatus(flowStatus)
-                .hisStatus(flowHisStatus)
-                .ignore(true);
-            //解决会签没权限问题
-            if (CollUtil.isNotEmpty(userList)) {
-                flowParams.handler(userList.get(0).getUserId().toString());
-            }
-            taskService.skip(task.getId(), flowParams);
-        }
-        //解决会签多人审批问题
-        backTask(message, instanceId, targetNodeCode, flowStatus, flowHisStatus);
-    }
-
-    /**
      * 申请人节点编码
      *
      * @param definitionId 流程定义id
@@ -226,26 +179,18 @@ public class FlwCommonServiceImpl implements IFlwCommonService {
      */
     @Override
     public String applyNodeCode(Long definitionId) {
-        //获取已发布的流程节点
-        List<FlowNode> flowNodes = flowNodeMapper.selectList(new LambdaQueryWrapper<FlowNode>().eq(FlowNode::getDefinitionId, definitionId));
-        AssertUtil.isTrue(CollUtil.isEmpty(flowNodes), ExceptionCons.NOT_PUBLISH_NODE);
-        Node startNode = flowNodes.stream().filter(t -> NodeType.isStart(t.getNodeType())).findFirst().orElse(null);
-        AssertUtil.isNull(startNode, ExceptionCons.LOST_START_NODE);
+        Node startNode = nodeService.getStartNode(definitionId);
         Node nextNode = nodeService.getNextNode(definitionId, startNode.getNodeCode(), null, SkipType.PASS.getKey());
         return nextNode.getNodeCode();
     }
 
-    /**
-     * 删除运行中的任务
-     *
-     * @param taskIds 任务id
-     */
     @Override
-    public void deleteRunTask(List<Long> taskIds) {
-        if (CollUtil.isEmpty(taskIds)) {
-            return;
+    public void mergeVariable(Instance instance, Map<String, Object> variable) {
+        if (MapUtil.isNotEmpty(variable)) {
+            String variableStr = instance.getVariable();
+            Map<String, Object> deserialize = FlowEngine.jsonConvert.strToMap(variableStr);
+            deserialize.putAll(variable);
+            instance.setVariable(FlowEngine.jsonConvert.objToStr(deserialize));
         }
-        userService.deleteByTaskIds(taskIds);
-        flowTaskMapper.deleteByIds(taskIds);
     }
 }

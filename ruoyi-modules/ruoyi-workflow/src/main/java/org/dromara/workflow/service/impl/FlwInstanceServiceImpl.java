@@ -19,13 +19,13 @@ import org.dromara.common.mybatis.core.page.PageQuery;
 import org.dromara.common.mybatis.core.page.TableDataInfo;
 import org.dromara.common.satoken.utils.LoginHelper;
 import org.dromara.system.api.domain.vo.RemoteUserVo;
-import org.dromara.warm.flow.core.FlowEngine;
 import org.dromara.warm.flow.core.constant.ExceptionCons;
 import org.dromara.warm.flow.core.dto.FlowParams;
 import org.dromara.warm.flow.core.entity.Definition;
 import org.dromara.warm.flow.core.entity.Instance;
 import org.dromara.warm.flow.core.entity.Task;
 import org.dromara.warm.flow.core.enums.NodeType;
+import org.dromara.warm.flow.core.enums.SkipType;
 import org.dromara.warm.flow.core.service.ChartService;
 import org.dromara.warm.flow.core.service.DefService;
 import org.dromara.warm.flow.core.service.InsService;
@@ -244,19 +244,16 @@ public class FlwInstanceServiceImpl implements IFlwInstanceService {
                 throw new ServiceException(ExceptionCons.NOT_FOUNT_DEF);
             }
             String message = bo.getMessage();
+            String userIdStr = LoginHelper.getUserIdStr();
             BusinessStatusEnum.checkCancelStatus(instance.getFlowStatus());
-            String applyNodeCode = flwCommonService.applyNodeCode(definition.getId());
-            //撤销
-            flwCommonService.backTask(message, instance.getId(), applyNodeCode, BusinessStatusEnum.CANCEL.getStatus(), BusinessStatusEnum.CANCEL.getStatus());
-            //判断或签节点是否有多个，只保留一个
-            List<Task> currentTaskList = taskService.list(FlowEngine.newTask().setInstanceId(instance.getId()));
-            if (CollUtil.isNotEmpty(currentTaskList)) {
-                if (currentTaskList.size() > 1) {
-                    currentTaskList.remove(0);
-                    flwCommonService.deleteRunTask(StreamUtils.toList(currentTaskList, Task::getId));
-                }
-            }
-
+            FlowParams flowParams = FlowParams.build()
+                .message(message)
+                .skipType(SkipType.PASS.getKey())
+                .flowStatus(BusinessStatusEnum.CANCEL.getStatus())
+                .hisStatus(BusinessStatusEnum.CANCEL.getStatus())
+                .handler(userIdStr)
+                .ignore(true);
+            taskService.revoke(instance.getId(), flowParams);
         } catch (Exception e) {
             log.error("撤销失败: {}", e.getMessage(), e);
             throw new ServiceException(e.getMessage());
@@ -363,7 +360,7 @@ public class FlwInstanceServiceImpl implements IFlwInstanceService {
     public void setVariable(Long instanceId, Map<String, Object> variable) {
         Instance instance = insService.getById(instanceId);
         if (instance != null) {
-            taskService.mergeVariable(instance, variable);
+            flwCommonService.mergeVariable(instance, variable);
             insService.updateById(instance);
         }
     }
