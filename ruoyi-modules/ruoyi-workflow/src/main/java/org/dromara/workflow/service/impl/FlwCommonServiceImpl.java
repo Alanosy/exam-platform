@@ -81,7 +81,7 @@ public class FlwCommonServiceImpl implements IFlwCommonService {
             List<User> entryValue = entry.getValue();
             String processedBys = StreamUtils.join(entryValue, User::getProcessedBy);
             // 根据 processedBy 前缀判断处理人类型，分别获取用户列表
-            List<RemoteUserVo> users = taskAssigneeService.fetchUsersByStorageId(processedBys);
+            List<RemoteUserVo> users = taskAssigneeService.fetchUsersByStorageIds(processedBys);
             // 转换为 FlowUser 并添加到结果集合
             if (CollUtil.isNotEmpty(users)) {
                 users.forEach(dto -> {

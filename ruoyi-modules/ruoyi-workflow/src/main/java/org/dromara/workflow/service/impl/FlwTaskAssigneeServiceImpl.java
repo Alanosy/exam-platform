@@ -8,7 +8,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.dubbo.config.annotation.DubboReference;
 import org.dromara.common.core.enums.FormatsType;
-import org.dromara.common.core.exception.ServiceException;
 import org.dromara.common.core.utils.DateUtils;
 import org.dromara.common.core.utils.StringUtils;
 import org.dromara.system.api.RemoteDeptService;
@@ -172,22 +171,6 @@ public class FlwTaskAssigneeServiceImpl implements IFlwTaskAssigneeService, Hand
     }
 
     /**
-     * 根据存储标识符（storageId）解析分配类型和ID，并获取对应的用户列表
-     * 支持单个标识（例如 "user:123" 或 "456"），格式非法将返回空列表
-     *
-     * @param storageId 包含分配类型和ID的字符串
-     * @return 匹配的用户列表，格式非法返回空列表
-     */
-    @Override
-    public List<RemoteUserVo> fetchUsersByStorageId(String storageId) {
-        Pair<TaskAssigneeEnum, Long> parsed = this.parseStorageId(storageId);
-        if (parsed == null) {
-            return Collections.emptyList();
-        }
-        return this.getUsersByType(parsed.getKey(), Collections.singletonList(parsed.getValue()));
-    }
-
-    /**
      * 批量解析多个存储标识符（storageIds），按类型分类并合并查询用户列表
      * 输入格式支持多个以逗号分隔的标识（如 "user:123,role:456,789"）
      * 会自动去重返回结果，非法格式的标识将被忽略
@@ -197,8 +180,11 @@ public class FlwTaskAssigneeServiceImpl implements IFlwTaskAssigneeService, Hand
      */
     @Override
     public List<RemoteUserVo> fetchUsersByStorageIds(String storageIds) {
+        if (StringUtils.isEmpty(storageIds)) {
+            return List.of();
+        }
         Map<TaskAssigneeEnum, List<Long>> typeIdMap = new EnumMap<>(TaskAssigneeEnum.class);
-        for (String storageId : storageIds.split(StrUtil.COMMA)) {
+        for (String storageId : storageIds.split(StringUtils.SEPARATOR)) {
             Pair<TaskAssigneeEnum, Long> parsed = this.parseStorageId(storageId);
             if (parsed != null) {
                 typeIdMap.computeIfAbsent(parsed.getKey(), k -> new ArrayList<>()).add(parsed.getValue());
