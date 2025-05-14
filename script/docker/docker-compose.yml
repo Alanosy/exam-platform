@@ -44,7 +44,7 @@ services:
     network_mode: "host"
 
   redis:
-    image: redis:6.2.12
+    image: redis:7.2.8
     container_name: redis
     ports:
       - "6379:6379"
