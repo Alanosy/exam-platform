@@ -104,6 +104,12 @@
             <artifactId>ruoyi-api-resource</artifactId>
         </dependency>
 
+        <!-- RuoYi Api System -->
+        <dependency>
+            <groupId>org.dromara</groupId>
+            <artifactId>ruoyi-api-workflow</artifactId>
+        </dependency>
+
     </dependencies>
 
     <build>
