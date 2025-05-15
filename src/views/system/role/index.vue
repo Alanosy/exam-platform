@@ -323,7 +323,7 @@ const handleSelectionChange = (selection: RoleVO[]) => {
 
 /** 角色状态修改 */
 const handleStatusChange = async (row: RoleVO) => {
-  let text = row.status === '0' ? '启用' : '停用';
+  const text = row.status === '0' ? '启用' : '停用';
   try {
     await proxy?.$modal.confirm('确认要"' + text + '""' + row.roleName + '"角色吗?');
     await changeRoleStatus(row.roleId, row.status);
@@ -346,11 +346,11 @@ const getMenuTreeselect = async () => {
 /** 所有部门节点数据 */
 const getDeptAllCheckedKeys = (): any => {
   // 目前被选中的部门节点
-  let checkedKeys = deptRef.value?.getCheckedKeys();
+  const checkedKeys = deptRef.value?.getCheckedKeys();
   // 半选中的部门节点
-  let halfCheckedKeys = deptRef.value?.getHalfCheckedKeys();
+  const halfCheckedKeys = deptRef.value?.getHalfCheckedKeys();
   if (halfCheckedKeys) {
-    checkedKeys?.unshift.apply(checkedKeys, halfCheckedKeys);
+    checkedKeys?.unshift(...halfCheckedKeys);
   }
   return checkedKeys;
 };
@@ -404,14 +404,14 @@ const getRoleDeptTreeSelect = async (roleId: string | number) => {
 /** 树权限（展开/折叠）*/
 const handleCheckedTreeExpand = (value: boolean, type: string) => {
   if (type == 'menu') {
-    let treeList = menuOptions.value;
+    const treeList = menuOptions.value;
     for (let i = 0; i < treeList.length; i++) {
       if (menuRef.value) {
         menuRef.value.store.nodesMap[treeList[i].id].expanded = value;
       }
     }
   } else if (type == 'dept') {
-    let treeList = deptOptions.value;
+    const treeList = deptOptions.value;
     for (let i = 0; i < treeList.length; i++) {
       if (deptRef.value) {
         deptRef.value.store.nodesMap[treeList[i].id].expanded = value;
@@ -438,11 +438,11 @@ const handleCheckedTreeConnect = (value: any, type: string) => {
 /** 所有菜单节点数据 */
 const getMenuAllCheckedKeys = (): any => {
   // 目前被选中的菜单节点
-  let checkedKeys = menuRef.value?.getCheckedKeys();
+  const checkedKeys = menuRef.value?.getCheckedKeys();
   // 半选中的菜单节点
-  let halfCheckedKeys = menuRef.value?.getHalfCheckedKeys();
+  const halfCheckedKeys = menuRef.value?.getHalfCheckedKeys();
   if (halfCheckedKeys) {
-    checkedKeys?.unshift.apply(checkedKeys, halfCheckedKeys);
+    checkedKeys?.unshift(...halfCheckedKeys);
   }
   return checkedKeys;
 };

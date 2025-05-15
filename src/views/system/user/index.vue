@@ -498,7 +498,7 @@ const handleDelete = async (row?: UserVO) => {
 
 /** 用户状态修改  */
 const handleStatusChange = async (row: UserVO) => {
-  let text = row.status === '0' ? '启用' : '停用';
+  const text = row.status === '0' ? '启用' : '停用';
   try {
     await proxy?.$modal.confirm('确认要"' + text + '""' + row.userName + '"用户吗?');
     await api.changeUserStatus(row.userId, row.status);

@@ -300,7 +300,7 @@ const handleExport = () => {
 
 /** 状态修改  */
 const handleStatusChange = async (row: ClientVO) => {
-  let text = row.status === '0' ? '启用' : '停用';
+  const text = row.status === '0' ? '启用' : '停用';
   try {
     await proxy?.$modal.confirm('确认要"' + text + '"吗?');
     await changeStatus(row.clientId, row.status);

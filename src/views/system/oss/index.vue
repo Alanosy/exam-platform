@@ -255,9 +255,9 @@ const handleHeaderCLick = (column: any) => {
   handleOrderChange(column.property, column.multiOrder);
 };
 const handleOrderChange = (prop: string, order: string) => {
-  let orderByArr = queryParams.value.orderByColumn ? queryParams.value.orderByColumn.split(',') : [];
-  let isAscArr = queryParams.value.isAsc ? queryParams.value.isAsc.split(',') : [];
-  let propIndex = orderByArr.indexOf(prop);
+  const orderByArr = queryParams.value.orderByColumn ? queryParams.value.orderByColumn.split(',') : [];
+  const isAscArr = queryParams.value.isAsc ? queryParams.value.isAsc.split(',') : [];
+  const propIndex = orderByArr.indexOf(prop);
   if (propIndex !== -1) {
     if (order) {
       //排序里已存在 只修改排序
@@ -306,7 +306,7 @@ const handleDownload = (row: OssVO) => {
 };
 /** 预览开关按钮  */
 const handlePreviewListResource = async (preview: boolean) => {
-  let text = preview ? '启用' : '停用';
+  const text = preview ? '启用' : '停用';
   try {
     await proxy?.$modal.confirm('确认要"' + text + '""预览列表图片"配置吗?');
     await proxy?.updateConfigByKey('sys.oss.previewListResource', preview);

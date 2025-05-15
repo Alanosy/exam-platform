@@ -95,7 +95,7 @@ const getRowKey = (row: RoleVO): string => {
 };
 /** 检查角色状态 */
 const checkSelectable = (row: RoleVO): boolean => {
-  return row.status === "0";
+  return row.status === '0';
 };
 /** 关闭按钮 */
 const close = () => {

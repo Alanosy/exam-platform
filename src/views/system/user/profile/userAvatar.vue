@@ -134,7 +134,7 @@ const beforeUpload = (file: UploadRawFile): any => {
 /** 上传图片 */
 const uploadImg = async () => {
   cropper.value.getCropBlob(async (data: any) => {
-    let formData = new FormData();
+    const formData = new FormData();
     formData.append('avatarfile', data, options.fileName);
     const res = await uploadAvatar(formData);
     open.value = false;

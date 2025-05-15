@@ -86,7 +86,7 @@ const resolvePath = (routePath: string, routeQuery?: string): any => {
     return props.basePath;
   }
   if (routeQuery) {
-    let query = JSON.parse(routeQuery);
+    const query = JSON.parse(routeQuery);
     return { path: getNormalPath(props.basePath + '/' + routePath), query: query };
   }
   return getNormalPath(props.basePath + '/' + routePath);

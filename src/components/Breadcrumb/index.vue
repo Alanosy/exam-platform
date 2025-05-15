@@ -44,7 +44,7 @@ const findPathNum = (str, char = '/') => {
   return str.split(char).length - 1;
 };
 const getMatched = (pathList, routeList, matched) => {
-  let data = routeList.find((item) => item.path == pathList[0] || (item.name += '').toLowerCase() == pathList[0]);
+  const data = routeList.find((item) => item.path == pathList[0] || (item.name += '').toLowerCase() == pathList[0]);
   if (data) {
     matched.push(data);
     if (data.children && pathList.length) {

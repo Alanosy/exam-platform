@@ -48,4 +48,3 @@ export type ObjKeysToUnion<T, P extends string = ''> = T extends object
       [K in keyof T]: ObjKeysToUnion<T[K], P extends '' ? `${K & string}` : `${P}.${K & string}`>;
     }[keyof T]
   : P;
-

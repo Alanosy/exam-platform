@@ -95,7 +95,7 @@ const options = ref<any>({
 });
 
 const styles = computed(() => {
-  let style: any = {};
+  const style: any = {};
   if (props.minHeight) {
     style.minHeight = `${props.minHeight}px`;
   }
@@ -121,9 +121,9 @@ const handleUploadSuccess = (res: any) => {
   // 如果上传成功
   if (res.code === 200) {
     // 获取富文本实例
-    let quill = toRaw(quillEditorRef.value).getQuill();
+    const quill = toRaw(quillEditorRef.value).getQuill();
     // 获取光标位置
-    let length = quill.selection.savedRange.index;
+    const length = quill.selection.savedRange.index;
     // 插入图片，res为服务器返回的图片链接地址
     quill.insertEmbed(length, 'image', res.data.url);
     // 调整光标到最后

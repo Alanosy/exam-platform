@@ -98,7 +98,7 @@ import { dynamicClear, dynamicTenant } from '@/api/system/tenant';
 import { TenantVO } from '@/api/types';
 import notice from './notice/index.vue';
 import router from '@/router';
-import {ElMessageBoxOptions} from "element-plus/es/components/message-box/src/message-box.type";
+import { ElMessageBoxOptions } from 'element-plus/es/components/message-box/src/message-box.type';
 
 const appStore = useAppStore();
 const userStore = useUserStore();

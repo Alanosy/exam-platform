@@ -87,16 +87,16 @@
           <el-input v-model="form.configKey" placeholder="请输入配置key" />
         </el-form-item>
         <el-form-item label="访问站点" prop="endpoint">
-          <el-input v-model="form.endpoint" placeholder="请输入访问站点" >
+          <el-input v-model="form.endpoint" placeholder="请输入访问站点">
             <template #prefix>
-              <span style="color: #999;">{{ protocol }}</span>
+              <span style="color: #999">{{ protocol }}</span>
             </template>
           </el-input>
         </el-form-item>
         <el-form-item label="自定义域名" prop="domain">
-          <el-input v-model="form.domain" placeholder="请输入自定义域名" >
+          <el-input v-model="form.domain" placeholder="请输入自定义域名">
             <template #prefix>
-              <span style="color: #999;">{{ protocol }}</span>
+              <span style="color: #999">{{ protocol }}</span>
             </template>
           </el-input>
         </el-form-item>
@@ -316,7 +316,7 @@ const submitForm = () => {
 };
 /** 状态修改  */
 const handleStatusChange = async (row: OssConfigVO) => {
-  let text = row.status === '0' ? '启用' : '停用';
+  const text = row.status === '0' ? '启用' : '停用';
   try {
     await proxy?.$modal.confirm('确认要"' + text + '""' + row.configKey + '"配置吗?');
     await changeOssConfigStatus(row.ossConfigId, row.status, row.configKey);

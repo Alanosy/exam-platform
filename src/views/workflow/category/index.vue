@@ -34,7 +34,7 @@
         :default-expand-all="isExpandAll"
         :tree-props="{ children: 'children', hasChildren: 'hasChildren' }"
       >
-        <el-table-column label="分类名称" prop="categoryName" width="260"/>
+        <el-table-column label="分类名称" prop="categoryName" width="260" />
         <el-table-column label="显示顺序" align="center" prop="orderNum" width="200" />
         <el-table-column label="创建时间" align="center" prop="createTime" width="180" />
         <el-table-column label="操作" fixed="right" align="center" class-name="small-padding fixed-width">
@@ -77,7 +77,7 @@
           </el-col>
         </el-row>
       </el-form>
-    <template #footer>
+      <template #footer>
         <div class="dialog-footer">
           <el-button :loading="buttonLoading" type="primary" @click="submitForm">确 定</el-button>
           <el-button @click="cancel">取 消</el-button>
@@ -88,17 +88,16 @@
 </template>
 
 <script setup name="Category" lang="ts">
-import { listCategory, getCategory, delCategory, addCategory, updateCategory } from "@/api/workflow/category";
+import { listCategory, getCategory, delCategory, addCategory, updateCategory } from '@/api/workflow/category';
 import { CategoryVO, CategoryQuery, CategoryForm } from '@/api/workflow/category/types';
 
 type CategoryOption = {
   categoryId: number;
   categoryName: string;
   children?: CategoryOption[];
-}
+};
 
-const { proxy } = getCurrentInstance() as ComponentInternalInstance;;
-
+const { proxy } = getCurrentInstance() as ComponentInternalInstance;
 
 const categoryList = ref<CategoryVO[]>([]);
 const categoryOptions = ref<CategoryOption[]>([]);
@@ -109,32 +108,29 @@ const loading = ref(false);
 
 const queryFormRef = ref<ElFormInstance>();
 const categoryFormRef = ref<ElFormInstance>();
-const categoryTableRef = ref<ElTableInstance>()
+const categoryTableRef = ref<ElTableInstance>();
 
 const dialog = reactive<DialogOption>({
   visible: false,
   title: ''
 });
 
-
 const initFormData: CategoryForm = {
   categoryId: undefined,
-  categoryName: "",
+  categoryName: '',
   parentId: undefined,
-  orderNum: 0,
-}
+  orderNum: 0
+};
 
 const data = reactive<PageData<CategoryForm, CategoryQuery>>({
-  form: {...initFormData},
+  form: { ...initFormData },
   queryParams: {
-    categoryName: undefined,
+    categoryName: undefined
   },
   rules: {
-    categoryId: [
-      { required: true, message: "流程分类ID不能为空", trigger: "blur" }
-    ],
-    parentId: [{ required: true, message: "请选择上级分类", trigger: "change" }],
-    categoryName: [{ required: true, message: "请输入分类名称", trigger: "blur" }]
+    categoryId: [{ required: true, message: '流程分类ID不能为空', trigger: 'blur' }],
+    parentId: [{ required: true, message: '请选择上级分类', trigger: 'change' }],
+    categoryName: [{ required: true, message: '请输入分类名称', trigger: 'blur' }]
   }
 });
 
@@ -144,19 +140,19 @@ const { queryParams, form, rules } = toRefs(data);
 const getList = async () => {
   loading.value = true;
   const res = await listCategory(queryParams.value);
-  const data = proxy?.handleTree<CategoryVO>(res.data, "categoryId", "parentId");
+  const data = proxy?.handleTree<CategoryVO>(res.data, 'categoryId', 'parentId');
   if (data) {
     categoryList.value = data;
     loading.value = false;
   }
-}
+};
 
 /** 查询流程分类下拉树结构 */
 const getTreeselect = async () => {
   const res = await listCategory();
   categoryOptions.value = [];
   // 处理树形数据
-  const data = proxy?.handleTree<CategoryOption>(res.data, "categoryId", "parentId");
+  const data = proxy?.handleTree<CategoryOption>(res.data, 'categoryId', 'parentId');
   if (data) {
     categoryOptions.value = data; // 将处理后的树形数据赋值
   }
@@ -166,24 +162,24 @@ const getTreeselect = async () => {
 const cancel = () => {
   reset();
   dialog.visible = false;
-}
+};
 
 // 表单重置
 const reset = () => {
-  form.value = {...initFormData}
+  form.value = { ...initFormData };
   categoryFormRef.value?.resetFields();
-}
+};
 
 /** 搜索按钮操作 */
 const handleQuery = () => {
   getList();
-}
+};
 
 /** 重置按钮操作 */
 const resetQuery = () => {
   queryFormRef.value?.resetFields();
   handleQuery();
-}
+};
 
 /** 新增按钮操作 */
 const handleAdd = (row?: CategoryVO) => {
@@ -195,22 +191,22 @@ const handleAdd = (row?: CategoryVO) => {
     form.value.parentId = undefined;
   }
   dialog.visible = true;
-  dialog.title = "添加流程分类";
-}
+  dialog.title = '添加流程分类';
+};
 
 /** 展开/折叠操作 */
 const handleToggleExpandAll = () => {
   isExpandAll.value = !isExpandAll.value;
-  toggleExpandAll(categoryList.value, isExpandAll.value)
-}
+  toggleExpandAll(categoryList.value, isExpandAll.value);
+};
 
 /** 展开/折叠操作 */
 const toggleExpandAll = (data: CategoryVO[], status: boolean) => {
   data.forEach((item) => {
-    categoryTableRef.value?.toggleRowExpansion(item, status)
-    if (item.children && item.children.length > 0) toggleExpandAll(item.children, status)
-  })
-}
+    categoryTableRef.value?.toggleRowExpansion(item, status);
+    if (item.children && item.children.length > 0) toggleExpandAll(item.children, status);
+  });
+};
 
 /** 修改按钮操作 */
 const handleUpdate = async (row: CategoryVO) => {
@@ -222,8 +218,8 @@ const handleUpdate = async (row: CategoryVO) => {
   const res = await getCategory(row.categoryId);
   Object.assign(form.value, res.data);
   dialog.visible = true;
-  dialog.title = "修改流程分类";
-}
+  dialog.title = '修改流程分类';
+};
 
 /** 提交按钮 */
 const submitForm = () => {
@@ -231,25 +227,25 @@ const submitForm = () => {
     if (valid) {
       buttonLoading.value = true;
       if (form.value.categoryId) {
-        await updateCategory(form.value).finally(() => buttonLoading.value = false);
+        await updateCategory(form.value).finally(() => (buttonLoading.value = false));
       } else {
-        await addCategory(form.value).finally(() => buttonLoading.value = false);
+        await addCategory(form.value).finally(() => (buttonLoading.value = false));
       }
-      proxy?.$modal.msgSuccess("操作成功");
+      proxy?.$modal.msgSuccess('操作成功');
       dialog.visible = false;
       getList();
     }
   });
-}
+};
 
 /** 删除按钮操作 */
 const handleDelete = async (row: CategoryVO) => {
   await proxy?.$modal.confirm('是否确认删除"' + row.categoryName + '"的分类？');
   loading.value = true;
-  await delCategory(row.categoryId).finally(() => loading.value = false);
+  await delCategory(row.categoryId).finally(() => (loading.value = false));
   await getList();
-  proxy?.$modal.msgSuccess("删除成功");
-}
+  proxy?.$modal.msgSuccess('删除成功');
+};
 
 onMounted(() => {
   getList();

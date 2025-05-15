@@ -14,8 +14,8 @@ NProgress.configure({ showSpinner: false });
 const whiteList = ['/login', '/register', '/social-callback', '/register*', '/register/*'];
 
 const isWhiteList = (path: string) => {
-  return whiteList.some(pattern => isPathMatch(pattern, path))
-}
+  return whiteList.some((pattern) => isPathMatch(pattern, path));
+};
 
 router.beforeEach(async (to, from, next) => {
   NProgress.start();

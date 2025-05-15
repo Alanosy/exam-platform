@@ -40,16 +40,16 @@ watch(
 );
 
 onMounted(() => {
-  addIframe()
-})
+  addIframe();
+});
 
 watchEffect(() => {
-  addIframe()
-})
+  addIframe();
+});
 
 function addIframe() {
   if (route.meta.link) {
-    useTagsViewStore().addIframeView(route)
+    useTagsViewStore().addIframeView(route);
   }
 }
 </script>

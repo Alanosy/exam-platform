@@ -18,7 +18,7 @@ const tagsViewStore = useTagsViewStore();
 
 function iframeUrl(url: string | undefined, query: any) {
   if (Object.keys(query).length > 0) {
-    let params = Object.keys(query)
+    const params = Object.keys(query)
       .map((key) => key + '=' + query[key])
       .join('&');
     return url + '?' + params;

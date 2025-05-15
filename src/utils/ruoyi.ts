@@ -178,11 +178,11 @@ export const handleTree = <T>(data: any[], id?: string, parentId?: string, child
 
   for (const d of data) {
     const parentId = d[config.parentId];
-    const parentObj = childrenListMap[parentId]
+    const parentObj = childrenListMap[parentId];
     if (!parentObj) {
       tree.push(d);
     } else {
-      parentObj[config.childrenList].push(d)
+      parentObj[config.childrenList].push(d);
     }
   }
   return tree;

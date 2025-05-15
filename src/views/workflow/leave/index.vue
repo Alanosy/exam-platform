@@ -222,7 +222,7 @@ const handleExport = () => {
 const handleCancelProcessApply = async (id: string) => {
   await proxy?.$modal.confirm('是否确认撤销当前单据？');
   loading.value = true;
-  let data = {
+  const data = {
     businessId: id,
     message: '申请人撤销流程！'
   };

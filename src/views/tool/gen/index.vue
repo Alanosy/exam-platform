@@ -113,8 +113,8 @@
 </template>
 
 <script setup name="Gen" lang="ts">
-import {delTable, genCode, getDataNames, listTable, previewTable, synchDb} from '@/api/tool/gen';
-import {TableQuery, TableVO} from '@/api/tool/gen/types';
+import { delTable, genCode, getDataNames, listTable, previewTable, synchDb } from '@/api/tool/gen';
+import { TableQuery, TableVO } from '@/api/tool/gen/types';
 import router from '@/router';
 import ImportTable from './importTable.vue';
 

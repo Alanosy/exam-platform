@@ -203,7 +203,6 @@ onMounted(() => {
     line-height: 0;
     color: #7483a3;
   }
-
 }
 
 .register-form {
