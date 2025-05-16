@@ -1,17 +1,15 @@
 <template>
   <div class="p-2">
     <el-card shadow="never">
-      <div style="display: flex; justify-content: space-between">
-        <div>
-          <el-button v-if="submitButtonShow" :loading="buttonLoading" type="info" @click="submitForm('draft')">暂存</el-button>
-          <el-button v-if="submitButtonShow" :loading="buttonLoading" type="primary" @click="submitForm('submit')">提 交</el-button>
-          <el-button v-if="approvalButtonShow" :loading="buttonLoading" type="primary" @click="approvalVerifyOpen">审批</el-button>
-          <el-button v-if="form && form.id && form.status !== 'draft'" type="primary" @click="handleApprovalRecord">流程进度</el-button>
-        </div>
-        <div>
-          <el-button style="float: right" @click="goBack()">返回</el-button>
-        </div>
-      </div>
+      <approvalButton
+        @submitForm="submitForm"
+        @approvalVerifyOpen="approvalVerifyOpen"
+        @handleApprovalRecord="handleApprovalRecord"
+        :buttonLoading="buttonLoading"
+        :id="form.id"
+        :status="form.status"
+        :pageType="routeParams.type"
+      />
     </el-card>
     <el-card shadow="never" style="height: 78vh; overflow-y: auto">
       <el-form ref="leaveFormRef" v-loading="loading" :disabled="routeParams.type === 'view'" :model="form" :rules="rules" label-width="80px">
@@ -64,6 +62,7 @@ import { LeaveForm, LeaveQuery, LeaveVO } from '@/api/workflow/leave/types';
 import { startWorkFlow } from '@/api/workflow/task';
 import SubmitVerify from '@/components/Process/submitVerify.vue';
 import ApprovalRecord from '@/components/Process/approvalRecord.vue';
+import ApprovalButton from '@/components/Process/approvalButton.vue';
 import { AxiosResponse } from 'axios';
 import { StartProcessBo } from '@/api/workflow/workflowCommon/types';
 const { proxy } = getCurrentInstance() as ComponentInternalInstance;
@@ -128,6 +127,8 @@ const dialogVisible = reactive<DialogOption>({
 const submitVerifyRef = ref<InstanceType<typeof SubmitVerify>>();
 //审批记录组件
 const approvalRecordRef = ref<InstanceType<typeof ApprovalRecord>>();
+//按钮组件
+const approvalButtonRef = ref<InstanceType<typeof ApprovalButton>>();
 
 const leaveFormRef = ref<ElFormInstance>();
 
@@ -274,12 +275,6 @@ const handleApprovalRecord = () => {
 //提交回调
 const submitCallback = async () => {
   await proxy.$tab.closePage(proxy.$route);
-  proxy.$router.go(-1);
-};
-
-//返回
-const goBack = () => {
-  proxy.$tab.closePage(proxy.$route);
   proxy.$router.go(-1);
 };
 //审批
