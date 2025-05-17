@@ -928,6 +928,21 @@ public class ExamServiceImpl extends ServiceImpl<ExamMapper, Exam> implements IE
         userExamsScoreToUpdate.setState(1); // 标记为完成
         userExamsScoreToUpdate.setLimitTime(nowTime); // 记录交卷时间
 
+        // 查询用户未作答的简答题，并添加默认空白作答
+        List<ExamQuestion> unansweredSaqQuestions = examQuestionMapper.getUnansweredSaqQuestions(examId, SecurityUtil.getUserId());
+        if (unansweredSaqQuestions != null && !unansweredSaqQuestions.isEmpty()) {
+            for (ExamQuestion question : unansweredSaqQuestions) {
+                ExamQuAnswer examQuAnswer = new ExamQuAnswer();
+                examQuAnswer.setExamId(examId);
+                examQuAnswer.setUserId(SecurityUtil.getUserId());
+                examQuAnswer.setQuestionId(question.getQuestionId());
+                examQuAnswer.setQuestionType(4); // 简答题
+                examQuAnswer.setAnswerContent(""); // 空白作答
+                examQuAnswer.setIsRight(0); // 默认错误
+                examQuAnswerMapper.insert(examQuAnswer);
+            }
+        }
+
         // 查询用户答题记录
         LambdaQueryWrapper<ExamQuAnswer> examQuAnswerLambdaQuery = new LambdaQueryWrapper<>();
         examQuAnswerLambdaQuery.eq(ExamQuAnswer::getUserId, SecurityUtil.getUserId())

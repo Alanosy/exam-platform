@@ -47,4 +47,13 @@ public interface ExamQuestionMapper extends BaseMapper<ExamQuestion> {
      */
     List<ExamQuestion> getExamQuByExamIdAndQuType(Integer examId, Integer quType);
 
+
+    /**
+     *
+     * 根据试卷ID和学生ID查询该学生在该场考试中所有未作答的简答题
+     * @param examId 试卷ID
+     * @param userId 用户ID
+     * @return 未作答的简答题列表
+     */
+    List<ExamQuestion> getUnansweredSaqQuestions(Integer examId, Integer userId);
 }
