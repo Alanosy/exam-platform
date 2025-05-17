@@ -25,5 +25,17 @@
         AND type = #{quType}
         ORDER BY sort ASC
     </select>
+    <!-- 根据试卷ID和学生ID查询该学生在该场考试中所有未作答的简答题 -->
+    <select id="getUnansweredSaqQuestions" resultType="cn.org.alan.exam.model.entity.ExamQuestion">
+        SELECT q.*
+        FROM t_exam_question q
+        WHERE q.exam_id = #{examId} AND q.type = 4
+        AND NOT EXISTS (
+        SELECT 1 FROM t_exam_qu_answer a
+        WHERE a.question_id = q.question_id
+        AND a.user_id = #{userId}
+        AND a.exam_id = #{examId}
+        )
+    </select>
 
 </mapper>
