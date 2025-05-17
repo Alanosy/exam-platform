@@ -1,6 +1,7 @@
 package cn.org.alan.exam.model.vo.exercise;
 
 import lombok.Data;
+import lombok.experimental.Accessors;
 
 /**
  * @Author WeiJin

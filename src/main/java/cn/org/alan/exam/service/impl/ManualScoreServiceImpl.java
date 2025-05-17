@@ -140,11 +140,6 @@ public class ManualScoreServiceImpl extends ServiceImpl<ManualScoreMapper, Manua
                     .eq(UserExamsScore::getExamId, answerExamVO.getExamId());
             answerExamVO.setCorrectedPaper(userExamsScoreMapper.selectCount(correctedWrapper).intValue());
         });
-        // 移除不需要批改的试卷
-        page.setRecords(list.stream()
-                .filter(answerExamVO -> answerExamVO.getNeededMark() == 1)
-                .collect(java.util.stream.Collectors.toList()));
-
         return Result.success(null, page);
 
     }

@@ -4,10 +4,10 @@
 
     <!--获取自己创建的考试，考试id，考试考试标题，是否需要阅卷-->
     <select id="selectMarkedList" resultType="cn.org.alan.exam.model.vo.answer.AnswerExamVO">
-        select id as examId, title as examTitle, case when saq_count > 0 then 1 else 0 end as neededMark
+        select id as examId, title as examTitle, 1 as neededMark
         from t_exam
         <trim prefix="where" prefixOverrides="and">
-            is_deleted = 0
+            is_deleted = 0 and saq_count > 0
             <if test="role == 'role_teacher'">
                 and user_id = #{userId}
             </if>
