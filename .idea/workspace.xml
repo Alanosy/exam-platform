@@ -1,0 +1,173 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="9f91ae12-c926-451e-b026-1b3559a4a2f9" name="Changes" comment="修复教师阅卷的分页问题">
+      <change beforePath="$PROJECT_DIR$/src/main/java/cn/org/alan/exam/utils/agent/impl/LLMUtil.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/cn/org/alan/exam/utils/agent/impl/LLMUtil.java" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="MavenImportPreferences">
+    <option name="generalSettings">
+      <MavenGeneralSettings>
+        <option name="localRepository" value="/Library/maven/mvn_repo" />
+        <option name="useMavenConfig" value="true" />
+        <option name="userSettingsFile" value="/Library/maven/conf/settings.xml" />
+      </MavenGeneralSettings>
+    </option>
+  </component>
+  <component name="ProjectId" id="2wJRQPZKnTi5P5NMtvMiLuUfKDT" />
+  <component name="ProjectLevelVcsManager">
+    <ConfirmationsSetting value="2" id="Add" />
+  </component>
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;RequestMappingsPanelOrder0&quot;: &quot;0&quot;,
+    &quot;RequestMappingsPanelOrder1&quot;: &quot;1&quot;,
+    &quot;RequestMappingsPanelWidth0&quot;: &quot;75&quot;,
+    &quot;RequestMappingsPanelWidth1&quot;: &quot;75&quot;,
+    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
+    &quot;last_opened_file_path&quot;: &quot;/Users/alan/Downloads/aa/online-exam-system-backend/src/main/java/cn/org/alan/exam/converter&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;project.structure.last.edited&quot;: &quot;Project&quot;,
+    &quot;project.structure.proportion&quot;: &quot;0.0&quot;,
+    &quot;project.structure.side.proportion&quot;: &quot;0.2&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;MavenSettings&quot;,
+    &quot;spring.configuration.checksum&quot;: &quot;654816f85dfe2115674e7115c7d1ea51&quot;
+  }
+}</component>
+  <component name="ReactorSettings">
+    <option name="notificationShown" value="true" />
+  </component>
+  <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/src/main/java/cn/org/alan/exam/converter" />
+      <recent name="$PROJECT_DIR$/src/main/java/cn/org/alan/exam/mapper" />
+      <recent name="$PROJECT_DIR$/src/main/java/cn/org/alan/exam/model" />
+      <recent name="$PROJECT_DIR$/src/main/java/cn/org/alan/exam/model/form" />
+      <recent name="$PROJECT_DIR$/src/main/java/cn/org/alan/exam/model/vo" />
+    </key>
+    <key name="CopyClassDialog.RECENTS_KEY">
+      <recent name="cn.org.alan.exam.service.impl" />
+      <recent name="cn.org.alan.exam.config" />
+      <recent name="cn.org.alan.exam.mapper" />
+      <recent name="cn.org.alan.exam.model.form.reply" />
+      <recent name="cn.org.alan.exam.model.form.like" />
+    </key>
+  </component>
+  <component name="RunManager">
+    <configuration name="ExamApplication" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot">
+      <module name="exam" />
+      <option name="SPRING_BOOT_MAIN_CLASS" value="cn.org.alan.exam.ExamApplication" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="9f91ae12-c926-451e-b026-1b3559a4a2f9" name="Changes" comment="" />
+      <created>1745757676796</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1745757676796</updated>
+      <workItem from="1745757679283" duration="1359000" />
+      <workItem from="1745759089285" duration="8722000" />
+      <workItem from="1745848420574" duration="1673000" />
+      <workItem from="1745944685363" duration="1420000" />
+      <workItem from="1746715884384" duration="1071000" />
+      <workItem from="1746884569127" duration="672000" />
+      <workItem from="1747066718426" duration="2453000" />
+      <workItem from="1747149259719" duration="1105000" />
+      <workItem from="1747314087936" duration="8000" />
+      <workItem from="1747314238366" duration="1149000" />
+      <workItem from="1747403196791" duration="2652000" />
+      <workItem from="1747409737800" duration="5122000" />
+    </task>
+    <task id="LOCAL-00001" summary="添加新功能：讨论功能，Ai阅卷、题库添加分类管理、成绩分析添加查看用户试卷、添加考试可以直接选题和抽题">
+      <created>1745760494820</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1745760494820</updated>
+    </task>
+    <task id="LOCAL-00002" summary="修复bug，考试提交校验是否超过最后截止时间，应该用开始考试时间加上考试时长作为考试结束时间">
+      <created>1745945583015</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1745945583015</updated>
+    </task>
+    <task id="LOCAL-00003" summary="修复bug，修改考试，无法开始考试问题">
+      <created>1746716020803</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1746716020804</updated>
+    </task>
+    <task id="LOCAL-00004" summary="修复考试时间不正确问题，修复自选试题组卷倒是考试乱序没分类问题">
+      <created>1747069343236</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1747069343236</updated>
+    </task>
+    <task id="LOCAL-00005" summary="修复教师阅卷的分页问题">
+      <created>1747492956080</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1747492956080</updated>
+    </task>
+    <option name="localTasksCounter" value="6" />
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="添加新功能：讨论功能，Ai阅卷、题库添加分类管理、成绩分析添加查看用户试卷、添加考试可以直接选题和抽题" />
+    <MESSAGE value="修复bug，考试提交校验是否超过最后截止时间，应该用开始考试时间加上考试时长作为考试结束时间" />
+    <MESSAGE value="修复bug，修改考试，无法开始考试问题" />
+    <MESSAGE value="修复考试时间不正确问题，修复自选试题组卷倒是考试乱序没分类问题" />
+    <MESSAGE value="修复教师阅卷的分页问题" />
+    <option name="LAST_COMMIT_MESSAGE" value="修复教师阅卷的分页问题" />
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints-dialog>
+        <breakpoints-dialog>
+          <selected-grouping-rules>
+            <grouping-rule id="XBreakpointGroupingByPackageRule" />
+          </selected-grouping-rules>
+        </breakpoints-dialog>
+      </breakpoints-dialog>
+    </breakpoint-manager>
+  </component>
+</project>

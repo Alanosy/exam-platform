@@ -12,6 +12,9 @@
 .springBeans
 .sts4-cache
 
+mvnw
+mvnw.cmd
+.mvn/wrapper/*
 **/mvnw
 **/mvnw.cmd
 
@@ -22,7 +25,8 @@
 /out/
 
 ### IntelliJ IDEA ###
-.idea
+## .idea
+!.idea/
 *.iws
 *.iml
 *.ipr

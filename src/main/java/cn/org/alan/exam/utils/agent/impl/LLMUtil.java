@@ -28,8 +28,12 @@ import dev.langchain4j.service.AiServices;
 //import io.milvus.param.MetricType;
 import org.jcp.xml.dsig.internal.dom.Utils;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.context.annotation.Conditional;
 import org.springframework.stereotype.Service;
+import org.springframework.validation.annotation.Validated;
 
 import java.net.URISyntaxException;
 import java.net.URL;
