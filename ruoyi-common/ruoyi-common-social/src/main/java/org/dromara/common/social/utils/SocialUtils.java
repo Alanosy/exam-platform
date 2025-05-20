@@ -43,7 +43,7 @@ public class SocialUtils  {
             .redirectUri(obj.getRedirectUri())
             .scopes(obj.getScopes());
         return switch (source.toLowerCase()) {
-            case "dingtalk" -> new AuthDingTalkRequest(builder.build(), STATE_CACHE);
+            case "dingtalk" -> new AuthDingTalkV2Request(builder.build(), STATE_CACHE);
             case "baidu" -> new AuthBaiduRequest(builder.build(), STATE_CACHE);
             case "github" -> new AuthGithubRequest(builder.build(), STATE_CACHE);
             case "gitee" -> new AuthGiteeRequest(builder.build(), STATE_CACHE);
@@ -61,7 +61,7 @@ public class SocialUtils  {
             case "renren" -> new AuthRenrenRequest(builder.build(), STATE_CACHE);
             case "stack_overflow" -> new AuthStackOverflowRequest(builder.stackOverflowKey(obj.getStackOverflowKey()).build(), STATE_CACHE);
             case "huawei" -> new AuthHuaweiV3Request(builder.build(), STATE_CACHE);
-            case "wechat_enterprise" -> new AuthWeChatEnterpriseQrcodeRequest(builder.agentId(obj.getAgentId()).build(), STATE_CACHE);
+            case "wechat_enterprise" -> new AuthWeChatEnterpriseQrcodeV2Request(builder.agentId(obj.getAgentId()).build(), STATE_CACHE);
             case "gitlab" -> new AuthGitlabRequest(builder.build(), STATE_CACHE);
             case "wechat_mp" -> new AuthWeChatMpRequest(builder.build(), STATE_CACHE);
             case "aliyun" -> new AuthAliyunRequest(builder.build(), STATE_CACHE);
