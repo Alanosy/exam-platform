@@ -45,7 +45,6 @@ import java.util.stream.Collectors;
 @Service
 public class FlwCommonServiceImpl implements IFlwCommonService {
 
-    private final UserService userService;
     private final NodeService nodeService;
 
     @DubboReference
@@ -54,77 +53,21 @@ public class FlwCommonServiceImpl implements IFlwCommonService {
     private RemoteMailService remoteMailService;
 
     /**
-     * 获取工作流用户service
-     */
-    @Override
-    public UserService getFlowUserService() {
-        return userService;
-    }
-
-    /**
      * 构建工作流用户
      *
-     * @param userList 办理用户
-     * @param taskId   任务ID
+     * @param permissionList 办理用户
      * @return 用户
      */
     @Override
-    public Set<User> buildUser(List<User> userList, Long taskId) {
-        if (CollUtil.isEmpty(userList)) {
-            return Set.of();
+    public List<String> buildUser(List<String> permissionList) {
+        if (CollUtil.isEmpty(permissionList)) {
+            return List.of();
         }
-        Set<User> list = new HashSet<>();
-        Set<String> processedBySet = new HashSet<>();
         IFlwTaskAssigneeService taskAssigneeService = SpringUtils.getBean(IFlwTaskAssigneeService.class);
-        Map<String, List<User>> userListMap = StreamUtils.groupByKey(userList, User::getType);
-        for (Map.Entry<String, List<User>> entry : userListMap.entrySet()) {
-            List<User> entryValue = entry.getValue();
-            String processedBys = StreamUtils.join(entryValue, User::getProcessedBy);
-            // 根据 processedBy 前缀判断处理人类型，分别获取用户列表
-            List<RemoteUserVo> users = taskAssigneeService.fetchUsersByStorageIds(processedBys);
-            // 转换为 FlowUser 并添加到结果集合
-            if (CollUtil.isNotEmpty(users)) {
-                users.forEach(dto -> {
-                    String processedBy = String.valueOf(dto.getUserId());
-                    if (!processedBySet.contains(processedBy)) {
-                        FlowUser flowUser = new FlowUser();
-                        flowUser.setType(entry.getKey());
-                        flowUser.setProcessedBy(processedBy);
-                        flowUser.setAssociated(taskId);
-                        list.add(flowUser);
-                        processedBySet.add(processedBy);
-                    }
-                });
-            }
-        }
-        return list;
-    }
-
-    /**
-     * 构建工作流用户
-     *
-     * @param userIdList 办理用户
-     * @param taskId     任务ID
-     * @return 用户
-     */
-    @Override
-    public Set<User> buildFlowUser(List<String> userIdList, Long taskId) {
-        if (CollUtil.isEmpty(userIdList)) {
-            return Set.of();
-        }
-        Set<User> list = new HashSet<>();
-        Set<String> processedBySet = new HashSet<>();
-        for (String userId : userIdList) {
-            if (!processedBySet.contains(userId)) {
-                FlowUser flowUser = new FlowUser();
-                flowUser.setType(TaskAssigneeType.APPROVER.getCode());
-                flowUser.setProcessedBy(String.valueOf(userId));
-                flowUser.setAssociated(taskId);
-                list.add(flowUser);
-                processedBySet.add(String.valueOf(userId));
-            }
-        }
-        return list;
+        String processedBys = CollUtil.join(permissionList,  StringUtils.SEPARATOR);
+        // 根据 processedBy 前缀判断处理人类型，分别获取用户列表
+        List<RemoteUserVo> users = taskAssigneeService.fetchUsersByStorageIds(processedBys);
+        return StreamUtils.toList(users, userDTO -> String.valueOf(userDTO.getUserId()));
     }
 
     /**
@@ -184,13 +127,4 @@ public class FlwCommonServiceImpl implements IFlwCommonService {
         return nextNode.getNodeCode();
     }
 
-    @Override
-    public void mergeVariable(Instance instance, Map<String, Object> variable) {
-        if (MapUtil.isNotEmpty(variable)) {
-            String variableStr = instance.getVariable();
-            Map<String, Object> deserialize = FlowEngine.jsonConvert.strToMap(variableStr);
-            deserialize.putAll(variable);
-            instance.setVariable(FlowEngine.jsonConvert.objToStr(deserialize));
-        }
-    }
 }

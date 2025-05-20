@@ -360,7 +360,7 @@ public class FlwInstanceServiceImpl implements IFlwInstanceService {
     public void setVariable(Long instanceId, Map<String, Object> variable) {
         Instance instance = insService.getById(instanceId);
         if (instance != null) {
-            flwCommonService.mergeVariable(instance, variable);
+            taskService.mergeVariable(instance, variable);
             insService.updateById(instance);
         }
     }

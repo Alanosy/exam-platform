@@ -14,7 +14,10 @@ import org.dromara.warm.flow.core.listener.GlobalListener;
 import org.dromara.warm.flow.core.listener.ListenerVariable;
 import org.dromara.warm.flow.orm.entity.FlowTask;
 import org.dromara.workflow.common.ConditionalOnEnable;
+import org.dromara.workflow.common.enums.TaskStatusEnum;
+import org.dromara.workflow.domain.bo.FlowCopyBo;
 import org.dromara.workflow.handler.FlowProcessEventHandler;
+import org.dromara.workflow.service.IFlwCommonService;
 import org.dromara.workflow.service.IFlwInstanceService;
 import org.dromara.workflow.service.IFlwTaskService;
 import org.springframework.stereotype.Component;
@@ -37,6 +40,7 @@ public class WorkflowGlobalListener implements GlobalListener {
     private final IFlwTaskService taskService;
     private final IFlwInstanceService instanceService;
     private final FlowProcessEventHandler flowProcessEventHandler;
+    private final IFlwCommonService flwCommonService;
 
     /**
      * 创建监听器，任务创建时执行
@@ -70,6 +74,32 @@ public class WorkflowGlobalListener implements GlobalListener {
      */
     @Override
     public void assignment(ListenerVariable listenerVariable) {
+        Map<String, Object> variable = listenerVariable.getVariable();
+        List<Task> nextTasks = listenerVariable.getNextTasks();
+        FlowParams flowParams = listenerVariable.getFlowParams();
+        Definition definition = listenerVariable.getDefinition();
+        Instance instance = listenerVariable.getInstance();
+        String applyNodeCode = flwCommonService.applyNodeCode(definition.getId());
+        for (Task flowTask : nextTasks) {
+            // 如果办理或者退回并行存在需要指定办理人，则直接覆盖办理人
+            if (variable.containsKey(flowTask.getNodeCode()) && (TaskStatusEnum.PASS.getStatus().equals(flowParams.getHisStatus())
+                || TaskStatusEnum.BACK.getStatus().equals(flowParams.getHisStatus()))) {
+                String userIds = variable.get(flowTask.getNodeCode()).toString();
+                flowTask.setPermissionList(List.of(userIds.split(StringUtils.SEPARATOR)));
+                variable.remove(flowTask.getNodeCode());
+            } else {
+                // 否则把所有的角色或者部门转成对应的用户
+                List<String> permissionList = flowTask.getPermissionList();
+                if (CollUtil.isNotEmpty(permissionList)) {
+                    List<String> newUserList = flwCommonService.buildUser(permissionList);
+                    flowTask.setPermissionList(newUserList);
+                }
+            }
+            // 如果是申请节点，则把启动人添加到办理人
+            if (flowTask.getNodeCode().equals(applyNodeCode)) {
+                flowTask.setPermissionList(List.of(instance.getCreateBy()));
+            }
+        }
     }
 
     /**
@@ -97,6 +127,27 @@ public class WorkflowGlobalListener implements GlobalListener {
         String status = determineFlowStatus(instance);
         if (StringUtils.isNotBlank(status)) {
             flowProcessEventHandler.processHandler(definition.getFlowCode(), instance, status, params, false);
+        }
+
+        // 只有办理或者退回的时候才执行消息通知和抄送
+        if (TaskStatusEnum.PASS.getStatus().equals(flowParams.getHisStatus())
+            || TaskStatusEnum.BACK.getStatus().equals(flowParams.getHisStatus())) {
+            Task task = listenerVariable.getTask();
+            Map<String, Object> variable = listenerVariable.getVariable();
+            List<FlowCopyBo> flowCopyList = (List<FlowCopyBo>) variable.get("flowCopyList");
+            List<String> messageType = (List<String>) variable.get("messageType");
+            String notice = (String) variable.get("notice");
+
+            // 添加抄送人
+            taskService.setCopy(task, flowCopyList);
+            variable.remove("flowCopyList");
+
+            // 消息通知
+            if (CollUtil.isNotEmpty(messageType)) {
+                flwCommonService.sendMessage(definition.getFlowName(), instance.getId(), messageType, notice);
+                variable.remove("messageType");
+                variable.remove("notice");
+            }
         }
     }
 
