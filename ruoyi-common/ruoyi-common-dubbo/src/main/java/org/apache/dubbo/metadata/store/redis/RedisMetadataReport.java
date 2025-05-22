@@ -136,7 +136,7 @@ public class RedisMetadataReport extends AbstractMetadataReport {
     private void storeMetadataInCluster(BaseMetadataIdentifier metadataIdentifier, String v) {
         try (JedisCluster jedisCluster =
                  new JedisCluster(jedisClusterNodes, timeout, timeout, 2, password, new GenericObjectPoolConfig<>())) {
-            jedisCluster.set(metadataIdentifier.getIdentifierKey() + META_DATA_STORE_TAG, v, jedisParams);
+            jedisCluster.set(metadataIdentifier.getIdentifierKey() + META_DATA_STORE_TAG, v);
         } catch (Throwable e) {
             String msg =
                 "Failed to put " + metadataIdentifier + " to redis cluster " + v + ", cause: " + e.getMessage();
@@ -147,7 +147,7 @@ public class RedisMetadataReport extends AbstractMetadataReport {
 
     private void storeMetadataStandalone(BaseMetadataIdentifier metadataIdentifier, String v) {
         try (Jedis jedis = pool.getResource()) {
-            jedis.set(metadataIdentifier.getUniqueKey(KeyTypeEnum.UNIQUE_KEY), v, jedisParams);
+            jedis.set(metadataIdentifier.getUniqueKey(KeyTypeEnum.UNIQUE_KEY), v);
         } catch (Throwable e) {
             String msg = "Failed to put " + metadataIdentifier + " to redis " + v + ", cause: " + e.getMessage();
             logger.error(TRANSPORT_FAILED_RESPONSE, "", "", msg, e);
