@@ -54,6 +54,11 @@ public class ProcessCreateTaskEvent extends RemoteApplicationEvent {
      */
     private String businessId;
 
+    /**
+     * 流程状态
+     */
+    private String status;
+
     public ProcessCreateTaskEvent() {
         super(new Object(), SpringUtils.getApplicationName(), DEFAULT_DESTINATION_FACTORY.getDestination(null));
     }

@@ -68,6 +68,7 @@ public class FlowProcessEventHandler {
         processCreateTaskEvent.setNodeCode(instance.getNodeCode());
         processCreateTaskEvent.setNodeName(instance.getNodeName());
         processCreateTaskEvent.setTaskId(taskId);
+        processCreateTaskEvent.setStatus(instance.getFlowStatus());
         SpringUtils.context().publishEvent(processCreateTaskEvent);
     }
 

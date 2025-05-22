@@ -180,9 +180,11 @@ public class TestLeaveServiceImpl implements ITestLeaveService {
     public void processCreateTaskHandler(ProcessCreateTaskEvent processCreateTaskEvent) {
         TenantHelper.dynamic(processCreateTaskEvent.getTenantId(), () -> {
             log.info("当前任务创建了{}", processCreateTaskEvent.toString());
-            TestLeave testLeave = baseMapper.selectById(Long.valueOf(processCreateTaskEvent.getBusinessId()));
-            testLeave.setStatus(BusinessStatusEnum.WAITING.getStatus());
-            baseMapper.updateById(testLeave);
+            if (BusinessStatusEnum.WAITING.getStatus().equals(processCreateTaskEvent.getStatus())) {
+                TestLeave testLeave = baseMapper.selectById(Long.valueOf(processCreateTaskEvent.getBusinessId()));
+                testLeave.setStatus(BusinessStatusEnum.WAITING.getStatus());
+                baseMapper.updateById(testLeave);
+            }
         });
     }
 
