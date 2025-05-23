@@ -28,6 +28,7 @@ import org.dromara.system.mapper.SysRoleMenuMapper;
 import org.dromara.system.mapper.SysTenantPackageMapper;
 import org.dromara.system.service.ISysMenuService;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 
@@ -173,11 +174,15 @@ public class SysMenuServiceImpl implements ISysMenuService {
         if (tenantPackage.getMenuCheckStrictly()) {
             parentIds = baseMapper.selectObjs(new LambdaQueryWrapper<SysMenu>()
                 .select(SysMenu::getParentId)
-                .in(SysMenu::getMenuId, menuIds), x -> {return Convert.toLong(x);});
+                .in(SysMenu::getMenuId, menuIds), x -> {
+                return Convert.toLong(x);
+            });
         }
         return baseMapper.selectObjs(new LambdaQueryWrapper<SysMenu>()
             .in(SysMenu::getMenuId, menuIds)
-            .notIn(CollUtil.isNotEmpty(parentIds), SysMenu::getMenuId, parentIds), x -> {return Convert.toLong(x);});
+            .notIn(CollUtil.isNotEmpty(parentIds), SysMenu::getMenuId, parentIds), x -> {
+            return Convert.toLong(x);
+        });
     }
 
     /**
@@ -290,6 +295,17 @@ public class SysMenuServiceImpl implements ISysMenuService {
     }
 
     /**
+     * 是否存在菜单子节点
+     *
+     * @param menuIds 菜单ID串
+     * @return 结果
+     */
+    @Override
+    public boolean hasChildByMenuId(List<Long> menuIds) {
+        return baseMapper.exists(new LambdaQueryWrapper<SysMenu>().in(SysMenu::getParentId, menuIds).notIn(SysMenu::getMenuId, menuIds));
+    }
+
+    /**
      * 新增保存菜单信息
      *
      * @param bo 菜单信息
@@ -322,6 +338,19 @@ public class SysMenuServiceImpl implements ISysMenuService {
     @Override
     public int deleteMenuById(Long menuId) {
         return baseMapper.deleteById(menuId);
+    }
+
+    /**
+     * 批量删除菜单管理信息
+     *
+     * @param menuIds 菜单ID串
+     * @return 结果
+     */
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void deleteMenuById(List<Long> menuIds) {
+        baseMapper.deleteByIds(menuIds);
+        roleMenuMapper.deleteByMenuIds(menuIds);
     }
 
     /**
