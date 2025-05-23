@@ -25,7 +25,6 @@ import org.dromara.warm.flow.core.entity.Definition;
 import org.dromara.warm.flow.core.entity.Instance;
 import org.dromara.warm.flow.core.entity.Task;
 import org.dromara.warm.flow.core.enums.NodeType;
-import org.dromara.warm.flow.core.enums.SkipType;
 import org.dromara.warm.flow.core.service.ChartService;
 import org.dromara.warm.flow.core.service.DefService;
 import org.dromara.warm.flow.core.service.InsService;
@@ -248,7 +247,6 @@ public class FlwInstanceServiceImpl implements IFlwInstanceService {
             BusinessStatusEnum.checkCancelStatus(instance.getFlowStatus());
             FlowParams flowParams = FlowParams.build()
                 .message(message)
-                .skipType(SkipType.PASS.getKey())
                 .flowStatus(BusinessStatusEnum.CANCEL.getStatus())
                 .hisStatus(BusinessStatusEnum.CANCEL.getStatus())
                 .handler(userIdStr)

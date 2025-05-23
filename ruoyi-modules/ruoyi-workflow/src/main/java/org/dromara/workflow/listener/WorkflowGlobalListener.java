@@ -1,6 +1,7 @@
 package org.dromara.workflow.listener;
 
 import cn.hutool.core.collection.CollUtil;
+import cn.hutool.core.map.MapUtil;
 import cn.hutool.core.util.ObjectUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -14,6 +15,7 @@ import org.dromara.warm.flow.core.listener.GlobalListener;
 import org.dromara.warm.flow.core.listener.ListenerVariable;
 import org.dromara.warm.flow.orm.entity.FlowTask;
 import org.dromara.workflow.common.ConditionalOnEnable;
+import org.dromara.workflow.common.constant.FlowConstant;
 import org.dromara.workflow.common.enums.TaskStatusEnum;
 import org.dromara.workflow.domain.bo.FlowCopyBo;
 import org.dromara.workflow.handler.FlowProcessEventHandler;
@@ -37,7 +39,7 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class WorkflowGlobalListener implements GlobalListener {
 
-    private final IFlwTaskService taskService;
+    private final IFlwTaskService flwTaskService;
     private final IFlwInstanceService instanceService;
     private final FlowProcessEventHandler flowProcessEventHandler;
     private final IFlwCommonService flwCommonService;
@@ -51,11 +53,19 @@ public class WorkflowGlobalListener implements GlobalListener {
     public void create(ListenerVariable listenerVariable) {
         Instance instance = listenerVariable.getInstance();
         Definition definition = listenerVariable.getDefinition();
+        FlowParams flowParams = listenerVariable.getFlowParams();
+        Map<String, Object> variable = flowParams.getVariable();
         Task task = listenerVariable.getTask();
         if (task != null) {
             // 判断流程状态（发布审批中事件）
             flowProcessEventHandler.processCreateTaskHandler(definition.getFlowCode(), instance, task.getId());
         }
+        Boolean submit = MapUtil.getBool(variable, FlowConstant.SUBMIT);
+        if (submit != null && submit) {
+            flowProcessEventHandler.processHandler(definition.getFlowCode(), instance, instance.getFlowStatus(), variable, true);
+        }
+        variable.remove(FlowConstant.SUBMIT);
+        flowParams.variable(variable);
     }
 
     /**
@@ -111,8 +121,6 @@ public class WorkflowGlobalListener implements GlobalListener {
     public void finish(ListenerVariable listenerVariable) {
         Instance instance = listenerVariable.getInstance();
         Definition definition = listenerVariable.getDefinition();
-        String businessId = instance.getBusinessId();
-        String flowStatus = instance.getFlowStatus();
         Map<String, Object> params = new HashMap<>();
         FlowParams flowParams = listenerVariable.getFlowParams();
         if (ObjectUtil.isNotNull(flowParams)) {
@@ -128,25 +136,24 @@ public class WorkflowGlobalListener implements GlobalListener {
         if (StringUtils.isNotBlank(status)) {
             flowProcessEventHandler.processHandler(definition.getFlowCode(), instance, status, params, false);
         }
-
+        Map<String, Object> variable = listenerVariable.getVariable();
         // 只有办理或者退回的时候才执行消息通知和抄送
         if (TaskStatusEnum.PASS.getStatus().equals(flowParams.getHisStatus())
             || TaskStatusEnum.BACK.getStatus().equals(flowParams.getHisStatus())) {
             Task task = listenerVariable.getTask();
-            Map<String, Object> variable = listenerVariable.getVariable();
-            List<FlowCopyBo> flowCopyList = (List<FlowCopyBo>) variable.get("flowCopyList");
-            List<String> messageType = (List<String>) variable.get("messageType");
-            String notice = (String) variable.get("notice");
+            List<FlowCopyBo> flowCopyList = (List<FlowCopyBo>) variable.get(FlowConstant.FLOW_COPY_LIST);
+            List<String> messageType = (List<String>) variable.get(FlowConstant.MESSAGE_TYPE);
+            String notice = (String) variable.get(FlowConstant.MESSAGE_NOTICE);
 
             // 添加抄送人
-            taskService.setCopy(task, flowCopyList);
-            variable.remove("flowCopyList");
+            flwTaskService.setCopy(task, flowCopyList);
+            variable.remove(FlowConstant.FLOW_COPY_LIST);
 
             // 消息通知
             if (CollUtil.isNotEmpty(messageType)) {
                 flwCommonService.sendMessage(definition.getFlowName(), instance.getId(), messageType, notice);
-                variable.remove("messageType");
-                variable.remove("notice");
+                variable.remove(FlowConstant.MESSAGE_TYPE);
+                variable.remove(FlowConstant.MESSAGE_NOTICE);
             }
         }
     }
@@ -164,7 +171,7 @@ public class WorkflowGlobalListener implements GlobalListener {
             return flowStatus;
         } else {
             Long instanceId = instance.getId();
-            List<FlowTask> flowTasks = taskService.selectByInstId(instanceId);
+            List<FlowTask> flowTasks = flwTaskService.selectByInstId(instanceId);
             if (CollUtil.isEmpty(flowTasks)) {
                 String status = BusinessStatusEnum.FINISH.getStatus();
                 // 更新流程状态为已完成

@@ -40,6 +40,7 @@ import org.dromara.warm.flow.orm.mapper.FlowNodeMapper;
 import org.dromara.warm.flow.orm.mapper.FlowTaskMapper;
 import org.dromara.workflow.api.domain.RemoteStartProcessReturn;
 import org.dromara.workflow.common.ConditionalOnEnable;
+import org.dromara.workflow.common.constant.FlowConstant;
 import org.dromara.workflow.common.enums.TaskAssigneeType;
 import org.dromara.workflow.common.enums.TaskStatusEnum;
 import org.dromara.workflow.domain.bo.*;
@@ -160,22 +161,20 @@ public class FlwTaskServiceImpl implements IFlwTaskService {
             // 获取抄送人
             List<FlowCopyBo> flowCopyList = completeTaskBo.getFlowCopyList();
             // 设置抄送人
-            completeTaskBo.getVariables().put("flowCopyList", flowCopyList);
+            completeTaskBo.getVariables().put(FlowConstant.FLOW_COPY_LIST, flowCopyList);
             // 消息类型
-            completeTaskBo.getVariables().put("messageType", messageType);
+            completeTaskBo.getVariables().put(FlowConstant.MESSAGE_TYPE, messageType);
             // 消息通知
-            completeTaskBo.getVariables().put("notice", notice);
+            completeTaskBo.getVariables().put(FlowConstant.MESSAGE_NOTICE, notice);
 
             FlowTask flowTask = flowTaskMapper.selectById(taskId);
             if (ObjectUtil.isNull(flowTask)) {
                 throw new ServiceException("流程任务不存在或任务已审批！");
             }
             Instance ins = insService.getById(flowTask.getInstanceId());
-            // 获取流程定义信息
-            Definition definition = defService.getById(flowTask.getDefinitionId());
             // 检查流程状态是否为草稿、已撤销或已退回状态，若是则执行流程提交监听
             if (BusinessStatusEnum.isDraftOrCancelOrBack(ins.getFlowStatus())) {
-                flowProcessEventHandler.processHandler(definition.getFlowCode(), ins, ins.getFlowStatus(), null, true);
+                completeTaskBo.getVariables().put(FlowConstant.SUBMIT, true);
             }
             // 设置弹窗处理人
             Map<String, Object> assigneeMap = setPopAssigneeMap(completeTaskBo.getAssigneeMap(), ins.getVariableMap());
