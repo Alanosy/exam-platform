@@ -68,3 +68,11 @@ export const delMenu = (menuId: string | number) => {
     method: 'delete'
   });
 };
+
+// 级联删除菜单
+export const cascadeDelMenu = (menuIds: Array<string | number>) => {
+  return request({
+    url: '/system/menu/cascade/' + menuIds,
+    method: 'delete'
+  });
+};
