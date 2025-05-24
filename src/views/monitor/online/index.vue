@@ -19,6 +19,7 @@
     <el-card shadow="hover">
       <el-table
         v-loading="loading"
+        border
         :data="onlineList.slice((queryParams.pageNum - 1) * queryParams.pageSize, queryParams.pageNum * queryParams.pageSize)"
         style="width: 100%"
       >

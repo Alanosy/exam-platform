@@ -5,7 +5,7 @@
         <basic-info-form ref="basicInfo" :info="info" />
       </el-tab-pane>
       <el-tab-pane label="字段信息" name="columnInfo">
-        <el-table ref="dragTable" :data="columns" row-key="columnId" :max-height="tableHeight">
+        <el-table ref="dragTable" border :data="columns" row-key="columnId" :max-height="tableHeight">
           <el-table-column label="序号" type="index" min-width="5%" />
           <el-table-column label="字段列名" prop="columnName" min-width="10%" :show-overflow-tooltip="true" />
           <el-table-column label="字段描述" min-width="10%">

@@ -33,7 +33,7 @@
           <right-toolbar v-model:show-search="showSearch" :search="true" @query-table="getList"></right-toolbar>
         </el-row>
       </template>
-      <el-table v-loading="loading" :data="userList" @selection-change="handleSelectionChange">
+      <el-table v-loading="loading" border :data="userList" @selection-change="handleSelectionChange">
         <el-table-column type="selection" width="55" align="center" />
         <el-table-column label="用户名称" prop="userName" :show-overflow-tooltip="true" />
         <el-table-column label="用户昵称" prop="nickName" :show-overflow-tooltip="true" />

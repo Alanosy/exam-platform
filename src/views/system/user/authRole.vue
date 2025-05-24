@@ -23,6 +23,7 @@
         <el-table
           ref="tableRef"
           v-loading="loading"
+          border
           :row-key="getRowKey"
           :data="roles.slice((pageNum - 1) * pageSize, pageNum * pageSize)"
           @row-click="clickRow"

@@ -14,7 +14,7 @@
         </el-form-item>
       </el-form>
       <el-row>
-        <el-table ref="tableRef" :data="userList" height="260px" @row-click="clickRow" @selection-change="handleSelectionChange">
+        <el-table ref="tableRef" border :data="userList" height="260px" @row-click="clickRow" @selection-change="handleSelectionChange">
           <el-table-column type="selection" width="55"></el-table-column>
           <el-table-column label="用户名称" prop="userName" :show-overflow-tooltip="true" />
           <el-table-column label="用户昵称" prop="nickName" :show-overflow-tooltip="true" />

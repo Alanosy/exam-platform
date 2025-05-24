@@ -33,6 +33,7 @@
         v-loading="loading"
         :data="treeList"
         row-key="id"
+        border
         :default-expand-all="isExpandAll"
         :tree-props="{ children: 'children', hasChildren: 'hasChildren' }"
       >

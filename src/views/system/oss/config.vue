@@ -45,7 +45,7 @@
         </el-row>
       </template>
 
-      <el-table v-loading="loading" :data="ossConfigList" @selection-change="handleSelectionChange">
+      <el-table v-loading="loading" border :data="ossConfigList" @selection-change="handleSelectionChange">
         <el-table-column type="selection" width="55" align="center" />
         <el-table-column v-if="columns[0].visible" label="主建" align="center" prop="ossConfigId" />
         <el-table-column v-if="columns[1].visible" label="配置key" align="center" prop="configKey" />

@@ -31,6 +31,7 @@
         v-loading="loading"
         :data="categoryList"
         row-key="categoryId"
+        border
         :default-expand-all="isExpandAll"
         :tree-props="{ children: 'children', hasChildren: 'hasChildren' }"
       >

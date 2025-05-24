@@ -39,7 +39,7 @@
         </el-row>
       </template>
 
-      <el-table v-loading="loading" :data="tenantPackageList" @selection-change="handleSelectionChange">
+      <el-table v-loading="loading" border :data="tenantPackageList" @selection-change="handleSelectionChange">
         <el-table-column type="selection" width="55" align="center" />
         <el-table-column v-if="false" label="租户套餐id" align="center" prop="packageId" />
         <el-table-column label="套餐名称" align="center" prop="packageName" />

@@ -55,7 +55,7 @@
         </el-row>
       </template>
 
-      <el-table ref="roleTableRef" v-loading="loading" :data="roleList" @selection-change="handleSelectionChange">
+      <el-table ref="roleTableRef" border v-loading="loading" :data="roleList" @selection-change="handleSelectionChange">
         <el-table-column type="selection" width="55" align="center" />
         <el-table-column v-if="false" label="角色编号" prop="roleId" width="120" />
         <el-table-column label="角色名称" prop="roleName" :show-overflow-tooltip="true" width="150" />

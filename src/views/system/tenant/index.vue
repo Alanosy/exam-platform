@@ -51,7 +51,7 @@
         </el-row>
       </template>
 
-      <el-table v-loading="loading" :data="tenantList" @selection-change="handleSelectionChange">
+      <el-table v-loading="loading" border :data="tenantList" @selection-change="handleSelectionChange">
         <el-table-column type="selection" width="55" align="center" />
         <el-table-column v-if="false" label="id" align="center" prop="id" />
         <el-table-column label="租户编号" align="center" prop="tenantId" />

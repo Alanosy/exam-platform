@@ -70,6 +70,7 @@
         v-if="showTable"
         v-loading="loading"
         :data="ossList"
+        border
         :header-cell-class-name="handleHeaderClass"
         @selection-change="handleSelectionChange"
         @header-click="handleHeaderCLick"
