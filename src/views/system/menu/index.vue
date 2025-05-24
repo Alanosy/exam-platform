@@ -360,7 +360,7 @@ const getTreeselect = async () => {
 /** 取消按钮 */
 const cancel = () => {
   reset();
-  dialog.visible = false;
+  deleteDialog.visible = false;
 };
 /** 表单重置 */
 const reset = () => {
@@ -455,7 +455,7 @@ const submitDeleteForm = async () => {
   await getList();
   proxy?.$modal.msgSuccess('删除成功');
   deleteDialog.visible = false;
-}
+};
 
 onMounted(() => {
   getList();
