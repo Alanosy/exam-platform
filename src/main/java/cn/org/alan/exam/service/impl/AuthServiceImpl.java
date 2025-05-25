@@ -8,15 +8,14 @@ import cn.org.alan.exam.converter.UserConverter;
 import cn.org.alan.exam.mapper.RoleMapper;
 import cn.org.alan.exam.mapper.UserDailyLoginDurationMapper;
 import cn.org.alan.exam.mapper.UserMapper;
+import cn.org.alan.exam.model.entity.Log;
 import cn.org.alan.exam.model.entity.User;
 import cn.org.alan.exam.model.entity.UserDailyLoginDuration;
 import cn.org.alan.exam.model.form.auth.LoginForm;
 import cn.org.alan.exam.model.form.user.UserForm;
 import cn.org.alan.exam.service.IAuthService;
-import cn.org.alan.exam.utils.DateTimeUtil;
-import cn.org.alan.exam.utils.JwtUtil;
-import cn.org.alan.exam.utils.SecretUtils;
-import cn.org.alan.exam.utils.SecurityUtil;
+import cn.org.alan.exam.service.ILogService;
+import cn.org.alan.exam.utils.*;
 import cn.org.alan.exam.utils.security.SysUserDetails;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.StringUtils;
@@ -24,6 +23,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import lombok.SneakyThrows;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -43,6 +43,8 @@ import java.time.*;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 
 /**
@@ -73,6 +75,10 @@ public class AuthServiceImpl implements IAuthService {
     private UserDailyLoginDurationMapper userDailyLoginDurationMapper;
     @Value("${online-exam.login.captcha.enabled}")
     private boolean captchaEnabled;
+    @Autowired
+    HttpServletRequest httpServletRequest;
+    @Autowired
+    private ILogService logService;
 
     /**
      * 登录
@@ -137,7 +143,35 @@ public class AuthServiceImpl implements IAuthService {
         // 用户信息放入
         // 清除redis通过校验表示
         stringRedisTemplate.delete("isVerifyCode" + request.getSession().getId());
+
+        // 记录日志
+        String device = httpServletRequest.getHeader("User-Agent");
+        String ipRegion = IPUtils.getIPRegion(httpServletRequest);
+        Log log = Log.builder()
+                .place(ipRegion)
+                .device(extractDeviceType(device))
+                .behavior("设备登录")
+                .userId(user.getId()).build();
+        logService.add(log);
         return Result.success("登录成功", token);
+    }
+
+
+    /**
+     * 获取设备名称
+     * @param userAgent
+     * @return
+     */
+    public static String extractDeviceType(String userAgent) {
+        // 定义正则表达式模式
+        String pattern = "\\((.*?);";
+        Pattern r = Pattern.compile(pattern);
+        Matcher m = r.matcher(userAgent);
+        if (m.find()) {
+            // 返回匹配到的设备类型
+            return m.group(1);
+        }
+        return null;
     }
 
     /**
@@ -152,6 +186,15 @@ public class AuthServiceImpl implements IAuthService {
         HttpSession session = request.getSession(false);
         String token = request.getHeader("Authorization");
         if (StringUtils.isNotBlank(token) && session != null) {
+            // 记录日志
+            String device = httpServletRequest.getHeader("User-Agent");
+            String ipRegion = IPUtils.getIPRegion(httpServletRequest);
+            Log log = Log.builder()
+                    .place(ipRegion)
+                    .device(extractDeviceType(device))
+                    .behavior("设备登出")
+                    .userId(SecurityUtil.getUserId()).build();
+            logService.add(log);
             token = token.substring(7);
             stringRedisTemplate.delete("token:" + request.getSession().getId());
             session.invalidate();
