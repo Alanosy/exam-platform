@@ -20,6 +20,7 @@ import org.dromara.common.mybatis.core.page.TableDataInfo;
 import org.dromara.common.satoken.utils.LoginHelper;
 import org.dromara.system.api.domain.vo.RemoteUserVo;
 import org.dromara.warm.flow.core.constant.ExceptionCons;
+import org.dromara.warm.flow.core.dto.DefChart;
 import org.dromara.warm.flow.core.dto.FlowParams;
 import org.dromara.warm.flow.core.entity.Definition;
 import org.dromara.warm.flow.core.entity.Instance;
@@ -316,7 +317,8 @@ public class FlwInstanceServiceImpl implements IFlwInstanceService {
             list.addAll(BeanUtil.copyToList(flowHisTasks, FlowHisTaskVo.class));
         }
         String flowChart = chartService.chartIns(instanceId);
-        return Map.of("list", list, "image", flowChart);
+        DefChart defChart = chartService.chartInsObj(instanceId);
+        return Map.of("list", list, "image", flowChart, "defChart", defChart);
     }
 
     /**
