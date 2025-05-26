@@ -9,10 +9,10 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>ruoyi-common-dict</artifactId>
+    <artifactId>ruoyi-common-service-impl</artifactId>
 
     <description>
-        ruoyi-common-dict 字典
+        ruoyi-common-service-impl 通用service实现模块(用于处理core模块中的通用业务service类)
     </description>
 
     <dependencies>

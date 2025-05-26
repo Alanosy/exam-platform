@@ -1,4 +1,4 @@
-package org.dromara.common.dict.utils;
+package org.dromara.common.core.utils;
 
 import org.dromara.common.core.constant.CacheNames;
 import org.dromara.common.redis.utils.CacheUtils;

@@ -1,4 +1,4 @@
-package org.dromara.common.dict.service.impl;
+package org.dromara.common.core.service.impl;
 
 import com.github.benmanes.caffeine.cache.Cache;
 import org.apache.dubbo.config.annotation.DubboReference;
