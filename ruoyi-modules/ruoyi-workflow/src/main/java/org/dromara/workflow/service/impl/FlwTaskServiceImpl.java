@@ -397,8 +397,6 @@ public class FlwTaskServiceImpl implements IFlwTaskService {
             String applyNodeCode = flwCommonService.applyNodeCode(definitionId);
 
             Map<String, Object> variable = new HashMap<>();
-            // 设置抄送人
-            variable.put("flowCopyList", bo.getMessageType());
             // 消息类型
             variable.put("messageType", messageType);
             // 消息通知
