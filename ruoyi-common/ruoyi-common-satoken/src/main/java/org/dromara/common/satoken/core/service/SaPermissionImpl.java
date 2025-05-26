@@ -28,7 +28,7 @@ public class SaPermissionImpl implements StpInterface {
     @Override
     public List<String> getPermissionList(Object loginId, String loginType) {
         LoginUser loginUser = LoginHelper.getLoginUser();
-        if (ObjectUtil.isNull(loginUser)) {
+        if (ObjectUtil.isNull(loginUser) || !loginUser.getLoginId().equals(loginId)) {
             List<String> list = StringUtils.splitList(loginId.toString(), ":");
             return new ArrayList<>(permissionService.getMenuPermission(Long.parseLong(list.get(1))));
         }
@@ -46,7 +46,7 @@ public class SaPermissionImpl implements StpInterface {
     @Override
     public List<String> getRoleList(Object loginId, String loginType) {
         LoginUser loginUser = LoginHelper.getLoginUser();
-        if (ObjectUtil.isNull(loginUser)) {
+        if (ObjectUtil.isNull(loginUser) || !loginUser.getLoginId().equals(loginId)) {
             List<String> list = StringUtils.splitList(loginId.toString(), ":");
             return new ArrayList<>(permissionService.getRolePermission(Long.parseLong(list.get(1))));
         }
