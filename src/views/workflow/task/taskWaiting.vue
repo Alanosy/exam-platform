@@ -160,7 +160,8 @@ const handleOpen = async (row: FlowTaskVO) => {
     taskId: row.id,
     type: 'approval',
     formCustom: row.formCustom,
-    formPath: row.formPath
+    formPath: row.formPath,
+    instanceId: row.instanceId
   });
   workflowCommon.routerJump(routerJumpVo, proxy);
 };

@@ -80,7 +80,7 @@
                   </el-col>
                   <el-col :span="1.5" v-if="scope.row.flowStatus === 'waiting'">
                     <el-button type="primary" size="small" icon="Notification" @click="handleCancelProcessApply(scope.row.businessId)"
-                      >撤销</el-button
+                    >撤销</el-button
                     >
                   </el-col>
                 </el-row>
@@ -239,7 +239,8 @@ const handleOpen = async (row, type) => {
     taskId: row.id,
     type: type,
     formCustom: row.formCustom,
-    formPath: row.formPath
+    formPath: row.formPath,
+    instanceId: row.instanceId
   });
   workflowCommon.routerJump(routerJumpVo, proxy);
 };

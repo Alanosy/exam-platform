@@ -227,7 +227,8 @@ const handleView = (row) => {
     taskId: row.id,
     type: 'view',
     formCustom: row.formCustom,
-    formPath: row.formPath
+    formPath: row.formPath,
+    instanceId: row.instanceId
   });
   workflowCommon.routerJump(routerJumpVo, proxy);
 };
