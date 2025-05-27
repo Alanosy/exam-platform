@@ -94,13 +94,6 @@ public class WorkflowGlobalListener implements GlobalListener {
                 String userIds = variable.get(flowTask.getNodeCode()).toString();
                 flowTask.setPermissionList(List.of(userIds.split(StringUtils.SEPARATOR)));
                 variable.remove(flowTask.getNodeCode());
-            } else {
-                // 否则把所有的角色或者部门转成对应的用户
-                List<String> permissionList = flowTask.getPermissionList();
-                if (CollUtil.isNotEmpty(permissionList)) {
-                    List<String> newUserList = flwCommonService.buildUser(permissionList);
-                    flowTask.setPermissionList(newUserList);
-                }
             }
             // 如果是申请节点，则把启动人添加到办理人
             if (flowTask.getNodeCode().equals(applyNodeCode)) {
