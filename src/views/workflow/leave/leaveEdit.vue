@@ -281,15 +281,6 @@ const submitCallback = async () => {
 const approvalVerifyOpen = async () => {
   submitVerifyRef.value.openDialog(routeParams.value.taskId);
 };
-//校验提交按钮是否显示
-const submitButtonShow = computed(() => {
-  return (
-    routeParams.value.type === 'add' ||
-    (routeParams.value.type === 'update' &&
-      form.value.status &&
-      (form.value.status === 'draft' || form.value.status === 'cancel' || form.value.status === 'back'))
-  );
-});
 
 onMounted(() => {
   nextTick(async () => {
