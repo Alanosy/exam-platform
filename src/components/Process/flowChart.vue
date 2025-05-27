@@ -1,13 +1,12 @@
 <template>
   <div>
-    <div :style="'height:' + height" class="iframe-wrapper">
+    <div style="height: 68vh" class="iframe-wrapper">
       <iframe :src="iframeUrl" style="width: 100%; height: 100%" frameborder="0" scrolling="no" class="custom-iframe" />
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import '@logicflow/core/lib/style/index.css';
 import { getToken } from '@/utils/auth';
 
 // Props 定义方式变化
@@ -18,7 +17,6 @@ const props = defineProps({
   }
 });
 
-const height = document.documentElement.clientHeight - 94.5 + 'px';
 const iframeUrl = ref('');
 const baseUrl = import.meta.env.VITE_APP_BASE_API;
 
@@ -31,12 +29,11 @@ onMounted(async () => {
 .iframe-wrapper {
   border-radius: 12px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  overflow: hidden; /* 关键隐藏内部溢出 */
+  overflow: hidden;
 }
 
 .custom-iframe {
   width: 100%;
-  height: 600px;
   border: none;
   background: transparent;
 }
