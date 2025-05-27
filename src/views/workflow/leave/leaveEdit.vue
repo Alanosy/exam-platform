@@ -270,7 +270,7 @@ const handleStartWorkFlow = async (data: LeaveForm) => {
 };
 //审批记录
 const handleApprovalRecord = () => {
-  approvalRecordRef.value.init(form.value.id, routeParams.value.instanceId);
+  approvalRecordRef.value.init(form.value.id);
 };
 //提交回调
 const submitCallback = async () => {
@@ -289,11 +289,6 @@ const submitButtonShow = computed(() => {
       form.value.status &&
       (form.value.status === 'draft' || form.value.status === 'cancel' || form.value.status === 'back'))
   );
-});
-
-//校验审批按钮是否显示
-const approvalButtonShow = computed(() => {
-  return routeParams.value.type === 'approval' && form.value.status && form.value.status === 'waiting';
 });
 
 onMounted(() => {

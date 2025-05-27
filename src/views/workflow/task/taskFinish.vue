@@ -158,8 +158,7 @@ const handleView = (row: FlowTaskVO) => {
     taskId: row.id,
     type: 'view',
     formCustom: row.formCustom,
-    formPath: row.formPath,
-    instanceId: row.instanceId
+    formPath: row.formPath
   });
   workflowCommon.routerJump(routerJumpVo, proxy);
 };

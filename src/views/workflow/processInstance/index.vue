@@ -159,7 +159,7 @@
         <template #header>
           <div class="clearfix">
             <span
-            >流程定义名称：<el-tag>{{ processDefinitionName }}</el-tag></span
+              >流程定义名称：<el-tag>{{ processDefinitionName }}</el-tag></span
             >
           </div>
         </template>
@@ -371,8 +371,7 @@ const handleView = (row) => {
     taskId: row.id,
     type: 'view',
     formCustom: row.formCustom,
-    formPath: row.formPath,
-    instanceId: row.instanceId
+    formPath: row.formPath
   });
   workflowCommon.routerJump(routerJumpVo, proxy);
 };

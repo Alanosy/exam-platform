@@ -1,7 +1,7 @@
 <template>
   <div>
-    <div :style="'height:' + height">
-      <iframe :src="iframeUrl" style="width: 100%; height: 100%" />
+    <div :style="'height:' + height" class="iframe-wrapper">
+      <iframe :src="iframeUrl" style="width: 100%; height: 100%" frameborder="0" scrolling="no" class="custom-iframe" />
     </div>
   </div>
 </template>
@@ -27,3 +27,17 @@ onMounted(async () => {
   iframeUrl.value = url + '&Authorization=Bearer ' + getToken() + '&clientid=' + import.meta.env.VITE_APP_CLIENT_ID;
 });
 </script>
+<style scoped>
+.iframe-wrapper {
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  overflow: hidden; /* 关键隐藏内部溢出 */
+}
+
+.custom-iframe {
+  width: 100%;
+  height: 600px;
+  border: none;
+  background: transparent;
+}
+</style>

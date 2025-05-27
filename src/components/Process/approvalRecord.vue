@@ -3,7 +3,7 @@
     <el-dialog v-model="visible" draggable title="审批记录" :width="props.width" :height="props.height" :close-on-click-modal="false">
       <el-tabs v-model="tabActiveName" class="demo-tabs">
         <el-tab-pane v-loading="loading" label="流程图" name="image" style="height: 68vh">
-          <flowChart :ins-id="insId" v-if="insId != ''" />
+          <flowChart :ins-id="insId" v-if="insId" />
         </el-tab-pane>
         <el-tab-pane v-loading="loading" label="审批信息" name="info">
           <div>
@@ -59,7 +59,7 @@
   </div>
 </template>
 <script setup lang="ts">
-import { flowImage } from '@/api/workflow/instance';
+import { flowHisTaskList } from '@/api/workflow/instance';
 import { propTypes } from '@/utils/propTypes';
 import { listByIds } from '@/api/system/oss';
 import FlowChart from '@/components/Process/flowChart.vue';
@@ -76,15 +76,15 @@ const tabActiveName = ref('image');
 const insId = ref(null);
 
 //初始化查询审批记录
-const init = async (businessId: string | number, instanceId: string | number) => {
+const init = async (businessId: string | number) => {
   visible.value = true;
   loading.value = true;
   tabActiveName.value = 'image';
   historyList.value = [];
-  insId.value = instanceId;
-  flowImage(businessId).then((resp) => {
+  flowHisTaskList(businessId).then((resp) => {
     if (resp.data) {
       historyList.value = resp.data.list;
+      insId.value = resp.data.instanceId;
       if (historyList.value.length > 0) {
         historyList.value.forEach((item) => {
           if (item.ext) {
