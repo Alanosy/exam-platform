@@ -25,7 +25,6 @@ import org.dromara.warm.flow.core.entity.Definition;
 import org.dromara.warm.flow.core.entity.Instance;
 import org.dromara.warm.flow.core.entity.Task;
 import org.dromara.warm.flow.core.enums.NodeType;
-import org.dromara.warm.flow.core.service.ChartService;
 import org.dromara.warm.flow.core.service.DefService;
 import org.dromara.warm.flow.core.service.InsService;
 import org.dromara.warm.flow.core.service.TaskService;
@@ -44,7 +43,6 @@ import org.dromara.workflow.domain.vo.FlowInstanceVo;
 import org.dromara.workflow.handler.FlowProcessEventHandler;
 import org.dromara.workflow.mapper.FlwCategoryMapper;
 import org.dromara.workflow.mapper.FlwInstanceMapper;
-import org.dromara.workflow.service.IFlwCommonService;
 import org.dromara.workflow.service.IFlwInstanceService;
 import org.dromara.workflow.service.IFlwTaskService;
 import org.springframework.stereotype.Service;
@@ -66,7 +64,6 @@ public class FlwInstanceServiceImpl implements IFlwInstanceService {
 
     private final InsService insService;
     private final DefService defService;
-    private final ChartService chartService;
     private final TaskService taskService;
     private final FlowHisTaskMapper flowHisTaskMapper;
     private final FlowInstanceMapper flowInstanceMapper;
@@ -74,7 +71,6 @@ public class FlwInstanceServiceImpl implements IFlwInstanceService {
     private final IFlwTaskService flwTaskService;
     private final FlwInstanceMapper flwInstanceMapper;
     private final FlwCategoryMapper flwCategoryMapper;
-    private final IFlwCommonService flwCommonService;
 
     /**
      * 分页查询正在运行的流程实例
