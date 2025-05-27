@@ -2,7 +2,7 @@ package org.dromara.system.dubbo;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.dubbo.config.annotation.DubboService;
-import org.dromara.common.core.service.PermissionService;
+import org.dromara.system.api.RemotePermissionService;
 import org.dromara.system.service.ISysPermissionService;
 import org.springframework.stereotype.Service;
 
@@ -16,7 +16,7 @@ import java.util.Set;
 @RequiredArgsConstructor
 @Service
 @DubboService
-public class RemotePermissionServiceImpl implements PermissionService {
+public class RemotePermissionServiceImpl implements RemotePermissionService {
 
     private final ISysPermissionService permissionService;
 
