@@ -133,8 +133,8 @@
                 </span>
               </template>
               <el-radio-group v-model="form.isFrame">
-                <el-radio label="0">是</el-radio>
-                <el-radio label="1">否</el-radio>
+                <el-radio value="0">是</el-radio>
+                <el-radio value="1">否</el-radio>
               </el-radio-group>
             </el-form-item>
           </el-col>
@@ -211,8 +211,8 @@
                 </span>
               </template>
               <el-radio-group v-model="form.isCache">
-                <el-radio label="0">缓存</el-radio>
-                <el-radio label="1">不缓存</el-radio>
+                <el-radio value="0">缓存</el-radio>
+                <el-radio value="1">不缓存</el-radio>
               </el-radio-group>
             </el-form-item>
           </el-col>
@@ -229,7 +229,7 @@
                 </span>
               </template>
               <el-radio-group v-model="form.visible">
-                <el-radio v-for="dict in sys_show_hide" :key="dict.value" :label="dict.value">{{ dict.label }} </el-radio>
+                <el-radio v-for="dict in sys_show_hide" :key="dict.value" :value="dict.value">{{ dict.label }} </el-radio>
               </el-radio-group>
             </el-form-item>
           </el-col>
@@ -246,7 +246,7 @@
                 </span>
               </template>
               <el-radio-group v-model="form.status">
-                <el-radio v-for="dict in sys_normal_disable" :key="dict.value" :label="dict.value">
+                <el-radio v-for="dict in sys_normal_disable" :key="dict.value" :value="dict.value">
                   {{ dict.label }}
                 </el-radio>
               </el-radio-group>
