@@ -8,6 +8,7 @@ export const useSettingsStore = defineStore('setting', () => {
   const storageSetting = useStorage<LayoutSetting>('layout-setting', {
     topNav: defaultSettings.topNav,
     tagsView: defaultSettings.tagsView,
+    tagsIcon: defaultSettings.tagsIcon,
     fixedHeader: defaultSettings.fixedHeader,
     sidebarLogo: defaultSettings.sidebarLogo,
     dynamicTitle: defaultSettings.dynamicTitle,
@@ -20,6 +21,7 @@ export const useSettingsStore = defineStore('setting', () => {
   const showSettings = ref<boolean>(defaultSettings.showSettings);
   const topNav = ref<boolean>(storageSetting.value.topNav);
   const tagsView = ref<boolean>(storageSetting.value.tagsView);
+  const tagsIcon = ref<boolean>(storageSetting.value.tagsIcon);
   const fixedHeader = ref<boolean>(storageSetting.value.fixedHeader);
   const sidebarLogo = ref<boolean>(storageSetting.value.sidebarLogo);
   const dynamicTitle = ref<boolean>(storageSetting.value.dynamicTitle);
@@ -37,6 +39,7 @@ export const useSettingsStore = defineStore('setting', () => {
     showSettings,
     topNav,
     tagsView,
+    tagsIcon,
     fixedHeader,
     sidebarLogo,
     dynamicTitle,

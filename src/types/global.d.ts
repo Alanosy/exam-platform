@@ -99,6 +99,10 @@ declare global {
      */
     tagsView: boolean;
     /**
+     * 显示页签图标
+     */
+    tagsIcon: boolean;
+    /**
      * 是否固定头部
      */
     fixedHeader: boolean;
@@ -157,8 +161,6 @@ declare global {
      * false: 明亮模式
      */
     dark: boolean;
-
-    errorLog: string;
   }
 }
 export {};
