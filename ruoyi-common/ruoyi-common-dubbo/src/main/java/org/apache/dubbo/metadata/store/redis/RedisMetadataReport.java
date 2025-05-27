@@ -83,17 +83,17 @@ public class RedisMetadataReport extends AbstractMetadataReport {
 
     @Override
     protected void doStoreProviderMetadata(MetadataIdentifier providerMetadataIdentifier, String serviceDefinitions) {
-        this.storeMetadata(providerMetadataIdentifier, serviceDefinitions);
+        this.storeMetadata(providerMetadataIdentifier, serviceDefinitions, true);
     }
 
     @Override
     protected void doStoreConsumerMetadata(MetadataIdentifier consumerMetadataIdentifier, String value) {
-        this.storeMetadata(consumerMetadataIdentifier, value);
+        this.storeMetadata(consumerMetadataIdentifier, value, true);
     }
 
     @Override
     protected void doSaveMetadata(ServiceMetadataIdentifier serviceMetadataIdentifier, URL url) {
-        this.storeMetadata(serviceMetadataIdentifier, URL.encode(url.toFullString()));
+        this.storeMetadata(serviceMetadataIdentifier, URL.encode(url.toFullString()), false);
     }
 
     @Override
@@ -112,7 +112,7 @@ public class RedisMetadataReport extends AbstractMetadataReport {
 
     @Override
     protected void doSaveSubscriberData(SubscriberMetadataIdentifier subscriberMetadataIdentifier, String urlListStr) {
-        this.storeMetadata(subscriberMetadataIdentifier, urlListStr);
+        this.storeMetadata(subscriberMetadataIdentifier, urlListStr, false);
     }
 
     @Override
@@ -125,18 +125,22 @@ public class RedisMetadataReport extends AbstractMetadataReport {
         return this.getMetadata(metadataIdentifier);
     }
 
-    private void storeMetadata(BaseMetadataIdentifier metadataIdentifier, String v) {
+    private void storeMetadata(BaseMetadataIdentifier metadataIdentifier, String v, boolean ephemeral) {
         if (pool != null) {
-            storeMetadataStandalone(metadataIdentifier, v);
+            storeMetadataStandalone(metadataIdentifier, v, ephemeral);
         } else {
-            storeMetadataInCluster(metadataIdentifier, v);
+            storeMetadataInCluster(metadataIdentifier, v, ephemeral);
         }
     }
 
-    private void storeMetadataInCluster(BaseMetadataIdentifier metadataIdentifier, String v) {
+    private void storeMetadataInCluster(BaseMetadataIdentifier metadataIdentifier, String v, boolean ephemeral) {
         try (JedisCluster jedisCluster =
                  new JedisCluster(jedisClusterNodes, timeout, timeout, 2, password, new GenericObjectPoolConfig<>())) {
-            jedisCluster.set(metadataIdentifier.getIdentifierKey() + META_DATA_STORE_TAG, v);
+            if (ephemeral) {
+                jedisCluster.set(metadataIdentifier.getIdentifierKey() + META_DATA_STORE_TAG, v, jedisParams);
+            } else {
+                jedisCluster.set(metadataIdentifier.getIdentifierKey() + META_DATA_STORE_TAG, v);
+            }
         } catch (Throwable e) {
             String msg =
                 "Failed to put " + metadataIdentifier + " to redis cluster " + v + ", cause: " + e.getMessage();
@@ -145,9 +149,13 @@ public class RedisMetadataReport extends AbstractMetadataReport {
         }
     }
 
-    private void storeMetadataStandalone(BaseMetadataIdentifier metadataIdentifier, String v) {
+    private void storeMetadataStandalone(BaseMetadataIdentifier metadataIdentifier, String v, boolean ephemeral) {
         try (Jedis jedis = pool.getResource()) {
-            jedis.set(metadataIdentifier.getUniqueKey(KeyTypeEnum.UNIQUE_KEY), v);
+            if (ephemeral) {
+                jedis.set(metadataIdentifier.getUniqueKey(KeyTypeEnum.UNIQUE_KEY), v, jedisParams);
+            } else {
+                jedis.set(metadataIdentifier.getUniqueKey(KeyTypeEnum.UNIQUE_KEY), v);
+            }
         } catch (Throwable e) {
             String msg = "Failed to put " + metadataIdentifier + " to redis " + v + ", cause: " + e.getMessage();
             logger.error(TRANSPORT_FAILED_RESPONSE, "", "", msg, e);
@@ -410,7 +418,7 @@ public class RedisMetadataReport extends AbstractMetadataReport {
 
     @Override
     public void publishAppMetadata(SubscriberMetadataIdentifier identifier, MetadataInfo metadataInfo) {
-        this.storeMetadata(identifier, metadataInfo.getContent());
+        this.storeMetadata(identifier, metadataInfo.getContent(), false);
     }
 
     @Override
