@@ -277,7 +277,7 @@
       <template #footer>
         <div class="dialog-footer">
           <el-button type="primary" @click="submitDeleteForm" :loading="deleteLoading">确 定</el-button>
-          <el-button @click="cancel">取 消</el-button>
+          <el-button @click="cancelCascade">取 消</el-button>
         </div>
       </template>
     </el-dialog>
@@ -361,7 +361,7 @@ const getTreeselect = async () => {
 /** 取消按钮 */
 const cancel = () => {
   reset();
-  deleteDialog.visible = false;
+  dialog.visible = false;
 };
 /** 表单重置 */
 const reset = () => {
@@ -441,6 +441,12 @@ const handleCascadeDelete = () => {
   menuTreeRef.value?.setCheckedKeys([]);
   getTreeselect();
   deleteDialog.visible = true;
+};
+
+/** 取消按钮 */
+const cancelCascade = () => {
+  menuTreeRef.value?.setCheckedKeys([]);
+  deleteDialog.visible = false;
 };
 
 /** 删除提交按钮 */
