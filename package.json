@@ -22,7 +22,6 @@
   "dependencies": {
     "@element-plus/icons-vue": "2.3.1",
     "@highlightjs/vue-plugin": "2.1.0",
-    "@logicflow/core": "^2.0.13",
     "@vueup/vue-quill": "1.2.0",
     "@vueuse/core": "13.1.0",
     "animate.css": "4.1.1",
