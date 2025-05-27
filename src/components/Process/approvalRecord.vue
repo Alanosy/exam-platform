@@ -3,7 +3,7 @@
     <el-dialog v-model="visible" draggable title="审批记录" :width="props.width" :height="props.height" :close-on-click-modal="false">
       <el-tabs v-model="tabActiveName" class="demo-tabs">
         <el-tab-pane v-loading="loading" label="流程图" name="image" style="height: 68vh">
-          <flowChart :defJson="defJson" v-if="defJson != ''" />
+          <flowChart :ins-id="insId" v-if="insId != ''" />
         </el-tab-pane>
         <el-tab-pane v-loading="loading" label="审批信息" name="info">
           <div>
@@ -73,20 +73,18 @@ const loading = ref(false);
 const visible = ref(false);
 const historyList = ref<Array<any>>([]);
 const tabActiveName = ref('image');
-const imgUrl = ref('');
-const defJson = ref<any>('');
+const insId = ref(null);
 
 //初始化查询审批记录
-const init = async (businessId: string | number) => {
+const init = async (businessId: string | number, instanceId: string | number) => {
   visible.value = true;
   loading.value = true;
   tabActiveName.value = 'image';
   historyList.value = [];
+  insId.value = instanceId;
   flowImage(businessId).then((resp) => {
     if (resp.data) {
       historyList.value = resp.data.list;
-      imgUrl.value = 'data:image/gif;base64,' + resp.data.image;
-      defJson.value = resp.data.defChart.defJson;
       if (historyList.value.length > 0) {
         historyList.value.forEach((item) => {
           if (item.ext) {
