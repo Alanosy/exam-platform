@@ -275,7 +275,7 @@ public class FlwInstanceServiceImpl implements IFlwInstanceService {
      * @param businessId 业务id
      */
     @Override
-    public Map<String, Object> flowImage(String businessId) {
+    public Map<String, Object> flowHisTaskList(String businessId) {
         FlowInstance flowInstance = this.selectInstByBusinessId(businessId);
         if (ObjectUtil.isNull(flowInstance)) {
             throw new ServiceException(ExceptionCons.NOT_FOUNT_INSTANCE);
@@ -311,7 +311,7 @@ public class FlwInstanceServiceImpl implements IFlwInstanceService {
         if (CollUtil.isNotEmpty(flowHisTasks)) {
             list.addAll(BeanUtil.copyToList(flowHisTasks, FlowHisTaskVo.class));
         }
-        return Map.of("list", list);
+        return Map.of("list", list, "instanceId", instanceId);
     }
 
     /**
