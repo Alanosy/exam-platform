@@ -16,9 +16,9 @@ import org.dromara.common.mybatis.core.domain.BaseEntity;
 import org.dromara.common.mybatis.core.page.PageQuery;
 import org.dromara.common.mybatis.core.page.TableDataInfo;
 import org.dromara.common.tenant.helper.TenantHelper;
-import org.dromara.workflow.api.event.ProcessCreateTaskEvent;
 import org.dromara.workflow.api.event.ProcessDeleteEvent;
 import org.dromara.workflow.api.event.ProcessEvent;
+import org.dromara.workflow.api.event.ProcessTaskEvent;
 import org.dromara.workflow.common.ConditionalOnEnable;
 import org.dromara.workflow.domain.TestLeave;
 import org.dromara.workflow.domain.bo.TestLeaveBo;
@@ -168,19 +168,17 @@ public class TestLeaveServiceImpl implements ITestLeaveService {
 
     /**
      * 执行任务创建监听
-     * 示例：也可通过  @EventListener(condition = "#processCreateTaskEvent.flowCode=='leave1'")进行判断
+     * 示例：也可通过  @EventListener(condition = "#processTaskEvent.flowCode=='leave1'")进行判断
      * 在方法中判断流程节点key
-     * if ("xxx".equals(processCreateTaskEvent.getNodeCode())) {
+     * if ("xxx".equals(processTaskEvent.getNodeCode())) {
      * //执行业务逻辑
      * }
      *
-     * @param processCreateTaskEvent 参数
+     * @param processTaskEvent 参数
      */
-    @EventListener(condition = "#processCreateTaskEvent.flowCode.startsWith('leave')")
-    public void processCreateTaskHandler(ProcessCreateTaskEvent processCreateTaskEvent) {
-        TenantHelper.dynamic(processCreateTaskEvent.getTenantId(), () -> {
-            log.info("当前任务创建了{}", processCreateTaskEvent.toString());
-        });
+    @EventListener(condition = "#processTaskEvent.flowCode.startsWith('leave')")
+    public void processTaskHandler(ProcessTaskEvent processTaskEvent) {
+        log.info("当前任务创建了{}", processTaskEvent.toString());
     }
 
     /**

@@ -4,9 +4,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.dromara.common.core.utils.SpringUtils;
 import org.dromara.common.tenant.helper.TenantHelper;
 import org.dromara.warm.flow.core.entity.Instance;
-import org.dromara.workflow.api.event.ProcessCreateTaskEvent;
 import org.dromara.workflow.api.event.ProcessDeleteEvent;
 import org.dromara.workflow.api.event.ProcessEvent;
+import org.dromara.workflow.api.event.ProcessTaskEvent;
 import org.dromara.workflow.common.ConditionalOnEnable;
 import org.springframework.stereotype.Component;
 
@@ -56,20 +56,20 @@ public class FlowProcessEventHandler {
      * @param instance 实例数据
      * @param taskId   任务id
      */
-    public void processCreateTaskHandler(String flowCode, Instance instance, Long taskId) {
+    public void processTaskHandler(String flowCode, Instance instance, Long taskId) {
         String tenantId = TenantHelper.getTenantId();
         log.info("【流程任务事件发布】租户ID: {}, 流程编码: {}, 业务ID: {}, 节点类型: {}, 节点编码: {}, 节点名称: {}, 任务ID: {}",
             tenantId, flowCode, instance.getBusinessId(), instance.getNodeType(), instance.getNodeCode(), instance.getNodeName(), taskId);
-        ProcessCreateTaskEvent processCreateTaskEvent = new ProcessCreateTaskEvent();
-        processCreateTaskEvent.setTenantId(tenantId);
-        processCreateTaskEvent.setFlowCode(flowCode);
-        processCreateTaskEvent.setBusinessId(instance.getBusinessId());
-        processCreateTaskEvent.setNodeType(instance.getNodeType());
-        processCreateTaskEvent.setNodeCode(instance.getNodeCode());
-        processCreateTaskEvent.setNodeName(instance.getNodeName());
-        processCreateTaskEvent.setTaskId(taskId);
-        processCreateTaskEvent.setStatus(instance.getFlowStatus());
-        SpringUtils.context().publishEvent(processCreateTaskEvent);
+        ProcessTaskEvent processTaskEvent = new ProcessTaskEvent();
+        processTaskEvent.setTenantId(tenantId);
+        processTaskEvent.setFlowCode(flowCode);
+        processTaskEvent.setBusinessId(instance.getBusinessId());
+        processTaskEvent.setNodeType(instance.getNodeType());
+        processTaskEvent.setNodeCode(instance.getNodeCode());
+        processTaskEvent.setNodeName(instance.getNodeName());
+        processTaskEvent.setTaskId(taskId);
+        processTaskEvent.setStatus(instance.getFlowStatus());
+        SpringUtils.context().publishEvent(processTaskEvent);
     }
 
     /**

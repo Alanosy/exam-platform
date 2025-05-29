@@ -54,15 +54,7 @@ public class WorkflowGlobalListener implements GlobalListener {
      */
     @Override
     public void create(ListenerVariable listenerVariable) {
-        Instance instance = listenerVariable.getInstance();
-        Definition definition = listenerVariable.getDefinition();
-        FlowParams flowParams = listenerVariable.getFlowParams();
-        Map<String, Object> variable = flowParams.getVariable();
-        Task task = listenerVariable.getTask();
-        if (task != null) {
-            // 判断流程状态（发布审批中事件）
-            flowProcessEventHandler.processCreateTaskHandler(definition.getFlowCode(), instance, task.getId());
-        }
+
     }
 
     /**
@@ -100,13 +92,6 @@ public class WorkflowGlobalListener implements GlobalListener {
                 flowTask.setPermissionList(List.of(instance.getCreateBy()));
             }
         }
-        // 申请人提交事件
-        Boolean submit = MapUtil.getBool(variable, FlowConstant.SUBMIT);
-        if (submit != null && submit) {
-            flowProcessEventHandler.processHandler(definition.getFlowCode(), instance, instance.getFlowStatus(), variable, true);
-        }
-        variable.remove(FlowConstant.SUBMIT);
-        flowParams.variable(variable);
     }
 
     /**
@@ -118,6 +103,7 @@ public class WorkflowGlobalListener implements GlobalListener {
     public void finish(ListenerVariable listenerVariable) {
         Instance instance = listenerVariable.getInstance();
         Definition definition = listenerVariable.getDefinition();
+        Task task = listenerVariable.getTask();
         Map<String, Object> params = new HashMap<>();
         FlowParams flowParams = listenerVariable.getFlowParams();
         if (ObjectUtil.isNotNull(flowParams)) {
@@ -128,20 +114,28 @@ public class WorkflowGlobalListener implements GlobalListener {
             // 办理意见
             params.put("message", flowParams.getMessage());
         }
-        // 判断流程状态（发布：撤销，退回，作废，终止，已完成事件）
-        String status = determineFlowStatus(instance);
-        if (StringUtils.isNotBlank(status)) {
-            flowProcessEventHandler.processHandler(definition.getFlowCode(), instance, status, params, false);
+        Map<String, Object> variable = flowParams.getVariable();
+        //申请人提交事件
+        Boolean submit = MapUtil.getBool(variable, FlowConstant.SUBMIT);
+        if (submit != null && submit) {
+            flowProcessEventHandler.processHandler(definition.getFlowCode(), instance, instance.getFlowStatus(), variable, true);
+        } else {
+            // 判断流程状态（发布：撤销，退回，作废，终止，已完成事件）
+            String status = determineFlowStatus(instance);
+            if (StringUtils.isNotBlank(status)) {
+                flowProcessEventHandler.processHandler(definition.getFlowCode(), instance, status, params, false);
+            }
         }
-
+        //发布任务事件
+        if (task != null) {
+            flowProcessEventHandler.processTaskHandler(definition.getFlowCode(), instance, task.getId());
+        }
         if (ObjectUtil.isNull(flowParams)) {
             return;
         }
-        Map<String, Object> variable = flowParams.getVariable();
         // 只有办理或者退回的时候才执行消息通知和抄送
         if (TaskStatusEnum.PASS.getStatus().equals(flowParams.getHisStatus())
             || TaskStatusEnum.BACK.getStatus().equals(flowParams.getHisStatus())) {
-            Task task = listenerVariable.getTask();
             if (variable != null) {
                 if (variable.containsKey(FlowConstant.FLOW_COPY_LIST)) {
                     List<FlowCopyBo> flowCopyList = (List<FlowCopyBo>) variable.get(FlowConstant.FLOW_COPY_LIST);
@@ -160,6 +154,7 @@ public class WorkflowGlobalListener implements GlobalListener {
                 variableMap.remove(FlowConstant.FLOW_COPY_LIST);
                 variableMap.remove(FlowConstant.MESSAGE_TYPE);
                 variableMap.remove(FlowConstant.MESSAGE_NOTICE);
+                variableMap.remove(FlowConstant.SUBMIT);
                 instance.setVariable(FlowEngine.jsonConvert.objToStr(variableMap));
                 insService.updateById(instance);
             }
