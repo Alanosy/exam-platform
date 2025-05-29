@@ -39,7 +39,7 @@
         </el-row>
       </template>
 
-      <el-table v-loading="loading" :data="tenantPackageList" @selection-change="handleSelectionChange">
+      <el-table v-loading="loading" border :data="tenantPackageList" @selection-change="handleSelectionChange">
         <el-table-column type="selection" width="55" align="center" />
         <el-table-column v-if="false" label="租户套餐id" align="center" prop="packageId" />
         <el-table-column label="套餐名称" align="center" prop="packageName" />
@@ -167,11 +167,11 @@ const getMenuTreeselect = async () => {
 // 所有菜单节点数据
 const getMenuAllCheckedKeys = (): any => {
   // 目前被选中的菜单节点
-  let checkedKeys = menuTreeRef.value?.getCheckedKeys();
+  const checkedKeys = menuTreeRef.value?.getCheckedKeys();
   // 半选中的菜单节点
-  let halfCheckedKeys = menuTreeRef.value?.getHalfCheckedKeys();
+  const halfCheckedKeys = menuTreeRef.value?.getHalfCheckedKeys();
   if (halfCheckedKeys) {
-    checkedKeys?.unshift.apply(checkedKeys, halfCheckedKeys);
+    checkedKeys?.unshift(...halfCheckedKeys);
   }
   return checkedKeys;
 };
@@ -194,7 +194,7 @@ const getList = async () => {
 
 // 租户套餐状态修改
 const handleStatusChange = async (row: TenantPkgVO) => {
-  let text = row.status === '0' ? '启用' : '停用';
+  const text = row.status === '0' ? '启用' : '停用';
   const [err] = await to(proxy?.$modal.confirm('确认要"' + text + '""' + row.packageName + '"套餐吗？') as Promise<any>);
   if (err) {
     row.status = row.status === '0' ? '1' : '0';
@@ -241,7 +241,7 @@ const handleSelectionChange = (selection: TenantPkgVO[]) => {
 // 树权限（展开/折叠）
 const handleCheckedTreeExpand = (value: CheckboxValueType, type: string) => {
   if (type == 'menu') {
-    let treeList = menuOptions.value;
+    const treeList = menuOptions.value;
     for (let i = 0; i < treeList.length; i++) {
       if (menuTreeRef.value) {
         menuTreeRef.value.store.nodesMap[treeList[i].id].expanded = value as boolean;

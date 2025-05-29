@@ -30,6 +30,9 @@
           <el-col :span="1.5">
             <el-button type="info" plain icon="Sort" @click="handleToggleExpandAll">展开/折叠</el-button>
           </el-col>
+          <el-col :span="1.5">
+            <el-button type="danger" plain icon="Delete" @click="handleCascadeDelete" :loading="deleteLoading">级联删除</el-button>
+          </el-col>
           <right-toolbar v-model:show-search="showSearch" @query-table="getList"></right-toolbar>
         </el-row>
       </template>
@@ -39,6 +42,7 @@
         v-loading="loading"
         :data="menuList"
         row-key="menuId"
+        border
         :tree-props="{ children: 'children', hasChildren: 'hasChildren' }"
         :default-expand-all="isExpandAll"
       >
@@ -129,8 +133,8 @@
                 </span>
               </template>
               <el-radio-group v-model="form.isFrame">
-                <el-radio label="0">是</el-radio>
-                <el-radio label="1">否</el-radio>
+                <el-radio value="0">是</el-radio>
+                <el-radio value="1">否</el-radio>
               </el-radio-group>
             </el-form-item>
           </el-col>
@@ -207,8 +211,8 @@
                 </span>
               </template>
               <el-radio-group v-model="form.isCache">
-                <el-radio label="0">缓存</el-radio>
-                <el-radio label="1">不缓存</el-radio>
+                <el-radio value="0">缓存</el-radio>
+                <el-radio value="1">不缓存</el-radio>
               </el-radio-group>
             </el-form-item>
           </el-col>
@@ -225,7 +229,7 @@
                 </span>
               </template>
               <el-radio-group v-model="form.visible">
-                <el-radio v-for="dict in sys_show_hide" :key="dict.value" :label="dict.value">{{ dict.label }} </el-radio>
+                <el-radio v-for="dict in sys_show_hide" :key="dict.value" :value="dict.value">{{ dict.label }} </el-radio>
               </el-radio-group>
             </el-form-item>
           </el-col>
@@ -242,7 +246,7 @@
                 </span>
               </template>
               <el-radio-group v-model="form.status">
-                <el-radio v-for="dict in sys_normal_disable" :key="dict.value" :label="dict.value">
+                <el-radio v-for="dict in sys_normal_disable" :key="dict.value" :value="dict.value">
                   {{ dict.label }}
                 </el-radio>
               </el-radio-group>
@@ -257,11 +261,31 @@
         </div>
       </template>
     </el-dialog>
+
+    <el-dialog v-model="deleteDialog.visible" :title="deleteDialog.title" destroy-on-close append-to-bod width="750px">
+      <el-tree
+        ref="menuTreeRef"
+        class="tree-border"
+        :data="menuOptions"
+        show-checkbox
+        node-key="menuId"
+        :check-strictly="false"
+        empty-text="加载中，请稍候"
+        :default-expanded-keys="[0]"
+        :props="{ value: 'menuId', label: 'menuName', children: 'children' } as any"
+      />
+      <template #footer>
+        <div class="dialog-footer">
+          <el-button type="primary" @click="submitDeleteForm" :loading="deleteLoading">确 定</el-button>
+          <el-button @click="cancelCascade">取 消</el-button>
+        </div>
+      </template>
+    </el-dialog>
   </div>
 </template>
 
 <script setup name="Menu" lang="ts">
-import { addMenu, delMenu, getMenu, listMenu, updateMenu } from '@/api/system/menu';
+import { addMenu, cascadeDelMenu, delMenu, getMenu, listMenu, updateMenu } from '@/api/system/menu';
 import { MenuForm, MenuQuery, MenuVO } from '@/api/system/menu/types';
 import { MenuTypeEnum } from '@/enums/MenuTypeEnum';
 
@@ -404,7 +428,50 @@ const handleDelete = async (row: MenuVO) => {
   proxy?.$modal.msgSuccess('删除成功');
 };
 
+const deleteLoading = ref<boolean>(false);
+const menuTreeRef = ref<ElTreeInstance>();
+
+const deleteDialog = reactive<DialogOption>({
+  visible: false,
+  title: '级联删除菜单'
+});
+
+/** 级联删除按钮操作 */
+const handleCascadeDelete = () => {
+  menuTreeRef.value?.setCheckedKeys([]);
+  getTreeselect();
+  deleteDialog.visible = true;
+};
+
+/** 取消按钮 */
+const cancelCascade = () => {
+  menuTreeRef.value?.setCheckedKeys([]);
+  deleteDialog.visible = false;
+};
+
+/** 删除提交按钮 */
+const submitDeleteForm = async () => {
+  const menuIds = menuTreeRef.value?.getCheckedKeys();
+  if (menuIds.length < 0) {
+    proxy?.$modal.msgWarning('请选择要删除的菜单');
+    return;
+  }
+
+  deleteLoading.value = true;
+  await cascadeDelMenu(menuIds).finally(() => (deleteLoading.value = false));
+  await getList();
+  proxy?.$modal.msgSuccess('删除成功');
+  deleteDialog.visible = false;
+};
+
 onMounted(() => {
   getList();
 });
 </script>
+
+<style scoped lang="scss">
+.tree-border {
+  height: 300px;
+  overflow: auto;
+}
+</style>

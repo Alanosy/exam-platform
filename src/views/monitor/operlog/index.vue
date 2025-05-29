@@ -65,6 +65,7 @@
         ref="operLogTableRef"
         v-loading="loading"
         :data="operlogList"
+        border
         :default-sort="defaultSort"
         @selection-change="handleSelectionChange"
         @sort-change="handleSortChange"

@@ -60,7 +60,7 @@
         </el-row>
       </template>
 
-      <el-table v-loading="loading" :data="configList" @selection-change="handleSelectionChange">
+      <el-table v-loading="loading" border :data="configList" @selection-change="handleSelectionChange">
         <el-table-column type="selection" width="55" align="center" />
         <el-table-column v-if="false" label="参数主键" align="center" prop="configId" />
         <el-table-column label="参数名称" align="center" prop="configName" :show-overflow-tooltip="true" />

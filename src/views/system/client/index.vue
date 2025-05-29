@@ -45,7 +45,7 @@
         </el-row>
       </template>
 
-      <el-table v-loading="loading" :data="clientList" @selection-change="handleSelectionChange">
+      <el-table v-loading="loading" :data="clientList" border @selection-change="handleSelectionChange">
         <el-table-column type="selection" width="55" align="center" />
         <el-table-column v-if="true" label="id" align="center" prop="id" />
         <el-table-column label="客户端id" align="center" prop="clientId" />
@@ -300,7 +300,7 @@ const handleExport = () => {
 
 /** 状态修改  */
 const handleStatusChange = async (row: ClientVO) => {
-  let text = row.status === '0' ? '启用' : '停用';
+  const text = row.status === '0' ? '启用' : '停用';
   try {
     await proxy?.$modal.confirm('确认要"' + text + '"吗?');
     await changeStatus(row.clientId, row.status);

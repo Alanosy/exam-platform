@@ -56,7 +56,7 @@
         </el-row>
       </template>
 
-      <el-table v-loading="loading" :data="tableList" @selection-change="handleSelectionChange">
+      <el-table v-loading="loading" border :data="tableList" @selection-change="handleSelectionChange">
         <el-table-column type="selection" align="center" width="55"></el-table-column>
         <el-table-column label="序号" type="index" width="50" align="center">
           <template #default="scope">
@@ -113,8 +113,8 @@
 </template>
 
 <script setup name="Gen" lang="ts">
-import {delTable, genCode, getDataNames, listTable, previewTable, synchDb} from '@/api/tool/gen';
-import {TableQuery, TableVO} from '@/api/tool/gen/types';
+import { delTable, genCode, getDataNames, listTable, previewTable, synchDb } from '@/api/tool/gen';
+import { TableQuery, TableVO } from '@/api/tool/gen/types';
 import router from '@/router';
 import ImportTable from './importTable.vue';
 

@@ -19,7 +19,7 @@
       </el-form-item>
     </el-form>
     <el-row>
-      <el-table ref="tableRef" :data="dbTableList" height="260px" @row-click="clickRow" @selection-change="handleSelectionChange">
+      <el-table ref="tableRef" border :data="dbTableList" height="260px" @row-click="clickRow" @selection-change="handleSelectionChange">
         <el-table-column type="selection" width="55"></el-table-column>
         <el-table-column prop="tableName" label="表名称" :show-overflow-tooltip="true"></el-table-column>
         <el-table-column prop="tableComment" label="表描述" :show-overflow-tooltip="true"></el-table-column>

@@ -49,7 +49,7 @@
         </el-row>
       </template>
 
-      <el-table v-loading="loading" :data="demoList" @selection-change="handleSelectionChange">
+      <el-table v-loading="loading" border :data="demoList" @selection-change="handleSelectionChange">
         <el-table-column type="selection" width="55" align="center" />
         <el-table-column v-if="true" label="主键" align="center" prop="id" />
         <el-table-column label="部门id" align="center" prop="deptId" />

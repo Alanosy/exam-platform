@@ -51,7 +51,7 @@
         </el-row>
       </template>
 
-      <el-table v-loading="loading" :data="tenantList" @selection-change="handleSelectionChange">
+      <el-table v-loading="loading" border :data="tenantList" @selection-change="handleSelectionChange">
         <el-table-column type="selection" width="55" align="center" />
         <el-table-column v-if="false" label="id" align="center" prop="id" />
         <el-table-column label="租户编号" align="center" prop="tenantId" />
@@ -245,7 +245,7 @@ const getList = async () => {
 
 // 租户套餐状态修改
 const handleStatusChange = async (row: TenantVO) => {
-  let text = row.status === '0' ? '启用' : '停用';
+  const text = row.status === '0' ? '启用' : '停用';
   try {
     await proxy?.$modal.confirm('确认要"' + text + '""' + row.companyName + '"租户吗？');
     await changeTenantStatus(row.id, row.tenantId, row.status);
@@ -361,7 +361,7 @@ const handleExport = () => {
 /**同步租户字典*/
 const handleSyncTenantDict = async () => {
   await proxy?.$modal.confirm('确认要同步所有租户字典吗？');
-  let res = await syncTenantDict();
+  const res = await syncTenantDict();
   proxy?.$modal.msgSuccess(res.msg);
 };
 

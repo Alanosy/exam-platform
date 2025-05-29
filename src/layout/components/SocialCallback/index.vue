@@ -63,9 +63,9 @@ const loginByCode = async (data: LoginData) => {
 
 const init = async () => {
   // 如果域名不相等 则重定向处理
-  let host = window.location.host;
+  const host = window.location.host;
   if (domain !== host) {
-    let urlFull = new URL(window.location.href);
+    const urlFull = new URL(window.location.href);
     urlFull.host = domain;
     window.location.href = urlFull.toString();
     return;

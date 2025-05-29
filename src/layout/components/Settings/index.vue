@@ -60,6 +60,13 @@
     </div>
 
     <div class="drawer-item">
+      <span>显示页签图标</span>
+      <span class="comp-style">
+        <el-switch v-model="settingsStore.tagsIcon" :disabled="!settingsStore.tagsView" class="drawer-switch" />
+      </span>
+    </div>
+
+    <div class="drawer-item">
       <span>固定 Header</span>
       <span class="comp-style">
         <el-switch v-model="settingsStore.fixedHeader" class="drawer-switch" />
@@ -153,6 +160,7 @@ const saveSetting = () => {
   const settings = useStorage<LayoutSetting>('layout-setting', defaultSettings);
   settings.value.topNav = storeSettings.value.topNav;
   settings.value.tagsView = storeSettings.value.tagsView;
+  settings.value.tagsIcon = storeSettings.value.tagsIcon;
   settings.value.fixedHeader = storeSettings.value.fixedHeader;
   settings.value.sidebarLogo = storeSettings.value.sidebarLogo;
   settings.value.dynamicTitle = storeSettings.value.dynamicTitle;

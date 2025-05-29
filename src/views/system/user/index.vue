@@ -27,6 +27,9 @@
                 <el-form-item label="用户名称" prop="userName">
                   <el-input v-model="queryParams.userName" placeholder="请输入用户名称" clearable @keyup.enter="handleQuery" />
                 </el-form-item>
+                <el-form-item label="用户昵称" prop="nickName">
+                  <el-input v-model="queryParams.nickName" placeholder="请输入用户昵称" clearable @keyup.enter="handleQuery" />
+                </el-form-item>
                 <el-form-item label="手机号码" prop="phonenumber">
                   <el-input v-model="queryParams.phonenumber" placeholder="请输入手机号码" clearable @keyup.enter="handleQuery" />
                 </el-form-item>
@@ -92,7 +95,7 @@
             </el-row>
           </template>
 
-          <el-table v-loading="loading" :data="userList" @selection-change="handleSelectionChange">
+          <el-table v-loading="loading" border :data="userList" @selection-change="handleSelectionChange">
             <el-table-column type="selection" width="50" align="center" />
             <el-table-column v-if="columns[0].visible" key="userId" label="用户编号" align="center" prop="userId" />
             <el-table-column v-if="columns[1].visible" key="userName" label="用户名称" align="center" prop="userName" :show-overflow-tooltip="true" />
@@ -498,7 +501,7 @@ const handleDelete = async (row?: UserVO) => {
 
 /** 用户状态修改  */
 const handleStatusChange = async (row: UserVO) => {
-  let text = row.status === '0' ? '启用' : '停用';
+  const text = row.status === '0' ? '启用' : '停用';
   try {
     await proxy?.$modal.confirm('确认要"' + text + '""' + row.userName + '"用户吗?');
     await api.changeUserStatus(row.userId, row.status);

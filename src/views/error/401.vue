@@ -22,7 +22,7 @@
 <script setup lang="ts">
 import errImage from '@/assets/401_images/401.gif';
 
-let { proxy } = getCurrentInstance() as ComponentInternalInstance;
+const { proxy } = getCurrentInstance() as ComponentInternalInstance;
 
 const errGif = ref(errImage + '?' + +new Date());
 

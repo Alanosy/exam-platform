@@ -197,7 +197,7 @@ import { categoryTree } from '@/api/workflow/category';
 import { CategoryTreeVO } from '@/api/workflow/category/types';
 import { FlowDefinitionQuery, FlowDefinitionVo, FlowDefinitionForm } from '@/api/workflow/definition/types';
 import { UploadRequestOptions, TabsPaneContext } from 'element-plus';
-import { ElMessageBoxOptions } from "element-plus/es/components/message-box/src/message-box.type";
+import { ElMessageBoxOptions } from 'element-plus/es/components/message-box/src/message-box.type';
 
 const { proxy } = getCurrentInstance() as ComponentInternalInstance;
 
@@ -326,7 +326,7 @@ const handleSelectionChange = (selection: any) => {
 };
 //分页
 const getPageList = async () => {
-  let query = proxy.$route.query;
+  const query = proxy.$route.query;
   if (query.activeName) {
     activeName.value = query.activeName;
   }
@@ -411,7 +411,7 @@ const handlerBeforeUpload = () => {
 };
 //部署文件
 const handlerImportDefinition = (data: UploadRequestOptions): XMLHttpRequest => {
-  let formData = new FormData();
+  const formData = new FormData();
   uploadDialogLoading.value = true;
   formData.append('file', data.file);
   formData.append('category', selectCategory.value);
@@ -466,6 +466,9 @@ const reset = () => {
  */
 const handleAdd = async () => {
   reset();
+  if (queryParams.value.category != '') {
+    form.value.category = queryParams.value.category;
+  }
   modelDialog.visible = true;
   modelDialog.title = '新增流程';
 };

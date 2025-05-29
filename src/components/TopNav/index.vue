@@ -47,11 +47,11 @@ const routers = computed(() => permissionStore.getTopbarRoutes());
 
 // 顶部显示菜单
 const topMenus = computed(() => {
-  let topMenus: RouteRecordRaw[] = [];
+  const topMenus: RouteRecordRaw[] = [];
   routers.value.map((menu) => {
     if (menu.hidden !== true) {
       // 兼容顶部栏一级菜单内部跳转
-      if (menu.path === '/') {
+      if (menu.path === '/' && menu.children) {
         topMenus.push(menu.children ? menu.children[0] : menu);
       } else {
         topMenus.push(menu);
@@ -63,7 +63,7 @@ const topMenus = computed(() => {
 
 // 设置子路由
 const childrenMenus = computed(() => {
-  let childrenMenus: RouteRecordRaw[] = [];
+  const childrenMenus: RouteRecordRaw[] = [];
   routers.value.map((router) => {
     router.children?.forEach((item) => {
       if (item.parentPath === undefined) {
@@ -118,7 +118,7 @@ const handleSelect = (key: string) => {
     // 没有子路由路径内部打开
     const routeMenu = childrenMenus.value.find((item) => item.path === key);
     if (routeMenu && routeMenu.query) {
-      let query = JSON.parse(routeMenu.query);
+      const query = JSON.parse(routeMenu.query);
       router.push({ path: key, query: query });
     } else {
       router.push({ path: key });
@@ -132,7 +132,7 @@ const handleSelect = (key: string) => {
 };
 
 const activeRoutes = (key: string) => {
-  let routes: RouteRecordRaw[] = [];
+  const routes: RouteRecordRaw[] = [];
   if (childrenMenus.value && childrenMenus.value.length > 0) {
     childrenMenus.value.map((item) => {
       if (key == item.parentPath || (key == 'index' && '' == item.path)) {

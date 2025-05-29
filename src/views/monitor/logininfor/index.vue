@@ -63,6 +63,7 @@
         v-loading="loading"
         :data="loginInfoList"
         :default-sort="defaultSort"
+        border
         @selection-change="handleSelectionChange"
         @sort-change="handleSortChange"
       >

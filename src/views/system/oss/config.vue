@@ -45,7 +45,7 @@
         </el-row>
       </template>
 
-      <el-table v-loading="loading" :data="ossConfigList" @selection-change="handleSelectionChange">
+      <el-table v-loading="loading" border :data="ossConfigList" @selection-change="handleSelectionChange">
         <el-table-column type="selection" width="55" align="center" />
         <el-table-column v-if="columns[0].visible" label="主建" align="center" prop="ossConfigId" />
         <el-table-column v-if="columns[1].visible" label="配置key" align="center" prop="configKey" />
@@ -87,10 +87,18 @@
           <el-input v-model="form.configKey" placeholder="请输入配置key" />
         </el-form-item>
         <el-form-item label="访问站点" prop="endpoint">
-          <el-input v-model="form.endpoint" placeholder="请输入访问站点" />
+          <el-input v-model="form.endpoint" placeholder="请输入访问站点">
+            <template #prefix>
+              <span style="color: #999">{{ protocol }}</span>
+            </template>
+          </el-input>
         </el-form-item>
         <el-form-item label="自定义域名" prop="domain">
-          <el-input v-model="form.domain" placeholder="请输入自定义域名" />
+          <el-input v-model="form.domain" placeholder="请输入自定义域名">
+            <template #prefix>
+              <span style="color: #999">{{ protocol }}</span>
+            </template>
+          </el-input>
         </el-form-item>
         <el-form-item label="accessKey" prop="accessKey">
           <el-input v-model="form.accessKey" placeholder="请输入accessKey" />
@@ -239,6 +247,8 @@ const data = reactive<PageData<OssConfigForm, OssConfigQuery>>({
 
 const { queryParams, form, rules } = toRefs(data);
 
+const protocol = computed(() => (form.value.isHttps === 'Y' ? 'https://' : 'http://'));
+
 /** 查询对象存储配置列表 */
 const getList = async () => {
   loading.value = true;
@@ -306,7 +316,7 @@ const submitForm = () => {
 };
 /** 状态修改  */
 const handleStatusChange = async (row: OssConfigVO) => {
-  let text = row.status === '0' ? '启用' : '停用';
+  const text = row.status === '0' ? '启用' : '停用';
   try {
     await proxy?.$modal.confirm('确认要"' + text + '""' + row.configKey + '"配置吗?');
     await changeOssConfigStatus(row.ossConfigId, row.status, row.configKey);

@@ -352,7 +352,7 @@ const handleInvalid = async (row: FlowInstanceVO) => {
   await proxy?.$modal.confirm('是否确认作废？');
   loading.value = true;
   if ('running' === tab.value) {
-    let param = {
+    const param = {
       id: row.id,
       comment: deleteReason.value
     };
@@ -381,7 +381,7 @@ const handleInstanceVariable = async (row: FlowInstanceVO) => {
   variableLoading.value = true;
   variableVisible.value = true;
   processDefinitionName.value = row.flowName;
-  let data = await instanceVariable(row.id);
+  const data = await instanceVariable(row.id);
   variables.value = data.data.variable;
   variableLoading.value = false;
 };

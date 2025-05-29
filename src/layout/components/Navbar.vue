@@ -33,7 +33,7 @@
             <el-popover placement="bottom" trigger="click" transition="el-zoom-in-top" :width="300" :persistent="false">
               <template #reference>
                 <el-badge :value="newNotice > 0 ? newNotice : ''" :max="99">
-                  <svg-icon icon-class="message" />
+                  <div class="right-menu-item hover-effect" style="display: block"><svg-icon icon-class="message" /></div>
                 </el-badge>
               </template>
               <template #default>
@@ -98,7 +98,7 @@ import { dynamicClear, dynamicTenant } from '@/api/system/tenant';
 import { TenantVO } from '@/api/types';
 import notice from './notice/index.vue';
 import router from '@/router';
-import {ElMessageBoxOptions} from "element-plus/es/components/message-box/src/message-box.type";
+import { ElMessageBoxOptions } from 'element-plus/es/components/message-box/src/message-box.type';
 
 const appStore = useAppStore();
 const userStore = useUserStore();
@@ -171,6 +171,7 @@ const logout = async () => {
         redirect: encodeURIComponent(router.currentRoute.value.fullPath || '/')
       }
     });
+    proxy?.$tab.closeAllPage();
   });
 };
 

@@ -315,6 +315,9 @@
     "watchThrottled": true,
     "watchTriggerable": true,
     "watchWithFilter": true,
-    "whenever": true
+    "whenever": true,
+    "Slot": true,
+    "Slots": true,
+    "createRef": true
   }
 }

@@ -189,7 +189,7 @@ const handleUploadSuccess = (res: any, file: UploadFile) => {
 const handleDelete = (file: UploadFile): boolean => {
   const findex = fileList.value.map((f) => f.name).indexOf(file.name);
   if (findex > -1 && uploadList.value.length === number.value) {
-    let ossId = fileList.value[findex].ossId;
+    const ossId = fileList.value[findex].ossId;
     delOss(ossId);
     fileList.value.splice(findex, 1);
     emit('update:modelValue', listToString(fileList.value));
@@ -225,7 +225,7 @@ const handlePictureCardPreview = (file: any) => {
 const listToString = (list: any[], separator?: string) => {
   let strs = '';
   separator = separator || ',';
-  for (let i in list) {
+  for (const i in list) {
     if (undefined !== list[i].ossId && list[i].url.indexOf('blob:') !== 0) {
       strs += list[i].ossId + separator;
     }
