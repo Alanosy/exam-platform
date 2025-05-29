@@ -3,11 +3,12 @@ package org.dromara.common.satoken.core.service;
 import cn.dev33.satoken.stp.StpInterface;
 import cn.hutool.core.util.ObjectUtil;
 import org.dromara.common.core.enums.UserType;
+import org.dromara.common.core.exception.ServiceException;
 import org.dromara.common.core.service.PermissionService;
+import org.dromara.common.core.utils.SpringUtils;
 import org.dromara.common.core.utils.StringUtils;
 import org.dromara.common.satoken.utils.LoginHelper;
 import org.dromara.system.api.model.LoginUser;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,9 +20,6 @@ import java.util.List;
  */
 public class SaPermissionImpl implements StpInterface {
 
-    @Autowired
-    private PermissionService permissionService;
-
     /**
      * 获取菜单权限列表
      */
@@ -29,8 +27,13 @@ public class SaPermissionImpl implements StpInterface {
     public List<String> getPermissionList(Object loginId, String loginType) {
         LoginUser loginUser = LoginHelper.getLoginUser();
         if (ObjectUtil.isNull(loginUser) || !loginUser.getLoginId().equals(loginId)) {
-            List<String> list = StringUtils.splitList(loginId.toString(), ":");
-            return new ArrayList<>(permissionService.getMenuPermission(Long.parseLong(list.get(1))));
+            PermissionService permissionService = getPermissionService();
+            if (ObjectUtil.isNotNull(permissionService)) {
+                List<String> list = StringUtils.splitList(loginId.toString(), ":");
+                return new ArrayList<>(permissionService.getMenuPermission(Long.parseLong(list.get(1))));
+            } else {
+                throw new ServiceException("PermissionService 实现类不存在");
+            }
         }
         UserType userType = UserType.getUserType(loginUser.getUserType());
         if (userType == UserType.APP_USER) {
@@ -47,8 +50,13 @@ public class SaPermissionImpl implements StpInterface {
     public List<String> getRoleList(Object loginId, String loginType) {
         LoginUser loginUser = LoginHelper.getLoginUser();
         if (ObjectUtil.isNull(loginUser) || !loginUser.getLoginId().equals(loginId)) {
-            List<String> list = StringUtils.splitList(loginId.toString(), ":");
-            return new ArrayList<>(permissionService.getRolePermission(Long.parseLong(list.get(1))));
+            PermissionService permissionService = getPermissionService();
+            if (ObjectUtil.isNotNull(permissionService)) {
+                List<String> list = StringUtils.splitList(loginId.toString(), ":");
+                return new ArrayList<>(permissionService.getRolePermission(Long.parseLong(list.get(1))));
+            } else {
+                throw new ServiceException("PermissionService 实现类不存在");
+            }
         }
         UserType userType = UserType.getUserType(loginUser.getUserType());
         if (userType == UserType.APP_USER) {
@@ -57,4 +65,13 @@ public class SaPermissionImpl implements StpInterface {
         // SYS_USER 默认返回权限
         return new ArrayList<>(loginUser.getRolePermission());
     }
+
+    private PermissionService getPermissionService() {
+        try {
+            return SpringUtils.getBean(PermissionService.class);
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
 }
