@@ -15,6 +15,7 @@ export interface UserInfo {
  */
 export interface UserQuery extends PageQuery {
   userName?: string;
+  nickName?: string;
   phonenumber?: string;
   status?: string;
   deptId?: string | number;
