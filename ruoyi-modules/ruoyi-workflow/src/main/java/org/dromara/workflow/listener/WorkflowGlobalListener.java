@@ -106,6 +106,7 @@ public class WorkflowGlobalListener implements GlobalListener {
         Task task = listenerVariable.getTask();
         Map<String, Object> params = new HashMap<>();
         FlowParams flowParams = listenerVariable.getFlowParams();
+        Map<String, Object> variable = new HashMap<>();
         if (ObjectUtil.isNotNull(flowParams)) {
             // 历史任务扩展(通常为附件)
             params.put("hisTaskExt", flowParams.getHisTaskExt());
@@ -113,8 +114,8 @@ public class WorkflowGlobalListener implements GlobalListener {
             params.put("handler", flowParams.getHandler());
             // 办理意见
             params.put("message", flowParams.getMessage());
+            variable = flowParams.getVariable();
         }
-        Map<String, Object> variable = flowParams.getVariable();
         //申请人提交事件
         Boolean submit = MapUtil.getBool(variable, FlowConstant.SUBMIT);
         if (submit != null && submit) {
