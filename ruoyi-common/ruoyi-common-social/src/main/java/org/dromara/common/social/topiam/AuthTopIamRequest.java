@@ -1,7 +1,10 @@
 package org.dromara.common.social.topiam;
 
+import cn.hutool.core.codec.Base64;
 import cn.hutool.core.lang.Dict;
 import cn.hutool.core.util.StrUtil;
+import cn.hutool.http.HttpRequest;
+import cn.hutool.http.HttpResponse;
 import com.xkcoding.http.support.HttpHeader;
 import lombok.extern.slf4j.Slf4j;
 import me.zhyd.oauth.cache.AuthStateCache;
@@ -70,6 +73,16 @@ public class AuthTopIamRequest extends AuthDefaultRequest {
             .build();
     }
 
+    @Override
+    protected String doPostAuthorizationCode(String code) {
+        HttpRequest request = HttpRequest.post(source.accessToken())
+            .header("Authorization", "Basic " + Base64.encode("%s:%s".formatted(config.getClientId(), config.getClientSecret())))
+            .form("grant_type", "authorization_code")
+            .form("code", code)
+            .form("redirect_uri", config.getRedirectUri());
+        HttpResponse response = request.execute();
+        return response.body();
+    }
 
     @Override
     protected String doGetUserInfo(AuthToken authToken) {
@@ -86,7 +99,7 @@ public class AuthTopIamRequest extends AuthDefaultRequest {
             .build();
     }
 
-    public static void checkResponse(Dict object) {
+    private static void checkResponse(Dict object) {
         // oauth/token 验证异常
         if (object.containsKey("error")) {
             throw new AuthException(object.getStr("error_description"));

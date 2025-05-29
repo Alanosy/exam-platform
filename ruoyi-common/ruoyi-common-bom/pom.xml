@@ -14,7 +14,7 @@
     </description>
 
     <properties>
-        <revision>2.3.0</revision>
+        <revision>2.4.0</revision>
     </properties>
 
     <dependencyManagement>
@@ -54,10 +54,10 @@
                 <version>${revision}</version>
             </dependency>
 
-            <!-- 字典 -->
+            <!-- 通用service实现模块 -->
             <dependency>
                 <groupId>org.dromara</groupId>
-                <artifactId>ruoyi-common-dict</artifactId>
+                <artifactId>ruoyi-common-service-impl</artifactId>
                 <version>${revision}</version>
             </dependency>
 

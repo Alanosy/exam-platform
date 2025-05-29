@@ -1,9 +1,8 @@
 package org.dromara.auth.listener;
 
-import cn.dev33.satoken.config.SaTokenConfig;
 import cn.dev33.satoken.listener.SaTokenListener;
-import cn.dev33.satoken.stp.SaLoginModel;
 import cn.dev33.satoken.stp.StpUtil;
+import cn.dev33.satoken.stp.parameter.SaLoginParameter;
 import cn.hutool.core.convert.Convert;
 import cn.hutool.http.useragent.UserAgent;
 import cn.hutool.http.useragent.UserAgentUtil;
@@ -37,7 +36,6 @@ import java.time.Duration;
 @Slf4j
 public class UserActionListener implements SaTokenListener {
 
-    private final SaTokenConfig tokenConfig;
     @DubboReference
     private RemoteUserService remoteUserService;
     @DubboReference
@@ -47,7 +45,7 @@ public class UserActionListener implements SaTokenListener {
      * 每次登录时触发
      */
     @Override
-    public void doLogin(String loginType, Object loginId, String tokenValue, SaLoginModel loginModel) {
+    public void doLogin(String loginType, Object loginId, String tokenValue, SaLoginParameter loginParameter) {
         UserAgent userAgent = UserAgentUtil.parse(ServletUtils.getRequest().getHeader("User-Agent"));
         String ip = ServletUtils.getClientIP();
         SysUserOnline userOnline = new SysUserOnline();
@@ -57,17 +55,17 @@ public class UserActionListener implements SaTokenListener {
         userOnline.setOs(userAgent.getOs().getName());
         userOnline.setLoginTime(System.currentTimeMillis());
         userOnline.setTokenId(tokenValue);
-        String username = (String) loginModel.getExtra(LoginHelper.USER_NAME_KEY);
-        String tenantId = (String) loginModel.getExtra(LoginHelper.TENANT_KEY);
+        String username = (String) loginParameter.getExtra(LoginHelper.USER_NAME_KEY);
+        String tenantId = (String) loginParameter.getExtra(LoginHelper.TENANT_KEY);
         userOnline.setUserName(username);
-        userOnline.setClientKey((String) loginModel.getExtra(LoginHelper.CLIENT_KEY));
-        userOnline.setDeviceType(loginModel.getDevice());
-        userOnline.setDeptName((String) loginModel.getExtra(LoginHelper.DEPT_NAME_KEY));
+        userOnline.setClientKey((String) loginParameter.getExtra(LoginHelper.CLIENT_KEY));
+        userOnline.setDeviceType(loginParameter.getDeviceType());
+        userOnline.setDeptName((String) loginParameter.getExtra(LoginHelper.DEPT_NAME_KEY));
         TenantHelper.dynamic(tenantId, () -> {
-            if (tokenConfig.getTimeout() == -1) {
+            if (loginParameter.getTimeout() == -1) {
                 RedisUtils.setCacheObject(CacheConstants.ONLINE_TOKEN_KEY + tokenValue, userOnline);
             } else {
-                RedisUtils.setCacheObject(CacheConstants.ONLINE_TOKEN_KEY + tokenValue, userOnline, Duration.ofSeconds(tokenConfig.getTimeout()));
+                RedisUtils.setCacheObject(CacheConstants.ONLINE_TOKEN_KEY + tokenValue, userOnline, Duration.ofSeconds(loginParameter.getTimeout()));
             }
         });
         // 记录登录日志
@@ -78,7 +76,7 @@ public class UserActionListener implements SaTokenListener {
         logininforEvent.setMessage(MessageUtils.message("user.login.success"));
         SpringUtils.context().publishEvent(logininforEvent);
         // 更新登录信息
-        remoteUserService.recordLoginInfo((Long) loginModel.getExtra(LoginHelper.USER_KEY), ip);
+        remoteUserService.recordLoginInfo((Long) loginParameter.getExtra(LoginHelper.USER_KEY), ip);
         log.info("user doLogin, useId:{}, token:{}", loginId, tokenValue);
     }
 

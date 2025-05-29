@@ -11,15 +11,18 @@ RUN mkdir -p /ruoyi/job/logs \
 
 WORKDIR /ruoyi/job
 
-ENV SERVER_PORT=9203 LANG=C.UTF-8 LC_ALL=C.UTF-8 JAVA_OPTS=""
+ENV SERVER_PORT=9203 SNAIL_PORT=29203 LANG=C.UTF-8 LC_ALL=C.UTF-8 JAVA_OPTS=""
 
 EXPOSE ${SERVER_PORT}
+# 暴露 snail job 客户端端口 用于定时任务调度中心通信
+EXPOSE ${SNAIL_PORT}
 
 ADD ./target/ruoyi-job.jar ./app.jar
 
 SHELL ["/bin/bash", "-c"]
 
 ENTRYPOINT java -Djava.security.egd=file:/dev/./urandom -Dserver.port=${SERVER_PORT} \
+           -Dsnail-job.port=${SNAIL_PORT} \
            #-Dskywalking.agent.service_name=ruoyi-job \
            #-javaagent:/ruoyi/skywalking/agent/skywalking-agent.jar \
            -XX:+HeapDumpOnOutOfMemoryError -XX:+UseZGC ${JAVA_OPTS} \

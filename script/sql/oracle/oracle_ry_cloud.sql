@@ -13,9 +13,9 @@ create table sys_social
     nick_name          varchar2(30)      default '',
     email              varchar2(255)     default '',
     avatar             varchar2(500)     default '',
-    access_token       varchar2(255)     not null,
+    access_token       varchar2(2000)     not null,
     expire_in          number(20)        default null,
-    refresh_token      varchar2(255)     default null,
+    refresh_token      varchar2(2000)     default null,
     access_code        varchar2(255)     default null,
     union_id           varchar2(255)     default null,
     scope              varchar2(255)     default null,
@@ -452,6 +452,12 @@ insert into sys_menu values('115',  '代码生成',     '3',   '2', 'gen',      
 insert into sys_menu values('121',  '租户管理',     '6',   '1', 'tenant',           'system/tenant/index',          '', 1, 0, 'C', '0', '0', 'system:tenant:list',          'list',          103, 1, sysdate, null, null, '租户管理菜单');
 insert into sys_menu values('122',  '租户套餐管理', '6',   '2', 'tenantPackage',    'system/tenantPackage/index',   '', 1, 0, 'C', '0', '0', 'system:tenantPackage:list',   'form',          103, 1, sysdate, null, null, '租户套餐管理菜单');
 insert into sys_menu values('123',  '客户端管理',   '1',   '11', 'client',          'system/client/index',          '', 1, 0, 'C', '0', '0', 'system:client:list',          'international', 103, 1, sysdate, null, null, '客户端管理菜单');
+insert into sys_menu values('116', '修改生成配置',  '3',   '2', 'gen-edit/index/:tableId(\\d+)', 'tool/gen/editTable', '', 1, 1, 'C', '1', '0', 'tool:gen:edit',           '#',               103, 1, sysdate, null, null, '');
+insert into sys_menu values('130', '分配用户',     '1',   '2', 'role-auth/user/:roleId(\\d+)', 'system/role/authUser', '', 1, 1, 'C', '1', '0', 'system:role:edit',      '#',               103, 1, sysdate, null, null, '');
+insert into sys_menu values('131', '分配角色',     '1',   '1', 'user-auth/role/:userId(\\d+)', 'system/user/authRole', '', 1, 1, 'C', '1', '0', 'system:user:edit',      '#',               103, 1, sysdate, null, null, '');
+insert into sys_menu values('132', '字典数据',     '1',   '6', 'dict-data/index/:dictId(\\d+)', 'system/dict/data', '', 1, 1, 'C', '1', '0', 'system:dict:list',         '#',               103, 1, sysdate, null, null, '');
+insert into sys_menu values('133', '文件配置管理',  '1',   '10', 'oss-config/index',              'system/oss/config', '', 1, 1, 'C', '1', '0', 'system:ossConfig:list',  '#',                103, 1, sysdate, null, null, '');
+
 -- springboot-admin监控
 insert into sys_menu values('117',  'Admin监控',   '2',    '5', 'Admin',            'monitor/admin/index',         '', 1, 0, 'C', '0', '0', 'monitor:admin:list',          'dashboard',     103, 1, sysdate, null, null, 'Admin监控菜单');
 -- oss菜单
@@ -578,6 +584,8 @@ INSERT INTO sys_menu VALUES ('11622', '流程分类', '11616', '1', 'category', 
 INSERT INTO sys_menu VALUES ('11629', '我发起的', '11618', '1', 'myDocument', 'workflow/task/myDocument', '', '1', '1', 'C', '0', '0', '', 'guide', 103, 1, SYSDATE, NULL, NULL, '');
 INSERT INTO sys_menu VALUES ('11630', '流程监控', '11616', '4', 'monitor', '', '', '1', '0', 'M', '0', '0', '', 'monitor', 103, 1, SYSDATE, NULL, NULL, '');
 INSERT INTO sys_menu VALUES ('11631', '待办任务', '11630', '2', 'allTaskWaiting', 'workflow/task/allTaskWaiting', '', '1', '1', 'C', '0', '0', '', 'waiting', 103, 1, SYSDATE, NULL, NULL, '');
+INSERT INTO sys_menu VALUES ('11700', '流程设计', '11616', '5', 'design/index',   'workflow/processDefinition/design', '', '1', '1', 'C', '1', '0', 'workflow:leave:edit', '#', 103, 1, SYSDATE, NULL, NULL, '');
+INSERT INTO sys_menu VALUES ('11701', '请假申请', '11616', '6', 'leaveEdit/index', 'workflow/leave/leaveEdit', '', '1', '1', 'C', '1', '0', 'workflow:leave:edit', '#', 103, 1, SYSDATE, NULL, NULL, '');
 
 INSERT INTO sys_menu VALUES ('11623', '流程分类查询', '11622', '1', '#', '', '', '1', '0', 'F', '0', '0', 'workflow:category:query', '#', 103, 1, SYSDATE, NULL, NULL, '');
 INSERT INTO sys_menu VALUES ('11624', '流程分类新增', '11622', '2', '#', '', '', '1', '0', 'F', '0', '0', 'workflow:category:add', '#', 103, 1, SYSDATE, NULL, NULL, '');
@@ -1405,18 +1413,6 @@ insert into test_tree values (11, '000000', 7, 108, 3, '子节点77', 0, 103, sy
 insert into test_tree values (12, '000000', 10, 108, 3, '子节点88', 0, 103, sysdate, 1, null, null, 0);
 insert into test_tree values (13, '000000', 10, 108, 3, '子节点99', 0, 103, sysdate, 1, null, null, 0);
 
-
--- ----------------------------
--- 钩子 ，用于session连接之后 自动设置默认的date类型格式化 简化时间查询
--- 如需设置其它配置 可在此钩子内任意增加处理语句
--- 例如： SELECT * FROM sys_user WHERE create_time BETWEEN '2022-03-01 00:00:00' AND '2022-04-01 00:00:00'
--- ----------------------------
-create or replace trigger login_trg
-after logon on database
-begin
-execute immediate 'alter session set nls_date_format=''YYYY-MM-DD HH24:MI:SS''';
-end;
-
 -- for AT mode you must to init this sql for you business database. the seata server not need it.
 CREATE TABLE undo_log
 (
@@ -1443,3 +1439,14 @@ COMMENT ON COLUMN undo_log.log_modified is 'modify datetime';
 
 -- Generate ID using sequence and trigger
 CREATE SEQUENCE UNDO_LOG_SEQ START WITH 1 INCREMENT BY 1;
+
+-- ----------------------------
+-- 钩子 ，用于session连接之后 自动设置默认的date类型格式化 简化时间查询
+-- 如需设置其它配置 可在此钩子内任意增加处理语句
+-- 例如： SELECT * FROM sys_user WHERE create_time BETWEEN '2022-03-01 00:00:00' AND '2022-04-01 00:00:00'
+-- ----------------------------
+create or replace trigger login_trg
+after logon on database
+begin
+execute immediate 'alter session set nls_date_format=''YYYY-MM-DD HH24:MI:SS''';
+end;

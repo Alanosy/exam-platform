@@ -35,7 +35,7 @@
 
         <dependency>
             <groupId>org.dromara</groupId>
-            <artifactId>ruoyi-common-dict</artifactId>
+            <artifactId>ruoyi-common-service-impl</artifactId>
         </dependency>
 
         <dependency>
@@ -102,6 +102,12 @@
         <dependency>
             <groupId>org.dromara</groupId>
             <artifactId>ruoyi-api-resource</artifactId>
+        </dependency>
+
+        <!-- RuoYi Api System -->
+        <dependency>
+            <groupId>org.dromara</groupId>
+            <artifactId>ruoyi-api-workflow</artifactId>
         </dependency>
 
     </dependencies>

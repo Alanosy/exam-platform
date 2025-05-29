@@ -3,7 +3,7 @@
  SnailJob Database Transfer Tool
  Source Server Type    : MySQL
  Target Server Type    : Oracle
- Date: 2025-02-25 22:16:28
+ Date: 2025-04-26 10:01:54
 */
 
 
@@ -149,8 +149,9 @@ CREATE TABLE sj_retry_dead_letter
     id            number GENERATED ALWAYS AS IDENTITY,
     namespace_id  varchar2(64)  DEFAULT '764d604ec6fc45f68cd92514c40e9e1a' NULL,
     group_name    varchar2(64)                                             NULL,
+    group_id      number                                                   NOT NULL,
     scene_name    varchar2(64)                                             NULL,
-    idempotent_id varchar2(64)                                             NULL,
+    scene_id      number                                                   NOT NULL,    idempotent_id varchar2(64)                                             NULL,
     biz_no        varchar2(64)  DEFAULT ''                                 NULL,
     executor_name varchar2(512) DEFAULT ''                                 NULL,
     args_str      clob                                                     NULL,
@@ -169,7 +170,9 @@ CREATE INDEX idx_sj_retry_dead_letter_04 ON sj_retry_dead_letter (create_dt);
 COMMENT ON COLUMN sj_retry_dead_letter.id IS '主键';
 COMMENT ON COLUMN sj_retry_dead_letter.namespace_id IS '命名空间id';
 COMMENT ON COLUMN sj_retry_dead_letter.group_name IS '组名称';
+COMMENT ON COLUMN sj_retry_dead_letter.group_id IS '组Id';
 COMMENT ON COLUMN sj_retry_dead_letter.scene_name IS '场景名称';
+COMMENT ON COLUMN sj_retry_dead_letter.scene_id IS '场景ID';
 COMMENT ON COLUMN sj_retry_dead_letter.idempotent_id IS '幂等id';
 COMMENT ON COLUMN sj_retry_dead_letter.biz_no IS '业务编号';
 COMMENT ON COLUMN sj_retry_dead_letter.executor_name IS '执行器名称';
@@ -184,8 +187,9 @@ CREATE TABLE sj_retry
     id              number GENERATED ALWAYS AS IDENTITY,
     namespace_id    varchar2(64)  DEFAULT '764d604ec6fc45f68cd92514c40e9e1a' NULL,
     group_name      varchar2(64)                                             NULL,
+    group_id        number                                                   NOT NULL,
     scene_name      varchar2(64)                                             NULL,
-    idempotent_id   varchar2(64)                                             NULL,
+    scene_id        number                                                   NOT NULL,    idempotent_id   varchar2(64)                                             NULL,
     biz_no          varchar2(64)  DEFAULT ''                                 NULL,
     executor_name   varchar2(512) DEFAULT ''                                 NULL,
     args_str        clob                                                     NULL,
@@ -204,19 +208,21 @@ CREATE TABLE sj_retry
 ALTER TABLE sj_retry
     ADD CONSTRAINT pk_sj_retry PRIMARY KEY (id);
 
-CREATE UNIQUE INDEX uk_sj_retry_01 ON sj_retry (namespace_id, group_name, task_type, idempotent_id, deleted);
+CREATE UNIQUE INDEX uk_sj_retry_01 ON sj_retry (scene_id, task_type, idempotent_id, deleted);
 
-CREATE INDEX idx_sj_retry_01 ON sj_retry (namespace_id, group_name, scene_name);
-CREATE INDEX idx_sj_retry_02 ON sj_retry (namespace_id, group_name, retry_status);
-CREATE INDEX idx_sj_retry_03 ON sj_retry (idempotent_id);
-CREATE INDEX idx_sj_retry_04 ON sj_retry (biz_no);
-CREATE INDEX idx_sj_retry_05 ON sj_retry (parent_id);
-CREATE INDEX idx_sj_retry_06 ON sj_retry (create_dt);
+CREATE INDEX idx_sj_retry_01 ON sj_retry (biz_no);
+CREATE INDEX idx_sj_retry_02 ON sj_retry (retry_status, bucket_index);
+CREATE INDEX idx_sj_retry_03 ON sj_retry (parent_id);
+CREATE INDEX idx_sj_retry_04 ON sj_retry (create_dt);
+CREATE INDEX idx_sj_retry_05 ON sj_retry (idempotent_id);
+
 
 COMMENT ON COLUMN sj_retry.id IS '主键';
 COMMENT ON COLUMN sj_retry.namespace_id IS '命名空间id';
 COMMENT ON COLUMN sj_retry.group_name IS '组名称';
+COMMENT ON COLUMN sj_retry.group_id IS '组Id';
 COMMENT ON COLUMN sj_retry.scene_name IS '场景名称';
+COMMENT ON COLUMN sj_retry.scene_id IS '场景ID';
 COMMENT ON COLUMN sj_retry.idempotent_id IS '幂等id';
 COMMENT ON COLUMN sj_retry.biz_no IS '业务编号';
 COMMENT ON COLUMN sj_retry.executor_name IS '执行器名称';
@@ -395,7 +401,7 @@ COMMENT ON TABLE sj_server_node IS '服务器节点';
 -- sj_distributed_lock
 CREATE TABLE sj_distributed_lock
 (
-    name       varchar2(64)                              NOT NULL,
+    name       varchar2(64)                              NULL,
     lock_until timestamp(3) DEFAULT CURRENT_TIMESTAMP(3) NOT NULL,
     locked_at  timestamp(3) DEFAULT CURRENT_TIMESTAMP(3) NOT NULL,
     locked_by  varchar2(255)                             NULL,
@@ -404,7 +410,7 @@ CREATE TABLE sj_distributed_lock
 );
 
 ALTER TABLE sj_distributed_lock
-    ADD CONSTRAINT pk_sj_distributed_lock PRIMARY KEY (name);
+    ADD CONSTRAINT pk_sj_distributed_lock PRIMARY KEY (id);
 
 COMMENT ON COLUMN sj_distributed_lock.name IS '锁名称';
 COMMENT ON COLUMN sj_distributed_lock.lock_until IS '锁定时长';

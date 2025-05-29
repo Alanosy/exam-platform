@@ -13,9 +13,9 @@ create table sys_social
     nick_name          varchar(30)      default ''      comment '用户昵称',
     email              varchar(255)     default ''      comment '用户邮箱',
     avatar             varchar(500)     default ''      comment '头像地址',
-    access_token       varchar(255)     not null        comment '用户的授权令牌',
+    access_token       varchar(2000)     not null        comment '用户的授权令牌',
     expire_in          int              default null    comment '用户的授权令牌的有效期，部分平台可能没有',
-    refresh_token      varchar(255)     default null    comment '刷新令牌，部分平台可能没有',
+    refresh_token      varchar(2000)     default null    comment '刷新令牌，部分平台可能没有',
     access_code        varchar(255)     default null    comment '平台的授权信息，部分平台可能没有',
     union_id           varchar(255)     default null    comment '用户的 unionid',
     scope              varchar(255)     default null    comment '授予的权限，部分平台可能没有',
@@ -288,6 +288,12 @@ insert into sys_menu values('115',  '代码生成',     '3',   '2', 'gen',      
 insert into sys_menu values('121', '租户管理',      '6',   '1', 'tenant',           'system/tenant/index',          '', 1, 0, 'C', '0', '0', 'system:tenant:list',          'list',          103, 1, sysdate(), null, null, '租户管理菜单');
 insert into sys_menu values('122', '租户套餐管理',  '6',   '2', 'tenantPackage',    'system/tenantPackage/index',   '', 1, 0, 'C', '0', '0', 'system:tenantPackage:list',   'form',          103, 1, sysdate(), null, null, '租户套餐管理菜单');
 insert into sys_menu values('123',  '客户端管理',   '1',   '11', 'client',           'system/client/index',         '', 1, 0, 'C', '0', '0', 'system:client:list',          'international', 103, 1, sysdate(), null, null, '客户端管理菜单');
+insert into sys_menu values('116', '修改生成配置',  '3',   '2', 'gen-edit/index/:tableId(\\d+)', 'tool/gen/editTable', '', 1, 1, 'C', '1', '0', 'tool:gen:edit',           '#',               103, 1, sysdate(), null, null, '');
+insert into sys_menu values('130', '分配用户',     '1',   '2', 'role-auth/user/:roleId(\\d+)', 'system/role/authUser', '', 1, 1, 'C', '1', '0', 'system:role:edit',      '#',               103, 1, sysdate(), null, null, '');
+insert into sys_menu values('131', '分配角色',     '1',   '1', 'user-auth/role/:userId(\\d+)', 'system/user/authRole', '', 1, 1, 'C', '1', '0', 'system:user:edit',      '#',               103, 1, sysdate(), null, null, '');
+insert into sys_menu values('132', '字典数据',     '1',   '6', 'dict-data/index/:dictId(\\d+)', 'system/dict/data', '', 1, 1, 'C', '1', '0', 'system:dict:list',         '#',               103, 1, sysdate(), null, null, '');
+insert into sys_menu values('133', '文件配置管理',  '1',   '10', 'oss-config/index',              'system/oss/config', '', 1, 1, 'C', '1', '0', 'system:ossConfig:list',  '#',                103, 1, sysdate(), null, null, '');
+
 -- oss菜单
 insert into sys_menu values('118',  '文件管理',     '1',   '10', 'oss',              'system/oss/index',            '', 1, 0, 'C', '0', '0', 'system:oss:list',              'upload',        103, 1, sysdate(), null, null, '文件管理菜单');
 -- 三级菜单
@@ -412,6 +418,8 @@ insert into sys_menu values ('11622', '流程分类', '11616', '1', 'category', 
 insert into sys_menu values ('11629', '我发起的', '11618', '1', 'myDocument',       'workflow/task/myDocument',     '', '1', '1', 'C', '0', '0', '', 'guide', 103, 1, sysdate(), NULL, NULL, '');
 insert into sys_menu values ('11630', '流程监控', '11616', '4', 'monitor',          '',                             '', '1', '0', 'M', '0', '0', '', 'monitor', 103, 1, sysdate(), NULL, NULL, '');
 insert into sys_menu values ('11631', '待办任务', '11630', '2', 'allTaskWaiting',   'workflow/task/allTaskWaiting', '', '1', '1', 'C', '0', '0', '', 'waiting', 103, 1, sysdate(), NULL, NULL, '');
+insert into sys_menu values ('11700', '流程设计', '11616', '5', 'design/index',   'workflow/processDefinition/design', '', 1, 1, 'C', '1', '0', 'workflow:leave:edit', '#', 103, 1, sysdate(), null, null, '');
+insert into sys_menu values ('11701', '请假申请', '11616', '6', 'leaveEdit/index', 'workflow/leave/leaveEdit', '', 1, 1, 'C', '1', '0', 'workflow:leave:edit', '#', 103, 1, sysdate(), null, null, '');
 -- 流程分类管理相关按钮
 insert into sys_menu values ('11623', '流程分类查询', '11622', '1', '#', '', '', '1', '0', 'F', '0', '0', 'workflow:category:query', '#', 103, 1,sysdate(), null, null, '');
 insert into sys_menu values ('11624', '流程分类新增', '11622', '2', '#', '', '', '1', '0', 'F', '0', '0', 'workflow:category:add', '#', 103, 1,sysdate(), null, null, '');

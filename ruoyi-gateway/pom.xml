@@ -88,6 +88,11 @@
             <artifactId>ruoyi-common-tenant</artifactId>
         </dependency>
 
+        <dependency>
+            <groupId>org.dromara</groupId>
+            <artifactId>ruoyi-common-service-impl</artifactId>
+        </dependency>
+
         <!-- 自定义负载均衡(多团队开发使用) -->
 <!--        <dependency>-->
 <!--            <groupId>org.dromara</groupId>-->

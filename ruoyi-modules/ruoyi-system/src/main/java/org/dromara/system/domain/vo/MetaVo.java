@@ -31,7 +31,7 @@ public class MetaVo implements Serializable {
     /**
      * 设置为true，则不会被 <keep-alive>缓存
      */
-    private boolean noCache;
+    private Boolean noCache;
 
     /**
      * 内链地址（http(s)://开头）
@@ -43,7 +43,7 @@ public class MetaVo implements Serializable {
         this.icon = icon;
     }
 
-    public MetaVo(String title, String icon, boolean noCache) {
+    public MetaVo(String title, String icon, Boolean noCache) {
         this.title = title;
         this.icon = icon;
         this.noCache = noCache;
@@ -55,7 +55,7 @@ public class MetaVo implements Serializable {
         this.link = link;
     }
 
-    public MetaVo(String title, String icon, boolean noCache, String link) {
+    public MetaVo(String title, String icon, Boolean noCache, String link) {
         this.title = title;
         this.icon = icon;
         this.noCache = noCache;

@@ -1,6 +1,6 @@
 package org.dromara.system.domain.vo;
 
-import com.alibaba.excel.annotation.ExcelProperty;
+import cn.idev.excel.annotation.ExcelProperty;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.dromara.common.excel.annotation.ExcelDictFormat;

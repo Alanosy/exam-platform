@@ -1,11 +1,11 @@
 package org.dromara.system.controller.system;
 
-import cn.dev33.satoken.secure.BCrypt;
+import cn.hutool.crypto.digest.BCrypt;
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.io.FileUtil;
-import io.seata.spring.annotation.GlobalTransactional;
 import lombok.RequiredArgsConstructor;
 import org.apache.dubbo.config.annotation.DubboReference;
+import org.apache.seata.spring.annotation.GlobalTransactional;
 import org.dromara.common.core.domain.R;
 import org.dromara.common.core.utils.StringUtils;
 import org.dromara.common.core.utils.file.MimeTypeUtils;
@@ -21,8 +21,6 @@ import org.dromara.resource.api.domain.RemoteFile;
 import org.dromara.system.domain.bo.SysUserBo;
 import org.dromara.system.domain.bo.SysUserPasswordBo;
 import org.dromara.system.domain.bo.SysUserProfileBo;
-import org.dromara.system.domain.vo.AvatarVo;
-import org.dromara.system.domain.vo.ProfileVo;
 import org.dromara.system.domain.vo.SysUserVo;
 import org.dromara.system.service.ISysUserService;
 import org.springframework.http.MediaType;
@@ -55,10 +53,9 @@ public class SysProfileController extends BaseController {
     @GetMapping
     public R<ProfileVo> profile() {
         SysUserVo user = userService.selectUserById(LoginHelper.getUserId());
-        ProfileVo profileVo = new ProfileVo();
-        profileVo.setUser(user);
-        profileVo.setRoleGroup(userService.selectUserRoleGroup(user.getUserId()));
-        profileVo.setPostGroup(userService.selectUserPostGroup(user.getUserId()));
+        String roleGroup = userService.selectUserRoleGroup(user.getUserId());
+        String postGroup = userService.selectUserPostGroup(user.getUserId());
+        ProfileVo profileVo = new ProfileVo(user, roleGroup, postGroup);
         return R.ok(profileVo);
     }
 
@@ -129,11 +126,14 @@ public class SysProfileController extends BaseController {
             String avatar = oss.getUrl();
             boolean updateSuccess = DataPermissionHelper.ignore(() -> userService.updateUserAvatar(LoginHelper.getUserId(), oss.getOssId()));
             if (updateSuccess) {
-                AvatarVo avatarVo = new AvatarVo();
-                avatarVo.setImgUrl(avatar);
-                return R.ok(avatarVo);
+                return R.ok(new AvatarVo(avatar));
             }
         }
         return R.fail("上传图片异常，请联系管理员");
     }
+
+    public record AvatarVo(String imgUrl) {}
+
+    public record ProfileVo(SysUserVo user, String roleGroup, String postGroup) {}
+
 }

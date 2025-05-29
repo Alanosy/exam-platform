@@ -30,7 +30,7 @@ import org.springframework.context.annotation.Bean;
 import java.util.*;
 
 /**
- * Swagger 文档配置
+ * 接口文档配置
  *
  * @author Lion Li
  */
