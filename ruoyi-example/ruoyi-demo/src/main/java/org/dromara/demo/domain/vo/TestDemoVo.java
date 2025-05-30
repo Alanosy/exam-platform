@@ -108,4 +108,9 @@ public class TestDemoVo implements Serializable {
     @ExcelProperty(value = "更新人账号")
     private String updateByName;
 
+    /**
+     * 版本
+     */
+    private Long version;
+
 }
