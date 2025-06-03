@@ -1,8 +1,6 @@
 package org.dromara.auth.controller;
 
-import cn.dev33.satoken.context.mock.SaTokenContextMockUtil;
 import cn.dev33.satoken.exception.NotLoginException;
-import cn.dev33.satoken.stp.StpUtil;
 import cn.hutool.core.codec.Base64;
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.ObjectUtil;
@@ -104,11 +102,8 @@ public class TokenController {
 
         Long userId = LoginHelper.getUserId();
         scheduledExecutorService.schedule(() -> {
-            SaTokenContextMockUtil.setMockContext(() -> {
-                StpUtil.setTokenValueToStorage(loginVo.getAccessToken());
-                remoteMessageService.publishMessage(List.of(userId), "欢迎登录RuoYi-Cloud-Plus微服务管理系统");
-            });
-        }, 3, TimeUnit.SECONDS);
+            remoteMessageService.publishMessage(List.of(userId), "欢迎登录RuoYi-Cloud-Plus微服务管理系统");
+        }, 5, TimeUnit.SECONDS);
         return R.ok(loginVo);
     }
 

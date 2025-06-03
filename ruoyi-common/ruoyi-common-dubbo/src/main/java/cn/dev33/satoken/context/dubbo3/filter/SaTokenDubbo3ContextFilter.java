@@ -34,7 +34,7 @@ public class SaTokenDubbo3ContextFilter implements Filter {
 
     @Override
     public Result invoke(Invoker<?> invoker, Invocation invocation) {
-        if(SaHolder.getContext().isValid()) {
+        if (SaHolder.getContext().isValid()) {
             return invoker.invoke(invocation);
         } else {
             try {

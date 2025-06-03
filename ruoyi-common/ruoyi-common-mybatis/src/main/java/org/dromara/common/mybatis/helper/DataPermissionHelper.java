@@ -87,11 +87,14 @@ public class DataPermissionHelper {
      * @throws NullPointerException 如果数据权限上下文类型异常，则抛出NullPointerException
      */
     public static Map<String, Object> getContext() {
-        SaStorage saStorage = SaHolder.getStorage();
-        Object attribute = saStorage.get(DATA_PERMISSION_KEY);
-        if (ObjectUtil.isNull(attribute)) {
-            saStorage.set(DATA_PERMISSION_KEY, new HashMap<>());
+        Object attribute = new HashMap<>();
+        if (SaHolder.getContext().isValid()) {
+            SaStorage saStorage = SaHolder.getStorage();
             attribute = saStorage.get(DATA_PERMISSION_KEY);
+            if (ObjectUtil.isNull(attribute)) {
+                saStorage.set(DATA_PERMISSION_KEY, new HashMap<>());
+                attribute = saStorage.get(DATA_PERMISSION_KEY);
+            }
         }
         if (attribute instanceof Map map) {
             return map;
