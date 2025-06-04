@@ -273,7 +273,7 @@ const emits = defineEmits(['submitCallback', 'cancelCallback']);
 /** 办理流程 */
 const handleCompleteTask = async () => {
   form.value.taskId = taskId.value;
-  form.value.taskVariables = props.taskVariables;
+  form.value.variables = props.taskVariables;
   let verify = false;
   if (buttonObj.value.pop && nestNodeList.value && nestNodeList.value.length > 0) {
     nestNodeList.value.forEach((e) => {
