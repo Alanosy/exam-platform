@@ -77,6 +77,8 @@ spring:
 easy-es:
   # 是否开启EE自动配置
   enable: false
+  # 兼容模式
+  compatible: true
   # es连接地址+端口 格式必须为ip:port,如果是集群则可用逗号隔开
   address : localhost:9200
   # 默认为http
