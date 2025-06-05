@@ -108,7 +108,7 @@ import {
   updateTenantPackage,
   changePackageStatus
 } from '@/api/system/tenantPackage';
-import { treeselect as menuTreeselect, tenantPackageMenuTreeselect } from '@/api/system/menu';
+import { tenantPackageMenuTreeselect } from '@/api/system/menu';
 import { TenantPkgForm, TenantPkgQuery, TenantPkgVO } from '@/api/system/tenantPackage/types';
 import { MenuTreeOption } from '@/api/system/menu/types';
 import to from 'await-to-js';
@@ -157,12 +157,6 @@ const data = reactive<PageData<TenantPkgForm, TenantPkgQuery>>({
 });
 
 const { queryParams, form, rules } = toRefs(data);
-
-/** 查询菜单树结构 */
-const getMenuTreeselect = async () => {
-  const { data } = await menuTreeselect();
-  menuOptions.value = data;
-};
 
 // 所有菜单节点数据
 const getMenuAllCheckedKeys = (): any => {
@@ -265,9 +259,9 @@ const handleCheckedTreeConnect = (value: CheckboxValueType, type: string) => {
 };
 
 /** 新增按钮操作 */
-const handleAdd = () => {
+const handleAdd = async () => {
   reset();
-  getMenuTreeselect();
+  await getPackageMenuTreeselect(0);
   dialog.visible = true;
   dialog.title = '添加租户套餐';
 };
