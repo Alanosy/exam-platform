@@ -410,7 +410,7 @@ CREATE TABLE sj_distributed_lock
 );
 
 ALTER TABLE sj_distributed_lock
-    ADD CONSTRAINT pk_sj_distributed_lock PRIMARY KEY (id);
+    ADD CONSTRAINT pk_sj_distributed_lock PRIMARY KEY (name);
 
 COMMENT ON COLUMN sj_distributed_lock.name IS '锁名称';
 COMMENT ON COLUMN sj_distributed_lock.lock_until IS '锁定时长';
