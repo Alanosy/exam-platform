@@ -238,6 +238,14 @@ public class FlwTaskAssigneeServiceImpl implements IFlwTaskAssigneeService, Hand
      * @return Pair(TaskAssigneeEnum, Long)，如果格式非法返回 null
      */
     private Pair<TaskAssigneeEnum, Long> parseStorageId(String storageId) {
+        if (StringUtils.isBlank(storageId)) {
+            return null;
+        }
+        // 跳过以 $ 或 # 开头的字符串
+        if (StringUtils.startsWith(storageId, "$") || StringUtils.startsWith(storageId, "#")) {
+            log.debug("跳过 storageId 解析，检测到内置变量表达式：{}", storageId);
+            return null;
+        }
         try {
             String[] parts = storageId.split(StrUtil.COLON, 2);
             if (parts.length < 2) {
