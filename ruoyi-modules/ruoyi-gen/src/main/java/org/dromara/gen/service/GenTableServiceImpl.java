@@ -302,8 +302,8 @@ public class GenTableServiceImpl implements IGenTableService {
             tableColumn.setColumnComment(column.getComment());
             tableColumn.setColumnType(column.getOriginType().toLowerCase());
             tableColumn.setSort(column.getPosition());
-            tableColumn.setIsRequired(column.isNullable() == 0 ? "1" : "0");
-            tableColumn.setIsIncrement(column.isAutoIncrement() == -1 ? "0" : "1");
+            tableColumn.setIsRequired(column.isNullable() ? "1" : "0");
+            tableColumn.setIsIncrement(column.isAutoIncrement() ? "0" : "1");
             tableColumns.add(tableColumn);
         });
         return tableColumns;
