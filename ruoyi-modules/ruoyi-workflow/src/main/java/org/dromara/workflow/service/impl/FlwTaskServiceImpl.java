@@ -534,7 +534,10 @@ public class FlwTaskServiceImpl implements IFlwTaskService {
             //构建以下节点数据
             List<Task> buildNextTaskList = StreamUtils.toList(nextNodeList, node -> taskService.addTask(node, instance, definition, FlowParams.build()));
             //办理人变量替换
-            ExpressionUtil.evalVariable(buildNextTaskList, mergeVariable);
+            ExpressionUtil.evalVariable(buildNextTaskList,
+                FlowParams.build()
+                    .variable(mergeVariable)
+            );
             for (FlowNode flowNode : nextFlowNodes) {
                 buildNextTaskList.stream().filter(t -> t.getNodeCode().equals(flowNode.getNodeCode())).findFirst().ifPresent(t -> {
                     if (CollUtil.isNotEmpty(t.getPermissionList())) {
@@ -718,7 +721,7 @@ public class FlwTaskServiceImpl implements IFlwTaskService {
         for (Map.Entry<Long, List<User>> entry : listMap.entrySet()) {
             List<User> value = entry.getValue();
             if (CollUtil.isNotEmpty(value)) {
-                List<RemoteUserVo> userDtoList = remoteUserService.selectListByIds(StreamUtils.toList(value, e -> Long.valueOf(e.getProcessedBy())));
+                List<RemoteUserVo> userDtoList = remoteUserService.selectListByIds(StreamUtils.toList(value, e -> Convert.toLong(e.getProcessedBy())));
                 map.put(entry.getKey(), userDtoList);
             }
         }
@@ -737,7 +740,7 @@ public class FlwTaskServiceImpl implements IFlwTaskService {
         if (CollUtil.isEmpty(userList)) {
             return Collections.emptyList();
         }
-        return remoteUserService.selectListByIds(StreamUtils.toList(userList, e -> Long.valueOf(e.getProcessedBy())));
+        return remoteUserService.selectListByIds(StreamUtils.toList(userList, e -> Convert.toLong(e.getProcessedBy())));
     }
 
     /**

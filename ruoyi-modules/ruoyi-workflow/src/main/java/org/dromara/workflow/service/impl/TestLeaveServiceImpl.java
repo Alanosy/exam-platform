@@ -147,7 +147,7 @@ public class TestLeaveServiceImpl implements ITestLeaveService {
     public void processHandler(ProcessEvent processEvent) {
         TenantHelper.dynamic(processEvent.getTenantId(), () -> {
             log.info("当前任务执行了{}", processEvent.toString());
-            TestLeave testLeave = baseMapper.selectById(Long.valueOf(processEvent.getBusinessId()));
+            TestLeave testLeave = baseMapper.selectById(Convert.toLong(processEvent.getBusinessId()));
             testLeave.setStatus(processEvent.getStatus());
             // 用于例如审批附件 审批意见等 存储到业务表内 自行根据业务实现存储流程
             Map<String, Object> params = processEvent.getParams();
