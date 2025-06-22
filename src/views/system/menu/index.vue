@@ -45,6 +45,8 @@
         border
         :tree-props="{ children: 'children', hasChildren: 'hasChildren' }"
         :default-expand-all="isExpandAll"
+        lazy
+        :load="getChildrenList"
       >
         <el-table-column prop="menuName" label="菜单名称" :show-overflow-tooltip="true" width="160"></el-table-column>
         <el-table-column prop="icon" label="图标" align="center" width="100">
@@ -299,6 +301,7 @@ const { proxy } = getCurrentInstance() as ComponentInternalInstance;
 const { sys_show_hide, sys_normal_disable } = toRefs<any>(proxy?.useDict('sys_show_hide', 'sys_normal_disable'));
 
 const menuList = ref<MenuVO[]>([]);
+const menuChildrenListMap = ref({});
 const loading = ref(true);
 const showSearch = ref(true);
 const menuOptions = ref<MenuOptionsType[]>([]);
@@ -340,14 +343,34 @@ const data = reactive<PageData<MenuForm, MenuQuery>>({
 const menuTableRef = ref<ElTableInstance>();
 
 const { queryParams, form, rules } = toRefs<PageData<MenuForm, MenuQuery>>(data);
+
+/** 获取子菜单列表 */
+const getChildrenList = async (row: any, treeNode: unknown, resolve: (data: any[]) => void) => {
+  loading.value = true;
+  resolve(menuChildrenListMap.value[row.menuId] || []);
+  loading.value = false;
+};
+
 /** 查询菜单列表 */
 const getList = async () => {
   loading.value = true;
   const res = await listMenu(queryParams.value);
-  const data = proxy?.handleTree<MenuVO>(res.data, 'menuId');
-  if (data) {
-    menuList.value = data;
+
+  const tempMap = {};
+  // 存储 父菜单:子菜单列表
+  for (const menu of res.data) {
+    const parentId = menu.parentId;
+    if (!tempMap[parentId]) {
+      tempMap[parentId] = [];
+    }
+    tempMap[parentId].push(menu);
   }
+  // 设置有没有子菜单
+  for (const menu of res.data) {
+    menu['hasChildren'] = tempMap[menu.menuId]?.length > 0;
+  }
+  menuChildrenListMap.value = tempMap;
+  menuList.value = tempMap[0] || [];
   loading.value = false;
 };
 /** 查询菜单下拉树结构 */
