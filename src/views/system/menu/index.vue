@@ -346,9 +346,7 @@ const { queryParams, form, rules } = toRefs<PageData<MenuForm, MenuQuery>>(data)
 
 /** 获取子菜单列表 */
 const getChildrenList = async (row: any, treeNode: unknown, resolve: (data: any[]) => void) => {
-  loading.value = true;
   resolve(menuChildrenListMap.value[row.menuId] || []);
-  loading.value = false;
 };
 
 /** 查询菜单列表 */
@@ -416,7 +414,14 @@ const handleToggleExpandAll = () => {
 };
 /** 展开/折叠所有 */
 const toggleExpandAll = (data: MenuVO[], status: boolean) => {
-  data.forEach((item: MenuVO) => {
+  data.forEach(async (item: MenuVO) => {
+    const menuChildrenList = menuChildrenListMap.value[item.menuId];
+    // 从menuChildrenListMap中获取子菜单列表
+    if (menuChildrenList && (!item.children || item.children.length === 0)) {
+      item.children = menuChildrenList || [];
+      // 等待子菜单列表加载完成
+      await nextTick();
+    }
     menuTableRef.value?.toggleRowExpansion(item, status);
     if (item.children && item.children.length > 0) toggleExpandAll(item.children, status);
   });
