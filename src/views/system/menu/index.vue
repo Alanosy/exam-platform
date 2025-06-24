@@ -302,6 +302,7 @@ const { sys_show_hide, sys_normal_disable } = toRefs<any>(proxy?.useDict('sys_sh
 
 const menuList = ref<MenuVO[]>([]);
 const menuChildrenListMap = ref({});
+const menuExpandMap = ref({});
 const loading = ref(true);
 const showSearch = ref(true);
 const menuOptions = ref<MenuOptionsType[]>([]);
@@ -346,7 +347,35 @@ const { queryParams, form, rules } = toRefs<PageData<MenuForm, MenuQuery>>(data)
 
 /** 获取子菜单列表 */
 const getChildrenList = async (row: any, treeNode: unknown, resolve: (data: any[]) => void) => {
-  resolve(menuChildrenListMap.value[row.menuId] || []);
+  menuExpandMap.value[row.menuId] = { row, treeNode, resolve };
+  const children = menuChildrenListMap.value[row.menuId] || [];
+  // 菜单的子菜单清空后关闭展开
+  if (children.length == 0) {
+    // fix: 处理当菜单只有一个子菜单并被删除，需要将父菜单的展开状态关闭
+    menuTableRef.value?.updateKeyChildren(row.menuId, children);
+  }
+  resolve(children);
+};
+
+/** 刷新展开的菜单数据 */
+const refreshLoadTree = (parentId: string | number) => {
+  if (menuExpandMap.value[parentId]) {
+    const { row, treeNode, resolve } = menuExpandMap.value[parentId];
+    if (row) {
+      getChildrenList(row, treeNode, resolve);
+      if (row.parentId) {
+        const grandpaMenu = menuExpandMap.value[row.parentId];
+        getChildrenList(grandpaMenu.row, grandpaMenu.treeNode, grandpaMenu.resolve);
+      }
+    }
+  }
+};
+
+/** 重新加载所有已展开的菜单的数据 */
+const refreshAllExpandMenuData = () => {
+  for (const menuId in menuExpandMap.value) {
+    refreshLoadTree(menuId);
+  }
 };
 
 /** 查询菜单列表 */
@@ -369,6 +398,8 @@ const getList = async () => {
   }
   menuChildrenListMap.value = tempMap;
   menuList.value = tempMap[0] || [];
+  // 根据新数据重新加载子菜单数据
+  refreshAllExpandMenuData();
   loading.value = false;
 };
 /** 查询菜单下拉树结构 */
