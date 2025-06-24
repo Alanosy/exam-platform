@@ -28,9 +28,6 @@
             <el-button v-hasPermi="['system:menu:add']" type="primary" plain icon="Plus" @click="handleAdd()">新增 </el-button>
           </el-col>
           <el-col :span="1.5">
-            <el-button type="info" plain icon="Sort" @click="handleToggleExpandAll">展开/折叠</el-button>
-          </el-col>
-          <el-col :span="1.5">
             <el-button type="danger" plain icon="Delete" @click="handleCascadeDelete" :loading="deleteLoading">级联删除</el-button>
           </el-col>
           <right-toolbar v-model:show-search="showSearch" @query-table="getList"></right-toolbar>
@@ -44,7 +41,7 @@
         row-key="menuId"
         border
         :tree-props="{ children: 'children', hasChildren: 'hasChildren' }"
-        :default-expand-all="isExpandAll"
+        :default-expand-all="false"
         lazy
         :load="getChildrenList"
       >
@@ -306,7 +303,6 @@ const menuExpandMap = ref({});
 const loading = ref(true);
 const showSearch = ref(true);
 const menuOptions = ref<MenuOptionsType[]>([]);
-const isExpandAll = ref(false);
 
 const dialog = reactive<DialogOption>({
   visible: false,
@@ -437,25 +433,6 @@ const handleAdd = (row?: MenuVO) => {
   row && row.menuId ? (form.value.parentId = row.menuId) : (form.value.parentId = 0);
   dialog.visible = true;
   dialog.title = '添加菜单';
-};
-/** 展开/折叠操作 */
-const handleToggleExpandAll = () => {
-  isExpandAll.value = !isExpandAll.value;
-  toggleExpandAll(menuList.value, isExpandAll.value);
-};
-/** 展开/折叠所有 */
-const toggleExpandAll = (data: MenuVO[], status: boolean) => {
-  data.forEach(async (item: MenuVO) => {
-    const menuChildrenList = menuChildrenListMap.value[item.menuId];
-    // 从menuChildrenListMap中获取子菜单列表
-    if (menuChildrenList && (!item.children || item.children.length === 0)) {
-      item.children = menuChildrenList || [];
-      // 等待子菜单列表加载完成
-      await nextTick();
-    }
-    menuTableRef.value?.toggleRowExpansion(item, status);
-    if (item.children && item.children.length > 0) toggleExpandAll(item.children, status);
-  });
 };
 /** 修改按钮操作 */
 const handleUpdate = async (row: MenuVO) => {
