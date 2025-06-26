@@ -14,10 +14,6 @@ import java.lang.annotation.Target;
 public @interface ExcelNotation {
 
     /**
-     * col index
-     */
-    int index() default -1;
-    /**
      * 批注内容
      */
     String value() default "";
