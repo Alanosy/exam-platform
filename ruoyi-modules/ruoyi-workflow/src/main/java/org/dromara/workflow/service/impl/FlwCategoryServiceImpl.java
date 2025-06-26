@@ -95,27 +95,20 @@ public class FlwCategoryServiceImpl implements IFlwCategoryService {
      */
     @Override
     public List<Tree<String>> selectCategoryTreeList(FlowCategoryBo category) {
-        LambdaQueryWrapper<FlowCategory> lqw = buildQueryWrapper(category);
-        List<FlowCategoryVo> categorys = baseMapper.selectVoList(lqw);
-        if (CollUtil.isEmpty(categorys)) {
+        List<FlowCategoryVo> categoryList = this.queryList(category);
+        if (CollUtil.isEmpty(categoryList)) {
             return CollUtil.newArrayList();
         }
-        // 获取当前列表中每一个节点的parentId，然后在列表中查找是否有id与其parentId对应，若无对应，则表明此时节点列表中，该节点在当前列表中属于顶级节点
-        List<Tree<String>> treeList = CollUtil.newArrayList();
-        for (FlowCategoryVo d : categorys) {
-            String parentId = d.getParentId().toString();
-            FlowCategoryVo categoryVo = StreamUtils.findFirst(categorys, it -> it.getCategoryId().toString().equals(parentId));
-            if (ObjectUtil.isNull(categoryVo)) {
-                List<Tree<String>> trees = TreeBuildUtils.build(categorys, parentId, (dept, tree) ->
-                    tree.setId(dept.getCategoryId().toString())
-                        .setParentId(dept.getParentId().toString())
-                        .setName(dept.getCategoryName())
-                        .setWeight(dept.getOrderNum()));
-                Tree<String> tree = StreamUtils.findFirst(trees, it -> it.getId().equals(d.getCategoryId().toString()));
-                treeList.add(tree);
-            }
-        }
-        return treeList;
+        return TreeBuildUtils.buildMultiRoot(
+            categoryList,
+            node -> String.valueOf(node.getCategoryId()),
+            node -> String.valueOf(node.getParentId()),
+            (node, treeNode) -> treeNode
+                .setId(String.valueOf(node.getCategoryId()))
+                .setParentId(String.valueOf(node.getParentId()))
+                .setName(node.getCategoryName())
+                .setWeight(node.getOrderNum())
+        );
     }
 
     /**
