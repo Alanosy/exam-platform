@@ -21,7 +21,7 @@ const iframeUrl = ref('');
 const baseUrl = import.meta.env.VITE_APP_BASE_API;
 
 onMounted(async () => {
-  const url = baseUrl + `/warm-flow-ui/index.html?id=${props.insId}&type=FlowChart`;
+  const url = baseUrl + `/warm-flow-ui/index.html?id=${props.insId}&type=FlowChart&t=${Date.now()}`;
   iframeUrl.value = url + '&Authorization=Bearer ' + getToken() + '&clientid=' + import.meta.env.VITE_APP_CLIENT_ID;
 });
 </script>
