@@ -80,11 +80,8 @@ public class GenController extends BaseController {
     @SaCheckPermission("tool:gen:list")
     @GetMapping(value = "/column/{tableId}")
     public TableDataInfo<GenTableColumn> columnList(@PathVariable("tableId") Long tableId) {
-        TableDataInfo<GenTableColumn> dataInfo = new TableDataInfo<>();
         List<GenTableColumn> list = genTableService.selectGenTableColumnListByTableId(tableId);
-        dataInfo.setRows(list);
-        dataInfo.setTotal(list.size());
-        return dataInfo;
+        return TableDataInfo.build(list);
     }
 
     /**
