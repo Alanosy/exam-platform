@@ -1,6 +1,7 @@
 package org.dromara.system.mapper;
 
 import com.baomidou.mybatisplus.core.conditions.Wrapper;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Constants;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.apache.ibatis.annotations.Param;
@@ -21,16 +22,20 @@ import java.util.List;
 public interface SysUserMapper extends BaseMapperPlus<SysUser, SysUserVo> {
 
     @DataPermission({
-        @DataColumn(key = "deptName", value = "u.dept_id"),
-        @DataColumn(key = "userName", value = "u.user_id")
+        @DataColumn(key = "deptName", value = "dept_id"),
+        @DataColumn(key = "userName", value = "user_id")
     })
-    Page<SysUserVo> selectPageUserList(@Param("page") Page<SysUser> page, @Param(Constants.WRAPPER) Wrapper<SysUser> queryWrapper);
+    default Page<SysUserVo> selectPageUserList(Page<SysUser> page, Wrapper<SysUser> queryWrapper) {
+        return this.selectVoPage(page, queryWrapper);
+    }
 
     @DataPermission({
         @DataColumn(key = "deptName", value = "dept_id"),
         @DataColumn(key = "userName", value = "user_id")
     })
-    List<SysUserVo> selectUserList(@Param(Constants.WRAPPER) Wrapper<SysUser> queryWrapper);
+    default List<SysUserVo> selectUserList(Wrapper<SysUser> queryWrapper) {
+        return this.selectVoList(queryWrapper);
+    }
 
     /**
      * 根据条件分页查询用户列表
@@ -47,6 +52,7 @@ public interface SysUserMapper extends BaseMapperPlus<SysUser, SysUserVo> {
     /**
      * 根据条件分页查询已配用户角色列表
      *
+     * @param page         分页信息
      * @param queryWrapper 查询条件
      * @return 用户信息集合信息
      */
@@ -72,7 +78,9 @@ public interface SysUserMapper extends BaseMapperPlus<SysUser, SysUserVo> {
         @DataColumn(key = "deptName", value = "dept_id"),
         @DataColumn(key = "userName", value = "user_id")
     })
-    long countUserById(Long userId);
+    default long countUserById(Long userId) {
+        return this.selectCount(new LambdaQueryWrapper<SysUser>().eq(SysUser::getUserId, userId));
+    }
 
     @Override
     @DataPermission({
