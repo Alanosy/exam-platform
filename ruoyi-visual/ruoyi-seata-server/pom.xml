@@ -31,7 +31,7 @@
         <spring-boot-for-server.version>2.7.18</spring-boot-for-server.version>
         <spring-framework-for-server.version>5.3.39</spring-framework-for-server.version>
         <snakeyaml-for-server.version>2.0</snakeyaml-for-server.version>
-        <tomcat-embed.version>9.0.98</tomcat-embed.version>
+        <tomcat-embed.version>9.0.105</tomcat-embed.version>
         <logstash-logback-encoder.version>7.2</logstash-logback-encoder.version>
         <jedis.version>3.8.0</jedis.version>
         <jackson-mapper.version>1.9.13</jackson-mapper.version>
