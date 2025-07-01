@@ -405,6 +405,9 @@ const openUserSelect = () => {
 //确认选择申请人
 const userSelectCallBack = (data: UserVO[]) => {
   userSelectCount.value = 0;
+  selectUserIds.value = [];
+  queryParams.value.createByIds = [];
+
   if (data && data.length > 0) {
     userSelectCount.value = data.length;
     selectUserIds.value = data.map((item) => item.userId);

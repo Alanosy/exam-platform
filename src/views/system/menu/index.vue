@@ -28,9 +28,6 @@
             <el-button v-hasPermi="['system:menu:add']" type="primary" plain icon="Plus" @click="handleAdd()">新增 </el-button>
           </el-col>
           <el-col :span="1.5">
-            <el-button type="info" plain icon="Sort" @click="handleToggleExpandAll">展开/折叠</el-button>
-          </el-col>
-          <el-col :span="1.5">
             <el-button type="danger" plain icon="Delete" @click="handleCascadeDelete" :loading="deleteLoading">级联删除</el-button>
           </el-col>
           <right-toolbar v-model:show-search="showSearch" @query-table="getList"></right-toolbar>
@@ -44,7 +41,9 @@
         row-key="menuId"
         border
         :tree-props="{ children: 'children', hasChildren: 'hasChildren' }"
-        :default-expand-all="isExpandAll"
+        :default-expand-all="false"
+        lazy
+        :load="getChildrenList"
       >
         <el-table-column prop="menuName" label="菜单名称" :show-overflow-tooltip="true" width="160"></el-table-column>
         <el-table-column prop="icon" label="图标" align="center" width="100">
@@ -299,10 +298,11 @@ const { proxy } = getCurrentInstance() as ComponentInternalInstance;
 const { sys_show_hide, sys_normal_disable } = toRefs<any>(proxy?.useDict('sys_show_hide', 'sys_normal_disable'));
 
 const menuList = ref<MenuVO[]>([]);
+const menuChildrenListMap = ref({});
+const menuExpandMap = ref({});
 const loading = ref(true);
 const showSearch = ref(true);
 const menuOptions = ref<MenuOptionsType[]>([]);
-const isExpandAll = ref(false);
 
 const dialog = reactive<DialogOption>({
   visible: false,
@@ -340,14 +340,62 @@ const data = reactive<PageData<MenuForm, MenuQuery>>({
 const menuTableRef = ref<ElTableInstance>();
 
 const { queryParams, form, rules } = toRefs<PageData<MenuForm, MenuQuery>>(data);
+
+/** 获取子菜单列表 */
+const getChildrenList = async (row: any, treeNode: unknown, resolve: (data: any[]) => void) => {
+  menuExpandMap.value[row.menuId] = { row, treeNode, resolve };
+  const children = menuChildrenListMap.value[row.menuId] || [];
+  // 菜单的子菜单清空后关闭展开
+  if (children.length == 0) {
+    // fix: 处理当菜单只有一个子菜单并被删除，需要将父菜单的展开状态关闭
+    menuTableRef.value?.updateKeyChildren(row.menuId, children);
+  }
+  resolve(children);
+};
+
+/** 刷新展开的菜单数据 */
+const refreshLoadTree = (parentId: string | number) => {
+  if (menuExpandMap.value[parentId]) {
+    const { row, treeNode, resolve } = menuExpandMap.value[parentId];
+    if (row) {
+      getChildrenList(row, treeNode, resolve);
+      if (row.parentId) {
+        const grandpaMenu = menuExpandMap.value[row.parentId];
+        getChildrenList(grandpaMenu.row, grandpaMenu.treeNode, grandpaMenu.resolve);
+      }
+    }
+  }
+};
+
+/** 重新加载所有已展开的菜单的数据 */
+const refreshAllExpandMenuData = () => {
+  for (const menuId in menuExpandMap.value) {
+    refreshLoadTree(menuId);
+  }
+};
+
 /** 查询菜单列表 */
 const getList = async () => {
   loading.value = true;
   const res = await listMenu(queryParams.value);
-  const data = proxy?.handleTree<MenuVO>(res.data, 'menuId');
-  if (data) {
-    menuList.value = data;
+
+  const tempMap = {};
+  // 存储 父菜单:子菜单列表
+  for (const menu of res.data) {
+    const parentId = menu.parentId;
+    if (!tempMap[parentId]) {
+      tempMap[parentId] = [];
+    }
+    tempMap[parentId].push(menu);
   }
+  // 设置有没有子菜单
+  for (const menu of res.data) {
+    menu['hasChildren'] = tempMap[menu.menuId]?.length > 0;
+  }
+  menuChildrenListMap.value = tempMap;
+  menuList.value = tempMap[0] || [];
+  // 根据新数据重新加载子菜单数据
+  refreshAllExpandMenuData();
   loading.value = false;
 };
 /** 查询菜单下拉树结构 */
@@ -385,18 +433,6 @@ const handleAdd = (row?: MenuVO) => {
   row && row.menuId ? (form.value.parentId = row.menuId) : (form.value.parentId = 0);
   dialog.visible = true;
   dialog.title = '添加菜单';
-};
-/** 展开/折叠操作 */
-const handleToggleExpandAll = () => {
-  isExpandAll.value = !isExpandAll.value;
-  toggleExpandAll(menuList.value, isExpandAll.value);
-};
-/** 展开/折叠所有 */
-const toggleExpandAll = (data: MenuVO[], status: boolean) => {
-  data.forEach((item: MenuVO) => {
-    menuTableRef.value?.toggleRowExpansion(item, status);
-    if (item.children && item.children.length > 0) toggleExpandAll(item.children, status);
-  });
 };
 /** 修改按钮操作 */
 const handleUpdate = async (row: MenuVO) => {

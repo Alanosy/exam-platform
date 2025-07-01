@@ -4,15 +4,6 @@
       <div v-show="showSearch" class="mb-[10px]">
         <el-card shadow="hover">
           <el-form ref="queryFormRef" :model="queryParams" :inline="true">
-            <el-form-item label="部门id" prop="deptId">
-              <el-input v-model="queryParams.deptId" placeholder="请输入部门id" clearable @keyup.enter="handleQuery" />
-            </el-form-item>
-            <el-form-item label="用户id" prop="userId">
-              <el-input v-model="queryParams.userId" placeholder="请输入用户id" clearable @keyup.enter="handleQuery" />
-            </el-form-item>
-            <el-form-item label="排序号" prop="orderNum">
-              <el-input v-model="queryParams.orderNum" placeholder="请输入排序号" clearable @keyup.enter="handleQuery" />
-            </el-form-item>
             <el-form-item label="key键" prop="testKey">
               <el-input v-model="queryParams.testKey" placeholder="请输入key键" clearable @keyup.enter="handleQuery" />
             </el-form-item>
