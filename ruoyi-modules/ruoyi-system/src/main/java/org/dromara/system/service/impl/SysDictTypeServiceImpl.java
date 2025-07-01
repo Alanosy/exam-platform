@@ -28,7 +28,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -94,10 +93,7 @@ public class SysDictTypeServiceImpl implements ISysDictTypeService {
     @Override
     public List<SysDictDataVo> selectDictDataByType(String dictType) {
         List<SysDictDataVo> dictDatas = dictDataMapper.selectDictDataByType(dictType);
-        if (CollUtil.isNotEmpty(dictDatas)) {
-            return dictDatas;
-        }
-        return null;
+        return CollUtil.isNotEmpty(dictDatas) ? dictDatas : null;
     }
 
     /**
@@ -129,17 +125,20 @@ public class SysDictTypeServiceImpl implements ISysDictTypeService {
      * @param dictIds 需要删除的字典ID
      */
     @Override
-    public void deleteDictTypeByIds(Long[] dictIds) {
-        for (Long dictId : dictIds) {
-            SysDictType dictType = baseMapper.selectById(dictId);
-            if (dictDataMapper.exists(new LambdaQueryWrapper<SysDictData>()
-                .eq(SysDictData::getDictType, dictType.getDictType()))) {
-                throw new ServiceException(String.format("%1$s已分配,不能删除", dictType.getDictName()));
+    public void deleteDictTypeByIds(List<Long> dictIds) {
+        List<SysDictType> list = baseMapper.selectByIds(dictIds);
+        list.forEach(x -> {
+            boolean assigned = dictDataMapper.exists(new LambdaQueryWrapper<SysDictData>()
+                .eq(SysDictData::getDictType, x.getDictType()));
+            if (assigned) {
+                throw new ServiceException(String.format("%1$s已分配,不能删除", x.getDictName()));
             }
-            CacheUtils.evict(CacheNames.SYS_DICT, dictType.getDictType());
-            CacheUtils.evict(CacheNames.SYS_DICT_TYPE, dictType.getDictType());
-        }
-        baseMapper.deleteByIds(Arrays.asList(dictIds));
+        });
+        baseMapper.deleteByIds(dictIds);
+        list.forEach(x -> {
+            CacheUtils.evict(CacheNames.SYS_DICT, x.getDictType());
+            CacheUtils.evict(CacheNames.SYS_DICT_TYPE, x.getDictType());
+        });
     }
 
     /**

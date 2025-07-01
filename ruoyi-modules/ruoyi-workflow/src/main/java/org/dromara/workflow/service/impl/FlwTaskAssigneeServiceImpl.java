@@ -2,6 +2,7 @@ package org.dromara.workflow.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.collection.CollUtil;
+import cn.hutool.core.convert.Convert;
 import cn.hutool.core.lang.Pair;
 import cn.hutool.core.util.StrUtil;
 import lombok.RequiredArgsConstructor;
@@ -238,13 +239,21 @@ public class FlwTaskAssigneeServiceImpl implements IFlwTaskAssigneeService, Hand
      * @return Pair(TaskAssigneeEnum, Long)，如果格式非法返回 null
      */
     private Pair<TaskAssigneeEnum, Long> parseStorageId(String storageId) {
+        if (StringUtils.isBlank(storageId)) {
+            return null;
+        }
+        // 跳过以 $ 或 # 开头的字符串
+        if (StringUtils.startsWith(storageId, "$") || StringUtils.startsWith(storageId, "#")) {
+            log.debug("跳过 storageId 解析，检测到内置变量表达式：{}", storageId);
+            return null;
+        }
         try {
             String[] parts = storageId.split(StrUtil.COLON, 2);
             if (parts.length < 2) {
-                return Pair.of(TaskAssigneeEnum.USER, Long.valueOf(parts[0]));
+                return Pair.of(TaskAssigneeEnum.USER, Convert.toLong(parts[0]));
             } else {
                 TaskAssigneeEnum type = TaskAssigneeEnum.fromCode(parts[0] + StrUtil.COLON);
-                return Pair.of(type, Long.valueOf(parts[1]));
+                return Pair.of(type, Convert.toLong(parts[1]));
             }
         } catch (Exception e) {
             log.warn("解析 storageId 失败，格式非法：{}，错误信息：{}", storageId, e.getMessage());

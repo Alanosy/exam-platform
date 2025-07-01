@@ -87,6 +87,12 @@
             <groupId>org.dromara</groupId>
             <artifactId>ruoyi-api-workflow</artifactId>
         </dependency>
+
+        <dependency>
+            <groupId>org.dromara</groupId>
+            <artifactId>ruoyi-common-bus</artifactId>
+        </dependency>
+
     </dependencies>
 
     <build>

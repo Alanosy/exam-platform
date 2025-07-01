@@ -22,9 +22,12 @@
             <groupId>org.dromara</groupId>
             <artifactId>ruoyi-common-core</artifactId>
         </dependency>
+
+        <!-- 非必需模块 如果需要跟工作流同步数据 则需要在对应服务内引入bus模块 如果只是调用工作流api则不需要 -->
         <dependency>
             <groupId>org.dromara</groupId>
             <artifactId>ruoyi-common-bus</artifactId>
+            <optional>true</optional>
         </dependency>
 
     </dependencies>

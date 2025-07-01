@@ -14,14 +14,13 @@
     </description>
 
     <properties>
-        <revision>2.4.0</revision>
-        <spring-cloud-alibaba.version>2023.0.1.2</spring-cloud-alibaba.version>
+        <revision>2.4.1</revision>
+        <spring-cloud-alibaba.version>2023.0.3.3</spring-cloud-alibaba.version>
         <sentinel.version>1.8.8</sentinel.version>
-        <seata.version>2.3.0</seata.version>
+        <seata.version>2.4.0</seata.version>
         <nacos.client.version>2.5.1</nacos.client.version>
-        <dubbo.version>3.3.4</dubbo.version>
+        <dubbo.version>3.3.5</dubbo.version>
         <dubbo-extensions.version>3.3.1</dubbo-extensions.version>
-        <spring.context.support.version>1.0.11</spring.context.support.version>
     </properties>
     <dependencyManagement>
         <dependencies>
@@ -176,12 +175,6 @@
                 <groupId>org.apache.dubbo.extensions</groupId>
                 <artifactId>dubbo-metadata-report-redis</artifactId>
                 <version>${dubbo-extensions.version}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>com.alibaba.spring</groupId>
-                <artifactId>spring-context-support</artifactId>
-                <version>${spring.context.support.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>

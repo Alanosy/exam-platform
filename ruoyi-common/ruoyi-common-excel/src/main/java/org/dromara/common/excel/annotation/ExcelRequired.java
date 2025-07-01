@@ -16,10 +16,6 @@ import java.lang.annotation.Target;
 public @interface ExcelRequired {
 
     /**
-     * col index
-     */
-    int index() default -1;
-    /**
      * 字体颜色
      */
     IndexedColors fontColor() default IndexedColors.RED;

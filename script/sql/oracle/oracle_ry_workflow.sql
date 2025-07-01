@@ -1,3 +1,6 @@
+-- ----------------------------
+-- 0、warm-flow-all.sql，地址：https://gitee.com/dromara/warm-flow/blob/master/sql/oracle/oracle-wram-flow-all.sql
+-- ----------------------------
 create table FLOW_DEFINITION
 (
     ID              NUMBER(20)            not null,
@@ -18,7 +21,8 @@ create table FLOW_DEFINITION
     TENANT_ID       VARCHAR2(40)
 );
 
-alter table FLOW_DEFINITION add constraint PK_FLOW_DEFINITION primary key (ID);
+alter table FLOW_DEFINITION
+    add constraint PK_FLOW_DEFINITION primary key (ID);
 
 comment on table FLOW_DEFINITION is '流程定义表';
 comment on column FLOW_DEFINITION.ID is '主键id';
@@ -57,13 +61,14 @@ create table FLOW_NODE
     VERSION         VARCHAR2(20),
     CREATE_TIME     DATE,
     UPDATE_TIME     DATE,
-    EXT             VARCHAR2(500),
+    EXT             CLOB,
     DEL_FLAG        VARCHAR2(1)   default '0',
     TENANT_ID       VARCHAR2(40),
     PERMISSION_FLAG VARCHAR2(200)
 );
 
-alter table FLOW_NODE add constraint PK_FLOW_NODE primary key (ID);
+alter table FLOW_NODE
+    add constraint PK_FLOW_NODE primary key (ID);
 
 comment on table FLOW_NODE is '流程节点表';
 comment on column FLOW_NODE.ID is '主键id';
@@ -83,10 +88,10 @@ comment on column FLOW_NODE.FORM_PATH is '审批表单路径';
 comment on column FLOW_NODE.VERSION is '版本';
 comment on column FLOW_NODE.CREATE_TIME is '创建时间';
 comment on column FLOW_NODE.UPDATE_TIME is '更新时间';
-comment on column FLOW_NODE.EXT is '扩展属性';
+comment on column FLOW_NODE.EXT is '节点扩展属性';
 comment on column FLOW_NODE.DEL_FLAG is '删除标志';
 comment on column FLOW_NODE.TENANT_ID is '租户id';
-comment on column FLOW_NODE.PERMISSION_FLAG is '权限标识（权限类型:权限标识，可以多个，用逗号隔开)';
+comment on column FLOW_NODE.PERMISSION_FLAG is '权限标识（权限类型:权限标识，可以多个，用@@隔开)';
 
 create table FLOW_SKIP
 (
@@ -106,7 +111,8 @@ create table FLOW_SKIP
     TENANT_ID      VARCHAR2(40)
 );
 
-alter table FLOW_SKIP add constraint PK_FLOW_SKIP primary key (ID);
+alter table FLOW_SKIP
+    add constraint PK_FLOW_SKIP primary key (ID);
 
 comment on table FLOW_SKIP is '节点跳转关联表';
 comment on column FLOW_SKIP.ID is '主键id';
@@ -144,7 +150,8 @@ create table FLOW_INSTANCE
     TENANT_ID       VARCHAR2(40)
 );
 
-alter table FLOW_INSTANCE add constraint PK_FLOW_INSTANCE primary key (ID);
+alter table FLOW_INSTANCE
+    add constraint PK_FLOW_INSTANCE primary key (ID);
 
 comment on table FLOW_INSTANCE is '流程实例表';
 comment on column FLOW_INSTANCE.ID is '主键id';
@@ -181,7 +188,8 @@ create table FLOW_TASK
     TENANT_ID     VARCHAR2(40)
 );
 
-alter table FLOW_TASK add constraint PK_FLOW_TASK primary key (ID);
+alter table FLOW_TASK
+    add constraint PK_FLOW_TASK primary key (ID);
 
 comment on table FLOW_TASK is '待办任务表';
 comment on column FLOW_TASK.ID is '主键id';
@@ -218,7 +226,7 @@ create table FLOW_HIS_TASK
     FORM_PATH        VARCHAR2(100),
     MESSAGE          VARCHAR2(500),
     VARIABLE         CLOB,
-    EXT              VARCHAR2(500),
+    EXT              CLOB,
     CREATE_TIME      DATE,
     UPDATE_TIME      DATE,
     DEL_FLAG         VARCHAR2(1) default '0',
@@ -226,7 +234,8 @@ create table FLOW_HIS_TASK
 
 );
 
-alter table FLOW_HIS_TASK add constraint PK_FLOW_HIS_TASK primary key (ID);
+alter table FLOW_HIS_TASK
+    add constraint PK_FLOW_HIS_TASK primary key (ID);
 
 comment on table FLOW_HIS_TASK is '历史任务记录表';
 comment on column FLOW_HIS_TASK.ID is '主键id';
@@ -266,7 +275,8 @@ create table FLOW_USER
     TENANT_ID    VARCHAR2(40)
 );
 
-alter table FLOW_USER add constraint PK_FLOW_USER primary key (ID);
+alter table FLOW_USER
+    add constraint PK_FLOW_USER primary key (ID);
 
 comment on table FLOW_USER is '待办任务表';
 comment on column FLOW_USER.ID is '主键id';
