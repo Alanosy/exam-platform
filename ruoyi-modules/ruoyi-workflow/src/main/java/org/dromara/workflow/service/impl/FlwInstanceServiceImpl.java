@@ -49,7 +49,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
-import java.util.stream.Collectors;
+import java.util.function.Function;
 
 /**
  * 流程实例 服务层实现
@@ -203,9 +203,11 @@ public class FlwInstanceServiceImpl implements IFlwInstanceService {
             return false;
         }
         // 获取定义信息
-        Map<Long, Definition> definitionMap = defService.getByIds(
-            StreamUtils.toList(instances, Instance::getDefinitionId)
-        ).stream().collect(Collectors.toMap(Definition::getId, definition -> definition));
+        Map<Long, Definition> definitionMap = StreamUtils.toMap(
+            defService.getByIds(StreamUtils.toList(instances, Instance::getDefinitionId)),
+            Definition::getId,
+            Function.identity()
+        );
 
         // 逐一触发删除事件
         instances.forEach(instance -> {

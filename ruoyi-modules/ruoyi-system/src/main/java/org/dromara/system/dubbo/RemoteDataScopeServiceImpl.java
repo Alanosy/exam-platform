@@ -9,7 +9,6 @@ import org.apache.dubbo.config.annotation.DubboService;
 import org.dromara.common.core.constant.CacheNames;
 import org.dromara.common.core.utils.StreamUtils;
 import org.dromara.system.api.RemoteDataScopeService;
-import org.dromara.system.domain.SysDept;
 import org.dromara.system.domain.SysRoleDept;
 import org.dromara.system.mapper.SysDeptMapper;
 import org.dromara.system.mapper.SysRoleDeptMapper;
@@ -68,13 +67,8 @@ public class RemoteDataScopeServiceImpl implements RemoteDataScopeService {
         if (ObjectUtil.isNull(deptId)) {
             return "-1";
         }
-        List<SysDept> deptList = deptMapper.selectListByParentId(deptId);
-        List<Long> ids = StreamUtils.toList(deptList, SysDept::getDeptId);
-        ids.add(deptId);
-        if (CollUtil.isNotEmpty(ids)) {
-            return StreamUtils.join(ids, Convert::toStr);
-        }
-        return "-1";
+        List<Long> deptIds = deptMapper.selectDeptAndChildById(deptId);
+        return CollUtil.isNotEmpty(deptIds) ? StreamUtils.join(deptIds, Convert::toStr) : "-1";
     }
 
 }

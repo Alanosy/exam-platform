@@ -77,10 +77,8 @@ public class SysUserServiceImpl implements ISysUserService {
             .between(params.get("beginTime") != null && params.get("endTime") != null,
                 "u.create_time", params.get("beginTime"), params.get("endTime"))
             .and(ObjectUtil.isNotNull(user.getDeptId()), w -> {
-                List<SysDept> deptList = deptMapper.selectListByParentId(user.getDeptId());
-                List<Long> ids = StreamUtils.toList(deptList, SysDept::getDeptId);
-                ids.add(user.getDeptId());
-                w.in("u.dept_id", ids);
+                List<Long> deptIds = deptMapper.selectDeptAndChildById(user.getDeptId());
+                w.in("u.dept_id", deptIds);
             }).orderByAsc("u.user_id");
         return baseMapper.selectUserExportList(wrapper);
     }
@@ -98,9 +96,7 @@ public class SysUserServiceImpl implements ISysUserService {
             .between(params.get("beginTime") != null && params.get("endTime") != null,
                 SysUser::getCreateTime, params.get("beginTime"), params.get("endTime"))
             .and(ObjectUtil.isNotNull(user.getDeptId()), w -> {
-                List<SysDept> deptList = deptMapper.selectListByParentId(user.getDeptId());
-                List<Long> ids = StreamUtils.toList(deptList, SysDept::getDeptId);
-                ids.add(user.getDeptId());
+                List<Long> ids = deptMapper.selectDeptAndChildById(user.getDeptId());
                 w.in(SysUser::getDeptId, ids);
             }).orderByAsc(SysUser::getUserId);
         if (StringUtils.isNotBlank(user.getExcludeUserIds())) {

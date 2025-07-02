@@ -11,9 +11,7 @@ import org.apache.dubbo.config.annotation.DubboReference;
 import org.dromara.common.core.enums.FormatsType;
 import org.dromara.common.core.utils.DateUtils;
 import org.dromara.common.core.utils.StringUtils;
-import org.dromara.system.api.RemoteDeptService;
-import org.dromara.system.api.RemoteTaskAssigneeService;
-import org.dromara.system.api.RemoteUserService;
+import org.dromara.system.api.*;
 import org.dromara.system.api.domain.bo.RemoteTaskAssigneeBo;
 import org.dromara.system.api.domain.vo.RemoteDeptVo;
 import org.dromara.system.api.domain.vo.RemoteTaskAssigneeVo;
@@ -50,6 +48,10 @@ public class FlwTaskAssigneeServiceImpl implements IFlwTaskAssigneeService, Hand
     private RemoteUserService remoteUserService;
     @DubboReference
     private RemoteDeptService remoteDeptService;
+    @DubboReference
+    private RemoteRoleService remoteRoleService;
+    @DubboReference
+    private RemotePostService remotePostService;
 
     /**
      * 获取办理人权限设置列表tabs页签
@@ -226,9 +228,9 @@ public class FlwTaskAssigneeServiceImpl implements IFlwTaskAssigneeService, Hand
     private Map<Long, String> getNamesByType(TaskAssigneeEnum type, List<Long> ids) {
         return switch (type) {
             case USER -> remoteUserService.selectUserNamesByIds(ids);
-            case ROLE -> remoteUserService.selectRoleNamesByIds(ids);
-            case DEPT -> remoteUserService.selectDeptNamesByIds(ids);
-            case POST -> remoteUserService.selectPostNamesByIds(ids);
+            case ROLE -> remoteRoleService.selectRoleNamesByIds(ids);
+            case DEPT -> remoteDeptService.selectDeptNamesByIds(ids);
+            case POST -> remotePostService.selectPostNamesByIds(ids);
         };
     }
 

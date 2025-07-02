@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.apache.ibatis.annotations.Param;
+import org.dromara.common.core.utils.StreamUtils;
 import org.dromara.common.mybatis.annotation.DataColumn;
 import org.dromara.common.mybatis.annotation.DataPermission;
 import org.dromara.common.mybatis.core.mapper.BaseMapperPlus;
@@ -67,6 +68,19 @@ public interface SysDeptMapper extends BaseMapperPlus<SysDept, SysDeptVo> {
         return this.selectList(new LambdaQueryWrapper<SysDept>()
             .select(SysDept::getDeptId)
             .apply(DataBaseHelper.findInSet(parentId, "ancestors")));
+    }
+
+    /**
+     * 查询某个部门及其所有子部门ID（含自身）
+     *
+     * @param parentId 父部门ID
+     * @return 部门ID集合
+     */
+    default List<Long> selectDeptAndChildById(Long parentId) {
+        List<SysDept> deptList = this.selectListByParentId(parentId);
+        List<Long> deptIds = StreamUtils.toList(deptList, SysDept::getDeptId);
+        deptIds.add(parentId);
+        return deptIds;
     }
 
     /**

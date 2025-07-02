@@ -3,6 +3,7 @@ package org.dromara.system.api;
 import org.dromara.system.api.domain.vo.RemoteDeptVo;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * 部门服务
@@ -33,5 +34,13 @@ public interface RemoteDeptService {
      * @return 部门列表
      */
     List<RemoteDeptVo> selectDeptsByList();
+
+    /**
+     * 根据部门 ID 列表查询部门名称映射关系
+     *
+     * @param deptIds 部门 ID 列表
+     * @return Map，其中 key 为部门 ID，value 为对应的部门名称
+     */
+    Map<Long, String> selectDeptNamesByIds(List<Long> deptIds);
 
 }

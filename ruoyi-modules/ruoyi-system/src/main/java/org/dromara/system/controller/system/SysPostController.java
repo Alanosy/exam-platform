@@ -19,6 +19,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -107,7 +108,7 @@ public class SysPostController extends BaseController {
     @Log(title = "岗位管理", businessType = BusinessType.DELETE)
     @DeleteMapping("/{postIds}")
     public R<Void> remove(@PathVariable Long[] postIds) {
-        return toAjax(postService.deletePostByIds(postIds));
+        return toAjax(postService.deletePostByIds(Arrays.asList(postIds)));
     }
 
     /**
