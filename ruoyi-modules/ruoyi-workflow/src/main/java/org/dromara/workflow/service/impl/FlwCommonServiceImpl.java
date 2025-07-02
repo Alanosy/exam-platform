@@ -53,24 +53,6 @@ public class FlwCommonServiceImpl implements IFlwCommonService {
     private RemoteMailService remoteMailService;
 
     /**
-     * 构建工作流用户
-     *
-     * @param permissionList 办理用户
-     * @return 用户
-     */
-    @Override
-    public List<String> buildUser(List<String> permissionList) {
-        if (CollUtil.isEmpty(permissionList)) {
-            return List.of();
-        }
-        IFlwTaskAssigneeService taskAssigneeService = SpringUtils.getBean(IFlwTaskAssigneeService.class);
-        String processedBys = CollUtil.join(permissionList,  StringUtils.SEPARATOR);
-        // 根据 processedBy 前缀判断处理人类型，分别获取用户列表
-        List<RemoteUserVo> users = taskAssigneeService.fetchUsersByStorageIds(processedBys);
-        return StreamUtils.toList(users, userDTO -> String.valueOf(userDTO.getUserId()));
-    }
-
-    /**
      * 发送消息
      *
      * @param flowName    流程定义名称

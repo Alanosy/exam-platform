@@ -10,14 +10,6 @@ import java.util.List;
 public interface IFlwCommonService {
 
     /**
-     * 构建工作流用户
-     *
-     * @param permissionList 办理用户
-     * @return 用户
-     */
-    List<String> buildUser(List<String> permissionList);
-
-    /**
      * 发送消息
      *
      * @param flowName    流程定义名称

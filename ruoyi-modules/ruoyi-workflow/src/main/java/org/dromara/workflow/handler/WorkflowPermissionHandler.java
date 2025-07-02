@@ -3,11 +3,14 @@ package org.dromara.workflow.handler;
 import cn.hutool.core.collection.CollUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.dromara.common.core.utils.StreamUtils;
+import org.dromara.common.core.utils.StringUtils;
 import org.dromara.common.satoken.utils.LoginHelper;
+import org.dromara.system.api.domain.vo.RemoteUserVo;
 import org.dromara.warm.flow.core.dto.FlowParams;
 import org.dromara.warm.flow.core.handler.PermissionHandler;
 import org.dromara.workflow.common.ConditionalOnEnable;
-import org.dromara.workflow.service.IFlwCommonService;
+import org.dromara.workflow.service.IFlwTaskAssigneeService;
 import org.springframework.stereotype.Component;
 
 import java.util.Collections;
@@ -24,7 +27,7 @@ import java.util.List;
 @Slf4j
 public class WorkflowPermissionHandler implements PermissionHandler {
 
-    private final IFlwCommonService flwCommonService;
+    private final IFlwTaskAssigneeService flwTaskAssigneeService;
 
     /**
      * 办理人权限标识，比如用户，角色，部门等，用于校验是否有权限办理任务
@@ -51,9 +54,12 @@ public class WorkflowPermissionHandler implements PermissionHandler {
      */
     @Override
     public List<String> convertPermissions(List<String> permissions) {
-        if (CollUtil.isNotEmpty(permissions)) {
-            permissions = flwCommonService.buildUser(permissions);
+        if (CollUtil.isEmpty(permissions)) {
+            return permissions;
         }
-        return permissions;
+        String storageIds = CollUtil.join(permissions, StringUtils.SEPARATOR);
+        List<RemoteUserVo> users = flwTaskAssigneeService.fetchUsersByStorageIds(storageIds);
+        return StreamUtils.toList(users, userDTO -> String.valueOf(userDTO.getUserId()));
     }
+
 }
