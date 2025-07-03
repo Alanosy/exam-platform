@@ -380,31 +380,6 @@ public class FlwInstanceServiceImpl implements IFlwInstanceService {
     }
 
     /**
-     * 按任务id查询实例
-     *
-     * @param taskIdList 任务id
-     */
-    @Override
-    public List<FlowInstance> selectByTaskIdList(List<Long> taskIdList) {
-        if (CollUtil.isEmpty(taskIdList)) {
-            return Collections.emptyList();
-        }
-        Set<Long> instanceIds = new HashSet<>();
-        List<FlowTask> flowTaskList = flwTaskService.selectByIdList(taskIdList);
-        for (FlowTask flowTask : flowTaskList) {
-            instanceIds.add(flowTask.getInstanceId());
-        }
-        List<FlowHisTask> flowHisTaskList = flwTaskService.selectHisTaskByIdList(taskIdList);
-        for (FlowHisTask flowHisTask : flowHisTaskList) {
-            instanceIds.add(flowHisTask.getInstanceId());
-        }
-        if (!instanceIds.isEmpty()) {
-            return this.selectInstListByIdList(new ArrayList<>(instanceIds));
-        }
-        return Collections.emptyList();
-    }
-
-    /**
      * 作废流程
      *
      * @param bo 参数

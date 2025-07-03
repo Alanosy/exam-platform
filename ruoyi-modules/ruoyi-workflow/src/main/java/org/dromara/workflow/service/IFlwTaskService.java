@@ -14,7 +14,6 @@ import org.dromara.workflow.domain.vo.FlowHisTaskVo;
 import org.dromara.workflow.domain.vo.FlowTaskVo;
 
 import java.util.List;
-import java.util.Map;
 
 /**
  * 任务 服务层
@@ -153,26 +152,10 @@ public interface IFlwTaskService {
     /**
      * 按照任务id查询任务
      *
-     * @param taskIdList 任务id
-     * @return 结果
-     */
-    List<FlowHisTask> selectHisTaskByIdList(List<Long> taskIdList);
-
-    /**
-     * 按照任务id查询任务
-     *
      * @param taskId 任务id
      * @return 结果
      */
     FlowHisTask selectHisTaskById(Long taskId);
-
-    /**
-     * 按照实例id查询任务
-     *
-     * @param instanceIdList 流程实例id
-     * @return 结果
-     */
-    List<FlowTask> selectByInstIdList(List<Long> instanceIdList);
 
     /**
      * 按照实例id查询任务
@@ -190,14 +173,6 @@ public interface IFlwTaskService {
      * @return 结果
      */
     boolean taskOperation(TaskOperationBo bo, String taskOperation);
-
-    /**
-     * 获取任务所有办理人
-     *
-     * @param taskIdList 任务id
-     * @return 结果
-     */
-    Map<Long, List<RemoteUserVo>> currentTaskAllUser(List<Long> taskIdList);
 
     /**
      * 获取当前任务的所有办理人

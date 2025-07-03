@@ -142,14 +142,6 @@ public interface IFlwInstanceService {
     FlowInstance selectByTaskId(Long taskId);
 
     /**
-     * 按任务id查询实例
-     *
-     * @param taskIdList 任务id
-     * @return 结果
-     */
-    List<FlowInstance> selectByTaskIdList(List<Long> taskIdList);
-
-    /**
      * 作废流程
      *
      * @param bo 流程实例

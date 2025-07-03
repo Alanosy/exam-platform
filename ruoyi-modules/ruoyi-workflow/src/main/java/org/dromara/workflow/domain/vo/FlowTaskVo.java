@@ -145,6 +145,7 @@ public class FlowTaskVo implements Serializable {
     /**
      * 办理人名称
      */
+    @Translation(type = TransConstant.USER_ID_TO_NICKNAME, mapper = "assigneeIds")
     private String assigneeNames;
 
     /**
