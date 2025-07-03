@@ -11,26 +11,17 @@ import org.dromara.common.core.utils.StringUtils;
 import org.dromara.resource.api.RemoteMailService;
 import org.dromara.resource.api.RemoteMessageService;
 import org.dromara.system.api.domain.vo.RemoteUserVo;
-import org.dromara.warm.flow.core.FlowEngine;
-import org.dromara.warm.flow.core.entity.Instance;
 import org.dromara.warm.flow.core.entity.Node;
-import org.dromara.warm.flow.core.entity.Task;
-import org.dromara.warm.flow.core.entity.User;
 import org.dromara.warm.flow.core.enums.SkipType;
 import org.dromara.warm.flow.core.service.NodeService;
-import org.dromara.warm.flow.core.service.UserService;
-import org.dromara.warm.flow.core.utils.MapUtil;
 import org.dromara.warm.flow.orm.entity.FlowTask;
-import org.dromara.warm.flow.orm.entity.FlowUser;
 import org.dromara.workflow.common.ConditionalOnEnable;
 import org.dromara.workflow.common.enums.MessageTypeEnum;
-import org.dromara.workflow.common.enums.TaskAssigneeType;
 import org.dromara.workflow.service.IFlwCommonService;
-import org.dromara.workflow.service.IFlwTaskAssigneeService;
 import org.dromara.workflow.service.IFlwTaskService;
 import org.springframework.stereotype.Service;
 
-import java.util.*;
+import java.util.List;
 import java.util.stream.Collectors;
 
 
@@ -62,38 +53,34 @@ public class FlwCommonServiceImpl implements IFlwCommonService {
     @Override
     public void sendMessage(String flowName, Long instId, List<String> messageType, String message) {
         IFlwTaskService flwTaskService = SpringUtils.getBean(IFlwTaskService.class);
-        List<RemoteUserVo> userList = new ArrayList<>();
         List<FlowTask> list = flwTaskService.selectByInstId(instId);
         if (StringUtils.isBlank(message)) {
             message = "有新的【" + flowName + "】单据已经提交至您，请您及时处理。";
         }
-        for (Task task : list) {
-            List<RemoteUserVo> users = flwTaskService.currentTaskAllUser(task.getId());
-            if (CollUtil.isNotEmpty(users)) {
-                userList.addAll(users);
-            }
+        List<RemoteUserVo> userList = flwTaskService.currentTaskAllUser(StreamUtils.toList(list, FlowTask::getId));
+        if (CollUtil.isEmpty(userList)) {
+            return;
         }
-        if (CollUtil.isNotEmpty(userList)) {
-            for (String code : messageType) {
-                MessageTypeEnum messageTypeEnum = MessageTypeEnum.getByCode(code);
-                if (ObjectUtil.isNotEmpty(messageTypeEnum)) {
-                    switch (messageTypeEnum) {
-                        case SYSTEM_MESSAGE:
-                            List<Long> userIds = StreamUtils.toList(userList, RemoteUserVo::getUserId).stream().distinct().collect(Collectors.toList());
-                            remoteMessageService.publishMessage(userIds, message);
-                            break;
-                        case EMAIL_MESSAGE:
-                            remoteMailService.send(StreamUtils.join(userList, RemoteUserVo::getEmail), "单据审批提醒", message);
-                            break;
-                        case SMS_MESSAGE:
-                            //todo 短信发送
-                            break;
-                        default:
-                            throw new IllegalStateException("Unexpected value: " + messageTypeEnum);
-                    }
+        for (String code : messageType) {
+            MessageTypeEnum messageTypeEnum = MessageTypeEnum.getByCode(code);
+            if (ObjectUtil.isEmpty(messageTypeEnum)) {
+                continue;
+            }
+            switch (messageTypeEnum) {
+                case SYSTEM_MESSAGE -> {
+                    List<Long> userIds = StreamUtils.toList(userList, RemoteUserVo::getUserId).stream().distinct().collect(Collectors.toList());
+                    remoteMessageService.publishMessage(userIds, message);
                 }
+                case EMAIL_MESSAGE -> {
+                    remoteMailService.send(StreamUtils.join(userList, RemoteUserVo::getEmail), "单据审批提醒", message);
+                }
+                case SMS_MESSAGE -> {
+                    //todo 短信发送
+                }
+                default -> throw new IllegalStateException("Unexpected value: " + messageTypeEnum);
             }
         }
+
     }
 
     /**

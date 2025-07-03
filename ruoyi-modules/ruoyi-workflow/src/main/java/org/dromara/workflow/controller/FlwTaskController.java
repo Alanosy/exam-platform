@@ -206,7 +206,7 @@ public class FlwTaskController extends BaseController {
      */
     @GetMapping("/currentTaskAllUser/{taskId}")
     public R<List<RemoteUserVo>> currentTaskAllUser(@PathVariable Long taskId) {
-        return R.ok(flwTaskService.currentTaskAllUser(taskId));
+        return R.ok(flwTaskService.currentTaskAllUser(List.of(taskId)));
     }
 
 }

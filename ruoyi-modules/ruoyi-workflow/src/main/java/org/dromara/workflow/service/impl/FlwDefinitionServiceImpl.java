@@ -123,8 +123,8 @@ public class FlwDefinitionServiceImpl implements IFlwDefinitionService {
         List<FlowNode> flowNodes = flowNodeMapper.selectList(new LambdaQueryWrapper<FlowNode>().eq(FlowNode::getDefinitionId, id));
         List<String> errorMsg = new ArrayList<>();
         if (CollUtil.isNotEmpty(flowNodes)) {
+            String applyNodeCode = flwCommonService.applyNodeCode(id);
             for (FlowNode flowNode : flowNodes) {
-                String applyNodeCode = flwCommonService.applyNodeCode(id);
                 if (StringUtils.isBlank(flowNode.getPermissionFlag()) && !applyNodeCode.equals(flowNode.getNodeCode()) && NodeType.BETWEEN.getKey().equals(flowNode.getNodeType())) {
                     errorMsg.add(flowNode.getNodeName());
                 }
@@ -215,7 +215,8 @@ public class FlwDefinitionServiceImpl implements IFlwDefinitionService {
             return;
         }
         FlowCategory flowCategory = flwCategoryMapper.selectOne(new LambdaQueryWrapper<FlowCategory>()
-            .eq(FlowCategory::getTenantId, DEFAULT_TENANT_ID).eq(FlowCategory::getCategoryId, FlowConstant.FLOW_CATEGORY_ID));
+            .eq(FlowCategory::getTenantId, DEFAULT_TENANT_ID)
+            .eq(FlowCategory::getCategoryId, FlowConstant.FLOW_CATEGORY_ID));
         flowCategory.setCategoryId(null);
         flowCategory.setTenantId(tenantId);
         flowCategory.setCreateDept(null);

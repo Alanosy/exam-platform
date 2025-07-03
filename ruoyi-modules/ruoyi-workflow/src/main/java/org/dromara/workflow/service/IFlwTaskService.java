@@ -177,10 +177,10 @@ public interface IFlwTaskService {
     /**
      * 获取当前任务的所有办理人
      *
-     * @param taskId 任务id
+     * @param taskIds 任务id
      * @return 结果
      */
-    List<RemoteUserVo> currentTaskAllUser(Long taskId);
+    List<RemoteUserVo> currentTaskAllUser(List<Long> taskIds);
 
     /**
      * 按照节点编码查询节点

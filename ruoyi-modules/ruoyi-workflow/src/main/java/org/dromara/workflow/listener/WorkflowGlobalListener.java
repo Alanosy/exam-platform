@@ -1,6 +1,7 @@
 package org.dromara.workflow.listener;
 
 import cn.hutool.core.collection.CollUtil;
+import cn.hutool.core.lang.TypeReference;
 import cn.hutool.core.map.MapUtil;
 import cn.hutool.core.util.ObjectUtil;
 import lombok.RequiredArgsConstructor;
@@ -136,33 +137,36 @@ public class WorkflowGlobalListener implements GlobalListener {
             return;
         }
         // 只有办理或者退回的时候才执行消息通知和抄送
-        if (TaskStatusEnum.PASS.getStatus().equals(flowParams.getHisStatus())
-            || TaskStatusEnum.BACK.getStatus().equals(flowParams.getHisStatus())) {
-            if (variable != null) {
-                if (variable.containsKey(FlowConstant.FLOW_COPY_LIST)) {
-                    List<FlowCopyBo> flowCopyList = (List<FlowCopyBo>) variable.get(FlowConstant.FLOW_COPY_LIST);
-                    // 添加抄送人
-                    flwTaskService.setCopy(task, flowCopyList);
-                }
-                if (variable.containsKey(FlowConstant.MESSAGE_TYPE)) {
-                    List<String> messageType = (List<String>) variable.get(FlowConstant.MESSAGE_TYPE);
-                    String notice = (String) variable.get(FlowConstant.MESSAGE_NOTICE);
-                    // 消息通知
-                    if (CollUtil.isNotEmpty(messageType)) {
-                        flwCommonService.sendMessage(definition.getFlowName(), instance.getId(), messageType, notice);
-                    }
-                }
-                FlowInstance ins = new FlowInstance();
-                Map<String, Object> variableMap = instance.getVariableMap();
-                variableMap.remove(FlowConstant.FLOW_COPY_LIST);
-                variableMap.remove(FlowConstant.MESSAGE_TYPE);
-                variableMap.remove(FlowConstant.MESSAGE_NOTICE);
-                variableMap.remove(FlowConstant.SUBMIT);
-                ins.setId(instance.getId());
-                ins.setVariable(FlowEngine.jsonConvert.objToStr(variableMap));
-                insService.updateById(ins);
+        if (!StringUtils.equalsAny(flowParams.getHisStatus(),
+            TaskStatusEnum.PASS.getStatus(), TaskStatusEnum.BACK.getStatus())) {
+            return;
+        }
+        if (ObjectUtil.isNull(variable)) {
+            return;
+        }
+
+        if (variable.containsKey(FlowConstant.FLOW_COPY_LIST)) {
+            List<FlowCopyBo> flowCopyList = MapUtil.get(variable, FlowConstant.FLOW_COPY_LIST, new TypeReference<>() {});
+            // 添加抄送人
+            flwTaskService.setCopy(task, flowCopyList);
+        }
+        if (variable.containsKey(FlowConstant.MESSAGE_TYPE)) {
+            List<String> messageType = MapUtil.get(variable, FlowConstant.FLOW_COPY_LIST, new TypeReference<>() {});
+            String notice = MapUtil.getStr(variable, FlowConstant.MESSAGE_NOTICE);
+            // 消息通知
+            if (CollUtil.isNotEmpty(messageType)) {
+                flwCommonService.sendMessage(definition.getFlowName(), instance.getId(), messageType, notice);
             }
         }
+        FlowInstance ins = new FlowInstance();
+        Map<String, Object> variableMap = instance.getVariableMap();
+        variableMap.remove(FlowConstant.FLOW_COPY_LIST);
+        variableMap.remove(FlowConstant.MESSAGE_TYPE);
+        variableMap.remove(FlowConstant.MESSAGE_NOTICE);
+        variableMap.remove(FlowConstant.SUBMIT);
+        ins.setId(instance.getId());
+        ins.setVariable(FlowEngine.jsonConvert.objToStr(variableMap));
+        insService.updateById(ins);
     }
 
     /**
