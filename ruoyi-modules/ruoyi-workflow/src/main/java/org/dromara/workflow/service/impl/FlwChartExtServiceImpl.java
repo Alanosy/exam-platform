@@ -28,8 +28,12 @@ import org.dromara.workflow.common.ConditionalOnEnable;
 import org.dromara.workflow.common.constant.FlowConstant;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 /**
  * 流程图提示信息
@@ -78,15 +82,26 @@ public class FlwChartExtServiceImpl implements ChartExtService {
 
         Map<String, String> dictType = dictService.getAllDictByDictType(FlowConstant.WF_TASK_STATUS);
 
-        // 遍历流程定义中的每个节点，调用处理方法，将对应节点的任务列表及用户信息传入，生成扩展提示内容
         for (NodeJson nodeJson : defJson.getNodeList()) {
-            // 获取当前节点对应的历史任务列表，如果没有则返回空列表避免空指针
             List<FlowHisTask> taskList = groupedByNode.get(nodeJson.getNodeCode());
             if (CollUtil.isEmpty(taskList)) {
                 continue;
             }
-            // 处理当前节点的扩展信息，包括构建审批人提示内容等
-            this.processNodeExtInfo(nodeJson, taskList, userMap, dictType);
+
+            // 按审批人分组去重，保留最新处理记录，最终转换成 List
+            List<FlowHisTask> latestPerApprover = taskList.stream()
+                .collect(Collectors.collectingAndThen(
+                    Collectors.toMap(
+                        FlowHisTask::getApprover,
+                        Function.identity(),
+                        (oldTask, newTask) -> newTask.getUpdateTime().after(oldTask.getUpdateTime()) ? newTask : oldTask,
+                        LinkedHashMap::new
+                    ),
+                    map -> new ArrayList<>(map.values())
+                ));
+
+            // 处理当前节点的扩展信息
+            this.processNodeExtInfo(nodeJson, latestPerApprover, userMap, dictType);
         }
     }
 
@@ -244,7 +259,7 @@ public class FlwChartExtServiceImpl implements ChartExtService {
         LambdaQueryWrapper<FlowHisTask> wrapper = Wrappers.lambdaQuery();
         wrapper.eq(FlowHisTask::getInstanceId, instanceId)
             .eq(FlowHisTask::getNodeType, NodeType.BETWEEN.getKey())
-            .orderByDesc(FlowHisTask::getCreateTime, FlowHisTask::getUpdateTime);
+            .orderByDesc(FlowHisTask::getUpdateTime);
         return flowHisTaskMapper.selectList(wrapper);
     }
 

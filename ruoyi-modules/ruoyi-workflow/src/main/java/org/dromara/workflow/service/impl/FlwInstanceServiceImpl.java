@@ -18,12 +18,13 @@ import org.dromara.common.core.utils.StringUtils;
 import org.dromara.common.mybatis.core.page.PageQuery;
 import org.dromara.common.mybatis.core.page.TableDataInfo;
 import org.dromara.common.satoken.utils.LoginHelper;
-import org.dromara.system.api.domain.vo.RemoteUserVo;
+import org.dromara.warm.flow.core.FlowEngine;
 import org.dromara.warm.flow.core.constant.ExceptionCons;
 import org.dromara.warm.flow.core.dto.FlowParams;
 import org.dromara.warm.flow.core.entity.Definition;
 import org.dromara.warm.flow.core.entity.Instance;
 import org.dromara.warm.flow.core.entity.Task;
+import org.dromara.warm.flow.core.entity.User;
 import org.dromara.warm.flow.core.enums.NodeType;
 import org.dromara.warm.flow.core.service.DefService;
 import org.dromara.warm.flow.core.service.InsService;
@@ -283,37 +284,50 @@ public class FlwInstanceServiceImpl implements IFlwInstanceService {
             throw new ServiceException(ExceptionCons.NOT_FOUNT_INSTANCE);
         }
         Long instanceId = flowInstance.getId();
-        //运行中的任务
-        List<FlowHisTaskVo> list = new ArrayList<>();
-        List<FlowTask> flowTaskList = flwTaskService.selectByInstId(instanceId);
-        if (CollUtil.isNotEmpty(flowTaskList)) {
-            List<FlowHisTaskVo> flowHisTaskVos = BeanUtil.copyToList(flowTaskList, FlowHisTaskVo.class);
-            for (FlowHisTaskVo flowHisTaskVo : flowHisTaskVos) {
-                flowHisTaskVo.setFlowStatus(TaskStatusEnum.WAITING.getStatus());
-                flowHisTaskVo.setUpdateTime(null);
-                flowHisTaskVo.setRunDuration(null);
-                List<RemoteUserVo> allUser = flwTaskService.currentTaskAllUser(flowHisTaskVo.getId());
-                if (CollUtil.isNotEmpty(allUser)) {
-                    String join = StreamUtils.join(allUser, e -> String.valueOf(e.getUserId()));
-                    flowHisTaskVo.setApprover(join);
+
+        // 先组装待审批任务（运行中的任务）
+        List<FlowHisTaskVo> runningTaskVos = new ArrayList<>();
+        List<FlowTask> runningTasks = flwTaskService.selectByInstId(instanceId);
+        if (CollUtil.isNotEmpty(runningTasks)) {
+            runningTaskVos = BeanUtil.copyToList(runningTasks, FlowHisTaskVo.class);
+
+            List<User> associatedUsers = FlowEngine.userService()
+                .getByAssociateds(StreamUtils.toList(runningTasks, FlowTask::getId));
+            Map<Long, List<User>> taskUserMap = StreamUtils.groupByKey(associatedUsers, User::getAssociated);
+
+            for (FlowHisTaskVo vo : runningTaskVos) {
+                vo.setFlowStatus(TaskStatusEnum.WAITING.getStatus());
+                vo.setUpdateTime(null);
+                vo.setRunDuration(null);
+
+                List<User> users = taskUserMap.get(vo.getId());
+                if (CollUtil.isNotEmpty(users)) {
+                    vo.setApprover(StreamUtils.join(users, User::getProcessedBy));
                 }
                 if (BusinessStatusEnum.isDraftOrCancelOrBack(flowInstance.getFlowStatus())) {
-                    flowHisTaskVo.setApprover(LoginHelper.getUserIdStr());
-                    flowHisTaskVo.setApproveName(LoginHelper.getLoginUser().getNickname());
+                    vo.setApprover(LoginHelper.getUserIdStr());
                 }
             }
-            list.addAll(flowHisTaskVos);
         }
-        //历史任务
-        LambdaQueryWrapper<FlowHisTask> wrapper = Wrappers.lambdaQuery();
-        wrapper.eq(FlowHisTask::getInstanceId, instanceId)
-            .eq(FlowHisTask::getNodeType, NodeType.BETWEEN.getKey())
-            .orderByDesc(FlowHisTask::getCreateTime, FlowHisTask::getUpdateTime);
-        List<FlowHisTask> flowHisTasks = flowHisTaskMapper.selectList(wrapper);
-        if (CollUtil.isNotEmpty(flowHisTasks)) {
-            list.addAll(BeanUtil.copyToList(flowHisTasks, FlowHisTaskVo.class));
+
+        // 再组装历史任务（已处理任务）
+        List<FlowHisTaskVo> hisTaskVos = new ArrayList<>();
+        List<FlowHisTask> hisTasks = flowHisTaskMapper.selectList(
+            new LambdaQueryWrapper<FlowHisTask>()
+                .eq(FlowHisTask::getInstanceId, instanceId)
+                .eq(FlowHisTask::getNodeType, NodeType.BETWEEN.getKey())
+                .orderByDesc(FlowHisTask::getUpdateTime)
+        );
+        if (CollUtil.isNotEmpty(hisTasks)) {
+            hisTaskVos = BeanUtil.copyToList(hisTasks, FlowHisTaskVo.class);
         }
-        return Map.of("list", list, "instanceId", instanceId);
+
+        // 结果列表，待审批任务在前，历史任务在后
+        List<FlowHisTaskVo> combinedList = new ArrayList<>();
+        combinedList.addAll(runningTaskVos);
+        combinedList.addAll(hisTaskVos);
+
+        return Map.of("list", combinedList, "instanceId", instanceId);
     }
 
     /**
