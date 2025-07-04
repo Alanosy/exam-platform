@@ -1,6 +1,7 @@
 package org.dromara.system.mapper;
 
 import com.baomidou.mybatisplus.core.conditions.Wrapper;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.dromara.common.mybatis.annotation.DataColumn;
 import org.dromara.common.mybatis.annotation.DataPermission;
@@ -31,6 +32,9 @@ public interface SysPostMapper extends BaseMapperPlus<SysPost, SysPostVo> {
      * @param userId 用户ID
      * @return 结果
      */
-    List<SysPostVo> selectPostsByUserId(Long userId);
+    default List<SysPostVo> selectPostsByUserId(Long userId) {
+        return this.selectVoList(new LambdaQueryWrapper<SysPost>()
+            .inSql(SysPost::getPostId, "select post_id from sys_user_post where user_id = " + userId));
+    }
 
 }

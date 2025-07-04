@@ -5,8 +5,6 @@ import cn.hutool.core.convert.Convert;
 import cn.hutool.core.lang.tree.Tree;
 import cn.hutool.core.util.ObjectUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import lombok.RequiredArgsConstructor;
 import org.dromara.common.core.constant.Constants;
 import org.dromara.common.core.constant.SystemConstants;
@@ -67,29 +65,20 @@ public class SysMenuServiceImpl implements ISysMenuService {
     @Override
     public List<SysMenuVo> selectMenuList(SysMenuBo menu, Long userId) {
         List<SysMenuVo> menuList;
-        // 管理员显示所有菜单信息
-        if (LoginHelper.isSuperAdmin(userId)) {
-            menuList = baseMapper.selectVoList(new LambdaQueryWrapper<SysMenu>()
-                .like(StringUtils.isNotBlank(menu.getMenuName()), SysMenu::getMenuName, menu.getMenuName())
+        LambdaQueryWrapper<SysMenu> wrapper = new LambdaQueryWrapper<>();
+        // 管理员显示所有菜单信息 不是管理员 按用户id过滤菜单
+        if (!LoginHelper.isSuperAdmin(userId)) {
+            // 通过用户id获取角色id 通过角色id获取菜单id 然后in菜单
+            wrapper.inSql(SysMenu::getMenuId, baseMapper.buildMenuByUserSql(userId));
+        }
+        menuList = baseMapper.selectVoList(
+            wrapper.like(StringUtils.isNotBlank(menu.getMenuName()), SysMenu::getMenuName, menu.getMenuName())
                 .eq(StringUtils.isNotBlank(menu.getVisible()), SysMenu::getVisible, menu.getVisible())
                 .eq(StringUtils.isNotBlank(menu.getStatus()), SysMenu::getStatus, menu.getStatus())
                 .eq(StringUtils.isNotBlank(menu.getMenuType()), SysMenu::getMenuType, menu.getMenuType())
                 .eq(ObjectUtil.isNotNull(menu.getParentId()), SysMenu::getParentId, menu.getParentId())
                 .orderByAsc(SysMenu::getParentId)
                 .orderByAsc(SysMenu::getOrderNum));
-        } else {
-            QueryWrapper<SysMenu> wrapper = Wrappers.query();
-            wrapper.inSql("r.role_id", "select role_id from sys_user_role where user_id = " + userId)
-                .like(StringUtils.isNotBlank(menu.getMenuName()), "m.menu_name", menu.getMenuName())
-                .eq(StringUtils.isNotBlank(menu.getVisible()), "m.visible", menu.getVisible())
-                .eq(StringUtils.isNotBlank(menu.getStatus()), "m.status", menu.getStatus())
-                .eq(StringUtils.isNotBlank(menu.getMenuType()), "m.menu_type", menu.getMenuType())
-                .eq(ObjectUtil.isNotNull(menu.getParentId()), "m.parent_id", menu.getParentId())
-                .orderByAsc("m.parent_id")
-                .orderByAsc("m.order_num");
-            List<SysMenu> list = baseMapper.selectMenuListByUserId(wrapper);
-            menuList = MapstructUtils.convert(list, SysMenuVo.class);
-        }
         return menuList;
     }
 
@@ -141,7 +130,13 @@ public class SysMenuServiceImpl implements ISysMenuService {
         if (LoginHelper.isSuperAdmin(userId)) {
             menus = baseMapper.selectMenuTreeAll();
         } else {
-            menus = baseMapper.selectMenuTreeByUserId(userId);
+            LambdaQueryWrapper<SysMenu> wrapper = new LambdaQueryWrapper<>();
+            menus = baseMapper.selectList(
+                wrapper.in(SysMenu::getMenuType, SystemConstants.TYPE_DIR, SystemConstants.TYPE_MENU)
+                    .eq(SysMenu::getStatus, SystemConstants.NORMAL)
+                    .inSql(SysMenu::getMenuId, baseMapper.buildMenuByUserSql(userId))
+                    .orderByAsc(SysMenu::getParentId)
+                    .orderByAsc(SysMenu::getOrderNum));
         }
         return getChildPerms(menus, Constants.TOP_PARENT_ID);
     }
@@ -169,7 +164,7 @@ public class SysMenuServiceImpl implements ISysMenuService {
         SysTenantPackage tenantPackage = tenantPackageMapper.selectById(packageId);
         List<Long> menuIds = StringUtils.splitTo(tenantPackage.getMenuIds(), Convert::toLong);
         if (CollUtil.isEmpty(menuIds)) {
-            return new ArrayList<>();
+            return List.of();
         }
         List<Long> parentIds = null;
         if (tenantPackage.getMenuCheckStrictly()) {
@@ -285,17 +280,6 @@ public class SysMenuServiceImpl implements ISysMenuService {
     }
 
     /**
-     * 查询菜单使用数量
-     *
-     * @param menuId 菜单ID
-     * @return 结果
-     */
-    @Override
-    public boolean checkMenuExistRole(Long menuId) {
-        return roleMenuMapper.exists(new LambdaQueryWrapper<SysRoleMenu>().eq(SysRoleMenu::getMenuId, menuId));
-    }
-
-    /**
      * 是否存在菜单子节点
      *
      * @param menuIds 菜单ID串
@@ -304,6 +288,17 @@ public class SysMenuServiceImpl implements ISysMenuService {
     @Override
     public boolean hasChildByMenuId(List<Long> menuIds) {
         return baseMapper.exists(new LambdaQueryWrapper<SysMenu>().in(SysMenu::getParentId, menuIds).notIn(SysMenu::getMenuId, menuIds));
+    }
+
+    /**
+     * 查询菜单使用数量
+     *
+     * @param menuId 菜单ID
+     * @return 结果
+     */
+    @Override
+    public boolean checkMenuExistRole(Long menuId) {
+        return roleMenuMapper.exists(new LambdaQueryWrapper<SysRoleMenu>().eq(SysRoleMenu::getMenuId, menuId));
     }
 
     /**

@@ -1,13 +1,10 @@
 package org.dromara.system.mapper;
 
-import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.baomidou.mybatisplus.core.toolkit.Constants;
 import org.dromara.common.core.constant.SystemConstants;
-import org.dromara.system.domain.SysMenu;
 import org.dromara.common.mybatis.core.mapper.BaseMapperPlus;
+import org.dromara.system.domain.SysMenu;
 import org.dromara.system.domain.vo.SysMenuVo;
-import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
@@ -18,13 +15,27 @@ import java.util.List;
  */
 public interface SysMenuMapper extends BaseMapperPlus<SysMenu, SysMenuVo> {
 
-    /**
-     * 根据用户查询系统菜单列表
-     *
-     * @param queryWrapper 查询条件
-     * @return 菜单列表
-     */
-    List<SysMenu> selectMenuListByUserId(@Param(Constants.WRAPPER) Wrapper<SysMenu> queryWrapper);
+    default String buildMenuByUserSql(Long userId) {
+        return """
+                select menu_id from sys_role_menu where role_id in (
+                    select role_id from sys_user_role where user_id = %d
+                )
+            """.formatted(userId);
+    }
+
+    default String buildMenuByRoleSql(Long roleId) {
+        return """
+                select menu_id from sys_role_menu where role_id = %d
+            """.formatted(roleId);
+    }
+
+    default String buildParentMenuByRoleSql(Long roleId) {
+        return """
+                select parent_id from sys_menu where menu_id in (
+                    select menu_id from sys_role_menu where role_id = %d
+                )
+            """.formatted(roleId);
+    }
 
     /**
      * 根据用户ID查询权限
@@ -32,7 +43,13 @@ public interface SysMenuMapper extends BaseMapperPlus<SysMenu, SysMenuVo> {
      * @param userId 用户ID
      * @return 权限列表
      */
-    List<String> selectMenuPermsByUserId(Long userId);
+    default List<String> selectMenuPermsByUserId(Long userId) {
+        return this.selectObjs(
+            new LambdaQueryWrapper<SysMenu>()
+                .select(SysMenu::getPerms)
+                .inSql(SysMenu::getMenuId, this.buildMenuByUserSql(userId))
+        );
+    }
 
     /**
      * 根据角色ID查询权限
@@ -40,7 +57,13 @@ public interface SysMenuMapper extends BaseMapperPlus<SysMenu, SysMenuVo> {
      * @param roleId 角色ID
      * @return 权限列表
      */
-    List<String> selectMenuPermsByRoleId(Long roleId);
+    default List<String> selectMenuPermsByRoleId(Long roleId) {
+        return this.selectObjs(
+            new LambdaQueryWrapper<SysMenu>()
+                .select(SysMenu::getPerms)
+                .inSql(SysMenu::getMenuId, this.buildMenuByRoleSql(roleId))
+        );
+    }
 
     /**
      * 根据用户ID查询菜单
@@ -57,20 +80,22 @@ public interface SysMenuMapper extends BaseMapperPlus<SysMenu, SysMenuVo> {
     }
 
     /**
-     * 根据用户ID查询菜单
-     *
-     * @param userId 用户ID
-     * @return 菜单列表
-     */
-    List<SysMenu> selectMenuTreeByUserId(Long userId);
-
-    /**
      * 根据角色ID查询菜单树信息
      *
      * @param roleId            角色ID
      * @param menuCheckStrictly 菜单树选择项是否关联显示
      * @return 选中菜单列表
      */
-    List<Long> selectMenuListByRoleId(@Param("roleId") Long roleId, @Param("menuCheckStrictly") boolean menuCheckStrictly);
+    default List<Long> selectMenuListByRoleId(Long roleId, boolean menuCheckStrictly) {
+        LambdaQueryWrapper<SysMenu> wrapper = new LambdaQueryWrapper<>();
+        wrapper.select(SysMenu::getMenuId)
+            .inSql(SysMenu::getMenuId, buildMenuByRoleSql(roleId))
+            .orderByAsc(SysMenu::getParentId)
+            .orderByAsc(SysMenu::getOrderNum);
+        if (menuCheckStrictly) {
+            wrapper.notInSql(SysMenu::getMenuId, this.buildParentMenuByRoleSql(roleId));
+        }
+        return this.selectObjs(wrapper);
+    }
 
 }

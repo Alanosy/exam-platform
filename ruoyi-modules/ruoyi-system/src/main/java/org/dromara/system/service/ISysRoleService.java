@@ -167,7 +167,7 @@ public interface ISysRoleService {
      * @param roleIds 需要删除的角色ID
      * @return 结果
      */
-    int deleteRoleByIds(Long[] roleIds);
+    int deleteRoleByIds(List<Long> roleIds);
 
     /**
      * 取消授权用户角色

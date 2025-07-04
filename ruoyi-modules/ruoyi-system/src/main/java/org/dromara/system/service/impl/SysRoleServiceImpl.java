@@ -7,14 +7,13 @@ import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.ObjectUtil;
 import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.RequiredArgsConstructor;
 import org.dromara.common.core.constant.CacheNames;
-import org.dromara.common.core.constant.TenantConstants;
 import org.dromara.common.core.constant.SystemConstants;
+import org.dromara.common.core.constant.TenantConstants;
 import org.dromara.common.core.exception.ServiceException;
 import org.dromara.common.core.utils.MapstructUtils;
 import org.dromara.common.core.utils.StreamUtils;
@@ -73,15 +72,14 @@ public class SysRoleServiceImpl implements ISysRoleService {
 
     private Wrapper<SysRole> buildQueryWrapper(SysRoleBo bo) {
         Map<String, Object> params = bo.getParams();
-        QueryWrapper<SysRole> wrapper = Wrappers.query();
-        wrapper.eq("r.del_flag", SystemConstants.NORMAL)
-            .eq(ObjectUtil.isNotNull(bo.getRoleId()), "r.role_id", bo.getRoleId())
-            .like(StringUtils.isNotBlank(bo.getRoleName()), "r.role_name", bo.getRoleName())
-            .eq(StringUtils.isNotBlank(bo.getStatus()), "r.status", bo.getStatus())
-            .like(StringUtils.isNotBlank(bo.getRoleKey()), "r.role_key", bo.getRoleKey())
+        LambdaQueryWrapper<SysRole> wrapper = Wrappers.lambdaQuery();
+        wrapper.eq(ObjectUtil.isNotNull(bo.getRoleId()), SysRole::getRoleId, bo.getRoleId())
+            .like(StringUtils.isNotBlank(bo.getRoleName()), SysRole::getRoleName, bo.getRoleName())
+            .eq(StringUtils.isNotBlank(bo.getStatus()), SysRole::getStatus, bo.getStatus())
+            .like(StringUtils.isNotBlank(bo.getRoleKey()), SysRole::getRoleKey, bo.getRoleKey())
             .between(params.get("beginTime") != null && params.get("endTime") != null,
-                "r.create_time", params.get("beginTime"), params.get("endTime"))
-            .orderByAsc("r.role_sort").orderByAsc("r.create_time");
+                SysRole::getCreateTime, params.get("beginTime"), params.get("endTime"))
+            .orderByAsc(SysRole::getRoleSort).orderByAsc(SysRole::getCreateTime);
         return wrapper;
     }
 
@@ -175,9 +173,9 @@ public class SysRoleServiceImpl implements ISysRoleService {
      */
     @Override
     public List<SysRoleVo> selectRoleByIds(List<Long> roleIds) {
-        return baseMapper.selectRoleList(new QueryWrapper<SysRole>()
-            .eq("r.status", SystemConstants.NORMAL)
-            .in(CollUtil.isNotEmpty(roleIds), "r.role_id", roleIds));
+        return baseMapper.selectRoleList(new LambdaQueryWrapper<SysRole>()
+            .eq(SysRole::getStatus, SystemConstants.NORMAL)
+            .in(CollUtil.isNotEmpty(roleIds), SysRole::getRoleId, roleIds));
     }
 
     /**
@@ -351,14 +349,14 @@ public class SysRoleServiceImpl implements ISysRoleService {
     private int insertRoleMenu(SysRoleBo role) {
         int rows = 1;
         // 新增用户与角色管理
-        List<SysRoleMenu> list = new ArrayList<SysRoleMenu>();
+        List<SysRoleMenu> list = new ArrayList<>();
         for (Long menuId : role.getMenuIds()) {
             SysRoleMenu rm = new SysRoleMenu();
             rm.setRoleId(role.getRoleId());
             rm.setMenuId(menuId);
             list.add(rm);
         }
-        if (list.size() > 0) {
+        if (CollUtil.isEmpty(list)) {
             rows = roleMenuMapper.insertBatch(list) ? list.size() : 0;
         }
         return rows;
@@ -372,14 +370,14 @@ public class SysRoleServiceImpl implements ISysRoleService {
     private int insertRoleDept(SysRoleBo role) {
         int rows = 1;
         // 新增角色与部门（数据权限）管理
-        List<SysRoleDept> list = new ArrayList<SysRoleDept>();
+        List<SysRoleDept> list = new ArrayList<>();
         for (Long deptId : role.getDeptIds()) {
             SysRoleDept rd = new SysRoleDept();
             rd.setRoleId(role.getRoleId());
             rd.setDeptId(deptId);
             list.add(rd);
         }
-        if (list.size() > 0) {
+        if (CollUtil.isEmpty(list)) {
             rows = roleDeptMapper.insertBatch(list) ? list.size() : 0;
         }
         return rows;
@@ -411,21 +409,20 @@ public class SysRoleServiceImpl implements ISysRoleService {
     @CacheEvict(cacheNames = CacheNames.SYS_ROLE_CUSTOM, allEntries = true)
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public int deleteRoleByIds(Long[] roleIds) {
-        for (Long roleId : roleIds) {
-            SysRole role = baseMapper.selectById(roleId);
+    public int deleteRoleByIds(List<Long> roleIds) {
+        List<SysRole> roles = baseMapper.selectByIds(roleIds);
+        for (SysRole role : roles) {
             checkRoleAllowed(BeanUtil.toBean(role, SysRoleBo.class));
-            checkRoleDataScope(roleId);
-            if (countUserRoleByRoleId(roleId) > 0) {
+            checkRoleDataScope(role.getRoleId());
+            if (countUserRoleByRoleId(role.getRoleId()) > 0) {
                 throw new ServiceException(String.format("%1$s已分配，不能删除!", role.getRoleName()));
             }
         }
-        List<Long> ids = Arrays.asList(roleIds);
         // 删除角色与菜单关联
-        roleMenuMapper.delete(new LambdaQueryWrapper<SysRoleMenu>().in(SysRoleMenu::getRoleId, ids));
+        roleMenuMapper.delete(new LambdaQueryWrapper<SysRoleMenu>().in(SysRoleMenu::getRoleId, roleIds));
         // 删除角色与部门关联
-        roleDeptMapper.delete(new LambdaQueryWrapper<SysRoleDept>().in(SysRoleDept::getRoleId, ids));
-        return baseMapper.deleteByIds(ids);
+        roleDeptMapper.delete(new LambdaQueryWrapper<SysRoleDept>().in(SysRoleDept::getRoleId, roleIds));
+        return baseMapper.deleteByIds(roleIds);
     }
 
     /**
@@ -547,4 +544,5 @@ public class SysRoleServiceImpl implements ISysRoleService {
             }
         });
     }
+
 }

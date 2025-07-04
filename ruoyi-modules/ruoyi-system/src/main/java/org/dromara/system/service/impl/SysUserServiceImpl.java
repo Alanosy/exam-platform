@@ -479,8 +479,8 @@ public class SysUserServiceImpl implements ISysUserService {
             }
             // 判断是否具有此角色的操作权限
             List<SysRoleVo> roles = roleMapper.selectRoleList(
-                new QueryWrapper<SysRole>().in("r.role_id", roleList));
-            if (CollUtil.isEmpty(roles)) {
+                new LambdaQueryWrapper<SysRole>().in(SysRole::getRoleId, roleList));
+            if (CollUtil.isEmpty(roles) || roles.size() != roleList.size()) {
                 throw new ServiceException("没有权限访问角色的数据");
             }
             if (clear) {
