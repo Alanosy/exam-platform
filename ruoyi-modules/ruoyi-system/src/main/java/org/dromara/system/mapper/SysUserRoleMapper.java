@@ -21,8 +21,7 @@ public interface SysUserRoleMapper extends BaseMapperPlus<SysUserRole, SysUserRo
      */
     default List<Long> selectUserIdsByRoleId(Long roleId) {
         return this.selectObjs(new LambdaQueryWrapper<SysUserRole>()
-            .select(SysUserRole::getUserId).inSql(SysUserRole::getRoleId,
-                "select role_id from sys_role where role_id = " + roleId)
+            .select(SysUserRole::getUserId).eq(SysUserRole::getRoleId, roleId)
         );
     }
 

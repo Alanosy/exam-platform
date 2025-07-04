@@ -27,6 +27,20 @@ public interface SysPostMapper extends BaseMapperPlus<SysPost, SysPostVo> {
     }
 
     /**
+     * 分页查询岗位列表
+     *
+     * @param queryWrapper 查询条件
+     * @return 包含岗位信息的分页结果
+     */
+    @DataPermission({
+        @DataColumn(key = "deptName", value = "dept_id"),
+        @DataColumn(key = "userName", value = "create_by")
+    })
+    default List<SysPostVo> selectPostList(Wrapper<SysPost> queryWrapper) {
+        return this.selectVoList(queryWrapper);
+    }
+
+    /**
      * 查询用户所属岗位组
      *
      * @param userId 用户ID
