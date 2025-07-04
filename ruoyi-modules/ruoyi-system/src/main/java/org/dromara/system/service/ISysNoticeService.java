@@ -14,7 +14,13 @@ import java.util.List;
  */
 public interface ISysNoticeService {
 
-
+    /**
+     * 分页查询通知公告列表
+     *
+     * @param notice    查询条件
+     * @param pageQuery 分页参数
+     * @return 通知公告分页列表
+     */
     TableDataInfo<SysNoticeVo> selectPageNoticeList(SysNoticeBo notice, PageQuery pageQuery);
 
     /**

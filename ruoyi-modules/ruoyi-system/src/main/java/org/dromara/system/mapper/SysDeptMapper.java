@@ -20,12 +20,30 @@ import java.util.List;
  */
 public interface SysDeptMapper extends BaseMapperPlus<SysDept, SysDeptVo> {
 
+    /**
+     * 构建角色对应的部门 SQL 查询语句
+     *
+     * <p>该 SQL 用于查询某个角色关联的所有部门 ID，常用于数据权限控制</p>
+     *
+     * @param roleId 角色ID
+     * @return 查询部门ID的 SQL 语句字符串
+     */
     default String buildDeptByRoleSql(Long roleId) {
         return """
                 select dept_id from sys_role_dept where role_id = %d
             """.formatted(roleId);
     }
 
+    /**
+     * 构建 SQL 查询，用于获取当前角色拥有的部门中所有的父部门ID
+     *
+     * <p>
+     * 该 SQL 用于 deptCheckStrictly 场景下，排除非叶子节点（父节点）用。
+     * </p>
+     *
+     * @param roleId 角色ID
+     * @return SQL 语句字符串，查询角色下部门的所有父部门ID
+     */
     default String buildParentDeptByRoleSql(Long roleId) {
         return """
                 select parent_id from sys_dept where dept_id in (

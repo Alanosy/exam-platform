@@ -4,6 +4,7 @@ import cn.dev33.satoken.exception.NotLoginException;
 import cn.dev33.satoken.stp.StpUtil;
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.collection.CollUtil;
+import cn.hutool.core.util.ArrayUtil;
 import cn.hutool.core.util.ObjectUtil;
 import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
@@ -38,6 +39,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * 角色 业务层处理
@@ -53,6 +55,13 @@ public class SysRoleServiceImpl implements ISysRoleService {
     private final SysUserRoleMapper userRoleMapper;
     private final SysRoleDeptMapper roleDeptMapper;
 
+    /**
+     * 分页查询角色列表
+     *
+     * @param role      查询条件
+     * @param pageQuery 分页参数
+     * @return 角色分页列表
+     */
     @Override
     public TableDataInfo<SysRoleVo> selectPageRoleList(SysRoleBo role, PageQuery pageQuery) {
         Page<SysRoleVo> page = baseMapper.selectPageRoleList(pageQuery.build(), this.buildQueryWrapper(role));
@@ -60,7 +69,7 @@ public class SysRoleServiceImpl implements ISysRoleService {
     }
 
     /**
-     * 根据条件分页查询角色数据
+     * 根据条件查询角色数据
      *
      * @param role 角色信息
      * @return 角色数据集合信息
@@ -347,19 +356,18 @@ public class SysRoleServiceImpl implements ISysRoleService {
      * @param role 角色对象
      */
     private int insertRoleMenu(SysRoleBo role) {
-        int rows = 1;
-        // 新增用户与角色管理
-        List<SysRoleMenu> list = new ArrayList<>();
-        for (Long menuId : role.getMenuIds()) {
-            SysRoleMenu rm = new SysRoleMenu();
-            rm.setRoleId(role.getRoleId());
-            rm.setMenuId(menuId);
-            list.add(rm);
+        Long[] menuIds = role.getMenuIds();
+        if (ArrayUtil.isEmpty(menuIds)) {
+            return 0;
         }
-        if (CollUtil.isEmpty(list)) {
-            rows = roleMenuMapper.insertBatch(list) ? list.size() : 0;
-        }
-        return rows;
+        List<SysRoleMenu> roleMenuList = Arrays.stream(menuIds)
+            .map(menuId -> {
+                SysRoleMenu roleMenu = new SysRoleMenu();
+                roleMenu.setRoleId(role.getRoleId());
+                roleMenu.setMenuId(menuId);
+                return roleMenu;
+            }).collect(Collectors.toList());
+        return roleMenuMapper.insertBatch(roleMenuList) ? roleMenuList.size() : 0;
     }
 
     /**
@@ -368,19 +376,18 @@ public class SysRoleServiceImpl implements ISysRoleService {
      * @param role 角色对象
      */
     private int insertRoleDept(SysRoleBo role) {
-        int rows = 1;
-        // 新增角色与部门（数据权限）管理
-        List<SysRoleDept> list = new ArrayList<>();
-        for (Long deptId : role.getDeptIds()) {
-            SysRoleDept rd = new SysRoleDept();
-            rd.setRoleId(role.getRoleId());
-            rd.setDeptId(deptId);
-            list.add(rd);
+        Long[] deptIds = role.getDeptIds();
+        if (ArrayUtil.isEmpty(deptIds)) {
+            return 0;
         }
-        if (CollUtil.isEmpty(list)) {
-            rows = roleDeptMapper.insertBatch(list) ? list.size() : 0;
-        }
-        return rows;
+        List<SysRoleDept> roleDeptList = Arrays.stream(deptIds)
+            .map(deptId -> {
+                SysRoleDept roleDept = new SysRoleDept();
+                roleDept.setRoleId(role.getRoleId());
+                roleDept.setDeptId(deptId);
+                return roleDept;
+            }).collect(Collectors.toList());
+        return roleDeptMapper.insertBatch(roleDeptList) ? roleDeptList.size() : 0;
     }
 
     /**
@@ -433,6 +440,9 @@ public class SysRoleServiceImpl implements ISysRoleService {
      */
     @Override
     public int deleteAuthUser(SysUserRole userRole) {
+        if (LoginHelper.getUserId().equals(userRole.getUserId())) {
+            throw new ServiceException("不允许修改当前用户角色!");
+        }
         int rows = userRoleMapper.delete(new LambdaQueryWrapper<SysUserRole>()
             .eq(SysUserRole::getRoleId, userRole.getRoleId())
             .eq(SysUserRole::getUserId, userRole.getUserId()));
@@ -452,6 +462,9 @@ public class SysRoleServiceImpl implements ISysRoleService {
     @Override
     public int deleteAuthUsers(Long roleId, Long[] userIds) {
         List<Long> ids = List.of(userIds);
+        if (ids.contains(LoginHelper.getUserId())) {
+            throw new ServiceException("不允许修改当前用户角色!");
+        }
         int rows = userRoleMapper.delete(new LambdaQueryWrapper<SysUserRole>()
             .eq(SysUserRole::getRoleId, roleId)
             .in(SysUserRole::getUserId, ids));
@@ -473,6 +486,9 @@ public class SysRoleServiceImpl implements ISysRoleService {
         // 新增用户与角色管理
         int rows = 1;
         List<Long> ids = List.of(userIds);
+        if (ids.contains(LoginHelper.getUserId())) {
+            throw new ServiceException("不允许修改当前用户角色!");
+        }
         List<SysUserRole> list = StreamUtils.toList(ids, userId -> {
             SysUserRole ur = new SysUserRole();
             ur.setUserId(userId);
@@ -488,6 +504,17 @@ public class SysRoleServiceImpl implements ISysRoleService {
         return rows;
     }
 
+    /**
+     * 根据角色ID清除该角色关联的所有在线用户的登录状态（踢出在线用户）
+     *
+     * <p>
+     * 先判断角色是否绑定用户，若无绑定则直接返回
+     * 然后遍历当前所有在线Token，查找拥有该角色的用户并强制登出
+     * 注意：在线用户量过大时，操作可能导致 Redis 阻塞，需谨慎调用
+     * </p>
+     *
+     * @param roleId 角色ID
+     */
     @Override
     public void cleanOnlineUserByRole(Long roleId) {
         // 如果角色未绑定用户 直接返回
@@ -519,6 +546,16 @@ public class SysRoleServiceImpl implements ISysRoleService {
         });
     }
 
+    /**
+     * 根据用户ID列表清除对应在线用户的登录状态（踢出指定用户）
+     *
+     * <p>
+     * 遍历当前所有在线Token，匹配用户ID列表中的用户，强制登出
+     * 注意：在线用户量过大时，操作可能导致 Redis 阻塞，需谨慎调用
+     * </p>
+     *
+     * @param userIds 需要清除的用户ID列表
+     */
     @Override
     public void cleanOnlineUser(List<Long> userIds) {
         List<String> keys = StpUtil.searchTokenValue("", 0, -1, false);

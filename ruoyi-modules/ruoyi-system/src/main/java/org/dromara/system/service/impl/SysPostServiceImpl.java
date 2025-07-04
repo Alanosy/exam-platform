@@ -39,6 +39,13 @@ public class SysPostServiceImpl implements ISysPostService {
     private final SysDeptMapper deptMapper;
     private final SysUserPostMapper userPostMapper;
 
+    /**
+     * 分页查询岗位列表
+     *
+     * @param post      查询条件
+     * @param pageQuery 分页参数
+     * @return 岗位分页列表
+     */
     @Override
     public TableDataInfo<SysPostVo> selectPagePostList(SysPostBo post, PageQuery pageQuery) {
         Page<SysPostVo> page = baseMapper.selectPagePostList(pageQuery.build(), buildQueryWrapper(post));

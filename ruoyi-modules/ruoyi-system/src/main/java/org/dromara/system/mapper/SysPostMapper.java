@@ -18,6 +18,13 @@ import java.util.List;
  */
 public interface SysPostMapper extends BaseMapperPlus<SysPost, SysPostVo> {
 
+    /**
+     * 分页查询岗位列表
+     *
+     * @param page         分页对象
+     * @param queryWrapper 查询条件
+     * @return 包含岗位信息的分页结果
+     */
     @DataPermission({
         @DataColumn(key = "deptName", value = "dept_id"),
         @DataColumn(key = "userName", value = "create_by")
@@ -27,10 +34,10 @@ public interface SysPostMapper extends BaseMapperPlus<SysPost, SysPostVo> {
     }
 
     /**
-     * 分页查询岗位列表
+     * 查询岗位列表
      *
      * @param queryWrapper 查询条件
-     * @return 包含岗位信息的分页结果
+     * @return 岗位信息列表
      */
     @DataPermission({
         @DataColumn(key = "deptName", value = "dept_id"),
@@ -41,10 +48,24 @@ public interface SysPostMapper extends BaseMapperPlus<SysPost, SysPostVo> {
     }
 
     /**
-     * 查询用户所属岗位组
+     * 根据岗位ID集合查询岗位数量
+     *
+     * @param postIds 岗位ID列表
+     * @return 匹配的岗位数量
+     */
+    @DataPermission({
+        @DataColumn(key = "deptName", value = "dept_id"),
+        @DataColumn(key = "userName", value = "create_by")
+    })
+    default long selectPostCount(List<Long> postIds) {
+        return this.selectCount(new LambdaQueryWrapper<SysPost>().in(SysPost::getPostId, postIds));
+    }
+
+    /**
+     * 根据用户ID查询其关联的岗位列表
      *
      * @param userId 用户ID
-     * @return 结果
+     * @return 岗位信息列表
      */
     default List<SysPostVo> selectPostsByUserId(Long userId) {
         return this.selectVoList(new LambdaQueryWrapper<SysPost>()

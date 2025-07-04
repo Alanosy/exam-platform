@@ -14,7 +14,13 @@ import java.util.List;
  */
 public interface ISysLogininforService {
 
-
+    /**
+     * 分页查询登录日志列表
+     *
+     * @param logininfor 查询条件
+     * @param pageQuery  分页参数
+     * @return 登录日志分页列表
+     */
     TableDataInfo<SysLogininforVo> selectPageLogininforList(SysLogininforBo logininfor, PageQuery pageQuery);
 
     /**

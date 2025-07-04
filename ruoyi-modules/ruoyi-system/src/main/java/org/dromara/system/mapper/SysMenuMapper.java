@@ -15,6 +15,16 @@ import java.util.List;
  */
 public interface SysMenuMapper extends BaseMapperPlus<SysMenu, SysMenuVo> {
 
+    /**
+     * 构建用户权限菜单 SQL
+     *
+     * <p>
+     * 查询用户所属角色所拥有的菜单权限，用于权限判断、菜单加载等场景
+     * </p>
+     *
+     * @param userId 用户ID
+     * @return SQL 字符串，用于 inSql 条件
+     */
     default String buildMenuByUserSql(Long userId) {
         return """
                 select menu_id from sys_role_menu where role_id in (
@@ -23,12 +33,34 @@ public interface SysMenuMapper extends BaseMapperPlus<SysMenu, SysMenuVo> {
             """.formatted(userId);
     }
 
+    /**
+     * 构建角色对应的菜单ID SQL 子查询
+     *
+     * <p>
+     * 用于根据角色ID查询其所拥有的菜单权限（用于权限标识、菜单显示等场景）
+     * 通常配合 inSql 使用
+     * </p>
+     *
+     * @param roleId 角色ID
+     * @return 查询菜单ID的 SQL 子查询字符串
+     */
     default String buildMenuByRoleSql(Long roleId) {
         return """
                 select menu_id from sys_role_menu where role_id = %d
             """.formatted(roleId);
     }
 
+    /**
+     * 构建角色所关联菜单的父菜单ID查询 SQL
+     *
+     * <p>
+     * 用于配合菜单勾选树结构的 {@code menuCheckStrictly} 模式，过滤掉非叶子节点（父菜单），
+     * 只返回角色实际勾选的末级菜单
+     * </p>
+     *
+     * @param roleId 角色ID
+     * @return SQL 语句字符串（查询菜单的父菜单ID）
+     */
     default String buildParentMenuByRoleSql(Long roleId) {
         return """
                 select parent_id from sys_menu where menu_id in (

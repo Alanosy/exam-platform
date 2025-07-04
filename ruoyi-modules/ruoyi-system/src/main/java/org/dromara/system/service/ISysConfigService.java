@@ -14,7 +14,13 @@ import java.util.List;
  */
 public interface ISysConfigService {
 
-
+    /**
+     * 分页查询参数配置列表
+     *
+     * @param config    查询条件
+     * @param pageQuery 分页参数
+     * @return 参数配置分页列表
+     */
     TableDataInfo<SysConfigVo> selectPageConfigList(SysConfigBo config, PageQuery pageQuery);
 
     /**

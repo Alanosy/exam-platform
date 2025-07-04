@@ -16,7 +16,13 @@ import java.util.Set;
  */
 public interface ISysRoleService {
 
-
+    /**
+     * 分页查询角色列表
+     *
+     * @param role      查询条件
+     * @param pageQuery 分页参数
+     * @return 角色分页列表
+     */
     TableDataInfo<SysRoleVo> selectPageRoleList(SysRoleBo role, PageQuery pageQuery);
 
     /**

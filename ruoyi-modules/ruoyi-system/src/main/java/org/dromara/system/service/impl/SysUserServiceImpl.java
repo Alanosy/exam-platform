@@ -33,6 +33,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -447,27 +448,31 @@ public class SysUserServiceImpl implements ISysUserService {
      * @param clear 清除已存在的关联数据
      */
     private void insertUserPost(SysUserBo user, boolean clear) {
-        List<Long> postIds = List.of(user.getPostIds());
-        if (ArrayUtil.isNotEmpty(postIds)) {
-            // 判断是否具有此角色的操作权限
-            List<SysPostVo> posts = postMapper.selectPostList(
-                new LambdaQueryWrapper<SysPost>().in(SysPost::getPostId, postIds));
-            if (CollUtil.isEmpty(posts) || posts.size() != postIds.size()) {
-                throw new ServiceException("没有权限访问岗位的数据");
-            }
-            if (clear) {
-                // 删除用户与岗位关联
-                userPostMapper.delete(new LambdaQueryWrapper<SysUserPost>().eq(SysUserPost::getUserId, user.getUserId()));
-            }
-            // 新增用户与岗位管理
-            List<SysUserPost> list = StreamUtils.toList(postIds, postId -> {
+        Long[] postIdArr = user.getPostIds();
+        if (ArrayUtil.isEmpty(postIdArr)) {
+            return;
+        }
+        List<Long> postIds = Arrays.asList(postIdArr);
+
+        // 校验是否有权限操作这些岗位（含数据权限控制）
+        if (postMapper.selectPostCount(postIds) != postIds.size()) {
+            throw new ServiceException("没有权限访问岗位的数据");
+        }
+
+        // 是否清除旧的用户岗位绑定
+        if (clear) {
+            userPostMapper.delete(new LambdaQueryWrapper<SysUserPost>().eq(SysUserPost::getUserId, user.getUserId()));
+        }
+
+        // 构建用户岗位关联列表并批量插入
+        List<SysUserPost> list = StreamUtils.toList(postIds,
+            postId -> {
                 SysUserPost up = new SysUserPost();
                 up.setUserId(user.getUserId());
                 up.setPostId(postId);
                 return up;
             });
-            userPostMapper.insertBatch(list);
-        }
+        userPostMapper.insertBatch(list);
     }
 
     /**
@@ -478,30 +483,36 @@ public class SysUserServiceImpl implements ISysUserService {
      * @param clear   清除已存在的关联数据
      */
     private void insertUserRole(Long userId, Long[] roleIds, boolean clear) {
-        if (ArrayUtil.isNotEmpty(roleIds)) {
-            List<Long> roleList = new ArrayList<>(List.of(roleIds));
-            if (!LoginHelper.isSuperAdmin(userId)) {
-                roleList.remove(SystemConstants.SUPER_ADMIN_ID);
-            }
-            // 判断是否具有此角色的操作权限
-            List<SysRoleVo> roles = roleMapper.selectRoleList(
-                new LambdaQueryWrapper<SysRole>().in(SysRole::getRoleId, roleList));
-            if (CollUtil.isEmpty(roles) || roles.size() != roleList.size()) {
-                throw new ServiceException("没有权限访问角色的数据");
-            }
-            if (clear) {
-                // 删除用户与角色关联
-                userRoleMapper.delete(new LambdaQueryWrapper<SysUserRole>().eq(SysUserRole::getUserId, userId));
-            }
-            // 新增用户与角色管理
-            List<SysUserRole> list = StreamUtils.toList(roleList, roleId -> {
+        if (ArrayUtil.isEmpty(roleIds)) {
+            return;
+        }
+
+        List<Long> roleList = new ArrayList<>(Arrays.asList(roleIds));
+
+        // 非超级管理员，禁止包含超级管理员角色
+        if (!LoginHelper.isSuperAdmin(userId)) {
+            roleList.remove(SystemConstants.SUPER_ADMIN_ID);
+        }
+
+        // 校验是否有权限访问这些角色（含数据权限控制）
+        if (roleMapper.selectRoleCount(roleList) != roleList.size()) {
+            throw new ServiceException("没有权限访问角色的数据");
+        }
+
+        // 是否清除原有绑定
+        if (clear) {
+            userRoleMapper.delete(new LambdaQueryWrapper<SysUserRole>().eq(SysUserRole::getUserId, userId));
+        }
+
+        // 批量插入用户-角色关联
+        List<SysUserRole> list = StreamUtils.toList(roleList,
+            roleId -> {
                 SysUserRole ur = new SysUserRole();
                 ur.setUserId(userId);
                 ur.setRoleId(roleId);
                 return ur;
             });
-            userRoleMapper.insertBatch(list);
-        }
+        userRoleMapper.insertBatch(list);
     }
 
     /**

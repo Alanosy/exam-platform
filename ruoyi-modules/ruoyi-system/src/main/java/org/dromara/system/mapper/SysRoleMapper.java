@@ -20,6 +20,12 @@ import java.util.List;
  */
 public interface SysRoleMapper extends BaseMapperPlus<SysRole, SysRoleVo> {
 
+    /**
+     * 构建根据用户ID查询角色ID的SQL子查询
+     *
+     * @param userId 用户ID
+     * @return 查询用户对应角色ID的SQL语句字符串
+     */
     default String buildRoleByUserSql(Long userId) {
         return """
                 select role_id from sys_user_role where user_id = %d
@@ -42,7 +48,7 @@ public interface SysRoleMapper extends BaseMapperPlus<SysRole, SysRoleVo> {
     }
 
     /**
-     * 根据条件分页查询角色数据
+     * 根据条件查询角色数据
      *
      * @param queryWrapper 查询条件
      * @return 角色数据集合信息
@@ -56,14 +62,28 @@ public interface SysRoleMapper extends BaseMapperPlus<SysRole, SysRoleVo> {
     }
 
     /**
+     * 根据角色ID集合查询角色数量
+     *
+     * @param roleIds 角色ID列表
+     * @return 匹配的角色数量
+     */
+    @DataPermission({
+        @DataColumn(key = "deptName", value = "create_dept"),
+        @DataColumn(key = "userName", value = "create_by")
+    })
+    default long selectRoleCount(List<Long> roleIds) {
+        return this.selectCount(new LambdaQueryWrapper<SysRole>().in(SysRole::getRoleId, roleIds));
+    }
+
+    /**
      * 根据角色ID查询角色信息
      *
      * @param roleId 角色ID
      * @return 对应的角色信息
      */
     @DataPermission({
-        @DataColumn(key = "deptName", value = "r.create_dept"),
-        @DataColumn(key = "userName", value = "r.create_by")
+        @DataColumn(key = "deptName", value = "create_dept"),
+        @DataColumn(key = "userName", value = "create_by")
     })
     default SysRoleVo selectRoleById(Long roleId) {
         return this.selectVoById(roleId);

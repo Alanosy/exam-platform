@@ -14,7 +14,13 @@ import java.util.List;
  */
 public interface ISysPostService {
 
-
+    /**
+     * 分页查询岗位列表
+     *
+     * @param post      查询条件
+     * @param pageQuery 分页参数
+     * @return 岗位分页列表
+     */
     TableDataInfo<SysPostVo> selectPagePostList(SysPostBo post, PageQuery pageQuery);
 
     /**
