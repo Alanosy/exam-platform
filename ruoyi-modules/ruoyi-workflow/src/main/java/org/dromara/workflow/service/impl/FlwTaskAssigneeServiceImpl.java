@@ -114,15 +114,10 @@ public class FlwTaskAssigneeServiceImpl implements IFlwTaskAssigneeService, Hand
             .map(entry -> {
                 String storageId = entry.getKey();
                 Pair<TaskAssigneeEnum, Long> parsed = entry.getValue();
-                String handlerName = "格式错误";
-                if (parsed != null) {
-                    Map<Long, String> nameMapping = nameMap.getOrDefault(parsed.getKey(), Collections.emptyMap());
-                    handlerName = nameMapping.getOrDefault(parsed.getValue(), "未知名称");
-                }
-                HandlerFeedBackVo backVo = new HandlerFeedBackVo();
-                backVo.setStorageId(storageId);
-                backVo.setHandlerName(handlerName);
-                return backVo;
+                String handlerName = (parsed == null) ? null
+                    : nameMap.getOrDefault(parsed.getKey(), Collections.emptyMap())
+                    .get(parsed.getValue());
+                return new HandlerFeedBackVo(storageId, handlerName);
             }).toList();
     }
 
