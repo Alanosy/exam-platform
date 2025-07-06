@@ -258,13 +258,16 @@ const openDialog = async (id?: string) => {
     buttonObj.value[e.code] = e.show;
   });
   buttonDisabled.value = false;
-  const data = {
-    taskId: taskId.value,
-    variables: props.taskVariables
-  };
-  const nextData = await getNextNodeList(data);
-  nestNodeList.value = nextData.data;
-  loading.value = false;
+  try {
+    const data = {
+      taskId: taskId.value,
+      variables: props.taskVariables
+    };
+    const nextData = await getNextNodeList(data);
+    nestNodeList.value = nextData.data;
+  } finally {
+    loading.value = false;
+  }
 };
 
 onMounted(() => {});
