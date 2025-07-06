@@ -45,9 +45,21 @@
             <span>{{ (queryParams.pageNum - 1) * queryParams.pageSize + scope.$index + 1 }}</span>
           </template>
         </el-table-column>
-        <el-table-column label="组件名称" align="center" prop="componentName" />
-        <el-table-column label="方法名称" align="center" prop="methodName" />
-        <el-table-column label="参数名称" align="center" prop="methodParams" />
+        <el-table-column label="组件名称" align="center">
+          <template #default="scope">
+            {{ scope.row.componentName || '-' }}
+          </template>
+        </el-table-column>
+        <el-table-column label="方法名称" align="center">
+          <template #default="scope">
+            {{ scope.row.methodName || '-' }}
+          </template>
+        </el-table-column>
+        <el-table-column label="参数名称" align="center">
+          <template #default="scope">
+            {{ scope.row.methodParams || '-' }}
+          </template>
+        </el-table-column>
         <el-table-column label="SPEL表达式" align="center" prop="viewSpel" />
         <el-table-column label="状态" align="center" prop="status">
           <template #default="scope">
@@ -55,7 +67,11 @@
             <el-tag v-else>停用</el-tag>
           </template>
         </el-table-column>
-        <el-table-column label="备注" align="center" prop="remark" />
+        <el-table-column label="备注" align="center">
+          <template #default="scope">
+            {{ scope.row.remark || '-' }}
+          </template>
+        </el-table-column>
         <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
           <template #default="scope">
             <el-tooltip content="修改" placement="top">
@@ -100,7 +116,7 @@
           <el-input v-model="form.methodParams" placeholder="请输入方法参数" @input="updateViewSpel" />
           <template #label>
             <span>
-              <el-tooltip content="方法参数，如：#deptId, 多个使用 ',' 分隔" placement="top">
+              <el-tooltip content="方法参数，如：deptId, 多个使用 ',' 分隔，单参数变量仅支持单个方法参数" placement="top">
                 <el-icon><question-filled /></el-icon>
               </el-tooltip>
               方法参数
@@ -110,7 +126,9 @@
 
         <!-- 改为只读文本展示 -->
         <el-form-item label="SPEL表达式">
-          <span class="preview-box">{{ form.viewSpel || '例如：#{@组件名.方法名(#方法参数)}' }}</span>
+          <span class="preview-box">
+            {{ form.viewSpel || '例如：#{@组件名.方法名(#方法参数)} 或 ${方法参数}' }}
+          </span>
         </el-form-item>
         <el-form-item label="状态" prop="status">
           <el-radio-group v-model="form.status">
@@ -292,6 +310,19 @@ const updateViewSpel = () => {
     return;
   }
 
+  // 替换变量值：只有参数存在，组件和方法都不存在
+  if (!comp && !method && paramStr) {
+    const paramList = paramStr.split(',')
+      .map(p => p.trim())
+      .filter(p => p.length > 0);
+
+    if (paramList.length === 1) {
+      form.value.viewSpel = `\${${paramList[0]}}`;
+      return;
+    }
+  }
+
+  // 如果缺少组件或方法，提示填写
   if (!comp || !method) {
     form.value.viewSpel = '请填写组件名称和方法名';
     return;
