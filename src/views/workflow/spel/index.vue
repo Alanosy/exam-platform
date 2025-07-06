@@ -49,7 +49,7 @@
         <el-table-column label="方法名称" align="center" prop="methodName" />
         <el-table-column label="参数名称" align="center" prop="methodParams" />
         <el-table-column label="SPEL表达式" align="center" prop="viewSpel" />
-        <el-table-column label="状态" align="center" prop="status" v-if="true">
+        <el-table-column label="状态" align="center" prop="status">
           <template #default="scope">
             <el-tag v-if="scope.row.status === '0'">正常</el-tag>
             <el-tag v-else>停用</el-tag>
@@ -163,7 +163,7 @@ const initFormData: SpelForm = {
   methodName: undefined,
   methodParams: undefined,
   viewSpel: undefined,
-  status: undefined,
+  status: '0',
   remark: undefined,
 }
 const data = reactive<PageData<SpelForm, SpelQuery>>({
@@ -180,12 +180,6 @@ const data = reactive<PageData<SpelForm, SpelQuery>>({
     }
   },
   rules: {
-    componentName: [
-      { required: true, message: "组件名称不能为空", trigger: "blur" }
-    ],
-    methodName: [
-      { required: true, message: "方法名不能为空", trigger: "blur" }
-    ],
     status: [
       { required: true, message: "状态不能为空", trigger: "change" }
     ],
