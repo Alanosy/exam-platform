@@ -35,7 +35,12 @@ public enum TaskAssigneeEnum {
     /**
      * 岗位
      */
-    POST("岗位", "post:");
+    POST("岗位", "post:"),
+
+    /**
+     * SPEL表达式
+     */
+    SPEL("SPEL表达式", "");
 
     private final String desc;
     private final String code;

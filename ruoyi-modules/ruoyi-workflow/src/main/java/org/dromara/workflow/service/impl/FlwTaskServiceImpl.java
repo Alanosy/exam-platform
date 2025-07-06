@@ -107,6 +107,8 @@ public class FlwTaskServiceImpl implements IFlwTaskService {
         Map<String, Object> variables = startProcessBo.getVariables();
         // 流程发起人
         variables.put(INITIATOR, LoginHelper.getUserIdStr());
+        // 发起人部门id
+        variables.put(INITIATOR_DEPT_ID, LoginHelper.getDeptId());
         // 业务id
         variables.put(BUSINESS_ID, businessId);
         FlowInstance flowInstance = flowInstanceMapper.selectOne(new LambdaQueryWrapper<>(FlowInstance.class)

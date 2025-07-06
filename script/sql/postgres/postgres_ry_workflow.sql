@@ -323,6 +323,44 @@ INSERT INTO flow_category VALUES (108, '000000', 102, '0,100,102', '转正', 1, 
 INSERT INTO flow_category VALUES (109, '000000', 102, '0,100,102', '离职', 2, '0', 103, 1, now(), NULL, NULL);
 
 -- ----------------------------
+-- 流程spel表达式定义表
+-- ----------------------------
+CREATE TABLE flow_spel (
+    id BIGINT NOT NULL,
+    component_name VARCHAR(255),
+    method_name VARCHAR(255),
+    method_params VARCHAR(255),
+    view_spel VARCHAR(255),
+    remark VARCHAR(255),
+    status CHAR(1) DEFAULT '0',
+    del_flag CHAR(1) DEFAULT '0',
+    create_dept BIGINT,
+    create_by BIGINT,
+    create_time TIMESTAMP,
+    update_by BIGINT,
+    update_time TIMESTAMP,
+    PRIMARY KEY (id)
+);
+
+COMMENT ON TABLE flow_spel IS '流程spel表达式定义表';
+COMMENT ON COLUMN flow_spel.id IS '主键id';
+COMMENT ON COLUMN flow_spel.component_name IS '组件名称';
+COMMENT ON COLUMN flow_spel.method_name IS '方法名';
+COMMENT ON COLUMN flow_spel.method_params IS '参数';
+COMMENT ON COLUMN flow_spel.view_spel IS '预览spel表达式';
+COMMENT ON COLUMN flow_spel.remark IS '备注';
+COMMENT ON COLUMN flow_spel.status IS '状态（0正常 1停用）';
+COMMENT ON COLUMN flow_spel.del_flag IS '删除标志';
+COMMENT ON COLUMN flow_spel.create_dept IS '创建部门';
+COMMENT ON COLUMN flow_spel.create_by IS '创建者';
+COMMENT ON COLUMN flow_spel.create_time IS '创建时间';
+COMMENT ON COLUMN flow_spel.update_by IS '更新者';
+COMMENT ON COLUMN flow_spel.update_time IS '更新时间';
+
+INSERT INTO flow_spel VALUES (1, 'spelRuleComponent', 'selectDeptLeaderById', 'initiatorDeptId', '#{@spelRuleComponent.selectDeptLeaderById(#initiatorDeptId)}', '根据部门id获取部门负责人', '0', '0', 103, 1, now(), 1, now());
+INSERT INTO flow_spel VALUES (2, NULL, NULL, 'initiator', '${initiator}', '流程发起人', '0', '0', 103, 1, now(), 1, now());
+
+-- ----------------------------
 -- 请假单信息
 -- ----------------------------
 CREATE TABLE test_leave

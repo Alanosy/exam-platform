@@ -19,6 +19,11 @@ public interface FlowConstant {
     String BUSINESS_ID = "businessId";
 
     /**
+     * 发起人部门id
+     */
+    String INITIATOR_DEPT_ID = "initiatorDeptId";
+
+    /**
      * 委托
      */
     String DELEGATE_TASK = "delegateTask";
