@@ -253,14 +253,23 @@ public class SysRoleServiceImpl implements ISysRoleService {
         if (ObjectUtil.isNull(roleId)) {
             return;
         }
-        if (LoginHelper.isSuperAdmin()) {
+        this.checkRoleDataScope(Collections.singletonList(roleId));
+    }
+
+    /**
+     * 校验角色是否有数据权限
+     *
+     * @param roleIds 角色ID列表（支持传单个ID）
+     */
+    @Override
+    public void checkRoleDataScope(List<Long> roleIds) {
+        if (CollUtil.isEmpty(roleIds) || LoginHelper.isSuperAdmin()) {
             return;
         }
-        List<SysRoleVo> roles = this.selectRoleList(new SysRoleBo(roleId));
-        if (CollUtil.isEmpty(roles)) {
-            throw new ServiceException("没有权限访问角色数据！");
+        long count = baseMapper.selectRoleCount(roleIds);
+        if (count != roleIds.size()) {
+            throw new ServiceException("没有权限访问部分角色数据！");
         }
-
     }
 
     /**
@@ -417,10 +426,10 @@ public class SysRoleServiceImpl implements ISysRoleService {
     @Override
     @Transactional(rollbackFor = Exception.class)
     public int deleteRoleByIds(List<Long> roleIds) {
+        checkRoleDataScope(roleIds);
         List<SysRole> roles = baseMapper.selectByIds(roleIds);
         for (SysRole role : roles) {
             checkRoleAllowed(BeanUtil.toBean(role, SysRoleBo.class));
-            checkRoleDataScope(role.getRoleId());
             if (countUserRoleByRoleId(role.getRoleId()) > 0) {
                 throw new ServiceException(String.format("%1$s已分配，不能删除!", role.getRoleName()));
             }

@@ -62,6 +62,7 @@ public class SysTenantBo extends BaseEntity {
      * 密码（创建系统用户）
      */
     @NotBlank(message = "密码不能为空", groups = { AddGroup.class })
+//    @Pattern(regexp = RegexConstants.PASSWORD, message = "{user.password.format.valid}", groups = { AddGroup.class })
     private String password;
 
     /**
