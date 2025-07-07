@@ -1,14 +1,12 @@
 package org.dromara.workflow.controller;
 
 import cn.dev33.satoken.annotation.SaCheckPermission;
-import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import org.dromara.common.core.domain.R;
 import org.dromara.common.core.validate.AddGroup;
 import org.dromara.common.core.validate.EditGroup;
-import org.dromara.common.excel.utils.ExcelUtil;
 import org.dromara.common.idempotent.annotation.RepeatSubmit;
 import org.dromara.common.log.annotation.Log;
 import org.dromara.common.log.enums.BusinessType;
@@ -46,17 +44,6 @@ public class FlwSpelController extends BaseController {
     @GetMapping("/list")
     public TableDataInfo<FlowSpelVo> list(FlowSpelBo bo, PageQuery pageQuery) {
         return flwSpelService.queryPageList(bo, pageQuery);
-    }
-
-    /**
-     * 导出流程spel达式定义列表
-     */
-    @SaCheckPermission("workflow:spel:export")
-    @Log(title = "流程spel达式定义", businessType = BusinessType.EXPORT)
-    @PostMapping("/export")
-    public void export(FlowSpelBo bo, HttpServletResponse response) {
-        List<FlowSpelVo> list = flwSpelService.queryList(bo);
-        ExcelUtil.exportExcel(list, "流程spel达式定义", FlowSpelVo.class, response);
     }
 
     /**
