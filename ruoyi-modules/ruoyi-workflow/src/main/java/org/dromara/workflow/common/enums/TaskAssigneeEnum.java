@@ -40,7 +40,7 @@ public enum TaskAssigneeEnum {
     /**
      * SPEL表达式
      */
-    SPEL("SPEL表达式", "");
+    SPEL("SpEL表达式", "");
 
     private final String desc;
     private final String code;

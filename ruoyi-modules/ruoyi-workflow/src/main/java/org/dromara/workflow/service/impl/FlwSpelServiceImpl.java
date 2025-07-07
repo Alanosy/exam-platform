@@ -1,5 +1,6 @@
 package org.dromara.workflow.service.impl;
 
+import cn.hutool.core.collection.CollUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -7,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.dromara.common.core.constant.SystemConstants;
 import org.dromara.common.core.utils.MapstructUtils;
+import org.dromara.common.core.utils.StreamUtils;
 import org.dromara.common.core.utils.StringUtils;
 import org.dromara.common.mybatis.core.page.PageQuery;
 import org.dromara.common.mybatis.core.page.TableDataInfo;
@@ -21,6 +23,7 @@ import org.dromara.workflow.service.IFlwSpelService;
 import org.springframework.stereotype.Service;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -37,26 +40,6 @@ import java.util.Map;
 public class FlwSpelServiceImpl implements IFlwSpelService {
 
     private final FlwSpelMapper baseMapper;
-
-    /**
-     * 查询流程spel达式定义列表
-     */
-    @Override
-    public RemoteTaskAssigneeVo selectSpelByTaskAssigneeList(RemoteTaskAssigneeBo taskQuery) {
-        PageQuery pageQuery = new PageQuery(taskQuery.getPageSize(), taskQuery.getPageNum());
-        FlowSpelBo bo = new FlowSpelBo();
-        bo.setViewSpel(taskQuery.getHandlerCode());
-        bo.setRemark(taskQuery.getHandlerName());
-        bo.setStatus(SystemConstants.NORMAL);
-        Map<String, Object> params = bo.getParams();
-        params.put("beginTime", taskQuery.getBeginTime());
-        params.put("endTime", taskQuery.getEndTime());
-        TableDataInfo<FlowSpelVo> page = this.queryPageList(bo, pageQuery);
-        // 使用封装的字段映射方法进行转换
-        List<RemoteTaskAssigneeVo.TaskHandler> handlers = RemoteTaskAssigneeVo.convertToHandlerList(page.getRows(),
-            FlowSpelVo::getViewSpel, c -> "", FlowSpelVo::getRemark, null, FlowSpelVo::getCreateTime);
-        return new RemoteTaskAssigneeVo(page.getTotal(), handlers);
-    }
 
     /**
      * 查询流程spel达式定义
@@ -159,4 +142,46 @@ public class FlwSpelServiceImpl implements IFlwSpelService {
         }
         return baseMapper.deleteByIds(ids) > 0;
     }
+
+    /**
+     * 查询spel并返回任务指派的列表，支持分页
+     *
+     * @param taskQuery 查询条件
+     * @return 办理人
+     */
+    @Override
+    public RemoteTaskAssigneeVo selectSpelByTaskAssigneeList(RemoteTaskAssigneeBo taskQuery) {
+        PageQuery pageQuery = new PageQuery(taskQuery.getPageSize(), taskQuery.getPageNum());
+        FlowSpelBo bo = new FlowSpelBo();
+        bo.setViewSpel(taskQuery.getHandlerCode());
+        bo.setRemark(taskQuery.getHandlerName());
+        bo.setStatus(SystemConstants.NORMAL);
+        Map<String, Object> params = bo.getParams();
+        params.put("beginTime", taskQuery.getBeginTime());
+        params.put("endTime", taskQuery.getEndTime());
+        TableDataInfo<FlowSpelVo> page = this.queryPageList(bo, pageQuery);
+        // 使用封装的字段映射方法进行转换
+        List<RemoteTaskAssigneeVo.TaskHandler> handlers = RemoteTaskAssigneeVo.convertToHandlerList(page.getRows(),
+            FlowSpelVo::getViewSpel, c -> "", FlowSpelVo::getRemark, null, FlowSpelVo::getCreateTime);
+        return new RemoteTaskAssigneeVo(page.getTotal(), handlers);
+    }
+
+    /**
+     * 根据视图 SpEL 表达式列表，查询对应的备注信息
+     *
+     * @param viewSpels SpEL 表达式列表
+     * @return 映射表：key 为 SpEL 表达式，value 为对应备注；若为空则返回空 Map
+     */
+    @Override
+    public Map<String, String> selectRemarksBySpels(List<String> viewSpels) {
+        if (CollUtil.isEmpty(viewSpels)) {
+            return Collections.emptyMap();
+        }
+        List<FlowSpel> list = baseMapper.selectList(
+            new LambdaQueryWrapper<FlowSpel>()
+                .select(FlowSpel::getViewSpel, FlowSpel::getRemark)
+        );
+        return StreamUtils.toMap(list, FlowSpel::getViewSpel, FlowSpel::getRemark);
+    }
+
 }
