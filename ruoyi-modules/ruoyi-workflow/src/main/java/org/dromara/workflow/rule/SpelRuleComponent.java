@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.dromara.common.core.exception.ServiceException;
 import org.dromara.system.api.RemoteDeptService;
+import org.dromara.workflow.common.ConditionalOnEnable;
 import org.springframework.stereotype.Component;
 
 /**
@@ -15,6 +16,7 @@ import org.springframework.stereotype.Component;
  *
  * @author Michelle.Chung
  */
+@ConditionalOnEnable
 @Slf4j
 @Component
 @RequiredArgsConstructor

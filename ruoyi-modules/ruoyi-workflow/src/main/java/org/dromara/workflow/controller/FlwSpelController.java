@@ -15,6 +15,7 @@ import org.dromara.common.log.enums.BusinessType;
 import org.dromara.common.mybatis.core.page.PageQuery;
 import org.dromara.common.mybatis.core.page.TableDataInfo;
 import org.dromara.common.web.core.BaseController;
+import org.dromara.workflow.common.ConditionalOnEnable;
 import org.dromara.workflow.domain.bo.FlowSpelBo;
 import org.dromara.workflow.domain.vo.FlowSpelVo;
 import org.dromara.workflow.service.IFlwSpelService;
@@ -29,6 +30,7 @@ import java.util.List;
  * @author Michelle.Chung
  * @date 2025-07-04
  */
+@ConditionalOnEnable
 @Validated
 @RequiredArgsConstructor
 @RestController

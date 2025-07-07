@@ -12,6 +12,7 @@ import org.dromara.common.mybatis.core.page.PageQuery;
 import org.dromara.common.mybatis.core.page.TableDataInfo;
 import org.dromara.system.api.domain.bo.RemoteTaskAssigneeBo;
 import org.dromara.system.api.domain.vo.RemoteTaskAssigneeVo;
+import org.dromara.workflow.common.ConditionalOnEnable;
 import org.dromara.workflow.domain.FlowSpel;
 import org.dromara.workflow.domain.bo.FlowSpelBo;
 import org.dromara.workflow.domain.vo.FlowSpelVo;
@@ -29,6 +30,7 @@ import java.util.Map;
  * @author Michelle.Chung
  * @date 2025-07-04
  */
+@ConditionalOnEnable
 @Slf4j
 @RequiredArgsConstructor
 @Service
