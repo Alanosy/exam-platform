@@ -9,6 +9,7 @@ import org.dromara.common.core.constant.CacheConstants;
 import org.dromara.common.core.domain.R;
 import org.dromara.common.core.utils.StreamUtils;
 import org.dromara.common.core.utils.StringUtils;
+import org.dromara.common.idempotent.annotation.RepeatSubmit;
 import org.dromara.common.web.core.BaseController;
 import org.dromara.common.log.annotation.Log;
 import org.dromara.common.log.enums.BusinessType;
@@ -80,6 +81,7 @@ public class SysUserOnlineController extends BaseController {
      */
     @SaCheckPermission("monitor:online:forceLogout")
     @Log(title = "在线用户", businessType = BusinessType.FORCE)
+    @RepeatSubmit()
     @DeleteMapping("/{tokenId}")
     public R<Void> forceLogout(@PathVariable String tokenId) {
         try {
@@ -113,6 +115,7 @@ public class SysUserOnlineController extends BaseController {
      * @param tokenId token值
      */
     @Log(title = "在线设备", businessType = BusinessType.FORCE)
+    @RepeatSubmit()
     @DeleteMapping("/myself/{tokenId}")
     public R<Void> remove(@PathVariable("tokenId") String tokenId) {
         try {

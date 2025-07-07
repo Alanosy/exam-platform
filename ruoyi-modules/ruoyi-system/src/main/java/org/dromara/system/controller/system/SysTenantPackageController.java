@@ -122,6 +122,7 @@ public class SysTenantPackageController extends BaseController {
     @SaCheckRole(TenantConstants.SUPER_ADMIN_ROLE_KEY)
     @SaCheckPermission("system:tenantPackage:edit")
     @Log(title = "租户套餐", businessType = BusinessType.UPDATE)
+    @RepeatSubmit()
     @PutMapping("/changeStatus")
     public R<Void> changeStatus(@RequestBody SysTenantPackageBo bo) {
         return toAjax(tenantPackageService.updatePackageStatus(bo));

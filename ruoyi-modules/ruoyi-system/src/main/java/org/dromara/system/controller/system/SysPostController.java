@@ -5,6 +5,7 @@ import cn.hutool.core.util.ObjectUtil;
 import org.dromara.common.core.constant.SystemConstants;
 import org.dromara.common.core.domain.R;
 import org.dromara.common.excel.utils.ExcelUtil;
+import org.dromara.common.idempotent.annotation.RepeatSubmit;
 import org.dromara.common.log.annotation.Log;
 import org.dromara.common.log.enums.BusinessType;
 import org.dromara.common.mybatis.core.page.PageQuery;
@@ -71,6 +72,7 @@ public class SysPostController extends BaseController {
      */
     @SaCheckPermission("system:post:add")
     @Log(title = "岗位管理", businessType = BusinessType.INSERT)
+    @RepeatSubmit()
     @PostMapping
     public R<Void> add(@Validated @RequestBody SysPostBo post) {
         if (!postService.checkPostNameUnique(post)) {
@@ -86,6 +88,7 @@ public class SysPostController extends BaseController {
      */
     @SaCheckPermission("system:post:edit")
     @Log(title = "岗位管理", businessType = BusinessType.UPDATE)
+    @RepeatSubmit()
     @PutMapping
     public R<Void> edit(@Validated @RequestBody SysPostBo post) {
         if (!postService.checkPostNameUnique(post)) {

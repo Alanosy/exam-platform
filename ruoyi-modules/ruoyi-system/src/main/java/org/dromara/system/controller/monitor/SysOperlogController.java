@@ -1,6 +1,7 @@
 package org.dromara.system.controller.monitor;
 
 import cn.dev33.satoken.annotation.SaCheckPermission;
+import com.baomidou.lock.annotation.Lock4j;
 import lombok.RequiredArgsConstructor;
 import org.dromara.common.core.domain.R;
 import org.dromara.common.web.core.BaseController;
@@ -67,6 +68,7 @@ public class SysOperlogController extends BaseController {
      */
     @SaCheckPermission("monitor:operlog:remove")
     @Log(title = "操作日志", businessType = BusinessType.CLEAN)
+    @Lock4j
     @DeleteMapping("/clean")
     public R<Void> clean() {
         operLogService.cleanOperLog();

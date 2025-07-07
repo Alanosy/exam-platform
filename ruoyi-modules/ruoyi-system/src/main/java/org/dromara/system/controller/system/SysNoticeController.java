@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.apache.dubbo.config.annotation.DubboReference;
 import org.dromara.common.core.domain.R;
 import org.dromara.common.core.service.DictService;
+import org.dromara.common.idempotent.annotation.RepeatSubmit;
 import org.dromara.common.web.core.BaseController;
 import org.dromara.common.log.annotation.Log;
 import org.dromara.common.log.enums.BusinessType;
@@ -59,6 +60,7 @@ public class SysNoticeController extends BaseController {
      */
     @SaCheckPermission("system:notice:add")
     @Log(title = "通知公告", businessType = BusinessType.INSERT)
+    @RepeatSubmit()
     @PostMapping
     public R<Void> add(@Validated @RequestBody SysNoticeBo notice) {
         int rows = noticeService.insertNotice(notice);
@@ -75,6 +77,7 @@ public class SysNoticeController extends BaseController {
      */
     @SaCheckPermission("system:notice:edit")
     @Log(title = "通知公告", businessType = BusinessType.UPDATE)
+    @RepeatSubmit()
     @PutMapping
     public R<Void> edit(@Validated @RequestBody SysNoticeBo notice) {
         return toAjax(noticeService.updateNotice(notice));
