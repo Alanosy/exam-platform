@@ -289,13 +289,6 @@ const handleDelete = async (row?: SpelVO) => {
   await getList();
 }
 
-/** 导出按钮操作 */
-const handleExport = () => {
-  proxy?.download('system/spel/export', {
-    ...queryParams.value
-  }, `spel_${new Date().getTime()}.xlsx`)
-}
-
 /** 控制是否显示 viewSpel 输入框 */
 const showViewSpelInput = ref(false);
 
