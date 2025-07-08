@@ -180,6 +180,7 @@ public class FlwSpelServiceImpl implements IFlwSpelService {
         List<FlowSpel> list = baseMapper.selectList(
             new LambdaQueryWrapper<FlowSpel>()
                 .select(FlowSpel::getViewSpel, FlowSpel::getRemark)
+                .in(FlowSpel::getViewSpel, viewSpels)
         );
         return StreamUtils.toMap(list, FlowSpel::getViewSpel, FlowSpel::getRemark);
     }
