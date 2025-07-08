@@ -83,8 +83,7 @@ public class WorkflowGlobalListener implements GlobalListener {
         String applyNodeCode = flwCommonService.applyNodeCode(definition.getId());
         for (Task flowTask : nextTasks) {
             // 如果办理或者退回并行存在需要指定办理人，则直接覆盖办理人
-            if (variable.containsKey(flowTask.getNodeCode()) && (TaskStatusEnum.PASS.getStatus().equals(flowParams.getHisStatus())
-                || TaskStatusEnum.BACK.getStatus().equals(flowParams.getHisStatus()))) {
+            if (variable.containsKey(flowTask.getNodeCode()) && TaskStatusEnum.isPassOrBack(flowParams.getHisStatus())) {
                 String userIds = variable.get(flowTask.getNodeCode()).toString();
                 flowTask.setPermissionList(List.of(userIds.split(StringUtils.SEPARATOR)));
                 variable.remove(flowTask.getNodeCode());
@@ -137,8 +136,7 @@ public class WorkflowGlobalListener implements GlobalListener {
             return;
         }
         // 只有办理或者退回的时候才执行消息通知和抄送
-        if (!StringUtils.equalsAny(flowParams.getHisStatus(),
-            TaskStatusEnum.PASS.getStatus(), TaskStatusEnum.BACK.getStatus())) {
+        if (!TaskStatusEnum.isPassOrBack(flowParams.getHisStatus())) {
             return;
         }
         if (ObjectUtil.isNull(variable)) {

@@ -100,5 +100,15 @@ public enum TaskStatusEnum {
         return STATUS_DESC_MAP.getOrDefault(status, StrUtil.EMPTY);
     }
 
+    /**
+     * 判断状态是否为通过或退回
+     *
+     * @param status 状态值
+     * @return true 表示是通过或退回状态
+     */
+    public static boolean isPassOrBack(String status) {
+        return PASS.getStatus().equals(status) || BACK.getStatus().equals(status);
+    }
+
 }
 

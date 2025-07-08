@@ -46,13 +46,6 @@ public interface IFlwCategoryService {
     List<Tree<String>> selectCategoryTreeList(FlowCategoryBo category);
 
     /**
-     * 校验流程分类是否有数据权限
-     *
-     * @param categoryId 流程分类ID
-     */
-    void checkCategoryDataScope(Long categoryId);
-
-    /**
      * 校验流程分类名称是否唯一
      *
      * @param category 流程分类信息

@@ -23,6 +23,7 @@ import org.dromara.workflow.service.IFlwCategoryService;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -112,24 +113,6 @@ public class FlwCategoryServiceImpl implements IFlwCategoryService {
     }
 
     /**
-     * 校验流程分类是否有数据权限
-     *
-     * @param categoryId 流程分类ID
-     */
-    @Override
-    public void checkCategoryDataScope(Long categoryId) {
-        if (ObjectUtil.isNull(categoryId)) {
-            return;
-        }
-        if (LoginHelper.isSuperAdmin()) {
-            return;
-        }
-        if (baseMapper.countCategoryById(categoryId) == 0) {
-            throw new ServiceException("没有权限访问流程分类数据！");
-        }
-    }
-
-    /**
      * 校验流程分类名称是否唯一
      *
      * @param category 流程分类信息
@@ -191,6 +174,9 @@ public class FlwCategoryServiceImpl implements IFlwCategoryService {
     @Override
     public int insertByBo(FlowCategoryBo bo) {
         FlowCategory info = baseMapper.selectById(bo.getParentId());
+        if (ObjectUtil.isNull(info)) {
+            throw new ServiceException("父级流程分类不存在!");
+        }
         FlowCategory category = MapstructUtils.convert(bo, FlowCategory.class);
         category.setAncestors(info.getAncestors() + StringUtils.SEPARATOR + category.getParentId());
         return baseMapper.insert(category);
@@ -204,6 +190,7 @@ public class FlwCategoryServiceImpl implements IFlwCategoryService {
      */
     @CacheEvict(cacheNames = FlowConstant.FLOW_CATEGORY_NAME, key = "#bo.categoryId")
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public int updateByBo(FlowCategoryBo bo) {
         FlowCategory category = MapstructUtils.convert(bo, FlowCategory.class);
         FlowCategory oldCategory = baseMapper.selectById(category.getCategoryId());
@@ -211,14 +198,14 @@ public class FlwCategoryServiceImpl implements IFlwCategoryService {
             throw new ServiceException("流程分类不存在，无法修改");
         }
         if (!oldCategory.getParentId().equals(category.getParentId())) {
-            // 如果是新父流程分类 则校验是否具有新父流程分类权限 避免越权
-            this.checkCategoryDataScope(category.getParentId());
             FlowCategory newParentCategory = baseMapper.selectById(category.getParentId());
             if (ObjectUtil.isNotNull(newParentCategory)) {
                 String newAncestors = newParentCategory.getAncestors() + StringUtils.SEPARATOR + newParentCategory.getCategoryId();
                 String oldAncestors = oldCategory.getAncestors();
                 category.setAncestors(newAncestors);
                 updateCategoryChildren(category.getCategoryId(), newAncestors, oldAncestors);
+            } else {
+                throw new ServiceException("父级流程分类不存在!");
             }
         } else {
             category.setAncestors(oldCategory.getAncestors());
