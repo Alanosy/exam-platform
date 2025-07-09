@@ -72,6 +72,11 @@ spring:
       # 允许对象忽略json中不存在的属性
       fail_on_unknown_properties: false
   cloud:
+    inetutils:
+      # 指定全局使用ip网段
+      preferred-networks:
+#        - 192.168
+#        - 10.0
     nacos:
       discovery:
         metadata:
@@ -81,7 +86,7 @@ spring:
     # sentinel 配置
     sentinel:
       # sentinel 开关
-      enabled: true
+      enabled: false
       transport:
         # dashboard控制台服务名 用于服务发现
         # 如无此配置将默认使用下方 dashboard 配置直接注册
