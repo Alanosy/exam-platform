@@ -137,7 +137,7 @@ public class TestLeaveServiceImpl implements ITestLeaveService {
     }
 
     /**
-     * 总体流程监听(例如: 草稿，撤销，退回，作废，终止，已完成，单任务完成等)
+     * 总体流程监听(例如: 草稿，撤销，退回，作废，终止，已完成等)
      * 正常使用只需#processEvent.flowCode=='leave1'
      * 示例为了方便则使用startsWith匹配了全部示例key
      *
@@ -167,7 +167,7 @@ public class TestLeaveServiceImpl implements ITestLeaveService {
     }
 
     /**
-     * 执行任务创建监听
+     * 执行任务创建监听(也代表上一条任务完成事件)
      * 示例：也可通过  @EventListener(condition = "#processTaskEvent.flowCode=='leave1'")进行判断
      * 在方法中判断流程节点key
      * if ("xxx".equals(processTaskEvent.getNodeCode())) {

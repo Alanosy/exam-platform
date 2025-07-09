@@ -6,6 +6,7 @@ import org.dromara.common.core.utils.SpringUtils;
 import org.springframework.cloud.bus.event.RemoteApplicationEvent;
 
 import java.io.Serial;
+import java.util.Map;
 
 /**
  * 流程任务监听
@@ -58,6 +59,11 @@ public class ProcessTaskEvent extends RemoteApplicationEvent {
      * 流程状态
      */
     private String status;
+
+    /**
+     * 办理参数
+     */
+    private Map<String, Object> params;
 
     public ProcessTaskEvent() {
         super(new Object(), SpringUtils.getApplicationName(), DEFAULT_DESTINATION_FACTORY.getDestination(null));
