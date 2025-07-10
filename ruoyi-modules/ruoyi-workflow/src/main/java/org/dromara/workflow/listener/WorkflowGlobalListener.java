@@ -105,6 +105,7 @@ public class WorkflowGlobalListener implements GlobalListener {
         Instance instance = listenerVariable.getInstance();
         Definition definition = listenerVariable.getDefinition();
         Task task = listenerVariable.getTask();
+        List<Task> nextTasks = listenerVariable.getNextTasks();
         Map<String, Object> params = new HashMap<>();
         FlowParams flowParams = listenerVariable.getFlowParams();
         Map<String, Object> variable = new HashMap<>();
@@ -129,8 +130,10 @@ public class WorkflowGlobalListener implements GlobalListener {
             }
         }
         //发布任务事件
-        if (task != null) {
-            flowProcessEventHandler.processTaskHandler(definition.getFlowCode(), instance, task.getId(), params);
+        if (CollUtil.isNotEmpty(nextTasks)) {
+            for (Task nextTask : nextTasks) {
+                flowProcessEventHandler.processTaskHandler(definition.getFlowCode(), instance, nextTask.getId(), params);
+            }
         }
         if (ObjectUtil.isNull(flowParams)) {
             return;
