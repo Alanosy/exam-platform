@@ -184,7 +184,7 @@ public class WorkflowGlobalListener implements GlobalListener {
         } else {
             Long instanceId = instance.getId();
             List<FlowTask> flowTasks = flwTaskService.selectByInstId(instanceId);
-            if (CollUtil.isEmpty(flowTasks)) {
+            if (flwTaskService.isTaskEnd(instanceId)) {
                 String status = BusinessStatusEnum.FINISH.getStatus();
                 // 更新流程状态为已完成
                 instanceService.updateStatus(instanceId, status);

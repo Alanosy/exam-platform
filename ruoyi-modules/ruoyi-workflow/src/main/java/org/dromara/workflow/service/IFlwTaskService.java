@@ -166,6 +166,14 @@ public interface IFlwTaskService {
     List<FlowTask> selectByInstId(Long instanceId);
 
     /**
+     * 判断流程是否已结束（即该流程实例下是否还有未完成的任务）
+     *
+     * @param instanceId 流程实例ID
+     * @return true 表示任务已全部结束；false 表示仍有任务存在
+     */
+    boolean isTaskEnd(Long instanceId);
+
+    /**
      * 任务操作
      *
      * @param bo            参数

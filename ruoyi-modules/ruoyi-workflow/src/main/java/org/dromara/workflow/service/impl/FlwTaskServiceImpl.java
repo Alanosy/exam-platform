@@ -579,6 +579,19 @@ public class FlwTaskServiceImpl implements IFlwTaskService {
     }
 
     /**
+     * 判断流程是否已结束（即该流程实例下是否还有未完成的任务）
+     *
+     * @param instanceId 流程实例ID
+     * @return true 表示任务已全部结束；false 表示仍有任务存在
+     */
+    @Override
+    public boolean isTaskEnd(Long instanceId) {
+        boolean exists = flowTaskMapper.exists(new LambdaQueryWrapper<FlowTask>()
+            .eq(FlowTask::getInstanceId, instanceId));
+        return !exists;
+    }
+
+    /**
      * 任务操作
      *
      * @param bo            参数
