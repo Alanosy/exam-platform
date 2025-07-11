@@ -27,9 +27,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.Collection;
-import java.util.Map;
-import java.util.StringJoiner;
+import java.util.*;
 
 /**
  * 操作日志记录处理
@@ -177,14 +175,28 @@ public class LogAspect {
         if (ArrayUtil.isEmpty(paramsArray)) {
             return params.toString();
         }
+        String[] exclude = ArrayUtil.addAll(excludeParamNames, EXCLUDE_PROPERTIES);
         for (Object o : paramsArray) {
             if (ObjectUtil.isNotNull(o) && !isFilterObject(o)) {
-                String str = JsonUtils.toJsonString(o);
-                Dict dict = JsonUtils.parseMap(str);
-                if (MapUtil.isNotEmpty(dict)) {
-                    MapUtil.removeAny(dict, EXCLUDE_PROPERTIES);
-                    MapUtil.removeAny(dict, excludeParamNames);
-                    str = JsonUtils.toJsonString(dict);
+                String str = "";
+                if (o instanceof List<?> list) {
+                    List<Dict> list1 = new ArrayList<>();
+                    for (Object obj : list) {
+                        String str1 = JsonUtils.toJsonString(obj);
+                        Dict dict = JsonUtils.parseMap(str1);
+                        if (MapUtil.isNotEmpty(dict)) {
+                            MapUtil.removeAny(dict, exclude);
+                            list1.add(dict);
+                        }
+                    }
+                    str = JsonUtils.toJsonString(list1);
+                } else {
+                    str = JsonUtils.toJsonString(o);
+                    Dict dict = JsonUtils.parseMap(str);
+                    if (MapUtil.isNotEmpty(dict)) {
+                        MapUtil.removeAny(dict, exclude);
+                        str = JsonUtils.toJsonString(dict);
+                    }
                 }
                 params.add(str);
             }
