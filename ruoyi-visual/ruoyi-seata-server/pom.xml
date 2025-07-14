@@ -306,9 +306,8 @@
             <artifactId>janino</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.codehaus.jackson</groupId>
-            <artifactId>jackson-mapper-asl</artifactId>
-            <version>${jackson-mapper.version}</version>
+            <groupId>com.bucket4j</groupId>
+            <artifactId>bucket4j_jdk8-core</artifactId>
         </dependency>
     </dependencies>
 
