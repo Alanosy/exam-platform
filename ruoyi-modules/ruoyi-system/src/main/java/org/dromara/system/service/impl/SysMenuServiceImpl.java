@@ -90,14 +90,7 @@ public class SysMenuServiceImpl implements ISysMenuService {
      */
     @Override
     public Set<String> selectMenuPermsByUserId(Long userId) {
-        List<String> perms = baseMapper.selectMenuPermsByUserId(userId);
-        Set<String> permsSet = new HashSet<>();
-        for (String perm : perms) {
-            if (StringUtils.isNotEmpty(perm)) {
-                permsSet.addAll(StringUtils.splitList(perm.trim()));
-            }
-        }
-        return permsSet;
+        return baseMapper.selectMenuPermsByUserId(userId);
     }
 
     /**
@@ -108,14 +101,7 @@ public class SysMenuServiceImpl implements ISysMenuService {
      */
     @Override
     public Set<String> selectMenuPermsByRoleId(Long roleId) {
-        List<String> perms = baseMapper.selectMenuPermsByRoleId(roleId);
-        Set<String> permsSet = new HashSet<>();
-        for (String perm : perms) {
-            if (StringUtils.isNotEmpty(perm)) {
-                permsSet.addAll(StringUtils.splitList(perm.trim()));
-            }
-        }
-        return permsSet;
+        return baseMapper.selectMenuPermsByRoleId(roleId);
     }
 
     /**

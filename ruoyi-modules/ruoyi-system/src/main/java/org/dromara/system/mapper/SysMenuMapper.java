@@ -6,7 +6,9 @@ import org.dromara.common.mybatis.core.mapper.BaseMapperPlus;
 import org.dromara.system.domain.SysMenu;
 import org.dromara.system.domain.vo.SysMenuVo;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * 菜单表 数据层
@@ -75,12 +77,14 @@ public interface SysMenuMapper extends BaseMapperPlus<SysMenu, SysMenuVo> {
      * @param userId 用户ID
      * @return 权限列表
      */
-    default List<String> selectMenuPermsByUserId(Long userId) {
-        return this.selectObjs(
+    default Set<String> selectMenuPermsByUserId(Long userId) {
+        return new HashSet<>(this.selectObjs(
             new LambdaQueryWrapper<SysMenu>()
                 .select(SysMenu::getPerms)
                 .inSql(SysMenu::getMenuId, this.buildMenuByUserSql(userId))
-        );
+                .isNotNull(SysMenu::getPerms)
+                .ne(SysMenu::getPerms, "")
+        ));
     }
 
     /**
@@ -89,12 +93,14 @@ public interface SysMenuMapper extends BaseMapperPlus<SysMenu, SysMenuVo> {
      * @param roleId 角色ID
      * @return 权限列表
      */
-    default List<String> selectMenuPermsByRoleId(Long roleId) {
-        return this.selectObjs(
+    default Set<String> selectMenuPermsByRoleId(Long roleId) {
+        return new HashSet<>(this.selectObjs(
             new LambdaQueryWrapper<SysMenu>()
                 .select(SysMenu::getPerms)
                 .inSql(SysMenu::getMenuId, this.buildMenuByRoleSql(roleId))
-        );
+                .isNotNull(SysMenu::getPerms)
+                .ne(SysMenu::getPerms, "")
+        ));
     }
 
     /**
