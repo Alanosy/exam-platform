@@ -8,7 +8,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.dromara.common.core.enums.BusinessStatusEnum;
 import org.dromara.common.core.utils.StringUtils;
-import org.dromara.warm.flow.core.FlowEngine;
 import org.dromara.warm.flow.core.dto.FlowParams;
 import org.dromara.warm.flow.core.entity.Definition;
 import org.dromara.warm.flow.core.entity.Instance;
@@ -16,7 +15,6 @@ import org.dromara.warm.flow.core.entity.Task;
 import org.dromara.warm.flow.core.listener.GlobalListener;
 import org.dromara.warm.flow.core.listener.ListenerVariable;
 import org.dromara.warm.flow.core.service.InsService;
-import org.dromara.warm.flow.orm.entity.FlowInstance;
 import org.dromara.warm.flow.orm.entity.FlowTask;
 import org.dromara.workflow.common.ConditionalOnEnable;
 import org.dromara.workflow.common.constant.FlowConstant;
@@ -166,15 +164,12 @@ public class WorkflowGlobalListener implements GlobalListener {
                 flwCommonService.sendMessage(definition.getFlowName(), instance.getId(), messageType, notice);
             }
         }
-        FlowInstance ins = new FlowInstance();
-        Map<String, Object> variableMap = instance.getVariableMap();
-        variableMap.remove(FlowConstant.FLOW_COPY_LIST);
-        variableMap.remove(FlowConstant.MESSAGE_TYPE);
-        variableMap.remove(FlowConstant.MESSAGE_NOTICE);
-        variableMap.remove(FlowConstant.SUBMIT);
-        ins.setId(instance.getId());
-        ins.setVariable(FlowEngine.jsonConvert.objToStr(variableMap));
-        insService.updateById(ins);
+        insService.removeVariables(instance.getId(),
+            FlowConstant.FLOW_COPY_LIST,
+            FlowConstant.MESSAGE_TYPE,
+            FlowConstant.MESSAGE_NOTICE,
+            FlowConstant.SUBMIT
+        );
     }
 
     /**

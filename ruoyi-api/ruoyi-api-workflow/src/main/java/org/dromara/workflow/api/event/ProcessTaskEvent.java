@@ -51,6 +51,11 @@ public class ProcessTaskEvent extends RemoteApplicationEvent {
     private Long taskId;
 
     /**
+     * 实例id
+     */
+    private Long instanceId;
+
+    /**
      * 业务id
      */
     private String businessId;
