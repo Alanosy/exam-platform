@@ -38,14 +38,6 @@ export const getDept = (deptId: string | number): AxiosPromise<DeptVO> => {
   });
 };
 
-// 查询部门下拉树结构
-export const treeselect = (): AxiosPromise<DeptTreeVO[]> => {
-  return request({
-    url: '/system/dept/treeselect',
-    method: 'get'
-  });
-};
-
 // 新增部门
 export const addDept = (data: DeptForm) => {
   return request({
