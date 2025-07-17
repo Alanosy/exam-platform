@@ -1,7 +1,8 @@
 <template>
   <div class="p-2">
     <el-card shadow="never">
-      <!-- mode用于直接后端发起流程 默认前端发起 不同接口实现方式可查看具体后端代码 -->
+      <!-- mode用于直接后端发起流程 不同接口实现方式可查看具体后端代码 -->
+      <!-- 默认前端发起 前端发起更多样性 比如可以选审批人 选抄送人 上传附件等等 后端发起需要用户自行编写代码传这些参数 -->
       <approvalButton
         @submitForm="submitForm"
         @approvalVerifyOpen="approvalVerifyOpen"
@@ -10,7 +11,7 @@
         :id="form.id"
         :status="form.status"
         :pageType="routeParams.type"
-        :mode="true"
+        :mode="false"
       />
     </el-card>
     <el-card shadow="never" style="height: 78vh; overflow-y: auto">
