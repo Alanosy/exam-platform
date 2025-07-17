@@ -10,12 +10,16 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.dromara.common.core.enums.BusinessStatusEnum;
+import org.dromara.common.core.exception.ServiceException;
 import org.dromara.common.core.utils.MapstructUtils;
 import org.dromara.common.core.utils.StringUtils;
 import org.dromara.common.mybatis.core.domain.BaseEntity;
 import org.dromara.common.mybatis.core.page.PageQuery;
 import org.dromara.common.mybatis.core.page.TableDataInfo;
 import org.dromara.common.tenant.helper.TenantHelper;
+import org.dromara.workflow.api.domain.RemoteCompleteTask;
+import org.dromara.workflow.api.domain.RemoteStartProcess;
+import org.dromara.workflow.api.domain.RemoteStartProcessReturn;
 import org.dromara.workflow.api.event.ProcessDeleteEvent;
 import org.dromara.workflow.api.event.ProcessEvent;
 import org.dromara.workflow.api.event.ProcessTaskEvent;
@@ -114,6 +118,35 @@ public class TestLeaveServiceImpl implements ITestLeaveService {
             bo.setId(add.getId());
         }
         return MapstructUtils.convert(add, TestLeaveVo.class);
+    }
+
+    @Transactional(rollbackFor = Exception.class)
+    @Override
+    public TestLeaveVo submitAndFlowStart(TestLeaveBo bo) {
+        long day = DateUtil.betweenDay(bo.getStartDate(), bo.getEndDate(), true);
+        // 截止日期也算一天
+        bo.setLeaveDays((int) day + 1);
+        TestLeave leave = MapstructUtils.convert(bo, TestLeave.class);
+        boolean flag = baseMapper.insertOrUpdate(leave);
+        if (flag) {
+            bo.setId(leave.getId());
+            // 后端发起需要忽略权限
+            bo.getParams().put("ignore", true);
+            RemoteStartProcessReturn result = workflowService.startWorkFlow(new RemoteStartProcess() {{
+                setBusinessId(leave.getId().toString());
+                setFlowCode(StringUtils.isEmpty(bo.getFlowCode()) ? "leave1" : bo.getFlowCode());
+                setVariables(bo.getParams());
+            }});
+            boolean flag1 = workflowService.completeTask(new RemoteCompleteTask() {{
+                setTaskId(result.getTaskId());
+                setMessageType(List.of("1"));
+                setVariables(bo.getParams());
+            }});
+            if (!flag1) {
+                throw new ServiceException("流程发起异常");
+            }
+        }
+        return MapstructUtils.convert(leave, TestLeaveVo.class);
     }
 
     /**

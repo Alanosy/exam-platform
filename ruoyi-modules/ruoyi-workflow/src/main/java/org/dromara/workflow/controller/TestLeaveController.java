@@ -83,6 +83,17 @@ public class TestLeaveController extends BaseController {
     }
 
     /**
+     * 提交请假并提交流程
+     */
+    @SaCheckPermission("workflow:leave:add")
+    @Log(title = "请假", businessType = BusinessType.INSERT)
+    @RepeatSubmit()
+    @PostMapping("/submitAndFlowStart")
+    public R<TestLeaveVo> submitAndFlowStart(@Validated(AddGroup.class) @RequestBody TestLeaveBo bo) {
+        return R.ok(testLeaveService.submitAndFlowStart(bo));
+    }
+
+    /**
      * 修改请假
      */
     @SaCheckPermission("workflow:leave:edit")
