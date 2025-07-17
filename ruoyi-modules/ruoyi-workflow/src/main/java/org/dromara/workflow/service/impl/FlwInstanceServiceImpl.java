@@ -304,9 +304,6 @@ public class FlwInstanceServiceImpl implements IFlwInstanceService {
                 if (CollUtil.isNotEmpty(users)) {
                     vo.setApprover(StreamUtils.join(users, User::getProcessedBy));
                 }
-                if (BusinessStatusEnum.isDraftOrCancelOrBack(flowInstance.getFlowStatus())) {
-                    vo.setApprover(LoginHelper.getUserIdStr());
-                }
             }
         }
 
