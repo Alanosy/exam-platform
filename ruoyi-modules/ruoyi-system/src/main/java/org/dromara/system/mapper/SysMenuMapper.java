@@ -2,6 +2,8 @@ package org.dromara.system.mapper;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import org.dromara.common.core.constant.SystemConstants;
+import org.dromara.common.core.utils.StreamUtils;
+import org.dromara.common.core.utils.StringUtils;
 import org.dromara.common.mybatis.core.mapper.BaseMapperPlus;
 import org.dromara.system.domain.SysMenu;
 import org.dromara.system.domain.vo.SysMenuVo;
@@ -78,13 +80,13 @@ public interface SysMenuMapper extends BaseMapperPlus<SysMenu, SysMenuVo> {
      * @return 权限列表
      */
     default Set<String> selectMenuPermsByUserId(Long userId) {
-        return new HashSet<>(this.selectObjs(
+        List<String> list = this.selectObjs(
             new LambdaQueryWrapper<SysMenu>()
                 .select(SysMenu::getPerms)
                 .inSql(SysMenu::getMenuId, this.buildMenuByUserSql(userId))
                 .isNotNull(SysMenu::getPerms)
-                .ne(SysMenu::getPerms, "")
-        ));
+        );
+        return new HashSet<>(StreamUtils.filter(list, StringUtils::isNotBlank));
     }
 
     /**
@@ -94,13 +96,13 @@ public interface SysMenuMapper extends BaseMapperPlus<SysMenu, SysMenuVo> {
      * @return 权限列表
      */
     default Set<String> selectMenuPermsByRoleId(Long roleId) {
-        return new HashSet<>(this.selectObjs(
+        List<String> list = this.selectObjs(
             new LambdaQueryWrapper<SysMenu>()
                 .select(SysMenu::getPerms)
                 .inSql(SysMenu::getMenuId, this.buildMenuByRoleSql(roleId))
                 .isNotNull(SysMenu::getPerms)
-                .ne(SysMenu::getPerms, "")
-        ));
+        );
+        return new HashSet<>(StreamUtils.filter(list, StringUtils::isNotBlank));
     }
 
     /**
