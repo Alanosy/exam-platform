@@ -1,6 +1,7 @@
 <template>
   <div class="p-2">
     <el-card shadow="never">
+      <!-- mode用于直接后端发起流程 默认前端发起 不同接口实现方式可查看具体后端代码 -->
       <approvalButton
         @submitForm="submitForm"
         @approvalVerifyOpen="approvalVerifyOpen"
@@ -9,6 +10,7 @@
         :id="form.id"
         :status="form.status"
         :pageType="routeParams.type"
+        :mode="true"
       />
     </el-card>
     <el-card shadow="never" style="height: 78vh; overflow-y: auto">
@@ -51,7 +53,7 @@
 </template>
 
 <script setup name="Leave" lang="ts">
-import { addLeave, getLeave, updateLeave } from '@/api/workflow/leave';
+import { addLeave, getLeave, submitAndFlowStart, updateLeave } from '@/api/workflow/leave';
 import { LeaveForm, LeaveQuery, LeaveVO } from '@/api/workflow/leave/types';
 import { startWorkFlow } from '@/api/workflow/task';
 import SubmitVerify from '@/components/Process/submitVerify.vue';
@@ -183,7 +185,7 @@ const getInfo = () => {
 };
 
 /** 提交按钮 */
-const submitForm = (status: string) => {
+const submitForm = (status: string, mode: boolean) => {
   if (leaveTime.value.length === 0) {
     proxy?.$modal.msgError('请假时间不能为空');
     return;
@@ -194,20 +196,30 @@ const submitForm = (status: string) => {
       form.value.endDate = leaveTime.value[1];
       if (valid) {
         buttonLoading.value = true;
-        let res: AxiosResponse<LeaveVO>;
-        if (form.value.id) {
-          res = await updateLeave(form.value).finally(() => (buttonLoading.value = false));
-        } else {
-          res = await addLeave(form.value).finally(() => (buttonLoading.value = false));
-        }
-        form.value = res.data;
-        if (status === 'draft') {
+        // 设置后端发起和不等于草稿状态 直接走流程发起
+        if (mode && status != 'draft') {
+          let res = await submitAndFlowStart(form.value).finally(() => (buttonLoading.value = false));
+          form.value = res.data;
           buttonLoading.value = false;
-          proxy?.$modal.msgSuccess('暂存成功');
+          proxy?.$modal.msgSuccess('操作成功');
           proxy.$tab.closePage(proxy.$route);
           proxy.$router.go(-1);
-        } else {
-          await handleStartWorkFlow(res.data);
+        } else{
+          let res;
+          if (form.value.id) {
+            res = await updateLeave(form.value).finally(() => (buttonLoading.value = false));
+          } else {
+            res = await addLeave(form.value).finally(() => (buttonLoading.value = false));
+          }
+          form.value = res.data;
+          if (status === 'draft') {
+            buttonLoading.value = false;
+            proxy?.$modal.msgSuccess('暂存成功');
+            proxy.$tab.closePage(proxy.$route);
+            proxy.$router.go(-1);
+          } else {
+            await handleStartWorkFlow(res.data);
+          }
         }
       }
     });

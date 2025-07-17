@@ -1,8 +1,8 @@
 <template>
   <div style="display: flex; justify-content: space-between">
     <div>
-      <el-button v-if="submitButtonShow" :loading="props.buttonLoading" type="info" @click="submitForm('draft')">暂存</el-button>
-      <el-button v-if="submitButtonShow" :loading="props.buttonLoading" type="primary" @click="submitForm('submit')">提 交</el-button>
+      <el-button v-if="submitButtonShow" :loading="props.buttonLoading" type="info" @click="submitForm('draft', mode)">暂存</el-button>
+      <el-button v-if="submitButtonShow" :loading="props.buttonLoading" type="primary" @click="submitForm('submit', mode)">提 交</el-button>
       <el-button v-if="approvalButtonShow" :loading="props.buttonLoading" type="primary" @click="approvalVerifyOpen">审批</el-button>
       <el-button v-if="props.id && props.status !== 'draft'" type="primary" @click="handleApprovalRecord">流程进度</el-button>
       <slot />
@@ -19,12 +19,13 @@ const props = defineProps({
   status: propTypes.string.def(''),
   pageType: propTypes.string.def(''),
   buttonLoading: propTypes.bool.def(false),
-  id: propTypes.string.def('') || propTypes.number.def()
+  id: propTypes.string.def('') || propTypes.number.def(),
+  mode: propTypes.bool.def(false)
 });
 const emits = defineEmits(['submitForm', 'approvalVerifyOpen', 'handleApprovalRecord']);
 //暂存，提交
-const submitForm = async (type) => {
-  emits('submitForm', type);
+const submitForm = async (type, mode) => {
+  emits('submitForm', type, mode);
 };
 //审批
 const approvalVerifyOpen = async () => {
