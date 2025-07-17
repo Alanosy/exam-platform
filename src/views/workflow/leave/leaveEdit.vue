@@ -13,6 +13,11 @@
     </el-card>
     <el-card shadow="never" style="height: 78vh; overflow-y: auto">
       <el-form ref="leaveFormRef" v-loading="loading" :disabled="routeParams.type === 'view'" :model="form" :rules="rules" label-width="80px">
+        <el-form-item label="流程定义" v-if="routeParams.type === 'add'">
+          <el-select v-model="flowCode" placeholder="选择流程定义" style="width: 100%">
+            <el-option v-for="item in flowCodeOptions" :key="item.value" :label="item.label" :value="item.value" />
+          </el-select>
+        </el-form-item>
         <el-form-item label="请假类型" prop="leaveType">
           <el-select v-model="form.leaveType" placeholder="请选择请假类型" style="width: 100%">
             <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value" />
@@ -42,17 +47,6 @@
     <submitVerify ref="submitVerifyRef" :task-variables="taskVariables" @submit-callback="submitCallback" />
     <!-- 审批记录 -->
     <approvalRecord ref="approvalRecordRef" />
-    <el-dialog v-model="dialogVisible.visible" :title="dialogVisible.title" :before-close="handleClose" width="500">
-      <el-select v-model="flowCode" placeholder="Select" style="width: 240px">
-        <el-option v-for="item in flowCodeOptions" :key="item.value" :label="item.label" :value="item.value" />
-      </el-select>
-      <template #footer>
-        <div class="dialog-footer">
-          <el-button @click="handleClose">取消</el-button>
-          <el-button type="primary" @click="submitFlow()"> 确认 </el-button>
-        </div>
-      </template>
-    </el-dialog>
   </div>
 </template>
 
@@ -116,19 +110,13 @@ const flowCodeOptions = [
     label: '请假申请-排他并行会签'
   }
 ];
+// 自定义流程可不选择 直接填写flowCode 例如 'leave1'
+const flowCode = ref<string>('leave1');
 
-const flowCode = ref<string>('');
-
-const dialogVisible = reactive<DialogOption>({
-  visible: false,
-  title: '流程定义'
-});
 //提交组件
 const submitVerifyRef = ref<InstanceType<typeof SubmitVerify>>();
 //审批记录组件
 const approvalRecordRef = ref<InstanceType<typeof ApprovalRecord>>();
-//按钮组件
-const approvalButtonRef = ref<InstanceType<typeof ApprovalButton>>();
 
 const leaveFormRef = ref<ElFormInstance>();
 
@@ -164,11 +152,6 @@ const data = reactive<PageData<LeaveForm, LeaveQuery>>({
   }
 });
 
-const handleClose = () => {
-  dialogVisible.visible = false;
-  flowCode.value = '';
-  buttonLoading.value = false;
-};
 const { form, rules } = toRefs(data);
 
 /** 表单重置 */
@@ -224,15 +207,6 @@ const submitForm = (status: string) => {
           proxy.$tab.closePage(proxy.$route);
           proxy.$router.go(-1);
         } else {
-          if ((form.value.status === 'draft' && (flowCode.value === '' || flowCode.value === null)) || routeParams.value.type === 'add') {
-            flowCode.value = flowCodeOptions[0].value;
-            dialogVisible.visible = true;
-            return;
-          }
-          //说明启动过先随意穿个参数
-          if (flowCode.value === '' || flowCode.value === null) {
-            flowCode.value = 'xx';
-          }
           await handleStartWorkFlow(res.data);
         }
       }
@@ -242,10 +216,6 @@ const submitForm = (status: string) => {
   }
 };
 
-const submitFlow = async () => {
-  handleStartWorkFlow(form.value);
-  dialogVisible.visible = false;
-};
 //提交申请
 const handleStartWorkFlow = async (data: LeaveForm) => {
   try {
