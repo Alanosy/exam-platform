@@ -81,18 +81,20 @@ CREATE TABLE `sj_notify_recipient`
 
 CREATE TABLE `sj_retry_dead_letter`
 (
-    `id`            bigint(20) unsigned NOT NULL AUTO_INCREMENT COMMENT '主键',
-    `namespace_id`  varchar(64)         NOT NULL DEFAULT '764d604ec6fc45f68cd92514c40e9e1a' COMMENT '命名空间id',
-    `group_name`    varchar(64)         NOT NULL COMMENT '组名称',
-    `group_id`      bigint(20)          NOT NULL COMMENT '组Id',
-    `scene_name`    varchar(64)         NOT NULL COMMENT '场景名称',
-    `scene_id`      bigint(20)          NOT NULL COMMENT '场景ID',
-    `idempotent_id` varchar(64)         NOT NULL COMMENT '幂等id',
-    `biz_no`        varchar(64)         NOT NULL DEFAULT '' COMMENT '业务编号',
-    `executor_name` varchar(512)        NOT NULL DEFAULT '' COMMENT '执行器名称',
-    `args_str`      text                NOT NULL COMMENT '执行方法参数',
-    `ext_attrs`     text                NOT NULL COMMENT '扩展字段',
-    `create_dt`     datetime            NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+    `id`              bigint(20) unsigned NOT NULL AUTO_INCREMENT COMMENT '主键',
+    `namespace_id`    varchar(64)         NOT NULL DEFAULT '764d604ec6fc45f68cd92514c40e9e1a' COMMENT '命名空间id',
+    `group_name`      varchar(64)         NOT NULL COMMENT '组名称',
+    `group_id`        bigint(20)          NOT NULL COMMENT '组Id',
+    `scene_name`      varchar(64)         NOT NULL COMMENT '场景名称',
+    `scene_id`        bigint(20)          NOT NULL COMMENT '场景ID',
+    `idempotent_id`   varchar(64)         NOT NULL COMMENT '幂等id',
+    `biz_no`          varchar(64)         NOT NULL DEFAULT '' COMMENT '业务编号',
+    `executor_name`   varchar(512)        NOT NULL DEFAULT '' COMMENT '执行器名称',
+    -- jackson 兼容历史数据 预计1.8.0默认改为fury
+    `serializer_name` varchar(32)         NOT NULL DEFAULT 'jackson' COMMENT '执行方法参数序列化器名称',
+    `args_str`        text                NOT NULL COMMENT '执行方法参数',
+    `ext_attrs`       text                NOT NULL COMMENT '扩展字段',
+    `create_dt`       datetime            NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
     PRIMARY KEY (`id`),
     KEY `idx_namespace_id_group_name_scene_name` (`namespace_id`, `group_name`, `scene_name`),
     KEY `idx_idempotent_id` (`idempotent_id`),
@@ -115,6 +117,8 @@ CREATE TABLE `sj_retry`
     `executor_name`   varchar(512)        NOT NULL DEFAULT '' COMMENT '执行器名称',
     `args_str`        text                NOT NULL COMMENT '执行方法参数',
     `ext_attrs`       text                NOT NULL COMMENT '扩展字段',
+    -- jackson 兼容历史数据 预计1.8.0默认改为fury
+    `serializer_name` varchar(32)         NOT NULL DEFAULT 'jackson' COMMENT '执行方法参数序列化器名称',
     `next_trigger_at` bigint(13)          NOT NULL COMMENT '下次触发时间',
     `retry_count`     int(11)             NOT NULL DEFAULT 0 COMMENT '重试次数',
     `retry_status`    tinyint(4)          NOT NULL DEFAULT 0 COMMENT '重试状态 0、重试中 1、成功 2、最大重试次数',
@@ -195,6 +199,8 @@ CREATE TABLE `sj_retry_scene_config`
     `cb_trigger_type`     tinyint(4)          NOT NULL DEFAULT 1 COMMENT '1、默认等级 2、固定间隔时间 3、CRON 表达式',
     `cb_max_count`        int(11)             NOT NULL DEFAULT 16 COMMENT '回调的最大执行次数',
     `cb_trigger_interval` varchar(16)         NOT NULL DEFAULT '' COMMENT '回调的最大执行次数',
+    `owner_id`            bigint(20)          NULL     DEFAULT NULL COMMENT '负责人id',
+    `labels`              varchar(512)        NULL     DEFAULT '' COMMENT '标签',
     `description`         varchar(256)        NOT NULL DEFAULT '' COMMENT '描述',
     `create_dt`           datetime            NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
     `update_dt`           datetime            NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '修改时间',
@@ -215,6 +221,7 @@ CREATE TABLE `sj_server_node`
     `expire_at`    datetime            NOT NULL COMMENT '过期时间',
     `node_type`    tinyint(4)          NOT NULL COMMENT '节点类型 1、客户端 2、是服务端',
     `ext_attrs`    varchar(256)        NULL     DEFAULT '' COMMENT '扩展字段',
+    `labels`       varchar(512)        NULL     DEFAULT '' COMMENT '标签',
     `create_dt`    datetime            NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
     `update_dt`    datetime            NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '修改时间',
     PRIMARY KEY (`id`),
@@ -268,19 +275,6 @@ CREATE TABLE `sj_system_user_permission`
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8mb4 COMMENT ='系统用户权限表';
 
-CREATE TABLE `sj_sequence_alloc`
-(
-    `id`           bigint(20) unsigned NOT NULL AUTO_INCREMENT COMMENT '主键',
-    `namespace_id` varchar(64)         NOT NULL DEFAULT '764d604ec6fc45f68cd92514c40e9e1a' COMMENT '命名空间id',
-    `group_name`   varchar(64)         NOT NULL DEFAULT '' COMMENT '组名称',
-    `max_id`       bigint(20)          NOT NULL DEFAULT 1 COMMENT '最大id',
-    `step`         int(11)             NOT NULL DEFAULT 100 COMMENT '步长',
-    `update_dt`    datetime            NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
-    PRIMARY KEY (`id`),
-    UNIQUE KEY `uk_namespace_id_group_name` (`namespace_id`, `group_name`)
-) ENGINE = InnoDB
-  DEFAULT CHARSET = utf8mb4 COMMENT ='号段模式序号ID分配表';
-
 -- 分布式调度DDL
 CREATE TABLE `sj_job`
 (
@@ -306,7 +300,8 @@ CREATE TABLE `sj_job`
     `bucket_index`     int(11)             NOT NULL DEFAULT 0 COMMENT 'bucket',
     `resident`         tinyint(4)          NOT NULL DEFAULT 0 COMMENT '是否是常驻任务',
     `notify_ids`       varchar(128)        NOT NULL DEFAULT '' COMMENT '通知告警场景配置id列表',
-    `owner_id`         bigint(20)          NULL                 COMMENT '负责人id',
+    `owner_id`         bigint(20)          NULL     DEFAULT NULL COMMENT '负责人id',
+    `labels`           varchar(512)        NULL     DEFAULT '' COMMENT '标签',
     `description`      varchar(256)        NOT NULL DEFAULT '' COMMENT '描述',
     `ext_attrs`        varchar(256)        NULL     DEFAULT '' COMMENT '扩展字段',
     `deleted`          tinyint(4)          NOT NULL DEFAULT 0 COMMENT '逻辑删除 1、删除',
@@ -320,7 +315,7 @@ CREATE TABLE `sj_job`
   AUTO_INCREMENT = 0
   DEFAULT CHARSET = utf8mb4 COMMENT ='任务信息';
 
-INSERT INTO `sj_job` VALUES (1, 'dev', 'ruoyi_group', 'demo-job', null, 1, 1710344035622, 1, 1, 4, 1, 'testJobExecutor', 2, '60', 1, 60, 3, 1, 1, 116, 0, '', 1, '', '', 0 , now(), now());
+INSERT INTO `sj_job` VALUES (1, 'dev', 'ruoyi_group', 'demo-job', null, 1, 1710344035622, 1, 1, 4, 1, 'testJobExecutor', 2, '60', 1, 60, 3, 1, 1, 116, 0, '', 1, '','', '', 0 , now(), now());
 
 CREATE TABLE `sj_job_log_message`
 (
@@ -461,6 +456,7 @@ CREATE TABLE `sj_workflow`
     `notify_ids`       varchar(128)        NOT NULL DEFAULT '' COMMENT '通知告警场景配置id列表',
     `bucket_index`     int(11)             NOT NULL DEFAULT 0 COMMENT 'bucket',
     `version`          int(11)             NOT NULL COMMENT '版本号',
+    `owner_id`         bigint(20)          NULL     DEFAULT NULL COMMENT '负责人id',
     `ext_attrs`        varchar(256)        NULL     DEFAULT '' COMMENT '扩展字段',
     `deleted`          tinyint(4)          NOT NULL DEFAULT 0 COMMENT '逻辑删除 1、删除',
     `create_dt`        datetime            NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
@@ -510,7 +506,7 @@ CREATE TABLE `sj_workflow_task_batch`
     `wf_context`        text                         DEFAULT NULL COMMENT '全局上下文',
     `execution_at`      bigint(13)          NOT NULL DEFAULT 0 COMMENT '任务执行时间',
     `ext_attrs`         varchar(256)        NULL     DEFAULT '' COMMENT '扩展字段',
-    `version`           int(11)              NOT NULL DEFAULT 1 COMMENT '版本号',
+    `version`           int(11)             NOT NULL DEFAULT 1 COMMENT '版本号',
     `deleted`           tinyint(4)          NOT NULL DEFAULT 0 COMMENT '逻辑删除 1、删除',
     `create_dt`         datetime            NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
     `update_dt`         datetime            NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '修改时间',
@@ -521,3 +517,19 @@ CREATE TABLE `sj_workflow_task_batch`
 ) ENGINE = InnoDB
   AUTO_INCREMENT = 0
   DEFAULT CHARSET = utf8mb4 COMMENT ='工作流批次';
+
+CREATE TABLE `sj_job_executor`
+(
+    `id`            bigint(20) unsigned NOT NULL AUTO_INCREMENT COMMENT '主键',
+    `namespace_id`  varchar(64)         NOT NULL DEFAULT '764d604ec6fc45f68cd92514c40e9e1a' COMMENT '命名空间id',
+    `group_name`    varchar(64)         NOT NULL COMMENT '组名称',
+    `executor_info` varchar(256)        NOT NULL COMMENT '任务执行器名称',
+    `executor_type` varchar(3)          NOT NULL COMMENT '1:java 2:python 3:go',
+    `create_dt`     datetime            NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+    `update_dt`     datetime            NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '修改时间',
+    PRIMARY KEY (`id`),
+    KEY `idx_namespace_id_group_name` (`namespace_id`, `group_name`),
+    KEY `idx_create_dt` (`create_dt`)
+) ENGINE = InnoDB
+  AUTO_INCREMENT = 0
+  DEFAULT CHARSET = utf8mb4 COMMENT ='任务执行器信息';
