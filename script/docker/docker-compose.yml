@@ -133,21 +133,6 @@ services:
     privileged: true
     network_mode: "host"
 
-  sentinel:
-    image: ruoyi/ruoyi-sentinel-dashboard:2.4.1
-    container_name: sentinel
-    environment:
-      TZ: Asia/Shanghai
-    ports:
-      - "8718:8718"
-    volumes:
-      # 配置文件
-      - /docker/ruoyi-sentinel-dashboard/logs/:/ruoyi/sentinel-dashboard/logs
-      # skywalking 探针
-      - /docker/skywalking/agent/:/ruoyi/skywalking/agent
-    restart: always
-    network_mode: "host"
-
   ruoyi-monitor:
     image: ruoyi/ruoyi-monitor:2.4.1
     container_name: ruoyi-monitor

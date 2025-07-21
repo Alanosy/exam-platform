@@ -166,13 +166,6 @@
                 <version>${revision}</version>
             </dependency>
 
-            <!-- 限流模块 -->
-            <dependency>
-                <groupId>org.dromara</groupId>
-                <artifactId>ruoyi-common-sentinel</artifactId>
-                <version>${revision}</version>
-            </dependency>
-
             <!-- skywalking日志收集模块 -->
             <dependency>
                 <groupId>org.dromara</groupId>

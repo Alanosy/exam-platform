@@ -10,7 +10,6 @@
 
     <modules>
         <module>ruoyi-monitor</module>
-        <module>ruoyi-sentinel-dashboard</module>
         <module>ruoyi-seata-server</module>
         <module>ruoyi-nacos</module>
         <module>ruoyi-snailjob-server</module>

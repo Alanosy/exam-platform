@@ -83,19 +83,6 @@ spring:
           # admin 监控账号密码
           username: ruoyi
           userpassword: 123456
-    # sentinel 配置
-    sentinel:
-      # sentinel 开关
-      enabled: false
-      transport:
-        # dashboard控制台服务名 用于服务发现
-        # 如无此配置将默认使用下方 dashboard 配置直接注册
-        server-name: ruoyi-sentinel-dashboard
-        # 客户端指定注册的ip 用于多网卡ip不稳点使用
-        # client-ip:
-        # 控制台地址 从1.3.0开始使用 server-name 注册
-        # dashboard: localhost:8718
-
     bus:
       id: ${spring.application.name}
       base-packages: org.dromara.**.event
@@ -166,7 +153,6 @@ logging:
     org.springframework: warn
     org.apache.dubbo: warn
     com.alibaba.nacos: warn
-    com.alibaba.cloud.sentinel: warn
     org.mybatis.spring.mapper: error
     org.apache.dubbo.config: error
     org.apache.fury: warn

@@ -26,11 +26,6 @@
             <artifactId>hutool-captcha</artifactId>
         </dependency>
 
-        <dependency>
-            <groupId>org.dromara</groupId>
-            <artifactId>ruoyi-common-sentinel</artifactId>
-        </dependency>
-
         <!-- RuoYi Common Security-->
         <dependency>
             <groupId>org.dromara</groupId>
