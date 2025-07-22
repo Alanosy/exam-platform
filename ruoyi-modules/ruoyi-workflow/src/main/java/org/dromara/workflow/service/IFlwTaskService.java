@@ -199,4 +199,11 @@ public interface IFlwTaskService {
      */
     FlowNode getByNodeCode(String nodeCode, Long definitionId);
 
+    /**
+     * 催办任务
+     *
+     * @param bo 参数
+     * @return 结果
+     */
+    boolean urgeTask(FlowUrgeTaskBo bo);
 }

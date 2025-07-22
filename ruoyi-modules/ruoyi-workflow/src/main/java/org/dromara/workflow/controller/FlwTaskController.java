@@ -209,4 +209,15 @@ public class FlwTaskController extends BaseController {
         return R.ok(flwTaskService.currentTaskAllUser(List.of(taskId)));
     }
 
+    /**
+     * 催办任务
+     *
+     * @param bo 参数
+     * @return 结果
+     */
+    @PostMapping("/urgeTask")
+    public R<Void> urgeTask(@RequestBody FlowUrgeTaskBo bo) {
+        return toAjax(flwTaskService.urgeTask(bo));
+    }
+
 }

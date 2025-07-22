@@ -725,4 +725,29 @@ public class FlwTaskServiceImpl implements IFlwTaskService {
             .eq(FlowNode::getDefinitionId, definitionId));
     }
 
+    /**
+     * 催办任务
+     *
+     * @param bo 参数
+     */
+    @Override
+    public boolean urgeTask(FlowUrgeTaskBo bo) {
+        try {
+            if (CollUtil.isEmpty(bo.getTaskIdList())) {
+                return false;
+            }
+            List<RemoteUserVo> userList = this.currentTaskAllUser(bo.getTaskIdList());
+            if (CollUtil.isEmpty(userList)) {
+                return false;
+            }
+            List<String> messageType = bo.getMessageType();
+            String message = bo.getMessage();
+            flwCommonService.sendMessage(messageType, message, "单据审批提醒", userList);
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+            throw new ServiceException(e.getMessage());
+        }
+        return true;
+    }
+
 }
