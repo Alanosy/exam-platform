@@ -20,6 +20,7 @@ import org.dromara.common.log.annotation.Log;
 import org.dromara.common.log.enums.BusinessType;
 import org.dromara.common.mybatis.core.page.PageQuery;
 import org.dromara.common.mybatis.core.page.TableDataInfo;
+import org.dromara.common.mybatis.helper.DataPermissionHelper;
 import org.dromara.common.satoken.utils.LoginHelper;
 import org.dromara.common.tenant.helper.TenantHelper;
 import org.dromara.common.web.core.BaseController;
@@ -111,7 +112,7 @@ public class SysUserController extends BaseController {
             // 超级管理员 如果重新加载用户信息需清除动态租户
             TenantHelper.clearDynamic();
         }
-        SysUserVo user = userService.selectUserById(loginUser.getUserId());
+        SysUserVo user = DataPermissionHelper.ignore(() -> userService.selectUserById(loginUser.getUserId()));
         if (ObjectUtil.isNull(user)) {
             return R.fail("没有权限访问用户数据!");
         }
