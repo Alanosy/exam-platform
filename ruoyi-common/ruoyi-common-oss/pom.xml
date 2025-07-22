@@ -31,11 +31,6 @@
             <groupId>software.amazon.awssdk</groupId>
             <artifactId>s3</artifactId>
             <exclusions>
-                <!-- 将基于 Netty 的 HTTP 客户端从类路径中移除 -->
-                <exclusion>
-                    <groupId>software.amazon.awssdk</groupId>
-                    <artifactId>netty-nio-client</artifactId>
-                </exclusion>
                 <!-- 将基于 CRT 的 HTTP 客户端从类路径中移除 -->
                 <exclusion>
                     <groupId>software.amazon.awssdk</groupId>
