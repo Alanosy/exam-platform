@@ -39,6 +39,7 @@ import org.dromara.workflow.common.enums.TaskStatusEnum;
 import org.dromara.workflow.domain.bo.FlowCancelBo;
 import org.dromara.workflow.domain.bo.FlowInstanceBo;
 import org.dromara.workflow.domain.bo.FlowInvalidBo;
+import org.dromara.workflow.domain.bo.FlowVariableBo;
 import org.dromara.workflow.domain.vo.FlowHisTaskVo;
 import org.dromara.workflow.domain.vo.FlowInstanceVo;
 import org.dromara.workflow.handler.FlowProcessEventHandler;
@@ -354,6 +355,30 @@ public class FlwInstanceServiceImpl implements IFlwInstanceService {
             .map(entry -> Map.of("key", entry.getKey(), "value", entry.getValue()))
             .toList();
         return Map.of("variableList", variableList, "variable", flowInstance.getVariable());
+    }
+
+    /**
+     * 设置流程变量
+     *
+     * @param bo 参数
+     */
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public boolean updateVariable(FlowVariableBo bo) {
+        FlowInstance flowInstance = flowInstanceMapper.selectById(bo.getInstanceId());
+        if (flowInstance == null) {
+            throw new ServiceException(ExceptionCons.NOT_FOUNT_INSTANCE);
+        }
+        try {
+            Map<String, Object> variableMap = new HashMap<>(Optional.ofNullable(flowInstance.getVariableMap()).orElse(Collections.emptyMap()));
+            variableMap.put(bo.getKey(), bo.getValue());
+            flowInstance.setVariable(FlowEngine.jsonConvert.objToStr(variableMap));
+            flowInstanceMapper.updateById(flowInstance);
+        } catch (Exception e) {
+            log.error("设置流程变量失败: {}", e.getMessage(), e);
+            throw new ServiceException(e.getMessage());
+        }
+        return true;
     }
 
     /**

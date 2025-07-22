@@ -143,6 +143,17 @@ public class FlwInstanceController extends BaseController {
     }
 
     /**
+     * 修改流程变量
+     *
+     * @param bo 参数
+     */
+    @RepeatSubmit()
+    @PutMapping("/updateVariable")
+    public R<Void> updateVariable(@Validated @RequestBody FlowVariableBo bo) {
+        return toAjax(flwInstanceService.updateVariable(bo));
+    }
+
+    /**
      * 作废流程
      *
      * @param bo 参数

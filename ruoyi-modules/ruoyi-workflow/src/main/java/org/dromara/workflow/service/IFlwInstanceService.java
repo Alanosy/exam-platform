@@ -6,6 +6,7 @@ import org.dromara.warm.flow.orm.entity.FlowInstance;
 import org.dromara.workflow.domain.bo.FlowCancelBo;
 import org.dromara.workflow.domain.bo.FlowInstanceBo;
 import org.dromara.workflow.domain.bo.FlowInvalidBo;
+import org.dromara.workflow.domain.bo.FlowVariableBo;
 import org.dromara.workflow.domain.vo.FlowInstanceVo;
 
 import java.util.List;
@@ -124,6 +125,14 @@ public interface IFlwInstanceService {
      * @return 结果
      */
     Map<String, Object> instanceVariable(Long instanceId);
+
+    /**
+     * 更新流程变量
+     *
+     * @param bo 参数
+     * @return 结果
+     */
+    boolean updateVariable(FlowVariableBo bo);
 
     /**
      * 设置流程变量
