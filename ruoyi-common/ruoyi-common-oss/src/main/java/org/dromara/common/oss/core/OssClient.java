@@ -177,12 +177,12 @@ public class OssClient {
             // 创建异步请求体（length如果为空会报错）
             BlockingInputStreamAsyncRequestBody body = BlockingInputStreamAsyncRequestBody.builder()
                 .contentLength(length)
-                .subscribeTimeout(Duration.ofSeconds(30))
+                .subscribeTimeout(Duration.ofSeconds(120))
                 .build();
 
             // 使用 transferManager 进行上传
             Upload upload = transferManager.upload(
-                x -> x.requestBody(body)
+                x -> x.requestBody(body).addTransferListener(LoggingTransferListener.create())
                     .putObjectRequest(
                         y -> y.bucket(properties.getBucketName())
                             .key(key)
