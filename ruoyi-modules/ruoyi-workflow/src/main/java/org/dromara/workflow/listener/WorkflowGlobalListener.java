@@ -157,7 +157,7 @@ public class WorkflowGlobalListener implements GlobalListener {
             flwTaskService.setCopy(task, flowCopyList);
         }
         if (variable.containsKey(FlowConstant.MESSAGE_TYPE)) {
-            List<String> messageType = MapUtil.get(variable, FlowConstant.FLOW_COPY_LIST, new TypeReference<>() {});
+            List<String> messageType = MapUtil.get(variable, FlowConstant.MESSAGE_TYPE, new TypeReference<>() {});
             String notice = MapUtil.getStr(variable, FlowConstant.MESSAGE_NOTICE);
             // 消息通知
             if (CollUtil.isNotEmpty(messageType)) {
