@@ -99,3 +99,15 @@ export const invalid = (data: any) => {
     data: data
   });
 };
+/**
+ * 修改流程变量
+ * @param data 参数
+ * @returns
+ */
+export const updateVariable = (data: any) => {
+  return request({
+    url: `/workflow/instance/updateVariable`,
+    method: 'put',
+    data: data
+  });
+};

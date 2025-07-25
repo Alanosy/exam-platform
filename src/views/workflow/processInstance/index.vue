@@ -20,14 +20,6 @@
         </el-card>
       </el-col>
       <el-col :lg="20" :xs="24">
-        <!--        <div class="mb-[10px]">
-                  <el-card shadow="hover" class="text-center">
-                    <el-radio-group v-model="tab" @change="changeTab(tab)">
-                      <el-radio-button value="running">运行中</el-radio-button>
-                      <el-radio-button value="finish">已完成</el-radio-button>
-                    </el-radio-group>
-                  </el-card>
-                </div>-->
         <transition :enter-active-class="proxy?.animate.searchAnimate.enter" :leave-active-class="proxy?.animate.searchAnimate.leave">
           <div v-show="showSearch" class="mb-[10px]">
             <el-card shadow="hover">
@@ -154,8 +146,8 @@
       </el-table>
     </el-dialog>
     <!-- 流程变量开始 -->
-    <el-dialog v-model="variableVisible" draggable title="流程变量" width="60%" :close-on-click-modal="false">
-      <el-card v-loading="variableLoading" class="box-card">
+    <el-dialog v-model="variableVisible" v-if="variableVisible" draggable title="流程变量" width="60%" :close-on-click-modal="false">
+      <el-card v-loading="variableLoading">
         <template #header>
           <div class="clearfix">
             <span
@@ -167,6 +159,19 @@
           <VueJsonPretty :data="formatToJsonObject(variables)" />
         </div>
       </el-card>
+      <el-card v-loading="variableLoading">
+        <el-form ref="ruleFormRef" :model="form" :inline="true" :rules="rules" label-width="120px">
+          <el-form-item label="变量KEY" prop="key">
+            <el-input v-model="form.key" placeholder="请输入变量KEY" />
+          </el-form-item>
+          <el-form-item label="变量值" prop="value">
+            <el-input v-model="form.value" placeholder="请输入变量值" />
+          </el-form-item>
+          <el-form-item>
+            <el-button type="primary" @click="handleVariable(ruleFormRef)">确认</el-button>
+          </el-form-item>
+        </el-form>
+      </el-card>
     </el-dialog>
     <!-- 流程变量结束 -->
 
@@ -176,7 +181,7 @@
 </template>
 
 <script setup lang="ts">
-import { pageByRunning, pageByFinish, deleteByInstanceIds, instanceVariable, invalid } from '@/api/workflow/instance';
+import { pageByRunning, pageByFinish, deleteByInstanceIds, instanceVariable, invalid, updateVariable } from '@/api/workflow/instance';
 import { categoryTree } from '@/api/workflow/category';
 import { CategoryTreeVO } from '@/api/workflow/category/types';
 import { FlowInstanceQuery, FlowInstanceVO } from '@/api/workflow/instance/types';
@@ -185,6 +190,7 @@ import { RouterJumpVo } from '@/api/workflow/workflowCommon/types';
 import VueJsonPretty from 'vue-json-pretty';
 import 'vue-json-pretty/lib/styles.css';
 import UserSelect from '@/components/UserSelect/index.vue';
+import { ElForm, FormInstance } from 'element-plus';
 //审批记录组件
 const { proxy } = getCurrentInstance() as ComponentInternalInstance;
 const { wf_business_status } = toRefs<any>(proxy?.useDict('wf_business_status'));
@@ -192,7 +198,12 @@ const queryFormRef = ref<ElFormInstance>();
 const categoryTreeRef = ref<ElTreeInstance>();
 import { ref } from 'vue';
 import { UserVO } from '@/api/system/user/types';
-
+const form = ref<Record<string, any>>({
+  instanceId: undefined,
+  key: undefined,
+  value: undefined
+});
+const ruleFormRef = ref<FormInstance>();
 const userSelectRef = ref<InstanceType<typeof UserSelect>>();
 // 遮罩层
 const loading = ref(true);
@@ -208,6 +219,8 @@ const multiple = ref(true);
 const showSearch = ref(true);
 // 总条数
 const total = ref(0);
+// 实例id
+const instanceId = ref(undefined);
 
 // 流程变量是否显示
 const variableVisible = ref(false);
@@ -378,12 +391,16 @@ const handleView = (row) => {
 
 //查询流程变量
 const handleInstanceVariable = async (row: FlowInstanceVO) => {
+  instanceId.value = row.id;
   variableLoading.value = true;
   variableVisible.value = true;
   processDefinitionName.value = row.flowName;
   const data = await instanceVariable(row.id);
   variables.value = data.data.variable;
   variableLoading.value = false;
+  form.value.instanceId = undefined;
+  form.value.key = undefined;
+  form.value.value = undefined;
 };
 
 /**
@@ -414,6 +431,36 @@ const userSelectCallBack = (data: UserVO[]) => {
     queryParams.value.createByIds = selectUserIds.value;
   }
 };
+const rules = reactive<Record<string, any>>({
+  key: [
+    {
+      required: true,
+      message: '请输入KEY',
+      trigger: 'blur'
+    }
+  ],
+  value: [
+    {
+      required: true,
+      message: '请输入变量值',
+      trigger: 'blur'
+    }
+  ]
+});
+
+const handleVariable = async (formEl: FormInstance | undefined) => {
+  await formEl.validate(async (valid, fields) => {
+    if (valid) {
+      form.value.instanceId = instanceId.value;
+      await proxy?.$modal.confirm('是否确认提交？');
+      await updateVariable(form.value);
+      proxy?.$modal.msgSuccess('操作成功');
+      variableVisible.value = false;
+      await handleQuery();
+    }
+  });
+};
+
 onMounted(() => {
   getProcessInstanceRunningList();
   getTreeselect();
