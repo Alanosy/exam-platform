@@ -1,8 +1,8 @@
 package org.dromara.system.controller.system;
 
-import cn.hutool.crypto.digest.BCrypt;
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.io.FileUtil;
+import cn.hutool.crypto.digest.BCrypt;
 import lombok.RequiredArgsConstructor;
 import org.apache.dubbo.config.annotation.DubboReference;
 import org.apache.seata.spring.annotation.GlobalTransactional;
@@ -21,6 +21,7 @@ import org.dromara.resource.api.domain.RemoteFile;
 import org.dromara.system.domain.bo.SysUserBo;
 import org.dromara.system.domain.bo.SysUserPasswordBo;
 import org.dromara.system.domain.bo.SysUserProfileBo;
+import org.dromara.system.domain.vo.ProfileUserVo;
 import org.dromara.system.domain.vo.SysUserVo;
 import org.dromara.system.service.ISysUserService;
 import org.springframework.http.MediaType;
@@ -55,7 +56,9 @@ public class SysProfileController extends BaseController {
         SysUserVo user = userService.selectUserById(LoginHelper.getUserId());
         String roleGroup = userService.selectUserRoleGroup(user.getUserId());
         String postGroup = userService.selectUserPostGroup(user.getUserId());
-        ProfileVo profileVo = new ProfileVo(user, roleGroup, postGroup);
+        // 单独做一个vo专门给个人中心用 避免数据被脱敏
+        ProfileUserVo profileUser = BeanUtil.toBean(user, ProfileUserVo.class);
+        ProfileVo profileVo = new ProfileVo(profileUser, roleGroup, postGroup);
         return R.ok(profileVo);
     }
 
@@ -134,6 +137,6 @@ public class SysProfileController extends BaseController {
 
     public record AvatarVo(String imgUrl) {}
 
-    public record ProfileVo(SysUserVo user, String roleGroup, String postGroup) {}
+    public record ProfileVo(ProfileUserVo user, String roleGroup, String postGroup) {}
 
 }
