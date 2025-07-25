@@ -191,3 +191,16 @@ export const getNextNodeList = (data: any): any => {
     data: data
   });
 };
+
+/**
+ * 催办任务
+ * @param data参数
+ * @returns
+ */
+export const urgeTask = (data: any): any => {
+  return request({
+    url: '/workflow/task/urgeTask',
+    method: 'post',
+    data: data
+  });
+};
