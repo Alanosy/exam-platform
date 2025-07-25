@@ -455,8 +455,8 @@ const handleVariable = async (formEl: FormInstance | undefined) => {
       await proxy?.$modal.confirm('是否确认提交？');
       await updateVariable(form.value);
       proxy?.$modal.msgSuccess('操作成功');
-      variableVisible.value = false;
-      await handleQuery();
+      const data = await instanceVariable(instanceId.value);
+      variables.value = data.data.variable;
     }
   });
 };
