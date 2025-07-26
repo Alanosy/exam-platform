@@ -67,9 +67,9 @@ public class SaPermissionImpl implements StpInterface {
         if (userType == UserType.APP_USER) {
             // 其他端 自行根据业务编写
         }
-        if (CollUtil.isNotEmpty(loginUser.getMenuPermission())) {
+        if (CollUtil.isNotEmpty(loginUser.getRolePermission())) {
             // SYS_USER 默认返回权限
-            return new ArrayList<>(loginUser.getMenuPermission());
+            return new ArrayList<>(loginUser.getRolePermission());
         } else {
             return new ArrayList<>();
         }
