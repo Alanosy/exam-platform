@@ -4,9 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="9f91ae12-c926-451e-b026-1b3559a4a2f9" name="Changes" comment="修复教师阅卷的分页问题">
-      <change beforePath="$PROJECT_DIR$/src/main/java/cn/org/alan/exam/utils/agent/impl/LLMUtil.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/cn/org/alan/exam/utils/agent/impl/LLMUtil.java" afterDir="false" />
-    </list>
+    <list default="true" id="9f91ae12-c926-451e-b026-1b3559a4a2f9" name="Changes" comment="修复日志没有记录问题" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -46,7 +44,7 @@
     &quot;project.structure.last.edited&quot;: &quot;Project&quot;,
     &quot;project.structure.proportion&quot;: &quot;0.0&quot;,
     &quot;project.structure.side.proportion&quot;: &quot;0.2&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;MavenSettings&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.pluginManager&quot;,
     &quot;spring.configuration.checksum&quot;: &quot;654816f85dfe2115674e7115c7d1ea51&quot;
   }
 }</component>
@@ -98,6 +96,17 @@
       <workItem from="1747314238366" duration="1149000" />
       <workItem from="1747403196791" duration="2652000" />
       <workItem from="1747409737800" duration="5122000" />
+      <workItem from="1747505313800" duration="28000" />
+      <workItem from="1747505464945" duration="37000" />
+      <workItem from="1747666613847" duration="216000" />
+      <workItem from="1748194129254" duration="212000" />
+      <workItem from="1748194403822" duration="1496000" />
+      <workItem from="1748441449357" duration="540000" />
+      <workItem from="1748716378143" duration="1960000" />
+      <workItem from="1748746881667" duration="656000" />
+      <workItem from="1749657393739" duration="130000" />
+      <workItem from="1749658195328" duration="321000" />
+      <workItem from="1750591035013" duration="111000" />
     </task>
     <task id="LOCAL-00001" summary="添加新功能：讨论功能，Ai阅卷、题库添加分类管理、成绩分析添加查看用户试卷、添加考试可以直接选题和抽题">
       <created>1745760494820</created>
@@ -134,11 +143,29 @@
       <option name="project" value="LOCAL" />
       <updated>1747492956080</updated>
     </task>
-    <option name="localTasksCounter" value="6" />
+    <task id="LOCAL-00006" summary="修复日志没有记录问题">
+      <created>1748195672588</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1748195672588</updated>
+    </task>
+    <option name="localTasksCounter" value="7" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="3" />
+  </component>
+  <component name="Vcs.Log.History.Properties">
+    <option name="COLUMN_ID_ORDER">
+      <list>
+        <option value="Default.Root" />
+        <option value="Default.Author" />
+        <option value="Default.Date" />
+        <option value="Default.Subject" />
+        <option value="Space.CommitStatus" />
+      </list>
+    </option>
   </component>
   <component name="Vcs.Log.Tabs.Properties">
     <option name="TAB_STATES">
@@ -157,7 +184,8 @@
     <MESSAGE value="修复bug，修改考试，无法开始考试问题" />
     <MESSAGE value="修复考试时间不正确问题，修复自选试题组卷倒是考试乱序没分类问题" />
     <MESSAGE value="修复教师阅卷的分页问题" />
-    <option name="LAST_COMMIT_MESSAGE" value="修复教师阅卷的分页问题" />
+    <MESSAGE value="修复日志没有记录问题" />
+    <option name="LAST_COMMIT_MESSAGE" value="修复日志没有记录问题" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
