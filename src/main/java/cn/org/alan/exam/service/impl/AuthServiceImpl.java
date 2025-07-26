@@ -42,6 +42,7 @@ import java.io.IOException;
 import java.time.*;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -146,7 +147,7 @@ public class AuthServiceImpl implements IAuthService {
 
         // 记录日志
         String device = httpServletRequest.getHeader("User-Agent");
-        String ipRegion = IPUtils.getIPRegion(httpServletRequest);
+        String ipRegion = Optional.ofNullable(IPUtils.getIPRegion(httpServletRequest)).orElse("暂无信息");
         Log log = Log.builder()
                 .place(ipRegion)
                 .device(extractDeviceType(device))
@@ -188,7 +189,7 @@ public class AuthServiceImpl implements IAuthService {
         if (StringUtils.isNotBlank(token) && session != null) {
             // 记录日志
             String device = httpServletRequest.getHeader("User-Agent");
-            String ipRegion = IPUtils.getIPRegion(httpServletRequest);
+            String ipRegion = Optional.ofNullable(IPUtils.getIPRegion(httpServletRequest)).orElse("暂无信息");
             Log log = Log.builder()
                     .place(ipRegion)
                     .device(extractDeviceType(device))
