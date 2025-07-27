@@ -181,7 +181,15 @@
 </template>
 
 <script setup lang="ts">
-import { pageByRunning, pageByFinish, deleteByInstanceIds, instanceVariable, invalid, updateVariable } from '@/api/workflow/instance';
+import {
+  pageByRunning,
+  pageByFinish,
+  deleteByInstanceIds,
+  deleteHisByInstanceIds,
+  instanceVariable,
+  invalid,
+  updateVariable
+} from '@/api/workflow/instance';
 import { categoryTree } from '@/api/workflow/category';
 import { CategoryTreeVO } from '@/api/workflow/category/types';
 import { FlowInstanceQuery, FlowInstanceVO } from '@/api/workflow/instance/types';
@@ -346,7 +354,7 @@ const handleDelete = async (row: FlowInstanceVO) => {
     await deleteByInstanceIds(instanceIdList).finally(() => (loading.value = false));
     getProcessInstanceRunningList();
   } else {
-    await deleteByInstanceIds(instanceIdList).finally(() => (loading.value = false));
+    await deleteHisByInstanceIds(instanceIdList).finally(() => (loading.value = false));
     getProcessInstanceFinishList();
   }
   proxy?.$modal.msgSuccess('删除成功');
