@@ -83,4 +83,9 @@ public interface FlowConstant {
      */
     String WF_TASK_STATUS = "wf_task_status";
 
+    /**
+     * 自动通过
+     */
+    String AUTO_PASS = "autoPass";
+
 }

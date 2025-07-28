@@ -166,6 +166,14 @@ public interface IFlwTaskService {
     List<FlowTask> selectByInstId(Long instanceId);
 
     /**
+     * 按照实例id查询任务
+     *
+     * @param instanceIds 列表
+     * @return 结果
+     */
+    List<FlowTask> selectByInstIds(List<Long> instanceIds);
+
+    /**
      * 判断流程是否已结束（即该流程实例下是否还有未完成的任务）
      *
      * @param instanceId 流程实例ID

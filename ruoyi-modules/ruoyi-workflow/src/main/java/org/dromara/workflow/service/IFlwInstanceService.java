@@ -86,6 +86,14 @@ public interface IFlwInstanceService {
     boolean deleteByInstanceIds(List<Long> instanceIds);
 
     /**
+     * 按照实例id删除已完成得流程实例
+     *
+     * @param instanceIds 删除的实例id
+     * @return 删除结果
+     */
+    boolean deleteHisByInstanceIds(List<Long> instanceIds);
+
+    /**
      * 撤销流程
      *
      * @param bo 参数

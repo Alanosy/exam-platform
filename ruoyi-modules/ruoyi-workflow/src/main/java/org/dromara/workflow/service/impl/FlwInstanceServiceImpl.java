@@ -211,18 +211,71 @@ public class FlwInstanceServiceImpl implements IFlwInstanceService {
             Function.identity()
         );
 
-        // 逐一触发删除事件
-        instances.forEach(instance -> {
-            Definition definition = definitionMap.get(instance.getDefinitionId());
-            if (ObjectUtil.isNull(definition)) {
-                log.warn("实例 ID: {} 对应的流程定义信息未找到，跳过删除事件触发。", instance.getId());
-                return;
+        try {
+            // 逐一触发删除事件
+            instances.forEach(instance -> {
+                Definition definition = definitionMap.get(instance.getDefinitionId());
+                if (ObjectUtil.isNull(definition)) {
+                    log.warn("实例 ID: {} 对应的流程定义信息未找到，跳过删除事件触发。", instance.getId());
+                    return;
+                }
+                flowProcessEventHandler.processDeleteHandler(definition.getFlowCode(), instance.getBusinessId());
+            });
+            // 删除实例
+            boolean remove = insService.remove(instanceIds);
+            if (!remove) {
+                log.warn("删除流程实例失败!");
+                throw new ServiceException("删除流程实例失败");
             }
-            flowProcessEventHandler.processDeleteHandler(definition.getFlowCode(), instance.getBusinessId());
-        });
+        } catch (Exception e) {
+            log.warn("操作失败!{}", e.getMessage());
+            throw new ServiceException(e.getMessage());
+        }
+        return true;
+    }
 
-        // 删除实例
-        return insService.remove(instanceIds);
+    /**
+     * 按照实例id删除已完成的流程实例
+     *
+     * @param instanceIds 实例id
+     */
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public boolean deleteHisByInstanceIds(List<Long> instanceIds) {
+        // 获取实例信息
+        List<Instance> instances = insService.getByIds(instanceIds);
+        if (CollUtil.isEmpty(instances)) {
+            log.warn("未找到对应的流程实例信息，无法执行删除操作。");
+            return false;
+        }
+        // 获取定义信息
+        Map<Long, Definition> definitionMap = StreamUtils.toMap(
+            defService.getByIds(StreamUtils.toList(instances, Instance::getDefinitionId)),
+            Definition::getId,
+            Function.identity()
+        );
+        try {
+            // 逐一触发删除事件
+            instances.forEach(instance -> {
+                Definition definition = definitionMap.get(instance.getDefinitionId());
+                if (ObjectUtil.isNull(definition)) {
+                    log.warn("实例 ID: {} 对应的流程定义信息未找到，跳过删除事件触发。", instance.getId());
+                    return;
+                }
+                flowProcessEventHandler.processDeleteHandler(definition.getFlowCode(), instance.getBusinessId());
+            });
+            List<FlowTask> flowTaskList = flwTaskService.selectByInstIds(instanceIds);
+            if (CollUtil.isNotEmpty(flowTaskList)) {
+                FlowEngine.userService().deleteByTaskIds(StreamUtils.toList(flowTaskList, FlowTask::getId));
+            }
+            FlowEngine.taskService().deleteByInsIds(instanceIds);
+            FlowEngine.hisTaskService().deleteByInsIds(instanceIds);
+            FlowEngine.insService().removeByIds(instanceIds);
+        } catch (Exception e) {
+            log.warn("操作失败!{}", e.getMessage());
+            throw new ServiceException(e.getMessage());
+        }
+        return true;
     }
 
     /**
