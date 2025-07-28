@@ -27,7 +27,7 @@
 > 成员前端项目地址: 基于soybean [ruoyi-plus-soybean](https://gitee.com/xlsea/ruoyi-plus-soybean)<br>
 > 成员项目地址: 删除多租户与工作流 [RuoYi-Vue-Plus-Single](https://gitee.com/ColorDreams/RuoYi-Vue-Plus-Single)<br>
 
-> 文档地址: [plus-doc](https://plus-doc.dromara.org) 文档在华为云上如果打不开大概率是DNS问题 可以尝试切换网络等方式(或者科学上网)
+> 文档地址: [plus-doc](https://plus-doc.dromara.org) 国内加速: [plus-doc.top](https://plus-doc.top)
 
 ## 赞助商
 
