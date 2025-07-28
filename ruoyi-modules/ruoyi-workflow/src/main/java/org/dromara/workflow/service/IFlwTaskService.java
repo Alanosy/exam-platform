@@ -111,11 +111,11 @@ public interface IFlwTaskService {
     /**
      * 获取可驳回的前置节点
      *
-     * @param definitionId 流程定义id
+     * @param taskId       任务id
      * @param nowNodeCode  当前节点
      * @return 结果
      */
-    List<Node> getBackTaskNode(Long definitionId, String nowNodeCode);
+    List<Node> getBackTaskNode(Long taskId, String nowNodeCode);
 
     /**
      * 终止任务

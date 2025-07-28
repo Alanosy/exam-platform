@@ -29,6 +29,7 @@ import org.dromara.warm.flow.core.dto.FlowParams;
 import org.dromara.warm.flow.core.entity.*;
 import org.dromara.warm.flow.core.enums.NodeType;
 import org.dromara.warm.flow.core.enums.SkipType;
+import org.dromara.warm.flow.core.enums.UserType;
 import org.dromara.warm.flow.core.service.*;
 import org.dromara.warm.flow.core.utils.ExpressionUtil;
 import org.dromara.warm.flow.core.utils.MapUtil;
@@ -422,22 +423,28 @@ public class FlwTaskServiceImpl implements IFlwTaskService {
     /**
      * 获取可驳回的前置节点
      *
-     * @param definitionId 流程定义id
+     * @param taskId       任务id
      * @param nowNodeCode  当前节点
      */
     @Override
-    public List<Node> getBackTaskNode(Long definitionId, String nowNodeCode) {
-        List<Node> nodeCodes = nodeService.getByNodeCodes(Collections.singletonList(nowNodeCode), definitionId);
+    public List<Node> getBackTaskNode(Long taskId, String nowNodeCode) {
+        FlowTask task = flowTaskMapper.selectById(taskId);
+        List<Node> nodeCodes = nodeService.getByNodeCodes(Collections.singletonList(nowNodeCode), task.getDefinitionId());
         if (!CollUtil.isNotEmpty(nodeCodes)) {
+            return nodeCodes;
+        }
+        List<User> userList = FlowEngine.userService()
+            .getByAssociateds(Collections.singletonList(task.getId()), UserType.DEPUTE.getKey());
+        if (CollUtil.isNotEmpty(userList)) {
             return nodeCodes;
         }
         //判断是否配置了固定驳回节点
         Node node = nodeCodes.get(0);
         if (StringUtils.isNotBlank(node.getAnyNodeSkip())) {
-            return nodeService.getByNodeCodes(Collections.singletonList(node.getAnyNodeSkip()), definitionId);
+            return nodeService.getByNodeCodes(Collections.singletonList(node.getAnyNodeSkip()), task.getDefinitionId());
         }
         //获取可驳回的前置节点
-        List<Node> nodes = nodeService.previousNodeList(definitionId, nowNodeCode);
+        List<Node> nodes = nodeService.previousNodeList(task.getDefinitionId(), nowNodeCode);
         if (CollUtil.isNotEmpty(nodes)) {
             return StreamUtils.filter(nodes, e -> NodeType.BETWEEN.getKey().equals(e.getNodeType()));
         }
