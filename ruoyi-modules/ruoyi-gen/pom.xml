@@ -71,12 +71,6 @@
 
         <dependency>
             <groupId>org.anyline</groupId>
-            <artifactId>anyline-environment-spring-data-jdbc</artifactId>
-            <version>${anyline.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.anyline</groupId>
             <artifactId>anyline-data-jdbc-mysql</artifactId>
             <version>${anyline.version}</version>
         </dependency>

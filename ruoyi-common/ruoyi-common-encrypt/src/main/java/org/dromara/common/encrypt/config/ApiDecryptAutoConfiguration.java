@@ -6,6 +6,7 @@ import org.dromara.common.encrypt.properties.ApiDecryptProperties;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.boot.web.servlet.FilterRegistration;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 
@@ -20,13 +21,14 @@ import org.springframework.context.annotation.Bean;
 public class ApiDecryptAutoConfiguration {
 
     @Bean
-    public FilterRegistrationBean<CryptoFilter> cryptoFilterRegistration(ApiDecryptProperties properties) {
-        FilterRegistrationBean<CryptoFilter> registration = new FilterRegistrationBean<>();
-        registration.setDispatcherTypes(DispatcherType.REQUEST);
-        registration.setFilter(new CryptoFilter(properties));
-        registration.addUrlPatterns("/*");
-        registration.setName("cryptoFilter");
-        registration.setOrder(FilterRegistrationBean.HIGHEST_PRECEDENCE);
-        return registration;
+    @FilterRegistration(
+        name = "cryptoFilter",
+        urlPatterns = "/*",
+        order = FilterRegistrationBean.HIGHEST_PRECEDENCE,
+        dispatcherTypes = DispatcherType.REQUEST
+    )
+    public CryptoFilter cryptoFilter(ApiDecryptProperties properties) {
+        return new CryptoFilter(properties);
     }
+
 }

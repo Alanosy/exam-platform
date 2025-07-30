@@ -44,6 +44,11 @@ spring:
     # 开启虚拟线程 仅jdk21可用
     virtual:
       enabled: false
+  task:
+    execution:
+      # 从 springboot 3.5 开始 spring自带线程池
+      # 不再需要 AsyncConfig与ThreadPoolConfig 可直接注入线程池使用
+      thread-name-prefix: async-
   # 资源信息
   messages:
     # 国际化资源文件路径

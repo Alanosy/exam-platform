@@ -12,6 +12,7 @@ import org.springframework.security.config.annotation.web.configurers.HeadersCon
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.SavedRequestAwareAuthenticationSuccessHandler;
 import org.springframework.security.web.servlet.util.matcher.MvcRequestMatcher;
+import org.springframework.security.web.servlet.util.matcher.PathPatternRequestMatcher;
 import org.springframework.web.servlet.handler.HandlerMappingIntrospector;
 
 /**
@@ -30,7 +31,7 @@ public class WebSecurityConfigurer {
     }
 
     @Bean
-    public SecurityFilterChain filterChain(HttpSecurity httpSecurity, MvcRequestMatcher.Builder mvc) throws Exception {
+    public SecurityFilterChain filterChain(HttpSecurity httpSecurity, PathPatternRequestMatcher.Builder mvc) throws Exception {
         SavedRequestAwareAuthenticationSuccessHandler successHandler = new SavedRequestAwareAuthenticationSuccessHandler();
         successHandler.setTargetUrlParameter("redirectTo");
         successHandler.setDefaultTargetUrl(adminContextPath + "/");
@@ -40,8 +41,8 @@ public class WebSecurityConfigurer {
                 header.frameOptions(HeadersConfigurer.FrameOptionsConfig::disable))
             .authorizeHttpRequests((authorize) ->
                 authorize.requestMatchers(
-                        mvc.pattern(adminContextPath + "/assets/**"),
-                        mvc.pattern(adminContextPath + "/login")
+                        mvc.matcher(adminContextPath + "/assets/**"),
+                        mvc.matcher(adminContextPath + "/login")
                     ).permitAll()
                     .anyRequest().authenticated())
             .formLogin((formLogin) ->
