@@ -3,7 +3,6 @@ package org.dromara.modules.monitor.config;
 import de.codecentric.boot.admin.server.config.AdminServerProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Scope;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -11,9 +10,7 @@ import org.springframework.security.config.annotation.web.configurers.AbstractHt
 import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.SavedRequestAwareAuthenticationSuccessHandler;
-import org.springframework.security.web.servlet.util.matcher.MvcRequestMatcher;
 import org.springframework.security.web.servlet.util.matcher.PathPatternRequestMatcher;
-import org.springframework.web.servlet.handler.HandlerMappingIntrospector;
 
 /**
  * admin 监控 安全配置
@@ -31,11 +28,11 @@ public class WebSecurityConfigurer {
     }
 
     @Bean
-    public SecurityFilterChain filterChain(HttpSecurity httpSecurity, PathPatternRequestMatcher.Builder mvc) throws Exception {
+    public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
         SavedRequestAwareAuthenticationSuccessHandler successHandler = new SavedRequestAwareAuthenticationSuccessHandler();
         successHandler.setTargetUrlParameter("redirectTo");
         successHandler.setDefaultTargetUrl(adminContextPath + "/");
-
+        PathPatternRequestMatcher.Builder mvc = PathPatternRequestMatcher.withDefaults();
         return httpSecurity
             .headers((header) ->
                 header.frameOptions(HeadersConfigurer.FrameOptionsConfig::disable))
@@ -52,12 +49,6 @@ public class WebSecurityConfigurer {
             .httpBasic(Customizer.withDefaults())
             .csrf(AbstractHttpConfigurer::disable)
             .build();
-    }
-
-    @Scope("prototype")
-    @Bean
-    public MvcRequestMatcher.Builder mvc(HandlerMappingIntrospector introspector) {
-        return new MvcRequestMatcher.Builder(introspector);
     }
 
 }
