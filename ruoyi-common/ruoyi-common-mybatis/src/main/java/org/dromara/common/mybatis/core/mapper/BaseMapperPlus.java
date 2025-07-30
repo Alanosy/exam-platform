@@ -6,20 +6,21 @@ import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
-import com.baomidou.mybatisplus.core.toolkit.ReflectionKit;
+import com.baomidou.mybatisplus.core.toolkit.Constants;
+import com.baomidou.mybatisplus.core.toolkit.reflect.GenericTypeUtils;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.toolkit.Db;
+import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.logging.Log;
 import org.apache.ibatis.logging.LogFactory;
 import org.dromara.common.core.utils.MapstructUtils;
+import org.dromara.common.core.utils.StreamUtils;
 
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.function.Function;
-import java.util.stream.Collectors;
 
 /**
  * 自定义 Mapper 接口, 实现 自定义扩展
@@ -35,25 +36,21 @@ public interface BaseMapperPlus<T, V> extends BaseMapper<T> {
     Log log = LogFactory.getLog(BaseMapperPlus.class);
 
     /**
-     * 获取当前类的泛型类型 V 的 Class 对象
-     * <p>
-     * 该方法使用反射机制从当前类（继承自 BaseMapperPlus 类）的泛型参数中获取第一个泛型类型 V 的 Class 对象
+     * 获取当前实例对象关联的泛型类型 V 的 Class 对象
      *
-     * @return 当前类的泛型类型 V 的 Class 对象
+     * @return 返回当前实例对象关联的泛型类型 V 的 Class 对象
      */
     default Class<V> currentVoClass() {
-        return (Class<V>) ReflectionKit.getSuperClassGenericType(this.getClass(), BaseMapperPlus.class, 1);
+        return (Class<V>) GenericTypeUtils.resolveTypeArguments(this.getClass(), BaseMapperPlus.class)[1];
     }
 
     /**
-     * 获取当前类的泛型类型 T 的 Class 对象
-     * <p>
-     * 该方法使用反射机制从当前类（继承自 BaseMapperPlus 类）的泛型参数中获取第一个泛型类型 T 的 Class 对象
+     * 获取当前实例对象关联的泛型类型 T 的 Class 对象
      *
-     * @return 当前类的泛型类型 T 的 Class 对象
+     * @return 返回当前实例对象关联的泛型类型 T 的 Class 对象
      */
     default Class<T> currentModelClass() {
-        return (Class<T>) ReflectionKit.getSuperClassGenericType(this.getClass(), BaseMapperPlus.class, 0);
+        return (Class<T>) GenericTypeUtils.resolveTypeArguments(this.getClass(), BaseMapperPlus.class)[0];
     }
 
     /**
@@ -135,7 +132,7 @@ public interface BaseMapperPlus<T, V> extends BaseMapper<T> {
      * @return 查询到的单个VO对象
      */
     default V selectVoById(Serializable id) {
-        return selectVoById(id, this.currentVoClass());
+        return this.selectVoById(id, this.currentVoClass());
     }
 
     /**
@@ -161,7 +158,7 @@ public interface BaseMapperPlus<T, V> extends BaseMapper<T> {
      * @return 查询到的VO对象列表
      */
     default List<V> selectVoByIds(Collection<? extends Serializable> idList) {
-        return selectVoByIds(idList, this.currentVoClass());
+        return this.selectVoByIds(idList, this.currentVoClass());
     }
 
     /**
@@ -187,7 +184,7 @@ public interface BaseMapperPlus<T, V> extends BaseMapper<T> {
      * @return 查询到的VO对象列表
      */
     default List<V> selectVoByMap(Map<String, Object> map) {
-        return selectVoByMap(map, this.currentVoClass());
+        return this.selectVoByMap(map, this.currentVoClass());
     }
 
     /**
@@ -213,7 +210,7 @@ public interface BaseMapperPlus<T, V> extends BaseMapper<T> {
      * @return 查询到的单个VO对象
      */
     default V selectVoOne(Wrapper<T> wrapper) {
-        return selectVoOne(wrapper, this.currentVoClass());
+        return this.selectVoOne(wrapper, this.currentVoClass());
     }
 
     /**
@@ -224,11 +221,12 @@ public interface BaseMapperPlus<T, V> extends BaseMapper<T> {
      * @return 查询到的单个VO对象
      */
     default V selectVoOne(Wrapper<T> wrapper, boolean throwEx) {
-        return selectVoOne(wrapper, this.currentVoClass(), throwEx);
+        return this.selectVoOne(wrapper, this.currentVoClass(), throwEx);
     }
 
     /**
-     * 根据条件查询单个VO对象，并指定返回的VO对象的类型
+     * 根据条件查询单个VO对象，并指定返回的VO对象的类型(自动拼接 limit 1)
+     * 注意不要再自己添加 limit 1 做限制了
      *
      * @param wrapper 查询条件Wrapper
      * @param voClass 返回的VO对象的Class对象
@@ -236,15 +234,12 @@ public interface BaseMapperPlus<T, V> extends BaseMapper<T> {
      * @return 查询到的单个VO对象，经过类型转换为指定的VO类后返回
      */
     default <C> C selectVoOne(Wrapper<T> wrapper, Class<C> voClass) {
-        T obj = this.selectOne(wrapper);
-        if (ObjectUtil.isNull(obj)) {
-            return null;
-        }
-        return MapstructUtils.convert(obj, voClass);
+        return this.selectVoOne(wrapper, voClass, true);
     }
 
     /**
-     * 根据条件查询单个实体对象，并将其转换为指定的VO对象
+     * 根据条件查询单个实体对象，并将其转换为指定的VO对象(自动拼接 limit 1)
+     * 注意不要再自己添加 limit 1 做限制了
      *
      * @param wrapper 查询条件Wrapper
      * @param voClass 要转换的VO类的Class对象
@@ -261,12 +256,32 @@ public interface BaseMapperPlus<T, V> extends BaseMapper<T> {
     }
 
     /**
+     * 根据条件查询单条记录（自动拼接 limit 1 限制返回 1 条数据，不依赖 {@code throwEx} 参数）
+     * 注意不要再自己添加 limit 1 做限制了
+     * <p>
+     * <strong>注意：</strong>
+     * 1. 使用 {@code Page<>(1, 1)} 强制分页查询，确保 SQL 自动添加 {@code LIMIT 1}，因此 {@code throwEx} 参数不再生效
+     * 2. 原方法的 {@code throwEx} 逻辑（多条数据抛异常）已被优化掉，因为分页查询不会返回多条记录
+     * </p>
+     *
+     * @param queryWrapper 查询条件（可为 null）
+     * @param throwEx      <del>是否抛出异常（已弃用，此参数不再生效）</del>
+     * @return 单条记录或无数据时返回 null
+     */
+    @Override
+    default T selectOne(@Param(Constants.WRAPPER) Wrapper<T> queryWrapper, boolean throwEx) {
+        // 强制分页查询（LIMIT 1），确保最多返回 1 条记录
+        List<T> list = this.selectList(new Page<>(1, 1), queryWrapper);
+        return CollUtil.isEmpty(list) ? null : list.get(0);
+    }
+
+    /**
      * 查询所有VO对象列表
      *
      * @return 查询到的VO对象列表
      */
     default List<V> selectVoList() {
-        return selectVoList(new QueryWrapper<>(), this.currentVoClass());
+        return this.selectVoList(new QueryWrapper<>(), this.currentVoClass());
     }
 
     /**
@@ -303,7 +318,7 @@ public interface BaseMapperPlus<T, V> extends BaseMapper<T> {
      * @return 查询到的VO对象分页列表
      */
     default <P extends IPage<V>> P selectVoPage(IPage<T> page, Wrapper<T> wrapper) {
-        return selectVoPage(page, wrapper, this.currentVoClass());
+        return this.selectVoPage(page, wrapper, this.currentVoClass());
     }
 
     /**
@@ -337,7 +352,7 @@ public interface BaseMapperPlus<T, V> extends BaseMapper<T> {
      * @return 查询到的符合条件的对象列表，经过转换为指定类型的对象后返回
      */
     default <C> List<C> selectObjs(Wrapper<T> wrapper, Function<? super Object, C> mapper) {
-        return this.selectObjs(wrapper).stream().filter(Objects::nonNull).map(mapper).collect(Collectors.toList());
+        return StreamUtils.toList(this.selectObjs(wrapper), mapper);
     }
 
 }
