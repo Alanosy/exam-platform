@@ -74,7 +74,9 @@ public class PlusSaTokenDao implements SaTokenDaoBySessionFollowObject {
      */
     @Override
     public void delete(String key) {
-        RedisUtils.deleteObject(key);
+        if (RedisUtils.deleteObject(key)) {
+            CAFFEINE.invalidate(key);
+        }
     }
 
     /**
@@ -151,7 +153,9 @@ public class PlusSaTokenDao implements SaTokenDaoBySessionFollowObject {
      */
     @Override
     public void deleteObject(String key) {
-        RedisUtils.deleteObject(key);
+        if (RedisUtils.deleteObject(key)) {
+            CAFFEINE.invalidate(key);
+        }
     }
 
     /**
