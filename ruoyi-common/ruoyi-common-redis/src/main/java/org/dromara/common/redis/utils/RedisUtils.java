@@ -129,9 +129,9 @@ public class RedisUtils {
             } catch (Exception e) {
                 long timeToLive = bucket.remainTimeToLive();
                 if (timeToLive == -1) {
-                    setCacheObject(key, value);
+                    bucket.set(value);
                 } else {
-                    setCacheObject(key, value, Duration.ofMillis(timeToLive));
+                    bucket.set(value, Duration.ofMillis(timeToLive));
                 }
             }
         } else {
@@ -147,11 +147,8 @@ public class RedisUtils {
      * @param duration 时间
      */
     public static <T> void setCacheObject(final String key, final T value, final Duration duration) {
-        RBatch batch = CLIENT.createBatch();
-        RBucketAsync<T> bucket = batch.getBucket(key);
-        bucket.setAsync(value);
-        bucket.expireAsync(duration);
-        batch.execute();
+        RBucket<T> bucket = CLIENT.getBucket(key);
+        bucket.set(value, duration);
     }
 
     /**
