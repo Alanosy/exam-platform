@@ -178,6 +178,12 @@
           <el-form-item label="流程名称" prop="flowName">
             <el-input v-model="form.flowName" placeholder="请输入流程名称" maxlength="100" show-word-limit />
           </el-form-item>
+          <el-form-item label="设计器模式" prop="modelValue">
+            <el-radio-group v-model="form.modelValue" :disabled="!!form.id">
+              <el-radio value="CLASSICS" size="large" border>经典模式</el-radio>
+              <el-radio value="MIMIC" size="large" border>仿钉钉模式</el-radio>
+            </el-radio-group>
+          </el-form-item>
           <el-form-item label="流程配置">
             <el-checkbox v-model="autoPass" label="下一节点执行人是当前任务处理人自动审批" />
           </el-form-item>
@@ -256,6 +262,7 @@ const rules = {
   category: [{ required: true, message: '分类名称不能为空', trigger: 'blur' }],
   flowName: [{ required: true, message: '流程定义名称不能为空', trigger: 'blur' }],
   formCustom: [{ required: true, message: '请选择是否动态表单', trigger: 'change' }],
+  modelValue: [{ required: true, message: '设计器模式不能为空', trigger: 'change' }],
   flowCode: [{ required: true, message: '流程定义编码不能为空', trigger: 'blur' }]
 };
 const initFormData: FlowDefinitionForm = {
@@ -265,7 +272,8 @@ const initFormData: FlowDefinitionForm = {
   category: '',
   ext: '',
   formPath: '',
-  formCustom: ''
+  formCustom: '',
+  modelValue: ''
 };
 //流程定义参数
 const form = ref<FlowDefinitionForm>({
@@ -275,7 +283,8 @@ const form = ref<FlowDefinitionForm>({
   category: '',
   ext: '',
   formPath: '',
-  formCustom: ''
+  formCustom: '',
+  modelValue: ''
 });
 onMounted(() => {
   getPageList();
@@ -484,6 +493,8 @@ const handleAdd = async () => {
   if (queryParams.value.category != '') {
     form.value.category = queryParams.value.category;
   }
+  form.value.modelValue = 'CLASSICS';
+  form.value.formCustom = 'N';
   modelDialog.visible = true;
   modelDialog.title = '新增流程';
 };
