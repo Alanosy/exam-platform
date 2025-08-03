@@ -24,7 +24,7 @@ const iframeLoaded = () => {
   };
 };
 const open = async (definitionId, disabled) => {
-  const url = baseUrl + `/warm-flow-ui/index.html?id=${definitionId}&disabled=${disabled}`;
+  const url = baseUrl + `/warm-flow-ui/index.html?id=${definitionId}&onlyDesignShow=true`;
   iframeUrl.value = url + '&Authorization=Bearer ' + getToken() + '&clientid=' + import.meta.env.VITE_APP_CLIENT_ID;
 };
 /** 关闭按钮 */
