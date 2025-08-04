@@ -304,7 +304,7 @@ public class FlwTaskServiceImpl implements IFlwTaskService {
         List<User> userList = StreamUtils.toList(flowCopyList, x ->
             new FlowUser()
                 .setType(TaskAssigneeType.COPY.getCode())
-                .setProcessedBy(String.valueOf(x.getUserId()))
+                .setProcessedBy(Convert.toStr(x.getUserId()))
                 .setAssociated(taskId));
         // 批量保存抄送人员
         FlowEngine.userService().saveBatch(userList);

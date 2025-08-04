@@ -1,5 +1,6 @@
 package org.dromara.common.redis.utils;
 
+import cn.hutool.core.convert.Convert;
 import cn.hutool.core.date.DatePattern;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -119,7 +120,7 @@ public class SequenceUtils {
      * @return 唯一id
      */
     public static String getNextIdString(String key, Duration expireTime, long initValue, long stepValue) {
-        return String.valueOf(getNextId(key, expireTime, initValue, stepValue));
+        return Convert.toStr(getNextId(key, expireTime, initValue, stepValue));
     }
 
     /**
@@ -130,7 +131,7 @@ public class SequenceUtils {
      * @return 唯一id
      */
     public static String getNextIdString(String key, Duration expireTime) {
-        return String.valueOf(getNextId(key, expireTime));
+        return Convert.toStr(getNextId(key, expireTime));
     }
 
     /**

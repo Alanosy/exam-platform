@@ -110,7 +110,7 @@ public class FlwInstanceServiceImpl implements IFlwInstanceService {
      */
     @Override
     public FlowInstanceVo queryByBusinessId(Long businessId) {
-        FlowInstance instance = this.selectInstByBusinessId(String.valueOf(businessId));
+        FlowInstance instance = this.selectInstByBusinessId(Convert.toStr(businessId));
         FlowInstanceVo instanceVo = BeanUtil.toBean(instance, FlowInstanceVo.class);
         Definition definition = defService.getById(instanceVo.getDefinitionId());
         instanceVo.setFlowName(definition.getFlowName());

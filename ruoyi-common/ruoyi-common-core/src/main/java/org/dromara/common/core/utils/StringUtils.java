@@ -260,13 +260,13 @@ public class StringUtils extends org.apache.commons.lang3.StringUtils {
         if (s != null) {
             final int len = s.length();
             if (s.length() <= size) {
-                sb.append(String.valueOf(c).repeat(size - len));
+                sb.append(Convert.toStr(c).repeat(size - len));
                 sb.append(s);
             } else {
                 return s.substring(len - size, len);
             }
         } else {
-            sb.append(String.valueOf(c).repeat(Math.max(0, size)));
+            sb.append(Convert.toStr(c).repeat(Math.max(0, size)));
         }
         return sb.toString();
     }

@@ -233,7 +233,7 @@ public class FlwDefinitionServiceImpl implements IFlwDefinitionService {
             flowDefinition.setId(null);
             flowDefinition.setTenantId(tenantId);
             flowDefinition.setIsPublish(0);
-            flowDefinition.setCategory(String.valueOf(flowCategory.getCategoryId()));
+            flowDefinition.setCategory(Convert.toStr(flowCategory.getCategoryId()));
             int insert = flowDefinitionMapper.insert(flowDefinition);
             if (insert <= 0) {
                 log.info("同步流程定义【{}】失败！", definition.getFlowCode());

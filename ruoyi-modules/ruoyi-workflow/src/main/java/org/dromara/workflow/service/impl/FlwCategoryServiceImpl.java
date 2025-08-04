@@ -1,6 +1,7 @@
 package org.dromara.workflow.service.impl;
 
 import cn.hutool.core.collection.CollUtil;
+import cn.hutool.core.convert.Convert;
 import cn.hutool.core.lang.tree.Tree;
 import cn.hutool.core.util.ObjectUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
@@ -8,9 +9,11 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import lombok.RequiredArgsConstructor;
 import org.dromara.common.core.constant.SystemConstants;
 import org.dromara.common.core.exception.ServiceException;
-import org.dromara.common.core.utils.*;
+import org.dromara.common.core.utils.MapstructUtils;
+import org.dromara.common.core.utils.ObjectUtils;
+import org.dromara.common.core.utils.StringUtils;
+import org.dromara.common.core.utils.TreeBuildUtils;
 import org.dromara.common.mybatis.helper.DataBaseHelper;
-import org.dromara.common.satoken.utils.LoginHelper;
 import org.dromara.warm.flow.core.service.DefService;
 import org.dromara.warm.flow.orm.entity.FlowDefinition;
 import org.dromara.workflow.common.ConditionalOnEnable;
@@ -102,11 +105,11 @@ public class FlwCategoryServiceImpl implements IFlwCategoryService {
         }
         return TreeBuildUtils.buildMultiRoot(
             categoryList,
-            node -> String.valueOf(node.getCategoryId()),
-            node -> String.valueOf(node.getParentId()),
+            node -> Convert.toStr(node.getCategoryId()),
+            node -> Convert.toStr(node.getParentId()),
             (node, treeNode) -> treeNode
-                .setId(String.valueOf(node.getCategoryId()))
-                .setParentId(String.valueOf(node.getParentId()))
+                .setId(Convert.toStr(node.getCategoryId()))
+                .setParentId(Convert.toStr(node.getParentId()))
                 .setName(node.getCategoryName())
                 .setWeight(node.getOrderNum())
         );

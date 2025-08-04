@@ -61,7 +61,7 @@ public class RemoteTaskAssigneeServiceImpl implements RemoteTaskAssigneeService 
         TableDataInfo<SysRoleVo> page = roleService.selectPageRoleList(bo, pageQuery);
         // 使用封装的字段映射方法进行转换
         List<RemoteTaskAssigneeVo.TaskHandler> handlers = RemoteTaskAssigneeVo.convertToHandlerList(page.getRows(),
-            r -> String.valueOf(r.getRoleId()), SysRoleVo::getRoleKey, SysRoleVo::getRoleName, null, SysRoleVo::getCreateTime);
+            item -> Convert.toStr(item.getRoleId()), SysRoleVo::getRoleKey, SysRoleVo::getRoleName, null, SysRoleVo::getCreateTime);
         return new RemoteTaskAssigneeVo(page.getTotal(), handlers);
     }
 
