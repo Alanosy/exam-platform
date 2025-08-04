@@ -42,3 +42,11 @@ INSERT INTO sys_menu VALUES ('11803', '流程spel达式定义新增', '11801', 2
 INSERT INTO sys_menu VALUES ('11804', '流程spel达式定义修改', '11801', 3, '#', '', NULL, 1, 0, 'F', '0', '0', 'workflow:spel:edit', '#', 103, 1, SYSDATE, NULL, NULL, '');
 INSERT INTO sys_menu VALUES ('11805', '流程spel达式定义删除', '11801', 4, '#', '', NULL, 1, 0, 'F', '0', '0', 'workflow:spel:remove', '#', 103, 1, SYSDATE, NULL, NULL, '');
 INSERT INTO sys_menu VALUES ('11806', '流程spel达式定义导出', '11801', 5, '#', '', NULL, 1, 0, 'F', '0', '0', 'workflow:spel:export', '#', 103, 1, SYSDATE, NULL, NULL, '');
+
+ALTER TABLE flow_definition ADD model_value VARCHAR2(40) DEFAULT 'CLASSICS' NOT NULL;
+COMMENT ON COLUMN flow_definition.model_value IS '设计器模式（CLASSICS经典模式 MIMIC仿钉钉模式）';
+
+UPDATE flow_skip SET skip_condition = REPLACE(skip_condition, 'notNike', 'notLike');
+
+ALTER TABLE flow_his_task MODIFY (collaborator VARCHAR2(500) DEFAULT NULL NULL);
+COMMENT ON COLUMN flow_his_task.collaborator IS '协作人';

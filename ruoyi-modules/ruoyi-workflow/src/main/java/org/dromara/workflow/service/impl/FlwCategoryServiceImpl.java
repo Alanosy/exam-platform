@@ -9,13 +9,11 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import lombok.RequiredArgsConstructor;
 import org.dromara.common.core.constant.SystemConstants;
 import org.dromara.common.core.exception.ServiceException;
-import org.dromara.common.core.utils.MapstructUtils;
-import org.dromara.common.core.utils.ObjectUtils;
-import org.dromara.common.core.utils.StringUtils;
-import org.dromara.common.core.utils.TreeBuildUtils;
+import org.dromara.common.core.utils.*;
 import org.dromara.common.mybatis.helper.DataBaseHelper;
 import org.dromara.warm.flow.core.service.DefService;
 import org.dromara.warm.flow.orm.entity.FlowDefinition;
+import org.dromara.warm.flow.ui.service.CategoryService;
 import org.dromara.workflow.common.ConditionalOnEnable;
 import org.dromara.workflow.common.constant.FlowConstant;
 import org.dromara.workflow.domain.FlowCategory;
@@ -39,7 +37,7 @@ import java.util.List;
 @ConditionalOnEnable
 @RequiredArgsConstructor
 @Service
-public class FlwCategoryServiceImpl implements IFlwCategoryService {
+public class FlwCategoryServiceImpl implements IFlwCategoryService, CategoryService {
 
     private final DefService defService;
     private final FlwCategoryMapper baseMapper;
@@ -112,6 +110,21 @@ public class FlwCategoryServiceImpl implements IFlwCategoryService {
                 .setParentId(Convert.toStr(node.getParentId()))
                 .setName(node.getCategoryName())
                 .setWeight(node.getOrderNum())
+        );
+    }
+
+    /**
+     * 工作流查询分类
+     *
+     * @return 分类树结构列表
+     */
+    @Override
+    public List<org.dromara.warm.flow.core.dto.Tree> queryCategory() {
+        List<FlowCategoryVo> list = this.queryList(new FlowCategoryBo());
+        return StreamUtils.toList(list, category -> new org.dromara.warm.flow.core.dto.Tree()
+            .setId(Convert.toStr(category.getCategoryId()))
+            .setName(category.getCategoryName())
+            .setParentId(Convert.toStr(category.getParentId()))
         );
     }
 

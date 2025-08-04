@@ -6,6 +6,7 @@ create table FLOW_DEFINITION
     ID              NUMBER(20)            not null,
     FLOW_CODE       VARCHAR2(40)          not null,
     FLOW_NAME       VARCHAR2(100)         not null,
+    MODEL_VALUE     VARCHAR2(40) default 'CLASSICS' not null,
     CATEGORY        VARCHAR2(100),
     VERSION         VARCHAR2(20)          not null,
     IS_PUBLISH      NUMBER(1)   default 0 not null,
@@ -28,6 +29,7 @@ comment on table FLOW_DEFINITION is '流程定义表';
 comment on column FLOW_DEFINITION.ID is '主键id';
 comment on column FLOW_DEFINITION.FLOW_CODE is '流程编码';
 comment on column FLOW_DEFINITION.FLOW_NAME is '流程名称';
+comment on column FLOW_DEFINITION.MODEL_VALUE is '设计器模型（CLASSICS经典模型 MIMIC仿钉钉模型）';
 comment on column FLOW_DEFINITION.CATEGORY is '流程类别';
 comment on column FLOW_DEFINITION.VERSION is '流程版本';
 comment on column FLOW_DEFINITION.IS_PUBLISH is '是否发布 (0未发布 1已发布 9失效)';
@@ -219,7 +221,7 @@ create table FLOW_HIS_TASK
     TARGET_NODE_NAME VARCHAR2(200),
     APPROVER         VARCHAR2(40),
     COOPERATE_TYPE   NUMBER(1)   default 0,
-    COLLABORATOR     VARCHAR2(40),
+    COLLABORATOR     VARCHAR2(500),
     SKIP_TYPE        VARCHAR2(10),
     FLOW_STATUS      VARCHAR2(20),
     FORM_CUSTOM      VARCHAR2(1) default 'N',

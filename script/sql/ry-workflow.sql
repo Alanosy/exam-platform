@@ -6,6 +6,7 @@ CREATE TABLE `flow_definition`
     `id`              bigint          NOT NULL COMMENT '主键id',
     `flow_code`       varchar(40)     NOT NULL COMMENT '流程编码',
     `flow_name`       varchar(100)    NOT NULL COMMENT '流程名称',
+    `model_value`     varchar(40)     NOT NULL DEFAULT 'CLASSICS' COMMENT '设计器模型（CLASSICS经典模型 MIMIC仿钉钉模型）',
     `category`        varchar(100)             DEFAULT NULL COMMENT '流程类别',
     `version`         varchar(20)     NOT NULL COMMENT '流程版本',
     `is_publish`      tinyint(1)      NOT NULL DEFAULT '0' COMMENT '是否发布（0未发布 1已发布 9失效）',
@@ -24,7 +25,7 @@ CREATE TABLE `flow_definition`
 
 CREATE TABLE `flow_node`
 (
-    `id`              bigint          NOT NULL COMMENT '主键id',
+    `id`              bigint        NOT NULL COMMENT '主键id',
     `node_type`       tinyint(1)      NOT NULL COMMENT '节点类型（0开始节点 1中间节点 2结束节点 3互斥网关 4并行网关）',
     `definition_id`   bigint          NOT NULL COMMENT '流程定义id',
     `node_code`       varchar(100)    NOT NULL COMMENT '流程节点编码',
@@ -50,7 +51,7 @@ CREATE TABLE `flow_node`
 
 CREATE TABLE `flow_skip`
 (
-    `id`             bigint          NOT NULL COMMENT '主键id',
+    `id`             bigint       NOT NULL COMMENT '主键id',
     `definition_id`  bigint          NOT NULL COMMENT '流程定义id',
     `now_node_code`  varchar(100)    NOT NULL COMMENT '当前流程节点的编码',
     `now_node_type`  tinyint(1)   DEFAULT NULL COMMENT '当前节点类型（0开始节点 1中间节点 2结束节点 3互斥网关 4并行网关）',
@@ -119,7 +120,7 @@ CREATE TABLE `flow_his_task`
     `target_node_name` varchar(200)                 DEFAULT NULL COMMENT '结束节点名称',
     `approver`         varchar(40)                  DEFAULT NULL COMMENT '审批者',
     `cooperate_type`   tinyint(1)                   NOT NULL DEFAULT '0' COMMENT '协作方式(1审批 2转办 3委派 4会签 5票签 6加签 7减签)',
-    `collaborator`     varchar(40)                  DEFAULT NULL COMMENT '协作人',
+    `collaborator`     varchar(500)                 DEFAULT NULL COMMENT '协作人',
     `skip_type`        varchar(10)                  NOT NULL COMMENT '流转类型（PASS通过 REJECT退回 NONE无动作）',
     `flow_status`      varchar(20)                  NOT NULL COMMENT '流程状态（0待提交 1审批中 2审批通过 4终止 5作废 6撤销 8已完成 9已退回 10失效 11拿回）',
     `form_custom`      char(1)                      DEFAULT 'N' COMMENT '审批表单是否自定义（Y是 N否）',
@@ -137,7 +138,7 @@ CREATE TABLE `flow_his_task`
 
 CREATE TABLE `flow_user`
 (
-    `id`           bigint          NOT NULL COMMENT '主键id',
+    `id`           bigint      NOT NULL COMMENT '主键id',
     `type`         char(1)         NOT NULL COMMENT '人员类型（1待办任务的审批人权限 2待办任务的转办人权限 3待办任务的委托人权限）',
     `processed_by` varchar(80) DEFAULT NULL COMMENT '权限人',
     `associated`   bigint          NOT NULL COMMENT '任务表id',

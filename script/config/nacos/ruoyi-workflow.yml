@@ -30,6 +30,8 @@ warm-flow:
   enabled: true
   # 是否开启设计器ui
   ui: true
+  # 是否显示流程图顶部文字
+  top-text-show: true
   # 默认Authorization，如果有多个token，用逗号分隔
   token-name: ${sa-token.token-name},clientid
   # 流程状态对应的三元色
