@@ -31,5 +31,3 @@ snail-job:
   port: 2${server.port}
   # 客户端ip指定
   host:
-  # RPC类型: netty, grpc
-  rpc-type: grpc

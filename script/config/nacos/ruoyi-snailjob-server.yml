@@ -43,7 +43,5 @@ snail-job:
   summary-day: 7
   # 配置负载均衡周期时间
   load-balance-cycle-time: 10
-  # 通知类型默认使用grpc(netty 已经下线)
-  rpc-type: grpc
   # 重试任务拉取的并行度
   retry-max-pull-parallel: 2

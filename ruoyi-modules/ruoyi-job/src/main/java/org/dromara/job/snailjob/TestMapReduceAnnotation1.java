@@ -8,8 +8,8 @@ import com.aizuda.snailjob.client.job.core.annotation.MapExecutor;
 import com.aizuda.snailjob.client.job.core.annotation.ReduceExecutor;
 import com.aizuda.snailjob.client.job.core.dto.MapArgs;
 import com.aizuda.snailjob.client.job.core.dto.ReduceArgs;
-import com.aizuda.snailjob.client.model.ExecuteResult;
 import com.aizuda.snailjob.common.log.SnailJobLog;
+import com.aizuda.snailjob.model.dto.ExecuteResult;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
