@@ -1,6 +1,7 @@
 package org.dromara.common.excel.core;
 
 import cn.hutool.core.collection.CollUtil;
+import cn.hutool.core.convert.Convert;
 import cn.hutool.core.util.ArrayUtil;
 import cn.hutool.core.util.EnumUtil;
 import cn.hutool.core.util.ObjectUtil;
@@ -115,7 +116,7 @@ public class ExcelDownHandler implements SheetWriteHandler {
                 // 否则如果指定了@ExcelEnumFormat，则使用枚举的逻辑
                 ExcelEnumFormat format = field.getDeclaredAnnotation(ExcelEnumFormat.class);
                 List<Object> values = EnumUtil.getFieldValues(format.enumClass(), format.textField());
-                options = StreamUtils.toList(values, String::valueOf);
+                options = StreamUtils.toList(values, Convert::toStr);
             }
             if (ObjectUtil.isNotEmpty(options)) {
                 // 仅当下拉可选项不为空时执行

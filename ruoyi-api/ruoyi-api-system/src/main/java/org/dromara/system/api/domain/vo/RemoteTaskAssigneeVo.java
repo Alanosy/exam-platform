@@ -1,6 +1,5 @@
 package org.dromara.system.api.domain.vo;
 
-import cn.hutool.core.convert.Convert;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -56,14 +55,14 @@ public class RemoteTaskAssigneeVo implements Serializable {
         Function<T, String> storageId,
         Function<T, String> handlerCode,
         Function<T, String> handlerName,
-        Function<T, Long> groupName,
+        Function<T, String> groupName,
         Function<T, Date> createTimeMapper) {
         return sourceList.stream()
             .map(item -> new TaskHandler(
                 storageId.apply(item),
                 handlerCode.apply(item),
                 handlerName.apply(item),
-                groupName != null ? Convert.toStr(groupName.apply(item)) : null,
+                groupName.apply(item),
                 createTimeMapper.apply(item)
             )).collect(Collectors.toList());
     }

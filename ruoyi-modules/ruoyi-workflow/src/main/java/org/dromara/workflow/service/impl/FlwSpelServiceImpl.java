@@ -162,7 +162,7 @@ public class FlwSpelServiceImpl implements IFlwSpelService {
         TableDataInfo<FlowSpelVo> page = this.queryPageList(bo, pageQuery);
         // 使用封装的字段映射方法进行转换
         List<RemoteTaskAssigneeVo.TaskHandler> handlers = RemoteTaskAssigneeVo.convertToHandlerList(page.getRows(),
-            FlowSpelVo::getViewSpel, c -> "", FlowSpelVo::getRemark, null, FlowSpelVo::getCreateTime);
+            FlowSpelVo::getViewSpel, item -> "", FlowSpelVo::getRemark, item -> "", FlowSpelVo::getCreateTime);
         return new RemoteTaskAssigneeVo(page.getTotal(), handlers);
     }
 
