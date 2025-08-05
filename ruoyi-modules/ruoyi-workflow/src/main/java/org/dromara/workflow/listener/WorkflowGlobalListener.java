@@ -125,12 +125,15 @@ public class WorkflowGlobalListener implements GlobalListener {
             if (StringUtils.isNotBlank(status)) {
                 flowProcessEventHandler.processHandler(definition.getFlowCode(), instance, status, params, false);
             }
-            if (task != null && CollUtil.isNotEmpty(nextTasks) && nextTasks.size() == 1 && flwCommonService.applyNodeCode(definition.getId()).equals(nextTasks.get(0).getNodeCode())) {
-                //如果为画线指定驳回 线条指定为驳回 驳回得节点为申请人节点 则修改流程状态为退回
-                flowProcessEventHandler.processHandler(definition.getFlowCode(), instance, BusinessStatusEnum.BACK.getStatus(), params, false);
-                //修改流程实例状态
-                instance.setFlowStatus(BusinessStatusEnum.BACK.getStatus());
-                insService.updateById(instance);
+            if (!BusinessStatusEnum.initialState(instance.getFlowStatus())) {
+                if (task != null && CollUtil.isNotEmpty(nextTasks) && nextTasks.size() == 1
+                    && flwCommonService.applyNodeCode(definition.getId()).equals(nextTasks.get(0).getNodeCode())) {
+                    // 如果为画线指定驳回 线条指定为驳回 驳回得节点为申请人节点 则修改流程状态为退回
+                    flowProcessEventHandler.processHandler(definition.getFlowCode(), instance, BusinessStatusEnum.BACK.getStatus(), params, false);
+                    // 修改流程实例状态
+                    instance.setFlowStatus(BusinessStatusEnum.BACK.getStatus());
+                    insService.updateById(instance);
+                }
             }
         }
         //发布任务事件
