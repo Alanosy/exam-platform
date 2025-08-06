@@ -88,11 +88,7 @@ public class SysTenantPackageServiceImpl implements ISysTenantPackageService {
         SysTenantPackage add = MapstructUtils.convert(bo, SysTenantPackage.class);
         // 保存菜单id
         List<Long> menuIds = Arrays.asList(bo.getMenuIds());
-        if (CollUtil.isNotEmpty(menuIds)) {
-            add.setMenuIds(StringUtils.join(menuIds, ", "));
-        } else {
-            add.setMenuIds("");
-        }
+        add.setMenuIds(CollUtil.isNotEmpty(menuIds) ? StringUtils.joinComma(menuIds) : "");
         boolean flag = baseMapper.insert(add) > 0;
         if (flag) {
             bo.setPackageId(add.getPackageId());
@@ -109,11 +105,7 @@ public class SysTenantPackageServiceImpl implements ISysTenantPackageService {
         SysTenantPackage update = MapstructUtils.convert(bo, SysTenantPackage.class);
         // 保存菜单id
         List<Long> menuIds = Arrays.asList(bo.getMenuIds());
-        if (CollUtil.isNotEmpty(menuIds)) {
-            update.setMenuIds(StringUtils.join(menuIds, ", "));
-        } else {
-            update.setMenuIds("");
-        }
+        update.setMenuIds(CollUtil.isNotEmpty(menuIds) ? StringUtils.joinComma(menuIds) : "");
         return baseMapper.updateById(update) > 0;
     }
 

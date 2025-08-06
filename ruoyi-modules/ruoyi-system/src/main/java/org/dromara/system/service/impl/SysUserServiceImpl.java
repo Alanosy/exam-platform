@@ -622,7 +622,7 @@ public class SysUserServiceImpl implements ISysUserService {
                 list.add(nickname);
             }
         }
-        return String.join(StringUtils.SEPARATOR, list);
+        return StringUtils.joinComma(list);
     }
 
     /**

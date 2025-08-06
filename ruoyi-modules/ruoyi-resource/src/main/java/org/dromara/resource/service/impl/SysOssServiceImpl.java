@@ -113,7 +113,7 @@ public class SysOssServiceImpl implements ISysOssService {
                 }
             }
         }
-        return String.join(StringUtils.SEPARATOR, list);
+        return StringUtils.joinComma(list);
     }
 
     private LambdaQueryWrapper<SysOss> buildQueryWrapper(SysOssBo bo) {

@@ -38,7 +38,7 @@ public class SysTenantPackageBo extends BaseEntity {
     /**
      * 关联菜单id
      */
-    @AutoMapping(target = "menuIds", expression = "java(org.dromara.common.core.utils.StringUtils.join(source.getMenuIds(), \",\"))")
+    @AutoMapping(target = "menuIds", expression = "java(org.dromara.common.core.utils.StringUtils.joinComma(source.getMenuIds()))")
     private Long[] menuIds;
 
     /**
