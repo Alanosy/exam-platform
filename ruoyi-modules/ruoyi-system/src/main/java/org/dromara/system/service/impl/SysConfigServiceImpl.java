@@ -170,7 +170,7 @@ public class SysConfigServiceImpl implements ISysConfigService {
         List<SysConfig> list = baseMapper.selectByIds(configIds);
         list.forEach(config -> {
             if (StringUtils.equals(SystemConstants.YES, config.getConfigType())) {
-                throw new ServiceException(String.format("内置参数【%s】不能删除", config.getConfigKey()));
+                throw new ServiceException("内置参数【{}】不能删除", config.getConfigKey());
             }
             CacheUtils.evict(CacheNames.SYS_CONFIG, config.getConfigKey());
         });

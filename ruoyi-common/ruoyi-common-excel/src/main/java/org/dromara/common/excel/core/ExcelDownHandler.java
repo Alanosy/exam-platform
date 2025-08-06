@@ -104,7 +104,7 @@ public class ExcelDownHandler implements SheetWriteHandler {
                 if (StringUtils.isNotBlank(dictType)) {
                     // 如果传递了字典名，则依据字典建立下拉
                     Collection<String> values = Optional.ofNullable(dictService.getAllDictByDictType(dictType))
-                        .orElseThrow(() -> new ServiceException(String.format("字典 %s 不存在", dictType)))
+                        .orElseThrow(() -> new ServiceException("字典 {} 不存在", dictType))
                         .values();
                     options = new ArrayList<>(values);
                 } else if (StringUtils.isNotBlank(converterExp)) {

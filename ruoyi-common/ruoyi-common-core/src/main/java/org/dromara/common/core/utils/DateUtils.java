@@ -293,7 +293,7 @@ public class DateUtils extends org.apache.commons.lang3.time.DateUtils {
 
         // 校验时间跨度不超过最大限制
         if (diff > maxValue) {
-            throw new ServiceException("最大时间跨度为 " + maxValue + " " + unit.toString().toLowerCase());
+            throw new ServiceException("最大时间跨度为 {} {}", maxValue, unit.toString().toLowerCase());
         }
     }
 

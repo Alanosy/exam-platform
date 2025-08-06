@@ -130,7 +130,7 @@ public class FlwDefinitionServiceImpl implements IFlwDefinitionService {
                 }
             }
             if (CollUtil.isNotEmpty(errorMsg)) {
-                throw new ServiceException("节点【" + StringUtils.join(errorMsg, ",") + "】未配置办理人!");
+                throw new ServiceException("节点【{}】未配置办理人!", StringUtils.join(errorMsg, ","));
             }
         }
         return defService.publish(id);

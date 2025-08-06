@@ -138,7 +138,7 @@ public class SysDictTypeServiceImpl implements ISysDictTypeService {
             boolean assigned = dictDataMapper.exists(new LambdaQueryWrapper<SysDictData>()
                 .eq(SysDictData::getDictType, x.getDictType()));
             if (assigned) {
-                throw new ServiceException(String.format("%1$s已分配,不能删除", x.getDictName()));
+                throw new ServiceException("{}已分配,不能删除", x.getDictName());
             }
         });
         baseMapper.deleteByIds(dictIds);

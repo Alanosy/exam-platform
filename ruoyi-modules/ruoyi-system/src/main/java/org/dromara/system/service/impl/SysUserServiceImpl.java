@@ -19,7 +19,9 @@ import org.dromara.common.core.utils.*;
 import org.dromara.common.mybatis.core.page.PageQuery;
 import org.dromara.common.mybatis.core.page.TableDataInfo;
 import org.dromara.common.satoken.utils.LoginHelper;
-import org.dromara.system.domain.*;
+import org.dromara.system.domain.SysUser;
+import org.dromara.system.domain.SysUserPost;
+import org.dromara.system.domain.SysUserRole;
 import org.dromara.system.domain.bo.SysUserBo;
 import org.dromara.system.domain.vo.SysPostVo;
 import org.dromara.system.domain.vo.SysRoleVo;
@@ -351,7 +353,7 @@ public class SysUserServiceImpl implements ISysUserService {
         // 防止错误更新后导致的数据误删除
         int flag = baseMapper.updateById(sysUser);
         if (flag < 1) {
-            throw new ServiceException("修改用户" + user.getUserName() + "信息失败");
+            throw new ServiceException("修改用户{}信息失败", user.getUserName());
         }
         return flag;
     }

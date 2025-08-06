@@ -223,7 +223,7 @@ public class SysPostServiceImpl implements ISysPostService {
         List<SysPost> list = baseMapper.selectByIds(postIds);
         for (SysPost post : list) {
             if (this.countUserPostById(post.getPostId()) > 0) {
-                throw new ServiceException(String.format("%1$s已分配，不能删除!", post.getPostName()));
+                throw new ServiceException("{}已分配，不能删除!", post.getPostName());
             }
         }
         return baseMapper.deleteByIds(postIds);
