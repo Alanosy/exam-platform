@@ -40,7 +40,7 @@ Mall4J 高质量Java商城系统 - https://www.mall4j.com/cn/?statId=11 <br>
 aizuda flowlong 工作流 - https://gitee.com/aizuda/flowlong <br>
 Ruoyi-Plus-Uniapp - https://ruoyi.plus <br>
 
-[如何成为赞助商 加群联系作者详谈](https://plus-doc.dromara.org/#/common/add_group)
+[如何成为赞助商 加群联系作者详谈 每日PV2500-3000 IP1700-2500](https://plus-doc.dromara.org/#/common/add_group)
 
 # 本框架与RuoYi的功能差异
 
