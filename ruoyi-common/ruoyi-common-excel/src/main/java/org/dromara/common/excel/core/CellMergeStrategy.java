@@ -3,6 +3,8 @@ package org.dromara.common.excel.core;
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.ReflectUtil;
 import cn.hutool.core.util.StrUtil;
+import cn.idev.excel.annotation.ExcelIgnore;
+import cn.idev.excel.annotation.ExcelIgnoreUnannotated;
 import cn.idev.excel.annotation.ExcelProperty;
 import cn.idev.excel.metadata.Head;
 import cn.idev.excel.write.handler.WorkbookWriteHandler;
@@ -70,7 +72,17 @@ public class CellMergeStrategy extends AbstractMergeStrategy implements Workbook
         if (CollUtil.isEmpty(list)) {
             return cellList;
         }
-        Field[] fields = ReflectUtils.getFields(list.get(0).getClass(), field -> !"serialVersionUID".equals(field.getName()));
+        Class<?> clazz = list.get(0).getClass();
+        boolean annotationPresent = clazz.isAnnotationPresent(ExcelIgnoreUnannotated.class);
+        Field[] fields = ReflectUtils.getFields(clazz, field -> {
+            if ("serialVersionUID".equals(field.getName())) {
+                return false;
+            }
+            if (field.isAnnotationPresent(ExcelIgnore.class)) {
+                return false;
+            }
+            return !annotationPresent || field.isAnnotationPresent(ExcelProperty.class);
+        });
 
         // 有注解的字段
         List<Field> mergeFields = new ArrayList<>();
@@ -91,9 +103,10 @@ public class CellMergeStrategy extends AbstractMergeStrategy implements Workbook
         Map<Field, RepeatCell> map = new HashMap<>();
         // 生成两两合并单元格
         for (int i = 0; i < list.size(); i++) {
+            Object rowObj = list.get(i);
             for (int j = 0; j < mergeFields.size(); j++) {
                 Field field = mergeFields.get(j);
-                Object val = ReflectUtils.invokeGetter(list.get(i), field.getName());
+                Object val = ReflectUtils.invokeGetter(rowObj, field.getName());
 
                 int colNum = mergeFieldsIndex.get(j);
                 if (!map.containsKey(field)) {
