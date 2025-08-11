@@ -49,6 +49,8 @@ spring:
       # 从 springboot 3.5 开始 spring自带线程池
       # 不再需要 AsyncConfig与ThreadPoolConfig 可直接注入线程池使用
       thread-name-prefix: async-
+      # 由spring自己初始化线程池
+      mode: force
   # 资源信息
   messages:
     # 国际化资源文件路径
