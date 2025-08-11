@@ -11,3 +11,6 @@ spring:
       discovery:
         # seata 不具有健康检查的能力 防止报错排除掉
         ignored-services: ruoyi-seata-server
+  # 忽略无用警告
+  thymeleaf:
+    check-template-location: false
