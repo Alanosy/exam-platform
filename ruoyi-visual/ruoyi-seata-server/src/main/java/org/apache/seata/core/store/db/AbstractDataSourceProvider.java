@@ -16,7 +16,6 @@
  */
 package org.apache.seata.core.store.db;
 
-import org.apache.seata.common.ConfigurationKeys;
 import org.apache.seata.common.exception.ShouldNeverHappenException;
 import org.apache.seata.common.exception.StoreException;
 import org.apache.seata.common.executor.Initialize;
@@ -24,6 +23,7 @@ import org.apache.seata.common.util.ConfigTools;
 import org.apache.seata.common.util.StringUtils;
 import org.apache.seata.config.Configuration;
 import org.apache.seata.config.ConfigurationFactory;
+import org.apache.seata.core.constants.ConfigurationKeys;
 import org.apache.seata.core.constants.DBType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -62,12 +62,12 @@ public abstract class AbstractDataSourceProvider implements DataSourceProvider, 
 
     private static final String MYSQL_DRIVER_FILE_PREFIX = "mysql-connector-j";
 
-    private static final Map<String, ClassLoader> MYSQL_DRIVER_LOADERS;
+    private static final Map<String, ClassLoader> DRIVER_LOADERS;
 
     private static final long DEFAULT_DB_MAX_WAIT = 5000;
 
     static {
-        MYSQL_DRIVER_LOADERS = createMysqlDriverClassLoaders();
+        DRIVER_LOADERS = createMysqlDriverClassLoaders();
     }
 
     @Override
@@ -161,8 +161,7 @@ public abstract class AbstractDataSourceProvider implements DataSourceProvider, 
     }
 
     protected ClassLoader getDriverClassLoader() {
-        return MYSQL_DRIVER_LOADERS.getOrDefault(
-            getDriverClassName(), this.getClass().getClassLoader());
+        return DRIVER_LOADERS.getOrDefault(getDriverClassName(), this.getClass().getClassLoader());
     }
 
     private static Map<String, ClassLoader> createMysqlDriverClassLoaders() {
