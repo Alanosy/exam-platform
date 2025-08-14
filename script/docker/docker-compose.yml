@@ -289,6 +289,8 @@ services:
       - "9200:9200"
       - "9300:9300"
     environment:
+      # 时区上海
+      TZ: Asia/Shanghai
       # 设置集群名称
       cluster.name: elasticsearch
       # 以单一节点模式启动
@@ -309,6 +311,8 @@ services:
       # kibana在elasticsearch启动之后再启动
       - elasticsearch
     environment:
+      # 时区上海
+      TZ: Asia/Shanghai
       #设置系统语言文中文
       I18N_LOCALE: zh-CN
       # 访问域名
@@ -322,6 +326,9 @@ services:
     container_name: logstash
     ports:
       - "4560:4560"
+    environment:
+      # 时区上海
+      TZ: Asia/Shanghai
     volumes:
       - /docker/elk/logstash/pipeline/logstash.conf:/usr/share/logstash/pipeline/logstash.conf
       - /docker/elk/logstash/config/logstash.yml:/usr/share/logstash/config/logstash.yml
