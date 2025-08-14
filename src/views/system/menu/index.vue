@@ -44,6 +44,7 @@
         :default-expand-all="false"
         lazy
         :load="getChildrenList"
+        :expand-change="expandMenuHandle"
       >
         <el-table-column prop="menuName" label="菜单名称" :show-overflow-tooltip="true" width="160"></el-table-column>
         <el-table-column prop="icon" label="图标" align="center" width="100">
@@ -351,6 +352,13 @@ const getChildrenList = async (row: any, treeNode: unknown, resolve: (data: any[
     menuTableRef.value?.updateKeyChildren(row.menuId, children);
   }
   resolve(children);
+};
+
+/** 收起菜单时从menuExpandMap中删除对应菜单id数据 */
+const expandMenuHandle = async (row: any, expanded: boolean) => {
+  if (!expanded) {
+    menuExpandMap.value[row.menuId] = undefined;
+  }
 };
 
 /** 刷新展开的菜单数据 */
