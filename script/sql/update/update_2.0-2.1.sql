@@ -34,7 +34,7 @@ create table sys_social
     create_time        datetime                         comment '创建时间',
     update_by          bigint(20)                       comment '更新者',
     update_time        datetime                         comment '更新时间',
-    del_flag           char(1)          default '0'     comment '删除标志（0代表存在 2代表删除）',
+    del_flag           char(1)          default '0'     comment '删除标志（0代表存在 1代表删除）',
     PRIMARY KEY (id)
 ) engine=innodb comment = '社会化关系表';
 
@@ -53,7 +53,7 @@ create table sys_client (
     active_timeout      int(11)       default 1800        comment 'token活跃超时时间',
     timeout             int(11)       default 604800      comment 'token固定超时',
     status              char(1)       default '0'         comment '状态（0正常 1停用）',
-    del_flag            char(1)       default '0'         comment '删除标志（0代表存在 2代表删除）',
+    del_flag            char(1)       default '0'         comment '删除标志（0代表存在 1代表删除）',
     create_dept         bigint(20)    default null        comment '创建部门',
     create_by           bigint(20)    default null        comment '创建者',
     create_time         datetime      default null        comment '创建时间',
