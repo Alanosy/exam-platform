@@ -132,16 +132,15 @@ public class TestLeaveServiceImpl implements ITestLeaveService {
             bo.setId(leave.getId());
             // 后端发起需要忽略权限
             bo.getParams().put("ignore", true);
-            RemoteStartProcessReturn result = workflowService.startWorkFlow(new RemoteStartProcess() {{
-                setBusinessId(leave.getId().toString());
-                setFlowCode(StringUtils.isEmpty(bo.getFlowCode()) ? "leave1" : bo.getFlowCode());
-                setVariables(bo.getParams());
-            }});
-            boolean flag1 = workflowService.completeTask(new RemoteCompleteTask() {{
-                setTaskId(result.getTaskId());
-                setMessageType(List.of("1"));
-                setVariables(bo.getParams());
-            }});
+
+            RemoteStartProcess startProcess = new RemoteStartProcess();
+            startProcess.setBusinessId(leave.getId().toString());
+            startProcess.setFlowCode(StringUtils.isEmpty(bo.getFlowCode()) ? "leave1" : bo.getFlowCode());
+            startProcess.setVariables(bo.getParams());
+            // 后端发起 如果没有登录用户 比如定时任务 可以手动设置一个处理人id
+            // startProcess.setHandler("0");
+
+            boolean flag1 = workflowService.startCompleteTask(startProcess);
             if (!flag1) {
                 throw new ServiceException("流程发起异常");
             }

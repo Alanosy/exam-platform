@@ -128,6 +128,7 @@ public class FlwTaskServiceImpl implements IFlwTaskService {
         variables.put(FlowConstant.AUTO_PASS, autoPass);
 
         FlowParams flowParams = FlowParams.build()
+            .handler(startProcessBo.getHandler())
             .flowCode(startProcessBo.getFlowCode())
             .variable(startProcessBo.getVariables())
             .flowStatus(BusinessStatusEnum.DRAFT.getStatus());
@@ -187,6 +188,7 @@ public class FlwTaskServiceImpl implements IFlwTaskService {
             }
             // 构建流程参数，包括变量、跳转类型、消息、处理人、权限等信息
             FlowParams flowParams = FlowParams.build()
+                .handler(completeTaskBo.getHandler())
                 .variable(variables)
                 .skipType(SkipType.PASS.getKey())
                 .message(completeTaskBo.getMessage())

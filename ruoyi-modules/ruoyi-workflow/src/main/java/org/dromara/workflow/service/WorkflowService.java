@@ -78,6 +78,8 @@ public interface WorkflowService {
 
     /**
      * 办理任务
+     * 系统后台发起审批 无用户信息 需要忽略权限
+     * completeTask.getVariables().put("ignore", true);
      *
      * @param completeTask 参数
      * @return 结果
@@ -89,7 +91,15 @@ public interface WorkflowService {
      *
      * @param taskId  任务ID
      * @param message 办理意见
+     * @return 结果
      */
     boolean completeTask(Long taskId, String message);
 
+    /**
+     * 启动流程并办理第一个任务
+     *
+     * @param startProcess 参数
+     * @return 结果
+     */
+    boolean startCompleteTask(RemoteStartProcess startProcess);
 }
