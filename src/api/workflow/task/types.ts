@@ -31,6 +31,8 @@ export interface FlowTaskVO {
   version?: string;
   applyNode?: boolean;
   buttonList?: buttonList[];
+  businessCode: string;
+  businessTitle: string;
 }
 
 export interface buttonList {

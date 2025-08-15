@@ -11,7 +11,7 @@
         :id="form.id"
         :status="form.status"
         :pageType="routeParams.type"
-        :mode="false"
+        :mode="true"
       />
     </el-card>
     <el-card shadow="never" style="height: 78vh; overflow-y: auto">
@@ -126,9 +126,11 @@ const leaveFormRef = ref<ElFormInstance>();
 const submitFormData = ref<StartProcessBo>({
   businessId: '',
   flowCode: '',
-  variables: {}
+  variables: {},
+  flowInstanceBizExtBo: {}
 });
 const taskVariables = ref<Record<string, any>>({});
+const flowInstanceBizExtBo = ref<Record<string, any>>({});
 
 const initFormData: LeaveForm = {
   id: undefined,
@@ -199,13 +201,13 @@ const submitForm = (status: string, mode: boolean) => {
         buttonLoading.value = true;
         // 设置后端发起和不等于草稿状态 直接走流程发起
         if (mode && status != 'draft') {
-          let res = await submitAndFlowStart(form.value).finally(() => (buttonLoading.value = false));
+          const res = await submitAndFlowStart(form.value).finally(() => (buttonLoading.value = false));
           form.value = res.data;
           buttonLoading.value = false;
           proxy?.$modal.msgSuccess('操作成功');
           proxy.$tab.closePage(proxy.$route);
           proxy.$router.go(-1);
-        } else{
+        } else {
           let res;
           if (form.value.id) {
             res = await updateLeave(form.value).finally(() => (buttonLoading.value = false));
@@ -241,7 +243,13 @@ const handleStartWorkFlow = async (data: LeaveForm) => {
       // leave4/5 使用的流程变量
       userList: ['1', '3', '4']
     };
+    //流程实例业务扩展字段
+    flowInstanceBizExtBo.value = {
+      businessTitle: '请假申请',
+      businessCode: data.applyCode
+    };
     submitFormData.value.variables = taskVariables.value;
+    submitFormData.value.flowInstanceBizExtBo = flowInstanceBizExtBo.value;
     const resp = await startWorkFlow(submitFormData.value);
     if (submitVerifyRef.value) {
       buttonLoading.value = false;

@@ -39,14 +39,16 @@
         <el-table v-loading="loading" border :data="taskList" @selection-change="handleSelectionChange">
           <el-table-column type="selection" width="55" align="center" />
           <el-table-column align="center" type="index" label="序号" width="60"></el-table-column>
-          <el-table-column :show-overflow-tooltip="true" prop="flowName" align="center" label="流程定义名称"></el-table-column>
-          <el-table-column align="center" prop="flowCode" label="流程定义编码"></el-table-column>
+          <el-table-column :show-overflow-tooltip="true" prop="businessCode" align="center" label="业务编码"></el-table-column>
+          <el-table-column :show-overflow-tooltip="true" prop="businessTitle" align="center" label="业务标题"></el-table-column>
+          <el-table-column :show-overflow-tooltip="true" prop="flowName" align="center" width="120" label="流程定义名称"></el-table-column>
+          <el-table-column align="center" prop="flowCode" width="120" label="流程定义编码"></el-table-column>
           <el-table-column align="center" prop="categoryName" label="流程分类"></el-table-column>
           <el-table-column align="center" prop="version" label="版本号" width="90">
             <template #default="scope"> v{{ scope.row.version }}.0</template>
           </el-table-column>
-          <el-table-column align="center" prop="nodeName" label="任务名称"></el-table-column>
-          <el-table-column align="center" prop="createByName" label="申请人"></el-table-column>
+          <el-table-column align="center" prop="nodeName" :show-overflow-tooltip="true" label="任务名称"></el-table-column>
+          <el-table-column align="center" prop="createByName" :show-overflow-tooltip="true" label="申请人"></el-table-column>
           <el-table-column align="center" label="办理人">
             <template #default="scope">
               <template v-if="tab === 'waiting'">

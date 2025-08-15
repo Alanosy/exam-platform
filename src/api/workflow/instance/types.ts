@@ -23,4 +23,6 @@ export interface FlowInstanceVO extends BaseEntity {
   flowStatus: string;
   flowStatusName: string;
   flowTaskList: FlowTaskVO[];
+  businessCode: string;
+  businessTitle: string;
 }
