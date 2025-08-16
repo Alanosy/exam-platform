@@ -134,4 +134,16 @@ public class FlowInstanceVo {
     @Translation(type = FlowConstant.CATEGORY_ID_TO_NAME, mapper = "category")
     private String categoryName;
 
+    //业务扩展信息开始
+    /**
+     * 业务编码
+     */
+    private String businessCode;
+
+    /**
+     * 业务标题
+     */
+    private String businessTitle;
+    //业务扩展信息结束
+
 }

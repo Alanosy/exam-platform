@@ -44,6 +44,11 @@ public class StartProcessBo implements Serializable {
      */
     private Map<String, Object> variables;
 
+    /**
+     * 流程业务扩展信息
+     */
+    private FlowInstanceBizExtBo flowInstanceBizExtBo;
+
     public Map<String, Object> getVariables() {
         if (variables == null) {
             return new HashMap<>(16);

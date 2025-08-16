@@ -203,6 +203,18 @@ public class FlowHisTaskVo implements Serializable {
      */
     private String runDuration;
 
+    //业务扩展信息开始
+    /**
+     * 业务编码
+     */
+    private String businessCode;
+
+    /**
+     * 业务标题
+     */
+    private String businessTitle;
+    //业务扩展信息结束
+
     /**
      * 设置创建时间并计算任务运行时长
      *

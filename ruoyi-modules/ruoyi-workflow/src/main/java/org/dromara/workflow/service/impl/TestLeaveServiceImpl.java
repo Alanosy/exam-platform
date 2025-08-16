@@ -4,6 +4,7 @@ import cn.hutool.core.convert.Convert;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.map.MapUtil;
 import cn.hutool.core.util.ObjectUtil;
+import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -17,9 +18,7 @@ import org.dromara.common.mybatis.core.domain.BaseEntity;
 import org.dromara.common.mybatis.core.page.PageQuery;
 import org.dromara.common.mybatis.core.page.TableDataInfo;
 import org.dromara.common.tenant.helper.TenantHelper;
-import org.dromara.workflow.api.domain.RemoteCompleteTask;
 import org.dromara.workflow.api.domain.RemoteStartProcess;
-import org.dromara.workflow.api.domain.RemoteStartProcessReturn;
 import org.dromara.workflow.api.event.ProcessDeleteEvent;
 import org.dromara.workflow.api.event.ProcessEvent;
 import org.dromara.workflow.api.event.ProcessTaskEvent;
@@ -112,6 +111,7 @@ public class TestLeaveServiceImpl implements ITestLeaveService {
         TestLeave add = MapstructUtils.convert(bo, TestLeave.class);
         if (StringUtils.isBlank(add.getStatus())) {
             add.setStatus(BusinessStatusEnum.DRAFT.getStatus());
+            add.setApplyCode(System.currentTimeMillis() + StrUtil.EMPTY);
         }
         boolean flag = baseMapper.insert(add) > 0;
         if (flag) {

@@ -185,5 +185,17 @@ public class FlowTaskVo implements Serializable {
      */
     private List<ButtonPermissionVo> buttonList;
 
+    //业务扩展信息开始
+    /**
+     * 业务编码
+     */
+    private String businessCode;
+
+    /**
+     * 业务标题
+     */
+    private String businessTitle;
+    //业务扩展信息结束
+
 }
 

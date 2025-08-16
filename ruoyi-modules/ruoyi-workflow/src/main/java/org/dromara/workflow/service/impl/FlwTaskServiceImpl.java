@@ -5,6 +5,7 @@ import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.convert.Convert;
 import cn.hutool.core.lang.Dict;
 import cn.hutool.core.util.ObjectUtil;
+import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.incrementer.IdentifierGenerator;
@@ -47,10 +48,7 @@ import org.dromara.workflow.domain.vo.FlowHisTaskVo;
 import org.dromara.workflow.domain.vo.FlowTaskVo;
 import org.dromara.workflow.mapper.FlwCategoryMapper;
 import org.dromara.workflow.mapper.FlwTaskMapper;
-import org.dromara.workflow.service.IFlwCommonService;
-import org.dromara.workflow.service.IFlwNodeExtService;
-import org.dromara.workflow.service.IFlwTaskAssigneeService;
-import org.dromara.workflow.service.IFlwTaskService;
+import org.dromara.workflow.service.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -85,6 +83,7 @@ public class FlwTaskServiceImpl implements IFlwTaskService {
     private final IFlwTaskAssigneeService flwTaskAssigneeService;
     private final IFlwCommonService flwCommonService;
     private final IFlwNodeExtService flwNodeExtService;
+    private final IFlwInstanceBizExtService flowInstanceBizExtService;
 
     @DubboReference
     private RemoteUserService remoteUserService;
@@ -119,14 +118,30 @@ public class FlwTaskServiceImpl implements IFlwTaskService {
             RemoteStartProcessReturn dto = new RemoteStartProcessReturn();
             dto.setProcessInstanceId(taskList.get(0).getInstanceId());
             dto.setTaskId(taskList.get(0).getId());
+            // 保存流程实例业务信息
+            buildFlowInstanceBizExt(flowInstance, startProcessBo.getFlowInstanceBizExtBo());
             return dto;
+        }
+        FlowInstanceBizExtBo extBo = startProcessBo.getFlowInstanceBizExtBo();
+        String businessCode;
+        if (ObjectUtil.isEmpty(extBo)) {
+            extBo = new FlowInstanceBizExtBo();
+            startProcessBo.setFlowInstanceBizExtBo(extBo);
+        }
+        // 生成业务编号
+        if (StringUtils.isBlank(extBo.getBusinessCode())) {
+            //todo 按照自己业务自行修改
+            businessCode = System.currentTimeMillis()+ StrUtil.EMPTY;
+            extBo.setBusinessCode(businessCode);
+        } else {
+            businessCode = extBo.getBusinessCode();
         }
         // 将流程定义内的扩展参数设置到变量中
         Definition definition = FlowEngine.defService().getPublishByFlowCode(startProcessBo.getFlowCode());
         Dict dict = JsonUtils.parseMap(definition.getExt());
         boolean autoPass = !ObjectUtil.isNull(dict) && dict.getBool(FlowConstant.AUTO_PASS);
         variables.put(FlowConstant.AUTO_PASS, autoPass);
-
+        variables.put(FlowConstant.BUSINESS_CODE, businessCode);
         FlowParams flowParams = FlowParams.build()
             .handler(startProcessBo.getHandler())
             .flowCode(startProcessBo.getFlowCode())
@@ -138,6 +153,8 @@ public class FlwTaskServiceImpl implements IFlwTaskService {
         } catch (Exception e) {
             throw new ServiceException(e.getMessage());
         }
+        // 保存流程实例业务信息
+        buildFlowInstanceBizExt(instance, startProcessBo.getFlowInstanceBizExtBo());
         // 申请人执行流程
         List<Task> taskList = taskService.list(new FlowTask().setInstanceId(instance.getId()));
         if (taskList.size() > 1) {
@@ -147,6 +164,19 @@ public class FlwTaskServiceImpl implements IFlwTaskService {
         dto.setProcessInstanceId(instance.getId());
         dto.setTaskId(taskList.get(0).getId());
         return dto;
+    }
+
+    /**
+     * 构建流程实例业务信息
+     *
+     * @param instance             流程实例
+     * @param flowInstanceBizExtBo 业务扩展信息
+     */
+    private void buildFlowInstanceBizExt(Instance instance, FlowInstanceBizExtBo flowInstanceBizExtBo) {
+        flowInstanceBizExtBo.setInstanceId(instance.getId());
+        flowInstanceBizExtBo.setBusinessId(instance.getBusinessId());
+        flowInstanceBizExtBo.setBusinessCode(flowInstanceBizExtBo.getBusinessCode());
+        flowInstanceBizExtService.saveOrUpdate(flowInstanceBizExtBo);
     }
 
     /**

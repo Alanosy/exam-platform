@@ -27,10 +27,13 @@
                fd.version,
                fd.form_custom,
                fd.form_path,
-               fd.category
+               fd.category,
+               biz.business_code,
+               biz.business_title
         from flow_instance fi
                  left join flow_definition fd on fi.definition_id = fd.id
-                ${ew.getCustomSqlSegment}
+                 left join flow_instance_biz_ext biz on biz.instance_id = fi.id
+            ${ew.getCustomSqlSegment}
     </select>
 
 </mapper>
