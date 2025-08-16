@@ -50,3 +50,37 @@ UPDATE flow_skip SET skip_condition = REPLACE(skip_condition, 'notNike', 'notLik
 
 ALTER TABLE flow_his_task MODIFY (collaborator VARCHAR2(500) DEFAULT NULL NULL);
 COMMENT ON COLUMN flow_his_task.collaborator IS '协作人';
+
+-- ----------------------------
+-- 流程实例业务扩展表
+-- ----------------------------
+CREATE TABLE flow_instance_biz_ext (
+    id             NUMBER(20),
+    tenant_id      VARCHAR2(20)  DEFAULT '000000',
+    create_dept    NUMBER(20),
+    create_by      NUMBER(20),
+    create_time    TIMESTAMP,
+    update_by      NUMBER(20),
+    update_time    TIMESTAMP,
+    business_code  VARCHAR2(255),
+    business_title VARCHAR2(1000),
+    del_flag       CHAR(1)       DEFAULT '0',
+    instance_id    NUMBER(20),
+    business_id    VARCHAR2(255)
+);
+
+alter table flow_instance_biz_ext add constraint pk_fi_biz_ext primary key (id);
+
+COMMENT ON TABLE flow_instance_biz_ext IS '流程实例业务扩展表';
+COMMENT ON COLUMN flow_instance_biz_ext.id  IS '主键id';
+COMMENT ON COLUMN flow_instance_biz_ext.tenant_id  IS '租户编号';
+COMMENT ON COLUMN flow_instance_biz_ext.create_dept  IS '创建部门';
+COMMENT ON COLUMN flow_instance_biz_ext.create_by  IS '创建者';
+COMMENT ON COLUMN flow_instance_biz_ext.create_time  IS '创建时间';
+COMMENT ON COLUMN flow_instance_biz_ext.update_by  IS '更新者';
+COMMENT ON COLUMN flow_instance_biz_ext.update_time  IS '更新时间';
+COMMENT ON COLUMN flow_instance_biz_ext.business_code  IS '业务编码';
+COMMENT ON COLUMN flow_instance_biz_ext.business_title  IS '业务标题';
+COMMENT ON COLUMN flow_instance_biz_ext.del_flag  IS '删除标志（0代表存在 1代表删除）';
+COMMENT ON COLUMN flow_instance_biz_ext.instance_id  IS '流程实例Id';
+COMMENT ON COLUMN flow_instance_biz_ext.business_id  IS '业务Id';
