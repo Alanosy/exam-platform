@@ -420,6 +420,7 @@ CREATE TABLE test_leave
 (
     id NUMBER (20) NOT NULL,
     tenant_id VARCHAR2 (20) DEFAULT '000000',
+    apply_code VARCHAR2 (50) NOT NULL,
     leave_type VARCHAR2 (255) NOT NULL,
     start_date  DATE NOT NULL,
     end_date    DATE NOT NULL,
@@ -438,6 +439,7 @@ alter table test_leave add constraint pk_test_leave primary key (id);
 COMMENT ON TABLE test_leave IS '请假申请表';
 COMMENT ON COLUMN test_leave.id IS 'ID';
 COMMENT ON COLUMN test_leave.tenant_id IS '租户编号';
+COMMENT ON COLUMN test_leave.apply_code IS '申请编号';
 COMMENT ON COLUMN test_leave.leave_type IS '请假类型';
 COMMENT ON COLUMN test_leave.start_date IS '开始时间';
 COMMENT ON COLUMN test_leave.end_date IS '结束时间';

@@ -85,3 +85,6 @@ COMMENT ON COLUMN flow_instance_biz_ext.business_title  IS '业务标题';
 COMMENT ON COLUMN flow_instance_biz_ext.del_flag  IS '删除标志（0代表存在 1代表删除）';
 COMMENT ON COLUMN flow_instance_biz_ext.instance_id  IS '流程实例Id';
 COMMENT ON COLUMN flow_instance_biz_ext.business_id  IS '业务Id';
+
+ALTER TABLE test_leave ADD COLUMN apply_code VARCHAR(50) NOT NULL;
+COMMENT ON COLUMN test_leave.apply_code IS '申请编号';

@@ -399,6 +399,7 @@ CREATE TABLE test_leave
 (
     id          int8         NOT NULL,
     tenant_id   VARCHAR(20)  DEFAULT '000000'::varchar,
+    apply_code  VARCHAR(50)  NOT NULL,
     leave_type  VARCHAR(255) NOT NULL,
     start_date  TIMESTAMP    NOT NULL,
     end_date    TIMESTAMP    NOT NULL,
@@ -416,6 +417,7 @@ CREATE TABLE test_leave
 COMMENT ON TABLE test_leave IS '请假申请表';
 COMMENT ON COLUMN test_leave.id IS 'id';
 COMMENT ON COLUMN test_leave.tenant_id IS '租户编号';
+COMMENT ON COLUMN test_leave.apply_code IS '申请编号';
 COMMENT ON COLUMN test_leave.leave_type IS '请假类型';
 COMMENT ON COLUMN test_leave.start_date IS '开始时间';
 COMMENT ON COLUMN test_leave.end_date IS '结束时间';

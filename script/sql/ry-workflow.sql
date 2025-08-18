@@ -234,7 +234,8 @@ create table flow_instance_biz_ext (
 create table test_leave
 (
     id          bigint(20)   not null comment 'id',
-    tenant_id   varchar(20) default '000000' comment '租户编号',
+    tenant_id   varchar(20)  default '000000' comment '租户编号',
+    apply_code  varchar(50)  not null comment '申请编号',
     leave_type  varchar(255) not null comment '请假类型',
     start_date  datetime     not null comment '开始时间',
     end_date    datetime     not null comment '结束时间',
