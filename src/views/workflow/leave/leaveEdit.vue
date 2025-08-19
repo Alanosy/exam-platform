@@ -11,7 +11,7 @@
         :id="form.id"
         :status="form.status"
         :pageType="routeParams.type"
-        :mode="true"
+        :mode="false"
       />
     </el-card>
     <el-card shadow="never" style="height: 78vh; overflow-y: auto">
