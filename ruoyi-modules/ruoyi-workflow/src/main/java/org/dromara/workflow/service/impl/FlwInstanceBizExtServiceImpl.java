@@ -39,7 +39,7 @@ public class FlwInstanceBizExtServiceImpl implements IFlwInstanceBizExtService {
             .eq(FlowInstanceBizExt::getInstanceId, bo.getInstanceId()));
         if (flowInstanceBizExt != null) {
             flowInstanceBizExt.setBusinessTitle(convert.getBusinessTitle());
-            return baseMapper.insertOrUpdate(convert);
+            return baseMapper.insertOrUpdate(flowInstanceBizExt);
         }
         return baseMapper.insertOrUpdate(convert);
     }

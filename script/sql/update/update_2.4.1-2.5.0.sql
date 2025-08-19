@@ -56,4 +56,4 @@ create table flow_instance_biz_ext (
 )  ENGINE = InnoDB COMMENT '流程实例业务扩展表';
 
 ALTER TABLE `test_leave`
-    ADD COLUMN `apply_code` varchar(50) NULL DEFAULT NULL COMMENT '申请编号' AFTER `tenant_id`;
+    ADD COLUMN `apply_code` varchar(50) NOT NULL COMMENT '申请编号' AFTER `tenant_id`;

@@ -108,10 +108,10 @@ public class TestLeaveServiceImpl implements ITestLeaveService {
         long day = DateUtil.betweenDay(bo.getStartDate(), bo.getEndDate(), true);
         // 截止日期也算一天
         bo.setLeaveDays((int) day + 1);
+        bo.setApplyCode(System.currentTimeMillis() + StrUtil.EMPTY);
         TestLeave add = MapstructUtils.convert(bo, TestLeave.class);
         if (StringUtils.isBlank(add.getStatus())) {
             add.setStatus(BusinessStatusEnum.DRAFT.getStatus());
-            add.setApplyCode(System.currentTimeMillis() + StrUtil.EMPTY);
         }
         boolean flag = baseMapper.insert(add) > 0;
         if (flag) {
@@ -126,6 +126,9 @@ public class TestLeaveServiceImpl implements ITestLeaveService {
         long day = DateUtil.betweenDay(bo.getStartDate(), bo.getEndDate(), true);
         // 截止日期也算一天
         bo.setLeaveDays((int) day + 1);
+        if (ObjectUtil.isNull(bo.getId())) {
+            bo.setApplyCode(System.currentTimeMillis() + StrUtil.EMPTY);
+        }
         TestLeave leave = MapstructUtils.convert(bo, TestLeave.class);
         boolean flag = baseMapper.insertOrUpdate(leave);
         if (flag) {
