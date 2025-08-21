@@ -135,8 +135,20 @@ public class SysProfileController extends BaseController {
         return R.fail("上传图片异常，请联系管理员");
     }
 
+    /**
+     * 用户头像信息
+     *
+     * @param imgUrl 头像地址
+     */
     public record AvatarVo(String imgUrl) {}
 
+    /**
+     * 用户个人信息
+     *
+     * @param user      用户信息
+     * @param roleGroup 用户所属角色组
+     * @param postGroup 用户所属岗位组
+     */
     public record ProfileVo(ProfileUserVo user, String roleGroup, String postGroup) {}
 
 }

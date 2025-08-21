@@ -235,6 +235,12 @@ public class SysRoleController extends BaseController {
         return R.ok(selectVo);
     }
 
+    /**
+     * 角色部门列表树信息
+     *
+     * @param checkedKeys 选中部门列表
+     * @param depts       下拉树结构列表
+     */
     public record DeptTreeSelectVo(List<Long> checkedKeys, List<Tree<Long>> depts) {}
 
 }
