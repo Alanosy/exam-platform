@@ -347,8 +347,8 @@ public class SysTenantServiceImpl implements ISysTenantService {
         if (tenant.getAccountCount() == -1) {
             return true;
         }
-        Long userNumber = userMapper.selectCount(new LambdaQueryWrapper<>());
-        // 如果余额大于0代表还有可用名额
+        Long userNumber = userMapper.selectCount(
+            new LambdaQueryWrapper<SysUser>().eq(SysUser::getTenantId, tenantId));        // 如果余额大于0代表还有可用名额
         return tenant.getAccountCount() - userNumber > 0;
     }
 
