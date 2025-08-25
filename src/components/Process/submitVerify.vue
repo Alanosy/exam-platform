@@ -217,7 +217,9 @@ const task = ref<FlowTaskVO>({
   nodeType: undefined,
   nodeRatio: undefined,
   applyNode: false,
-  buttonList: []
+  buttonList: [],
+  businessCode: undefined,
+  businessTitle: undefined
 });
 const dialog = reactive<DialogOption>({
   visible: false,
