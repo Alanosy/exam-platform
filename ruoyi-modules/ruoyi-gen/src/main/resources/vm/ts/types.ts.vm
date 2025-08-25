@@ -54,10 +54,10 @@ export interface ${BusinessName}Query #if(!${treeCode})extends PageQuery #end{
                     #end
 #end
 #end
-    /**
-     * 日期范围参数
-     */
-    params?: any;
+  /**
+   * 日期范围参数
+   */
+  params?: any;
 }
 
 
