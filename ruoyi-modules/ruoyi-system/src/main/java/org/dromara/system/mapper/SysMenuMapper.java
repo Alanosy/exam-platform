@@ -32,7 +32,9 @@ public interface SysMenuMapper extends BaseMapperPlus<SysMenu, SysMenuVo> {
     default String buildMenuByUserSql(Long userId) {
         return """
                 select menu_id from sys_role_menu where role_id in (
-                    select role_id from sys_user_role where user_id = %d
+                    select sur.role_id from sys_user_role sur
+                        left join sys_role sr on sr.role_id = sur.role_id
+                        where sur.user_id = %d and sr.status = 0
                 )
             """.formatted(userId);
     }
@@ -50,7 +52,9 @@ public interface SysMenuMapper extends BaseMapperPlus<SysMenu, SysMenuVo> {
      */
     default String buildMenuByRoleSql(Long roleId) {
         return """
-                select menu_id from sys_role_menu where role_id = %d
+                select srm.menu_id from sys_role_menu srm
+                    left join sys_role sr on sr.role_id = srm.role_id
+                    where srm.role_id = %d and sr.status = 0
             """.formatted(roleId);
     }
 
@@ -68,7 +72,9 @@ public interface SysMenuMapper extends BaseMapperPlus<SysMenu, SysMenuVo> {
     default String buildParentMenuByRoleSql(Long roleId) {
         return """
                 select parent_id from sys_menu where menu_id in (
-                    select menu_id from sys_role_menu where role_id = %d
+                    select srm.menu_id from sys_role_menu srm
+                        left join sys_role sr on sr.role_id = srm.role_id
+                        where srm.role_id = %d and sr.status = 0
                 )
             """.formatted(roleId);
     }

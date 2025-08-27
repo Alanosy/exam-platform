@@ -30,7 +30,9 @@ public interface SysDeptMapper extends BaseMapperPlus<SysDept, SysDeptVo> {
      */
     default String buildDeptByRoleSql(Long roleId) {
         return """
-                select dept_id from sys_role_dept where role_id = %d
+                select srd.dept_id from sys_role_dept srd
+                    left join sys_role sr on sr.role_id = srd.role_id
+                    where srd.role_id = %d and sr.status = 0
             """.formatted(roleId);
     }
 
@@ -47,7 +49,9 @@ public interface SysDeptMapper extends BaseMapperPlus<SysDept, SysDeptVo> {
     default String buildParentDeptByRoleSql(Long roleId) {
         return """
                 select parent_id from sys_dept where dept_id in (
-                    select dept_id from sys_role_dept where role_id = %d
+                    select srd.dept_id from sys_role_dept srd
+                        left join sys_role sr on sr.role_id = srd.role_id
+                        where srd.role_id = %d and sr.status = 0
                 )
             """.formatted(roleId);
     }
