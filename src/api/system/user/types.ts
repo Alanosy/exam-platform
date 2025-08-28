@@ -20,7 +20,7 @@ export interface UserQuery extends PageQuery {
   status?: string;
   deptId?: string | number;
   roleId?: string | number;
-  userIds?: string;
+  userIds?:  string | number | (string | number)[] | undefined;
 }
 
 /**
