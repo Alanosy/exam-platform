@@ -5,12 +5,14 @@ import org.dromara.common.translation.annotation.Translation;
 import org.dromara.common.translation.constant.TransConstant;
 import org.dromara.warm.flow.core.entity.User;
 import org.dromara.workflow.common.constant.FlowConstant;
+import org.dromara.workflow.domain.bo.FlowCopyBo;
 
 import java.io.Serial;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 任务视图
@@ -185,6 +187,20 @@ public class FlowTaskVo implements Serializable {
      */
     private List<ButtonPermissionVo> buttonList;
 
+    /**
+     * 抄送对象 ID 集合
+     * <p>
+     * 根据扩展属性中 CopySettingEnum 类型的数据生成，存储需要抄送的对象 ID
+     */
+    private List<FlowCopyBo> copyList;
+
+    /**
+     * 自定义参数 Map
+     * <p>
+     * 根据扩展属性中 VariablesEnum 类型的数据生成，存储 key=value 格式的自定义参数
+     */
+    private Map<String, String> varList;
+
     //业务扩展信息开始
     /**
      * 业务编码
@@ -198,4 +214,3 @@ public class FlowTaskVo implements Serializable {
     //业务扩展信息结束
 
 }
-

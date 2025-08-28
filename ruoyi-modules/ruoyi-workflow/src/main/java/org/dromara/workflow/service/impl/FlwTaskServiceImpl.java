@@ -603,6 +603,19 @@ public class FlwTaskServiceImpl implements IFlwTaskService {
         NodeExtVo nodeExtVo = flwNodeExtService.parseNodeExt(flowNode.getExt());
         //设置按钮权限
         flowTaskVo.setButtonList(nodeExtVo.getButtonPermissions());
+        if (CollUtil.isNotEmpty(nodeExtVo.getCopySettings())) {
+            List<FlowCopyBo> list = StreamUtils.toList(nodeExtVo.getCopySettings(), x -> {
+                FlowCopyBo bo = new FlowCopyBo();
+                Long id = Convert.toLong(x);
+                bo.setUserId(id);
+                bo.setUserName(remoteUserService.selectUserNameById(id));
+                return bo;
+            });
+            flowTaskVo.setCopyList(list);
+        } else {
+            flowTaskVo.setCopyList(new ArrayList<>());
+        }
+        flowTaskVo.setVarList(nodeExtVo.getVariables());
         flowTaskVo.setNodeRatio(flowNode.getNodeRatio());
         flowTaskVo.setApplyNode(flowNode.getNodeCode().equals(flwCommonService.applyNodeCode(task.getDefinitionId())));
         return flowTaskVo;
