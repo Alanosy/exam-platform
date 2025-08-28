@@ -1,13 +1,17 @@
 package org.dromara.workflow.listener;
 
 import cn.hutool.core.collection.CollUtil;
+import cn.hutool.core.convert.Convert;
 import cn.hutool.core.lang.TypeReference;
 import cn.hutool.core.map.MapUtil;
 import cn.hutool.core.util.ObjectUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.dubbo.config.annotation.DubboReference;
 import org.dromara.common.core.enums.BusinessStatusEnum;
+import org.dromara.common.core.utils.StreamUtils;
 import org.dromara.common.core.utils.StringUtils;
+import org.dromara.system.api.RemoteUserService;
 import org.dromara.warm.flow.core.dto.FlowParams;
 import org.dromara.warm.flow.core.entity.Definition;
 import org.dromara.warm.flow.core.entity.Instance;
@@ -19,15 +23,18 @@ import org.dromara.workflow.common.ConditionalOnEnable;
 import org.dromara.workflow.common.constant.FlowConstant;
 import org.dromara.workflow.common.enums.TaskStatusEnum;
 import org.dromara.workflow.domain.bo.FlowCopyBo;
+import org.dromara.workflow.domain.vo.NodeExtVo;
 import org.dromara.workflow.handler.FlowProcessEventHandler;
 import org.dromara.workflow.service.IFlwCommonService;
 import org.dromara.workflow.service.IFlwInstanceService;
+import org.dromara.workflow.service.IFlwNodeExtService;
 import org.dromara.workflow.service.IFlwTaskService;
 import org.springframework.stereotype.Component;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * 全局任务办理监听
@@ -44,7 +51,11 @@ public class WorkflowGlobalListener implements GlobalListener {
     private final IFlwInstanceService instanceService;
     private final FlowProcessEventHandler flowProcessEventHandler;
     private final IFlwCommonService flwCommonService;
+    private final IFlwNodeExtService nodeExtService;
     private final InsService insService;
+
+    @DubboReference
+    private RemoteUserService remoteUserService;
 
     /**
      * 创建监听器，任务创建时执行
@@ -63,6 +74,25 @@ public class WorkflowGlobalListener implements GlobalListener {
      */
     @Override
     public void start(ListenerVariable listenerVariable) {
+        String ext = listenerVariable.getNode().getExt();
+        if (StringUtils.isNotBlank(ext)) {
+            NodeExtVo nodeExt = nodeExtService.parseNodeExt(ext);
+            Map<String, Object> variable = listenerVariable.getVariable();
+            Set<String> copyList = nodeExt.getCopySettings();
+            if (CollUtil.isNotEmpty(copyList)) {
+                List<FlowCopyBo> list = StreamUtils.toList(copyList, x -> {
+                    FlowCopyBo bo = new FlowCopyBo();
+                    Long id = Convert.toLong(x);
+                    bo.setUserId(id);
+                    bo.setUserName(remoteUserService.selectUserNameById(id));
+                    return bo;
+                });
+                variable.put(FlowConstant.FLOW_COPY_LIST, list);
+            }
+            if (CollUtil.isNotEmpty(nodeExt.getVariables())) {
+                variable.putAll(nodeExt.getVariables());
+            }
+        }
     }
 
     /**
