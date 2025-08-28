@@ -14,7 +14,9 @@ import org.dromara.warm.flow.ui.service.NodeExtService;
 import org.dromara.warm.flow.ui.vo.NodeExt;
 import org.dromara.workflow.common.ConditionalOnEnable;
 import org.dromara.workflow.common.enums.ButtonPermissionEnum;
+import org.dromara.workflow.common.enums.CopySettingEnum;
 import org.dromara.workflow.common.enums.NodeExtEnum;
+import org.dromara.workflow.common.enums.VariablesEnum;
 import org.dromara.workflow.domain.vo.ButtonPermissionVo;
 import org.dromara.workflow.service.IFlwNodeExtService;
 import org.springframework.stereotype.Service;
@@ -37,14 +39,35 @@ public class FlwNodeExtServiceImpl implements NodeExtService, IFlwNodeExtService
     /**
      * 存储不同 dictType 对应的配置信息
      */
-    private static final Map<String, ButtonPermission> CHILD_NODE_MAP = new HashMap<>();
-
-    record ButtonPermission(String label, Integer type, Boolean must, Boolean multiple) {
-    }
+    private static final Map<String, Map<String, Object>> CHILD_NODE_MAP;
 
     static {
-        CHILD_NODE_MAP.put(ButtonPermissionEnum.class.getSimpleName(),
-            new ButtonPermission("权限按钮", 4, false, true));
+        CHILD_NODE_MAP = Map.of(
+            CopySettingEnum.class.getSimpleName(),
+            Map.of(
+                "label", "抄送对象",
+                "type", 2,
+                "must", false,
+                "multiple", false,
+                "desc", "设置该节点的抄送办理人"
+            ),
+            VariablesEnum.class.getSimpleName(),
+            Map.of(
+                "label", "自定义参数",
+                "type", 2,
+                "must", false,
+                "multiple", false,
+                "desc", "节点执行时可以使用的自定义参数"
+            ),
+            ButtonPermissionEnum.class.getSimpleName(),
+            Map.of(
+                "label", "权限按钮",
+                "type", 4,
+                "must", false,
+                "multiple", true,
+                "desc", "控制该节点的按钮权限"
+            )
+        );
     }
 
     @DubboReference
@@ -58,6 +81,9 @@ public class FlwNodeExtServiceImpl implements NodeExtService, IFlwNodeExtService
     @Override
     public List<NodeExt> getNodeExt() {
         List<NodeExt> nodeExtList = new ArrayList<>();
+        // 构建基础设置页面
+        nodeExtList.add(buildNodeExt("wf_basic_tab", "基础设置", 1,
+            List.of(CopySettingEnum.class, VariablesEnum.class)));
         // 构建按钮权限页面
         nodeExtList.add(buildNodeExt("wf_button_tab", "权限", 2,
             List.of(ButtonPermissionEnum.class)));
@@ -107,9 +133,20 @@ public class FlwNodeExtServiceImpl implements NodeExtService, IFlwNodeExtService
             return null;
         }
         String simpleName = enumClass.getSimpleName();
-        NodeExt.ChildNode childNode = buildChildNodeMap(simpleName);
+        NodeExt.ChildNode childNode = new NodeExt.ChildNode();
+        Map<String, Object> map = CHILD_NODE_MAP.get(simpleName);
         // 编码，此json中唯
         childNode.setCode(simpleName);
+        // label名称
+        childNode.setLabel(Convert.toStr(map.get("label")));
+        // 1：输入框 2：文本域 3：下拉框 4：选择框
+        childNode.setType(Convert.toInt(map.get("type"), 1));
+        // 是否必填
+        childNode.setMust(Convert.toBool(map.get("must"), false));
+        // 是否多选
+        childNode.setMultiple(Convert.toBool(map.get("multiple"), true));
+        // 描述
+        childNode.setDesc(Convert.toStr(map.get("desc"), null));
         // 字典，下拉框和复选框时用到
         childNode.setDict(Arrays.stream(enumClass.getEnumConstants())
             .map(NodeExtEnum.class::cast)
@@ -126,49 +163,27 @@ public class FlwNodeExtServiceImpl implements NodeExtService, IFlwNodeExtService
      * @return 构建的 `ChildNode` 对象
      */
     private NodeExt.ChildNode buildChildNode(String dictType) {
-        RemoteDictTypeVo dictTypeDTO = remoteDictService.selectDictTypeByType(dictType);
-        if (ObjectUtil.isNull(dictTypeDTO)) {
+        RemoteDictTypeVo dictTypeDTO = remoteDictService.selectDictTypeByType(dictType);        if (ObjectUtil.isNull(dictTypeDTO)) {
             return null;
         }
-        NodeExt.ChildNode childNode = buildChildNodeMap(dictType);
+        NodeExt.ChildNode childNode = new NodeExt.ChildNode();
         // 编码，此json中唯一
         childNode.setCode(dictType);
         // label名称
         childNode.setLabel(dictTypeDTO.getDictName());
-        // 描述
+        // 1：输入框 2：文本域 3：下拉框 4：选择框
+        childNode.setType(3);
+        // 是否必填
+        childNode.setMust(false);
+        // 是否多选
+        childNode.setMultiple(true);
+        // 描述 (可根据描述参数解析更多配置，如type，must，multiple等)
         childNode.setDesc(dictTypeDTO.getRemark());
         // 字典，下拉框和复选框时用到
         childNode.setDict(remoteDictService.selectDictDataByType(dictType)
             .stream().map(x ->
                 new NodeExt.DictItem(x.getDictLabel(), x.getDictValue(), Convert.toBool(x.getIsDefault(), false))
             ).toList());
-        return childNode;
-    }
-
-    /**
-     * 根据 CHILD_NODE_MAP 中的配置信息，构建一个基本的 ChildNode 对象
-     * 该方法用于设置 ChildNode 的常规属性，例如 label、type、是否必填、是否多选等
-     *
-     * @param key CHILD_NODE_MAP 的 key
-     * @return 返回构建好的 ChildNode 对象
-     */
-    private NodeExt.ChildNode buildChildNodeMap(String key) {
-        NodeExt.ChildNode childNode = new NodeExt.ChildNode();
-        ButtonPermission bp = CHILD_NODE_MAP.get(key);
-        if (bp == null) {
-            childNode.setType(1);
-            childNode.setMust(false);
-            childNode.setMultiple(true);
-            return childNode;
-        }
-        // label名称
-        childNode.setLabel(bp.label());
-        // 1：输入框 2：输入框 3：下拉框 4：选择框
-        childNode.setType(bp.type());
-        // 是否必填
-        childNode.setMust(bp.must());
-        // 是否多选
-        childNode.setMultiple(bp.multiple());
         return childNode;
     }
 
