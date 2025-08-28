@@ -5,7 +5,6 @@ import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.convert.Convert;
 import cn.hutool.core.lang.Dict;
 import cn.hutool.core.util.ObjectUtil;
-import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.incrementer.IdentifierGenerator;
@@ -37,18 +36,26 @@ import org.dromara.warm.flow.core.service.*;
 import org.dromara.warm.flow.core.utils.ExpressionUtil;
 import org.dromara.warm.flow.core.utils.MapUtil;
 import org.dromara.warm.flow.orm.entity.*;
-import org.dromara.warm.flow.orm.mapper.*;
+import org.dromara.warm.flow.orm.mapper.FlowHisTaskMapper;
+import org.dromara.warm.flow.orm.mapper.FlowInstanceMapper;
+import org.dromara.warm.flow.orm.mapper.FlowNodeMapper;
+import org.dromara.warm.flow.orm.mapper.FlowTaskMapper;
 import org.dromara.workflow.api.domain.RemoteStartProcessReturn;
 import org.dromara.workflow.common.ConditionalOnEnable;
 import org.dromara.workflow.common.constant.FlowConstant;
 import org.dromara.workflow.common.enums.TaskAssigneeType;
 import org.dromara.workflow.common.enums.TaskStatusEnum;
+import org.dromara.workflow.domain.FlowInstanceBizExt;
 import org.dromara.workflow.domain.bo.*;
 import org.dromara.workflow.domain.vo.FlowHisTaskVo;
 import org.dromara.workflow.domain.vo.FlowTaskVo;
 import org.dromara.workflow.mapper.FlwCategoryMapper;
+import org.dromara.workflow.mapper.FlwInstanceBizExtMapper;
 import org.dromara.workflow.mapper.FlwTaskMapper;
-import org.dromara.workflow.service.*;
+import org.dromara.workflow.service.IFlwCommonService;
+import org.dromara.workflow.service.IFlwNodeExtService;
+import org.dromara.workflow.service.IFlwTaskAssigneeService;
+import org.dromara.workflow.service.IFlwTaskService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -83,7 +90,7 @@ public class FlwTaskServiceImpl implements IFlwTaskService {
     private final IFlwTaskAssigneeService flwTaskAssigneeService;
     private final IFlwCommonService flwCommonService;
     private final IFlwNodeExtService flwNodeExtService;
-    private final IFlwInstanceBizExtService flowInstanceBizExtService;
+    private final FlwInstanceBizExtMapper flwInstanceBizExtMapper;
 
     @DubboReference
     private RemoteUserService remoteUserService;
@@ -100,6 +107,7 @@ public class FlwTaskServiceImpl implements IFlwTaskService {
         if (StringUtils.isBlank(businessId)) {
             throw new ServiceException("启动工作流时必须包含业务ID");
         }
+
         // 启动流程实例（提交申请）
         Map<String, Object> variables = startProcessBo.getVariables();
         // 流程发起人
@@ -108,14 +116,14 @@ public class FlwTaskServiceImpl implements IFlwTaskService {
         variables.put(INITIATOR_DEPT_ID, LoginHelper.getDeptId());
         // 业务id
         variables.put(BUSINESS_ID, businessId);
+        FlowInstanceBizExt bizExt = startProcessBo.getBizExt();
+
+        // 获取已有流程实例
         FlowInstance flowInstance = flowInstanceMapper.selectOne(new LambdaQueryWrapper<>(FlowInstance.class)
             .eq(FlowInstance::getBusinessId, businessId));
-        FlowInstanceBizExtBo extBo = startProcessBo.getFlowInstanceBizExtBo();
-        if (ObjectUtil.isEmpty(extBo)) {
-            extBo = new FlowInstanceBizExtBo();
-            startProcessBo.setFlowInstanceBizExtBo(extBo);
-        }
+
         if (ObjectUtil.isNotNull(flowInstance)) {
+            // 已存在流程
             BusinessStatusEnum.checkStartStatus(flowInstance.getFlowStatus());
             List<Task> taskList = taskService.list(new FlowTask().setInstanceId(flowInstance.getId()));
             taskService.mergeVariable(flowInstance, variables);
@@ -124,24 +132,16 @@ public class FlwTaskServiceImpl implements IFlwTaskService {
             dto.setProcessInstanceId(taskList.get(0).getInstanceId());
             dto.setTaskId(taskList.get(0).getId());
             // 保存流程实例业务信息
-            buildFlowInstanceBizExt(flowInstance, startProcessBo.getFlowInstanceBizExtBo());
+            this.buildFlowInstanceBizExt(flowInstance, bizExt);
             return dto;
         }
-        String businessCode;
-        // 生成业务编号
-        if (StringUtils.isBlank(extBo.getBusinessCode())) {
-            //todo 按照自己业务自行修改
-            businessCode = System.currentTimeMillis()+ StrUtil.EMPTY;
-            extBo.setBusinessCode(businessCode);
-        } else {
-            businessCode = extBo.getBusinessCode();
-        }
+
         // 将流程定义内的扩展参数设置到变量中
         Definition definition = FlowEngine.defService().getPublishByFlowCode(startProcessBo.getFlowCode());
         Dict dict = JsonUtils.parseMap(definition.getExt());
         boolean autoPass = !ObjectUtil.isNull(dict) && dict.getBool(FlowConstant.AUTO_PASS);
         variables.put(FlowConstant.AUTO_PASS, autoPass);
-        variables.put(FlowConstant.BUSINESS_CODE, businessCode);
+        variables.put(FlowConstant.BUSINESS_CODE, this.generateBusinessCode(bizExt));
         FlowParams flowParams = FlowParams.build()
             .handler(startProcessBo.getHandler())
             .flowCode(startProcessBo.getFlowCode())
@@ -154,7 +154,7 @@ public class FlwTaskServiceImpl implements IFlwTaskService {
             throw new ServiceException(e.getMessage());
         }
         // 保存流程实例业务信息
-        buildFlowInstanceBizExt(instance, startProcessBo.getFlowInstanceBizExtBo());
+        this.buildFlowInstanceBizExt(instance, bizExt);
         // 申请人执行流程
         List<Task> taskList = taskService.list(new FlowTask().setInstanceId(instance.getId()));
         if (taskList.size() > 1) {
@@ -167,16 +167,28 @@ public class FlwTaskServiceImpl implements IFlwTaskService {
     }
 
     /**
+     * 生成业务编号，如果已有则直接返回已有值
+     */
+    private String generateBusinessCode(FlowInstanceBizExt bizExt) {
+        if (StringUtils.isBlank(bizExt.getBusinessCode())) {
+            // TODO: 按照自己业务规则生成编号
+            String businessCode = Convert.toStr(System.currentTimeMillis());
+            bizExt.setBusinessCode(businessCode);
+            return businessCode;
+        }
+        return bizExt.getBusinessCode();
+    }
+
+    /**
      * 构建流程实例业务信息
      *
-     * @param instance             流程实例
-     * @param flowInstanceBizExtBo 业务扩展信息
+     * @param instance 流程实例
+     * @param bizExt   流程业务扩展信息
      */
-    private void buildFlowInstanceBizExt(Instance instance, FlowInstanceBizExtBo flowInstanceBizExtBo) {
-        flowInstanceBizExtBo.setInstanceId(instance.getId());
-        flowInstanceBizExtBo.setBusinessId(instance.getBusinessId());
-        flowInstanceBizExtBo.setBusinessCode(flowInstanceBizExtBo.getBusinessCode());
-        flowInstanceBizExtService.saveOrUpdate(flowInstanceBizExtBo);
+    private void buildFlowInstanceBizExt(Instance instance, FlowInstanceBizExt bizExt) {
+        bizExt.setInstanceId(instance.getId());
+        bizExt.setBusinessId(instance.getBusinessId());
+        flwInstanceBizExtMapper.saveOrUpdateByInstanceId(bizExt);
     }
 
     /**
@@ -237,10 +249,10 @@ public class FlwTaskServiceImpl implements IFlwTaskService {
     /**
      * 流程办理
      *
-     * @param taskId         任务ID
-     * @param flowParams     参数
-     * @param instanceId     实例ID
-     * @param autoPass       自动审批
+     * @param taskId     任务ID
+     * @param flowParams 参数
+     * @param instanceId 实例ID
+     * @param autoPass   自动审批
      */
     private void skipTask(Long taskId, FlowParams flowParams, Long instanceId, Boolean autoPass) {
         // 执行任务跳转，并根据返回的处理人设置下一步处理人
@@ -496,8 +508,8 @@ public class FlwTaskServiceImpl implements IFlwTaskService {
     /**
      * 获取可驳回的前置节点
      *
-     * @param taskId       任务id
-     * @param nowNodeCode  当前节点
+     * @param taskId      任务id
+     * @param nowNodeCode 当前节点
      */
     @Override
     public List<Node> getBackTaskNode(Long taskId, String nowNodeCode) {
