@@ -1,8 +1,8 @@
 package org.dromara.workflow.service.impl;
 
 import cn.hutool.core.convert.Convert;
+import cn.hutool.core.lang.Dict;
 import cn.hutool.core.util.ObjectUtil;
-import cn.hutool.core.util.StrUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.dubbo.config.annotation.DubboReference;
@@ -18,12 +18,12 @@ import org.dromara.workflow.common.enums.CopySettingEnum;
 import org.dromara.workflow.common.enums.NodeExtEnum;
 import org.dromara.workflow.common.enums.VariablesEnum;
 import org.dromara.workflow.domain.vo.ButtonPermissionVo;
+import org.dromara.workflow.domain.vo.NodeExtVo;
 import org.dromara.workflow.service.IFlwNodeExtService;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 /**
  * 流程设计器-节点扩展属性
@@ -163,7 +163,8 @@ public class FlwNodeExtServiceImpl implements NodeExtService, IFlwNodeExtService
      * @return 构建的 `ChildNode` 对象
      */
     private NodeExt.ChildNode buildChildNode(String dictType) {
-        RemoteDictTypeVo dictTypeDTO = remoteDictService.selectDictTypeByType(dictType);        if (ObjectUtil.isNull(dictTypeDTO)) {
+        RemoteDictTypeVo dictTypeDTO = remoteDictService.selectDictTypeByType(dictType);
+        if (ObjectUtil.isNull(dictTypeDTO)) {
             return null;
         }
         NodeExt.ChildNode childNode = new NodeExt.ChildNode();
@@ -188,73 +189,71 @@ public class FlwNodeExtServiceImpl implements NodeExtService, IFlwNodeExtService
     }
 
     /**
-     * 从扩展属性构建按钮权限列表：根据 ext 中记录的权限值，标记每个按钮是否勾选
+     * 解析扩展属性 JSON 并构建 Node 扩展属性对象
+     * <p>
+     * 根据传入的 JSON 字符串，将扩展属性分为三类：
+     * 1. ButtonPermissionEnum：解析为按钮权限列表，标记每个按钮是否勾选
+     * 2. CopySettingEnum：解析为抄送对象 ID 集合
+     * 3. VariablesEnum：解析为自定义参数 Map
+     *
+     * <p>示例 JSON：
+     * [
+     * {"code": "ButtonPermissionEnum", "value": "back,termination"},
+     * {"code": "CopySettingEnum", "value": "1"},
+     * {"code": "VariablesEnum", "value": "key1=value1,key2=value2"}
+     * ]
      *
      * @param ext 扩展属性 JSON 字符串
-     * @return 按钮权限 VO 列表
+     * @return NodeExtVo 对象，封装按钮权限列表、抄送对象集合和自定义参数 Map
      */
     @Override
-    public List<ButtonPermissionVo> buildButtonPermissionsFromExt(String ext) {
-        // 解析 ext 为 Map<code, Set<value>>，用于标记权限
-        Map<String, Set<String>> permissionMap = JsonUtils.parseArray(ext, ButtonPermissionVo.class)
-            .stream()
-            .collect(Collectors.toMap(
-                ButtonPermissionVo::getCode,
-                item -> StringUtils.splitList(item.getValue()).stream()
-                    .map(String::trim)
-                    .filter(StrUtil::isNotBlank)
-                    .collect(Collectors.toSet()),
-                (a, b) -> b,
-                HashMap::new
-            ));
+    public NodeExtVo parseNodeExt(String ext) {
+        NodeExtVo nodeExtVo = new NodeExtVo();
 
-        // 构建按钮权限列表，标记哪些按钮在 permissionMap 中出现（表示已勾选）
-        return buildPermissionsFromSources(permissionMap, List.of(ButtonPermissionEnum.class));
-    }
+        // 解析 JSON 为 Dict 列表
+        List<Dict> nodeExtMap = JsonUtils.parseArrayMap(ext);
 
-    /**
-     * 将权限映射与按钮权限来源（枚举类或字典类型）进行匹配，生成权限视图列表
-     * <p>
-     * 使用说明：
-     * - sources 支持传入多个来源类型，支持 NodeExtEnum 枚举类 或 字典类型字符串（dictType）
-     * - 若需要扩展更多按钮权限，只需在 sources 中新增对应的枚举类或字典类型
-     * <p>
-     * 示例：
-     * buildPermissionsFromSources(permissionMap, List.of(ButtonPermissionEnum.class, "custom_button_dict"));
-     *
-     * @param permissionMap 权限映射
-     * @param sources       枚举类或字典类型列表
-     * @return 按钮权限视图对象列表
-     */
-    @SuppressWarnings("unchecked cast")
-    private List<ButtonPermissionVo> buildPermissionsFromSources(Map<String, Set<String>> permissionMap, List<Object> sources) {
-        return sources.stream()
-            .flatMap(source -> {
-                if (source instanceof Class<?> clazz && NodeExtEnum.class.isAssignableFrom(clazz)) {
-                    Set<String> selectedSet = permissionMap.getOrDefault(clazz.getSimpleName(), Collections.emptySet());
-                    return extractDictItems(this.buildChildNode((Class<? extends NodeExtEnum>) clazz), selectedSet).stream();
-                } else if (source instanceof String dictType) {
-                    Set<String> selectedSet = permissionMap.getOrDefault(dictType, Collections.emptySet());
-                    return extractDictItems(this.buildChildNode(dictType), selectedSet).stream();
-                }
-                return Stream.empty();
-            }).toList();
-    }
+        for (Dict nodeExt : nodeExtMap) {
+            String code = nodeExt.getStr("code");
+            String value = nodeExt.getStr("value");
 
-    /**
-     * 从节点子项中提取字典项，并构建按钮权限视图对象列表
-     *
-     * @param childNode   子节点
-     * @param selectedSet 已选中的值集
-     * @return 按钮权限视图对象列表
-     */
-    private List<ButtonPermissionVo> extractDictItems(NodeExt.ChildNode childNode, Set<String> selectedSet) {
-        return Optional.ofNullable(childNode)
-            .map(NodeExt.ChildNode::getDict)
-            .orElse(List.of())
-            .stream()
-            .map(dict -> new ButtonPermissionVo(dict.getValue(), selectedSet.contains(dict.getValue())))
-            .toList();
+            if (ButtonPermissionEnum.class.getSimpleName().equals(code)) {
+                // 解析按钮权限
+                // 将 value 拆分为 Set<String>，便于精确匹配
+                Set<String> buttonSet = StringUtils.str2Set(value, StringUtils.SEPARATOR);
+
+                // 获取按钮字典配置
+                NodeExt.ChildNode childNode = buildChildNode(ButtonPermissionEnum.class);
+
+                // 构建 ButtonPermissionVo 列表
+                List<ButtonPermissionVo> buttonList = Optional.ofNullable(childNode)
+                    .map(NodeExt.ChildNode::getDict)
+                    .orElse(List.of())
+                    .stream()
+                    .map(dict -> new ButtonPermissionVo(dict.getValue(), buttonSet.contains(dict.getValue())))
+                    .toList();
+
+                nodeExtVo.setButtonPermissions(buttonList);
+
+            } else if (CopySettingEnum.class.getSimpleName().equals(code)) {
+                // 解析抄送对象 ID 集合
+                nodeExtVo.setCopySettings(StringUtils.str2Set(value, StringUtils.SEPARATOR));
+
+            } else if (VariablesEnum.class.getSimpleName().equals(code)) {
+                // 解析自定义参数
+                // 将 key=value 字符串拆分为 Map
+                Map<String, String> variables = Arrays.stream(StringUtils.split(value, StringUtils.SEPARATOR))
+                    .map(s -> StringUtils.split(s, "="))
+                    .filter(arr -> arr.length == 2)
+                    .collect(Collectors.toMap(arr -> arr[0], arr -> arr[1]));
+
+                nodeExtVo.setVariables(variables);
+            } else {
+                // 未知扩展类型，记录日志
+                log.warn("未知扩展类型：code={}, value={}", code, value);
+            }
+        }
+        return nodeExtVo;
     }
 
 }

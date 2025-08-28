@@ -49,6 +49,7 @@ import org.dromara.workflow.domain.FlowInstanceBizExt;
 import org.dromara.workflow.domain.bo.*;
 import org.dromara.workflow.domain.vo.FlowHisTaskVo;
 import org.dromara.workflow.domain.vo.FlowTaskVo;
+import org.dromara.workflow.domain.vo.NodeExtVo;
 import org.dromara.workflow.mapper.FlwCategoryMapper;
 import org.dromara.workflow.mapper.FlwInstanceBizExtMapper;
 import org.dromara.workflow.mapper.FlwTaskMapper;
@@ -599,8 +600,9 @@ public class FlwTaskServiceImpl implements IFlwTaskService {
         if (ObjectUtil.isNull(flowNode)) {
             throw new NullPointerException("当前【" + flowTaskVo.getNodeCode() + "】节点编码不存在");
         }
+        NodeExtVo nodeExtVo = flwNodeExtService.parseNodeExt(flowNode.getExt());
         //设置按钮权限
-        flowTaskVo.setButtonList(flwNodeExtService.buildButtonPermissionsFromExt(flowNode.getExt()));
+        flowTaskVo.setButtonList(nodeExtVo.getButtonPermissions());
         flowTaskVo.setNodeRatio(flowNode.getNodeRatio());
         flowTaskVo.setApplyNode(flowNode.getNodeCode().equals(flwCommonService.applyNodeCode(task.getDefinitionId())));
         return flowTaskVo;
