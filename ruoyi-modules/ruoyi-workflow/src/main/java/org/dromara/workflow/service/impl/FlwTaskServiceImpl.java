@@ -47,6 +47,7 @@ import org.dromara.workflow.common.enums.TaskAssigneeType;
 import org.dromara.workflow.common.enums.TaskStatusEnum;
 import org.dromara.workflow.domain.FlowInstanceBizExt;
 import org.dromara.workflow.domain.bo.*;
+import org.dromara.workflow.domain.vo.FlowCopyVo;
 import org.dromara.workflow.domain.vo.FlowHisTaskVo;
 import org.dromara.workflow.domain.vo.FlowTaskVo;
 import org.dromara.workflow.domain.vo.NodeExtVo;
@@ -604,13 +605,7 @@ public class FlwTaskServiceImpl implements IFlwTaskService {
         //设置按钮权限
         flowTaskVo.setButtonList(nodeExtVo.getButtonPermissions());
         if (CollUtil.isNotEmpty(nodeExtVo.getCopySettings())) {
-            List<FlowCopyBo> list = StreamUtils.toList(nodeExtVo.getCopySettings(), x -> {
-                FlowCopyBo bo = new FlowCopyBo();
-                Long id = Convert.toLong(x);
-                bo.setUserId(id);
-                bo.setUserName(remoteUserService.selectUserNameById(id));
-                return bo;
-            });
+            List<FlowCopyVo> list = StreamUtils.toList(nodeExtVo.getCopySettings(), x -> new FlowCopyVo(Convert.toLong(x)));
             flowTaskVo.setCopyList(list);
         } else {
             flowTaskVo.setCopyList(new ArrayList<>());

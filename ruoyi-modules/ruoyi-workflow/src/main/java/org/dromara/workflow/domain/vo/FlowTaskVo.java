@@ -5,7 +5,6 @@ import org.dromara.common.translation.annotation.Translation;
 import org.dromara.common.translation.constant.TransConstant;
 import org.dromara.warm.flow.core.entity.User;
 import org.dromara.workflow.common.constant.FlowConstant;
-import org.dromara.workflow.domain.bo.FlowCopyBo;
 
 import java.io.Serial;
 import java.io.Serializable;
@@ -192,7 +191,7 @@ public class FlowTaskVo implements Serializable {
      * <p>
      * 根据扩展属性中 CopySettingEnum 类型的数据生成，存储需要抄送的对象 ID
      */
-    private List<FlowCopyBo> copyList;
+    private List<FlowCopyVo> copyList;
 
     /**
      * 自定义参数 Map
