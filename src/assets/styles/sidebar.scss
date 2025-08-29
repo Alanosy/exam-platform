@@ -112,7 +112,7 @@
       min-width: calc($base-sidebar-width - 20px) !important;
       border-radius: 8px;
       height: 45px;
-      margin: 1px 8px 1px 8px;
+      margin: 1px 5px 1px 5px;
       &:not(.is-active):hover {
         background-color: rgba(0, 0, 0, 0.1) !important;
       }
@@ -123,7 +123,7 @@
       background-color: $base-sub-menu-background !important;
       border-radius: 8px;
       height: 45px;
-      margin: 1px 8px 1px 8px;
+      margin: 1px 5px 1px 5px;
 
       &.is-active {
         background-color: var(--el-menu-active-color) !important;
@@ -139,7 +139,7 @@
     & .theme-dark .el-menu-item {
       border-radius: 8px;
       height: 45px;
-      margin: 1px 8px 1px 8px;
+      margin: 1px 5px 1px 5px;
 
       &.is-active {
         background-color: var(--el-menu-active-color) !important;
@@ -155,7 +155,7 @@
     & .el-menu-item {
       border-radius: 8px;
       height: 45px;
-      margin: 1px 8px 1px 8px;
+      margin: 1px 5px 1px 5px;
 
       &.is-active {
         background-color: var(--el-menu-active-color) !important;
