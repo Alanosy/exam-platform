@@ -168,6 +168,9 @@ const confirm = () => {
 };
 
 const computedIds = (data) => {
+  if (data === '' || data === null || data === undefined) {
+    return [];
+  }
   if (data instanceof Array) {
     return data.map((item) => String(item));
   } else if (typeof data === 'string') {
