@@ -353,6 +353,7 @@ const getPageList = async () => {
   const query = proxy.$route.query;
   if (query.activeName) {
     activeName.value = query.activeName;
+    proxy.$route.query.activeName = '';
   }
   if (activeName.value === '0') {
     getList();
@@ -526,6 +527,7 @@ const handleSubmit = async () => {
         await edit(form.value).finally(() => (loading.value = false));
       } else {
         await add(form.value).finally(() => (loading.value = false));
+        activeName.value = '1';
       }
       proxy?.$modal.msgSuccess('操作成功');
       modelDialog.visible = false;
