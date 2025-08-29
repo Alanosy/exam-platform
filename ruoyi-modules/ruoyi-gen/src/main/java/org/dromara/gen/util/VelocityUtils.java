@@ -1,4 +1,4 @@
-package org.dromara.generator.util;
+package org.dromara.gen.util;
 
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.convert.Convert;
