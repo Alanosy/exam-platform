@@ -629,7 +629,7 @@ public class FlwTaskServiceImpl implements IFlwTaskService {
         Instance instance = insService.getById(task.getInstanceId());
         Definition definition = defService.getById(task.getDefinitionId());
         Map<String, Object> mergeVariable = MapUtil.mergeAll(instance.getVariableMap(), variables);
-        //获取下一节点列表
+        // 获取下一节点列表
         List<Node> nextNodeList = nodeService.getNextNodeList(task.getDefinitionId(), task.getNodeCode(), null, SkipType.PASS.getKey(), mergeVariable);
         List<FlowNode> nextFlowNodes = BeanUtil.copyToList(nextNodeList, FlowNode.class);
         // 只获取中间节点
@@ -640,14 +640,14 @@ public class FlwTaskServiceImpl implements IFlwTaskService {
             //办理人变量替换
             ExpressionUtil.evalVariable(buildNextTaskList, FlowParams.build().variable(mergeVariable));
             for (FlowNode flowNode : nextFlowNodes) {
-                Task first = StreamUtils.findFirst(buildNextTaskList, t -> t.getNodeCode().equals(flowNode.getNodeCode()));
-                if (ObjectUtil.isNotNull(first) && CollUtil.isNotEmpty(first.getPermissionList())) {
-                    List<RemoteUserVo> users = flwTaskAssigneeService.fetchUsersByStorageIds(StringUtils.joinComma(first.getPermissionList()));
-                    if (CollUtil.isNotEmpty(users)) {
-                        flowNode.setPermissionFlag(StreamUtils.join(users, e -> String.valueOf(e.getUserId())));
-                    }
-                }
-
+                StreamUtils.findFirst(buildNextTaskList, t -> t.getNodeCode().equals(flowNode.getNodeCode()))
+                    .ifPresent(first -> {
+                        List<RemoteUserVo> users;
+                        if (CollUtil.isNotEmpty(first.getPermissionList())
+                            && CollUtil.isNotEmpty(users = flwTaskAssigneeService.fetchUsersByStorageIds(StringUtils.joinComma(first.getPermissionList())))) {
+                            flowNode.setPermissionFlag(StreamUtils.join(users, e -> Convert.toStr(e.getUserId())));
+                        }
+                    });
             }
         }
         return nextFlowNodes;
