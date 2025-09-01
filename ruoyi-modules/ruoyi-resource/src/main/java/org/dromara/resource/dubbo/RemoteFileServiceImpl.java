@@ -7,11 +7,13 @@ import org.apache.dubbo.config.annotation.DubboService;
 import org.dromara.common.core.exception.ServiceException;
 import org.dromara.common.core.utils.MapstructUtils;
 import org.dromara.common.core.utils.StringUtils;
+import org.dromara.common.json.utils.JsonUtils;
 import org.dromara.common.oss.core.OssClient;
 import org.dromara.common.oss.entity.UploadResult;
 import org.dromara.common.oss.factory.OssFactory;
 import org.dromara.resource.api.RemoteFileService;
 import org.dromara.resource.api.domain.RemoteFile;
+import org.dromara.resource.domain.SysOssExt;
 import org.dromara.resource.domain.bo.SysOssBo;
 import org.dromara.resource.domain.vo.SysOssVo;
 import org.dromara.resource.service.ISysOssService;
@@ -50,6 +52,10 @@ public class RemoteFileServiceImpl implements RemoteFileService {
             oss.setFileName(uploadResult.getFilename());
             oss.setOriginalName(originalFilename);
             oss.setService(storage.getConfigKey());
+            SysOssExt ext1 = new SysOssExt();
+            ext1.setFileSize((long) file.length);
+            String extStr = JsonUtils.toJsonString(ext1);
+            oss.setExt1(extStr);
             sysOssService.insertByBo(oss);
             RemoteFile sysFile = new RemoteFile();
             sysFile.setOssId(oss.getOssId());
@@ -57,6 +63,7 @@ public class RemoteFileServiceImpl implements RemoteFileService {
             sysFile.setUrl(uploadResult.getUrl());
             sysFile.setOriginalName(originalFilename);
             sysFile.setFileSuffix(suffix);
+            sysFile.setExt1(extStr);
             return sysFile;
         } catch (Exception e) {
             log.error("上传文件失败", e);
