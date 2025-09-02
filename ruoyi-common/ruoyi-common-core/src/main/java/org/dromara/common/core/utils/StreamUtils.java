@@ -27,7 +27,7 @@ public class StreamUtils {
      */
     public static <E> List<E> filter(Collection<E> collection, Predicate<E> function) {
         if (CollUtil.isEmpty(collection)) {
-            return Collections.emptyList();
+            return CollUtil.newArrayList();
         }
         return collection.stream()
             .filter(function)
@@ -127,7 +127,7 @@ public class StreamUtils {
      */
     public static <E> List<E> sorted(Collection<E> collection, Comparator<E> comparing) {
         if (CollUtil.isEmpty(collection)) {
-            return Collections.emptyList();
+            return CollUtil.newArrayList();
         }
         return collection.stream()
             .filter(Objects::nonNull)
@@ -265,7 +265,7 @@ public class StreamUtils {
      */
     public static <E, T> List<T> toList(Collection<E> collection, Function<E, T> function) {
         if (CollUtil.isEmpty(collection)) {
-            return Collections.emptyList();
+            return CollUtil.newArrayList();
         }
         return collection.stream()
             .map(function)
