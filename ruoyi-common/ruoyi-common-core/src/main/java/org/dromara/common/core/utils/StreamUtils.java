@@ -287,7 +287,7 @@ public class StreamUtils {
      */
     public static <E, T> Set<T> toSet(Collection<E> collection, Function<E, T> function) {
         if (CollUtil.isEmpty(collection)) {
-            return Collections.emptySet();
+            return CollUtil.newHashSet();
         }
         return collection.stream()
             .map(function)
