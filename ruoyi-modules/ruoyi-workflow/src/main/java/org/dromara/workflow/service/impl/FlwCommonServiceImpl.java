@@ -53,7 +53,7 @@ public class FlwCommonServiceImpl implements IFlwCommonService {
      */
     @Override
     public void sendMessage(String flowName, Long instId, List<String> messageType, String message) {
-        if (CollUtil.isNotEmpty(messageType)) {
+        if (CollUtil.isEmpty(messageType)) {
             return;
         }
         IFlwTaskService flwTaskService = SpringUtils.getBean(IFlwTaskService.class);
