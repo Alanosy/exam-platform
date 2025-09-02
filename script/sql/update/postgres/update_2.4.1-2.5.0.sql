@@ -88,3 +88,10 @@ COMMENT ON COLUMN flow_instance_biz_ext.business_id  IS '业务Id';
 
 ALTER TABLE test_leave ADD COLUMN apply_code VARCHAR(50) NOT NULL;
 COMMENT ON COLUMN test_leave.apply_code IS '申请编号';
+
+update sys_menu set remark = '/tool/gen' where menu_id = 116;
+update sys_menu set remark = '/system/role' where menu_id = 130;
+update sys_menu set remark = '/system/user' where menu_id = 131;
+update sys_menu set remark = '/system/dict' where menu_id = 132;
+update sys_menu set remark = '/system/oss' where menu_id = 133;
+update sys_menu set remark = '/workflow/processDefinition' where menu_id = 11700;

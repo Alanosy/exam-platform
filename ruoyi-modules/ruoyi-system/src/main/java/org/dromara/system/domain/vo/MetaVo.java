@@ -38,6 +38,11 @@ public class MetaVo implements Serializable {
      */
     private String link;
 
+    /**
+     * 激活菜单
+     */
+    private String activeMenu;
+
     public MetaVo(String title, String icon) {
         this.title = title;
         this.icon = icon;
@@ -61,6 +66,18 @@ public class MetaVo implements Serializable {
         this.noCache = noCache;
         if (StringUtils.ishttp(link)) {
             this.link = link;
+        }
+    }
+
+    public MetaVo(String title, String icon, Boolean noCache, String link, String activeMenu) {
+        this.title = title;
+        this.icon = icon;
+        this.noCache = noCache;
+        if (StringUtils.ishttp(link)) {
+            this.link = link;
+        }
+        if (StringUtils.startWithAnyIgnoreCase(activeMenu, "/")) {
+            this.activeMenu = activeMenu;
         }
     }
 

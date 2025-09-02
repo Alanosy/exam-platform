@@ -57,3 +57,10 @@ create table flow_instance_biz_ext (
 
 ALTER TABLE `test_leave`
     ADD COLUMN `apply_code` varchar(50) NOT NULL COMMENT '申请编号' AFTER `tenant_id`;
+
+update sys_menu set remark = '/tool/gen' where menu_id = 116;
+update sys_menu set remark = '/system/role' where menu_id = 130;
+update sys_menu set remark = '/system/user' where menu_id = 131;
+update sys_menu set remark = '/system/dict' where menu_id = 132;
+update sys_menu set remark = '/system/oss' where menu_id = 133;
+update sys_menu set remark = '/workflow/processDefinition' where menu_id = 11700;
