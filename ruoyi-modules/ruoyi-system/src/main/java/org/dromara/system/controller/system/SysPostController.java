@@ -1,6 +1,7 @@
 package org.dromara.system.controller.system;
 
 import cn.dev33.satoken.annotation.SaCheckPermission;
+import cn.hutool.core.lang.tree.Tree;
 import cn.hutool.core.util.ObjectUtil;
 import org.dromara.common.core.constant.SystemConstants;
 import org.dromara.common.core.domain.R;
@@ -11,8 +12,10 @@ import org.dromara.common.log.enums.BusinessType;
 import org.dromara.common.mybatis.core.page.PageQuery;
 import org.dromara.common.mybatis.core.page.TableDataInfo;
 import org.dromara.common.web.core.BaseController;
+import org.dromara.system.domain.bo.SysDeptBo;
 import org.dromara.system.domain.bo.SysPostBo;
 import org.dromara.system.domain.vo.SysPostVo;
+import org.dromara.system.service.ISysDeptService;
 import org.dromara.system.service.ISysPostService;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -35,6 +38,7 @@ import java.util.List;
 public class SysPostController extends BaseController {
 
     private final ISysPostService postService;
+    private final ISysDeptService deptService;
 
     /**
      * 获取岗位列表
@@ -132,6 +136,15 @@ public class SysPostController extends BaseController {
             list = postService.selectPostByIds(List.of(postIds));
         }
         return R.ok(list);
+    }
+
+    /**
+     * 获取部门树列表
+     */
+    @SaCheckPermission("system:post:list")
+    @GetMapping("/deptTree")
+    public R<List<Tree<Long>>> deptTree(SysDeptBo dept) {
+        return R.ok(deptService.selectDeptTreeList(dept));
     }
 
 }
