@@ -170,10 +170,9 @@
 </template>
 
 <script setup name="Post" lang="ts">
-import { listPost, addPost, delPost, getPost, updatePost } from '@/api/system/post';
+import { listPost, addPost, delPost, getPost, updatePost, deptTreeSelect } from '@/api/system/post';
 import { PostForm, PostQuery, PostVO } from '@/api/system/post/types';
-import { DeptVO } from '@/api/system/dept/types';
-import api from '@/api/system/user';
+import { DeptTreeVO, DeptVO } from '@/api/system/dept/types';
 
 const { proxy } = getCurrentInstance() as ComponentInternalInstance;
 const { sys_normal_disable } = toRefs<any>(proxy?.useDict('sys_normal_disable'));
@@ -186,7 +185,7 @@ const single = ref(true);
 const multiple = ref(true);
 const total = ref(0);
 const deptName = ref('');
-const deptOptions = ref<DeptVO[]>([]);
+const deptOptions = ref<DeptTreeVO[]>([]);
 const deptTreeRef = ref<ElTreeInstance>();
 const postFormRef = ref<ElFormInstance>();
 const queryFormRef = ref<ElFormInstance>();
@@ -212,6 +211,8 @@ const data = reactive<PageData<PostForm, PostQuery>>({
   queryParams: {
     pageNum: 1,
     pageSize: 10,
+    deptId: undefined,
+    belongDeptId: undefined,
     postCode: '',
     postName: '',
     postCategory: '',
@@ -245,7 +246,7 @@ watchEffect(
 
 /** 查询部门下拉树结构 */
 const getTreeSelect = async () => {
-  const res = await api.deptTreeSelect();
+  const res = await deptTreeSelect();
   deptOptions.value = res.data;
 };
 
