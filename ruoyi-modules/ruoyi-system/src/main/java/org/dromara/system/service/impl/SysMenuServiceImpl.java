@@ -161,6 +161,7 @@ public class SysMenuServiceImpl implements ISysMenuService {
             });
         }
         return baseMapper.selectObjs(new LambdaQueryWrapper<SysMenu>()
+            .select(SysMenu::getMenuId)
             .in(SysMenu::getMenuId, menuIds)
             .notIn(CollUtil.isNotEmpty(parentIds), SysMenu::getMenuId, parentIds), x -> {
             return Convert.toLong(x);
