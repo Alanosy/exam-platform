@@ -32,7 +32,7 @@ public interface SysDeptMapper extends BaseMapperPlus<SysDept, SysDeptVo> {
         return """
                 select srd.dept_id from sys_role_dept srd
                     left join sys_role sr on sr.role_id = srd.role_id
-                    where srd.role_id = %d and sr.status = 0
+                    where srd.role_id = %d and sr.status = '0'
             """.formatted(roleId);
     }
 
@@ -51,7 +51,7 @@ public interface SysDeptMapper extends BaseMapperPlus<SysDept, SysDeptVo> {
                 select parent_id from sys_dept where dept_id in (
                     select srd.dept_id from sys_role_dept srd
                         left join sys_role sr on sr.role_id = srd.role_id
-                        where srd.role_id = %d and sr.status = 0
+                        where srd.role_id = %d and sr.status = '0'
                 )
             """.formatted(roleId);
     }
