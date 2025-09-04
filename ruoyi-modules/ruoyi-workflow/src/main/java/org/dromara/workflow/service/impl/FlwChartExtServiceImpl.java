@@ -25,6 +25,7 @@ import org.dromara.warm.flow.orm.mapper.FlowHisTaskMapper;
 import org.dromara.warm.flow.ui.service.ChartExtService;
 import org.dromara.workflow.common.ConditionalOnEnable;
 import org.dromara.workflow.common.constant.FlowConstant;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -47,6 +48,8 @@ public class FlwChartExtServiceImpl implements ChartExtService {
 
     private final FlowHisTaskMapper flowHisTaskMapper;
     private final DictService dictService;
+    @Value("${warm-flow.node-tooltip:true}")
+    private boolean nodeTooltip;
 
     @DubboReference
     private RemoteUserService remoteUserService;
@@ -60,6 +63,11 @@ public class FlwChartExtServiceImpl implements ChartExtService {
      */
     @Override
     public void execute(DefJson defJson) {
+        // 配置关闭，直接返回，不渲染悬浮窗
+        if (!nodeTooltip) {
+            return;
+        }
+
         // 根据流程实例ID查询所有相关的历史任务列表
         List<FlowHisTask> flowHisTasks = this.getHisTaskGroupedByNode(defJson.getInstance().getId());
         if (CollUtil.isEmpty(flowHisTasks)) {
@@ -107,6 +115,11 @@ public class FlwChartExtServiceImpl implements ChartExtService {
      */
     @Override
     public void initPromptContent(DefJson defJson) {
+        // 配置关闭，直接返回，不渲染悬浮窗
+        if (!nodeTooltip) {
+            return;
+        }
+
         defJson.setTopText("流程名称: " + defJson.getFlowName());
         defJson.getNodeList().forEach(nodeJson -> {
             nodeJson.setPromptContent(
@@ -156,8 +169,10 @@ public class FlwChartExtServiceImpl implements ChartExtService {
     /**
      * 处理节点的扩展信息，构建用于流程图悬浮提示的内容
      *
-     * @param nodeJson 当前节点对象
-     * @param taskList 当前节点对应的历史审批任务列表
+     * @param nodeJson 当前流程节点对象，包含节点基础信息和提示内容容器
+     * @param taskList 当前节点关联的历史审批任务列表，用于生成提示信息
+     * @param userMap  用户信息映射表，key 为用户ID，value 为用户DTO对象，用于获取审批人信息
+     * @param dictType 数据字典映射表，key 为字典项编码，value 为对应显示值，用于翻译审批状态等
      */
     private void processNodeExtInfo(NodeJson nodeJson, List<FlowHisTask> taskList, Map<Long, RemoteUserVo> userMap, Map<String, String> dictType) {
 

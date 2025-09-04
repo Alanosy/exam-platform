@@ -32,5 +32,7 @@ warm-flow:
   ui: true
   # 是否显示流程图顶部文字
   top-text-show: true
+  # 是否渲染节点悬浮提示，默认true
+  node-tooltip: true
   # 默认Authorization，如果有多个token，用逗号分隔
   token-name: ${sa-token.token-name},clientid
