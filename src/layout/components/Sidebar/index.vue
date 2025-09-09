@@ -11,6 +11,7 @@
           :unique-opened="true"
           :active-text-color="theme"
           :collapse-transition="false"
+          :popper-offset="12"
           mode="vertical"
         >
           <sidebar-item v-for="(r, index) in sidebarRouters" :key="r.path + index" :item="r" :base-path="r.path" />
