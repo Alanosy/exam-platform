@@ -112,8 +112,8 @@ public class EncryptorManager {
             return value;
         }
         IEncryptor encryptor = this.registAndGetEncryptor(encryptContext);
-        String decrypt = encryptor.decrypt(value);
-        return StringUtils.removeStart(decrypt, Constants.ENCRYPT_HEADER);
+        String str = StringUtils.removeStart(value, Constants.ENCRYPT_HEADER);
+        return encryptor.decrypt(str);
     }
 
     /**
