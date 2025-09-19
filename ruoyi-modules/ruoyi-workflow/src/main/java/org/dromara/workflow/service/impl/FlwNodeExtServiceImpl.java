@@ -46,7 +46,7 @@ public class FlwNodeExtServiceImpl implements NodeExtService, IFlwNodeExtService
             CopySettingEnum.class.getSimpleName(),
             Map.of(
                 "label", "抄送对象",
-                "type", 2,
+                "type", 5,
                 "must", false,
                 "multiple", false,
                 "desc", "设置该节点的抄送办理人"
@@ -57,7 +57,7 @@ public class FlwNodeExtServiceImpl implements NodeExtService, IFlwNodeExtService
                 "type", 2,
                 "must", false,
                 "multiple", false,
-                "desc", "节点执行时可以使用的自定义参数"
+                "desc", "节点执行时可设置自定义参数，多个参数以逗号分隔，如：key1=value1,key2=value2"
             ),
             ButtonPermissionEnum.class.getSimpleName(),
             Map.of(
@@ -139,7 +139,7 @@ public class FlwNodeExtServiceImpl implements NodeExtService, IFlwNodeExtService
         childNode.setCode(simpleName);
         // label名称
         childNode.setLabel(Convert.toStr(map.get("label")));
-        // 1：输入框 2：文本域 3：下拉框 4：选择框
+        // 1：输入框 2：文本域 3：下拉框 4：选择框 5：用户选择器
         childNode.setType(Convert.toInt(map.get("type"), 1));
         // 是否必填
         childNode.setMust(Convert.toBool(map.get("must"), false));
@@ -172,7 +172,7 @@ public class FlwNodeExtServiceImpl implements NodeExtService, IFlwNodeExtService
         childNode.setCode(dictType);
         // label名称
         childNode.setLabel(dictTypeDTO.getDictName());
-        // 1：输入框 2：文本域 3：下拉框 4：选择框
+        // 1：输入框 2：文本域 3：下拉框 4：选择框 5：用户选择器
         childNode.setType(3);
         // 是否必填
         childNode.setMust(false);
