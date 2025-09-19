@@ -24,7 +24,7 @@ import java.util.Map;
 public class FlowProcessEventHandler {
 
     /**
-     * 总体流程监听(例如: 草稿，撤销，退回，作废，终止，已完成，单任务完成等)
+     * 总体流程监听(例如: 草稿，撤销，退回，作废，终止，已完成等)
      *
      * @param flowCode 流程定义编码
      * @param instance 实例数据
