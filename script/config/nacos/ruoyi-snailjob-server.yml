@@ -25,12 +25,23 @@ spring:
 
 # snail-job 服务端配置
 snail-job:
-  # 拉取重试数据的每批次的大小
-  retry-pull-page-size: 1000
-  # 拉取重试数据的每批次的大小
-  job-pull-page-size: 1000
-  # 服务器端口
+  # 服务端节点IP(默认按照`NetUtil.getLocalIpStr()`)
+  server-host:
+  # 服务端netty的端口号
   server-port: 17888
-  # 日志保存时间(单位: day)
+  # 合并日志默认保存天数
+  merge-Log-days: 1
+  # 合并日志默认的条数
+  merge-Log-num: 500
+  # 配置每批次拉取重试数据的大小
+  retry-pull-page-size: 100
+  # 配置日志保存时间（单位：天）
   log-storage: 7
-  rpc-type: grpc
+  # bucket的总数量
+  bucket-total: 128
+  # Dashboard 任务容错天数
+  summary-day: 7
+  # 配置负载均衡周期时间
+  load-balance-cycle-time: 10
+  # 重试任务拉取的并行度
+  retry-max-pull-parallel: 2

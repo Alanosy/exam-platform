@@ -51,6 +51,8 @@ public class TableDataInfo<T> implements Serializable {
     public TableDataInfo(List<T> list, long total) {
         this.rows = list;
         this.total = total;
+        this.code = HttpStatus.HTTP_OK;
+        this.msg = "查询成功";
     }
 
     /**

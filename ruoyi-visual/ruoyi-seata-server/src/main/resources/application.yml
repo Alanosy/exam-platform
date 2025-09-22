@@ -1,9 +1,11 @@
 server:
-  port: 7091
+  port: 8091
 
 spring:
   application:
     name: ruoyi-seata-server
+  main:
+    web-application-type: none
   profiles:
     # 环境配置
     active: @profiles.active@

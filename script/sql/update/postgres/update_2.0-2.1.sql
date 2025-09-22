@@ -66,7 +66,7 @@ comment on column  sys_social.create_by         is '创建者';
 comment on column  sys_social.create_time       is '创建时间';
 comment on column  sys_social.update_by         is '更新者';
 comment on column  sys_social.update_time       is '更新时间';
-comment on column  sys_social.del_flag          is '删除标志（0代表存在 2代表删除）';
+comment on column  sys_social.del_flag          is '删除标志（0代表存在 1代表删除）';
 
 
 -- ----------------------------
@@ -102,7 +102,7 @@ comment on column sys_client.device_type            is '设备类型';
 comment on column sys_client.active_timeout         is 'token活跃超时时间';
 comment on column sys_client.timeout                is 'token固定超时';
 comment on column sys_client.status                 is '状态（0正常 1停用）';
-comment on column sys_client.del_flag               is '删除标志（0代表存在 2代表删除）';
+comment on column sys_client.del_flag               is '删除标志（0代表存在 1代表删除）';
 comment on column sys_client.create_dept            is '创建部门';
 comment on column sys_client.create_by              is '创建者';
 comment on column sys_client.create_time            is '创建时间';

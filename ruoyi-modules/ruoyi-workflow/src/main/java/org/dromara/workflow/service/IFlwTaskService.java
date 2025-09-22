@@ -14,7 +14,6 @@ import org.dromara.workflow.domain.vo.FlowHisTaskVo;
 import org.dromara.workflow.domain.vo.FlowTaskVo;
 
 import java.util.List;
-import java.util.Map;
 
 /**
  * 任务 服务层
@@ -112,11 +111,11 @@ public interface IFlwTaskService {
     /**
      * 获取可驳回的前置节点
      *
-     * @param definitionId 流程定义id
+     * @param taskId       任务id
      * @param nowNodeCode  当前节点
      * @return 结果
      */
-    List<Node> getBackTaskNode(Long definitionId, String nowNodeCode);
+    List<Node> getBackTaskNode(Long taskId, String nowNodeCode);
 
     /**
      * 终止任务
@@ -153,14 +152,6 @@ public interface IFlwTaskService {
     /**
      * 按照任务id查询任务
      *
-     * @param taskIdList 任务id
-     * @return 结果
-     */
-    List<FlowHisTask> selectHisTaskByIdList(List<Long> taskIdList);
-
-    /**
-     * 按照任务id查询任务
-     *
      * @param taskId 任务id
      * @return 结果
      */
@@ -169,18 +160,26 @@ public interface IFlwTaskService {
     /**
      * 按照实例id查询任务
      *
-     * @param instanceIdList 流程实例id
-     * @return 结果
-     */
-    List<FlowTask> selectByInstIdList(List<Long> instanceIdList);
-
-    /**
-     * 按照实例id查询任务
-     *
      * @param instanceId 流程实例id
      * @return 结果
      */
     List<FlowTask> selectByInstId(Long instanceId);
+
+    /**
+     * 按照实例id查询任务
+     *
+     * @param instanceIds 列表
+     * @return 结果
+     */
+    List<FlowTask> selectByInstIds(List<Long> instanceIds);
+
+    /**
+     * 判断流程是否已结束（即该流程实例下是否还有未完成的任务）
+     *
+     * @param instanceId 流程实例ID
+     * @return true 表示任务已全部结束；false 表示仍有任务存在
+     */
+    boolean isTaskEnd(Long instanceId);
 
     /**
      * 任务操作
@@ -192,20 +191,12 @@ public interface IFlwTaskService {
     boolean taskOperation(TaskOperationBo bo, String taskOperation);
 
     /**
-     * 获取任务所有办理人
-     *
-     * @param taskIdList 任务id
-     * @return 结果
-     */
-    Map<Long, List<RemoteUserVo>> currentTaskAllUser(List<Long> taskIdList);
-
-    /**
      * 获取当前任务的所有办理人
      *
-     * @param taskId 任务id
+     * @param taskIds 任务id
      * @return 结果
      */
-    List<RemoteUserVo> currentTaskAllUser(Long taskId);
+    List<RemoteUserVo> currentTaskAllUser(List<Long> taskIds);
 
     /**
      * 按照节点编码查询节点
@@ -216,4 +207,11 @@ public interface IFlwTaskService {
      */
     FlowNode getByNodeCode(String nodeCode, Long definitionId);
 
+    /**
+     * 催办任务
+     *
+     * @param bo 参数
+     * @return 结果
+     */
+    boolean urgeTask(FlowUrgeTaskBo bo);
 }

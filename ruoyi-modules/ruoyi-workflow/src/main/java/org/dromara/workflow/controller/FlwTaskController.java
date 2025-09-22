@@ -191,12 +191,12 @@ public class FlwTaskController extends BaseController {
     /**
      * 获取可驳回的前置节点
      *
-     * @param definitionId 流程定义id
+     * @param taskId       任务id
      * @param nowNodeCode  当前节点
      */
-    @GetMapping("/getBackTaskNode/{definitionId}/{nowNodeCode}")
-    public R<List<Node>> getBackTaskNode(@PathVariable Long definitionId, @PathVariable String nowNodeCode) {
-        return R.ok(flwTaskService.getBackTaskNode(definitionId, nowNodeCode));
+    @GetMapping("/getBackTaskNode/{taskId}/{nowNodeCode}")
+    public R<List<Node>> getBackTaskNode(@PathVariable Long taskId, @PathVariable String nowNodeCode) {
+        return R.ok(flwTaskService.getBackTaskNode(taskId, nowNodeCode));
     }
 
     /**
@@ -206,7 +206,18 @@ public class FlwTaskController extends BaseController {
      */
     @GetMapping("/currentTaskAllUser/{taskId}")
     public R<List<RemoteUserVo>> currentTaskAllUser(@PathVariable Long taskId) {
-        return R.ok(flwTaskService.currentTaskAllUser(taskId));
+        return R.ok(flwTaskService.currentTaskAllUser(List.of(taskId)));
+    }
+
+    /**
+     * 催办任务
+     *
+     * @param bo 参数
+     * @return 结果
+     */
+    @PostMapping("/urgeTask")
+    public R<Void> urgeTask(@RequestBody FlowUrgeTaskBo bo) {
+        return toAjax(flwTaskService.urgeTask(bo));
     }
 
 }

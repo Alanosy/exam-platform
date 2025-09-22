@@ -4,16 +4,16 @@ import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.convert.Convert;
 import cn.hutool.core.lang.Pair;
+import cn.hutool.core.map.MapUtil;
 import cn.hutool.core.util.StrUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.dubbo.config.annotation.DubboReference;
 import org.dromara.common.core.enums.FormatsType;
 import org.dromara.common.core.utils.DateUtils;
+import org.dromara.common.core.utils.StreamUtils;
 import org.dromara.common.core.utils.StringUtils;
-import org.dromara.system.api.RemoteDeptService;
-import org.dromara.system.api.RemoteTaskAssigneeService;
-import org.dromara.system.api.RemoteUserService;
+import org.dromara.system.api.*;
 import org.dromara.system.api.domain.bo.RemoteTaskAssigneeBo;
 import org.dromara.system.api.domain.vo.RemoteDeptVo;
 import org.dromara.system.api.domain.vo.RemoteTaskAssigneeVo;
@@ -26,10 +26,12 @@ import org.dromara.warm.flow.ui.vo.HandlerFeedBackVo;
 import org.dromara.warm.flow.ui.vo.HandlerSelectVo;
 import org.dromara.workflow.common.ConditionalOnEnable;
 import org.dromara.workflow.common.enums.TaskAssigneeEnum;
+import org.dromara.workflow.service.IFlwSpelService;
 import org.dromara.workflow.service.IFlwTaskAssigneeService;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * 流程设计器-获取办理人权限设置列表
@@ -50,6 +52,12 @@ public class FlwTaskAssigneeServiceImpl implements IFlwTaskAssigneeService, Hand
     private RemoteUserService remoteUserService;
     @DubboReference
     private RemoteDeptService remoteDeptService;
+    @DubboReference
+    private RemoteRoleService remoteRoleService;
+    @DubboReference
+    private RemotePostService remotePostService;
+
+    private final IFlwSpelService spelService;
 
     /**
      * 获取办理人权限设置列表tabs页签
@@ -93,10 +101,10 @@ public class FlwTaskAssigneeServiceImpl implements IFlwTaskAssigneeService, Hand
             return Collections.emptyList();
         }
         // 解析并归类 ID，同时记录原始顺序和对应解析结果
-        Map<TaskAssigneeEnum, List<Long>> typeIdMap = new EnumMap<>(TaskAssigneeEnum.class);
-        Map<String, Pair<TaskAssigneeEnum, Long>> parsedMap = new LinkedHashMap<>();
+        Map<TaskAssigneeEnum, List<String>> typeIdMap = new EnumMap<>(TaskAssigneeEnum.class);
+        Map<String, Pair<TaskAssigneeEnum, String>> parsedMap = new LinkedHashMap<>();
         for (String storageId : storageIds) {
-            Pair<TaskAssigneeEnum, Long> parsed = this.parseStorageId(storageId);
+            Pair<TaskAssigneeEnum, String> parsed = this.parseStorageId(storageId);
             parsedMap.put(storageId, parsed);
             if (parsed != null) {
                 typeIdMap.computeIfAbsent(parsed.getKey(), k -> new ArrayList<>()).add(parsed.getValue());
@@ -104,23 +112,17 @@ public class FlwTaskAssigneeServiceImpl implements IFlwTaskAssigneeService, Hand
         }
 
         // 查询所有类型对应的 ID 名称映射
-        Map<TaskAssigneeEnum, Map<Long, String>> nameMap = new EnumMap<>(TaskAssigneeEnum.class);
+        Map<TaskAssigneeEnum, Map<String, String>> nameMap = new EnumMap<>(TaskAssigneeEnum.class);
         typeIdMap.forEach((type, ids) -> nameMap.put(type, this.getNamesByType(type, ids)));
-
         // 组装返回结果，保持原始顺序
         return parsedMap.entrySet().stream()
             .map(entry -> {
                 String storageId = entry.getKey();
-                Pair<TaskAssigneeEnum, Long> parsed = entry.getValue();
-                String handlerName = "格式错误";
-                if (parsed != null) {
-                    Map<Long, String> nameMapping = nameMap.getOrDefault(parsed.getKey(), Collections.emptyMap());
-                    handlerName = nameMapping.getOrDefault(parsed.getValue(), "未知名称");
-                }
-                HandlerFeedBackVo backVo = new HandlerFeedBackVo();
-                backVo.setStorageId(storageId);
-                backVo.setHandlerName(handlerName);
-                return backVo;
+                Pair<TaskAssigneeEnum, String> parsed = entry.getValue();
+                String handlerName = (parsed == null) ? null
+                    : nameMap.getOrDefault(parsed.getKey(), Collections.emptyMap())
+                    .get(parsed.getValue());
+                return new HandlerFeedBackVo(storageId, handlerName);
             }).toList();
     }
 
@@ -133,6 +135,7 @@ public class FlwTaskAssigneeServiceImpl implements IFlwTaskAssigneeService, Hand
             case ROLE -> remoteTaskAssigneeService.selectRolesByTaskAssigneeList(taskQuery);
             case DEPT -> remoteTaskAssigneeService.selectDeptsByTaskAssigneeList(taskQuery);
             case POST -> remoteTaskAssigneeService.selectPostsByTaskAssigneeList(taskQuery);
+            case SPEL -> spelService.selectSpelByTaskAssigneeList(taskQuery);
         };
     }
 
@@ -140,10 +143,27 @@ public class FlwTaskAssigneeServiceImpl implements IFlwTaskAssigneeService, Hand
      * 根据任务办理类型获取部门数据
      */
     private List<RemoteDeptVo> fetchDeptData(TaskAssigneeEnum type) {
-        if (type == TaskAssigneeEnum.USER || type == TaskAssigneeEnum.DEPT || type == TaskAssigneeEnum.POST) {
+        if (type.needsDeptService()) {
             return remoteDeptService.selectDeptsByList();
         }
         return new ArrayList<>();
+    }
+
+    /**
+     * 获取权限分组名称
+     *
+     * @param type      任务分配人枚举
+     * @param groupName 权限分组
+     * @return 权限分组名称
+     */
+    private String getGroupName(TaskAssigneeEnum type, String groupName) {
+        if (StringUtils.isEmpty(groupName)) {
+            return DEFAULT_GROUP_NAME;
+        }
+        if (type.needsDeptService()) {
+            return remoteDeptService.selectDeptNameByIds(groupName);
+        }
+        return DEFAULT_GROUP_NAME;
     }
 
     /**
@@ -151,9 +171,9 @@ public class FlwTaskAssigneeServiceImpl implements IFlwTaskAssigneeService, Hand
      */
     private TreeFunDto<RemoteDeptVo> buildDeptTree(List<RemoteDeptVo> depts) {
         return new TreeFunDto<>(depts)
-            .setId(dept -> String.valueOf(dept.getDeptId()))
+            .setId(dept -> Convert.toStr(dept.getDeptId()))
             .setName(RemoteDeptVo::getDeptName)
-            .setParentId(dept -> String.valueOf(dept.getParentId()));
+            .setParentId(dept -> Convert.toStr(dept.getParentId()));
     }
 
     /**
@@ -164,10 +184,7 @@ public class FlwTaskAssigneeServiceImpl implements IFlwTaskAssigneeService, Hand
             .setStorageId(assignee -> type.getCode() + assignee.getStorageId())
             .setHandlerCode(assignee -> StringUtils.blankToDefault(assignee.getHandlerCode(), "无"))
             .setHandlerName(assignee -> StringUtils.blankToDefault(assignee.getHandlerName(), "无"))
-            .setGroupName(assignee -> StringUtils.defaultIfBlank(
-                Optional.ofNullable(assignee.getGroupName())
-                    .map(remoteDeptService::selectDeptNameByIds)
-                    .orElse(DEFAULT_GROUP_NAME), DEFAULT_GROUP_NAME))
+            .setGroupName(assignee -> this.getGroupName(type, assignee.getGroupName()))
             .setCreateTime(assignee -> DateUtils.parseDateToStr(FormatsType.YYYY_MM_DD_HH_MM_SS, assignee.getCreateTime()));
     }
 
@@ -184,9 +201,9 @@ public class FlwTaskAssigneeServiceImpl implements IFlwTaskAssigneeService, Hand
         if (StringUtils.isEmpty(storageIds)) {
             return List.of();
         }
-        Map<TaskAssigneeEnum, List<Long>> typeIdMap = new EnumMap<>(TaskAssigneeEnum.class);
+        Map<TaskAssigneeEnum, List<String>> typeIdMap = new EnumMap<>(TaskAssigneeEnum.class);
         for (String storageId : storageIds.split(StringUtils.SEPARATOR)) {
-            Pair<TaskAssigneeEnum, Long> parsed = this.parseStorageId(storageId);
+            Pair<TaskAssigneeEnum, String> parsed = this.parseStorageId(storageId);
             if (parsed != null) {
                 typeIdMap.computeIfAbsent(parsed.getKey(), k -> new ArrayList<>()).add(parsed.getValue());
             }
@@ -207,12 +224,17 @@ public class FlwTaskAssigneeServiceImpl implements IFlwTaskAssigneeService, Hand
      * 如果类型为部门（DEPT），则通过部门ID列表查询；
      * 如果类型为岗位（POST）或无法识别的类型，则返回空列表
      */
-    private List<RemoteUserVo> getUsersByType(TaskAssigneeEnum type, List<Long> ids) {
+    private List<RemoteUserVo> getUsersByType(TaskAssigneeEnum type, List<String> ids) {
+        if (type == TaskAssigneeEnum.SPEL) {
+            return new ArrayList<>();
+        }
+        List<Long> longIds = StreamUtils.toList(ids, Convert::toLong);
         return switch (type) {
-            case USER -> remoteUserService.selectListByIds(ids);
-            case ROLE -> remoteUserService.selectUsersByRoleIds(ids);
-            case DEPT -> remoteUserService.selectUsersByDeptIds(ids);
-            case POST -> remoteUserService.selectUsersByPostIds(ids);
+            case USER -> remoteUserService.selectListByIds(longIds);
+            case ROLE -> remoteUserService.selectUsersByRoleIds(longIds);
+            case DEPT -> remoteUserService.selectUsersByDeptIds(longIds);
+            case POST -> remoteUserService.selectUsersByPostIds(longIds);
+            default -> new ArrayList<>();
         };
     }
 
@@ -223,13 +245,28 @@ public class FlwTaskAssigneeServiceImpl implements IFlwTaskAssigneeService, Hand
      * @param ids  ID 列表（如用户ID、角色ID等）
      * @return 返回 Map，其中 key 为 ID，value 为对应的名称
      */
-    private Map<Long, String> getNamesByType(TaskAssigneeEnum type, List<Long> ids) {
-        return switch (type) {
-            case USER -> remoteUserService.selectUserNamesByIds(ids);
-            case ROLE -> remoteUserService.selectRoleNamesByIds(ids);
-            case DEPT -> remoteUserService.selectDeptNamesByIds(ids);
-            case POST -> remoteUserService.selectPostNamesByIds(ids);
+    private Map<String, String> getNamesByType(TaskAssigneeEnum type, List<String> ids) {
+        if (type == TaskAssigneeEnum.SPEL) {
+            return spelService.selectRemarksBySpels(ids);
+        }
+
+        List<Long> longIds = StreamUtils.toList(ids, Convert::toLong);
+        Map<Long, String> rawMap = switch (type) {
+            case USER -> remoteUserService.selectUserNamesByIds(longIds);
+            case ROLE -> remoteRoleService.selectRoleNamesByIds(longIds);
+            case DEPT -> remoteDeptService.selectDeptNamesByIds(longIds);
+            case POST -> remotePostService.selectPostNamesByIds(longIds);
+            default -> Collections.emptyMap();
         };
+        if (MapUtil.isEmpty(rawMap)) {
+            return Collections.emptyMap();
+        }
+        return rawMap.entrySet()
+            .stream()
+            .collect(Collectors.toMap(
+                e -> Convert.toStr(e.getKey()),
+                Map.Entry::getValue
+            ));
     }
 
     /**
@@ -238,22 +275,20 @@ public class FlwTaskAssigneeServiceImpl implements IFlwTaskAssigneeService, Hand
      * @param storageId 例如 "user:123" 或 "456"
      * @return Pair(TaskAssigneeEnum, Long)，如果格式非法返回 null
      */
-    private Pair<TaskAssigneeEnum, Long> parseStorageId(String storageId) {
+    private Pair<TaskAssigneeEnum, String> parseStorageId(String storageId) {
         if (StringUtils.isBlank(storageId)) {
             return null;
         }
-        // 跳过以 $ 或 # 开头的字符串
-        if (StringUtils.startsWith(storageId, "$") || StringUtils.startsWith(storageId, "#")) {
-            log.debug("跳过 storageId 解析，检测到内置变量表达式：{}", storageId);
-            return null;
+        if (TaskAssigneeEnum.isSpelExpression(storageId)) {
+            return Pair.of(TaskAssigneeEnum.SPEL, storageId);
         }
         try {
             String[] parts = storageId.split(StrUtil.COLON, 2);
             if (parts.length < 2) {
-                return Pair.of(TaskAssigneeEnum.USER, Convert.toLong(parts[0]));
+                return Pair.of(TaskAssigneeEnum.USER, parts[0]);
             } else {
                 TaskAssigneeEnum type = TaskAssigneeEnum.fromCode(parts[0] + StrUtil.COLON);
-                return Pair.of(type, Convert.toLong(parts[1]));
+                return Pair.of(type, parts[1]);
             }
         } catch (Exception e) {
             log.warn("解析 storageId 失败，格式非法：{}，错误信息：{}", storageId, e.getMessage());

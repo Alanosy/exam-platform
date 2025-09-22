@@ -1,8 +1,6 @@
 package org.dromara.workflow.mapper;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import org.dromara.common.mybatis.annotation.DataColumn;
-import org.dromara.common.mybatis.annotation.DataPermission;
 import org.dromara.common.mybatis.core.mapper.BaseMapperPlus;
 import org.dromara.common.mybatis.helper.DataBaseHelper;
 import org.dromara.workflow.domain.FlowCategory;
@@ -19,19 +17,6 @@ import java.util.stream.Stream;
  * @date 2023-06-27
  */
 public interface FlwCategoryMapper extends BaseMapperPlus<FlowCategory, FlowCategoryVo> {
-
-    /**
-     * 统计指定流程分类ID的分类数量
-     *
-     * @param categoryId 流程分类ID
-     * @return 该流程分类ID的分类数量
-     */
-    @DataPermission({
-        @DataColumn(key = "deptName", value = "createDept")
-    })
-    default long countCategoryById(Long categoryId) {
-        return this.selectCount(new LambdaQueryWrapper<FlowCategory>().eq(FlowCategory::getCategoryId, categoryId));
-    }
 
     /**
      * 根据父流程分类ID查询其所有子流程分类的列表

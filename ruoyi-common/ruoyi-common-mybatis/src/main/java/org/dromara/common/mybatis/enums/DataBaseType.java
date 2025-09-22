@@ -42,17 +42,46 @@ public enum DataBaseType {
      * 根据数据库产品名称查找对应的数据库类型
      *
      * @param databaseProductName 数据库产品名称
-     * @return 对应的数据库类型枚举值，如果未找到则返回 null
+     * @return 对应的数据库类型枚举值
      */
     public static DataBaseType find(String databaseProductName) {
         if (StringUtils.isBlank(databaseProductName)) {
-            return null;
+            return MY_SQL;
         }
         for (DataBaseType type : values()) {
             if (type.getType().equals(databaseProductName)) {
                 return type;
             }
         }
-        return null;
+        return MY_SQL;
     }
+
+    /**
+     * 判断是否为 MySQL 类型
+     */
+    public boolean isMySql() {
+        return this == MY_SQL;
+    }
+
+    /**
+     * 判断是否为 Oracle 类型
+     */
+    public boolean isOracle() {
+        return this == ORACLE;
+    }
+
+    /**
+     * 判断是否为 PostgreSQL 类型
+     */
+    public boolean isPostgreSql() {
+        return this == POSTGRE_SQL;
+    }
+
+    /**
+     * 判断是否为 SQL Server 类型
+     */
+    public boolean isSqlServer() {
+        return this == SQL_SERVER;
+    }
+
 }

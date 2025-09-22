@@ -33,6 +33,13 @@ public class SysDictDataServiceImpl implements ISysDictDataService {
 
     private final SysDictDataMapper baseMapper;
 
+    /**
+     * 分页查询字典数据列表
+     *
+     * @param dictData  查询条件
+     * @param pageQuery 分页参数
+     * @return 字典数据分页列表
+     */
     @Override
     public TableDataInfo<SysDictDataVo> selectPageDictDataList(SysDictDataBo dictData, PageQuery pageQuery) {
         LambdaQueryWrapper<SysDictData> lqw = buildQueryWrapper(dictData);

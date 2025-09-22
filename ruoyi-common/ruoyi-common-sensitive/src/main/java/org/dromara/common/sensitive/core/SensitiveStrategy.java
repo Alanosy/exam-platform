@@ -1,5 +1,6 @@
 package org.dromara.common.sensitive.core;
 
+import cn.hutool.core.convert.Convert;
 import cn.hutool.core.util.DesensitizedUtil;
 import lombok.AllArgsConstructor;
 
@@ -52,7 +53,7 @@ public enum SensitiveStrategy {
     /**
      * 用户ID
      */
-    USER_ID(s -> String.valueOf(DesensitizedUtil.userId())),
+    USER_ID(s -> Convert.toStr(DesensitizedUtil.userId())),
 
     /**
      * 密码

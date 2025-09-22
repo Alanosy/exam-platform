@@ -10,7 +10,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.dubbo.config.annotation.DubboReference;
 import org.dromara.common.core.service.DictService;
 import org.dromara.common.core.utils.DateUtils;
-import org.dromara.common.core.utils.ServletUtils;
 import org.dromara.common.core.utils.StreamUtils;
 import org.dromara.common.core.utils.StringUtils;
 import org.dromara.system.api.RemoteDeptService;
@@ -26,10 +25,15 @@ import org.dromara.warm.flow.orm.mapper.FlowHisTaskMapper;
 import org.dromara.warm.flow.ui.service.ChartExtService;
 import org.dromara.workflow.common.ConditionalOnEnable;
 import org.dromara.workflow.common.constant.FlowConstant;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 /**
  * 流程图提示信息
@@ -44,6 +48,8 @@ public class FlwChartExtServiceImpl implements ChartExtService {
 
     private final FlowHisTaskMapper flowHisTaskMapper;
     private final DictService dictService;
+    @Value("${warm-flow.node-tooltip:true}")
+    private boolean nodeTooltip;
 
     @DubboReference
     private RemoteUserService remoteUserService;
@@ -57,12 +63,13 @@ public class FlwChartExtServiceImpl implements ChartExtService {
      */
     @Override
     public void execute(DefJson defJson) {
-        // 临时修复 后续版本将通过defjson获取流程实例ID
-        String[] parts = ServletUtils.getRequest().getRequestURI().split("/");
-        Long instanceId = Convert.toLong(parts[parts.length - 1]);
+        // 配置关闭，直接返回，不渲染悬浮窗
+        if (!nodeTooltip) {
+            return;
+        }
 
         // 根据流程实例ID查询所有相关的历史任务列表
-        List<FlowHisTask> flowHisTasks = this.getHisTaskGroupedByNode(instanceId);
+        List<FlowHisTask> flowHisTasks = this.getHisTaskGroupedByNode(defJson.getInstance().getId());
         if (CollUtil.isEmpty(flowHisTasks)) {
             return;
         }
@@ -78,15 +85,26 @@ public class FlwChartExtServiceImpl implements ChartExtService {
 
         Map<String, String> dictType = dictService.getAllDictByDictType(FlowConstant.WF_TASK_STATUS);
 
-        // 遍历流程定义中的每个节点，调用处理方法，将对应节点的任务列表及用户信息传入，生成扩展提示内容
         for (NodeJson nodeJson : defJson.getNodeList()) {
-            // 获取当前节点对应的历史任务列表，如果没有则返回空列表避免空指针
             List<FlowHisTask> taskList = groupedByNode.get(nodeJson.getNodeCode());
             if (CollUtil.isEmpty(taskList)) {
                 continue;
             }
-            // 处理当前节点的扩展信息，包括构建审批人提示内容等
-            this.processNodeExtInfo(nodeJson, taskList, userMap, dictType);
+
+            // 按审批人分组去重，保留最新处理记录，最终转换成 List
+            List<FlowHisTask> latestPerApprover = taskList.stream()
+                .collect(Collectors.collectingAndThen(
+                    Collectors.toMap(
+                        FlowHisTask::getApprover,
+                        Function.identity(),
+                        (oldTask, newTask) -> newTask.getUpdateTime().after(oldTask.getUpdateTime()) ? newTask : oldTask,
+                        LinkedHashMap::new
+                    ),
+                    map -> new ArrayList<>(map.values())
+                ));
+
+            // 处理当前节点的扩展信息
+            this.processNodeExtInfo(nodeJson, latestPerApprover, userMap, dictType);
         }
     }
 
@@ -97,6 +115,11 @@ public class FlwChartExtServiceImpl implements ChartExtService {
      */
     @Override
     public void initPromptContent(DefJson defJson) {
+        // 配置关闭，直接返回，不渲染悬浮窗
+        if (!nodeTooltip) {
+            return;
+        }
+
         defJson.setTopText("流程名称: " + defJson.getFlowName());
         defJson.getNodeList().forEach(nodeJson -> {
             nodeJson.setPromptContent(
@@ -132,7 +155,8 @@ public class FlwChartExtServiceImpl implements ChartExtService {
                         "fontSize", "14px",
                         "zIndex", "1000",
                         "maxWidth", "500px",
-                        "overflowY", "visible",
+                        "maxHeight", "300px",
+                        "overflowY", "auto",
                         "overflowX", "hidden",
                         "color", "#333",
                         "pointerEvents", "auto",
@@ -145,8 +169,10 @@ public class FlwChartExtServiceImpl implements ChartExtService {
     /**
      * 处理节点的扩展信息，构建用于流程图悬浮提示的内容
      *
-     * @param nodeJson 当前节点对象
-     * @param taskList 当前节点对应的历史审批任务列表
+     * @param nodeJson 当前流程节点对象，包含节点基础信息和提示内容容器
+     * @param taskList 当前节点关联的历史审批任务列表，用于生成提示信息
+     * @param userMap  用户信息映射表，key 为用户ID，value 为用户DTO对象，用于获取审批人信息
+     * @param dictType 数据字典映射表，key 为字典项编码，value 为对应显示值，用于翻译审批状态等
      */
     private void processNodeExtInfo(NodeJson nodeJson, List<FlowHisTask> taskList, Map<Long, RemoteUserVo> userMap, Map<String, String> dictType) {
 
@@ -244,7 +270,7 @@ public class FlwChartExtServiceImpl implements ChartExtService {
         LambdaQueryWrapper<FlowHisTask> wrapper = Wrappers.lambdaQuery();
         wrapper.eq(FlowHisTask::getInstanceId, instanceId)
             .eq(FlowHisTask::getNodeType, NodeType.BETWEEN.getKey())
-            .orderByDesc(FlowHisTask::getCreateTime, FlowHisTask::getUpdateTime);
+            .orderByDesc(FlowHisTask::getUpdateTime);
         return flowHisTaskMapper.selectList(wrapper);
     }
 

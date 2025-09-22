@@ -4,18 +4,21 @@ import cn.hutool.core.convert.Convert;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.map.MapUtil;
 import cn.hutool.core.util.ObjectUtil;
+import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.dromara.common.core.enums.BusinessStatusEnum;
+import org.dromara.common.core.exception.ServiceException;
 import org.dromara.common.core.utils.MapstructUtils;
 import org.dromara.common.core.utils.StringUtils;
 import org.dromara.common.mybatis.core.domain.BaseEntity;
 import org.dromara.common.mybatis.core.page.PageQuery;
 import org.dromara.common.mybatis.core.page.TableDataInfo;
 import org.dromara.common.tenant.helper.TenantHelper;
+import org.dromara.workflow.api.domain.RemoteStartProcess;
 import org.dromara.workflow.api.event.ProcessDeleteEvent;
 import org.dromara.workflow.api.event.ProcessEvent;
 import org.dromara.workflow.api.event.ProcessTaskEvent;
@@ -105,6 +108,7 @@ public class TestLeaveServiceImpl implements ITestLeaveService {
         long day = DateUtil.betweenDay(bo.getStartDate(), bo.getEndDate(), true);
         // 截止日期也算一天
         bo.setLeaveDays((int) day + 1);
+        bo.setApplyCode(System.currentTimeMillis() + StrUtil.EMPTY);
         TestLeave add = MapstructUtils.convert(bo, TestLeave.class);
         if (StringUtils.isBlank(add.getStatus())) {
             add.setStatus(BusinessStatusEnum.DRAFT.getStatus());
@@ -114,6 +118,37 @@ public class TestLeaveServiceImpl implements ITestLeaveService {
             bo.setId(add.getId());
         }
         return MapstructUtils.convert(add, TestLeaveVo.class);
+    }
+
+    @Transactional(rollbackFor = Exception.class)
+    @Override
+    public TestLeaveVo submitAndFlowStart(TestLeaveBo bo) {
+        long day = DateUtil.betweenDay(bo.getStartDate(), bo.getEndDate(), true);
+        // 截止日期也算一天
+        bo.setLeaveDays((int) day + 1);
+        if (ObjectUtil.isNull(bo.getId())) {
+            bo.setApplyCode(System.currentTimeMillis() + StrUtil.EMPTY);
+        }
+        TestLeave leave = MapstructUtils.convert(bo, TestLeave.class);
+        boolean flag = baseMapper.insertOrUpdate(leave);
+        if (flag) {
+            bo.setId(leave.getId());
+            // 后端发起需要忽略权限
+            bo.getParams().put("ignore", true);
+
+            RemoteStartProcess startProcess = new RemoteStartProcess();
+            startProcess.setBusinessId(leave.getId().toString());
+            startProcess.setFlowCode(StringUtils.isEmpty(bo.getFlowCode()) ? "leave1" : bo.getFlowCode());
+            startProcess.setVariables(bo.getParams());
+            // 后端发起 如果没有登录用户 比如定时任务 可以手动设置一个处理人id
+            // startProcess.setHandler("0");
+
+            boolean flag1 = workflowService.startCompleteTask(startProcess);
+            if (!flag1) {
+                throw new ServiceException("流程发起异常");
+            }
+        }
+        return MapstructUtils.convert(leave, TestLeaveVo.class);
     }
 
     /**
@@ -137,7 +172,7 @@ public class TestLeaveServiceImpl implements ITestLeaveService {
     }
 
     /**
-     * 总体流程监听(例如: 草稿，撤销，退回，作废，终止，已完成，单任务完成等)
+     * 总体流程监听(例如: 草稿，撤销，退回，作废，终止，已完成等)
      * 正常使用只需#processEvent.flowCode=='leave1'
      * 示例为了方便则使用startsWith匹配了全部示例key
      *
@@ -167,7 +202,7 @@ public class TestLeaveServiceImpl implements ITestLeaveService {
     }
 
     /**
-     * 执行任务创建监听
+     * 执行任务创建监听(也代表上一条任务完成事件)
      * 示例：也可通过  @EventListener(condition = "#processTaskEvent.flowCode=='leave1'")进行判断
      * 在方法中判断流程节点key
      * if ("xxx".equals(processTaskEvent.getNodeCode())) {

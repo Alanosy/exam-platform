@@ -5,6 +5,7 @@ import cn.hutool.core.util.ReflectUtil;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.ibatis.io.Resources;
+import org.dromara.common.core.constant.Constants;
 import org.dromara.common.core.utils.ObjectUtils;
 import org.dromara.common.core.utils.StringUtils;
 import org.dromara.common.encrypt.annotation.EncryptField;
@@ -92,8 +93,12 @@ public class EncryptorManager {
      * @param encryptContext 加密相关的配置信息
      */
     public String encrypt(String value, EncryptContext encryptContext) {
+        if (StringUtils.startsWith(value, Constants.ENCRYPT_HEADER)) {
+            return value;
+        }
         IEncryptor encryptor = this.registAndGetEncryptor(encryptContext);
-        return encryptor.encrypt(value, encryptContext.getEncode());
+        String encrypt = encryptor.encrypt(value, encryptContext.getEncode());
+        return Constants.ENCRYPT_HEADER + encrypt;
     }
 
     /**
@@ -103,8 +108,12 @@ public class EncryptorManager {
      * @param encryptContext 加密相关的配置信息
      */
     public String decrypt(String value, EncryptContext encryptContext) {
+        if (!StringUtils.startsWith(value, Constants.ENCRYPT_HEADER)) {
+            return value;
+        }
         IEncryptor encryptor = this.registAndGetEncryptor(encryptContext);
-        return encryptor.decrypt(value);
+        String str = StringUtils.removeStart(value, Constants.ENCRYPT_HEADER);
+        return encryptor.decrypt(str);
     }
 
     /**

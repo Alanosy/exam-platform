@@ -24,18 +24,21 @@ import org.dromara.system.api.model.LoginUser;
 import org.dromara.system.api.model.PostDTO;
 import org.dromara.system.api.model.RoleDTO;
 import org.dromara.system.api.model.XcxLoginUser;
-import org.dromara.system.domain.*;
+import org.dromara.system.domain.SysUser;
+import org.dromara.system.domain.SysUserPost;
+import org.dromara.system.domain.SysUserRole;
 import org.dromara.system.domain.bo.SysUserBo;
 import org.dromara.system.domain.vo.SysDeptVo;
 import org.dromara.system.domain.vo.SysPostVo;
 import org.dromara.system.domain.vo.SysRoleVo;
 import org.dromara.system.domain.vo.SysUserVo;
-import org.dromara.system.mapper.*;
+import org.dromara.system.mapper.SysUserMapper;
+import org.dromara.system.mapper.SysUserPostMapper;
+import org.dromara.system.mapper.SysUserRoleMapper;
 import org.dromara.system.service.*;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 /**
  * 用户服务
@@ -54,9 +57,6 @@ public class RemoteUserServiceImpl implements RemoteUserService {
     private final ISysDeptService deptService;
     private final ISysPostService postService;
     private final SysUserMapper userMapper;
-    private final SysRoleMapper roleMapper;
-    private final SysDeptMapper deptMapper;
-    private final SysPostMapper postMapper;
     private final SysUserRoleMapper userRoleMapper;
     private final SysUserPostMapper userPostMapper;
 
@@ -403,74 +403,16 @@ public class RemoteUserServiceImpl implements RemoteUserService {
      * @param userIds 用户 ID 列表
      * @return Map，其中 key 为用户 ID，value 为对应的用户名称
      */
-    @Override
     public Map<Long, String> selectUserNamesByIds(List<Long> userIds) {
         if (CollUtil.isEmpty(userIds)) {
             return Collections.emptyMap();
         }
-        return userMapper.selectList(
-                new LambdaQueryWrapper<SysUser>()
-                    .select(SysUser::getUserId, SysUser::getNickName)
-                    .in(SysUser::getUserId, userIds)
-            ).stream()
-            .collect(Collectors.toMap(SysUser::getUserId, SysUser::getNickName));
-    }
-
-    /**
-     * 根据角色 ID 列表查询角色名称映射关系
-     *
-     * @param roleIds 角色 ID 列表
-     * @return Map，其中 key 为角色 ID，value 为对应的角色名称
-     */
-    @Override
-    public Map<Long, String> selectRoleNamesByIds(List<Long> roleIds) {
-        if (CollUtil.isEmpty(roleIds)) {
-            return Collections.emptyMap();
-        }
-        return roleMapper.selectList(
-                new LambdaQueryWrapper<SysRole>()
-                    .select(SysRole::getRoleId, SysRole::getRoleName)
-                    .in(SysRole::getRoleId, roleIds)
-            ).stream()
-            .collect(Collectors.toMap(SysRole::getRoleId, SysRole::getRoleName));
-    }
-
-    /**
-     * 根据部门 ID 列表查询部门名称映射关系
-     *
-     * @param deptIds 部门 ID 列表
-     * @return Map，其中 key 为部门 ID，value 为对应的部门名称
-     */
-    @Override
-    public Map<Long, String> selectDeptNamesByIds(List<Long> deptIds) {
-        if (CollUtil.isEmpty(deptIds)) {
-            return Collections.emptyMap();
-        }
-        return deptMapper.selectList(
-                new LambdaQueryWrapper<SysDept>()
-                    .select(SysDept::getDeptId, SysDept::getDeptName)
-                    .in(SysDept::getDeptId, deptIds)
-            ).stream()
-            .collect(Collectors.toMap(SysDept::getDeptId, SysDept::getDeptName));
-    }
-
-    /**
-     * 根据岗位 ID 列表查询岗位名称映射关系
-     *
-     * @param postIds 岗位 ID 列表
-     * @return Map，其中 key 为岗位 ID，value 为对应的岗位名称
-     */
-    @Override
-    public Map<Long, String> selectPostNamesByIds(List<Long> postIds) {
-        if (CollUtil.isEmpty(postIds)) {
-            return Collections.emptyMap();
-        }
-        return postMapper.selectList(
-                new LambdaQueryWrapper<SysPost>()
-                    .select(SysPost::getPostId, SysPost::getPostName)
-                    .in(SysPost::getPostId, postIds)
-            ).stream()
-            .collect(Collectors.toMap(SysPost::getPostId, SysPost::getPostName));
+        List<SysUser> list = userMapper.selectList(
+            new LambdaQueryWrapper<SysUser>()
+                .select(SysUser::getUserId, SysUser::getNickName)
+                .in(SysUser::getUserId, userIds)
+        );
+        return StreamUtils.toMap(list, SysUser::getUserId, SysUser::getNickName);
     }
 
 }

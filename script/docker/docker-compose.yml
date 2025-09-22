@@ -27,7 +27,7 @@ services:
     network_mode: "host"
 
   nacos:
-    image: ruoyi/ruoyi-nacos:2.4.1
+    image: ruoyi/ruoyi-nacos:2.5.0
     container_name: nacos
     ports:
       - "8848:8848"
@@ -95,7 +95,7 @@ services:
     network_mode: "host"
 
   seata-server:
-    image: ruoyi/ruoyi-seata-server:2.4.1
+    image: ruoyi/ruoyi-seata-server:2.5.0
     container_name: seata-server
     ports:
       - "7091:7091"
@@ -133,23 +133,8 @@ services:
     privileged: true
     network_mode: "host"
 
-  sentinel:
-    image: ruoyi/ruoyi-sentinel-dashboard:2.4.1
-    container_name: sentinel
-    environment:
-      TZ: Asia/Shanghai
-    ports:
-      - "8718:8718"
-    volumes:
-      # 配置文件
-      - /docker/ruoyi-sentinel-dashboard/logs/:/ruoyi/sentinel-dashboard/logs
-      # skywalking 探针
-      - /docker/skywalking/agent/:/ruoyi/skywalking/agent
-    restart: always
-    network_mode: "host"
-
   ruoyi-monitor:
-    image: ruoyi/ruoyi-monitor:2.4.1
+    image: ruoyi/ruoyi-monitor:2.5.0
     container_name: ruoyi-monitor
     environment:
       # 时区上海
@@ -165,7 +150,7 @@ services:
     network_mode: "host"
 
   ruoyi-snailjob-server:
-    image: ruoyi/ruoyi-snailjob-server:2.4.1
+    image: ruoyi/ruoyi-snailjob-server:2.5.0
     container_name: ruoyi-snailjob-server
     environment:
       # 时区上海
@@ -179,7 +164,7 @@ services:
     network_mode: "host"
 
   ruoyi-gateway:
-    image: ruoyi/ruoyi-gateway:2.4.1
+    image: ruoyi/ruoyi-gateway:2.5.0
     container_name: ruoyi-gateway
     environment:
       # 时区上海
@@ -195,7 +180,7 @@ services:
     network_mode: "host"
 
   ruoyi-auth:
-    image: ruoyi/ruoyi-auth:2.4.1
+    image: ruoyi/ruoyi-auth:2.5.0
     container_name: ruoyi-auth
     environment:
       # 时区上海
@@ -211,7 +196,7 @@ services:
     network_mode: "host"
 
   ruoyi-system:
-    image: ruoyi/ruoyi-system:2.4.1
+    image: ruoyi/ruoyi-system:2.5.0
     container_name: ruoyi-system
     environment:
       # 时区上海
@@ -227,7 +212,7 @@ services:
     network_mode: "host"
 
   ruoyi-gen:
-    image: ruoyi/ruoyi-gen:2.4.1
+    image: ruoyi/ruoyi-gen:2.5.0
     container_name: ruoyi-gen
     environment:
       # 时区上海
@@ -243,7 +228,7 @@ services:
     network_mode: "host"
 
   ruoyi-job:
-    image: ruoyi/ruoyi-job:2.4.1
+    image: ruoyi/ruoyi-job:2.5.0
     container_name: ruoyi-job
     environment:
       # 时区上海
@@ -261,7 +246,7 @@ services:
     network_mode: "host"
 
   ruoyi-resource:
-    image: ruoyi/ruoyi-resource:2.4.1
+    image: ruoyi/ruoyi-resource:2.5.0
     container_name: ruoyi-resource
     environment:
       # 时区上海
@@ -277,7 +262,7 @@ services:
     network_mode: "host"
 
   ruoyi-workflow:
-    image: ruoyi/ruoyi-workflow:2.4.1
+    image: ruoyi/ruoyi-workflow:2.5.0
     container_name: ruoyi-workflow
     environment:
       # 时区上海
@@ -304,6 +289,8 @@ services:
       - "9200:9200"
       - "9300:9300"
     environment:
+      # 时区上海
+      TZ: Asia/Shanghai
       # 设置集群名称
       cluster.name: elasticsearch
       # 以单一节点模式启动
@@ -324,6 +311,8 @@ services:
       # kibana在elasticsearch启动之后再启动
       - elasticsearch
     environment:
+      # 时区上海
+      TZ: Asia/Shanghai
       #设置系统语言文中文
       I18N_LOCALE: zh-CN
       # 访问域名
@@ -337,6 +326,9 @@ services:
     container_name: logstash
     ports:
       - "4560:4560"
+    environment:
+      # 时区上海
+      TZ: Asia/Shanghai
     volumes:
       - /docker/elk/logstash/pipeline/logstash.conf:/usr/share/logstash/pipeline/logstash.conf
       - /docker/elk/logstash/config/logstash.yml:/usr/share/logstash/config/logstash.yml

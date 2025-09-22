@@ -19,7 +19,7 @@
         <!-- SpringCloud Gateway -->
         <dependency>
             <groupId>org.springframework.cloud</groupId>
-            <artifactId>spring-cloud-starter-gateway</artifactId>
+            <artifactId>spring-cloud-starter-gateway-server-webflux</artifactId>
         </dependency>
 
         <dependency>
@@ -35,12 +35,6 @@
         <dependency>
             <groupId>org.dromara</groupId>
             <artifactId>ruoyi-common-nacos</artifactId>
-        </dependency>
-
-        <!-- SpringCloud Alibaba Sentinel Gateway -->
-        <dependency>
-            <groupId>com.alibaba.cloud</groupId>
-            <artifactId>spring-cloud-alibaba-sentinel-gateway</artifactId>
         </dependency>
 
         <!-- SpringBoot Actuator -->
@@ -59,17 +53,6 @@
             <groupId>cn.dev33</groupId>
             <artifactId>sa-token-reactor-spring-boot3-starter</artifactId>
             <version>${satoken.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.dromara</groupId>
-            <artifactId>ruoyi-common-sentinel</artifactId>
-            <exclusions>
-                <exclusion>
-                    <groupId>com.alibaba.csp</groupId>
-                    <artifactId>sentinel-apache-dubbo3-adapter</artifactId>
-                </exclusion>
-            </exclusions>
         </dependency>
 
         <dependency>

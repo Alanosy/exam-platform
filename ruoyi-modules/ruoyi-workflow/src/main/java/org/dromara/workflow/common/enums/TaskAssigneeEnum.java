@@ -3,6 +3,7 @@ package org.dromara.workflow.common.enums;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.dromara.common.core.exception.ServiceException;
+import org.dromara.common.core.utils.StringUtils;
 
 import java.util.Arrays;
 import java.util.List;
@@ -35,7 +36,12 @@ public enum TaskAssigneeEnum {
     /**
      * 岗位
      */
-    POST("岗位", "post:");
+    POST("岗位", "post:"),
+
+    /**
+     * SPEL表达式
+     */
+    SPEL("SpEL表达式", "");
 
     private final String desc;
     private final String code;
@@ -105,5 +111,30 @@ public enum TaskAssigneeEnum {
             .map(TaskAssigneeEnum::getCode)
             .collect(Collectors.toList());
     }
+
+    /**
+     * 判断当前办理人类型是否需要调用部门服务（deptService）
+     *
+     * @return 如果类型是 USER、DEPT 或 POST，则返回 true；否则返回 false
+     */
+    public boolean needsDeptService() {
+        return this == USER || this == DEPT || this == POST;
+    }
+
+    /**
+     * 判断给定字符串是否符合 SPEL 表达式格式（以 $ 或 # 开头）
+     *
+     * @param value 待判断字符串
+     * @return 是否为 SPEL 表达式
+     */
+    public static boolean isSpelExpression(String value) {
+        if (value == null) {
+            return false;
+        }
+        // $前缀表示默认办理人变量策略
+        // #前缀表示spel办理人变量策略
+        return StringUtils.startsWith(value, "$") || StringUtils.startsWith(value, "#");
+    }
+
 }
 

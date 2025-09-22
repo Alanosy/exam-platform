@@ -66,7 +66,6 @@ public class FlwCategoryController extends BaseController {
     @SaCheckPermission("workflow:category:query")
     @GetMapping("/{categoryId}")
     public R<FlowCategoryVo> getInfo(@NotNull(message = "主键不能为空") @PathVariable Long categoryId) {
-        flwCategoryService.checkCategoryDataScope(categoryId);
         return R.ok(flwCategoryService.queryById(categoryId));
     }
 
@@ -93,7 +92,6 @@ public class FlwCategoryController extends BaseController {
     @PutMapping()
     public R<Void> edit(@Validated(EditGroup.class) @RequestBody FlowCategoryBo category) {
         Long categoryId = category.getCategoryId();
-        flwCategoryService.checkCategoryDataScope(categoryId);
         if (!flwCategoryService.checkCategoryNameUnique(category)) {
             return R.fail("修改流程分类'" + category.getCategoryName() + "'失败，流程分类名称已存在");
         } else if (category.getParentId().equals(categoryId)) {

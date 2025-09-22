@@ -16,7 +16,13 @@ import java.util.Set;
  */
 public interface ISysRoleService {
 
-
+    /**
+     * 分页查询角色列表
+     *
+     * @param role      查询条件
+     * @param pageQuery 分页参数
+     * @return 角色分页列表
+     */
     TableDataInfo<SysRoleVo> selectPageRoleList(SysRoleBo role, PageQuery pageQuery);
 
     /**
@@ -113,6 +119,13 @@ public interface ISysRoleService {
     void checkRoleDataScope(Long roleId);
 
     /**
+     * 校验角色是否有数据权限
+     *
+     * @param roleIds 角色ID列表（支持传单个ID）
+     */
+    void checkRoleDataScope(List<Long> roleIds);
+
+    /**
      * 通过角色ID查询角色使用数量
      *
      * @param roleId 角色ID
@@ -167,7 +180,7 @@ public interface ISysRoleService {
      * @param roleIds 需要删除的角色ID
      * @return 结果
      */
-    int deleteRoleByIds(Long[] roleIds);
+    int deleteRoleByIds(List<Long> roleIds);
 
     /**
      * 取消授权用户角色

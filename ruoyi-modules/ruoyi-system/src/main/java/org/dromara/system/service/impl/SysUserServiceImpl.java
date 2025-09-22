@@ -19,7 +19,9 @@ import org.dromara.common.core.utils.*;
 import org.dromara.common.mybatis.core.page.PageQuery;
 import org.dromara.common.mybatis.core.page.TableDataInfo;
 import org.dromara.common.satoken.utils.LoginHelper;
-import org.dromara.system.domain.*;
+import org.dromara.system.domain.SysUser;
+import org.dromara.system.domain.SysUserPost;
+import org.dromara.system.domain.SysUserRole;
 import org.dromara.system.domain.bo.SysUserBo;
 import org.dromara.system.domain.vo.SysPostVo;
 import org.dromara.system.domain.vo.SysRoleVo;
@@ -33,6 +35,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -77,10 +80,8 @@ public class SysUserServiceImpl implements ISysUserService {
             .between(params.get("beginTime") != null && params.get("endTime") != null,
                 "u.create_time", params.get("beginTime"), params.get("endTime"))
             .and(ObjectUtil.isNotNull(user.getDeptId()), w -> {
-                List<SysDept> deptList = deptMapper.selectListByParentId(user.getDeptId());
-                List<Long> ids = StreamUtils.toList(deptList, SysDept::getDeptId);
-                ids.add(user.getDeptId());
-                w.in("u.dept_id", ids);
+                List<Long> deptIds = deptMapper.selectDeptAndChildById(user.getDeptId());
+                w.in("u.dept_id", deptIds);
             }).orderByAsc("u.user_id");
         return baseMapper.selectUserExportList(wrapper);
     }
@@ -98,9 +99,7 @@ public class SysUserServiceImpl implements ISysUserService {
             .between(params.get("beginTime") != null && params.get("endTime") != null,
                 SysUser::getCreateTime, params.get("beginTime"), params.get("endTime"))
             .and(ObjectUtil.isNotNull(user.getDeptId()), w -> {
-                List<SysDept> deptList = deptMapper.selectListByParentId(user.getDeptId());
-                List<Long> ids = StreamUtils.toList(deptList, SysDept::getDeptId);
-                ids.add(user.getDeptId());
+                List<Long> ids = deptMapper.selectDeptAndChildById(user.getDeptId());
                 w.in(SysUser::getDeptId, ids);
             }).orderByAsc(SysUser::getUserId);
         if (StringUtils.isNotBlank(user.getExcludeUserIds())) {
@@ -354,7 +353,7 @@ public class SysUserServiceImpl implements ISysUserService {
         // 防止错误更新后导致的数据误删除
         int flag = baseMapper.updateById(sysUser);
         if (flag < 1) {
-            throw new ServiceException("修改用户" + user.getUserName() + "信息失败");
+            throw new ServiceException("修改用户{}信息失败", user.getUserName());
         }
         return flag;
     }
@@ -451,21 +450,31 @@ public class SysUserServiceImpl implements ISysUserService {
      * @param clear 清除已存在的关联数据
      */
     private void insertUserPost(SysUserBo user, boolean clear) {
-        Long[] posts = user.getPostIds();
-        if (ArrayUtil.isNotEmpty(posts)) {
-            if (clear) {
-                // 删除用户与岗位关联
-                userPostMapper.delete(new LambdaQueryWrapper<SysUserPost>().eq(SysUserPost::getUserId, user.getUserId()));
-            }
-            // 新增用户与岗位管理
-            List<SysUserPost> list = StreamUtils.toList(List.of(posts), postId -> {
+        Long[] postIdArr = user.getPostIds();
+        if (ArrayUtil.isEmpty(postIdArr)) {
+            return;
+        }
+        List<Long> postIds = Arrays.asList(postIdArr);
+
+        // 校验是否有权限操作这些岗位（含数据权限控制）
+        if (postMapper.selectPostCount(postIds) != postIds.size()) {
+            throw new ServiceException("没有权限访问岗位的数据");
+        }
+
+        // 是否清除旧的用户岗位绑定
+        if (clear) {
+            userPostMapper.delete(new LambdaQueryWrapper<SysUserPost>().eq(SysUserPost::getUserId, user.getUserId()));
+        }
+
+        // 构建用户岗位关联列表并批量插入
+        List<SysUserPost> list = StreamUtils.toList(postIds,
+            postId -> {
                 SysUserPost up = new SysUserPost();
                 up.setUserId(user.getUserId());
                 up.setPostId(postId);
                 return up;
             });
-            userPostMapper.insertBatch(list);
-        }
+        userPostMapper.insertBatch(list);
     }
 
     /**
@@ -476,30 +485,36 @@ public class SysUserServiceImpl implements ISysUserService {
      * @param clear   清除已存在的关联数据
      */
     private void insertUserRole(Long userId, Long[] roleIds, boolean clear) {
-        if (ArrayUtil.isNotEmpty(roleIds)) {
-            List<Long> roleList = new ArrayList<>(List.of(roleIds));
-            if (!LoginHelper.isSuperAdmin(userId)) {
-                roleList.remove(SystemConstants.SUPER_ADMIN_ID);
-            }
-            // 判断是否具有此角色的操作权限
-            List<SysRoleVo> roles = roleMapper.selectRoleList(
-                new QueryWrapper<SysRole>().in("r.role_id", roleList));
-            if (CollUtil.isEmpty(roles)) {
-                throw new ServiceException("没有权限访问角色的数据");
-            }
-            if (clear) {
-                // 删除用户与角色关联
-                userRoleMapper.delete(new LambdaQueryWrapper<SysUserRole>().eq(SysUserRole::getUserId, userId));
-            }
-            // 新增用户与角色管理
-            List<SysUserRole> list = StreamUtils.toList(roleList, roleId -> {
+        if (ArrayUtil.isEmpty(roleIds)) {
+            return;
+        }
+
+        List<Long> roleList = new ArrayList<>(Arrays.asList(roleIds));
+
+        // 非超级管理员，禁止包含超级管理员角色
+        if (!LoginHelper.isSuperAdmin(userId)) {
+            roleList.remove(SystemConstants.SUPER_ADMIN_ID);
+        }
+
+        // 校验是否有权限访问这些角色（含数据权限控制）
+        if (roleMapper.selectRoleCount(roleList) != roleList.size()) {
+            throw new ServiceException("没有权限访问角色的数据");
+        }
+
+        // 是否清除原有绑定
+        if (clear) {
+            userRoleMapper.delete(new LambdaQueryWrapper<SysUserRole>().eq(SysUserRole::getUserId, userId));
+        }
+
+        // 批量插入用户-角色关联
+        List<SysUserRole> list = StreamUtils.toList(roleList,
+            roleId -> {
                 SysUserRole ur = new SysUserRole();
                 ur.setUserId(userId);
                 ur.setRoleId(roleId);
                 return ur;
             });
-            userRoleMapper.insertBatch(list);
-        }
+        userRoleMapper.insertBatch(list);
     }
 
     /**
@@ -607,7 +622,7 @@ public class SysUserServiceImpl implements ISysUserService {
                 list.add(nickname);
             }
         }
-        return String.join(StringUtils.SEPARATOR, list);
+        return StringUtils.joinComma(list);
     }
 
     /**

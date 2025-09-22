@@ -1,9 +1,10 @@
 package org.dromara.job.snailjob;
 
+import cn.hutool.core.convert.Convert;
 import com.aizuda.snailjob.client.job.core.annotation.JobExecutor;
 import com.aizuda.snailjob.client.job.core.dto.JobArgs;
-import com.aizuda.snailjob.client.model.ExecuteResult;
 import com.aizuda.snailjob.common.log.SnailJobLog;
+import com.aizuda.snailjob.model.dto.ExecuteResult;
 import org.springframework.stereotype.Component;
 
 /**
@@ -17,7 +18,7 @@ import org.springframework.stereotype.Component;
 public class TestStaticShardingJob {
 
     public ExecuteResult jobExecute(JobArgs jobArgs) {
-        String jobParams = String.valueOf(jobArgs.getJobParams());
+        String jobParams = Convert.toStr(jobArgs.getJobParams());
         SnailJobLog.LOCAL.info("开始执行分片任务,参数:{}", jobParams);
         // 获得jobArgs 中传入的开始id和结束id
         String[] split = jobParams.split(",");

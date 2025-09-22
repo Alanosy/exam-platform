@@ -64,7 +64,7 @@ comment on column  sys_social.create_by         is '创建者';
 comment on column  sys_social.create_time       is '创建时间';
 comment on column  sys_social.update_by         is '更新者';
 comment on column  sys_social.update_time       is '更新时间';
-comment on column  sys_social.del_flag          is '删除标志（0代表存在 2代表删除）';
+comment on column  sys_social.del_flag          is '删除标志（0代表存在 1代表删除）';
 
 -- ----------------------------
 -- 租户表
@@ -109,7 +109,7 @@ comment on column  sys_tenant.package_id         is '租户套餐编号';
 comment on column  sys_tenant.expire_time        is '过期时间';
 comment on column  sys_tenant.account_count      is '用户数量（-1不限制）';
 comment on column  sys_tenant.status             is '租户状态（0正常 1停用）';
-comment on column  sys_tenant.del_flag           is '删除标志（0代表存在 2代表删除）';
+comment on column  sys_tenant.del_flag           is '删除标志（0代表存在 1代表删除）';
 comment on column  sys_tenant.create_dept        is '创建部门';
 comment on column  sys_tenant.create_by          is '创建者';
 comment on column  sys_tenant.create_time        is '创建时间';
@@ -151,7 +151,7 @@ comment on column  sys_tenant_package.package_name       is '套餐名称';
 comment on column  sys_tenant_package.menu_ids           is '关联菜单id';
 comment on column  sys_tenant_package.remark             is '备注';
 comment on column  sys_tenant_package.status             is '状态（0正常 1停用）';
-comment on column  sys_tenant_package.del_flag           is '删除标志（0代表存在 2代表删除）';
+comment on column  sys_tenant_package.del_flag           is '删除标志（0代表存在 1代表删除）';
 comment on column  sys_tenant_package.create_dept        is '创建部门';
 comment on column  sys_tenant_package.create_by          is '创建者';
 comment on column  sys_tenant_package.create_time        is '创建时间';
@@ -196,7 +196,7 @@ comment on column sys_dept.leader       is '负责人';
 comment on column sys_dept.phone        is '联系电话';
 comment on column sys_dept.email        is '邮箱';
 comment on column sys_dept.status       is '部门状态（0正常 1停用）';
-comment on column sys_dept.del_flag     is '删除标志（0代表存在 2代表删除）';
+comment on column sys_dept.del_flag     is '删除标志（0代表存在 1代表删除）';
 comment on column sys_dept.create_dept  is '创建部门';
 comment on column sys_dept.create_by    is '创建者';
 comment on column sys_dept.create_time  is '创建时间';
@@ -259,7 +259,7 @@ comment on column sys_user.sex          is '用户性别（0男 1女 2未知）'
 comment on column sys_user.avatar       is '头像地址';
 comment on column sys_user.password     is '密码';
 comment on column sys_user.status       is '帐号状态（0正常 1停用）';
-comment on column sys_user.del_flag     is '删除标志（0代表存在 2代表删除）';
+comment on column sys_user.del_flag     is '删除标志（0代表存在 1代表删除）';
 comment on column sys_user.login_ip     is '最后登陆IP';
 comment on column sys_user.login_date   is '最后登陆时间';
 comment on column sys_user.create_dept  is '创建部门';
@@ -358,7 +358,7 @@ comment on column sys_role.data_scope           is '数据范围（1：全部数
 comment on column sys_role.menu_check_strictly  is '菜单树选择项是否关联显示';
 comment on column sys_role.dept_check_strictly  is '部门树选择项是否关联显示';
 comment on column sys_role.status               is '角色状态（0正常 1停用）';
-comment on column sys_role.del_flag             is '删除标志（0代表存在 2代表删除）';
+comment on column sys_role.del_flag             is '删除标志（0代表存在 1代表删除）';
 comment on column sys_role.create_dept          is '创建部门';
 comment on column sys_role.create_by            is '创建者';
 comment on column sys_role.create_time          is '创建时间';
@@ -447,18 +447,17 @@ insert into sys_menu values('108',  '日志管理',     '1',   '9', 'log',      
 insert into sys_menu values('109',  '在线用户',     '2',   '1', 'online',           'monitor/online/index',         '', '1', '0', 'C', '0', '0', 'monitor:online:list',         'online',        103, 1, now(), null, null, '在线用户菜单');
 insert into sys_menu values('124',  '缓存监控',     '2',   '1',  'cache',           'monitor/cache/index',          '', '1', '0', 'C', '0', '0',  'monitor:cache:list',          'redis',        103, 1, now(), null, null, '缓存监控');
 insert into sys_menu values('110',  'SnailJob控制台', '2', '2', 'http://localhost:8800/snail-job', '',              '', '0', '0', 'C', '0', '0', 'monitor:job:list',            'job',           103, 1, now(), null, null, 'SJ定时任务菜单');
-insert into sys_menu values('111',  'Sentinel控制台','2',  '3', 'http://localhost:8718',        '',                 '', '0', '0', 'C', '0', '0', 'monitor:sentinel:list',       'sentinel',      103, 1, now(), null, null, '流量控制菜单');
 insert into sys_menu values('112',  'Nacos控制台',  '2',   '4', 'http://localhost:8848/nacos',  '',                 '', '0', '0', 'C', '0', '0', 'monitor:nacos:list',          'nacos',         103, 1, now(), null, null, '服务治理菜单');
 insert into sys_menu values('113',  'Admin控制台',  '2',   '5', 'http://localhost:9100/login',  '',                 '', '0', '0', 'C', '0', '0', 'monitor:server:list',         'server',        103, 1, now(), null, null, '服务监控菜单');
 insert into sys_menu values('115',  '代码生成',     '3',   '2', 'gen',              'tool/gen/index',               '', '1', '0', 'C', '0', '0', 'tool:gen:list',               'code',          103, 1, now(), null, null, '代码生成菜单');
 insert into sys_menu values('121',  '租户管理',     '6',   '1', 'tenant',           'system/tenant/index',          '', '1', '0', 'C', '0', '0', 'system:tenant:list',          'list',          103, 1, now(), null, null, '租户管理菜单');
 insert into sys_menu values('122',  '租户套餐管理',  '6',   '2', 'tenantPackage',    'system/tenantPackage/index',   '', '1', '0', 'C', '0', '0', 'system:tenantPackage:list',   'form',          103, 1, now(), null, null, '租户套餐管理菜单');
 insert into sys_menu values('123',  '客户端管理',   '1',   '11', 'client',           'system/client/index',          '', '1', '0', 'C', '0', '0', 'system:client:list',          'international', 103, 1, now(), null, null, '客户端管理菜单');
-insert into sys_menu values('116', '修改生成配置',  '3',   '2', 'gen-edit/index/:tableId', 'tool/gen/editTable', '', '1', '1', 'C', '1', '0', 'tool:gen:edit',           '#',               103, 1, now(), null, null, '');
-insert into sys_menu values('130', '分配用户',     '1',   '2', 'role-auth/user/:roleId', 'system/role/authUser', '', '1', '1', 'C', '1', '0', 'system:role:edit',      '#',               103, 1, now(), null, null, '');
-insert into sys_menu values('131', '分配角色',     '1',   '1', 'user-auth/role/:userId', 'system/user/authRole', '', '1', '1', 'C', '1', '0', 'system:user:edit',      '#',               103, 1, now(), null, null, '');
-insert into sys_menu values('132', '字典数据',     '1',   '6', 'dict-data/index/:dictId', 'system/dict/data', '', '1', '1', 'C', '1', '0', 'system:dict:list',         '#',               103, 1, now(), null, null, '');
-insert into sys_menu values('133', '文件配置管理',  '1',   '10', 'oss-config/index',              'system/oss/config', '', '1', '1', 'C', '1', '0', 'system:ossConfig:list',  '#',                103, 1, now(), null, null, '');
+insert into sys_menu values('116', '修改生成配置',  '3',   '2', 'gen-edit/index/:tableId', 'tool/gen/editTable', '', '1', '1', 'C', '1', '0', 'tool:gen:edit',           '#',               103, 1, now(), null, null, '/tool/gen');
+insert into sys_menu values('130', '分配用户',     '1',   '2', 'role-auth/user/:roleId', 'system/role/authUser', '', '1', '1', 'C', '1', '0', 'system:role:edit',      '#',               103, 1, now(), null, null, '/system/role');
+insert into sys_menu values('131', '分配角色',     '1',   '1', 'user-auth/role/:userId', 'system/user/authRole', '', '1', '1', 'C', '1', '0', 'system:user:edit',      '#',               103, 1, now(), null, null, '/system/user');
+insert into sys_menu values('132', '字典数据',     '1',   '6', 'dict-data/index/:dictId', 'system/dict/data', '', '1', '1', 'C', '1', '0', 'system:dict:list',         '#',               103, 1, now(), null, null, '/system/dict');
+insert into sys_menu values('133', '文件配置管理',  '1',   '10', 'oss-config/index',              'system/oss/config', '', '1', '1', 'C', '1', '0', 'system:ossConfig:list',  '#',                103, 1, now(), null, null, '/system/oss');
 
 -- oss菜单
 insert into sys_menu values('118',  '文件管理',     '1',   '10', 'oss',              'system/oss/index',            '', '1', '0', 'C', '0', '0', 'system:oss:list',             'upload',        103, 1, now(), null, null, '文件管理菜单');
@@ -584,7 +583,7 @@ INSERT INTO sys_menu VALUES ('11622', '流程分类', '11616', '1', 'category', 
 INSERT INTO sys_menu VALUES ('11629', '我发起的', '11618', '1', 'myDocument', 'workflow/task/myDocument', '', '1', '1', 'C', '0', '0', '', 'guide', 103, 1, now(), NULL, NULL, '');
 INSERT INTO sys_menu VALUES ('11630', '流程监控', '11616', '4', 'monitor', '', '', '1', '0', 'M', '0', '0', '', 'monitor', 103, 1, now(), NULL, NULL, '');
 INSERT INTO sys_menu VALUES ('11631', '待办任务', '11630', '2', 'allTaskWaiting', 'workflow/task/allTaskWaiting', '', '1', '1', 'C', '0', '0', '', 'waiting', 103, 1, now(), NULL, NULL, '');
-INSERT INTO sys_menu VALUES ('11700', '流程设计', '11616', '5', 'design/index',   'workflow/processDefinition/design', '', '1', '1', 'C', '1', '0', 'workflow:leave:edit', '#', 103, 1, now(), NULL, NULL, '');
+INSERT INTO sys_menu VALUES ('11700', '流程设计', '11616', '5', 'design/index',   'workflow/processDefinition/design', '', '1', '1', 'C', '1', '0', 'workflow:leave:edit', '#', 103, 1, now(), NULL, NULL, '/workflow/processDefinition');
 INSERT INTO sys_menu VALUES ('11701', '请假申请', '11616', '6', 'leaveEdit/index', 'workflow/leave/leaveEdit', '', '1', '1', 'C', '1', '0', 'workflow:leave:edit', '#', 103, 1, now(), NULL, NULL, '');
 
 INSERT INTO sys_menu VALUES ('11623', '流程分类查询', '11622', '1', '#', '', '', '1', '0', 'F', '0', '0', 'workflow:category:query', '#', 103, 1, now(), NULL, NULL, '');
@@ -598,6 +597,13 @@ INSERT INTO sys_menu VALUES ('11640', '请假申请新增', '11638', '2', '#', '
 INSERT INTO sys_menu VALUES ('11641', '请假申请修改', '11638', '3', '#', '', '', '1', '0', 'F', '0', '0', 'workflow:leave:edit', '#', 103, 1, now(), NULL, NULL, '');
 INSERT INTO sys_menu VALUES ('11642', '请假申请删除', '11638', '4', '#', '', '', '1', '0', 'F', '0', '0', 'workflow:leave:remove', '#', 103, 1, now(), NULL, NULL, '');
 INSERT INTO sys_menu VALUES ('11643', '请假申请导出', '11638', '5', '#', '', '', '1', '0', 'F', '0', '0', 'workflow:leave:export', '#', 103, 1, now(), NULL, NULL, '');
+
+INSERT INTO sys_menu VALUES ('11801', '流程表达式', '11616', 2, 'spel', 'workflow/spel/index', '', 1, 0, 'C', '0', '0', 'workflow:spel:list', 'input', 103, 1, now(), 1, now(), '流程达式定义菜单');
+INSERT INTO sys_menu VALUES ('11802', '流程spel达式定义查询', '11801', 1, '#', '', NULL, 1, 0, 'F', '0', '0', 'workflow:spel:query', '#', 103, 1, now(), NULL, NULL, '');
+INSERT INTO sys_menu VALUES ('11803', '流程spel达式定义新增', '11801', 2, '#', '', NULL, 1, 0, 'F', '0', '0', 'workflow:spel:add', '#', 103, 1, now(), NULL, NULL, '');
+INSERT INTO sys_menu VALUES ('11804', '流程spel达式定义修改', '11801', 3, '#', '', NULL, 1, 0, 'F', '0', '0', 'workflow:spel:edit', '#', 103, 1, now(), NULL, NULL, '');
+INSERT INTO sys_menu VALUES ('11805', '流程spel达式定义删除', '11801', 4, '#', '', NULL, 1, 0, 'F', '0', '0', 'workflow:spel:remove', '#', 103, 1, now(), NULL, NULL, '');
+INSERT INTO sys_menu VALUES ('11806', '流程spel达式定义导出', '11801', 5, '#', '', NULL, 1, 0, 'F', '0', '0', 'workflow:spel:export', '#', 103, 1, now(), NULL, NULL, '');
 
 -- ----------------------------
 -- 6、用户和角色关联表  用户N-1角色
@@ -1339,7 +1345,7 @@ comment on column sys_client.device_type            is '设备类型';
 comment on column sys_client.active_timeout         is 'token活跃超时时间';
 comment on column sys_client.timeout                is 'token固定超时';
 comment on column sys_client.status                 is '状态（0正常 1停用）';
-comment on column sys_client.del_flag               is '删除标志（0代表存在 2代表删除）';
+comment on column sys_client.del_flag               is '删除标志（0代表存在 1代表删除）';
 comment on column sys_client.create_dept            is '创建部门';
 comment on column sys_client.create_by              is '创建者';
 comment on column sys_client.create_time            is '创建时间';

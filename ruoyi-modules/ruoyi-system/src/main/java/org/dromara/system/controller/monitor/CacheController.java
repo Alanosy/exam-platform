@@ -53,6 +53,13 @@ public class CacheController {
         }
     }
 
+    /**
+     * 缓存监控列表信息
+     *
+     * @param info         信息
+     * @param dbSize       数据库
+     * @param commandStats 命令统计
+     */
     public record CacheListInfoVo(Properties info, Long dbSize, List<Map<String, String>> commandStats) {}
 
 }

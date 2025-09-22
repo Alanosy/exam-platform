@@ -10,7 +10,7 @@ import org.springframework.security.config.annotation.web.configurers.AbstractHt
 import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.SavedRequestAwareAuthenticationSuccessHandler;
-import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
+import org.springframework.security.web.servlet.util.matcher.PathPatternRequestMatcher;
 
 /**
  * admin 监控 安全配置
@@ -32,14 +32,14 @@ public class WebSecurityConfigurer {
         SavedRequestAwareAuthenticationSuccessHandler successHandler = new SavedRequestAwareAuthenticationSuccessHandler();
         successHandler.setTargetUrlParameter("redirectTo");
         successHandler.setDefaultTargetUrl(adminContextPath + "/");
-
+        PathPatternRequestMatcher.Builder mvc = PathPatternRequestMatcher.withDefaults();
         return httpSecurity
             .headers((header) ->
                 header.frameOptions(HeadersConfigurer.FrameOptionsConfig::disable))
             .authorizeHttpRequests((authorize) ->
                 authorize.requestMatchers(
-                        new AntPathRequestMatcher(adminContextPath + "/assets/**"),
-                        new AntPathRequestMatcher(adminContextPath + "/login")
+                        mvc.matcher(adminContextPath + "/assets/**"),
+                        mvc.matcher(adminContextPath + "/login")
                     ).permitAll()
                     .anyRequest().authenticated())
             .formLogin((formLogin) ->

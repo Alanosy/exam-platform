@@ -27,6 +27,7 @@ import java.io.UnsupportedEncodingException;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Consumer;
 
 /**
  * Excel相关处理
@@ -201,6 +202,44 @@ public class ExcelUtil {
         // 添加下拉框操作
         builder.registerWriteHandler(new ExcelDownHandler(options));
         builder.doWrite(list);
+    }
+
+    /**
+     * 导出excel
+     *
+     * @param headType 带Excel注解的类型
+     * @param os       输出流
+     * @param options  Excel下拉可选项
+     * @param consumer 导出助手消费函数
+     */
+    public static <T> void exportExcel(Class<T> headType, OutputStream os, List<DropDownOptions> options, Consumer<ExcelWriterWrapper<T>> consumer) {
+        try (ExcelWriter writer = FastExcel.write(os, headType)
+            .autoCloseStream(false)
+            // 自动适配
+            .registerWriteHandler(new LongestMatchColumnWidthStyleStrategy())
+            // 大数值自动转换 防止失真
+            .registerConverter(new ExcelBigNumberConvert())
+            // 批注必填项处理
+            .registerWriteHandler(new DataWriteHandler(headType))
+            // 添加下拉框操作
+            .registerWriteHandler(new ExcelDownHandler(options))
+            .build()) {
+            // 执行消费函数
+            consumer.accept(ExcelWriterWrapper.of(writer));
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    /**
+     * 导出excel
+     *
+     * @param headType 带Excel注解的类型
+     * @param os       输出流
+     * @param consumer 导出助手消费函数
+     */
+    public static <T> void exportExcel(Class<T> headType, OutputStream os, Consumer<ExcelWriterWrapper<T>> consumer) {
+        exportExcel(headType, os, null, consumer);
     }
 
     /**

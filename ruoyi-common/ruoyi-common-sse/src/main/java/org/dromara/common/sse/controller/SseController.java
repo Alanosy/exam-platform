@@ -5,15 +5,12 @@ import lombok.RequiredArgsConstructor;
 import org.dromara.common.core.domain.R;
 import org.dromara.common.satoken.utils.LoginHelper;
 import org.dromara.common.sse.core.SseEmitterManager;
-import org.dromara.common.sse.dto.SseMessageDto;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
-
-import java.util.List;
 
 /**
  * SSE 控制器
@@ -32,7 +29,9 @@ public class SseController implements DisposableBean {
      */
     @GetMapping(value = "${sse.path}", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
     public SseEmitter connect() {
-        StpUtil.checkLogin();
+        if (!StpUtil.isLogin()) {
+            return null;
+        }
         String tokenValue = StpUtil.getTokenValue();
         Long userId = LoginHelper.getUserId();
         return sseEmitterManager.connect(userId, tokenValue);
@@ -49,31 +48,32 @@ public class SseController implements DisposableBean {
         return R.ok();
     }
 
-    /**
-     * 向特定用户发送消息
-     *
-     * @param userId 目标用户的 ID
-     * @param msg    要发送的消息内容
-     */
-    @GetMapping(value = "${sse.path}/send")
-    public R<Void> send(Long userId, String msg) {
-        SseMessageDto dto = new SseMessageDto();
-        dto.setUserIds(List.of(userId));
-        dto.setMessage(msg);
-        sseEmitterManager.publishMessage(dto);
-        return R.ok();
-    }
-
-    /**
-     * 向所有用户发送消息
-     *
-     * @param msg 要发送的消息内容
-     */
-    @GetMapping(value = "${sse.path}/sendAll")
-    public R<Void> send(String msg) {
-        sseEmitterManager.publishAll(msg);
-        return R.ok();
-    }
+    // 以下为demo仅供参考 禁止使用 请在业务逻辑中使用工具发送而不是用接口发送
+//    /**
+//     * 向特定用户发送消息
+//     *
+//     * @param userId 目标用户的 ID
+//     * @param msg    要发送的消息内容
+//     */
+//    @GetMapping(value = "${sse.path}/send")
+//    public R<Void> send(Long userId, String msg) {
+//        SseMessageDto dto = new SseMessageDto();
+//        dto.setUserIds(List.of(userId));
+//        dto.setMessage(msg);
+//        sseEmitterManager.publishMessage(dto);
+//        return R.ok();
+//    }
+//
+//    /**
+//     * 向所有用户发送消息
+//     *
+//     * @param msg 要发送的消息内容
+//     */
+//    @GetMapping(value = "${sse.path}/sendAll")
+//    public R<Void> send(String msg) {
+//        sseEmitterManager.publishAll(msg);
+//        return R.ok();
+//    }
 
     /**
      * 清理资源。此方法目前不执行任何操作，但避免因未实现而导致错误

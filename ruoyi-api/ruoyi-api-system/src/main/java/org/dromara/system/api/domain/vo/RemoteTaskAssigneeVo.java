@@ -52,17 +52,17 @@ public class RemoteTaskAssigneeVo implements Serializable {
      */
     public static <T> List<TaskHandler> convertToHandlerList(
         List<T> sourceList,
-        Function<T, Long> storageId,
+        Function<T, String> storageId,
         Function<T, String> handlerCode,
         Function<T, String> handlerName,
-        Function<T, Long> groupName,
+        Function<T, String> groupName,
         Function<T, Date> createTimeMapper) {
         return sourceList.stream()
             .map(item -> new TaskHandler(
-                String.valueOf(storageId.apply(item)),
+                storageId.apply(item),
                 handlerCode.apply(item),
                 handlerName.apply(item),
-                groupName != null ? String.valueOf(groupName.apply(item)) : null,
+                groupName.apply(item),
                 createTimeMapper.apply(item)
             )).collect(Collectors.toList());
     }

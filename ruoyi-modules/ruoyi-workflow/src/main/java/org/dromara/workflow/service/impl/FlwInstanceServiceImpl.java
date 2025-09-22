@@ -18,12 +18,13 @@ import org.dromara.common.core.utils.StringUtils;
 import org.dromara.common.mybatis.core.page.PageQuery;
 import org.dromara.common.mybatis.core.page.TableDataInfo;
 import org.dromara.common.satoken.utils.LoginHelper;
-import org.dromara.system.api.domain.vo.RemoteUserVo;
+import org.dromara.warm.flow.core.FlowEngine;
 import org.dromara.warm.flow.core.constant.ExceptionCons;
 import org.dromara.warm.flow.core.dto.FlowParams;
 import org.dromara.warm.flow.core.entity.Definition;
 import org.dromara.warm.flow.core.entity.Instance;
 import org.dromara.warm.flow.core.entity.Task;
+import org.dromara.warm.flow.core.entity.User;
 import org.dromara.warm.flow.core.enums.NodeType;
 import org.dromara.warm.flow.core.service.DefService;
 import org.dromara.warm.flow.core.service.InsService;
@@ -38,6 +39,7 @@ import org.dromara.workflow.common.enums.TaskStatusEnum;
 import org.dromara.workflow.domain.bo.FlowCancelBo;
 import org.dromara.workflow.domain.bo.FlowInstanceBo;
 import org.dromara.workflow.domain.bo.FlowInvalidBo;
+import org.dromara.workflow.domain.bo.FlowVariableBo;
 import org.dromara.workflow.domain.vo.FlowHisTaskVo;
 import org.dromara.workflow.domain.vo.FlowInstanceVo;
 import org.dromara.workflow.handler.FlowProcessEventHandler;
@@ -49,7 +51,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
-import java.util.stream.Collectors;
+import java.util.function.Function;
 
 /**
  * 流程实例 服务层实现
@@ -108,7 +110,7 @@ public class FlwInstanceServiceImpl implements IFlwInstanceService {
      */
     @Override
     public FlowInstanceVo queryByBusinessId(Long businessId) {
-        FlowInstance instance = this.selectInstByBusinessId(String.valueOf(businessId));
+        FlowInstance instance = this.selectInstByBusinessId(Convert.toStr(businessId));
         FlowInstanceVo instanceVo = BeanUtil.toBean(instance, FlowInstanceVo.class);
         Definition definition = defService.getById(instanceVo.getDefinitionId());
         instanceVo.setFlowName(definition.getFlowName());
@@ -203,22 +205,77 @@ public class FlwInstanceServiceImpl implements IFlwInstanceService {
             return false;
         }
         // 获取定义信息
-        Map<Long, Definition> definitionMap = defService.getByIds(
-            StreamUtils.toList(instances, Instance::getDefinitionId)
-        ).stream().collect(Collectors.toMap(Definition::getId, definition -> definition));
+        Map<Long, Definition> definitionMap = StreamUtils.toMap(
+            defService.getByIds(StreamUtils.toList(instances, Instance::getDefinitionId)),
+            Definition::getId,
+            Function.identity()
+        );
 
-        // 逐一触发删除事件
-        instances.forEach(instance -> {
-            Definition definition = definitionMap.get(instance.getDefinitionId());
-            if (ObjectUtil.isNull(definition)) {
-                log.warn("实例 ID: {} 对应的流程定义信息未找到，跳过删除事件触发。", instance.getId());
-                return;
+        try {
+            // 逐一触发删除事件
+            instances.forEach(instance -> {
+                Definition definition = definitionMap.get(instance.getDefinitionId());
+                if (ObjectUtil.isNull(definition)) {
+                    log.warn("实例 ID: {} 对应的流程定义信息未找到，跳过删除事件触发。", instance.getId());
+                    return;
+                }
+                flowProcessEventHandler.processDeleteHandler(definition.getFlowCode(), instance.getBusinessId());
+            });
+            // 删除实例
+            boolean remove = insService.remove(instanceIds);
+            if (!remove) {
+                log.warn("删除流程实例失败!");
+                throw new ServiceException("删除流程实例失败");
             }
-            flowProcessEventHandler.processDeleteHandler(definition.getFlowCode(), instance.getBusinessId());
-        });
+        } catch (Exception e) {
+            log.warn("操作失败!{}", e.getMessage());
+            throw new ServiceException(e.getMessage());
+        }
+        return true;
+    }
 
-        // 删除实例
-        return insService.remove(instanceIds);
+    /**
+     * 按照实例id删除已完成的流程实例
+     *
+     * @param instanceIds 实例id
+     */
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public boolean deleteHisByInstanceIds(List<Long> instanceIds) {
+        // 获取实例信息
+        List<Instance> instances = insService.getByIds(instanceIds);
+        if (CollUtil.isEmpty(instances)) {
+            log.warn("未找到对应的流程实例信息，无法执行删除操作。");
+            return false;
+        }
+        // 获取定义信息
+        Map<Long, Definition> definitionMap = StreamUtils.toMap(
+            defService.getByIds(StreamUtils.toList(instances, Instance::getDefinitionId)),
+            Definition::getId,
+            Function.identity()
+        );
+        try {
+            // 逐一触发删除事件
+            instances.forEach(instance -> {
+                Definition definition = definitionMap.get(instance.getDefinitionId());
+                if (ObjectUtil.isNull(definition)) {
+                    log.warn("实例 ID: {} 对应的流程定义信息未找到，跳过删除事件触发。", instance.getId());
+                    return;
+                }
+                flowProcessEventHandler.processDeleteHandler(definition.getFlowCode(), instance.getBusinessId());
+            });
+            List<FlowTask> flowTaskList = flwTaskService.selectByInstIds(instanceIds);
+            if (CollUtil.isNotEmpty(flowTaskList)) {
+                FlowEngine.userService().deleteByTaskIds(StreamUtils.toList(flowTaskList, FlowTask::getId));
+            }
+            FlowEngine.taskService().deleteByInsIds(instanceIds);
+            FlowEngine.hisTaskService().deleteByInsIds(instanceIds);
+            FlowEngine.insService().removeByIds(instanceIds);
+        } catch (Exception e) {
+            log.warn("操作失败!{}", e.getMessage());
+            throw new ServiceException(e.getMessage());
+        }
+        return true;
     }
 
     /**
@@ -281,37 +338,47 @@ public class FlwInstanceServiceImpl implements IFlwInstanceService {
             throw new ServiceException(ExceptionCons.NOT_FOUNT_INSTANCE);
         }
         Long instanceId = flowInstance.getId();
-        //运行中的任务
-        List<FlowHisTaskVo> list = new ArrayList<>();
-        List<FlowTask> flowTaskList = flwTaskService.selectByInstId(instanceId);
-        if (CollUtil.isNotEmpty(flowTaskList)) {
-            List<FlowHisTaskVo> flowHisTaskVos = BeanUtil.copyToList(flowTaskList, FlowHisTaskVo.class);
-            for (FlowHisTaskVo flowHisTaskVo : flowHisTaskVos) {
-                flowHisTaskVo.setFlowStatus(TaskStatusEnum.WAITING.getStatus());
-                flowHisTaskVo.setUpdateTime(null);
-                flowHisTaskVo.setRunDuration(null);
-                List<RemoteUserVo> allUser = flwTaskService.currentTaskAllUser(flowHisTaskVo.getId());
-                if (CollUtil.isNotEmpty(allUser)) {
-                    String join = StreamUtils.join(allUser, e -> String.valueOf(e.getUserId()));
-                    flowHisTaskVo.setApprover(join);
-                }
-                if (BusinessStatusEnum.isDraftOrCancelOrBack(flowInstance.getFlowStatus())) {
-                    flowHisTaskVo.setApprover(LoginHelper.getUserIdStr());
-                    flowHisTaskVo.setApproveName(LoginHelper.getLoginUser().getNickname());
+
+        // 先组装待审批任务（运行中的任务）
+        List<FlowHisTaskVo> runningTaskVos = new ArrayList<>();
+        List<FlowTask> runningTasks = flwTaskService.selectByInstId(instanceId);
+        if (CollUtil.isNotEmpty(runningTasks)) {
+            runningTaskVos = BeanUtil.copyToList(runningTasks, FlowHisTaskVo.class);
+
+            List<User> associatedUsers = FlowEngine.userService()
+                .getByAssociateds(StreamUtils.toList(runningTasks, FlowTask::getId));
+            Map<Long, List<User>> taskUserMap = StreamUtils.groupByKey(associatedUsers, User::getAssociated);
+
+            for (FlowHisTaskVo vo : runningTaskVos) {
+                vo.setFlowStatus(TaskStatusEnum.WAITING.getStatus());
+                vo.setUpdateTime(null);
+                vo.setRunDuration(null);
+
+                List<User> users = taskUserMap.get(vo.getId());
+                if (CollUtil.isNotEmpty(users)) {
+                    vo.setApprover(StreamUtils.join(users, User::getProcessedBy));
                 }
             }
-            list.addAll(flowHisTaskVos);
         }
-        //历史任务
-        LambdaQueryWrapper<FlowHisTask> wrapper = Wrappers.lambdaQuery();
-        wrapper.eq(FlowHisTask::getInstanceId, instanceId)
-            .eq(FlowHisTask::getNodeType, NodeType.BETWEEN.getKey())
-            .orderByDesc(FlowHisTask::getCreateTime, FlowHisTask::getUpdateTime);
-        List<FlowHisTask> flowHisTasks = flowHisTaskMapper.selectList(wrapper);
-        if (CollUtil.isNotEmpty(flowHisTasks)) {
-            list.addAll(BeanUtil.copyToList(flowHisTasks, FlowHisTaskVo.class));
+
+        // 再组装历史任务（已处理任务）
+        List<FlowHisTaskVo> hisTaskVos = new ArrayList<>();
+        List<FlowHisTask> hisTasks = flowHisTaskMapper.selectList(
+            new LambdaQueryWrapper<FlowHisTask>()
+                .eq(FlowHisTask::getInstanceId, instanceId)
+                .eq(FlowHisTask::getNodeType, NodeType.BETWEEN.getKey())
+                .orderByDesc(FlowHisTask::getUpdateTime)
+        );
+        if (CollUtil.isNotEmpty(hisTasks)) {
+            hisTaskVos = BeanUtil.copyToList(hisTasks, FlowHisTaskVo.class);
         }
-        return Map.of("list", list, "instanceId", instanceId);
+
+        // 结果列表，待审批任务在前，历史任务在后
+        List<FlowHisTaskVo> combinedList = new ArrayList<>();
+        combinedList.addAll(runningTaskVos);
+        combinedList.addAll(hisTaskVos);
+
+        return Map.of("list", combinedList, "instanceId", instanceId);
     }
 
     /**
@@ -346,6 +413,34 @@ public class FlwInstanceServiceImpl implements IFlwInstanceService {
     /**
      * 设置流程变量
      *
+     * @param bo 参数
+     */
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public boolean updateVariable(FlowVariableBo bo) {
+        FlowInstance flowInstance = flowInstanceMapper.selectById(bo.getInstanceId());
+        if (flowInstance == null) {
+            throw new ServiceException(ExceptionCons.NOT_FOUNT_INSTANCE);
+        }
+        try {
+            Map<String, Object> variableMap = new HashMap<>(Optional.ofNullable(flowInstance.getVariableMap()).orElse(Collections.emptyMap()));
+            if (!variableMap.containsKey(bo.getKey())) {
+                log.error("变量不存在: {}", bo.getKey());
+                return false;
+            }
+            variableMap.put(bo.getKey(), bo.getValue());
+            flowInstance.setVariable(FlowEngine.jsonConvert.objToStr(variableMap));
+            flowInstanceMapper.updateById(flowInstance);
+        } catch (Exception e) {
+            log.error("设置流程变量失败: {}", e.getMessage(), e);
+            throw new ServiceException(e.getMessage());
+        }
+        return true;
+    }
+
+    /**
+     * 设置流程变量
+     *
      * @param instanceId 实例id
      * @param variable   流程变量
      */
@@ -375,31 +470,6 @@ public class FlwInstanceServiceImpl implements IFlwInstanceService {
             return this.selectInstById(task.getInstanceId());
         }
         return null;
-    }
-
-    /**
-     * 按任务id查询实例
-     *
-     * @param taskIdList 任务id
-     */
-    @Override
-    public List<FlowInstance> selectByTaskIdList(List<Long> taskIdList) {
-        if (CollUtil.isEmpty(taskIdList)) {
-            return Collections.emptyList();
-        }
-        Set<Long> instanceIds = new HashSet<>();
-        List<FlowTask> flowTaskList = flwTaskService.selectByIdList(taskIdList);
-        for (FlowTask flowTask : flowTaskList) {
-            instanceIds.add(flowTask.getInstanceId());
-        }
-        List<FlowHisTask> flowHisTaskList = flwTaskService.selectHisTaskByIdList(taskIdList);
-        for (FlowHisTask flowHisTask : flowHisTaskList) {
-            instanceIds.add(flowHisTask.getInstanceId());
-        }
-        if (!instanceIds.isEmpty()) {
-            return this.selectInstListByIdList(new ArrayList<>(instanceIds));
-        }
-        return Collections.emptyList();
     }
 
     /**

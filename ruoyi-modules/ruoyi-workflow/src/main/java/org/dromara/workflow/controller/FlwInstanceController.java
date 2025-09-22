@@ -13,6 +13,7 @@ import org.dromara.workflow.common.ConditionalOnEnable;
 import org.dromara.workflow.domain.bo.FlowCancelBo;
 import org.dromara.workflow.domain.bo.FlowInstanceBo;
 import org.dromara.workflow.domain.bo.FlowInvalidBo;
+import org.dromara.workflow.domain.bo.FlowVariableBo;
 import org.dromara.workflow.domain.vo.FlowInstanceVo;
 import org.dromara.workflow.service.IFlwInstanceService;
 import org.springframework.validation.annotation.Validated;
@@ -89,6 +90,16 @@ public class FlwInstanceController extends BaseController {
     }
 
     /**
+     * 按照实例id删除已完成得流程实例
+     *
+     * @param instanceIds 实例id
+     */
+    @DeleteMapping("/deleteHisByInstanceIds/{instanceIds}")
+    public R<Void> deleteHisByInstanceIds(@PathVariable List<Long> instanceIds) {
+        return toAjax(flwInstanceService.deleteHisByInstanceIds(instanceIds));
+    }
+
+    /**
      * 撤销流程
      *
      * @param bo 参数
@@ -140,6 +151,17 @@ public class FlwInstanceController extends BaseController {
     @GetMapping("/instanceVariable/{instanceId}")
     public R<Map<String, Object>> instanceVariable(@PathVariable Long instanceId) {
         return R.ok(flwInstanceService.instanceVariable(instanceId));
+    }
+
+    /**
+     * 修改流程变量
+     *
+     * @param bo 参数
+     */
+    @RepeatSubmit()
+    @PutMapping("/updateVariable")
+    public R<Void> updateVariable(@Validated @RequestBody FlowVariableBo bo) {
+        return toAjax(flwInstanceService.updateVariable(bo));
     }
 
     /**

@@ -1,6 +1,8 @@
 package org.dromara.common.web.config;
 
+import cn.hutool.core.date.DateTime;
 import cn.hutool.core.date.DateUtil;
+import org.dromara.common.core.utils.ObjectUtils;
 import org.dromara.common.core.utils.StringUtils;
 import org.dromara.common.web.handler.GlobalExceptionHandler;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
@@ -29,10 +31,11 @@ public class ResourcesConfig implements WebMvcConfigurer {
     public void addFormatters(FormatterRegistry registry) {
         // 全局日期格式转换配置
         registry.addConverter(String.class, Date.class, source -> {
-            if (StringUtils.isBlank(source)) {
+            DateTime parse = DateUtil.parse(source);
+            if (ObjectUtils.isNull(parse)) {
                 return null;
             }
-            return DateUtil.parse(source);
+            return parse.toJdkDate();
         });
     }
 

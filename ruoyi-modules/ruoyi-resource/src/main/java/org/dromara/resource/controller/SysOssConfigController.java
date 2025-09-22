@@ -1,24 +1,25 @@
 package org.dromara.resource.controller;
 
 import cn.dev33.satoken.annotation.SaCheckPermission;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
+import lombok.RequiredArgsConstructor;
 import org.dromara.common.core.domain.R;
 import org.dromara.common.core.validate.AddGroup;
 import org.dromara.common.core.validate.EditGroup;
 import org.dromara.common.core.validate.QueryGroup;
-import org.dromara.common.web.core.BaseController;
+import org.dromara.common.idempotent.annotation.RepeatSubmit;
 import org.dromara.common.log.annotation.Log;
 import org.dromara.common.log.enums.BusinessType;
 import org.dromara.common.mybatis.core.page.PageQuery;
 import org.dromara.common.mybatis.core.page.TableDataInfo;
+import org.dromara.common.web.core.BaseController;
 import org.dromara.resource.domain.bo.SysOssConfigBo;
 import org.dromara.resource.domain.vo.SysOssConfigVo;
 import org.dromara.resource.service.ISysOssConfigService;
-import lombok.RequiredArgsConstructor;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import jakarta.validation.constraints.NotEmpty;
-import jakarta.validation.constraints.NotNull;
 import java.util.Arrays;
 
 /**
@@ -93,6 +94,7 @@ public class SysOssConfigController extends BaseController {
      */
     @SaCheckPermission("system:ossConfig:edit")
     @Log(title = "对象存储状态修改", businessType = BusinessType.UPDATE)
+    @RepeatSubmit()
     @PutMapping("/changeStatus")
     public R<Void> changeStatus(@RequestBody SysOssConfigBo bo) {
         return toAjax(iSysOssConfigService.updateOssConfigStatus(bo));

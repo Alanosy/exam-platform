@@ -14,6 +14,9 @@ import org.dromara.common.social.gitea.AuthGiteaRequest;
 import org.dromara.common.social.maxkey.AuthMaxKeyRequest;
 import org.dromara.common.social.topiam.AuthTopIamRequest;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+
 /**
  * 认证授权工具类
  *
@@ -40,7 +43,7 @@ public class SocialUtils  {
         AuthConfig.AuthConfigBuilder builder = AuthConfig.builder()
             .clientId(obj.getClientId())
             .clientSecret(obj.getClientSecret())
-            .redirectUri(obj.getRedirectUri())
+            .redirectUri(URLEncoder.encode(obj.getRedirectUri(), StandardCharsets.UTF_8))
             .scopes(obj.getScopes());
         return switch (source.toLowerCase()) {
             case "dingtalk" -> new AuthDingTalkV2Request(builder.build(), STATE_CACHE);

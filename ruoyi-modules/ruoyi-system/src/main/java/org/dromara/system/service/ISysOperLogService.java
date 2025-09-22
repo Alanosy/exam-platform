@@ -14,6 +14,13 @@ import java.util.List;
  */
 public interface ISysOperLogService {
 
+    /**
+     * 分页查询操作日志列表
+     *
+     * @param operLog   查询条件
+     * @param pageQuery 分页参数
+     * @return 操作日志分页列表
+     */
     TableDataInfo<SysOperLogVo> selectPageOperLogList(SysOperLogBo operLog, PageQuery pageQuery);
 
     /**

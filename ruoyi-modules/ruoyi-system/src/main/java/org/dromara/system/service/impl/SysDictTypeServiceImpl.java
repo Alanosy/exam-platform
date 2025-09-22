@@ -43,6 +43,13 @@ public class SysDictTypeServiceImpl implements ISysDictTypeService {
     private final SysDictTypeMapper baseMapper;
     private final SysDictDataMapper dictDataMapper;
 
+    /**
+     * 分页查询字典类型列表
+     *
+     * @param dictType  查询条件
+     * @param pageQuery 分页参数
+     * @return 字典类型分页列表
+     */
     @Override
     public TableDataInfo<SysDictTypeVo> selectPageDictTypeList(SysDictTypeBo dictType, PageQuery pageQuery) {
         LambdaQueryWrapper<SysDictType> lqw = buildQueryWrapper(dictType);
@@ -131,7 +138,7 @@ public class SysDictTypeServiceImpl implements ISysDictTypeService {
             boolean assigned = dictDataMapper.exists(new LambdaQueryWrapper<SysDictData>()
                 .eq(SysDictData::getDictType, x.getDictType()));
             if (assigned) {
-                throw new ServiceException(String.format("%1$s已分配,不能删除", x.getDictName()));
+                throw new ServiceException("{}已分配,不能删除", x.getDictName());
             }
         });
         baseMapper.deleteByIds(dictIds);

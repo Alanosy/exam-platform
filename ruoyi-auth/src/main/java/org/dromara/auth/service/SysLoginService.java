@@ -174,7 +174,7 @@ public class SysLoginService {
             recordLogininfor(tenantId, username, Constants.LOGIN_FAIL, MessageUtils.message("user.jcaptcha.expire"));
             throw new CaptchaExpireException();
         }
-        if (!code.equalsIgnoreCase(captcha)) {
+        if (!StringUtils.equalsIgnoreCase(code, captcha)) {
             recordLogininfor(tenantId, username, Constants.LOGIN_FAIL, MessageUtils.message("user.jcaptcha.error"));
             throw new CaptchaException();
         }

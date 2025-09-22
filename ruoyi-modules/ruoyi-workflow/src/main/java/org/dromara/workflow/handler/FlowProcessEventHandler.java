@@ -24,7 +24,7 @@ import java.util.Map;
 public class FlowProcessEventHandler {
 
     /**
-     * 总体流程监听(例如: 草稿，撤销，退回，作废，终止，已完成，单任务完成等)
+     * 总体流程监听(例如: 草稿，撤销，退回，作废，终止，已完成等)
      *
      * @param flowCode 流程定义编码
      * @param instance 实例数据
@@ -39,6 +39,7 @@ public class FlowProcessEventHandler {
         ProcessEvent processEvent = new ProcessEvent();
         processEvent.setTenantId(tenantId);
         processEvent.setFlowCode(flowCode);
+        processEvent.setInstanceId(instance.getId());
         processEvent.setBusinessId(instance.getBusinessId());
         processEvent.setNodeType(instance.getNodeType());
         processEvent.setNodeCode(instance.getNodeCode());
@@ -55,20 +56,23 @@ public class FlowProcessEventHandler {
      * @param flowCode 流程定义编码
      * @param instance 实例数据
      * @param taskId   任务id
+     * @param params     上一个任务的办理参数
      */
-    public void processTaskHandler(String flowCode, Instance instance, Long taskId) {
+    public void processTaskHandler(String flowCode, Instance instance, Long taskId, Map<String, Object> params) {
         String tenantId = TenantHelper.getTenantId();
         log.info("【流程任务事件发布】租户ID: {}, 流程编码: {}, 业务ID: {}, 节点类型: {}, 节点编码: {}, 节点名称: {}, 任务ID: {}",
             tenantId, flowCode, instance.getBusinessId(), instance.getNodeType(), instance.getNodeCode(), instance.getNodeName(), taskId);
         ProcessTaskEvent processTaskEvent = new ProcessTaskEvent();
         processTaskEvent.setTenantId(tenantId);
         processTaskEvent.setFlowCode(flowCode);
+        processTaskEvent.setInstanceId(instance.getId());
         processTaskEvent.setBusinessId(instance.getBusinessId());
         processTaskEvent.setNodeType(instance.getNodeType());
         processTaskEvent.setNodeCode(instance.getNodeCode());
         processTaskEvent.setNodeName(instance.getNodeName());
         processTaskEvent.setTaskId(taskId);
         processTaskEvent.setStatus(instance.getFlowStatus());
+        processTaskEvent.setParams(params);
         SpringUtils.context().publishEvent(processTaskEvent);
     }
 

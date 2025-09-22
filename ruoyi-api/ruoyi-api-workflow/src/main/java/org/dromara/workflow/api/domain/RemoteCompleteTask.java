@@ -51,6 +51,11 @@ public class RemoteCompleteTask implements Serializable {
     private String notice;
 
     /**
+     * 办理人(可不填 用于覆盖当前节点办理人)
+     */
+    private String handler;
+
+    /**
      * 流程变量
      */
     private Map<String, Object> variables;

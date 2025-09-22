@@ -12,26 +12,17 @@ import org.dromara.resource.api.RemoteMailService;
 import org.dromara.resource.api.RemoteMessageService;
 import org.dromara.system.api.domain.vo.RemoteUserVo;
 import org.dromara.warm.flow.core.FlowEngine;
-import org.dromara.warm.flow.core.entity.Instance;
 import org.dromara.warm.flow.core.entity.Node;
-import org.dromara.warm.flow.core.entity.Task;
-import org.dromara.warm.flow.core.entity.User;
-import org.dromara.warm.flow.core.enums.SkipType;
-import org.dromara.warm.flow.core.service.NodeService;
-import org.dromara.warm.flow.core.service.UserService;
-import org.dromara.warm.flow.core.utils.MapUtil;
 import org.dromara.warm.flow.orm.entity.FlowTask;
-import org.dromara.warm.flow.orm.entity.FlowUser;
 import org.dromara.workflow.common.ConditionalOnEnable;
 import org.dromara.workflow.common.enums.MessageTypeEnum;
-import org.dromara.workflow.common.enums.TaskAssigneeType;
 import org.dromara.workflow.service.IFlwCommonService;
-import org.dromara.workflow.service.IFlwTaskAssigneeService;
 import org.dromara.workflow.service.IFlwTaskService;
 import org.springframework.stereotype.Service;
 
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 
 
 /**
@@ -45,7 +36,7 @@ import java.util.stream.Collectors;
 @Service
 public class FlwCommonServiceImpl implements IFlwCommonService {
 
-    private final NodeService nodeService;
+    private static final String DEFAULT_SUBJECT = "单据审批提醒";
 
     @DubboReference
     private RemoteMessageService remoteMessageService;
@@ -53,63 +44,65 @@ public class FlwCommonServiceImpl implements IFlwCommonService {
     private RemoteMailService remoteMailService;
 
     /**
-     * 构建工作流用户
-     *
-     * @param permissionList 办理用户
-     * @return 用户
-     */
-    @Override
-    public List<String> buildUser(List<String> permissionList) {
-        if (CollUtil.isEmpty(permissionList)) {
-            return List.of();
-        }
-        IFlwTaskAssigneeService taskAssigneeService = SpringUtils.getBean(IFlwTaskAssigneeService.class);
-        String processedBys = CollUtil.join(permissionList,  StringUtils.SEPARATOR);
-        // 根据 processedBy 前缀判断处理人类型，分别获取用户列表
-        List<RemoteUserVo> users = taskAssigneeService.fetchUsersByStorageIds(processedBys);
-        return StreamUtils.toList(users, userDTO -> String.valueOf(userDTO.getUserId()));
-    }
-
-    /**
-     * 发送消息
+     * 根据流程实例发送消息给当前处理人
      *
      * @param flowName    流程定义名称
-     * @param messageType 消息类型
-     * @param message     消息内容，为空则发送默认配置的消息内容
+     * @param instId      流程实例ID
+     * @param messageType 消息类型列表
+     * @param message     消息内容，为空则使用默认消息
      */
     @Override
     public void sendMessage(String flowName, Long instId, List<String> messageType, String message) {
+        if (CollUtil.isEmpty(messageType)) {
+            return;
+        }
         IFlwTaskService flwTaskService = SpringUtils.getBean(IFlwTaskService.class);
-        List<RemoteUserVo> userList = new ArrayList<>();
         List<FlowTask> list = flwTaskService.selectByInstId(instId);
+        if (CollUtil.isEmpty(list)) {
+            return;
+        }
         if (StringUtils.isBlank(message)) {
             message = "有新的【" + flowName + "】单据已经提交至您，请您及时处理。";
         }
-        for (Task task : list) {
-            List<RemoteUserVo> users = flwTaskService.currentTaskAllUser(task.getId());
-            if (CollUtil.isNotEmpty(users)) {
-                userList.addAll(users);
-            }
+        List<RemoteUserVo> userList = flwTaskService.currentTaskAllUser(StreamUtils.toList(list, FlowTask::getId));
+        if (CollUtil.isEmpty(userList)) {
+            return;
         }
-        if (CollUtil.isNotEmpty(userList)) {
-            for (String code : messageType) {
-                MessageTypeEnum messageTypeEnum = MessageTypeEnum.getByCode(code);
-                if (ObjectUtil.isNotEmpty(messageTypeEnum)) {
-                    switch (messageTypeEnum) {
-                        case SYSTEM_MESSAGE:
-                            List<Long> userIds = StreamUtils.toList(userList, RemoteUserVo::getUserId).stream().distinct().collect(Collectors.toList());
-                            remoteMessageService.publishMessage(userIds, message);
-                            break;
-                        case EMAIL_MESSAGE:
-                            remoteMailService.send(StreamUtils.join(userList, RemoteUserVo::getEmail), "单据审批提醒", message);
-                            break;
-                        case SMS_MESSAGE:
-                            //todo 短信发送
-                            break;
-                        default:
-                            throw new IllegalStateException("Unexpected value: " + messageTypeEnum);
-                    }
+        sendMessage(messageType, message, DEFAULT_SUBJECT, userList);
+    }
+
+    /**
+     * 发送消息给指定用户列表
+     *
+     * @param messageType 消息类型列表
+     * @param message     消息内容
+     * @param subject     邮件标题
+     * @param userList    接收用户列表
+     */
+    @Override
+    public void sendMessage(List<String> messageType, String message, String subject, List<RemoteUserVo> userList) {
+        if (CollUtil.isEmpty(messageType) || CollUtil.isEmpty(userList)) {
+            return;
+        }
+        List<Long> userIds = new ArrayList<>(StreamUtils.toSet(userList, RemoteUserVo::getUserId));
+        String emails = StreamUtils.join(userList, RemoteUserVo::getEmail);
+
+        for (String code : messageType) {
+            MessageTypeEnum messageTypeEnum = MessageTypeEnum.getByCode(code);
+            if (ObjectUtil.isEmpty(messageTypeEnum)) {
+                continue;
+            }
+            switch (messageTypeEnum) {
+                case SYSTEM_MESSAGE -> {
+                    remoteMessageService.publishMessage(userIds, message);
                 }
+                case EMAIL_MESSAGE -> {
+                    remoteMailService.send(emails, subject, message);
+                }
+                case SMS_MESSAGE -> {
+                    //todo 短信发送
+                }
+                default -> throw new IllegalStateException("Unexpected value: " + messageTypeEnum);
             }
         }
     }
@@ -122,9 +115,8 @@ public class FlwCommonServiceImpl implements IFlwCommonService {
      */
     @Override
     public String applyNodeCode(Long definitionId) {
-        Node startNode = nodeService.getStartNode(definitionId);
-        Node nextNode = nodeService.getNextNode(definitionId, startNode.getNodeCode(), null, SkipType.PASS.getKey());
-        return nextNode.getNodeCode();
+        List<Node> firstBetweenNode = FlowEngine.nodeService().getFirstBetweenNode(definitionId, new HashMap<>());
+        return firstBetweenNode.get(0).getNodeCode();
     }
 
 }

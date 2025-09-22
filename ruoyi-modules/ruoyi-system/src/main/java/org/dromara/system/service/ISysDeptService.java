@@ -144,10 +144,4 @@ public interface ISysDeptService {
      */
     int deleteDeptById(Long deptId);
 
-    /**
-     * 查询部门(简单查询)
-     *
-     * @return 部门列表
-     */
-    List<SysDeptVo> selectDeptsSimple();
 }

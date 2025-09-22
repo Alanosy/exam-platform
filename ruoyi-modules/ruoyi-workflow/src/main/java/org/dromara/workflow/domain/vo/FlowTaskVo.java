@@ -11,6 +11,7 @@ import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 任务视图
@@ -145,6 +146,7 @@ public class FlowTaskVo implements Serializable {
     /**
      * 办理人名称
      */
+    @Translation(type = TransConstant.USER_ID_TO_NICKNAME, mapper = "assigneeIds")
     private String assigneeNames;
 
     /**
@@ -184,5 +186,30 @@ public class FlowTaskVo implements Serializable {
      */
     private List<ButtonPermissionVo> buttonList;
 
-}
+    /**
+     * 抄送对象 ID 集合
+     * <p>
+     * 根据扩展属性中 CopySettingEnum 类型的数据生成，存储需要抄送的对象 ID
+     */
+    private List<FlowCopyVo> copyList;
 
+    /**
+     * 自定义参数 Map
+     * <p>
+     * 根据扩展属性中 VariablesEnum 类型的数据生成，存储 key=value 格式的自定义参数
+     */
+    private Map<String, String> varList;
+
+    //业务扩展信息开始
+    /**
+     * 业务编码
+     */
+    private String businessCode;
+
+    /**
+     * 业务标题
+     */
+    private String businessTitle;
+    //业务扩展信息结束
+
+}

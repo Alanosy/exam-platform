@@ -14,7 +14,7 @@
     </description>
 
     <properties>
-        <revision>2.4.1</revision>
+        <revision>2.5.0</revision>
     </properties>
 
     <dependencyManagement>
@@ -163,13 +163,6 @@
             <dependency>
                 <groupId>org.dromara</groupId>
                 <artifactId>ruoyi-common-elasticsearch</artifactId>
-                <version>${revision}</version>
-            </dependency>
-
-            <!-- 限流模块 -->
-            <dependency>
-                <groupId>org.dromara</groupId>
-                <artifactId>ruoyi-common-sentinel</artifactId>
                 <version>${revision}</version>
             </dependency>
 

@@ -64,15 +64,18 @@ public class CaptchaController {
         String verifyKey = GlobalConstants.CAPTCHA_CODE_KEY + uuid;
         // 生成验证码
         CaptchaType captchaType = captchaProperties.getType();
-        boolean isMath = CaptchaType.MATH == captchaType;
-        Integer length = isMath ? captchaProperties.getNumberLength() : captchaProperties.getCharLength();
-        CodeGenerator codeGenerator = ReflectUtils.newInstance(captchaType.getClazz(), length);
+        CodeGenerator codeGenerator;
+        if (CaptchaType.MATH == captchaType) {
+            codeGenerator = ReflectUtils.newInstance(captchaType.getClazz(), captchaProperties.getNumberLength(), false);
+        } else {
+            codeGenerator = ReflectUtils.newInstance(captchaType.getClazz(), captchaProperties.getCharLength());
+        }
         AbstractCaptcha captcha = SpringUtils.getBean(captchaProperties.getCategory().getClazz());
         captcha.setGenerator(codeGenerator);
         captcha.createCode();
         // 如果是数学验证码，使用SpEL表达式处理验证码结果
         String code = captcha.getCode();
-        if (isMath) {
+        if (CaptchaType.MATH == captchaType) {
             ExpressionParser parser = new SpelExpressionParser();
             Expression exp = parser.parseExpression(StringUtils.remove(code, "="));
             code = exp.getValue(String.class);

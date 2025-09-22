@@ -6,6 +6,7 @@ CREATE TABLE `flow_definition`
     `id`              bigint          NOT NULL COMMENT '主键id',
     `flow_code`       varchar(40)     NOT NULL COMMENT '流程编码',
     `flow_name`       varchar(100)    NOT NULL COMMENT '流程名称',
+    `model_value`     varchar(40)     NOT NULL DEFAULT 'CLASSICS' COMMENT '设计器模型（CLASSICS经典模型 MIMIC仿钉钉模型）',
     `category`        varchar(100)             DEFAULT NULL COMMENT '流程类别',
     `version`         varchar(20)     NOT NULL COMMENT '流程版本',
     `is_publish`      tinyint(1)      NOT NULL DEFAULT '0' COMMENT '是否发布（0未发布 1已发布 9失效）',
@@ -24,7 +25,7 @@ CREATE TABLE `flow_definition`
 
 CREATE TABLE `flow_node`
 (
-    `id`              bigint          NOT NULL COMMENT '主键id',
+    `id`              bigint        NOT NULL COMMENT '主键id',
     `node_type`       tinyint(1)      NOT NULL COMMENT '节点类型（0开始节点 1中间节点 2结束节点 3互斥网关 4并行网关）',
     `definition_id`   bigint          NOT NULL COMMENT '流程定义id',
     `node_code`       varchar(100)    NOT NULL COMMENT '流程节点编码',
@@ -50,7 +51,7 @@ CREATE TABLE `flow_node`
 
 CREATE TABLE `flow_skip`
 (
-    `id`             bigint          NOT NULL COMMENT '主键id',
+    `id`             bigint       NOT NULL COMMENT '主键id',
     `definition_id`  bigint          NOT NULL COMMENT '流程定义id',
     `now_node_code`  varchar(100)    NOT NULL COMMENT '当前流程节点的编码',
     `now_node_type`  tinyint(1)   DEFAULT NULL COMMENT '当前节点类型（0开始节点 1中间节点 2结束节点 3互斥网关 4并行网关）',
@@ -119,7 +120,7 @@ CREATE TABLE `flow_his_task`
     `target_node_name` varchar(200)                 DEFAULT NULL COMMENT '结束节点名称',
     `approver`         varchar(40)                  DEFAULT NULL COMMENT '审批者',
     `cooperate_type`   tinyint(1)                   NOT NULL DEFAULT '0' COMMENT '协作方式(1审批 2转办 3委派 4会签 5票签 6加签 7减签)',
-    `collaborator`     varchar(40)                  DEFAULT NULL COMMENT '协作人',
+    `collaborator`     varchar(500)                 DEFAULT NULL COMMENT '协作人',
     `skip_type`        varchar(10)                  NOT NULL COMMENT '流转类型（PASS通过 REJECT退回 NONE无动作）',
     `flow_status`      varchar(20)                  NOT NULL COMMENT '流程状态（0待提交 1审批中 2审批通过 4终止 5作废 6撤销 8已完成 9已退回 10失效 11拿回）',
     `form_custom`      char(1)                      DEFAULT 'N' COMMENT '审批表单是否自定义（Y是 N否）',
@@ -137,7 +138,7 @@ CREATE TABLE `flow_his_task`
 
 CREATE TABLE `flow_user`
 (
-    `id`           bigint          NOT NULL COMMENT '主键id',
+    `id`           bigint      NOT NULL COMMENT '主键id',
     `type`         char(1)         NOT NULL COMMENT '人员类型（1待办任务的审批人权限 2待办任务的转办人权限 3待办任务的委托人权限）',
     `processed_by` varchar(80) DEFAULT NULL COMMENT '权限人',
     `associated`   bigint          NOT NULL COMMENT '任务表id',
@@ -183,12 +184,58 @@ INSERT INTO flow_category values (108, '000000', 102, '0,100,102', '转正', 1, 
 INSERT INTO flow_category values (109, '000000', 102, '0,100,102', '离职', 2, '0', 103, 1, sysdate(), null, null);
 
 -- ----------------------------
+-- 流程spel表达式定义表
+-- ----------------------------
+
+CREATE TABLE flow_spel (
+    id bigint(20) NOT NULL COMMENT '主键id',
+    component_name varchar(255) DEFAULT NULL COMMENT '组件名称',
+    method_name varchar(255) DEFAULT NULL COMMENT '方法名',
+    method_params varchar(255) DEFAULT NULL COMMENT '参数',
+    view_spel varchar(255) DEFAULT NULL COMMENT '预览spel表达式',
+    remark varchar(255) DEFAULT NULL COMMENT '备注',
+    status char(1) DEFAULT '0' COMMENT '状态（0正常 1停用）',
+    del_flag char(1) DEFAULT '0' COMMENT '删除标志',
+    create_dept bigint(20) DEFAULT NULL COMMENT '创建部门',
+    create_by bigint(20) DEFAULT NULL COMMENT '创建者',
+    create_time datetime DEFAULT NULL COMMENT '创建时间',
+    update_by bigint(20) DEFAULT NULL COMMENT '更新者',
+    update_time datetime DEFAULT NULL COMMENT '更新时间',
+    PRIMARY KEY (id)
+) ENGINE = InnoDB COMMENT='流程spel表达式定义表';
+
+INSERT INTO flow_spel VALUES (1, 'spelRuleComponent', 'selectDeptLeaderById', 'initiatorDeptId', '#{@spelRuleComponent.selectDeptLeaderById(#initiatorDeptId)}', '根据部门id获取部门负责人', '0', '0', 103, 1, sysdate(), 1, sysdate());
+INSERT INTO flow_spel VALUES (2, NULL, NULL, 'initiator', '${initiator}', '流程发起人', '0', '0', 103, 1, sysdate(), 1, sysdate());
+
+-- ----------------------------
+-- 流程实例业务扩展表
+-- ----------------------------
+
+create table flow_instance_biz_ext (
+    id             bigint                       not null comment '主键id',
+    tenant_id      varchar(20) default '000000' null comment '租户编号',
+    create_dept    bigint                       null comment '创建部门',
+    create_by      bigint                       null comment '创建者',
+    create_time    datetime                     null comment '创建时间',
+    update_by      bigint                       null comment '更新者',
+    update_time    datetime                     null comment '更新时间',
+    business_code  varchar(255)                 null comment '业务编码',
+    business_title varchar(1000)                null comment '业务标题',
+    del_flag       char        default '0'      null comment '删除标志（0代表存在 1代表删除）',
+    instance_id    bigint                       null comment '流程实例Id',
+    business_id    varchar(255)                 null comment '业务Id',
+    PRIMARY KEY (id)
+)  ENGINE = InnoDB COMMENT '流程实例业务扩展表';
+
+-- ----------------------------
 -- 请假单信息
 -- ----------------------------
+
 create table test_leave
 (
     id          bigint(20)   not null comment 'id',
-    tenant_id   varchar(20) default '000000' comment '租户编号',
+    tenant_id   varchar(20)  default '000000' comment '租户编号',
+    apply_code  varchar(50)  not null comment '申请编号',
     leave_type  varchar(255) not null comment '请假类型',
     start_date  datetime     not null comment '开始时间',
     end_date    datetime     not null comment '结束时间',

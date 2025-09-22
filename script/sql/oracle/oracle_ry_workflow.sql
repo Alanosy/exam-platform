@@ -6,6 +6,7 @@ create table FLOW_DEFINITION
     ID              NUMBER(20)            not null,
     FLOW_CODE       VARCHAR2(40)          not null,
     FLOW_NAME       VARCHAR2(100)         not null,
+    MODEL_VALUE     VARCHAR2(40) default 'CLASSICS' not null,
     CATEGORY        VARCHAR2(100),
     VERSION         VARCHAR2(20)          not null,
     IS_PUBLISH      NUMBER(1)   default 0 not null,
@@ -28,6 +29,7 @@ comment on table FLOW_DEFINITION is '流程定义表';
 comment on column FLOW_DEFINITION.ID is '主键id';
 comment on column FLOW_DEFINITION.FLOW_CODE is '流程编码';
 comment on column FLOW_DEFINITION.FLOW_NAME is '流程名称';
+comment on column FLOW_DEFINITION.MODEL_VALUE is '设计器模型（CLASSICS经典模型 MIMIC仿钉钉模型）';
 comment on column FLOW_DEFINITION.CATEGORY is '流程类别';
 comment on column FLOW_DEFINITION.VERSION is '流程版本';
 comment on column FLOW_DEFINITION.IS_PUBLISH is '是否发布 (0未发布 1已发布 9失效)';
@@ -219,7 +221,7 @@ create table FLOW_HIS_TASK
     TARGET_NODE_NAME VARCHAR2(200),
     APPROVER         VARCHAR2(40),
     COOPERATE_TYPE   NUMBER(1)   default 0,
-    COLLABORATOR     VARCHAR2(40),
+    COLLABORATOR     VARCHAR2(500),
     SKIP_TYPE        VARCHAR2(10),
     FLOW_STATUS      VARCHAR2(20),
     FORM_CUSTOM      VARCHAR2(1) default 'N',
@@ -338,6 +340,78 @@ INSERT INTO flow_category VALUES (107, '000000', 101, '0,100,101', '外出', 4, 
 INSERT INTO flow_category VALUES (108, '000000', 102, '0,100,102', '转正', 1, '0', 103, 1, SYSDATE, NULL, NULL);
 INSERT INTO flow_category VALUES (109, '000000', 102, '0,100,102', '离职', 2, '0', 103, 1, SYSDATE, NULL, NULL);
 
+-- ----------------------------
+-- 流程spel表达式定义表
+-- ----------------------------
+CREATE TABLE flow_spel (
+    id NUMBER(20) NOT NULL,
+    component_name VARCHAR2(255),
+    method_name VARCHAR2(255),
+    method_params VARCHAR2(255),
+    view_spel VARCHAR2(255),
+    remark VARCHAR2(255),
+    status CHAR(1) DEFAULT '0',
+    del_flag CHAR(1) DEFAULT '0',
+    create_dept NUMBER(20),
+    create_by NUMBER(20),
+    create_time DATE,
+    update_by NUMBER(20),
+    update_time DATE
+);
+
+alter table flow_spel add constraint pk_flow_spel primary key (id);
+
+COMMENT ON TABLE flow_spel IS '流程spel表达式定义表';
+COMMENT ON COLUMN flow_spel.id IS '主键id';
+COMMENT ON COLUMN flow_spel.component_name IS '组件名称';
+COMMENT ON COLUMN flow_spel.method_name IS '方法名';
+COMMENT ON COLUMN flow_spel.method_params IS '参数';
+COMMENT ON COLUMN flow_spel.view_spel IS '预览spel表达式';
+COMMENT ON COLUMN flow_spel.remark IS '备注';
+COMMENT ON COLUMN flow_spel.status IS '状态（0正常 1停用）';
+COMMENT ON COLUMN flow_spel.del_flag IS '删除标志';
+COMMENT ON COLUMN flow_spel.create_dept IS '创建部门';
+COMMENT ON COLUMN flow_spel.create_by IS '创建者';
+COMMENT ON COLUMN flow_spel.create_time IS '创建时间';
+COMMENT ON COLUMN flow_spel.update_by IS '更新者';
+COMMENT ON COLUMN flow_spel.update_time IS '更新时间';
+
+INSERT INTO flow_spel VALUES (1, 'spelRuleComponent', 'selectDeptLeaderById', 'initiatorDeptId', '#{@spelRuleComponent.selectDeptLeaderById(#initiatorDeptId)}', '根据部门id获取部门负责人', '0', '0', 103, 1, SYSDATE, 1, SYSDATE);
+INSERT INTO flow_spel VALUES (2, NULL, NULL, 'initiator', '${initiator}', '流程发起人', '0', '0', 103, 1, SYSDATE, 1, SYSDATE);
+
+-- ----------------------------
+-- 流程实例业务扩展表
+-- ----------------------------
+CREATE TABLE flow_instance_biz_ext (
+    id             NUMBER(20),
+    tenant_id      VARCHAR2(20)  DEFAULT '000000',
+    create_dept    NUMBER(20),
+    create_by      NUMBER(20),
+    create_time    TIMESTAMP,
+    update_by      NUMBER(20),
+    update_time    TIMESTAMP,
+    business_code  VARCHAR2(255),
+    business_title VARCHAR2(1000),
+    del_flag       CHAR(1)       DEFAULT '0',
+    instance_id    NUMBER(20),
+    business_id    VARCHAR2(255)
+);
+
+alter table flow_instance_biz_ext add constraint pk_fi_biz_ext primary key (id);
+
+COMMENT ON TABLE flow_instance_biz_ext IS '流程实例业务扩展表';
+COMMENT ON COLUMN flow_instance_biz_ext.id  IS '主键id';
+COMMENT ON COLUMN flow_instance_biz_ext.tenant_id  IS '租户编号';
+COMMENT ON COLUMN flow_instance_biz_ext.create_dept  IS '创建部门';
+COMMENT ON COLUMN flow_instance_biz_ext.create_by  IS '创建者';
+COMMENT ON COLUMN flow_instance_biz_ext.create_time  IS '创建时间';
+COMMENT ON COLUMN flow_instance_biz_ext.update_by  IS '更新者';
+COMMENT ON COLUMN flow_instance_biz_ext.update_time  IS '更新时间';
+COMMENT ON COLUMN flow_instance_biz_ext.business_code  IS '业务编码';
+COMMENT ON COLUMN flow_instance_biz_ext.business_title  IS '业务标题';
+COMMENT ON COLUMN flow_instance_biz_ext.del_flag  IS '删除标志（0代表存在 1代表删除）';
+COMMENT ON COLUMN flow_instance_biz_ext.instance_id  IS '流程实例Id';
+COMMENT ON COLUMN flow_instance_biz_ext.business_id  IS '业务Id';
 
 -- ----------------------------
 -- 请假单信息
@@ -346,6 +420,7 @@ CREATE TABLE test_leave
 (
     id NUMBER (20) NOT NULL,
     tenant_id VARCHAR2 (20) DEFAULT '000000',
+    apply_code VARCHAR2 (50) NOT NULL,
     leave_type VARCHAR2 (255) NOT NULL,
     start_date  DATE NOT NULL,
     end_date    DATE NOT NULL,
@@ -364,6 +439,7 @@ alter table test_leave add constraint pk_test_leave primary key (id);
 COMMENT ON TABLE test_leave IS '请假申请表';
 COMMENT ON COLUMN test_leave.id IS 'ID';
 COMMENT ON COLUMN test_leave.tenant_id IS '租户编号';
+COMMENT ON COLUMN test_leave.apply_code IS '申请编号';
 COMMENT ON COLUMN test_leave.leave_type IS '请假类型';
 COMMENT ON COLUMN test_leave.start_date IS '开始时间';
 COMMENT ON COLUMN test_leave.end_date IS '结束时间';

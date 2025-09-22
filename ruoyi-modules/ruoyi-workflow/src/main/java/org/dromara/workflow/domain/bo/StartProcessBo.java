@@ -1,9 +1,11 @@
 package org.dromara.workflow.domain.bo;
 
 
+import cn.hutool.core.util.ObjectUtil;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 import org.dromara.common.core.validate.AddGroup;
+import org.dromara.workflow.domain.FlowInstanceBizExt;
 
 import java.io.Serial;
 import java.io.Serializable;
@@ -35,9 +37,19 @@ public class StartProcessBo implements Serializable {
     private String flowCode;
 
     /**
+     * 办理人(可不填 用于覆盖当前节点办理人)
+     */
+    private String handler;
+
+    /**
      * 流程变量，前端会提交一个元素{'entity': {业务详情数据对象}}
      */
     private Map<String, Object> variables;
+
+    /**
+     * 流程业务扩展信息
+     */
+    private FlowInstanceBizExt bizExt;
 
     public Map<String, Object> getVariables() {
         if (variables == null) {
@@ -45,5 +57,12 @@ public class StartProcessBo implements Serializable {
         }
         variables.entrySet().removeIf(entry -> Objects.isNull(entry.getValue()));
         return variables;
+    }
+
+    public FlowInstanceBizExt getBizExt() {
+        if (ObjectUtil.isNull(bizExt)) {
+            bizExt = new FlowInstanceBizExt();
+        }
+        return bizExt;
     }
 }

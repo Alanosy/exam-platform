@@ -36,6 +36,11 @@ public interface ITestLeaveService {
     TestLeaveVo insertByBo(TestLeaveBo bo);
 
     /**
+     * 提交请假并发起流程
+     */
+    TestLeaveVo submitAndFlowStart(TestLeaveBo bo);
+
+    /**
      * 修改请假
      */
     TestLeaveVo updateByBo(TestLeaveBo bo);

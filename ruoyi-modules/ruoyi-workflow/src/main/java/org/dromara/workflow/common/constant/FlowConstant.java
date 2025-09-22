@@ -19,6 +19,11 @@ public interface FlowConstant {
     String BUSINESS_ID = "businessId";
 
     /**
+     * 发起人部门id
+     */
+    String INITIATOR_DEPT_ID = "initiatorDeptId";
+
+    /**
      * 委托
      */
     String DELEGATE_TASK = "delegateTask";
@@ -77,5 +82,15 @@ public interface FlowConstant {
      * 任务状态
      */
     String WF_TASK_STATUS = "wf_task_status";
+
+    /**
+     * 自动通过
+     */
+    String AUTO_PASS = "autoPass";
+
+    /**
+     * 业务编码
+     */
+    String BUSINESS_CODE = "businessCode";
 
 }

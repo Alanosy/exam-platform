@@ -41,4 +41,9 @@ public class RemoteFile implements Serializable {
      */
     private String fileSuffix;
 
+    /**
+     * 扩展字段
+     */
+    private String ext1;
+
 }

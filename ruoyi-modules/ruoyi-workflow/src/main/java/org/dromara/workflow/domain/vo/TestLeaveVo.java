@@ -2,7 +2,6 @@ package org.dromara.workflow.domain.vo;
 
 import cn.idev.excel.annotation.ExcelIgnoreUnannotated;
 import cn.idev.excel.annotation.ExcelProperty;
-import com.fasterxml.jackson.annotation.JsonFormat;
 import io.github.linpeilie.annotations.AutoMapper;
 import lombok.Data;
 import org.dromara.workflow.domain.TestLeave;
@@ -31,6 +30,12 @@ public class TestLeaveVo implements Serializable {
      */
     @ExcelProperty(value = "主键")
     private Long id;
+
+    /**
+     * 申请编号
+     */
+    @ExcelProperty(value = "申请编号")
+    private String applyCode;
 
     /**
      * 请假类型

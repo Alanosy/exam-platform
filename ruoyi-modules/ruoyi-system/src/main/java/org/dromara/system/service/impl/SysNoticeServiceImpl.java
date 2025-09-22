@@ -34,6 +34,13 @@ public class SysNoticeServiceImpl implements ISysNoticeService {
     private final SysNoticeMapper baseMapper;
     private final SysUserMapper userMapper;
 
+    /**
+     * 分页查询通知公告列表
+     *
+     * @param notice    查询条件
+     * @param pageQuery 分页参数
+     * @return 通知公告分页列表
+     */
     @Override
     public TableDataInfo<SysNoticeVo> selectPageNoticeList(SysNoticeBo notice, PageQuery pageQuery) {
         LambdaQueryWrapper<SysNotice> lqw = buildQueryWrapper(notice);

@@ -111,7 +111,7 @@ public class SysClientServiceImpl implements ISysClientService {
     @Override
     public Boolean updateByBo(SysClientBo bo) {
         SysClient update = MapstructUtils.convert(bo, SysClient.class);
-        update.setGrantType(String.join(",", bo.getGrantTypeList()));
+        update.setGrantType(StringUtils.joinComma(bo.getGrantTypeList()));
         return baseMapper.updateById(update) > 0;
     }
 

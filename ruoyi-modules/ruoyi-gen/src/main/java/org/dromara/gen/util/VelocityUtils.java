@@ -9,6 +9,7 @@ import org.apache.velocity.VelocityContext;
 import org.dromara.common.core.utils.DateUtils;
 import org.dromara.common.core.utils.StringUtils;
 import org.dromara.common.json.utils.JsonUtils;
+import org.dromara.common.mybatis.enums.DataBaseType;
 import org.dromara.common.mybatis.helper.DataBaseHelper;
 import org.dromara.gen.constant.GenConstants;
 import org.dromara.gen.domain.GenTable;
@@ -118,10 +119,13 @@ public class VelocityUtils {
         templates.add("vm/java/serviceImpl.java.vm");
         templates.add("vm/java/controller.java.vm");
         templates.add("vm/xml/mapper.xml.vm");
-        if (DataBaseHelper.isOracle()) {
+        DataBaseType dataBaseType = DataBaseHelper.getDataBaseType();
+        if (dataBaseType.isOracle()) {
             templates.add("vm/sql/oracle/sql.vm");
-        } else if (DataBaseHelper.isPostgerSql()) {
+        } else if (dataBaseType.isPostgreSql()) {
             templates.add("vm/sql/postgres/sql.vm");
+        } else if (dataBaseType.isSqlServer()) {
+            templates.add("vm/sql/sqlserver/sql.vm");
         } else {
             templates.add("vm/sql/sql.vm");
         }

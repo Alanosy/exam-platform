@@ -32,6 +32,13 @@ dubbo:
   consumer:
     # 超时时间
     timeout: 3000
+  metadata-report:
+    # Redis集群开关
+    cluster: false
+    parameters:
+      # 集群地址 cluster 为 true 生效
+      # 集群把所有Redis集群节点写到这里就行了
+      backup: 127.0.0.1:6379,127.0.0.1:6381
   # 自定义配置
   custom:
     # 全局请求log
@@ -44,6 +51,13 @@ spring:
     # 开启虚拟线程 仅jdk21可用
     virtual:
       enabled: false
+  task:
+    execution:
+      # 从 springboot 3.5 开始 spring自带线程池
+      # 不再需要 AsyncConfig与ThreadPoolConfig 可直接注入线程池使用
+      thread-name-prefix: async-
+      # 由spring自己初始化线程池
+      mode: force
   # 资源信息
   messages:
     # 国际化资源文件路径
@@ -72,25 +86,17 @@ spring:
       # 允许对象忽略json中不存在的属性
       fail_on_unknown_properties: false
   cloud:
+    inetutils:
+      # 指定全局使用ip网段
+      preferred-networks:
+#        - 192.168
+#        - 10.0
     nacos:
       discovery:
         metadata:
           # admin 监控账号密码
           username: ruoyi
           userpassword: 123456
-    # sentinel 配置
-    sentinel:
-      # sentinel 开关
-      enabled: true
-      transport:
-        # dashboard控制台服务名 用于服务发现
-        # 如无此配置将默认使用下方 dashboard 配置直接注册
-        server-name: ruoyi-sentinel-dashboard
-        # 客户端指定注册的ip 用于多网卡ip不稳点使用
-        # client-ip:
-        # 控制台地址 从1.3.0开始使用 server-name 注册
-        # dashboard: localhost:8718
-
     bus:
       id: ${spring.application.name}
       base-packages: org.dromara.**.event
@@ -159,12 +165,11 @@ management:
 logging:
   level:
     org.springframework: warn
-    org.apache.dubbo: warn
-    com.alibaba.nacos: warn
-    com.alibaba.cloud.sentinel: warn
+    org.apache.dubbo: error
+    com.alibaba.nacos: error
     org.mybatis.spring.mapper: error
-    org.apache.dubbo.config: error
     org.apache.fury: warn
+    io.micrometer: error
     # 临时处理 spring 调整日志级别导致启动警告问题 不影响使用等待 alibaba 适配
     org.springframework.context.support.PostProcessorRegistrationDelegate: error
   config: classpath:logback-plus.xml
@@ -250,13 +255,6 @@ springdoc:
       name: Lion Li
       email: crazylionli@163.com
       url: https://gitee.com/dromara/RuoYi-Cloud-Plus
-  components:
-    # 鉴权方式配置
-    security-schemes:
-      apiKey:
-        type: APIKEY
-        in: HEADER
-        name: ${sa-token.token-name}
 
 # seata配置
 seata:
@@ -302,3 +300,4 @@ tenant:
     - sys_user_role
     - sys_client
     - sys_oss_config
+    - flow_spel

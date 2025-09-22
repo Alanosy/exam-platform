@@ -30,11 +30,14 @@
                 COALESCE(t.form_path, d.form_path) as form_path,
                 d.version,
                 uu.processed_by,
-                uu.type
+                uu.type,
+                biz.business_code,
+                biz.business_title
             from flow_task t
                     left join flow_user uu on uu.associated = t.id
                     left join flow_definition d on t.definition_id = d.id
                     left join flow_instance i on t.instance_id = i.id
+                    left join flow_instance_biz_ext biz on biz.instance_id = i.id
             where t.node_type = 1
               and t.del_flag = '0'
               and uu.del_flag = '0'
@@ -71,10 +74,13 @@
                 c.flow_name,
                 c.flow_code,
                 c.category,
-                c.version
+                c.version,
+                biz.business_code,
+                biz.business_title
             from flow_his_task a
                     left join flow_instance b on a.instance_id = b.id
                     left join flow_definition c on a.definition_id = c.id
+                    left join flow_instance_biz_ext biz on biz.instance_id = b.id
             where a.del_flag ='0'
               and b.del_flag = '0'
               and c.del_flag = '0'
@@ -100,11 +106,14 @@
                 d.flow_name,
                 d.flow_code,
                 d.category,
-                d.version
+                d.version,
+                biz.business_code,
+                biz.business_title
             from flow_user a
                 left join flow_his_task b on a.associated = b.task_id
                 left join flow_instance c on b.instance_id = c.id
-                left join flow_definition d on c.definition_id=d.id
+                left join flow_definition d on c.definition_id = d.id
+                left join flow_instance_biz_ext biz on biz.instance_id = c.id
             where a.type = '4'
                and a.del_flag = '0'
                and b.del_flag = '0'

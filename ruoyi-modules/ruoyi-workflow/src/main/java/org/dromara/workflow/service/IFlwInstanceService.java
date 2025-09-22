@@ -6,6 +6,7 @@ import org.dromara.warm.flow.orm.entity.FlowInstance;
 import org.dromara.workflow.domain.bo.FlowCancelBo;
 import org.dromara.workflow.domain.bo.FlowInstanceBo;
 import org.dromara.workflow.domain.bo.FlowInvalidBo;
+import org.dromara.workflow.domain.bo.FlowVariableBo;
 import org.dromara.workflow.domain.vo.FlowInstanceVo;
 
 import java.util.List;
@@ -85,6 +86,14 @@ public interface IFlwInstanceService {
     boolean deleteByInstanceIds(List<Long> instanceIds);
 
     /**
+     * 按照实例id删除已完成得流程实例
+     *
+     * @param instanceIds 删除的实例id
+     * @return 删除结果
+     */
+    boolean deleteHisByInstanceIds(List<Long> instanceIds);
+
+    /**
      * 撤销流程
      *
      * @param bo 参数
@@ -126,6 +135,14 @@ public interface IFlwInstanceService {
     Map<String, Object> instanceVariable(Long instanceId);
 
     /**
+     * 更新流程变量
+     *
+     * @param bo 参数
+     * @return 结果
+     */
+    boolean updateVariable(FlowVariableBo bo);
+
+    /**
      * 设置流程变量
      *
      * @param instanceId 实例id
@@ -140,14 +157,6 @@ public interface IFlwInstanceService {
      * @return 结果
      */
     FlowInstance selectByTaskId(Long taskId);
-
-    /**
-     * 按任务id查询实例
-     *
-     * @param taskIdList 任务id
-     * @return 结果
-     */
-    List<FlowInstance> selectByTaskIdList(List<Long> taskIdList);
 
     /**
      * 作废流程

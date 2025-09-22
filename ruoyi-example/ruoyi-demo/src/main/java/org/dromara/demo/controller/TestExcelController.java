@@ -14,6 +14,7 @@ import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -92,6 +93,16 @@ public class TestExcelController {
     @GetMapping("/exportWithOptions")
     public void exportWithOptions(HttpServletResponse response) {
         exportExcelService.exportWithOptions(response);
+    }
+
+    /**
+     * 自定义导出
+     *
+     * @param response /
+     */
+    @GetMapping("/customExport")
+    public void customExport(HttpServletResponse response) throws IOException {
+        exportExcelService.customExport(response);
     }
 
     /**

@@ -2,17 +2,22 @@ package org.dromara.demo.service.impl;
 
 import cn.hutool.core.util.RandomUtil;
 import cn.hutool.core.util.StrUtil;
+import cn.idev.excel.write.metadata.WriteSheet;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
+import org.dromara.common.core.constant.SystemConstants;
 import org.dromara.common.core.enums.UserStatus;
 import org.dromara.common.core.utils.StreamUtils;
+import org.dromara.common.core.utils.file.FileUtils;
 import org.dromara.common.excel.core.DropDownOptions;
 import org.dromara.common.excel.utils.ExcelUtil;
+import org.dromara.common.excel.utils.ExcelWriterWrapper;
 import org.dromara.demo.domain.vo.ExportDemoVo;
 import org.dromara.demo.service.IExportExcelService;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -232,5 +237,61 @@ public class ExportExcelServiceImpl implements IExportExcelService {
             this.pid = pid;
             this.name = name;
         }
+    }
+
+    @Override
+    public void customExport(HttpServletResponse response) throws IOException {
+        String filename = ExcelUtil.encodingFilename("自定义导出");
+        FileUtils.setAttachmentResponseHeader(response, filename);
+        response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8");
+
+        ExcelUtil.exportExcel(ExportDemoVo.class, response.getOutputStream(), wrapper -> {
+            // 创建表格数据，业务中一般通过数据库查询
+            List<ExportDemoVo> excelDataList = new ArrayList<>();
+            for (int i = 0; i < 30; i++) {
+                // 模拟数据库中的一条数据
+                ExportDemoVo everyRowData = new ExportDemoVo();
+                everyRowData.setNickName("用户-" + i);
+                everyRowData.setUserStatus(SystemConstants.NORMAL);
+                everyRowData.setGender("1");
+                everyRowData.setPhoneNumber(String.format("175%08d", i));
+                everyRowData.setEmail(String.format("175%08d", i) + "@163.com");
+                everyRowData.setProvinceId(i);
+                everyRowData.setCityId(i);
+                everyRowData.setAreaId(i);
+                excelDataList.add(everyRowData);
+            }
+
+            // 创建表格
+            WriteSheet sheet = ExcelWriterWrapper.sheetBuilder("自定义导出demo")
+                // 合并单元格
+                // .registerWriteHandler(new CellMergeStrategy(excelDataList, true))
+                .build();
+
+
+            wrapper.write(excelDataList, sheet);
+
+            List<ExportDemoVo> excelDataList2 = new ArrayList<>();
+            for (int i = 0; i < 20; i++) {
+                int index = 1000 + i;
+                // 模拟数据库中的一条数据
+                ExportDemoVo everyRowData = new ExportDemoVo();
+                everyRowData.setNickName("用户-" + index);
+                everyRowData.setUserStatus(SystemConstants.NORMAL);
+                everyRowData.setGender("1");
+                everyRowData.setPhoneNumber(String.format("175%08d", index));
+                everyRowData.setEmail(String.format("175%08d", index) + "@163.com");
+                everyRowData.setProvinceId(index);
+                everyRowData.setCityId(index);
+                everyRowData.setAreaId(index);
+                excelDataList2.add(everyRowData);
+            }
+
+            wrapper.write(excelDataList2, sheet);
+
+            // 或者在同一个excel中创建多个表格
+            // WriteSheet sheet2 = ExcelWriterWrapper.sheetBuilder("自定义导出demo2").build();
+            // wrapper.write(excelDataList2, sheet2);
+        });
     }
 }

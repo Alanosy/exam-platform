@@ -107,10 +107,7 @@ public class SysDeptServiceImpl implements ISysDeptService {
         if (ObjectUtil.isNotNull(bo.getBelongDeptId())) {
             //部门树搜索
             lqw.and(x -> {
-                Long parentId = bo.getBelongDeptId();
-                List<SysDept> deptList = baseMapper.selectListByParentId(parentId);
-                List<Long> deptIds = StreamUtils.toList(deptList, SysDept::getDeptId);
-                deptIds.add(parentId);
+                List<Long> deptIds = baseMapper.selectDeptAndChildById(bo.getBelongDeptId());
                 x.in(SysDept::getDeptId, deptIds);
             });
         }
@@ -201,7 +198,7 @@ public class SysDeptServiceImpl implements ISysDeptService {
                 list.add(vo.getDeptName());
             }
         }
-        return String.join(StringUtils.SEPARATOR, list);
+        return StringUtils.joinComma(list);
     }
 
     /**
@@ -382,18 +379,6 @@ public class SysDeptServiceImpl implements ISysDeptService {
     @Override
     public int deleteDeptById(Long deptId) {
         return baseMapper.deleteById(deptId);
-    }
-
-    /**
-     * 查询部门(简单查询)
-     *
-     * @return 部门列表
-     */
-    @Override
-    public List<SysDeptVo> selectDeptsSimple() {
-        return baseMapper.selectDeptList(new LambdaQueryWrapper<SysDept>()
-            .select(SysDept::getDeptId, SysDept::getDeptName, SysDept::getParentId)
-            .eq(SysDept::getStatus, SystemConstants.NORMAL));
     }
 
 }

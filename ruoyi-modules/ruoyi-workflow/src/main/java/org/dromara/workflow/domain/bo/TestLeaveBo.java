@@ -32,6 +32,16 @@ public class TestLeaveBo extends BaseEntity {
     private Long id;
 
     /**
+     * 流程code
+     */
+    private String flowCode;
+
+    /**
+     * 申请编号
+     */
+    private String applyCode;
+
+    /**
      * 请假类型
      */
     @NotBlank(message = "请假类型不能为空", groups = {AddGroup.class, EditGroup.class})

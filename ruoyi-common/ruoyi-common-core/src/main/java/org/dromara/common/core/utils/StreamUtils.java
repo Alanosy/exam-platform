@@ -30,8 +30,10 @@ public class StreamUtils {
         if (CollUtil.isEmpty(collection)) {
             return CollUtil.newArrayList();
         }
-        // 注意此处不要使用 .toList() 新语法 因为返回的是不可变List 会导致序列化问题
-        return collection.stream().filter(function).collect(Collectors.toList());
+        return collection.stream()
+            .filter(function)
+            // 注意此处不要使用 .toList() 新语法 因为返回的是不可变List 会导致序列化问题
+            .collect(Collectors.toList());
     }
 
     /**
@@ -39,13 +41,26 @@ public class StreamUtils {
      *
      * @param collection 需要查询的集合
      * @param function   过滤方法
-     * @return 找到符合条件的第一个元素，没有则返回null
+     * @return 找到符合条件的第一个元素，没有则返回 Optional.empty()
      */
-    public static <E> E findFirst(Collection<E> collection, Predicate<E> function) {
+    public static <E> Optional<E> findFirst(Collection<E> collection, Predicate<E> function) {
         if (CollUtil.isEmpty(collection)) {
-            return null;
+            return Optional.empty();
         }
-        return collection.stream().filter(function).findFirst().orElse(null);
+        return collection.stream()
+            .filter(function)
+            .findFirst();
+    }
+
+    /**
+     * 找到流中满足条件的第一个元素值
+     *
+     * @param collection 需要查询的集合
+     * @param function   过滤方法
+     * @return 找到符合条件的第一个元素，没有则返回 null
+     */
+    public static <E> E findFirstValue(Collection<E> collection, Predicate<E> function) {
+        return findFirst(collection,function).orElse(null);
     }
 
     /**
@@ -53,13 +68,26 @@ public class StreamUtils {
      *
      * @param collection 需要查询的集合
      * @param function   过滤方法
-     * @return 找到符合条件的任意一个元素，没有则返回null
+     * @return 找到符合条件的任意一个元素，没有则返回 Optional.empty()
      */
     public static <E> Optional<E> findAny(Collection<E> collection, Predicate<E> function) {
         if (CollUtil.isEmpty(collection)) {
             return Optional.empty();
         }
-        return collection.stream().filter(function).findAny();
+        return collection.stream()
+            .filter(function)
+            .findAny();
+    }
+
+    /**
+     * 找到流中任意一个满足条件的元素值
+     *
+     * @param collection 需要查询的集合
+     * @param function   过滤方法
+     * @return 找到符合条件的任意一个元素，没有则返回null
+     */
+    public static <E> E findAnyValue(Collection<E> collection, Predicate<E> function) {
+        return findAny(collection,function).orElse(null);
     }
 
     /**
@@ -85,7 +113,10 @@ public class StreamUtils {
         if (CollUtil.isEmpty(collection)) {
             return StringUtils.EMPTY;
         }
-        return collection.stream().map(function).filter(Objects::nonNull).collect(Collectors.joining(delimiter));
+        return collection.stream()
+            .map(function)
+            .filter(Objects::nonNull)
+            .collect(Collectors.joining(delimiter));
     }
 
     /**
@@ -99,8 +130,11 @@ public class StreamUtils {
         if (CollUtil.isEmpty(collection)) {
             return CollUtil.newArrayList();
         }
-        // 注意此处不要使用 .toList() 新语法 因为返回的是不可变List 会导致序列化问题
-        return collection.stream().filter(Objects::nonNull).sorted(comparing).collect(Collectors.toList());
+        return collection.stream()
+            .filter(Objects::nonNull)
+            .sorted(comparing)
+            // 注意此处不要使用 .toList() 新语法 因为返回的是不可变List 会导致序列化问题
+            .collect(Collectors.toList());
     }
 
     /**
@@ -117,7 +151,9 @@ public class StreamUtils {
         if (CollUtil.isEmpty(collection)) {
             return MapUtil.newHashMap();
         }
-        return collection.stream().filter(Objects::nonNull).collect(Collectors.toMap(key, Function.identity(), (l, r) -> l));
+        return collection.stream()
+            .filter(Objects::nonNull)
+            .collect(Collectors.toMap(key, Function.identity(), (l, r) -> l));
     }
 
     /**
@@ -136,7 +172,25 @@ public class StreamUtils {
         if (CollUtil.isEmpty(collection)) {
             return MapUtil.newHashMap();
         }
-        return collection.stream().filter(Objects::nonNull).collect(Collectors.toMap(key, value, (l, r) -> l));
+        return collection.stream()
+            .filter(Objects::nonNull)
+            .collect(Collectors.toMap(key, value, (l, r) -> l));
+    }
+
+    /**
+     * 获取 map 中的数据作为新 Map 的 value ，key 不变
+     * @param map 需要处理的map
+     * @param take 取值函数
+     * @param <K> map中的key类型
+     * @param <E> map中的value类型
+     * @param <V> 新map中的value类型
+     * @return 新的map
+     */
+    public static <K, E, V> Map<K, V> toMap(Map<K, E> map, BiFunction<K, E, V> take) {
+        if (CollUtil.isEmpty(map)) {
+            return MapUtil.newHashMap();
+        }
+        return toMap(map.entrySet(), Map.Entry::getKey, entry -> take.apply(entry.getKey(), entry.getValue()));
     }
 
     /**
@@ -153,8 +207,8 @@ public class StreamUtils {
         if (CollUtil.isEmpty(collection)) {
             return MapUtil.newHashMap();
         }
-        return collection
-            .stream().filter(Objects::nonNull)
+        return collection.stream()
+            .filter(Objects::nonNull)
             .collect(Collectors.groupingBy(key, LinkedHashMap::new, Collectors.toList()));
     }
 
@@ -174,8 +228,8 @@ public class StreamUtils {
         if (CollUtil.isEmpty(collection)) {
             return MapUtil.newHashMap();
         }
-        return collection
-            .stream().filter(Objects::nonNull)
+        return collection.stream()
+            .filter(Objects::nonNull)
             .collect(Collectors.groupingBy(key1, LinkedHashMap::new, Collectors.groupingBy(key2, LinkedHashMap::new, Collectors.toList())));
     }
 
@@ -192,11 +246,11 @@ public class StreamUtils {
      * @return 分类后的map
      */
     public static <E, T, U> Map<T, Map<U, E>> group2Map(Collection<E> collection, Function<E, T> key1, Function<E, U> key2) {
-        if (CollUtil.isEmpty(collection) || key1 == null || key2 == null) {
+        if (CollUtil.isEmpty(collection)) {
             return MapUtil.newHashMap();
         }
-        return collection
-            .stream().filter(Objects::nonNull)
+        return collection.stream()
+            .filter(Objects::nonNull)
             .collect(Collectors.groupingBy(key1, LinkedHashMap::new, Collectors.toMap(key2, Function.identity(), (l, r) -> l)));
     }
 
@@ -214,8 +268,7 @@ public class StreamUtils {
         if (CollUtil.isEmpty(collection)) {
             return CollUtil.newArrayList();
         }
-        return collection
-            .stream()
+        return collection.stream()
             .map(function)
             .filter(Objects::nonNull)
             // 注意此处不要使用 .toList() 新语法 因为返回的是不可变List 会导致序列化问题
@@ -233,11 +286,10 @@ public class StreamUtils {
      * @return 转化后的Set
      */
     public static <E, T> Set<T> toSet(Collection<E> collection, Function<E, T> function) {
-        if (CollUtil.isEmpty(collection) || function == null) {
+        if (CollUtil.isEmpty(collection)) {
             return CollUtil.newHashSet();
         }
-        return collection
-            .stream()
+        return collection.stream()
             .map(function)
             .filter(Objects::nonNull)
             .collect(Collectors.toSet());
@@ -257,26 +309,20 @@ public class StreamUtils {
      * @return 合并后的map
      */
     public static <K, X, Y, V> Map<K, V> merge(Map<K, X> map1, Map<K, Y> map2, BiFunction<X, Y, V> merge) {
-        if (MapUtil.isEmpty(map1) && MapUtil.isEmpty(map2)) {
+        if (CollUtil.isEmpty(map1) && CollUtil.isEmpty(map2)) {
+            // 如果两个 map 都为空，则直接返回空的 map
             return MapUtil.newHashMap();
-        } else if (MapUtil.isEmpty(map1)) {
-            map1 = MapUtil.newHashMap();
-        } else if (MapUtil.isEmpty(map2)) {
-            map2 = MapUtil.newHashMap();
+        } else if (CollUtil.isEmpty(map1)) {
+            // 如果 map1 为空，则直接处理返回 map2
+            return toMap(map2.entrySet(), Map.Entry::getKey, entry -> merge.apply(null, entry.getValue()));
+        } else if (CollUtil.isEmpty(map2)) {
+            // 如果 map2 为空，则直接处理返回 map1
+            return toMap(map1.entrySet(), Map.Entry::getKey, entry -> merge.apply(entry.getValue(), null));
         }
-        Set<K> key = new HashSet<>();
-        key.addAll(map1.keySet());
-        key.addAll(map2.keySet());
-        Map<K, V> map = new HashMap<>();
-        for (K t : key) {
-            X x = map1.get(t);
-            Y y = map2.get(t);
-            V z = merge.apply(x, y);
-            if (z != null) {
-                map.put(t, z);
-            }
-        }
-        return map;
+        Set<K> keySet = new HashSet<>();
+        keySet.addAll(map1.keySet());
+        keySet.addAll(map2.keySet());
+        return toMap(keySet, key -> key, key -> merge.apply(map1.get(key), map2.get(key)));
     }
 
 }
