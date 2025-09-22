@@ -27,7 +27,8 @@
       <template #header>
         <el-row :gutter="10" class="mb8">
           <el-col :span="1.5" v-if="tab === 'waiting'">
-            <el-button type="primary" plain icon="Edit" :disabled="multiple" @click="handleUpdate">修改办理人 </el-button>
+            <el-button type="primary" plain icon="Edit" :disabled="multiple" @click="handleUserOpen()">修改办理人 </el-button>
+            <el-button type="primary" plain icon="Bell" :disabled="multiple" @click="handleUrgeTaskOpen()">催办 </el-button>
           </el-col>
           <right-toolbar v-model:show-search="showSearch" @query-table="handleQuery"></right-toolbar>
         </el-row>
@@ -38,14 +39,16 @@
         <el-table v-loading="loading" border :data="taskList" @selection-change="handleSelectionChange">
           <el-table-column type="selection" width="55" align="center" />
           <el-table-column align="center" type="index" label="序号" width="60"></el-table-column>
-          <el-table-column :show-overflow-tooltip="true" prop="flowName" align="center" label="流程定义名称"></el-table-column>
-          <el-table-column align="center" prop="flowCode" label="流程定义编码"></el-table-column>
+          <el-table-column :show-overflow-tooltip="true" prop="businessCode" align="center" label="业务编码"></el-table-column>
+          <el-table-column :show-overflow-tooltip="true" prop="businessTitle" align="center" label="业务标题"></el-table-column>
+          <el-table-column :show-overflow-tooltip="true" prop="flowName" align="center" width="120" label="流程定义名称"></el-table-column>
+          <el-table-column align="center" prop="flowCode" width="120" label="流程定义编码"></el-table-column>
           <el-table-column align="center" prop="categoryName" label="流程分类"></el-table-column>
           <el-table-column align="center" prop="version" label="版本号" width="90">
             <template #default="scope"> v{{ scope.row.version }}.0</template>
           </el-table-column>
-          <el-table-column align="center" prop="nodeName" label="任务名称"></el-table-column>
-          <el-table-column align="center" prop="createByName" label="申请人"></el-table-column>
+          <el-table-column align="center" prop="nodeName" :show-overflow-tooltip="true" label="任务名称"></el-table-column>
+          <el-table-column align="center" prop="createByName" :show-overflow-tooltip="true" label="申请人"></el-table-column>
           <el-table-column align="center" label="办理人">
             <template #default="scope">
               <template v-if="tab === 'waiting'">
@@ -97,21 +100,24 @@
       </el-tabs>
     </el-card>
     <!-- 选人组件 -->
-    <UserSelect ref="userSelectRef" :multiple="false" @confirm-call-back="submitCallback"></UserSelect>
+    <UserSelect ref="userSelectRef" :multiple="userMultiple" @confirm-call-back="submitCallback"></UserSelect>
     <!-- 流程干预组件 -->
     <processMeddle ref="processMeddleRef" @submitCallback="getWaitingList"></processMeddle>
     <!-- 申请人 -->
     <UserSelect ref="applyUserSelectRef" :multiple="true" :data="selectUserIds" @confirm-call-back="userSelectCallBack"></UserSelect>
+    <!-- 流程干预组件 -->
+    <messageType ref="messageTypeRef" @submitCallback="handleUserTask"></messageType>
   </div>
 </template>
 
 <script setup lang="ts">
-import { pageByAllTaskWait, pageByAllTaskFinish, updateAssignee } from '@/api/workflow/task';
+import { pageByAllTaskWait, pageByAllTaskFinish, updateAssignee, urgeTask } from '@/api/workflow/task';
 import UserSelect from '@/components/UserSelect';
 import { TaskQuery } from '@/api/workflow/task/types';
 import workflowCommon from '@/api/workflow/workflowCommon';
 import { RouterJumpVo } from '@/api/workflow/workflowCommon/types';
 import processMeddle from '@/components/Process/processMeddle';
+import messageType from '@/components/Process/MessageType';
 import { UserVO } from '@/api/system/user/types';
 import { TabsPaneContext } from 'element-plus';
 //选人组件
@@ -120,6 +126,8 @@ const userSelectRef = ref<InstanceType<typeof UserSelect>>();
 const processMeddleRef = ref<InstanceType<typeof processMeddle>>();
 //选人组件
 const applyUserSelectRef = ref<InstanceType<typeof UserSelect>>();
+//消息组件
+const messageTypeRef = ref<InstanceType<typeof messageType>>();
 const queryFormRef = ref<ElFormInstance>();
 const { proxy } = getCurrentInstance() as ComponentInternalInstance;
 const { wf_business_status } = toRefs<any>(proxy?.useDict('wf_business_status'));
@@ -132,13 +140,14 @@ const ids = ref<Array<any>>([]);
 const single = ref(true);
 // 非多个禁用
 const multiple = ref(true);
+const userMultiple = ref(false);
 // 显示搜索条件
 const showSearch = ref(true);
 // 总条数
 const total = ref(0);
 // 模型定义表格数据
 const taskList = ref([]);
-const title = ref('');
+const buttonType = ref('');
 //申请人id
 const selectUserIds = ref<Array<number | string>>([]);
 //申请人选择数量
@@ -204,9 +213,23 @@ const getFinishList = () => {
     loading.value = false;
   });
 };
+// 打开催办
+const handleUrgeTaskOpen = () => {
+  messageTypeRef.value.open();
+};
 //打开修改选人
-const handleUpdate = () => {
+const handleUserOpen = () => {
   userSelectRef.value.open();
+};
+
+//打开修改选人
+const handleUserTask = async (data) => {
+  await proxy?.$modal.confirm('是否确认提交？');
+  data.taskIdList = ids.value;
+  await urgeTask(data);
+  messageTypeRef.value.close();
+  proxy?.$modal.msgSuccess('操作成功');
+  handleQuery();
 };
 //修改办理人
 const submitCallback = async (data) => {
@@ -227,8 +250,7 @@ const handleView = (row) => {
     taskId: row.id,
     type: 'view',
     formCustom: row.formCustom,
-    formPath: row.formPath,
-    instanceId: row.instanceId
+    formPath: row.formPath
   });
   workflowCommon.routerJump(routerJumpVo, proxy);
 };

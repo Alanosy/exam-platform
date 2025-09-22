@@ -11,10 +11,10 @@ export const initSSE = (url: any) => {
   url = url + '?Authorization=Bearer ' + getToken() + '&clientid=' + import.meta.env.VITE_APP_CLIENT_ID;
   const { data, error } = useEventSource(url, [], {
     autoReconnect: {
-      retries: 10,
-      delay: 3000,
+      retries: 5,
+      delay: 5000,
       onFailed() {
-        console.log('Failed to connect after 10 retries');
+        console.log('Failed to connect after 5 retries');
       }
     }
   });

@@ -13,7 +13,7 @@
         @contextmenu.prevent="openMenu(tag, $event)"
       >
         <svg-icon v-if="tagsIcon && tag.meta && tag.meta.icon && tag.meta.icon !== '#'" :icon-class="tag.meta.icon"/>
-        {{ tag.title }}
+        <span class="tags-view-item-title">{{ tag.title }}</span>
         <span v-if="!isAffix(tag)" @click.prevent.stop="closeSelectedTag(tag)">
           <close class="el-icon-close" style="width: 1em; height: 1em; vertical-align: middle" />
         </span>
@@ -253,7 +253,7 @@ onMounted(() => {
       position: relative;
       cursor: pointer;
       height: 26px;
-      line-height: 23px;
+      line-height: 25px;
       background-color: var(--el-bg-color);
       border: 1px solid var(--el-border-color-light);
       color: #495060;
@@ -261,6 +261,7 @@ onMounted(() => {
       font-size: 12px;
       margin-left: 5px;
       margin-top: 4px;
+      border-radius: 4px;
       &:hover {
         color: var(--el-color-primary);
       }
@@ -289,6 +290,10 @@ onMounted(() => {
   }
   .tags-view-item.active.has-icon::before {
     content: none !important;
+  }
+  .tags-view-item-title {
+    margin-left: 4px;
+    margin-right: 3px;
   }
   .contextmenu {
     margin: 0;

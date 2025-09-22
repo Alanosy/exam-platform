@@ -20,14 +20,6 @@
         </el-card>
       </el-col>
       <el-col :lg="20" :xs="24">
-        <!--        <div class="mb-[10px]">
-                  <el-card shadow="hover" class="text-center">
-                    <el-radio-group v-model="tab" @change="changeTab(tab)">
-                      <el-radio-button value="running">运行中</el-radio-button>
-                      <el-radio-button value="finish">已完成</el-radio-button>
-                    </el-radio-group>
-                  </el-card>
-                </div>-->
         <transition :enter-active-class="proxy?.animate.searchAnimate.enter" :leave-active-class="proxy?.animate.searchAnimate.leave">
           <div v-show="showSearch" class="mb-[10px]">
             <el-card shadow="hover">
@@ -69,15 +61,17 @@
             <el-table v-loading="loading" border :data="processInstanceList" @selection-change="handleSelectionChange">
               <el-table-column type="selection" width="55" align="center" />
               <el-table-column align="center" type="index" label="序号" width="60"></el-table-column>
-              <el-table-column :show-overflow-tooltip="true" align="center" label="流程定义名称">
+              <el-table-column :show-overflow-tooltip="true" prop="businessCode" align="center" label="业务编码"></el-table-column>
+              <el-table-column :show-overflow-tooltip="true" prop="businessTitle" align="center" label="业务标题"></el-table-column>
+              <el-table-column :show-overflow-tooltip="true" align="center" width="120" label="流程定义名称">
                 <template #default="scope">
                   <span>{{ scope.row.flowName }}v{{ scope.row.version }}</span>
                 </template>
               </el-table-column>
-              <el-table-column align="center" prop="nodeName" label="任务名称"></el-table-column>
-              <el-table-column align="center" prop="flowCode" label="流程定义编码"></el-table-column>
+              <el-table-column align="center" prop="flowCode" width="120" label="流程定义编码"></el-table-column>
               <el-table-column align="center" prop="categoryName" label="流程分类"></el-table-column>
-              <el-table-column align="center" prop="createByName" label="申请人"></el-table-column>
+              <el-table-column align="center" prop="nodeName" label="任务名称"></el-table-column>
+              <el-table-column align="center" prop="createByName" :show-overflow-tooltip="true" label="申请人"></el-table-column>
               <el-table-column align="center" prop="version" label="版本号" width="90">
                 <template #default="scope"> v{{ scope.row.version }}.0</template>
               </el-table-column>
@@ -87,14 +81,14 @@
                   <el-tag v-else type="danger">挂起</el-tag>
                 </template>
               </el-table-column>
-              <el-table-column align="center" label="流程状态" min-width="70">
+              <el-table-column align="center" label="流程状态" min-width="80">
                 <template #default="scope">
                   <dict-tag :options="wf_business_status" :value="scope.row.flowStatus"></dict-tag>
                 </template>
               </el-table-column>
               <el-table-column align="center" prop="createTime" label="启动时间" width="160"></el-table-column>
               <el-table-column v-if="tab === 'finish'" align="center" prop="updateTime" label="结束时间" width="160"></el-table-column>
-              <el-table-column label="操作" align="center" :width="165">
+              <el-table-column label="操作" align="center" :width="165" fixed="right">
                 <template #default="scope">
                   <el-row v-if="tab === 'running'" :gutter="10" class="mb8">
                     <el-col :span="1.5">
@@ -154,8 +148,8 @@
       </el-table>
     </el-dialog>
     <!-- 流程变量开始 -->
-    <el-dialog v-model="variableVisible" draggable title="流程变量" width="60%" :close-on-click-modal="false">
-      <el-card v-loading="variableLoading" class="box-card">
+    <el-dialog v-model="variableVisible" v-if="variableVisible" draggable title="流程变量" width="60%" :close-on-click-modal="false">
+      <el-card v-loading="variableLoading">
         <template #header>
           <div class="clearfix">
             <span
@@ -167,6 +161,19 @@
           <VueJsonPretty :data="formatToJsonObject(variables)" />
         </div>
       </el-card>
+      <el-card v-loading="variableLoading">
+        <el-form ref="ruleFormRef" :model="form" :inline="true" :rules="rules" label-width="120px">
+          <el-form-item label="变量KEY" prop="key">
+            <el-input v-model="form.key" placeholder="请输入变量KEY" />
+          </el-form-item>
+          <el-form-item label="变量值" prop="value">
+            <el-input v-model="form.value" placeholder="请输入变量值" />
+          </el-form-item>
+          <el-form-item>
+            <el-button type="primary" @click="handleVariable(ruleFormRef)">确认</el-button>
+          </el-form-item>
+        </el-form>
+      </el-card>
     </el-dialog>
     <!-- 流程变量结束 -->
 
@@ -176,7 +183,15 @@
 </template>
 
 <script setup lang="ts">
-import { pageByRunning, pageByFinish, deleteByInstanceIds, instanceVariable, invalid } from '@/api/workflow/instance';
+import {
+  pageByRunning,
+  pageByFinish,
+  deleteByInstanceIds,
+  deleteHisByInstanceIds,
+  instanceVariable,
+  invalid,
+  updateVariable
+} from '@/api/workflow/instance';
 import { categoryTree } from '@/api/workflow/category';
 import { CategoryTreeVO } from '@/api/workflow/category/types';
 import { FlowInstanceQuery, FlowInstanceVO } from '@/api/workflow/instance/types';
@@ -185,6 +200,7 @@ import { RouterJumpVo } from '@/api/workflow/workflowCommon/types';
 import VueJsonPretty from 'vue-json-pretty';
 import 'vue-json-pretty/lib/styles.css';
 import UserSelect from '@/components/UserSelect/index.vue';
+import { ElForm, FormInstance } from 'element-plus';
 //审批记录组件
 const { proxy } = getCurrentInstance() as ComponentInternalInstance;
 const { wf_business_status } = toRefs<any>(proxy?.useDict('wf_business_status'));
@@ -192,7 +208,12 @@ const queryFormRef = ref<ElFormInstance>();
 const categoryTreeRef = ref<ElTreeInstance>();
 import { ref } from 'vue';
 import { UserVO } from '@/api/system/user/types';
-
+const form = ref<Record<string, any>>({
+  instanceId: undefined,
+  key: undefined,
+  value: undefined
+});
+const ruleFormRef = ref<FormInstance>();
 const userSelectRef = ref<InstanceType<typeof UserSelect>>();
 // 遮罩层
 const loading = ref(true);
@@ -208,6 +229,8 @@ const multiple = ref(true);
 const showSearch = ref(true);
 // 总条数
 const total = ref(0);
+// 实例id
+const instanceId = ref(undefined);
 
 // 流程变量是否显示
 const variableVisible = ref(false);
@@ -333,7 +356,7 @@ const handleDelete = async (row: FlowInstanceVO) => {
     await deleteByInstanceIds(instanceIdList).finally(() => (loading.value = false));
     getProcessInstanceRunningList();
   } else {
-    await deleteByInstanceIds(instanceIdList).finally(() => (loading.value = false));
+    await deleteHisByInstanceIds(instanceIdList).finally(() => (loading.value = false));
     getProcessInstanceFinishList();
   }
   proxy?.$modal.msgSuccess('删除成功');
@@ -378,12 +401,16 @@ const handleView = (row) => {
 
 //查询流程变量
 const handleInstanceVariable = async (row: FlowInstanceVO) => {
+  instanceId.value = row.id;
   variableLoading.value = true;
   variableVisible.value = true;
   processDefinitionName.value = row.flowName;
   const data = await instanceVariable(row.id);
   variables.value = data.data.variable;
   variableLoading.value = false;
+  form.value.instanceId = undefined;
+  form.value.key = undefined;
+  form.value.value = undefined;
 };
 
 /**
@@ -414,6 +441,36 @@ const userSelectCallBack = (data: UserVO[]) => {
     queryParams.value.createByIds = selectUserIds.value;
   }
 };
+const rules = reactive<Record<string, any>>({
+  key: [
+    {
+      required: true,
+      message: '请输入KEY',
+      trigger: 'blur'
+    }
+  ],
+  value: [
+    {
+      required: true,
+      message: '请输入变量值',
+      trigger: 'blur'
+    }
+  ]
+});
+
+const handleVariable = async (formEl: FormInstance | undefined) => {
+  await formEl.validate(async (valid, fields) => {
+    if (valid) {
+      form.value.instanceId = instanceId.value;
+      await proxy?.$modal.confirm('是否确认提交？');
+      await updateVariable(form.value);
+      proxy?.$modal.msgSuccess('操作成功');
+      const data = await instanceVariable(instanceId.value);
+      variables.value = data.data.variable;
+    }
+  });
+};
+
 onMounted(() => {
   getProcessInstanceRunningList();
   getTreeselect();

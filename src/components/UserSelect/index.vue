@@ -168,12 +168,15 @@ const confirm = () => {
 };
 
 const computedIds = (data) => {
+  if (data === '' || data === null || data === undefined) {
+    return [];
+  }
   if (data instanceof Array) {
     return data.map((item) => String(item));
   } else if (typeof data === 'string') {
     return data.split(',');
   } else if (typeof data === 'number') {
-    return [data];
+    return [String(data)];
   } else {
     console.warn('<UserSelect> The data type of data should be array or string or number, but I received other');
     return [];

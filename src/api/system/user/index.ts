@@ -1,4 +1,4 @@
-import { DeptTreeVO, DeptVO } from './../dept/types';
+import { DeptTreeVO } from './../dept/types';
 import { RoleVO } from '@/api/system/role/types';
 import request from '@/utils/request';
 import { AxiosPromise } from 'axios';

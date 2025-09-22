@@ -1,5 +1,6 @@
 export interface LeaveVO {
   id: string | number;
+  applyCode?: string;
   leaveType: string;
   startDate: string;
   endDate: string;
@@ -10,6 +11,7 @@ export interface LeaveVO {
 
 export interface LeaveForm extends BaseEntity {
   id?: string | number;
+  applyCode?: string;
   leaveType?: string;
   startDate?: string;
   endDate?: string;

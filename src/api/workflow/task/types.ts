@@ -30,16 +30,20 @@ export interface FlowTaskVO {
   nodeRatio: string | number;
   version?: string;
   applyNode?: boolean;
-  buttonList?: buttonList[];
+  buttonList?: ButtonList[];
+  copyList?: FlowCopyVo[];
+  varList?: Map<string, string>;
+  businessCode: string;
+  businessTitle: string;
 }
 
-export interface buttonList {
+export interface ButtonList {
   code: string;
   show: boolean;
 }
-export interface VariableVo {
-  key: string;
-  value: string;
+export interface FlowCopyVo {
+  userId: string | number;
+  userName: string;
 }
 
 export interface TaskOperationBo {

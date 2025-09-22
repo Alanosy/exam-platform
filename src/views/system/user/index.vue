@@ -154,7 +154,7 @@
               <el-input v-model="form.nickName" placeholder="请输入用户昵称" maxlength="30" />
             </el-form-item>
           </el-col>
-          <el-col :span="12">
+          <el-col :span="12" v-if="form.userId == null || form.userId != useUserStore().userId">
             <el-form-item label="归属部门" prop="deptId">
               <el-tree-select
                 v-model="form.deptId"
@@ -209,7 +209,7 @@
           </el-col>
         </el-row>
         <el-row>
-          <el-col :span="12">
+          <el-col :span="12" v-if="form.userId == null || form.userId != useUserStore().userId">
             <el-form-item label="岗位">
               <el-select v-model="form.postIds" multiple placeholder="请选择">
                 <el-option
@@ -222,7 +222,7 @@
               </el-select>
             </el-form-item>
           </el-col>
-          <el-col :span="12">
+          <el-col :span="12" v-if="form.userId == null || form.userId != useUserStore().userId">
             <el-form-item label="角色" prop="roleIds">
               <el-select v-model="form.roleIds" filterable multiple placeholder="请选择">
                 <el-option
@@ -293,13 +293,12 @@ import api from '@/api/system/user';
 import { UserForm, UserQuery, UserVO } from '@/api/system/user/types';
 import { DeptTreeVO, DeptVO } from '@/api/system/dept/types';
 import { RoleVO } from '@/api/system/role/types';
-import { PostQuery, PostVO } from '@/api/system/post/types';
-import { treeselect } from '@/api/system/dept';
+import { PostVO } from '@/api/system/post/types';
 import { globalHeaders } from '@/utils/request';
 import { to } from 'await-to-js';
 import { optionselect } from '@/api/system/post';
-import { hasPermi } from '@/directive/permission';
 import { checkPermi } from '@/utils/permission';
+import { useUserStore } from '@/store/modules/user';
 
 const router = useRouter();
 const { proxy } = getCurrentInstance() as ComponentInternalInstance;
@@ -411,7 +410,7 @@ const initData: PageData<UserForm, UserQuery> = {
     ],
     phonenumber: [
       {
-        pattern: /^1[3|4|5|6|7|8|9][0-9]\d{8}$/,
+        pattern: /^1[3456789][0-9]\d{8}$/,
         message: '请输入正确的手机号码',
         trigger: 'blur'
       }
@@ -616,7 +615,9 @@ const handleUpdate = async (row?: UserForm) => {
   dialog.title = '修改用户';
   Object.assign(form.value, data.user);
   postOptions.value = data.posts;
-  roleOptions.value = data.roles;
+  roleOptions.value = Array.from(
+    new Map([...data.roles, ...data.user.roles].map(role => [role.roleId, role])).values()
+  );
   form.value.postIds = data.postIds;
   form.value.roleIds = data.roleIds;
   form.value.password = '';
@@ -626,7 +627,17 @@ const handleUpdate = async (row?: UserForm) => {
 const submitForm = () => {
   userFormRef.value?.validate(async (valid: boolean) => {
     if (valid) {
-      form.value.userId ? await api.updateUser(form.value) : await api.addUser(form.value);
+      if (form.value.userId) {
+        // 自己编辑自己的情况下 不允许编辑角色部门岗位
+        if (form.value.userId == useUserStore().userId) {
+          form.value.roleIds = null;
+          form.value.deptId = null;
+          form.value.postIds = null;
+        }
+        await api.updateUser(form.value);
+      } else {
+        await api.addUser(form.value);
+      }
       proxy?.$modal.msgSuccess('操作成功');
       dialog.visible = false;
       await getList();

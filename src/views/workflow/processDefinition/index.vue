@@ -159,7 +159,7 @@
     <!-- 新增/编辑流程定义 -->
     <el-dialog v-model="modelDialog.visible" :title="modelDialog.title" width="650px" append-to-body :close-on-click-modal="false">
       <template #footer>
-        <el-form ref="defFormRef" :model="form" :rules="rules" label-width="110px">
+        <el-form ref="defFormRef" :model="form" :rules="rules" label-width="120px">
           <el-form-item label="流程类别" prop="category">
             <el-tree-select
               v-model="form.category"
@@ -177,6 +177,21 @@
           </el-form-item>
           <el-form-item label="流程名称" prop="flowName">
             <el-input v-model="form.flowName" placeholder="请输入流程名称" maxlength="100" show-word-limit />
+          </el-form-item>
+          <el-form-item label="设计器模式" prop="modelValue">
+            <el-radio-group v-model="form.modelValue" :disabled="!!form.id">
+              <el-radio value="CLASSICS" size="large" border>经典模式</el-radio>
+              <el-radio value="MIMIC" size="large" border>仿钉钉模式</el-radio>
+            </el-radio-group>
+          </el-form-item>
+          <el-form-item label="流程配置">
+            <el-checkbox v-model="autoPass" label="下一节点执行人是当前任务处理人自动审批" />
+          </el-form-item>
+          <el-form-item label="是否动态表单" prop="formCustom">
+            <el-radio-group v-model="form.formCustom">
+              <el-radio value="Y" size="large" border>是</el-radio>
+              <el-radio value="N" size="large" border>否</el-radio>
+            </el-radio-group>
           </el-form-item>
           <el-form-item label="表单路径" prop="formPath">
             <el-input v-model="form.formPath" placeholder="请输入表单路径" maxlength="100" show-word-limit />
@@ -215,6 +230,7 @@ const uploadDialogLoading = ref(false);
 const processDefinitionList = ref<FlowDefinitionVo[]>([]);
 const categoryOptions = ref<CategoryTreeVO[]>([]);
 const categoryName = ref('');
+const autoPass = ref(false);
 /** 部署文件分类选择 */
 const selectCategory = ref();
 const defFormRef = ref<ElFormInstance>();
@@ -245,6 +261,8 @@ const queryParams = ref<FlowDefinitionQuery>({
 const rules = {
   category: [{ required: true, message: '分类名称不能为空', trigger: 'blur' }],
   flowName: [{ required: true, message: '流程定义名称不能为空', trigger: 'blur' }],
+  formCustom: [{ required: true, message: '请选择是否动态表单', trigger: 'change' }],
+  modelValue: [{ required: true, message: '设计器模式不能为空', trigger: 'change' }],
   flowCode: [{ required: true, message: '流程定义编码不能为空', trigger: 'blur' }]
 };
 const initFormData: FlowDefinitionForm = {
@@ -252,7 +270,10 @@ const initFormData: FlowDefinitionForm = {
   flowName: '',
   flowCode: '',
   category: '',
-  formPath: ''
+  ext: '',
+  formPath: '',
+  formCustom: '',
+  modelValue: ''
 };
 //流程定义参数
 const form = ref<FlowDefinitionForm>({
@@ -260,7 +281,10 @@ const form = ref<FlowDefinitionForm>({
   flowName: '',
   flowCode: '',
   category: '',
-  formPath: ''
+  ext: '',
+  formPath: '',
+  formCustom: '',
+  modelValue: ''
 });
 onMounted(() => {
   getPageList();
@@ -329,6 +353,7 @@ const getPageList = async () => {
   const query = proxy.$route.query;
   if (query.activeName) {
     activeName.value = query.activeName;
+    proxy.$route.query.activeName = '';
   }
   if (activeName.value === '0') {
     getList();
@@ -469,6 +494,8 @@ const handleAdd = async () => {
   if (queryParams.value.category != '') {
     form.value.category = queryParams.value.category;
   }
+  form.value.modelValue = 'CLASSICS';
+  form.value.formCustom = 'N';
   modelDialog.visible = true;
   modelDialog.title = '新增流程';
 };
@@ -478,6 +505,13 @@ const handleUpdate = async (row?: FlowDefinitionVo) => {
   const id = row?.id || ids.value[0];
   const res = await getInfo(id);
   Object.assign(form.value, res.data);
+  autoPass.value = false;
+  if (form.value.ext != null && form.value.ext != '') {
+    const extJson = JSON.parse(form.value.ext);
+    if (extJson.autoPass != null && extJson.autoPass != '') {
+      autoPass.value = extJson.autoPass;
+    }
+  }
   modelDialog.visible = true;
   modelDialog.title = '修改流程';
 };
@@ -486,10 +520,14 @@ const handleSubmit = async () => {
   defFormRef.value.validate(async (valid: boolean) => {
     if (valid) {
       loading.value = true;
+      const ext = {};
+      ext.autoPass = autoPass.value;
+      form.value.ext = JSON.stringify(ext);
       if (form.value.id) {
         await edit(form.value).finally(() => (loading.value = false));
       } else {
         await add(form.value).finally(() => (loading.value = false));
+        activeName.value = '1';
       }
       proxy?.$modal.msgSuccess('操作成功');
       modelDialog.visible = false;

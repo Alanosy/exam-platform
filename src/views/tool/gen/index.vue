@@ -104,7 +104,7 @@
           <el-link v-copyText="value" v-copyText:callback="copyTextSuccess" :underline="false" icon="DocumentCopy" style="float: right">
             &nbsp;复制
           </el-link>
-          <pre>{{ value }}</pre>
+          <highlightjs :code="value" />
         </el-tab-pane>
       </el-tabs>
     </el-dialog>
@@ -248,3 +248,12 @@ onMounted(() => {
   getDataNameList();
 });
 </script>
+
+<style lang="scss" scoped>
+.el-tab-pane {
+  background-color: #282c34;
+  .el-link {
+    color: #fff;
+  }
+}
+</style>

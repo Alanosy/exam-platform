@@ -1,6 +1,7 @@
 import request from '@/utils/request';
 import { PostForm, PostQuery, PostVO } from './types';
 import { AxiosPromise } from 'axios';
+import { DeptTreeVO } from '../dept/types';
 
 // 查询岗位列表
 export function listPost(query: PostQuery): AxiosPromise<PostVO[]> {
@@ -56,3 +57,13 @@ export function delPost(postId: string | number | (string | number)[]) {
     method: 'delete'
   });
 }
+
+/**
+ * 查询部门下拉树结构
+ */
+export const deptTreeSelect = (): AxiosPromise<DeptTreeVO[]> => {
+  return request({
+    url: '/system/post/deptTree',
+    method: 'get'
+  });
+};

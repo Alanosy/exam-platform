@@ -22,7 +22,10 @@ export interface FlowDefinitionForm {
   flowName: string;
   flowCode: string;
   category: string;
+  ext: string;
   formPath: string;
+  formCustom: string;
+  modelValue: string;
 }
 
 export interface definitionXmlVO {

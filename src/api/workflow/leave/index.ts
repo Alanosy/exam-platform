@@ -40,6 +40,18 @@ export const addLeave = (data: LeaveForm): AxiosPromise<LeaveVO> => {
 };
 
 /**
+ * 提交请假并发起流程
+ * @param data
+ */
+export const submitAndFlowStart = (data: LeaveForm): AxiosPromise<LeaveVO> => {
+  return request({
+    url: '/workflow/leave/submitAndFlowStart',
+    method: 'post',
+    data: data
+  });
+};
+
+/**
  * 修改请假
  * @param data
  */

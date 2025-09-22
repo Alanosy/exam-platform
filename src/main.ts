@@ -1,8 +1,8 @@
 import { createApp } from 'vue';
 // global css
 import 'virtual:uno.css';
-import '@/assets/styles/index.scss';
 import 'element-plus/theme-chalk/dark/css-vars.css';
+import '@/assets/styles/index.scss';
 
 // App、router、store
 import App from './App.vue';

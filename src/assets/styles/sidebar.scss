@@ -65,7 +65,7 @@
     }
 
     .svg-icon {
-      margin-right: 16px;
+      margin-right: 10px;
     }
 
     .el-menu {
@@ -88,12 +88,16 @@
     // menu hover
     .theme-dark .sub-menu-title-noDropdown,
     .theme-dark .el-sub-menu__title {
+      border-radius: 8px;
+      margin: 1px 5px 1px 5px;
       &:hover {
         background-color: $base-sub-menu-title-hover !important;
       }
     }
     .sub-menu-title-noDropdown,
     .el-sub-menu__title {
+      border-radius: 8px;
+      margin: 1px 5px 1px 5px;
       &:hover {
         background-color: rgba(0, 0, 0, 0.05) !important;
       }
@@ -105,8 +109,11 @@
 
     & .nest-menu .el-sub-menu > .el-sub-menu__title,
     & .el-sub-menu .el-menu-item {
-      min-width: $base-sidebar-width !important;
-      &:hover {
+      min-width: calc($base-sidebar-width - 20px) !important;
+      border-radius: 8px;
+      height: 45px;
+      margin: 1px 5px 1px 5px;
+      &:not(.is-active):hover {
         background-color: rgba(0, 0, 0, 0.1) !important;
       }
     }
@@ -114,28 +121,54 @@
     & .theme-dark .nest-menu .el-sub-menu > .el-sub-menu__title,
     & .theme-dark .el-sub-menu .el-menu-item {
       background-color: $base-sub-menu-background !important;
+      border-radius: 8px;
+      height: 45px;
+      margin: 1px 5px 1px 5px;
 
-      &:hover {
+      &.is-active {
+        background-color: var(--el-menu-active-color) !important;
+        color: #fff;
+      }
+      &:not(.is-active):hover {
+        // you can use $sub-menuHover
         background-color: $base-sub-menu-hover !important;
       }
     }
 
     & .theme-dark .nest-menu .el-sub-menu > .el-sub-menu__title,
     & .theme-dark .el-menu-item {
-      &:hover {
+      border-radius: 8px;
+      height: 45px;
+      margin: 1px 5px 1px 5px;
+
+      &.is-active {
+        background-color: var(--el-menu-active-color) !important;
+        color: #fff;
+      }
+      &:not(.is-active):hover {
         // you can use $sub-menuHover
         background-color: $base-menu-hover !important;
       }
     }
+
     & .nest-menu .el-sub-menu > .el-sub-menu__title,
     & .el-menu-item {
-      &:hover {
+      border-radius: 8px;
+      height: 45px;
+      margin: 1px 5px 1px 5px;
+
+      &.is-active {
+        background-color: var(--el-menu-active-color) !important;
+        color: #fff;
+      }
+      &:not(.is-active):hover {
         // you can use $sub-menuHover
         background-color: rgba(0, 0, 0, 0.04) !important;
       }
     }
   }
 
+  // 收起菜单后的样式
   .hideSidebar {
     .sidebar-container {
       width: 54px !important;
@@ -148,29 +181,48 @@
     .sub-menu-title-noDropdown {
       padding: 0 !important;
       position: relative;
+      height: 45px;
+      // 选中状态的菜单
+      &.is-active {
+        background-color: var(--el-menu-active-color) !important;
+        color: #fff !important;
+      }
 
       .el-tooltip {
         padding: 0 !important;
-
-        .svg-icon {
-          margin-left: 20px;
-        }
       }
     }
 
-    .el-sub-menu {
+
+    & .el-sub-menu {
       overflow: hidden;
+      border-radius: 8px;
+      .el-sub-menu__title.el-tooltip__trigger {
+        border-radius: 8px;
+        height: 45px;
+      }
+
+      // 选中状态的菜单
+      &.is-active .el-sub-menu__title.el-tooltip__trigger {
+        background-color: var(--el-menu-active-color) !important;
+      }
+
 
       & > .el-sub-menu__title {
         padding: 0 !important;
-
-        .svg-icon {
-          margin-left: 20px;
-        }
       }
     }
 
     .el-menu--collapse {
+      .is-active .svg-icon {
+        fill: #fff;
+      }
+      .svg-icon {
+        display: flex;
+        margin: auto;
+        height: 100%;
+        // 这里设置width会跟随sidebar-container的transition 不符合预期
+      }
       .el-sub-menu {
         & > .el-sub-menu__title {
           & > span {
@@ -230,5 +282,15 @@
     .svg-icon {
       margin-right: 16px;
     }
+  }
+}
+// 收起菜单后悬浮的菜单样式
+.el-popper.is-pure{
+  border-radius: 8px;
+  .el-menu--popup{
+    border-radius: 8px;
+  }
+  .el-menu-item{
+    border-radius: 4px;
   }
 }
