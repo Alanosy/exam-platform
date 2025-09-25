@@ -30,7 +30,7 @@ public enum ButtonPermissionEnum implements NodeExtEnum {
     /**
      * 是否能抄送
      */
-    COPY("是否能抄送", "copy", false),
+    COPY("是否能抄送", "copy", true),
 
     /**
      * 是否显示退回
