@@ -487,9 +487,9 @@ public class FlwTaskServiceImpl implements IFlwTaskService {
 
             Map<String, Object> variable = new HashMap<>();
             // 消息类型
-            variable.put("messageType", messageType);
+            variable.put(FlowConstant.MESSAGE_TYPE, messageType);
             // 消息通知
-            variable.put("notice", notice);
+            variable.put(FlowConstant.MESSAGE_NOTICE, notice);
 
             FlowParams flowParams = FlowParams.build()
                 .nodeCode(bo.getNodeCode())

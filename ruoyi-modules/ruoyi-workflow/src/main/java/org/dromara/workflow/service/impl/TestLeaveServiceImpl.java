@@ -23,6 +23,7 @@ import org.dromara.workflow.api.event.ProcessDeleteEvent;
 import org.dromara.workflow.api.event.ProcessEvent;
 import org.dromara.workflow.api.event.ProcessTaskEvent;
 import org.dromara.workflow.common.ConditionalOnEnable;
+import org.dromara.workflow.common.constant.FlowConstant;
 import org.dromara.workflow.domain.TestLeave;
 import org.dromara.workflow.domain.bo.TestLeaveBo;
 import org.dromara.workflow.domain.vo.TestLeaveVo;
@@ -195,6 +196,10 @@ public class TestLeaveServiceImpl implements ITestLeaveService {
                 String message = Convert.toStr(params.get("message"));
             }
             if (processEvent.getSubmit()) {
+                if (StringUtils.isBlank(testLeave.getApplyCode())) {
+                    String businessCode = MapUtil.getStr(params, FlowConstant.BUSINESS_CODE, StrUtil.EMPTY);
+                    testLeave.setApplyCode(businessCode);
+                }
                 testLeave.setStatus(BusinessStatusEnum.WAITING.getStatus());
             }
             baseMapper.updateById(testLeave);
