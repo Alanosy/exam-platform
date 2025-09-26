@@ -40,6 +40,10 @@ public class MybatisExceptionHandler {
             log.error("请求地址'{}', 未找到数据源", requestURI);
             return R.fail(HttpStatus.HTTP_INTERNAL_ERROR, "未找到数据源，请联系管理员确认");
         }
+        if (StringUtils.contains(message, "NotLoginException")) {
+            log.error("请求地址'{}',认证失败'{}',无法访问系统资源", requestURI, e.getMessage());
+            return R.fail(HttpStatus.HTTP_UNAUTHORIZED, "认证失败，无法访问系统资源");
+        }
         log.error("请求地址'{}', Mybatis系统异常", requestURI, e);
         return R.fail(HttpStatus.HTTP_INTERNAL_ERROR, message);
     }
