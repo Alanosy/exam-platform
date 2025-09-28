@@ -12,7 +12,7 @@ import type { LanguageType } from '@/lang';
 
 export {};
 
-declare module '@vue/runtime-core' {
+declare module 'vue' {
   interface ComponentCustomProperties {
     // 全局方法声明
     $modal: typeof modal;
