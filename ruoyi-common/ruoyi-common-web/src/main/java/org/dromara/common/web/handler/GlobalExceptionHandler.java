@@ -23,6 +23,7 @@ import org.springframework.web.bind.MissingPathVariableException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.context.request.async.AsyncRequestTimeoutException;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.servlet.NoHandlerFoundException;
 
@@ -123,13 +124,20 @@ public class GlobalExceptionHandler {
      */
     @ResponseStatus(org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR)
     @ExceptionHandler(IOException.class)
-    public void handleRuntimeException(IOException e, HttpServletRequest request) {
+    public void handleIoException(IOException e, HttpServletRequest request) {
         String requestURI = request.getRequestURI();
         if (requestURI.contains("sse")) {
             // sse 经常性连接中断 例如关闭浏览器 直接屏蔽
             return;
         }
         log.error("请求地址'{}',连接中断", requestURI, e);
+    }
+
+    /**
+     * sse 连接超时异常 不需要处理
+     */
+    @ExceptionHandler(AsyncRequestTimeoutException.class)
+    public void handleRuntimeException(AsyncRequestTimeoutException e) {
     }
 
     /**
