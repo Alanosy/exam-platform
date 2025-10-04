@@ -245,7 +245,19 @@
             <artifactId>ip2region</artifactId>
             <version>2.6.5</version>
         </dependency>
+        <!-- XML Digital Signature -->
+        <dependency>
+            <groupId>org.apache.santuario</groupId>
+            <artifactId>xmlsec</artifactId>
+            <version>2.3.0</version>
+        </dependency>
 
+        <!--&lt;!&ndash; 或者使用 JDK 相关的 XML DSig &ndash;&gt;-->
+        <!--<dependency>-->
+        <!--    <groupId>org.glassfish</groupId>-->
+        <!--    <artifactId>jakarta.xml.bind-api</artifactId>-->
+        <!--    <version>2.3.3</version>-->
+        <!--</dependency>-->
 
     </dependencies>
     <!-- 项目构建配置 -->

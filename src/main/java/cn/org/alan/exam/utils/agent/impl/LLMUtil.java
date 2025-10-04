@@ -3,30 +3,31 @@ package cn.org.alan.exam.utils.agent.impl;
 import cn.org.alan.exam.utils.agent.AIChat;
 import cn.org.alan.exam.utils.agent.Assistant;
 import cn.org.alan.exam.utils.agent.Constants;
-//import dev.langchain4j.data.document.Document;
-//import dev.langchain4j.data.document.DocumentSplitter;
-//import dev.langchain4j.data.document.loader.FileSystemDocumentLoader;
-//import dev.langchain4j.data.document.splitter.DocumentSplitters;
-//import dev.langchain4j.data.embedding.Embedding;
+import dev.langchain4j.data.document.Document;
+import dev.langchain4j.data.document.DocumentSplitter;
+import dev.langchain4j.data.document.loader.FileSystemDocumentLoader;
+import dev.langchain4j.data.document.splitter.DocumentSplitters;
+import dev.langchain4j.data.embedding.Embedding;
 import dev.langchain4j.data.message.ChatMessage;
 import dev.langchain4j.data.message.SystemMessage;
 import dev.langchain4j.data.message.UserMessage;
-//import dev.langchain4j.data.segment.TextSegment;
-//import dev.langchain4j.memory.ChatMemory;
-//import dev.langchain4j.memory.chat.MessageWindowChatMemory;
-//import dev.langchain4j.model.embedding.EmbeddingModel;
+import dev.langchain4j.data.segment.TextSegment;
+import dev.langchain4j.memory.ChatMemory;
+import dev.langchain4j.memory.chat.MessageWindowChatMemory;
+import dev.langchain4j.model.embedding.EmbeddingModel;
 import dev.langchain4j.model.openai.OpenAiChatModel;
-//import dev.langchain4j.model.openai.OpenAiEmbeddingModel;
-//import dev.langchain4j.rag.content.retriever.ContentRetriever;
-//import dev.langchain4j.rag.content.retriever.EmbeddingStoreContentRetriever;
+import dev.langchain4j.model.openai.OpenAiEmbeddingModel;
+import dev.langchain4j.rag.content.retriever.ContentRetriever;
+import dev.langchain4j.rag.content.retriever.EmbeddingStoreContentRetriever;
 import dev.langchain4j.service.AiServices;
-//import dev.langchain4j.store.embedding.milvus.MilvusEmbeddingStore;
-//import io.milvus.client.MilvusServiceClient;
-//import io.milvus.common.clientenum.ConsistencyLevelEnum;
-//import io.milvus.param.ConnectParam;
-//import io.milvus.param.IndexType;
-//import io.milvus.param.MetricType;
-import org.jcp.xml.dsig.internal.dom.Utils;
+import dev.langchain4j.store.embedding.milvus.MilvusEmbeddingStore;
+import io.milvus.client.MilvusServiceClient;
+import io.milvus.common.clientenum.ConsistencyLevelEnum;
+import io.milvus.param.ConnectParam;
+import io.milvus.param.IndexType;
+import io.milvus.param.MetricType;
+// import org.jcp.xml.dsig.internal.dom.Utils;
+import jdk.internal.foreign.Utils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -163,17 +164,17 @@ public class LLMUtil implements AIChat {
                 .build();
     }
 
-    // 将相对路径转换为绝对路径
-    public Path toPath(String relativePath) {
-        try {
-            // 使用类加载器获取资源路径，并将其转换为 URI 形式的 Path
-            URL fileUrl = Utils.class.getClassLoader().getResource(relativePath);
-            return Paths.get(fileUrl.toURI());
-        } catch (URISyntaxException e) {
-            // 如果发生 URI 格式异常，则抛出运行时异常
-            throw new RuntimeException(e);
-        }
-    }
+    // // 将相对路径转换为绝对路径
+    // public Path toPath(String relativePath) {
+    //     try {
+    //         // 使用类加载器获取资源路径，并将其转换为 URI 形式的 Path
+    //         URL fileUrl = Utils.class.getClassLoader().getResource(relativePath);
+    //         return Paths.get(fileUrl.toURI());
+    //     } catch (URISyntaxException e) {
+    //         // 如果发生 URI 格式异常，则抛出运行时异常
+    //         throw new RuntimeException(e);
+    //     }
+    // }
 
     // 先运行这个代码构建向量数据库
     /*public void creatKnowledgeBase() {
