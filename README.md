@@ -2,7 +2,11 @@
 
 #### 友情提示
 
-> 1. **配套前端项目**：[前端项目地址](https://github.com/Alanosy/online-exam-system-frontend)
+> 1. **项目体验地址**：[项目体验地址](http://exam.alan.org.cn)  
+>    1. 管理员账号:admin 密码:123456
+>    2. 教师账号:teacher 密码:123456
+>    3. 教师账号:student 密码:123456
+> 2. **配套前端项目**：[前端项目地址](https://github.com/Alanosy/online-exam-system-frontend)
 
 #### 介绍
 
