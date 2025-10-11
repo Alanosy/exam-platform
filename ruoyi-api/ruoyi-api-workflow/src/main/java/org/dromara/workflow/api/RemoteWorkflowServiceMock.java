@@ -67,4 +67,17 @@ public class RemoteWorkflowServiceMock implements RemoteWorkflowService {
         log.warn("服务调用异常 -> 降级处理");
         return false;
     }
+
+    @Override
+    public boolean completeTask(Long taskId, String message) {
+        log.warn("服务调用异常 -> 降级处理");
+        return false;
+    }
+
+    @Override
+    public boolean startCompleteTask(RemoteStartProcess startProcess) {
+        log.warn("服务调用异常 -> 降级处理");
+        return false;
+    }
+
 }
