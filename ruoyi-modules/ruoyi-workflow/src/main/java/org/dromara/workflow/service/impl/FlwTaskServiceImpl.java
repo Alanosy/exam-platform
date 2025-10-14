@@ -384,7 +384,6 @@ public class FlwTaskServiceImpl implements IFlwTaskService {
         QueryWrapper<FlowTaskBo> queryWrapper = buildQueryWrapper(flowTaskBo);
         queryWrapper.eq("t.node_type", NodeType.BETWEEN.getKey());
         queryWrapper.in("t.approver", LoginHelper.getUserIdStr());
-        queryWrapper.orderByDesc("t.create_time").orderByDesc("t.update_time");
         Page<FlowHisTaskVo> page = flwTaskMapper.getListFinishTask(pageQuery.build(), queryWrapper);
         return TableDataInfo.build(page);
     }
@@ -459,7 +458,7 @@ public class FlwTaskServiceImpl implements IFlwTaskService {
             List<Long> categoryIds = flwCategoryMapper.selectCategoryIdsByParentId(Convert.toLong(flowTaskBo.getCategory()));
             wrapper.in("t.category", StreamUtils.toList(categoryIds, Convert::toStr));
         }
-        wrapper.orderByDesc("t.create_time");
+        wrapper.orderByDesc("t.create_time").orderByDesc("t.update_time");
         return wrapper;
     }
 
