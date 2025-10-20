@@ -600,7 +600,7 @@ public class FlwTaskServiceImpl implements IFlwTaskService {
         if (ObjectUtil.isNull(flowNode)) {
             throw new NullPointerException("当前【" + flowTaskVo.getNodeCode() + "】节点编码不存在");
         }
-        NodeExtVo nodeExtVo = flwNodeExtService.parseNodeExt(flowNode.getExt());
+        NodeExtVo nodeExtVo = flwNodeExtService.parseNodeExt(flowNode.getExt(), instance.getVariableMap());
         //设置按钮权限
         flowTaskVo.setButtonList(nodeExtVo.getButtonPermissions());
         if (CollUtil.isNotEmpty(nodeExtVo.getCopySettings())) {

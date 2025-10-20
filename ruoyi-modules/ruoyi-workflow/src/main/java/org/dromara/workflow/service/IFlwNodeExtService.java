@@ -2,6 +2,8 @@ package org.dromara.workflow.service;
 
 import org.dromara.workflow.domain.vo.NodeExtVo;
 
+import java.util.Map;
+
 /**
  * 流程节点扩展属性 服务层
  *
@@ -24,9 +26,10 @@ public interface IFlwNodeExtService {
      * {"code": "VariablesEnum", "value": "key1=value1,key2=value2"}
      * ]
      *
-     * @param ext 扩展属性 JSON 字符串
+     * @param ext      扩展属性 JSON 字符串
+     * @param variable 流程变量
      * @return NodeExtVo 对象，封装按钮权限列表、抄送对象集合和自定义参数 Map
      */
-    NodeExtVo parseNodeExt(String ext);
+    NodeExtVo parseNodeExt(String ext, Map<String, Object> variable);
 
 }
