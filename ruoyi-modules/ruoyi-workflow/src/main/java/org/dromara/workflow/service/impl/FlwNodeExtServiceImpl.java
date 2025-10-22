@@ -6,7 +6,6 @@ import cn.hutool.core.util.ObjectUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.dubbo.config.annotation.DubboReference;
-import org.dromara.common.core.service.DictService;
 import org.dromara.common.core.utils.StringUtils;
 import org.dromara.common.json.utils.JsonUtils;
 import org.dromara.system.api.RemoteDictService;
@@ -217,6 +216,9 @@ public class FlwNodeExtServiceImpl implements NodeExtService, IFlwNodeExtService
 
         // 解析 JSON 为 Dict 列表
         List<Dict> nodeExtMap = JsonUtils.parseArrayMap(ext);
+        if (ObjectUtil.isEmpty(nodeExtMap)) {
+            return nodeExtVo;
+        }
 
         for (Dict nodeExt : nodeExtMap) {
             String code = nodeExt.getStr("code");
