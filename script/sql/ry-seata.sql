@@ -48,7 +48,7 @@ CREATE TABLE IF NOT EXISTS `lock_table`
     `branch_id`      BIGINT       NOT NULL,
     `resource_id`    VARCHAR(256),
     `table_name`     VARCHAR(32),
-    `pk`             VARCHAR(36),
+    `pk`             VARCHAR(100),
     `status`         TINYINT      NOT NULL DEFAULT '0' COMMENT '0:locked ,1:rollbacking',
     `gmt_create`     DATETIME,
     `gmt_modified`   DATETIME,
