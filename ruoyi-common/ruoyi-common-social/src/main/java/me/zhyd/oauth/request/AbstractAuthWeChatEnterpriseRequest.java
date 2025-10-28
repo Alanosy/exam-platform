@@ -52,10 +52,11 @@ public abstract class AbstractAuthWeChatEnterpriseRequest extends AuthDefaultReq
         JSONObject object = this.checkResponse(response);
 
         // 返回 OpenId 或其他，均代表非当前企业用户，不支持
-        if (!object.containsKey("UserId")) {
+        // https://github.com/justauth/JustAuth/issues/227 修复bug
+        if (!object.containsKey("userid")) {
             throw new AuthException(AuthResponseStatus.UNIDENTIFIED_PLATFORM, source);
         }
-        String userId = object.getString("UserId");
+        String userId = object.getString("userid");
         String userTicket = object.getString("user_ticket");
         JSONObject userDetail = getUserDetail(authToken.getAccessToken(), userId, userTicket);
 
