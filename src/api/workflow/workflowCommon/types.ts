@@ -10,5 +10,5 @@ export interface StartProcessBo {
   businessId: string | number;
   flowCode: string;
   variables: any;
-  flowInstanceBizExtBo: any;
+  bizExt: any;
 }

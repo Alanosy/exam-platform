@@ -127,10 +127,10 @@ const submitFormData = ref<StartProcessBo>({
   businessId: '',
   flowCode: '',
   variables: {},
-  flowInstanceBizExtBo: {}
+  bizExt: {}
 });
 const taskVariables = ref<Record<string, any>>({});
-const flowInstanceBizExtBo = ref<Record<string, any>>({});
+const bizExt = ref<Record<string, any>>({});
 
 const initFormData: LeaveForm = {
   id: undefined,
@@ -244,12 +244,12 @@ const handleStartWorkFlow = async (data: LeaveForm) => {
       userList: ['1', '3', '4']
     };
     //流程实例业务扩展字段
-    flowInstanceBizExtBo.value = {
+    bizExt.value = {
       businessTitle: '请假申请',
       businessCode: data.applyCode
     };
     submitFormData.value.variables = taskVariables.value;
-    submitFormData.value.flowInstanceBizExtBo = flowInstanceBizExtBo.value;
+    submitFormData.value.bizExt = bizExt.value;
     const resp = await startWorkFlow(submitFormData.value);
     if (submitVerifyRef.value) {
       buttonLoading.value = false;

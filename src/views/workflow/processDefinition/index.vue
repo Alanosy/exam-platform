@@ -189,7 +189,7 @@
           </el-form-item>
           <el-form-item label="是否动态表单" prop="formCustom">
             <el-radio-group v-model="form.formCustom">
-              <el-radio value="Y" size="large" border>是</el-radio>
+              <el-radio value="Y" size="large" border disabled>是</el-radio>
               <el-radio value="N" size="large" border>否</el-radio>
             </el-radio-group>
           </el-form-item>
