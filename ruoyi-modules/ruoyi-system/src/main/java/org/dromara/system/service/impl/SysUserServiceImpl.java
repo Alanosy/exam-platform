@@ -103,7 +103,7 @@ public class SysUserServiceImpl implements ISysUserService {
                 w.in(SysUser::getDeptId, ids);
             }).orderByAsc(SysUser::getUserId);
         if (StringUtils.isNotBlank(user.getExcludeUserIds())) {
-            wrapper.notIn(SysUser::getUserId, StringUtils.splitList(user.getExcludeUserIds()));
+            wrapper.notIn(SysUser::getUserId, StringUtils.splitTo(user.getExcludeUserIds(), Convert::toLong));
         }
         return wrapper;
     }

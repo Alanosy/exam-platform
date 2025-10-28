@@ -75,8 +75,8 @@ public class WorkflowGlobalListener implements GlobalListener {
     public void start(ListenerVariable listenerVariable) {
         String ext = listenerVariable.getNode().getExt();
         if (StringUtils.isNotBlank(ext)) {
-            NodeExtVo nodeExt = nodeExtService.parseNodeExt(ext);
             Map<String, Object> variable = listenerVariable.getVariable();
+            NodeExtVo nodeExt = nodeExtService.parseNodeExt(ext, variable);
             Set<String> copyList = nodeExt.getCopySettings();
             if (CollUtil.isNotEmpty(copyList)) {
                 List<FlowCopyBo> list = StreamUtils.toList(copyList, x -> {

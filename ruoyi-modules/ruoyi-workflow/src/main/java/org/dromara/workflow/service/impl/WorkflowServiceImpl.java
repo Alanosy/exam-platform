@@ -11,6 +11,7 @@ import org.dromara.workflow.api.domain.RemoteStartProcess;
 import org.dromara.workflow.api.domain.RemoteStartProcessReturn;
 import org.dromara.workflow.common.ConditionalOnEnable;
 import org.dromara.workflow.common.enums.MessageTypeEnum;
+import org.dromara.workflow.domain.FlowInstanceBizExt;
 import org.dromara.workflow.domain.bo.CompleteTaskBo;
 import org.dromara.workflow.domain.bo.StartProcessBo;
 import org.dromara.workflow.service.IFlwDefinitionService;
@@ -164,6 +165,7 @@ public class WorkflowServiceImpl implements WorkflowService {
             processBo.setFlowCode(startProcess.getFlowCode());
             processBo.setVariables(startProcess.getVariables());
             processBo.setHandler(startProcess.getHandler());
+            processBo.setBizExt(BeanUtil.toBean(startProcess.getBizExt(), FlowInstanceBizExt.class));
 
             RemoteStartProcessReturn result = flwTaskService.startWorkFlow(processBo);
             CompleteTaskBo taskBo = new CompleteTaskBo();

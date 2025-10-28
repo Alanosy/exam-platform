@@ -7,6 +7,7 @@ import cn.dev33.satoken.reactor.filter.SaReactorFilter;
 import cn.dev33.satoken.router.SaRouter;
 import cn.dev33.satoken.stp.StpUtil;
 import cn.dev33.satoken.util.SaResult;
+import cn.dev33.satoken.util.SaTokenConsts;
 import org.dromara.common.core.constant.HttpStatus;
 import org.dromara.common.core.utils.SpringUtils;
 import org.dromara.common.core.utils.StringUtils;
@@ -15,6 +16,7 @@ import org.dromara.gateway.config.properties.IgnoreWhiteProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.server.reactive.ServerHttpRequest;
+import org.springframework.http.server.reactive.ServerHttpResponse;
 
 /**
  * [Sa-Token 权限认证] 拦截器
@@ -61,6 +63,8 @@ public class AuthFilter {
                         // }
                     });
             }).setError(e -> {
+                ServerHttpResponse response = SaReactorSyncHolder.getExchange().getResponse();
+                response.getHeaders().set(SaTokenConsts.CONTENT_TYPE_KEY, SaTokenConsts.CONTENT_TYPE_APPLICATION_JSON);
                 if (e instanceof NotLoginException) {
                     return SaResult.error(e.getMessage()).setCode(HttpStatus.UNAUTHORIZED);
                 }
@@ -80,7 +84,11 @@ public class AuthFilter {
             .setAuth(obj -> {
                 SaHttpBasicUtil.check(username + ":" + password);
             })
-            .setError(e -> SaResult.error(e.getMessage()).setCode(HttpStatus.UNAUTHORIZED));
+            .setError(e -> {
+                ServerHttpResponse response = SaReactorSyncHolder.getExchange().getResponse();
+                response.getHeaders().set(SaTokenConsts.CONTENT_TYPE_KEY, SaTokenConsts.CONTENT_TYPE_APPLICATION_JSON);
+                return SaResult.error(e.getMessage()).setCode(HttpStatus.UNAUTHORIZED);
+            });
     }
 
 }

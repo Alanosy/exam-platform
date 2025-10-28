@@ -84,4 +84,9 @@ public interface ISysTenantService {
      * 同步租户字典
      */
     void syncTenantDict();
+
+    /**
+     * 同步租户参数配置
+     */
+    void syncTenantConfig();
 }

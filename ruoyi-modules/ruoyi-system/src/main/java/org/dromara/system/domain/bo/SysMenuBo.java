@@ -9,6 +9,8 @@ import jakarta.validation.constraints.Size;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.dromara.common.core.constant.RegexConstants;
+import org.dromara.common.json.validate.JsonPattern;
+import org.dromara.common.json.validate.JsonType;
 import org.dromara.common.mybatis.core.domain.BaseEntity;
 import org.dromara.system.domain.SysMenu;
 
@@ -61,6 +63,7 @@ public class SysMenuBo extends BaseEntity {
     /**
      * 路由参数
      */
+    @JsonPattern(type = JsonType.OBJECT, message = "路由参数必须符合JSON格式")
     private String queryParam;
 
     /**

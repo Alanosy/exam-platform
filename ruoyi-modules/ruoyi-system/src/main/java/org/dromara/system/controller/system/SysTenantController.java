@@ -194,4 +194,19 @@ public class SysTenantController extends BaseController {
         return R.ok("同步租户字典成功");
     }
 
+    /**
+     * 同步租户参数配置
+     */
+    @SaCheckRole(TenantConstants.SUPER_ADMIN_ROLE_KEY)
+    @Log(title = "租户管理", businessType = BusinessType.INSERT)
+    @Lock4j
+    @GetMapping("/syncTenantConfig")
+    public R<Void> syncTenantConfig() {
+        if (!TenantHelper.isEnable()) {
+            return R.fail("当前未开启租户模式");
+        }
+        tenantService.syncTenantConfig();
+        return R.ok("同步租户参数配置成功");
+    }
+
 }

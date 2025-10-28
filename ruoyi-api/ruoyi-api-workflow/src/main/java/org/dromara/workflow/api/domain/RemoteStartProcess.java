@@ -1,6 +1,7 @@
 package org.dromara.workflow.api.domain;
 
 
+import cn.hutool.core.util.ObjectUtil;
 import lombok.Data;
 
 import java.io.Serial;
@@ -40,6 +41,11 @@ public class RemoteStartProcess implements Serializable {
      */
     private Map<String, Object> variables;
 
+    /**
+     * 流程业务扩展信息
+     */
+    private RemoteFlowInstanceBizExt bizExt;
+
     public Map<String, Object> getVariables() {
         if (variables == null) {
             return new HashMap<>(16);
@@ -47,4 +53,12 @@ public class RemoteStartProcess implements Serializable {
         variables.entrySet().removeIf(entry -> Objects.isNull(entry.getValue()));
         return variables;
     }
+
+    public RemoteFlowInstanceBizExt getBizExt() {
+        if (ObjectUtil.isNull(bizExt)) {
+            bizExt = new RemoteFlowInstanceBizExt();
+        }
+        return bizExt;
+    }
+
 }

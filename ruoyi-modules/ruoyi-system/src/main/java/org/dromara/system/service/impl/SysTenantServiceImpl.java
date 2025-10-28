@@ -506,4 +506,60 @@ public class SysTenantServiceImpl implements ISysTenantService {
         }
     }
 
+    /**
+     * 同步租户参数配置
+     */
+    @Transactional(rollbackFor = Exception.class)
+    @Override
+    public void syncTenantConfig() {
+        // 查询超管 所有参数配置
+        List<SysConfig> configList = TenantHelper.ignore(() -> configMapper.selectList());
+
+        // 所有租户参数配置
+        Map<String, List<SysConfig>> configMap = StreamUtils.groupByKey(configList, TenantEntity::getTenantId);
+
+        // 默认租户字典类型列表
+        List<SysConfig> defaultConfigList = configMap.get(TenantConstants.DEFAULT_TENANT_ID);
+
+        // 获取所有租户编号
+        List<String> tenantIds = baseMapper.selectObjs(
+            new LambdaQueryWrapper<SysTenant>().select(SysTenant::getTenantId)
+                .eq(SysTenant::getStatus, SystemConstants.NORMAL), x -> {
+                return Convert.toStr(x);
+            });
+        // 待入库的字典类型和字典数据
+        List<SysConfig> saveConfigList = new ArrayList<>();
+        // 待同步的租户编号（用于清除对于租户的字典缓存）
+        Set<String> syncTenantIds = new HashSet<>();
+        // 循环所有租户，处理需要同步的数据
+        for (String tenantId : tenantIds) {
+            // 排除默认租户
+            if (TenantConstants.DEFAULT_TENANT_ID.equals(tenantId)) {
+                continue;
+            }
+            // 根据默认租户的字典类型进行数据同步
+            for (SysConfig config : defaultConfigList) {
+                // 获取当前租户的字典类型列表
+                List<String> typeList = StreamUtils.toList(configMap.get(tenantId), SysConfig::getConfigKey);
+                if (!typeList.contains(config.getConfigKey())) {
+                    SysConfig type = BeanUtil.toBean(config, SysConfig.class);
+                    type.setConfigId(null);
+                    type.setTenantId(tenantId);
+                    type.setCreateTime(null);
+                    type.setUpdateTime(null);
+                    syncTenantIds.add(tenantId);
+                    saveConfigList.add(type);
+                }
+            }
+        }
+        TenantHelper.ignore(() -> {
+            if (CollUtil.isNotEmpty(saveConfigList)) {
+                configMapper.insertBatch(saveConfigList);
+            }
+        });
+        for (String tenantId : syncTenantIds) {
+            TenantHelper.dynamic(tenantId, () -> CacheUtils.clear(CacheNames.SYS_CONFIG));
+        }
+    }
+
 }

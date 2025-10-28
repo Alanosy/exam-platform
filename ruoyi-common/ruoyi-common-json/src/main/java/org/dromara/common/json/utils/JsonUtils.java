@@ -5,6 +5,7 @@ import cn.hutool.core.util.ArrayUtil;
 import cn.hutool.core.util.ObjectUtil;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.exc.MismatchedInputException;
 import lombok.AccessLevel;
@@ -166,5 +167,60 @@ public class JsonUtils {
             throw new RuntimeException(e);
         }
     }
+
+    /**
+     * 判断字符串是否为合法 JSON（对象或数组）
+     *
+     * @param str 待校验字符串
+     * @return true = 合法 JSON，false = 非法或空
+     */
+    public static boolean isJson(String str) {
+        if (StringUtils.isBlank(str)) {
+            return false;
+        }
+        try {
+            OBJECT_MAPPER.readTree(str);
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    /**
+     * 判断字符串是否为 JSON 对象（{}）
+     *
+     * @param str 待校验字符串
+     * @return true = JSON 对象
+     */
+    public static boolean isJsonObject(String str) {
+        if (StringUtils.isBlank(str)) {
+            return false;
+        }
+        try {
+            JsonNode node = OBJECT_MAPPER.readTree(str);
+            return node.isObject();
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    /**
+     * 判断字符串是否为 JSON 数组（[]）
+     *
+     * @param str 待校验字符串
+     * @return true = JSON 数组
+     */
+    public static boolean isJsonArray(String str) {
+        if (StringUtils.isBlank(str)) {
+            return false;
+        }
+        try {
+            JsonNode node = OBJECT_MAPPER.readTree(str);
+            return node.isArray();
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
 
 }

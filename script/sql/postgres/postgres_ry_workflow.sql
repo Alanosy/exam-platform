@@ -14,7 +14,9 @@ CREATE TABLE flow_definition
     listener_path   varchar(400) NULL,
     ext             varchar(500) NULL,
     create_time     timestamp    NULL,
+    create_by       varchar(64)  NULL     DEFAULT '':: character varying,
     update_time     timestamp    NULL,
+    update_by       varchar(64)  NULL     DEFAULT '':: character varying,
     del_flag        bpchar(1)    NULL     DEFAULT '0':: character varying,
     tenant_id       varchar(40)  NULL,
     CONSTRAINT flow_definition_pkey PRIMARY KEY (id)
@@ -35,7 +37,9 @@ COMMENT ON COLUMN flow_definition.listener_type IS '监听器类型';
 COMMENT ON COLUMN flow_definition.listener_path IS '监听器路径';
 COMMENT ON COLUMN flow_definition.ext IS '扩展字段，预留给业务系统使用';
 COMMENT ON COLUMN flow_definition.create_time IS '创建时间';
+COMMENT ON COLUMN flow_definition.create_by IS '创建人';
 COMMENT ON COLUMN flow_definition.update_time IS '更新时间';
+COMMENT ON COLUMN flow_definition.update_by IS '更新人';
 COMMENT ON COLUMN flow_definition.del_flag IS '删除标志';
 COMMENT ON COLUMN flow_definition.tenant_id IS '租户id';
 
@@ -58,7 +62,9 @@ CREATE TABLE flow_node
     form_path       varchar(100)  NULL,
     "version"       varchar(20)   NOT NULL,
     create_time     timestamp     NULL,
+    create_by       varchar(64)  NULL DEFAULT '':: character varying,
     update_time     timestamp     NULL,
+    update_by       varchar(64)  NULL DEFAULT '':: character varying,
     ext             text         NULL,
     del_flag        bpchar(1)     NULL DEFAULT '0':: character varying,
     tenant_id       varchar(40)   NULL,
@@ -83,7 +89,9 @@ COMMENT ON COLUMN flow_node.form_custom IS '审批表单是否自定义（Y是 N
 COMMENT ON COLUMN flow_node.form_path IS '审批表单路径';
 COMMENT ON COLUMN flow_node."version" IS '版本';
 COMMENT ON COLUMN flow_node.create_time IS '创建时间';
+COMMENT ON COLUMN flow_node.create_by IS '创建人';
 COMMENT ON COLUMN flow_node.update_time IS '更新时间';
+COMMENT ON COLUMN flow_node.update_by IS '更新人';
 COMMENT ON COLUMN flow_node.ext IS '节点扩展属性';
 COMMENT ON COLUMN flow_node.del_flag IS '删除标志';
 COMMENT ON COLUMN flow_node.tenant_id IS '租户id';
@@ -102,7 +110,9 @@ CREATE TABLE flow_skip
     skip_condition varchar(200) NULL,
     coordinate     varchar(100) NULL,
     create_time    timestamp    NULL,
+    create_by      varchar(64)  NULL DEFAULT '':: character varying,
     update_time    timestamp    NULL,
+    update_by      varchar(64)  NULL DEFAULT '':: character varying,
     del_flag       bpchar(1)    NULL DEFAULT '0':: character varying,
     tenant_id      varchar(40)  NULL,
     CONSTRAINT flow_skip_pkey PRIMARY KEY (id)
@@ -120,7 +130,9 @@ COMMENT ON COLUMN flow_skip.skip_type IS '跳转类型（PASS审批通过 REJECT
 COMMENT ON COLUMN flow_skip.skip_condition IS '跳转条件';
 COMMENT ON COLUMN flow_skip.coordinate IS '坐标';
 COMMENT ON COLUMN flow_skip.create_time IS '创建时间';
+COMMENT ON COLUMN flow_skip.create_by IS '创建人';
 COMMENT ON COLUMN flow_skip.update_time IS '更新时间';
+COMMENT ON COLUMN flow_skip.update_by IS '更新人';
 COMMENT ON COLUMN flow_skip.del_flag IS '删除标志';
 COMMENT ON COLUMN flow_skip.tenant_id IS '租户id';
 
@@ -136,9 +148,10 @@ CREATE TABLE flow_instance
     flow_status     varchar(20)  NOT NULL,
     activity_status int2         NOT NULL DEFAULT 1,
     def_json        text         NULL,
-    create_by       varchar(64)  NULL     DEFAULT '':: character varying,
     create_time     timestamp    NULL,
+    create_by       varchar(64)  NULL     DEFAULT '':: character varying,
     update_time     timestamp    NULL,
+    update_by       varchar(64)  NULL DEFAULT '':: character varying,
     ext             varchar(500) NULL,
     del_flag        bpchar(1)    NULL     DEFAULT '0':: character varying,
     tenant_id       varchar(40)  NULL,
@@ -156,9 +169,10 @@ COMMENT ON COLUMN flow_instance.variable IS '任务变量';
 COMMENT ON COLUMN flow_instance.flow_status IS '流程状态（0待提交 1审批中 2审批通过 4终止 5作废 6撤销 8已完成 9已退回 10失效 11拿回）';
 COMMENT ON COLUMN flow_instance.activity_status IS '流程激活状态（0挂起 1激活）';
 COMMENT ON COLUMN flow_instance.def_json IS '流程定义json';
-COMMENT ON COLUMN flow_instance.create_by IS '创建者';
 COMMENT ON COLUMN flow_instance.create_time IS '创建时间';
+COMMENT ON COLUMN flow_instance.create_by IS '创建人';
 COMMENT ON COLUMN flow_instance.update_time IS '更新时间';
+COMMENT ON COLUMN flow_instance.update_by IS '更新人';
 COMMENT ON COLUMN flow_instance.ext IS '扩展字段，预留给业务系统使用';
 COMMENT ON COLUMN flow_instance.del_flag IS '删除标志';
 COMMENT ON COLUMN flow_instance.tenant_id IS '租户id';
@@ -175,7 +189,9 @@ CREATE TABLE flow_task
     form_custom   bpchar(1)    NULL DEFAULT 'N':: character varying,
     form_path     varchar(100) NULL,
     create_time   timestamp    NULL,
+    create_by     varchar(64)  NULL DEFAULT '':: character varying,
     update_time   timestamp    NULL,
+    update_by     varchar(64)  NULL DEFAULT '':: character varying,
     del_flag      bpchar(1)    NULL DEFAULT '0':: character varying,
     tenant_id     varchar(40)  NULL,
     CONSTRAINT flow_task_pkey PRIMARY KEY (id)
@@ -192,7 +208,9 @@ COMMENT ON COLUMN flow_task.flow_status IS '流程状态（0待提交 1审批中
 COMMENT ON COLUMN flow_task.form_custom IS '审批表单是否自定义（Y是 N否）';
 COMMENT ON COLUMN flow_task.form_path IS '审批表单路径';
 COMMENT ON COLUMN flow_task.create_time IS '创建时间';
+COMMENT ON COLUMN flow_task.create_by IS '创建人';
 COMMENT ON COLUMN flow_task.update_time IS '更新时间';
+COMMENT ON COLUMN flow_task.update_by IS '更新人';
 COMMENT ON COLUMN flow_task.del_flag IS '删除标志';
 COMMENT ON COLUMN flow_task.tenant_id IS '租户id';
 
@@ -256,8 +274,9 @@ CREATE TABLE flow_user
     processed_by varchar(80) NULL,
     associated   int8        NOT NULL,
     create_time  timestamp   NULL,
-    create_by    varchar(80) NULL,
+    create_by    varchar(64)  NULL     DEFAULT '':: character varying,
     update_time  timestamp   NULL,
+    update_by    varchar(64)  NULL DEFAULT '':: character varying,
     del_flag     bpchar(1)   NULL DEFAULT '0':: character varying,
     tenant_id    varchar(40) NULL,
     CONSTRAINT flow_user_pk PRIMARY KEY (id)
@@ -273,6 +292,7 @@ COMMENT ON COLUMN flow_user.associated IS '任务表id';
 COMMENT ON COLUMN flow_user.create_time IS '创建时间';
 COMMENT ON COLUMN flow_user.create_by IS '创建人';
 COMMENT ON COLUMN flow_user.update_time IS '更新时间';
+COMMENT ON COLUMN flow_user.update_by IS '更新人';
 COMMENT ON COLUMN flow_user.del_flag IS '删除标志';
 COMMENT ON COLUMN flow_user.tenant_id IS '租户id';
 

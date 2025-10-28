@@ -384,7 +384,6 @@ public class FlwTaskServiceImpl implements IFlwTaskService {
         QueryWrapper<FlowTaskBo> queryWrapper = buildQueryWrapper(flowTaskBo);
         queryWrapper.eq("t.node_type", NodeType.BETWEEN.getKey());
         queryWrapper.in("t.approver", LoginHelper.getUserIdStr());
-        queryWrapper.orderByDesc("t.create_time").orderByDesc("t.update_time");
         Page<FlowHisTaskVo> page = flwTaskMapper.getListFinishTask(pageQuery.build(), queryWrapper);
         return TableDataInfo.build(page);
     }
@@ -459,7 +458,7 @@ public class FlwTaskServiceImpl implements IFlwTaskService {
             List<Long> categoryIds = flwCategoryMapper.selectCategoryIdsByParentId(Convert.toLong(flowTaskBo.getCategory()));
             wrapper.in("t.category", StreamUtils.toList(categoryIds, Convert::toStr));
         }
-        wrapper.orderByDesc("t.create_time");
+        wrapper.orderByDesc("t.create_time").orderByDesc("t.update_time");
         return wrapper;
     }
 
@@ -487,9 +486,9 @@ public class FlwTaskServiceImpl implements IFlwTaskService {
 
             Map<String, Object> variable = new HashMap<>();
             // 消息类型
-            variable.put("messageType", messageType);
+            variable.put(FlowConstant.MESSAGE_TYPE, messageType);
             // 消息通知
-            variable.put("notice", notice);
+            variable.put(FlowConstant.MESSAGE_NOTICE, notice);
 
             FlowParams flowParams = FlowParams.build()
                 .nodeCode(bo.getNodeCode())
@@ -601,16 +600,24 @@ public class FlwTaskServiceImpl implements IFlwTaskService {
         if (ObjectUtil.isNull(flowNode)) {
             throw new NullPointerException("当前【" + flowTaskVo.getNodeCode() + "】节点编码不存在");
         }
-        NodeExtVo nodeExtVo = flwNodeExtService.parseNodeExt(flowNode.getExt());
+        NodeExtVo nodeExtVo = flwNodeExtService.parseNodeExt(flowNode.getExt(), instance.getVariableMap());
         //设置按钮权限
-        flowTaskVo.setButtonList(nodeExtVo.getButtonPermissions());
+        if (CollUtil.isNotEmpty(nodeExtVo.getButtonPermissions())) {
+            flowTaskVo.setButtonList(nodeExtVo.getButtonPermissions());
+        } else {
+            flowTaskVo.setButtonList(new ArrayList<>());
+        }
         if (CollUtil.isNotEmpty(nodeExtVo.getCopySettings())) {
             List<FlowCopyVo> list = StreamUtils.toList(nodeExtVo.getCopySettings(), x -> new FlowCopyVo(Convert.toLong(x)));
             flowTaskVo.setCopyList(list);
         } else {
             flowTaskVo.setCopyList(new ArrayList<>());
         }
-        flowTaskVo.setVarList(nodeExtVo.getVariables());
+        if (CollUtil.isNotEmpty(nodeExtVo.getVariables())) {
+            flowTaskVo.setVarList(nodeExtVo.getVariables());
+        } else {
+            flowTaskVo.setVarList(new HashMap<>());
+        }
         flowTaskVo.setNodeRatio(flowNode.getNodeRatio());
         flowTaskVo.setApplyNode(flowNode.getNodeCode().equals(flwCommonService.applyNodeCode(task.getDefinitionId())));
         return flowTaskVo;

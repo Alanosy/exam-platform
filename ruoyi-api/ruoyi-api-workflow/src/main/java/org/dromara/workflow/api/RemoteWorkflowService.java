@@ -85,4 +85,22 @@ public interface RemoteWorkflowService {
      */
     boolean completeTask(RemoteCompleteTask completeTask);
 
+
+    /**
+     * 办理任务
+     *
+     * @param taskId  任务ID
+     * @param message 办理意见
+     * @return 结果
+     */
+    boolean completeTask(Long taskId, String message);
+
+    /**
+     * 启动流程并办理第一个任务
+     *
+     * @param startProcess 参数
+     * @return 结果
+     */
+    boolean startCompleteTask(RemoteStartProcess startProcess);
+
 }

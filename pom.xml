@@ -13,13 +13,13 @@
     <description>Dromara RuoYi-Cloud-Plus微服务系统</description>
 
     <properties>
-        <revision>2.5.0</revision>
+        <revision>2.5.1</revision>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <java.version>17</java.version>
-        <spring-boot.version>3.5.6</spring-boot.version>
+        <spring-boot.version>3.5.7</spring-boot.version>
         <spring-cloud.version>2025.0.0</spring-cloud.version>
-        <spring-boot-admin.version>3.5.3</spring-boot-admin.version>
+        <spring-boot-admin.version>3.5.5</spring-boot-admin.version>
         <mybatis.version>3.5.16</mybatis.version>
         <mybatis-plus.version>3.5.14</mybatis-plus.version>
         <p6spy.version>3.9.1</p6spy.version>
@@ -53,7 +53,7 @@
         <!-- 面向运行时的D-ORM依赖 -->
         <anyline.version>8.7.2-20250603</anyline.version>
         <!-- 工作流配置 -->
-        <warm-flow.version>1.8.1</warm-flow.version>
+        <warm-flow.version>1.8.2</warm-flow.version>
         <!-- mq配置 -->
         <rocketmq.version>2.3.4</rocketmq.version>
 
