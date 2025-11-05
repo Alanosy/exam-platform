@@ -176,6 +176,8 @@ const getCode = async () => {
   const { data } = res;
   captchaEnabled.value = data.captchaEnabled === undefined ? true : data.captchaEnabled;
   if (captchaEnabled.value) {
+    // 刷新验证码时清空输入框
+    loginForm.value.code = '';
     codeUrl.value = 'data:image/gif;base64,' + data.img;
     loginForm.value.uuid = data.uuid;
   }
