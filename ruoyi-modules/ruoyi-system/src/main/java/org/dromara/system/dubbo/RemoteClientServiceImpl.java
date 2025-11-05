@@ -23,6 +23,8 @@ public class RemoteClientServiceImpl implements RemoteClientService {
 
     /**
      * 根据客户端id获取客户端详情
+     *
+     * @see org.dromara.system.domain.convert.SysClientVoConvert
      */
     @Override
     public RemoteClientVo queryByClientId(String clientId) {

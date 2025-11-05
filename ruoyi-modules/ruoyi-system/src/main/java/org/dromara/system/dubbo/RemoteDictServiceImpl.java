@@ -25,6 +25,13 @@ public class RemoteDictServiceImpl implements RemoteDictService {
 
     private final ISysDictTypeService sysDictTypeService;
 
+    /**
+     * remote根据字典类型查询字典
+     *
+     * @param dictType 字典类型
+     * @return RemoteDictTypeVo
+     * @see org.dromara.system.domain.convert.SysDictTypeVoConvert
+     */
     @Override
     public RemoteDictTypeVo selectDictTypeByType(String dictType) {
         SysDictTypeVo vo = sysDictTypeService.selectDictTypeByType(dictType);
@@ -32,10 +39,11 @@ public class RemoteDictServiceImpl implements RemoteDictService {
     }
 
     /**
-     * 根据字典类型查询字典数据
+     * remote根据字典类型查询字典数据
      *
      * @param dictType 字典类型
      * @return 字典数据集合信息
+     * @see org.dromara.system.domain.convert.SysDictDataVoConvert
      */
     @Override
     public List<RemoteDictDataVo> selectDictDataByType(String dictType) {
