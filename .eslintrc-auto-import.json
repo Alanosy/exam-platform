@@ -17,6 +17,8 @@
     "MaybeRefOrGetter": true,
     "PropType": true,
     "Ref": true,
+    "Slot": true,
+    "Slots": true,
     "VNode": true,
     "WritableComputedRef": true,
     "acceptHMRUpdate": true,
@@ -35,6 +37,7 @@
     "createInjectionState": true,
     "createPinia": true,
     "createReactiveFn": true,
+    "createRef": true,
     "createReusableTemplate": true,
     "createSharedComposable": true,
     "createTemplatePromise": true,
@@ -277,6 +280,7 @@
     "useThrottleFn": true,
     "useThrottledRefHistory": true,
     "useTimeAgo": true,
+    "useTimeAgoIntl": true,
     "useTimeout": true,
     "useTimeoutFn": true,
     "useTimeoutPoll": true,
@@ -315,9 +319,6 @@
     "watchThrottled": true,
     "watchTriggerable": true,
     "watchWithFilter": true,
-    "whenever": true,
-    "Slot": true,
-    "Slots": true,
-    "createRef": true
+    "whenever": true
   }
 }

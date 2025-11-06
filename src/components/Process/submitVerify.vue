@@ -8,7 +8,7 @@
           <el-checkbox value="3" name="type">短信</el-checkbox>
         </el-checkbox-group>
       </el-form-item>
-      <el-form-item label="附件">
+      <el-form-item label="附件" v-if="buttonObj.file">
         <fileUpload v-model="form.fileId" :file-type="['png', 'jpg', 'jpeg', 'doc', 'docx', 'xlsx', 'xls', 'ppt', 'txt', 'pdf']" :file-size="20" />
       </el-form-item>
       <el-form-item label="抄送" v-if="buttonObj.copy">
