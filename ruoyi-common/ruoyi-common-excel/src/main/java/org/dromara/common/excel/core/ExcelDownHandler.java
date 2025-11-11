@@ -23,7 +23,9 @@ import org.dromara.common.core.utils.SpringUtils;
 import org.dromara.common.core.utils.StreamUtils;
 import org.dromara.common.core.utils.StringUtils;
 import org.dromara.common.excel.annotation.ExcelDictFormat;
+import org.dromara.common.excel.annotation.ExcelDynamicOptions;
 import org.dromara.common.excel.annotation.ExcelEnumFormat;
+import org.dromara.common.excel.service.ExcelOptionsProvider;
 
 import java.lang.reflect.Field;
 import java.util.*;
@@ -117,6 +119,18 @@ public class ExcelDownHandler implements SheetWriteHandler {
                 ExcelEnumFormat format = field.getDeclaredAnnotation(ExcelEnumFormat.class);
                 List<Object> values = EnumUtil.getFieldValues(format.enumClass(), format.textField());
                 options = StreamUtils.toList(values, Convert::toStr);
+            } else if (field.isAnnotationPresent(ExcelDynamicOptions.class)) {
+                // 处理动态下拉选项
+                ExcelDynamicOptions dynamicOptions = field.getDeclaredAnnotation(ExcelDynamicOptions.class);
+                Class<?> providerClass = dynamicOptions.providerClass();
+                if (providerClass == null) {
+                    throw new ServiceException("使用ExcelDynamicOptions注解，必须给providerClass赋予ExcelOptionsProvider的实现类" +
+                        "，字段：{}", field.getName());
+                }
+                // 获取提供者实例
+                ExcelOptionsProvider provider = (ExcelOptionsProvider) SpringUtils.getBean(providerClass);
+                Set<String> optionSets = provider.getOptions();
+                options = new ArrayList<>(CollUtil.isNotEmpty(optionSets) ? new ArrayList<>(optionSets) : Collections.emptyList());
             }
             if (ObjectUtil.isNotEmpty(options)) {
                 // 仅当下拉可选项不为空时执行
