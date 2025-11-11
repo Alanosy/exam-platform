@@ -147,7 +147,8 @@ public class WorkflowGlobalListener implements GlobalListener {
         //申请人提交事件
         Boolean submit = MapUtil.getBool(variable, FlowConstant.SUBMIT);
         if (submit != null && submit) {
-            flowProcessEventHandler.processHandler(definition.getFlowCode(), instance, instance.getFlowStatus(), variable, true);
+            String status = determineFlowStatus(instance);
+            flowProcessEventHandler.processHandler(definition.getFlowCode(), instance, status, variable, true);
         } else {
             // 判断流程状态（发布：撤销，退回，作废，终止，已完成事件）
             String status = determineFlowStatus(instance);
