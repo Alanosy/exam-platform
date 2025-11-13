@@ -33,6 +33,7 @@ import java.nio.channels.WritableByteChannel;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.Duration;
+import java.util.Map;
 import java.util.Optional;
 import java.util.function.Consumer;
 
@@ -317,13 +318,13 @@ public class OssClient {
     }
 
     /**
-     * 获取私有URL链接
+     * 创建下载请求的预签名URL
      *
      * @param objectKey   对象KEY
      * @param expiredTime 链接授权到期时间
      */
-    public String getPrivateUrl(String objectKey, Duration expiredTime) {
-        // 使用 AWS S3 预签名 URL 的生成器 获取对象的预签名 URL
+    public String createPresignedGetUrl(String objectKey, Duration expiredTime) {
+        // 使用 AWS S3 预签名 URL 的生成器 获取下载对象的预签名 URL
         URL url = presigner.presignGetObject(
                 x -> x.signatureDuration(expiredTime)
                     .getObjectRequest(
@@ -332,7 +333,28 @@ public class OssClient {
                             .build())
                     .build())
             .url();
-        return url.toString();
+        return url.toExternalForm();
+    }
+
+    /**
+     * 创建上传请求的预签名URL
+     *
+     * @param objectKey   对象KEY
+     * @param expiredTime 链接授权到期时间
+     * @param metadata 元数据
+     */
+    public String createPresignedPutUrl(String objectKey, Duration expiredTime, Map<String, String> metadata) {
+        // 使用 AWS S3 预签名 URL 的生成器 获取上传文件对象的预签名 URL
+        URL url = presigner.presignPutObject(
+                x -> x.signatureDuration(expiredTime)
+                    .putObjectRequest(
+                        y -> y.bucket(properties.getBucketName())
+                            .key(objectKey)
+                            .metadata(metadata)
+                            .build())
+                    .build())
+            .url();
+        return url.toExternalForm();
     }
 
     /**
