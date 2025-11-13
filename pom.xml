@@ -32,7 +32,7 @@
         <hutool.version>5.8.40</hutool.version>
         <redisson.version>3.51.0</redisson.version>
         <lock4j.version>2.2.7</lock4j.version>
-        <snailjob.version>1.8.0</snailjob.version>
+        <snailjob.version>1.8.1</snailjob.version>
         <satoken.version>1.44.0</satoken.version>
         <lombok.version>1.18.40</lombok.version>
         <logstash.version>7.4</logstash.version>
@@ -53,7 +53,7 @@
         <!-- 面向运行时的D-ORM依赖 -->
         <anyline.version>8.7.2-20250603</anyline.version>
         <!-- 工作流配置 -->
-        <warm-flow.version>1.8.2</warm-flow.version>
+        <warm-flow.version>1.8.3</warm-flow.version>
         <!-- mq配置 -->
         <rocketmq.version>2.3.4</rocketmq.version>
 
