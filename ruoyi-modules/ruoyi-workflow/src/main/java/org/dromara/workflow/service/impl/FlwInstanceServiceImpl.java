@@ -181,8 +181,8 @@ public class FlwInstanceServiceImpl implements IFlwInstanceService {
      */
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public boolean deleteByBusinessIds(List<Long> businessIds) {
-        List<FlowInstance> flowInstances = flowInstanceMapper.selectList(new LambdaQueryWrapper<FlowInstance>().in(FlowInstance::getBusinessId, StreamUtils.toList(businessIds, Convert::toStr)));
+    public boolean deleteByBusinessIds(List<String> businessIds) {
+        List<FlowInstance> flowInstances = flowInstanceMapper.selectList(new LambdaQueryWrapper<FlowInstance>().in(FlowInstance::getBusinessId, businessIds));
         if (CollUtil.isEmpty(flowInstances)) {
             log.warn("未找到对应的流程实例信息，无法执行删除操作。");
             return false;

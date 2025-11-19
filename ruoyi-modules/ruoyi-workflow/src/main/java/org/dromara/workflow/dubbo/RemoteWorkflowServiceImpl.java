@@ -24,7 +24,7 @@ public class RemoteWorkflowServiceImpl implements RemoteWorkflowService {
     private final WorkflowService workflowService;
 
     @Override
-    public boolean deleteInstance(List<Long> businessIds) {
+    public boolean deleteInstance(List<String> businessIds) {
         return workflowService.deleteInstance(businessIds);
     }
 

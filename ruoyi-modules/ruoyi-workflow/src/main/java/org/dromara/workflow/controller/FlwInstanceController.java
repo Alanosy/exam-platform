@@ -1,7 +1,9 @@
 package org.dromara.workflow.controller;
 
+import cn.hutool.core.convert.Convert;
 import lombok.RequiredArgsConstructor;
 import org.dromara.common.core.domain.R;
+import org.dromara.common.core.utils.StreamUtils;
 import org.dromara.common.idempotent.annotation.RepeatSubmit;
 import org.dromara.common.log.annotation.Log;
 import org.dromara.common.log.enums.BusinessType;
@@ -76,7 +78,7 @@ public class FlwInstanceController extends BaseController {
      */
     @DeleteMapping("/deleteByBusinessIds/{businessIds}")
     public R<Void> deleteByBusinessIds(@PathVariable List<Long> businessIds) {
-        return toAjax(flwInstanceService.deleteByBusinessIds(businessIds));
+        return toAjax(flwInstanceService.deleteByBusinessIds(StreamUtils.toList(businessIds, Convert::toStr)));
     }
 
     /**

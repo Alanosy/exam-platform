@@ -17,7 +17,7 @@ import java.util.Map;
 public class RemoteWorkflowServiceMock implements RemoteWorkflowService {
 
     @Override
-    public boolean deleteInstance(List<Long> businessIds) {
+    public boolean deleteInstance(List<String> businessIds) {
         log.warn("服务调用异常 -> 降级处理");
         return false;
     }
