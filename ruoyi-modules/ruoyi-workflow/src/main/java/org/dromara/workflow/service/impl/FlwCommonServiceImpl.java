@@ -92,17 +92,23 @@ public class FlwCommonServiceImpl implements IFlwCommonService {
             if (ObjectUtil.isEmpty(messageTypeEnum)) {
                 continue;
             }
-            switch (messageTypeEnum) {
-                case SYSTEM_MESSAGE -> {
-                    remoteMessageService.publishMessage(userIds, message);
+            try {
+                switch (messageTypeEnum) {
+                    case SYSTEM_MESSAGE -> {
+                        remoteMessageService.publishMessage(userIds, message);
+                    }
+                    case EMAIL_MESSAGE -> {
+                        remoteMailService.send(emails, subject, message);
+                    }
+                    case SMS_MESSAGE -> {
+                        // TODO: 补充短信发送逻辑
+                        log.info("【短信发送 - TODO】用户数量={} 内容={}", userList.size(), message);
+                    }
+                    default -> log.warn("【消息发送】未处理的消息类型：{}", messageTypeEnum);
                 }
-                case EMAIL_MESSAGE -> {
-                    remoteMailService.send(emails, subject, message);
-                }
-                case SMS_MESSAGE -> {
-                    //todo 短信发送
-                }
-                default -> throw new IllegalStateException("Unexpected value: " + messageTypeEnum);
+            } catch (Exception ex) {
+                // 记录错误但不抛出，确保主逻辑不受影响
+                log.error("【消息发送失败】类型={}，原因={}", messageTypeEnum, ex.getMessage(), ex);
             }
         }
     }
