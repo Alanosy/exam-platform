@@ -140,6 +140,9 @@ public class FlwTaskServiceImpl implements IFlwTaskService {
 
         // 将流程定义内的扩展参数设置到变量中
         Definition definition = FlowEngine.defService().getPublishByFlowCode(startProcessBo.getFlowCode());
+        if (ObjectUtil.isNull(definition)) {
+            throw new ServiceException("流程【" + startProcessBo.getFlowCode() + "】未发布，请先在流程设计器中发布流程定义");
+        }
         Dict dict = JsonUtils.parseMap(definition.getExt());
         boolean autoPass = !ObjectUtil.isNull(dict) && dict.getBool(FlowConstant.AUTO_PASS);
         variables.put(FlowConstant.AUTO_PASS, autoPass);
