@@ -15,10 +15,10 @@
 
     <properties>
         <revision>2.5.1</revision>
-        <spring-cloud-alibaba.version>2023.0.3.4</spring-cloud-alibaba.version>
+        <spring-cloud-alibaba.version>2025.0.0.0</spring-cloud-alibaba.version>
         <seata.version>2.5.0</seata.version>
         <nacos.client.version>2.5.1</nacos.client.version>
-        <dubbo.version>3.3.5</dubbo.version>
+        <dubbo.version>3.3.6</dubbo.version>
         <dubbo-extensions.version>3.3.1</dubbo-extensions.version>
     </properties>
     <dependencyManagement>
