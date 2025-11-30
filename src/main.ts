@@ -28,6 +28,9 @@ import ElementIcons from '@/plugins/svgicon';
 // permission control
 import './permission';
 
+// 开发者工具保护
+import { initDevToolsProtection } from '@/utils/devtools-protection';
+
 // 国际化
 import i18n from '@/lang/index';
 
@@ -55,3 +58,6 @@ app.use(plugins);
 directive(app);
 
 app.mount('#app');
+
+// 初始化开发者工具保护（仅生产环境）
+initDevToolsProtection();
