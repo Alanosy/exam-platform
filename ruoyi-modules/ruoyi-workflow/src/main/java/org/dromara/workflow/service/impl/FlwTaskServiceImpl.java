@@ -5,6 +5,7 @@ import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.convert.Convert;
 import cn.hutool.core.lang.Dict;
 import cn.hutool.core.util.ObjectUtil;
+import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.incrementer.IdentifierGenerator;
@@ -310,10 +311,12 @@ public class FlwTaskServiceImpl implements IFlwTaskService {
                     List<String> variableUserIds = Arrays.asList(userIds.split(StringUtils.SEPARATOR));
                     hashSet.addAll(popUserIds);
                     hashSet.addAll(variableUserIds);
-                    map.put(entry.getKey(), StringUtils.joinComma(hashSet));
+                    map.put(TaskStatusEnum.PASS.getStatus() + StrUtil.COLON + entry.getKey(), StringUtils.joinComma(hashSet));
+                    map.put(TaskStatusEnum.BACK.getStatus() + StrUtil.COLON + entry.getKey(), StringUtils.joinComma(hashSet));
                 }
             } else {
-                map.put(entry.getKey(), entry.getValue());
+                map.put(TaskStatusEnum.PASS.getStatus() + StrUtil.COLON + entry.getKey(), entry.getValue());
+                map.put(TaskStatusEnum.BACK.getStatus() + StrUtil.COLON + entry.getKey(), entry.getValue());
             }
         }
         return map;
