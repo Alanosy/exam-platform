@@ -3,7 +3,6 @@ package org.dromara.workflow.service.impl;
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.util.ObjectUtil;
 import lombok.RequiredArgsConstructor;
-import org.dromara.common.core.exception.ServiceException;
 import org.dromara.common.core.utils.StringUtils;
 import org.dromara.warm.flow.orm.entity.FlowInstance;
 import org.dromara.workflow.api.domain.RemoteCompleteTask;
@@ -159,28 +158,19 @@ public class WorkflowServiceImpl implements WorkflowService {
      */
     @Override
     public boolean startCompleteTask(RemoteStartProcess startProcess) {
-        try {
-            StartProcessBo processBo = new StartProcessBo();
-            processBo.setBusinessId(startProcess.getBusinessId());
-            processBo.setFlowCode(startProcess.getFlowCode());
-            processBo.setVariables(startProcess.getVariables());
-            processBo.setHandler(startProcess.getHandler());
-            processBo.setBizExt(BeanUtil.toBean(startProcess.getBizExt(), FlowInstanceBizExt.class));
+        StartProcessBo processBo = new StartProcessBo();
+        processBo.setBusinessId(startProcess.getBusinessId());
+        processBo.setFlowCode(startProcess.getFlowCode());
+        processBo.setVariables(startProcess.getVariables());
+        processBo.setHandler(startProcess.getHandler());
+        processBo.setBizExt(BeanUtil.toBean(startProcess.getBizExt(), FlowInstanceBizExt.class));
 
-            RemoteStartProcessReturn result = flwTaskService.startWorkFlow(processBo);
-            CompleteTaskBo taskBo = new CompleteTaskBo();
-            taskBo.setTaskId(result.getTaskId());
-            taskBo.setMessageType(Collections.singletonList(MessageTypeEnum.SYSTEM_MESSAGE.getCode()));
-            taskBo.setVariables(startProcess.getVariables());
-            taskBo.setHandler(startProcess.getHandler());
-
-            boolean flag = flwTaskService.completeTask(taskBo);
-            if (!flag) {
-                throw new ServiceException("流程发起异常");
-            }
-            return true;
-        } catch (Exception e) {
-            throw new ServiceException(e.getMessage());
-        }
+        RemoteStartProcessReturn result = flwTaskService.startWorkFlow(processBo);
+        CompleteTaskBo taskBo = new CompleteTaskBo();
+        taskBo.setTaskId(result.getTaskId());
+        taskBo.setMessageType(Collections.singletonList(MessageTypeEnum.SYSTEM_MESSAGE.getCode()));
+        taskBo.setVariables(startProcess.getVariables());
+        taskBo.setHandler(startProcess.getHandler());
+        return flwTaskService.completeTask(taskBo);
     }
 }
