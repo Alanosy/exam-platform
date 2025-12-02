@@ -455,15 +455,19 @@ public class FlwTaskServiceImpl implements IFlwTaskService {
     }
 
     private QueryWrapper<FlowTaskBo> buildQueryWrapper(FlowTaskBo flowTaskBo) {
+        Map<String, Object> params = flowTaskBo.getParams();
         QueryWrapper<FlowTaskBo> wrapper = Wrappers.query();
         wrapper.like(StringUtils.isNotBlank(flowTaskBo.getNodeName()), "t.node_name", flowTaskBo.getNodeName());
         wrapper.like(StringUtils.isNotBlank(flowTaskBo.getFlowName()), "t.flow_name", flowTaskBo.getFlowName());
         wrapper.like(StringUtils.isNotBlank(flowTaskBo.getFlowCode()), "t.flow_code", flowTaskBo.getFlowCode());
+        wrapper.like(StringUtils.isNotBlank(flowTaskBo.getFlowStatus()), "t.flow_status", flowTaskBo.getFlowStatus());
         wrapper.in(CollUtil.isNotEmpty(flowTaskBo.getCreateByIds()), "t.create_by", flowTaskBo.getCreateByIds());
         if (StringUtils.isNotBlank(flowTaskBo.getCategory())) {
             List<Long> categoryIds = flwCategoryMapper.selectCategoryIdsByParentId(Convert.toLong(flowTaskBo.getCategory()));
             wrapper.in("t.category", StreamUtils.toList(categoryIds, Convert::toStr));
         }
+        wrapper.between(params.get("beginTime") != null && params.get("endTime") != null,
+            "t.create_time", params.get("beginTime"), params.get("endTime"));
         wrapper.orderByDesc("t.create_time").orderByDesc("t.update_time");
         return wrapper;
     }
