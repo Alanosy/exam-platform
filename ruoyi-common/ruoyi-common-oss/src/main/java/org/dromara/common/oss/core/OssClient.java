@@ -95,7 +95,11 @@ public class OssClient {
                 .region(of())
                 .forcePathStyle(isStyle)
                 .httpClient(NettyNioAsyncHttpClient.builder()
-                    .connectionTimeout(Duration.ofSeconds(60)).build())
+                    .connectionTimeout(Duration.ofSeconds(60))
+                    .connectionAcquisitionTimeout(Duration.ofSeconds(30))
+                    .maxConcurrency(100)
+                    .maxPendingConnectionAcquires(1000)
+                    .build())
                 .build();
 
             //AWS基于 CRT 的 S3 AsyncClient 实例用作 S3 传输管理器的底层客户端
