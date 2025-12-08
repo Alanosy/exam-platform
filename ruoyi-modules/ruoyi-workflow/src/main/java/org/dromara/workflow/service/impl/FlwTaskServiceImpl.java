@@ -6,6 +6,7 @@ import cn.hutool.core.convert.Convert;
 import cn.hutool.core.lang.Dict;
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.StrUtil;
+import com.baomidou.lock.annotation.Lock4j;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.incrementer.IdentifierGenerator;
@@ -105,6 +106,7 @@ public class FlwTaskServiceImpl implements IFlwTaskService {
      */
     @Override
     @Transactional(rollbackFor = Exception.class)
+    @Lock4j(keys = {"#startProcessBo.flowCode + #startProcessBo.businessId"})
     public RemoteStartProcessReturn startWorkFlow(StartProcessBo startProcessBo) {
         String businessId = startProcessBo.getBusinessId();
         if (StringUtils.isBlank(businessId)) {
@@ -199,6 +201,7 @@ public class FlwTaskServiceImpl implements IFlwTaskService {
      */
     @Override
     @Transactional(rollbackFor = Exception.class)
+    @Lock4j(keys = {"#completeTaskBo.taskId"})
     public boolean completeTask(CompleteTaskBo completeTaskBo) {
         // 获取任务ID并查询对应的流程任务和实例信息
         Long taskId = completeTaskBo.getTaskId();
