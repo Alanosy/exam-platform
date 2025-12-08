@@ -71,4 +71,10 @@ public interface SystemConstants {
      * 根部门祖级列表
      */
     String ROOT_DEPT_ANCESTORS = "0";
+
+    /**
+     * 排除敏感属性字段
+     */
+    String[] EXCLUDE_PROPERTIES = { "password", "oldPassword", "newPassword", "confirmPassword" };
+
 }

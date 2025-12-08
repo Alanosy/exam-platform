@@ -3,7 +3,7 @@ package org.dromara.common.sensitive.core;
 import cn.hutool.core.convert.Convert;
 import cn.hutool.core.util.DesensitizedUtil;
 import lombok.AllArgsConstructor;
-import org.dromara.common.sensitive.utils.DesensitizedUtils;
+import org.dromara.common.core.utils.DesensitizedUtils;
 
 import java.util.function.Function;
 

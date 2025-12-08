@@ -1,4 +1,4 @@
-package org.dromara.common.sensitive.utils;
+package org.dromara.common.core.utils;
 
 import cn.hutool.core.util.DesensitizedUtil;
 import cn.hutool.core.util.StrUtil;
