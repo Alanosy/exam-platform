@@ -395,56 +395,31 @@ services:
       - /docker/rabbitmq/data:/var/lib/rabbitmq
     network_mode: "host"
 
-  zookeeper:
-    image: 'bitnami/zookeeper:3.8.0'
-    container_name: zookeeper
-    ports:
-      - "2181:2181"
-    environment:
-      TZ: Asia/Shanghai
-      ALLOW_ANONYMOUS_LOGIN: "yes"
-      ZOO_SERVER_ID: 1
-      ZOO_PORT_NUMBER: 2181
-      # 自带的控制台 一般用不上可自行开启
-      ZOO_ENABLE_ADMIN_SERVER: "no"
-      # 自带控制台的端口
-      ZOO_ADMIN_SERVER_PORT_NUMBER: 8080
-    network_mode: "host"
-
   kafka:
-    image: 'bitnami/kafka:3.6.2'
+    image: apache/kafka:3.9.1
     container_name: kafka
     ports:
       - "9092:9092"
+      - "9093:9093"
     environment:
-      TZ: Asia/Shanghai
-      # 更多变量 查看文档 https://github.com/bitnami/bitnami-docker-kafka/blob/master/README.md
-      KAFKA_BROKER_ID: 1
+      KAFKA_NODE_ID: 1
+      KAFKA_PROCESS_ROLES: broker,controller
       # 监听端口
-      KAFKA_CFG_LISTENERS: PLAINTEXT://:9092
+      KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9092,CONTROLLER://0.0.0.0:9093
       # 实际访问ip 本地用 127 内网用 192 外网用 外网ip
-      KAFKA_CFG_ADVERTISED_LISTENERS: PLAINTEXT://192.168.31.165:9092
-      KAFKA_CFG_ZOOKEEPER_CONNECT: 127.0.0.1:2181
-      ALLOW_PLAINTEXT_LISTENER: "yes"
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://192.168.31.165:9092
+      KAFKA_CONTROLLER_QUORUM_VOTERS: 1@localhost:9093
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+      KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
+      KAFKA_LOG_DIRS: /var/lib/kafka/data
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: "true"
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_LOG_RETENTION_HOURS: 168
+      KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
+      CLUSTER_ID: "Mk3OEYBSD34fcwNTJENDM2Qk" # 使用 kafka-storage.sh random-uuid 生成
     volumes:
-      - /docker/kafka/data:/bitnami/kafka/data
-    depends_on:
-      - zookeeper
-    network_mode: "host"
-
-  kafka-manager:
-    image: sheepkiller/kafka-manager:latest
-    container_name: kafka-manager
-    ports:
-      - "19092:19092"
-    environment:
-      ZK_HOSTS: 127.0.0.1:2181
-      APPLICATION_SECRET: letmein
-      KAFKA_MANAGER_USERNAME: ruoyi
-      KAFKA_MANAGER_PASSWORD: ruoyi123
-      KM_ARGS: -Dhttp.port=19092
-    depends_on:
-      - kafka
+      - /docker/kafka/data:/var/lib/kafka/data
     network_mode: "host"
 
   sky-oap:
