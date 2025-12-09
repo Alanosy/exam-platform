@@ -1,8 +1,13 @@
 package org.dromara.gateway.filter;
 
-import cn.hutool.core.lang.Dict;
 import cn.hutool.core.map.MapUtil;
+import cn.hutool.core.util.ArrayUtil;
 import cn.hutool.core.util.ObjectUtil;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.dromara.common.core.constant.SystemConstants;
 import org.dromara.common.core.utils.StringUtils;
@@ -21,8 +26,8 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Mono;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * 全局日志过滤器
@@ -42,6 +47,7 @@ public class GlobalLogFilter implements GlobalFilter, Ordered {
 
     private static final String START_TIME = "startTime";
 
+    @SneakyThrows
     @Override
     public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
         if (!customGatewayProperties.getRequestLog()) {
@@ -59,20 +65,10 @@ public class GlobalLogFilter implements GlobalFilter, Ordered {
             } else {
                 String jsonParam = WebFluxUtils.resolveBodyFromCacheRequest(exchange);
                 if (StringUtils.isNotBlank(jsonParam)) {
-                    List<Dict> list = new ArrayList<>();
-                    if (JsonUtils.isJsonArray(jsonParam)) {
-                        List<String> list1 = JsonUtils.parseArray(jsonParam, String.class);
-                        for (String str : list1) {
-                            Dict map = JsonUtils.parseMap(str);
-                            MapUtil.removeAny(map, SystemConstants.EXCLUDE_PROPERTIES);
-                            list.add(map);
-                        }
-                        jsonParam = JsonUtils.toJsonString(list);
-                    } else {
-                        Dict map = JsonUtils.parseMap(jsonParam);
-                        MapUtil.removeAny(map, SystemConstants.EXCLUDE_PROPERTIES);
-                        jsonParam = JsonUtils.toJsonString(map);
-                    }
+                    ObjectMapper objectMapper = JsonUtils.getObjectMapper();
+                    JsonNode rootNode = objectMapper.readTree(jsonParam);
+                    removeSensitiveFields(rootNode, SystemConstants.EXCLUDE_PROPERTIES);
+                    jsonParam = rootNode.toString();
                 }
                 log.info("[PLUS]开始请求 => URL[{}],参数类型[json],参数:[{}]", url, jsonParam);
             }
@@ -96,6 +92,30 @@ public class GlobalLogFilter implements GlobalFilter, Ordered {
                 log.info("[PLUS]结束请求 => URL[{}],耗时:[{}]毫秒", url, executeTime);
             }
         }));
+    }
+
+    private void removeSensitiveFields(JsonNode node, String[] excludeProperties) {
+        if (node == null) {
+            return;
+        }
+        if (node.isObject()) {
+            ObjectNode objectNode = (ObjectNode) node;
+            // 收集要删除的字段名（避免 ConcurrentModification）
+            Set<String> fieldsToRemove = new HashSet<>();
+            objectNode.fieldNames().forEachRemaining(fieldName -> {
+                if (ArrayUtil.contains(excludeProperties, fieldName)) {
+                    fieldsToRemove.add(fieldName);
+                }
+            });
+            fieldsToRemove.forEach(objectNode::remove);
+            // 递归处理子节点
+            objectNode.elements().forEachRemaining(child -> removeSensitiveFields(child, excludeProperties));
+        } else if (node.isArray()) {
+            ArrayNode arrayNode = (ArrayNode) node;
+            for (JsonNode child : arrayNode) {
+                removeSensitiveFields(child, excludeProperties);
+            }
+        }
     }
 
     @Override
