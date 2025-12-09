@@ -197,9 +197,10 @@ public class SysOssServiceImpl implements ISysOssService {
         String originalfileName = file.getName();
         String suffix = StringUtils.substring(originalfileName, originalfileName.lastIndexOf("."), originalfileName.length());
         OssClient storage = OssFactory.instance();
+        long length = file.length();
         UploadResult uploadResult = storage.uploadSuffix(file, suffix);
         SysOssExt ext1 = new SysOssExt();
-        ext1.setFileSize(file.length());
+        ext1.setFileSize(length);
         // 保存文件信息
         return buildResultEntity(originalfileName, suffix, storage.getConfigKey(), uploadResult, ext1);
     }
