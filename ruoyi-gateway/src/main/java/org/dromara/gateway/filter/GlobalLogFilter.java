@@ -5,6 +5,7 @@ import cn.hutool.core.map.MapUtil;
 import cn.hutool.core.util.ObjectUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.dromara.common.core.constant.SystemConstants;
+import org.dromara.common.core.utils.StringUtils;
 import org.dromara.common.json.utils.JsonUtils;
 import org.dromara.gateway.config.properties.ApiDecryptProperties;
 import org.dromara.gateway.config.properties.CustomGatewayProperties;
@@ -57,19 +58,21 @@ public class GlobalLogFilter implements GlobalFilter, Ordered {
                 log.info("[PLUS]开始请求 => URL[{}],参数类型[encrypt]", url);
             } else {
                 String jsonParam = WebFluxUtils.resolveBodyFromCacheRequest(exchange);
-                List<Dict> list = new ArrayList<>();
-                if (JsonUtils.isJsonArray(jsonParam)) {
-                    List<String> list1 = JsonUtils.parseArray(jsonParam, String.class);
-                    for (String str : list1) {
-                        Dict map = JsonUtils.parseMap(str);
+                if (StringUtils.isNotBlank(jsonParam)) {
+                    List<Dict> list = new ArrayList<>();
+                    if (JsonUtils.isJsonArray(jsonParam)) {
+                        List<String> list1 = JsonUtils.parseArray(jsonParam, String.class);
+                        for (String str : list1) {
+                            Dict map = JsonUtils.parseMap(str);
+                            MapUtil.removeAny(map, SystemConstants.EXCLUDE_PROPERTIES);
+                            list.add(map);
+                        }
+                        jsonParam = JsonUtils.toJsonString(list);
+                    } else {
+                        Dict map = JsonUtils.parseMap(jsonParam);
                         MapUtil.removeAny(map, SystemConstants.EXCLUDE_PROPERTIES);
-                        list.add(map);
+                        jsonParam = JsonUtils.toJsonString(map);
                     }
-                    jsonParam = JsonUtils.toJsonString(list);
-                } else {
-                    Dict map = JsonUtils.parseMap(jsonParam);
-                    MapUtil.removeAny(map, SystemConstants.EXCLUDE_PROPERTIES);
-                    jsonParam = JsonUtils.toJsonString(map);
                 }
                 log.info("[PLUS]开始请求 => URL[{}],参数类型[json],参数:[{}]", url, jsonParam);
             }
