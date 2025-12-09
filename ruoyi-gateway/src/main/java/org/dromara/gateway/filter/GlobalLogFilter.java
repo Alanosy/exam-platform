@@ -15,6 +15,7 @@ import org.springframework.cloud.gateway.filter.GlobalFilter;
 import org.springframework.core.Ordered;
 import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.stereotype.Component;
+import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Mono;
@@ -75,8 +76,9 @@ public class GlobalLogFilter implements GlobalFilter, Ordered {
         } else {
             MultiValueMap<String, String> parameterMap = request.getQueryParams();
             if (MapUtil.isNotEmpty(parameterMap)) {
-                MapUtil.removeAny(parameterMap, SystemConstants.EXCLUDE_PROPERTIES);
-                String parameters = JsonUtils.toJsonString(parameterMap);
+                LinkedMultiValueMap<String, String> map = new LinkedMultiValueMap<>(parameterMap);
+                MapUtil.removeAny(map, SystemConstants.EXCLUDE_PROPERTIES);
+                String parameters = JsonUtils.toJsonString(map);
                 log.info("[PLUS]开始请求 => URL[{}],参数类型[param],参数:[{}]", url, parameters);
             } else {
                 log.info("[PLUS]开始请求 => URL[{}],无参数", url);
