@@ -51,13 +51,11 @@ CREATE TABLE flow_node
     node_code       varchar(100)  NOT NULL,
     node_name       varchar(100)  NULL,
     permission_flag varchar(200)  NULL,
-    node_ratio      numeric(6, 3) NULL,
+    node_ratio      varchar(200)  NULL,
     coordinate      varchar(100)  NULL,
     any_node_skip   varchar(100)  NULL,
     listener_type   varchar(100)  NULL,
     listener_path   varchar(400)  NULL,
-    handler_type    varchar(100)  NULL,
-    handler_path    varchar(400)  NULL,
     form_custom     bpchar(1)     NULL DEFAULT 'N':: character varying,
     form_path       varchar(100)  NULL,
     "version"       varchar(20)   NOT NULL,
@@ -83,8 +81,6 @@ COMMENT ON COLUMN flow_node.coordinate IS '坐标';
 COMMENT ON COLUMN flow_node.any_node_skip IS '任意结点跳转';
 COMMENT ON COLUMN flow_node.listener_type IS '监听器类型';
 COMMENT ON COLUMN flow_node.listener_path IS '监听器路径';
-COMMENT ON COLUMN flow_node.handler_type IS '处理器类型';
-COMMENT ON COLUMN flow_node.handler_path IS '处理器路径';
 COMMENT ON COLUMN flow_node.form_custom IS '审批表单是否自定义（Y是 N否）';
 COMMENT ON COLUMN flow_node.form_path IS '审批表单路径';
 COMMENT ON COLUMN flow_node."version" IS '版本';
