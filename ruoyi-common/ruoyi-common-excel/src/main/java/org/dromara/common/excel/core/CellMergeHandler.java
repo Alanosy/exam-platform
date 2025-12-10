@@ -147,12 +147,12 @@ public class CellMergeHandler {
     private boolean isMerge(Object currentRow, Object preRow, CellMerge cellMerge) {
         final String[] mergeBy = cellMerge.mergeBy();
         if (StrUtil.isAllNotBlank(mergeBy)) {
-            //比对当前行和上一行的各个属性值一一比对 如果全为真 则为真
+            // 比对当前行和上一行的各个属性值一一比对 如果全为真 则为真
             for (String fieldName : mergeBy) {
                 final Object valCurrent = ReflectUtil.getFieldValue(currentRow, fieldName);
                 final Object valPre = ReflectUtil.getFieldValue(preRow, fieldName);
                 if (!Objects.equals(valPre, valCurrent)) {
-                    //依赖字段如有任一不等值,则标记为不可合并
+                    // 依赖字段如有任一不等值,则标记为不可合并
                     return false;
                 }
             }
