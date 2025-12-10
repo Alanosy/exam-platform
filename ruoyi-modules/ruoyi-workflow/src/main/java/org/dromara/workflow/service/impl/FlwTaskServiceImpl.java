@@ -31,6 +31,7 @@ import org.dromara.system.api.domain.vo.RemoteUserVo;
 import org.dromara.warm.flow.core.FlowEngine;
 import org.dromara.warm.flow.core.dto.FlowParams;
 import org.dromara.warm.flow.core.entity.*;
+import org.dromara.warm.flow.core.enums.CooperateType;
 import org.dromara.warm.flow.core.enums.NodeType;
 import org.dromara.warm.flow.core.enums.SkipType;
 import org.dromara.warm.flow.core.enums.UserType;
@@ -63,7 +64,6 @@ import org.dromara.workflow.service.IFlwTaskService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.math.BigDecimal;
 import java.util.*;
 
 import static org.dromara.workflow.common.constant.FlowConstant.*;
@@ -746,7 +746,7 @@ public class FlwTaskServiceImpl implements IFlwTaskService {
         Task task = taskService.getById(taskId);
         FlowNode flowNode = getByNodeCode(task.getNodeCode(), task.getDefinitionId());
         if ("addSignature".equals(taskOperation) || "reductionSignature".equals(taskOperation)) {
-            if (flowNode.getNodeRatio().compareTo(BigDecimal.ZERO) == 0) {
+            if (!CooperateType.isCountersign(flowNode.getNodeRatio())) {
                 throw new ServiceException(task.getNodeName() + "不是会签节点！");
             }
         }
