@@ -746,8 +746,8 @@ public class FlwTaskServiceImpl implements IFlwTaskService {
         Task task = taskService.getById(taskId);
         FlowNode flowNode = getByNodeCode(task.getNodeCode(), task.getDefinitionId());
         if ("addSignature".equals(taskOperation) || "reductionSignature".equals(taskOperation)) {
-            if (!CooperateType.isCountersign(flowNode.getNodeRatio())) {
-                throw new ServiceException(task.getNodeName() + "不是会签节点！");
+            if (CooperateType.isOrSign(flowNode.getNodeRatio())) {
+                throw new ServiceException(task.getNodeName() + "不是会签或票签节点！");
             }
         }
         // 设置任务状态并执行对应的任务操作
