@@ -211,7 +211,7 @@ public class WorkflowGlobalListener implements GlobalListener {
         //发布任务事件
         if (CollUtil.isNotEmpty(nextTasks)) {
             for (Task nextTask : nextTasks) {
-                flowProcessEventHandler.processTaskHandler(definition.getFlowCode(), instance, nextTask.getId(), params);
+                flowProcessEventHandler.processTaskHandler(definition.getFlowCode(), instance, nextTask, params);
             }
         }
         if (ObjectUtil.isNull(flowParams)) {
