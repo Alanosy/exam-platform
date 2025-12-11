@@ -529,20 +529,22 @@ public class FlwTaskServiceImpl implements IFlwTaskService {
         }
         //获取可驳回的前置节点
         List<Node> nodes = nodeService.previousNodeList(task.getDefinitionId(), nowNodeCode);
-        List<HisTask> taskList = hisTaskService.getByInsId(task.getInstanceId());
+        List<HisTask> hisTaskList = hisTaskService.getByInsId(task.getInstanceId());
 
         Map<String, Node> nodeMap = StreamUtils.toIdentityMap(nodes, Node::getNodeCode);
+        Set<String> added = new HashSet<>();
         List<Node> backNodeList = new ArrayList<>();
-        for (HisTask hisTask : taskList) {
+        for (HisTask hisTask : hisTaskList) {
             Node nodeValue = nodeMap.get(hisTask.getNodeCode());
-            if (nodeValue != null) {
+            if (nodeValue != null
+                && NodeType.BETWEEN.getKey().equals(nodeValue.getNodeType())
+                && added.add(nodeValue.getNodeCode())) {
                 backNodeList.add(nodeValue);
             }
         }
         if (CollUtil.isNotEmpty(backNodeList)) {
-            List<Node> prefixOrSuffixNodes = StreamUtils.filter(backNodeList, e -> NodeType.BETWEEN.getKey().equals(e.getNodeType()));
-            Collections.reverse(prefixOrSuffixNodes);
-            return prefixOrSuffixNodes;
+            Collections.reverse(backNodeList);
+            return backNodeList;
         }
         return nodes;
     }
