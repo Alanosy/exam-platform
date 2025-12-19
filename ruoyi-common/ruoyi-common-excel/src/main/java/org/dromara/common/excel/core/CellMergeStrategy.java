@@ -31,6 +31,10 @@ public class CellMergeStrategy extends AbstractMergeStrategy implements SheetWri
         this.cellList = CellMergeHandler.of(hasTitle).handle(list);
     }
 
+    public CellMergeStrategy(List<?> list, boolean hasTitle, int rowIndex) {
+        this.cellList = CellMergeHandler.of(hasTitle, rowIndex).handle(list);
+    }
+
     @Override
     protected void merge(Sheet sheet, Cell cell, Head head, Integer relativeRowIndex) {
         if (CollUtil.isEmpty(cellList)) {
