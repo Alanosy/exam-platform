@@ -80,7 +80,7 @@
 
 <script setup lang="ts">
 import { getCodeImg, getTenantList } from '@/api/login';
-import { authBinding } from '@/api/system/social/auth';
+import { authRouterUrl } from '@/api/system/social/auth';
 import { useUserStore } from '@/store/modules/user';
 import { LoginData, TenantVO } from '@/api/types';
 import { to } from 'await-to-js';
@@ -215,7 +215,7 @@ const initTenantList = async () => {
  * @param type
  */
 const doSocialLogin = (type: string) => {
-  authBinding(type, loginForm.value.tenantId).then((res: any) => {
+  authRouterUrl(type, loginForm.value.tenantId).then((res: any) => {
     if (res.code === HttpStatus.SUCCESS) {
       // 获取授权地址跳转
       window.location.href = res.data;
