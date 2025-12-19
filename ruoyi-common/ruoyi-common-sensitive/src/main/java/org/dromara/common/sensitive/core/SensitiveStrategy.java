@@ -89,6 +89,11 @@ public enum SensitiveStrategy {
     STRING_MASK(s -> DesensitizedUtils.mask(s, 4, 4, 4)),
 
     /**
+     * 高安全级别脱敏（Token / 私钥）：前2位可见，后2位可见，中间全部掩码
+     */
+    MASK_HIGH_SECURITY(s -> DesensitizedUtils.maskHighSecurity(s, 2, 2)),
+
+    /**
      * 清空为null
      */
     CLEAR(s -> DesensitizedUtil.clear()),

@@ -28,27 +28,60 @@ public class DesensitizedUtils extends DesensitizedUtil {
         }
 
         int len = value.length();
+        int prefixMaskLimit = prefixVisible + maskLength;
+        int fullLimit = prefixMaskLimit + suffixVisible;
 
-        // 总长度小于等于前后可见长度 → 全部掩码
-        if (len <= prefixVisible + suffixVisible) {
+        // 规则 1：长度 <= 中间掩码长度 → 全掩码
+        if (len <= maskLength) {
+            return StrUtil.repeat('*', len);
+        }
+        String mask = StrUtil.repeat('*', maskLength);
+
+        // 规则 2：长度 <= 前缀 + 中间掩码
+        if (len <= prefixMaskLimit) {
+            return value.substring(0, len - maskLength) + mask;
+        }
+
+        String prefix = value.substring(0, prefixVisible);
+
+        // 规则 3：长度 <= 前缀 + 中间掩码 + 后缀
+        if (len <= fullLimit) {
+            int suffixLen = len - prefixMaskLimit;
+            return prefix + mask + value.substring(len - suffixLen);
+        }
+
+        // 规则 4：标准形态
+        return prefix + mask + value.substring(len - suffixVisible);
+    }
+
+    /**
+     * 高安全级别脱敏方法（Token / 私钥）
+     *
+     * @param value         原始字符串
+     * @param prefixVisible 前面可见长度（推荐0~4）
+     * @param suffixVisible 后面可见长度（推荐0~4）
+     * @return 脱敏后字符串
+     */
+    public static String maskHighSecurity(String value, int prefixVisible, int suffixVisible) {
+        if (StrUtil.isBlank(value)) {
+            return value;
+        }
+        int len = value.length();
+
+        // 规则1：长度 <= 前缀可见长度 → 全部掩码
+        if (len <= prefixVisible) {
             return StrUtil.repeat('*', len);
         }
 
-        // 可用长度 = 总长度 - 前后可见长度
-        int available = len - prefixVisible - suffixVisible;
+        // 规则2：长度 <= 前缀 + 后缀可见长度 → 优先掩码后面
+        if (len <= prefixVisible + suffixVisible) {
+            return value.substring(0, len - prefixVisible) + StrUtil.repeat('*', prefixVisible);
+        }
 
-        // 中间掩码长度不能超过可用长度
-        int actualMaskLength = Math.min(maskLength, available);
-
-        // 剩余字符尽量显示在中间掩码旁
-        int remaining = available - actualMaskLength;
-        String middleChars = remaining > 0 ? value.substring(prefixVisible, prefixVisible + remaining) : "";
-        String middleMask = StrUtil.repeat('*', actualMaskLength);
-
-        String prefix = value.substring(0, prefixVisible);
-        String suffix = value.substring(len - suffixVisible);
-
-        return prefix + middleChars + middleMask + suffix;
+        // 规则3：标准形态 → 前后可见，中间全部掩码
+        return value.substring(0, prefixVisible)
+            + StrUtil.repeat('*', len - prefixVisible - suffixVisible)
+            + value.substring(len - suffixVisible);
     }
 
 }
