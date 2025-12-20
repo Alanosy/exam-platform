@@ -88,7 +88,7 @@ const handleArray = (array: Array<string | number>) => {
 };
 
 const isValueMatch = (itemValue: any) => {
-  return this.values.some(val => val == itemValue)
+  return values.value.some(val => val == itemValue)
 }
 </script>
 
