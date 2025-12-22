@@ -51,7 +51,7 @@
         <!-- SMS 配置 -->
         <sms4j.version>3.3.4</sms4j.version>
         <!-- 面向运行时的D-ORM依赖 -->
-        <anyline.version>8.7.2-20250603</anyline.version>
+        <anyline.version>8.7.3-20251210</anyline.version>
         <!-- 工作流配置 -->
         <warm-flow.version>1.8.4</warm-flow.version>
         <!-- mq配置 -->
