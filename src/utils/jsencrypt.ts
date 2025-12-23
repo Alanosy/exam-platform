@@ -1,4 +1,4 @@
-import JSEncrypt from 'jsencrypt/bin/jsencrypt.min.js';
+import JSEncrypt from 'jsencrypt';
 // 密钥对生成 http://web.chacuo.net/netrsakeypair
 
 const publicKey = import.meta.env.VITE_APP_RSA_PUBLIC_KEY;

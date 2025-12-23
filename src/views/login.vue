@@ -73,14 +73,14 @@
     </el-form>
     <!--  底部  -->
     <div class="el-login-footer">
-      <span>Copyright © 2018-2025 疯狂的狮子Li All Rights Reserved.</span>
+      <span>Copyright © 2018-2026 疯狂的狮子Li All Rights Reserved.</span>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
 import { getCodeImg, getTenantList } from '@/api/login';
-import { authBinding } from '@/api/system/social/auth';
+import { authRouterUrl } from '@/api/system/social/auth';
 import { useUserStore } from '@/store/modules/user';
 import { LoginData, TenantVO } from '@/api/types';
 import { to } from 'await-to-js';
@@ -176,6 +176,8 @@ const getCode = async () => {
   const { data } = res;
   captchaEnabled.value = data.captchaEnabled === undefined ? true : data.captchaEnabled;
   if (captchaEnabled.value) {
+    // 刷新验证码时清空输入框
+    loginForm.value.code = '';
     codeUrl.value = 'data:image/gif;base64,' + data.img;
     loginForm.value.uuid = data.uuid;
   }
@@ -213,7 +215,7 @@ const initTenantList = async () => {
  * @param type
  */
 const doSocialLogin = (type: string) => {
-  authBinding(type, loginForm.value.tenantId).then((res: any) => {
+  authRouterUrl(type, loginForm.value.tenantId).then((res: any) => {
     if (res.code === HttpStatus.SUCCESS) {
       // 获取授权地址跳转
       window.location.href = res.data;

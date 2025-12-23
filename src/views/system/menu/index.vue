@@ -252,6 +252,21 @@
               </el-radio-group>
             </el-form-item>
           </el-col>
+          <el-col v-if="form.visible !== '0'" :span="12">
+            <el-form-item label="激活路径" prop="form.remark">
+              <template #label>
+                <span>
+                  <el-tooltip content="隐藏菜单填写默认激活路由，比如激活父菜单的路由 /system/user" placement="top">
+                    <el-icon>
+                      <question-filled />
+                    </el-icon>
+                  </el-tooltip>
+                  激活路由
+                </span>
+              </template>
+              <el-input v-model="form.remark" placeholder="请输入激活路径" />
+            </el-form-item>
+          </el-col>
         </el-row>
       </el-form>
       <template #footer>
