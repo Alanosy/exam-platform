@@ -1,5 +1,9 @@
 package org.dromara.common.translation.core.impl;
 
+import cn.hutool.core.convert.Convert;
+import org.dromara.common.core.constant.CacheNames;
+import org.dromara.common.core.utils.StringUtils;
+import org.dromara.common.redis.utils.CacheUtils;
 import org.dromara.common.translation.annotation.TranslationType;
 import org.dromara.common.translation.constant.TransConstant;
 import org.dromara.common.translation.core.TranslationInterface;
@@ -21,6 +25,11 @@ public class UserNameTranslationImpl implements TranslationInterface<String> {
 
     @Override
     public String translation(Object key, String other) {
-        return remoteUserService.selectUserNameById((Long) key);
+        Long userId = Convert.toLong(key);
+        String username = CacheUtils.get(CacheNames.SYS_USER_NAME, userId);
+        if (StringUtils.isNotBlank(username)) {
+            return username;
+        }
+        return remoteUserService.selectUserNameById(userId);
     }
 }

@@ -1,7 +1,9 @@
 package org.dromara.common.mybatis.service;
 
 import org.apache.dubbo.config.annotation.DubboReference;
+import org.dromara.common.core.constant.CacheNames;
 import org.dromara.system.api.RemoteDataScopeService;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 /**
@@ -24,6 +26,7 @@ public class SysDataScopeService {
      * @param roleId 角色ID
      * @return 返回角色的自定义权限语句，如果没有找到则返回 null
      */
+    @Cacheable(cacheNames = CacheNames.SYS_ROLE_CUSTOM, key = "#roleId", condition = "#roleId != null")
     public String getRoleCustom(Long roleId) {
         return remoteDataScopeService.getRoleCustom(roleId);
     }
@@ -34,6 +37,7 @@ public class SysDataScopeService {
      * @param deptId 部门ID
      * @return 返回部门及其下级的权限语句，如果没有找到则返回 null
      */
+    @Cacheable(cacheNames = CacheNames.SYS_DEPT_AND_CHILD, key = "#deptId", condition = "#deptId != null")
     public String getDeptAndChild(Long deptId) {
         return remoteDataScopeService.getDeptAndChild(deptId);
     }
