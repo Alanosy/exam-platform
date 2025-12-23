@@ -1,8 +1,16 @@
 package org.dromara.gateway.filter;
 
 import cn.hutool.core.map.MapUtil;
+import cn.hutool.core.util.ArrayUtil;
 import cn.hutool.core.util.ObjectUtil;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.dromara.common.core.constant.SystemConstants;
+import org.dromara.common.core.utils.StringUtils;
 import org.dromara.common.json.utils.JsonUtils;
 import org.dromara.gateway.config.properties.ApiDecryptProperties;
 import org.dromara.gateway.config.properties.CustomGatewayProperties;
@@ -13,9 +21,13 @@ import org.springframework.cloud.gateway.filter.GlobalFilter;
 import org.springframework.core.Ordered;
 import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.stereotype.Component;
+import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Mono;
+
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * 全局日志过滤器
@@ -35,6 +47,7 @@ public class GlobalLogFilter implements GlobalFilter, Ordered {
 
     private static final String START_TIME = "startTime";
 
+    @SneakyThrows
     @Override
     public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
         if (!customGatewayProperties.getRequestLog()) {
@@ -51,12 +64,20 @@ public class GlobalLogFilter implements GlobalFilter, Ordered {
                 log.info("[PLUS]开始请求 => URL[{}],参数类型[encrypt]", url);
             } else {
                 String jsonParam = WebFluxUtils.resolveBodyFromCacheRequest(exchange);
+                if (StringUtils.isNotBlank(jsonParam)) {
+                    ObjectMapper objectMapper = JsonUtils.getObjectMapper();
+                    JsonNode rootNode = objectMapper.readTree(jsonParam);
+                    removeSensitiveFields(rootNode, SystemConstants.EXCLUDE_PROPERTIES);
+                    jsonParam = rootNode.toString();
+                }
                 log.info("[PLUS]开始请求 => URL[{}],参数类型[json],参数:[{}]", url, jsonParam);
             }
         } else {
             MultiValueMap<String, String> parameterMap = request.getQueryParams();
             if (MapUtil.isNotEmpty(parameterMap)) {
-                String parameters = JsonUtils.toJsonString(parameterMap);
+                LinkedMultiValueMap<String, String> map = new LinkedMultiValueMap<>(parameterMap);
+                MapUtil.removeAny(map, SystemConstants.EXCLUDE_PROPERTIES);
+                String parameters = JsonUtils.toJsonString(map);
                 log.info("[PLUS]开始请求 => URL[{}],参数类型[param],参数:[{}]", url, parameters);
             } else {
                 log.info("[PLUS]开始请求 => URL[{}],无参数", url);
@@ -71,6 +92,30 @@ public class GlobalLogFilter implements GlobalFilter, Ordered {
                 log.info("[PLUS]结束请求 => URL[{}],耗时:[{}]毫秒", url, executeTime);
             }
         }));
+    }
+
+    private void removeSensitiveFields(JsonNode node, String[] excludeProperties) {
+        if (node == null) {
+            return;
+        }
+        if (node.isObject()) {
+            ObjectNode objectNode = (ObjectNode) node;
+            // 收集要删除的字段名（避免 ConcurrentModification）
+            Set<String> fieldsToRemove = new HashSet<>();
+            objectNode.fieldNames().forEachRemaining(fieldName -> {
+                if (ArrayUtil.contains(excludeProperties, fieldName)) {
+                    fieldsToRemove.add(fieldName);
+                }
+            });
+            fieldsToRemove.forEach(objectNode::remove);
+            // 递归处理子节点
+            objectNode.elements().forEachRemaining(child -> removeSensitiveFields(child, excludeProperties));
+        } else if (node.isArray()) {
+            ArrayNode arrayNode = (ArrayNode) node;
+            for (JsonNode child : arrayNode) {
+                removeSensitiveFields(child, excludeProperties);
+            }
+        }
     }
 
     @Override

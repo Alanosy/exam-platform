@@ -305,6 +305,7 @@ public class RemoteUserServiceImpl implements RemoteUserService {
      *
      * @param userIds 用户ids
      * @return 用户列表
+     * @see org.dromara.system.domain.convert.SysUserVoConvert
      */
     @Override
     public List<RemoteUserVo> selectListByIds(List<Long> userIds) {

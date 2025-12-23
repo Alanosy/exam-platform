@@ -210,10 +210,6 @@ public class FlwDefinitionServiceImpl implements IFlwDefinitionService {
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void syncDef(String tenantId) {
-        List<FlowDefinition> flowDefinitions = flowDefinitionMapper.selectList(new LambdaQueryWrapper<FlowDefinition>().eq(FlowDefinition::getTenantId, DEFAULT_TENANT_ID));
-        if (CollUtil.isEmpty(flowDefinitions)) {
-            return;
-        }
         FlowCategory flowCategory = flwCategoryMapper.selectOne(new LambdaQueryWrapper<FlowCategory>()
             .eq(FlowCategory::getTenantId, DEFAULT_TENANT_ID)
             .eq(FlowCategory::getCategoryId, FlowConstant.FLOW_CATEGORY_ID));
@@ -225,6 +221,11 @@ public class FlwDefinitionServiceImpl implements IFlwDefinitionService {
         flowCategory.setUpdateBy(null);
         flowCategory.setUpdateTime(null);
         flwCategoryMapper.insert(flowCategory);
+
+        List<FlowDefinition> flowDefinitions = flowDefinitionMapper.selectList(new LambdaQueryWrapper<FlowDefinition>().eq(FlowDefinition::getTenantId, DEFAULT_TENANT_ID));
+        if (CollUtil.isEmpty(flowDefinitions)) {
+            return;
+        }
         List<Long> defIds = StreamUtils.toList(flowDefinitions, FlowDefinition::getId);
         List<FlowNode> flowNodes = flowNodeMapper.selectList(new LambdaQueryWrapper<FlowNode>().in(FlowNode::getDefinitionId, defIds));
         List<FlowSkip> flowSkips = flowSkipMapper.selectList(new LambdaQueryWrapper<FlowSkip>().in(FlowSkip::getDefinitionId, defIds));

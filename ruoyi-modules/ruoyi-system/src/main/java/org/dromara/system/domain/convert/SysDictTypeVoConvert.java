@@ -1,18 +1,18 @@
 package org.dromara.system.domain.convert;
 
 import io.github.linpeilie.BaseMapper;
-import org.dromara.system.api.domain.vo.RemoteDictDataVo;
-import org.dromara.system.domain.vo.SysDictDataVo;
+import org.dromara.system.api.domain.vo.RemoteDictTypeVo;
+import org.dromara.system.domain.vo.SysDictTypeVo;
 import org.mapstruct.Mapper;
 import org.mapstruct.MappingConstants;
 import org.mapstruct.ReportingPolicy;
 
 /**
- * 字典数据转换器
+ * 字典类型转换器
  *
- * @author zhujie
+ * @author liyaoheng
  */
 @Mapper(componentModel = MappingConstants.ComponentModel.SPRING, unmappedTargetPolicy = ReportingPolicy.IGNORE)
-public interface SysDictDataVoConvert extends BaseMapper<SysDictDataVo, RemoteDictDataVo> {
+public interface SysDictTypeVoConvert extends BaseMapper<SysDictTypeVo, RemoteDictTypeVo> {
 
 }

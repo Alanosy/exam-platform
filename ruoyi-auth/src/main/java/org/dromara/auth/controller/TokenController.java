@@ -43,6 +43,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -104,7 +105,7 @@ public class TokenController {
 
         Long userId = LoginHelper.getUserId();
         scheduledExecutorService.schedule(() -> {
-            remoteMessageService.publishMessage(List.of(userId), "欢迎登录RuoYi-Cloud-Plus微服务管理系统");
+            remoteMessageService.publishMessage(List.of(userId), DateUtils.getTodayHour(new Date()) + "好，欢迎登录 RuoYi-Cloud-Plus 后台管理系统");
         }, 5, TimeUnit.SECONDS);
         return R.ok(loginVo);
     }

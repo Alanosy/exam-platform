@@ -170,6 +170,9 @@ public class SysOssServiceImpl implements ISysOssService {
      */
     @Override
     public SysOssVo upload(MultipartFile file) {
+        if (ObjectUtil.isNull(file) || file.isEmpty()) {
+            throw new ServiceException("上传文件不能为空");
+        }
         String originalfileName = file.getOriginalFilename();
         String suffix = StringUtils.substring(originalfileName, originalfileName.lastIndexOf("."), originalfileName.length());
         OssClient storage = OssFactory.instance();
@@ -194,12 +197,16 @@ public class SysOssServiceImpl implements ISysOssService {
      */
     @Override
     public SysOssVo upload(File file) {
+        if (ObjectUtil.isNull(file) || !file.isFile() || file.length() <= 0) {
+            throw new ServiceException("上传文件不能为空");
+        }
         String originalfileName = file.getName();
         String suffix = StringUtils.substring(originalfileName, originalfileName.lastIndexOf("."), originalfileName.length());
         OssClient storage = OssFactory.instance();
+        long length = file.length();
         UploadResult uploadResult = storage.uploadSuffix(file, suffix);
         SysOssExt ext1 = new SysOssExt();
-        ext1.setFileSize(file.length());
+        ext1.setFileSize(length);
         // 保存文件信息
         return buildResultEntity(originalfileName, suffix, storage.getConfigKey(), uploadResult, ext1);
     }
@@ -263,7 +270,7 @@ public class SysOssServiceImpl implements ISysOssService {
         OssClient storage = OssFactory.instance(oss.getService());
         // 仅修改桶类型为 private 的URL，临时URL时长为120s
         if (AccessPolicyType.PRIVATE == storage.getAccessPolicy()) {
-            oss.setUrl(storage.getPrivateUrl(oss.getFileName(), Duration.ofSeconds(120)));
+            oss.setUrl(storage.createPresignedGetUrl(oss.getFileName(), Duration.ofSeconds(120)));
         }
         return oss;
     }

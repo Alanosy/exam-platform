@@ -24,6 +24,8 @@ public class RemoteTenantServiceImpl implements RemoteTenantService {
 
     /**
      * 根据租户id获取租户详情
+     *
+     * @see org.dromara.system.domain.convert.SysTenantVoConvert
      */
     @Override
     public RemoteTenantVo queryByTenantId(String tenantId) {
