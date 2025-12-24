@@ -46,7 +46,7 @@
             <el-button v-hasPermi="['system:role:edit']" type="success" plain :disabled="single" icon="Edit" @click="handleUpdate()">修改</el-button>
           </el-col>
           <el-col :span="1.5">
-            <el-button v-hasPermi="['system:role:delete']" type="danger" plain :disabled="ids.length === 0" @click="handleDelete()">删除</el-button>
+            <el-button v-hasPermi="['system:role:remove']" type="danger" plain :disabled="ids.length === 0" @click="handleDelete()">删除</el-button>
           </el-col>
           <el-col :span="1.5">
             <el-button v-hasPermi="['system:role:export']" type="warning" plain icon="Download" @click="handleExport">导出</el-button>
