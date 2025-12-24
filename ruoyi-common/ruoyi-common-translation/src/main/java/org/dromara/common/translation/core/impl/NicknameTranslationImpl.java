@@ -37,7 +37,7 @@ public class NicknameTranslationImpl implements TranslationInterface<String> {
         } else if (key instanceof String ids) {
             List<String> list = new ArrayList<>();
             for (Long id : StringUtils.splitTo(ids, Convert::toLong)) {
-                String nickname = CacheUtils.get(CacheNames.SYS_NICKNAME, key);
+                String nickname = CacheUtils.get(CacheNames.SYS_NICKNAME, id);
                 if (StringUtils.isNotBlank(nickname)) {
                     list.add(nickname);
                 } else {
