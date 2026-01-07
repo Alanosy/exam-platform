@@ -5,8 +5,13 @@ import org.dromara.common.core.utils.StringUtils;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
+import org.springframework.boot.context.properties.bind.Bindable;
+import org.springframework.boot.context.properties.bind.Binder;
+import org.springframework.boot.context.properties.source.ConfigurationPropertySources;
 import org.springframework.cloud.commons.util.InetUtils;
+import org.springframework.cloud.commons.util.InetUtilsProperties;
 import org.springframework.core.Ordered;
+import org.springframework.core.env.Environment;
 
 import java.net.Inet6Address;
 import java.net.InetAddress;
@@ -41,22 +46,27 @@ public class CustomBeanFactoryPostProcessor implements BeanFactoryPostProcessor,
             return;
         }
         // 获取 InetUtils bean，用于获取 IP 地址
-        InetUtils inetUtils = beanFactory.getBean(InetUtils.class);
+        Environment environment = beanFactory.getBean(Environment.class);
+        InetUtilsProperties target = new InetUtilsProperties();
+        ConfigurationPropertySources.attach(environment);
+        Binder.get(environment).bind(InetUtilsProperties.PREFIX, Bindable.ofInstance(target));
         String ip = "127.0.0.1";
-        // 获取第一个非回环地址
-        InetAddress address = inetUtils.findFirstNonLoopbackAddress();
-        if (address != null) {
-            if (address instanceof Inet6Address) {
-                // 处理 IPv6 地址
-                String ipv6AddressString = address.getHostAddress();
-                if (ipv6AddressString.contains("%")) {
-                    // 去掉可能存在的范围 ID
-                    ipv6AddressString = ipv6AddressString.substring(0, ipv6AddressString.indexOf("%"));
+        try (InetUtils inetUtils = new InetUtils(target)) {
+            // 获取第一个非回环地址
+            InetAddress address = inetUtils.findFirstNonLoopbackAddress();
+            if (address != null) {
+                if (address instanceof Inet6Address) {
+                    // 处理 IPv6 地址
+                    String ipv6AddressString = address.getHostAddress();
+                    if (ipv6AddressString.contains("%")) {
+                        // 去掉可能存在的范围 ID
+                        ipv6AddressString = ipv6AddressString.substring(0, ipv6AddressString.indexOf("%"));
+                    }
+                    ip = ipv6AddressString;
+                } else {
+                    // 处理 IPv4 地址
+                    ip = inetUtils.findFirstNonLoopbackHostInfo().getIpAddress();
                 }
-                ip = ipv6AddressString;
-            } else {
-                // 处理 IPv4 地址
-                ip = inetUtils.findFirstNonLoopbackHostInfo().getIpAddress();
             }
         }
         // 设置系统属性 DUBBO_IP_TO_REGISTRY 为获取到的 IP 地址
