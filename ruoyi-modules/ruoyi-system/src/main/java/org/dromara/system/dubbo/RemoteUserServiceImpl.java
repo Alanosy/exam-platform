@@ -203,10 +203,10 @@ public class RemoteUserServiceImpl implements RemoteUserService {
     }
 
     /**
-     * 通过用户ID查询用户账户
+     * 通过用户ID查询用户帐户
      *
      * @param userId 用户ID
-     * @return 用户账户
+     * @return 用户帐户
      */
     @Override
     public String selectUserNameById(Long userId) {
@@ -225,10 +225,10 @@ public class RemoteUserServiceImpl implements RemoteUserService {
     }
 
     /**
-     * 通过用户ID查询用户账户
+     * 通过用户ID查询用户帐户
      *
      * @param userIds 用户ID 多个用逗号隔开
-     * @return 用户账户
+     * @return 用户帐户
      */
     @Override
     public String selectNicknameByIds(String userIds) {

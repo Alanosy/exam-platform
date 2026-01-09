@@ -219,26 +219,26 @@ public interface ISysUserService {
     int deleteUserByIds(Long[] userIds);
 
     /**
-     * 通过用户ID查询用户账户
+     * 通过用户ID查询用户帐户
      *
      * @param userId 用户ID
-     * @return 用户账户
+     * @return 用户帐户
      */
     String selectUserNameById(Long userId);
 
     /**
-     * 通过用户ID查询用户账户
+     * 通过用户ID查询用户帐户
      *
      * @param userId 用户ID
-     * @return 用户账户
+     * @return 用户帐户
      */
     String selectNicknameById(Long userId);
 
     /**
-     * 通过用户ID查询用户账户
+     * 通过用户ID查询用户帐户
      *
      * @param userIds 用户ID
-     * @return 用户账户
+     * @return 用户帐户
      */
     String selectNicknameByIds(String userIds);
 

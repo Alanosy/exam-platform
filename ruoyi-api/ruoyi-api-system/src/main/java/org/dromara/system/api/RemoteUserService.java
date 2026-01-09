@@ -70,7 +70,7 @@ public interface RemoteUserService {
     Boolean registerUserInfo(RemoteUserBo remoteUserBo) throws UserException, ServiceException;
 
     /**
-     * 通过userId查询用户账户
+     * 通过userId查询用户帐户
      *
      * @param userId 用户id
      * @return 结果
@@ -86,7 +86,7 @@ public interface RemoteUserService {
     String selectNicknameById(Long userId);
 
     /**
-     * 通过用户ID查询用户账户
+     * 通过用户ID查询用户帐户
      *
      * @param userIds 用户ID 多个用逗号隔开
      * @return 用户名称
