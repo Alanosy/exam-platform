@@ -374,7 +374,7 @@ public class SysUserServiceImpl implements ISysUserService {
      * 修改用户状态
      *
      * @param userId 用户ID
-     * @param status 帐号状态
+     * @param status 账号状态
      * @return 结果
      */
     @Override
@@ -586,10 +586,10 @@ public class SysUserServiceImpl implements ISysUserService {
     }
 
     /**
-     * 通过用户ID查询用户帐户
+     * 通过用户ID查询用户账户
      *
      * @param userId 用户ID
-     * @return 用户帐户
+     * @return 用户账户
      */
     @Cacheable(cacheNames = CacheNames.SYS_USER_NAME, key = "#userId")
     @Override

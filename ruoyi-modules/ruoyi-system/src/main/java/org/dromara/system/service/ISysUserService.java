@@ -171,7 +171,7 @@ public interface ISysUserService {
      * 修改用户状态
      *
      * @param userId 用户ID
-     * @param status 帐号状态
+     * @param status 账号状态
      * @return 结果
      */
     int updateUserStatus(Long userId, String status);
@@ -219,26 +219,26 @@ public interface ISysUserService {
     int deleteUserByIds(Long[] userIds);
 
     /**
-     * 通过用户ID查询用户帐户
+     * 通过用户ID查询用户账户
      *
      * @param userId 用户ID
-     * @return 用户帐户
+     * @return 用户账户
      */
     String selectUserNameById(Long userId);
 
     /**
-     * 通过用户ID查询用户帐户
+     * 通过用户ID查询用户账户
      *
      * @param userId 用户ID
-     * @return 用户帐户
+     * @return 用户账户
      */
     String selectNicknameById(Long userId);
 
     /**
-     * 通过用户ID查询用户帐户
+     * 通过用户ID查询用户账户
      *
      * @param userIds 用户ID
-     * @return 用户帐户
+     * @return 用户账户
      */
     String selectNicknameByIds(String userIds);
 
