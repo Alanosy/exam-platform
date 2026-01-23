@@ -5,8 +5,12 @@ import org.dromara.common.core.utils.StringUtils;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
+import org.springframework.boot.context.properties.bind.Binder;
 import org.springframework.cloud.commons.util.InetUtils;
+import org.springframework.cloud.commons.util.InetUtilsProperties;
+import org.springframework.context.EnvironmentAware;
 import org.springframework.core.Ordered;
+import org.springframework.core.env.Environment;
 
 import java.net.Inet6Address;
 import java.net.InetAddress;
@@ -16,7 +20,20 @@ import java.net.InetAddress;
  *
  * @author Lion Li
  */
-public class CustomBeanFactoryPostProcessor implements BeanFactoryPostProcessor, Ordered {
+public class CustomBeanFactoryPostProcessor implements BeanFactoryPostProcessor, Ordered, EnvironmentAware {
+
+    private Environment environment;
+
+    /**
+     * 设置此组件运行的应用环境。
+     * 由 Spring 容器回调注入。
+     *
+     * @param environment 当前应用环境对象
+     */
+    @Override
+    public void setEnvironment(Environment environment) {
+        this.environment = environment;
+    }
 
     /**
      * 获取该 BeanFactoryPostProcessor 的顺序，确保它在容器初始化过程中具有最高优先级
@@ -40,26 +57,32 @@ public class CustomBeanFactoryPostProcessor implements BeanFactoryPostProcessor,
         if (StringUtils.isNotBlank(property)) {
             return;
         }
-        // 获取 InetUtils bean，用于获取 IP 地址
-        InetUtils inetUtils = beanFactory.getBean(InetUtils.class);
-        String ip = "127.0.0.1";
-        // 获取第一个非回环地址
-        InetAddress address = inetUtils.findFirstNonLoopbackAddress();
-        if (address != null) {
-            if (address instanceof Inet6Address) {
-                // 处理 IPv6 地址
-                String ipv6AddressString = address.getHostAddress();
-                if (ipv6AddressString.contains("%")) {
-                    // 去掉可能存在的范围 ID
-                    ipv6AddressString = ipv6AddressString.substring(0, ipv6AddressString.indexOf("%"));
+        // 手动绑定 InetUtilsProperties，避免早期初始化导致配置未注入
+        InetUtilsProperties properties = Binder.get(environment)
+            .bind(InetUtilsProperties.PREFIX, InetUtilsProperties.class)
+            .orElseGet(InetUtilsProperties::new);
+
+        // 创建临时的 InetUtils 实例
+        try (InetUtils inetUtils = new InetUtils(properties)) {
+            String ip = "127.0.0.1";
+            // 获取第一个非回环地址
+            InetAddress address = inetUtils.findFirstNonLoopbackAddress();
+            if (address != null) {
+                if (address instanceof Inet6Address) {
+                    // 处理 IPv6 地址
+                    String ipv6AddressString = address.getHostAddress();
+                    if (ipv6AddressString.contains("%")) {
+                        // 去掉可能存在的范围 ID
+                        ipv6AddressString = ipv6AddressString.substring(0, ipv6AddressString.indexOf("%"));
+                    }
+                    ip = ipv6AddressString;
+                } else {
+                    // 处理 IPv4 地址
+                    ip = inetUtils.findFirstNonLoopbackHostInfo().getIpAddress();
                 }
-                ip = ipv6AddressString;
-            } else {
-                // 处理 IPv4 地址
-                ip = inetUtils.findFirstNonLoopbackHostInfo().getIpAddress();
             }
+            // 设置系统属性 DUBBO_IP_TO_REGISTRY 为获取到的 IP 地址
+            System.setProperty(CommonConstants.DubboProperty.DUBBO_IP_TO_REGISTRY, ip);
         }
-        // 设置系统属性 DUBBO_IP_TO_REGISTRY 为获取到的 IP 地址
-        System.setProperty(CommonConstants.DubboProperty.DUBBO_IP_TO_REGISTRY, ip);
     }
 }

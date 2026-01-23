@@ -1,7 +1,5 @@
 package org.dromara.auth.properties;
 
-import org.dromara.auth.enums.CaptchaCategory;
-import org.dromara.auth.enums.CaptchaType;
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
@@ -21,12 +19,7 @@ public class CaptchaProperties {
     /**
      * 验证码类型
      */
-    private CaptchaType type;
-
-    /**
-     * 验证码类别
-     */
-    private CaptchaCategory category;
+    private String type;
 
     /**
      * 数字验证码位数

@@ -14,7 +14,8 @@ public class ActuatorEnvironmentPostProcessor implements EnvironmentPostProcesso
 
 	@Override
 	public void postProcessEnvironment(ConfigurableEnvironment environment, SpringApplication application) {
-        System.setProperty("management.health.elasticsearch.enabled", "false");
+        String enable = environment.getProperty("easy-es.enable", "false");
+        System.setProperty("management.health.elasticsearch.enabled", enable);
 	}
 
 	@Override
