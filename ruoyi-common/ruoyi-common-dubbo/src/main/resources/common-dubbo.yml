@@ -22,7 +22,7 @@ dubbo:
   metadata-report:
     address: redis://${spring.data.redis.host:localhost}:${spring.data.redis.port:6379}
     group: DUBBO_GROUP
-    username: dubbo
+    username: ${spring.data.redis.username:default}
     password: ${spring.data.redis.password}
     parameters:
       namespace: ${spring.profiles.active}
