@@ -55,6 +55,7 @@ public class RedisMetadataReport extends AbstractMetadataReport {
     protected JedisPool pool;
     private Set<HostAndPort> jedisClusterNodes;
     private int timeout;
+    private String username;
     private String password;
     private final String root;
     private final ConcurrentHashMap<String, MappingDataListener> mappingDataListenerMap = new ConcurrentHashMap<>();
@@ -63,6 +64,7 @@ public class RedisMetadataReport extends AbstractMetadataReport {
     public RedisMetadataReport(URL url) {
         super(url);
         timeout = url.getParameter(TIMEOUT_KEY, DEFAULT_TIMEOUT);
+        username = url.getUsername();
         password = url.getPassword();
         this.root = url.getGroup(DEFAULT_ROOT);
         if (url.getParameter(CYCLE_REPORT_KEY, DEFAULT_METADATA_REPORT_CYCLE_REPORT)) {
@@ -77,7 +79,7 @@ public class RedisMetadataReport extends AbstractMetadataReport {
             }
         } else {
             int database = url.getParameter(REDIS_DATABASE_KEY, 0);
-            pool = new JedisPool(new JedisPoolConfig(), url.getHost(), url.getPort(), timeout, password, database);
+            pool = new JedisPool(new JedisPoolConfig(), url.getHost(), url.getPort(), timeout, username, password, database);
         }
     }
 
