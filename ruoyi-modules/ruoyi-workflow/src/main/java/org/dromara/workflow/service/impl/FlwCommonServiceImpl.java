@@ -10,6 +10,7 @@ import org.dromara.common.core.utils.StreamUtils;
 import org.dromara.common.core.utils.StringUtils;
 import org.dromara.resource.api.RemoteMailService;
 import org.dromara.resource.api.RemoteMessageService;
+import org.dromara.resource.api.RemoteSmsService;
 import org.dromara.system.api.domain.vo.RemoteUserVo;
 import org.dromara.warm.flow.core.FlowEngine;
 import org.dromara.warm.flow.core.entity.Node;
@@ -22,6 +23,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 
 
@@ -42,6 +44,8 @@ public class FlwCommonServiceImpl implements IFlwCommonService {
     private RemoteMessageService remoteMessageService;
     @DubboReference
     private RemoteMailService remoteMailService;
+    @DubboReference
+    private RemoteSmsService remoteSmsService;
 
     /**
      * 根据流程实例发送消息给当前处理人
@@ -101,7 +105,10 @@ public class FlwCommonServiceImpl implements IFlwCommonService {
                         remoteMailService.send(emails, subject, message);
                     }
                     case SMS_MESSAGE -> {
-                        // TODO: 补充短信发送逻辑
+//                        LinkedHashMap<String, String> map = new LinkedHashMap<>(1);
+//                        // 根据具体短信服务商参数用法传参
+//                        map.put("code", "1234");
+//                        remoteSmsService.sendMessage(phones, templateId, map);
                         log.info("【短信发送 - TODO】用户数量={} 内容={}", userList.size(), message);
                     }
                     default -> log.warn("【消息发送】未处理的消息类型：{}", messageTypeEnum);
