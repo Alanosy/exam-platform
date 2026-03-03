@@ -5,7 +5,7 @@
 ## 平台简介
 
 [![码云Gitee](https://gitee.com/dromara/RuoYi-Cloud-Plus/badge/star.svg?theme=blue)](https://gitee.com/dromara/RuoYi-Cloud-Plus)
-[![GitHub](https://img.shields.io/github/stars/dromara/RuoYi-Cloud-Plus.svg?style=social&label=Stars)](https://github.com/dromara/RuoYi-Cloud-Plus)
+[![GitHub](https://img.shields.io/github/stars/dromara/RuoYi-Cloud-Plus.svg?label=Github%20Stars)](https://github.com/dromara/RuoYi-Cloud-Plus)
 [![Star](https://gitcode.com/dromara/RuoYi-Cloud-Plus/star/badge.svg)](https://gitcode.com/dromara/RuoYi-Cloud-Plus)
 [![License](https://img.shields.io/badge/License-MIT-blue.svg)](https://gitee.com/dromara/RuoYi-Cloud-Plus/blob/2.X/LICENSE)
 <br>
