@@ -113,7 +113,8 @@ const handleTransferTask = async (data) => {
     const taskOperationBo = reactive<TaskOperationBo>({
       userId: data[0].userId,
       taskId: task.value.id,
-      message: ''
+      message: '',
+      messageType: ['1']
     });
     await proxy?.$modal.confirm('是否确认提交？');
     loading.value = true;
@@ -139,7 +140,8 @@ const addMultiInstanceUser = async (data) => {
     const taskOperationBo = reactive<TaskOperationBo>({
       userIds: data.map((e) => e.userId),
       taskId: task.value.id,
-      message: ''
+      message: '',
+      messageType: ['1']
     });
     await proxy?.$modal.confirm('是否确认提交？');
     loading.value = true;
@@ -163,7 +165,8 @@ const deleteMultiInstanceUser = async (row) => {
   const taskOperationBo = reactive<TaskOperationBo>({
     userIds: [row.userId],
     taskId: task.value.id,
-    message: ''
+    message: '',
+    messageType: ['1']
   });
   await taskOperation(taskOperationBo, 'reductionSignature').finally(() => {
     loading.value = false;

@@ -397,7 +397,8 @@ const addMultiInstanceUser = async (data) => {
     const taskOperationBo = reactive<TaskOperationBo>({
       userIds: data.map((e) => e.userId),
       taskId: taskId.value,
-      message: form.value.message
+      message: form.value.message,
+      messageType: ['1']
     });
     await proxy?.$modal.confirm('是否确认提交？');
     loading.value = true;
@@ -421,7 +422,8 @@ const deleteMultiInstanceUser = async (row) => {
   const taskOperationBo = reactive<TaskOperationBo>({
     userIds: [row.userId],
     taskId: taskId.value,
-    message: form.value.message
+    message: form.value.message,
+    messageType: ['1']
   });
   await taskOperation(taskOperationBo, 'reductionSignature').finally(() => {
     loading.value = false;
@@ -441,7 +443,8 @@ const handleTransferTask = async (data) => {
     const taskOperationBo = reactive<TaskOperationBo>({
       userId: data[0].userId,
       taskId: taskId.value,
-      message: form.value.message
+      message: form.value.message,
+      messageType: ['1']
     });
     await proxy?.$modal.confirm('是否确认提交？');
     loading.value = true;
@@ -468,7 +471,8 @@ const handleDelegateTask = async (data) => {
     const taskOperationBo = reactive<TaskOperationBo>({
       userId: data[0].userId,
       taskId: taskId.value,
-      message: form.value.message
+      message: form.value.message,
+      messageType: ['1']
     });
     await proxy?.$modal.confirm('是否确认提交？');
     loading.value = true;

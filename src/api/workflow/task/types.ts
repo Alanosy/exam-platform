@@ -53,6 +53,8 @@ export interface TaskOperationBo {
   userIds?: string[];
   //任务ID（必填）
   taskId: string | number;
+  //消息类型
+  messageType?: string[];
   //意见或备注信息（可选）
   message?: string;
 }
