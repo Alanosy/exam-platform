@@ -31,7 +31,11 @@ public class TranslationHandler extends JsonSerializer<Object> implements Contex
      */
     public static final Map<String, TranslationInterface<?>> TRANSLATION_MAPPER = new ConcurrentHashMap<>();
 
-    private Translation translation;
+    private final Translation translation;
+
+    public TranslationHandler(Translation translation) {
+        this.translation = translation;
+    }
 
     @Override
     public void serialize(Object value, JsonGenerator gen, SerializerProvider serializers) throws IOException {
@@ -63,8 +67,7 @@ public class TranslationHandler extends JsonSerializer<Object> implements Contex
     public JsonSerializer<?> createContextual(SerializerProvider prov, BeanProperty property) throws JsonMappingException {
         Translation translation = property.getAnnotation(Translation.class);
         if (Objects.nonNull(translation)) {
-            this.translation = translation;
-            return this;
+            return new TranslationHandler(translation);
         }
         return prov.findValueSerializer(property.getType(), property);
     }
