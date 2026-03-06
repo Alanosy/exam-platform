@@ -496,6 +496,11 @@ public class SysUserServiceImpl implements ISysUserService {
             roleList.remove(SystemConstants.SUPER_ADMIN_ID);
         }
 
+        // 移除超管角色后若无剩余角色，说明仅选了超管角色且不允许分配，显式报错
+        if (roleList.isEmpty()) {
+            throw new ServiceException("不允许为普通用户分配超级管理员角色，请至少选择一个其他角色");
+        }
+
         // 校验是否有权限访问这些角色（含数据权限控制）
         if (roleMapper.selectRoleCount(roleList) != roleList.size()) {
             throw new ServiceException("没有权限访问角色的数据");
