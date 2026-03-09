@@ -47,6 +47,7 @@ import org.dromara.workflow.api.domain.RemoteStartProcessReturn;
 import org.dromara.workflow.common.ConditionalOnEnable;
 import org.dromara.workflow.common.constant.FlowConstant;
 import org.dromara.workflow.common.enums.TaskAssigneeType;
+import org.dromara.workflow.common.enums.TaskOperationEnum;
 import org.dromara.workflow.common.enums.TaskStatusEnum;
 import org.dromara.workflow.domain.FlowInstanceBizExt;
 import org.dromara.workflow.domain.bo.*;
@@ -721,13 +722,19 @@ public class FlwTaskServiceImpl implements IFlwTaskService {
     @Override
     @Transactional(rollbackFor = Exception.class)
     public boolean taskOperation(TaskOperationBo bo, String taskOperation) {
+        TaskOperationEnum op = TaskOperationEnum.getByCode(taskOperation);
+        if (op == null) {
+            log.error("Invalid operation type:{} ", taskOperation);
+            throw new ServiceException("Invalid operation type " + taskOperation);
+        }
+
         FlowParams flowParams = FlowParams.build().message(bo.getMessage());
         if (LoginHelper.isSuperAdmin() || LoginHelper.isTenantAdmin()) {
             flowParams.ignore(true);
         }
 
         // 根据操作类型构建 FlowParams
-        switch (taskOperation) {
+        switch (op) {
             case DELEGATE_TASK, TRANSFER_TASK -> {
                 ValidatorUtils.validate(bo, AddGroup.class);
                 flowParams.addHandlers(Collections.singletonList(bo.getUserId()));
@@ -740,47 +747,56 @@ public class FlwTaskServiceImpl implements IFlwTaskService {
                 ValidatorUtils.validate(bo, EditGroup.class);
                 flowParams.reductionHandlers(bo.getUserIds());
             }
-            default -> {
-                log.error("Invalid operation type:{} ", taskOperation);
-                throw new ServiceException("Invalid operation type " + taskOperation);
-            }
         }
 
         Long taskId = bo.getTaskId();
         Task task = taskService.getById(taskId);
         FlowNode flowNode = getByNodeCode(task.getNodeCode(), task.getDefinitionId());
-        if ("addSignature".equals(taskOperation) || "reductionSignature".equals(taskOperation)) {
+        if (op == TaskOperationEnum.ADD_SIGNATURE || op == TaskOperationEnum.REDUCTION_SIGNATURE) {
             if (CooperateType.isOrSign(flowNode.getNodeRatio())) {
                 throw new ServiceException(task.getNodeName() + "不是会签或票签节点！");
             }
         }
+
+        // 发送消息给相关用户
+        List<String> messageType = bo.getMessageType();
+        if (CollUtil.isNotEmpty(messageType)) {
+            List<Long> userIdList = new ArrayList<>();
+            if (StrUtil.isNotBlank(bo.getUserId())) {
+                userIdList.add(Convert.toLong(bo.getUserId()));
+            }
+            if (CollUtil.isNotEmpty(bo.getUserIds())) {
+                userIdList.addAll(StreamUtils.toList(bo.getUserIds(), Convert::toLong));
+            }
+            if (CollUtil.isNotEmpty(userIdList)) {
+                flwCommonService.sendMessage(
+                    messageType,
+                    StringUtils.isNotBlank(bo.getMessage()) ? bo.getMessage() : "单据「" + op.getDesc() + "」通知",
+                    "单据「" + op.getDesc() + "」提醒",
+                    remoteUserService.selectListByIds(userIdList)
+                );
+            }
+        }
         // 设置任务状态并执行对应的任务操作
-        switch (taskOperation) {
-            //委派任务
+        switch (op) {
             case DELEGATE_TASK -> {
                 flowParams.hisStatus(TaskStatusEnum.DEPUTE.getStatus());
                 return taskService.depute(taskId, flowParams);
             }
-            //转办任务
             case TRANSFER_TASK -> {
                 flowParams.hisStatus(TaskStatusEnum.TRANSFER.getStatus());
                 return taskService.transfer(taskId, flowParams);
             }
-            //加签，增加办理人
             case ADD_SIGNATURE -> {
                 flowParams.hisStatus(TaskStatusEnum.SIGN.getStatus());
                 return taskService.addSignature(taskId, flowParams);
             }
-            //减签，减少办理人
             case REDUCTION_SIGNATURE -> {
                 flowParams.hisStatus(TaskStatusEnum.SIGN_OFF.getStatus());
                 return taskService.reductionSignature(taskId, flowParams);
             }
-            default -> {
-                log.error("Invalid operation type:{} ", taskOperation);
-                throw new ServiceException("Invalid operation type " + taskOperation);
-            }
         }
+        return false;
     }
 
     /**
