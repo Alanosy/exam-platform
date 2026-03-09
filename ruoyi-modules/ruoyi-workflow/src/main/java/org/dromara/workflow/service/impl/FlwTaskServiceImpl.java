@@ -147,9 +147,9 @@ public class FlwTaskServiceImpl implements IFlwTaskService {
             throw new ServiceException("流程【" + startProcessBo.getFlowCode() + "】未发布，请先在流程设计器中发布流程定义");
         }
         Dict dict = JsonUtils.parseMap(definition.getExt());
-        boolean autoPass = !ObjectUtil.isNull(dict) && dict.getBool(FlowConstant.AUTO_PASS);
-        variables.put(FlowConstant.AUTO_PASS, autoPass);
-        variables.put(FlowConstant.BUSINESS_CODE, this.generateBusinessCode(bizExt));
+        boolean autoPass = !ObjectUtil.isNull(dict) && dict.getBool(AUTO_PASS);
+        variables.put(AUTO_PASS, autoPass);
+        variables.put(BUSINESS_CODE, this.generateBusinessCode(bizExt));
         FlowParams flowParams = FlowParams.build()
             .handler(startProcessBo.getHandler())
             .flowCode(startProcessBo.getFlowCode())
@@ -211,11 +211,11 @@ public class FlwTaskServiceImpl implements IFlwTaskService {
         List<FlowCopyBo> flowCopyList = completeTaskBo.getFlowCopyList();
         // 设置抄送人
         Map<String, Object> variables = completeTaskBo.getVariables();
-        variables.put(FlowConstant.FLOW_COPY_LIST, flowCopyList);
+        variables.put(FLOW_COPY_LIST, flowCopyList);
         // 消息类型
-        variables.put(FlowConstant.MESSAGE_TYPE, messageType);
+        variables.put(MESSAGE_TYPE, messageType);
         // 消息通知
-        variables.put(FlowConstant.MESSAGE_NOTICE, notice);
+        variables.put(MESSAGE_NOTICE, notice);
 
         FlowTask flowTask = flowTaskMapper.selectById(taskId);
         if (ObjectUtil.isNull(flowTask)) {
@@ -224,7 +224,7 @@ public class FlwTaskServiceImpl implements IFlwTaskService {
         Instance ins = insService.getById(flowTask.getInstanceId());
         // 检查流程状态是否为草稿、已撤销或已退回状态，若是则执行流程提交监听
         if (BusinessStatusEnum.isDraftOrCancelOrBack(ins.getFlowStatus())) {
-            variables.put(FlowConstant.SUBMIT, true);
+            variables.put(SUBMIT, true);
         }
         // 设置弹窗处理人
         Map<String, Object> assigneeMap = setPopAssigneeMap(completeTaskBo.getAssigneeMap(), ins.getVariableMap());
@@ -277,9 +277,9 @@ public class FlwTaskServiceImpl implements IFlwTaskService {
                 flowParams.
                     message("流程引擎自动审批！").
                     variable(Map.of(
-                        FlowConstant.SUBMIT, false,
-                        FlowConstant.FLOW_COPY_LIST, Collections.emptyList(),
-                        FlowConstant.MESSAGE_NOTICE, StringUtils.EMPTY));
+                        SUBMIT, false,
+                        FLOW_COPY_LIST, Collections.emptyList(),
+                        MESSAGE_NOTICE, StringUtils.EMPTY));
                 skipTask(task.getId(), flowParams, instanceId, true);
             }
         }
@@ -491,9 +491,9 @@ public class FlwTaskServiceImpl implements IFlwTaskService {
 
         Map<String, Object> variable = new HashMap<>();
         // 消息类型
-        variable.put(FlowConstant.MESSAGE_TYPE, messageType);
+        variable.put(MESSAGE_TYPE, messageType);
         // 消息通知
-        variable.put(FlowConstant.MESSAGE_NOTICE, notice);
+        variable.put(MESSAGE_NOTICE, notice);
 
         FlowParams flowParams = FlowParams.build()
             .nodeCode(bo.getNodeCode())
@@ -758,9 +758,29 @@ public class FlwTaskServiceImpl implements IFlwTaskService {
             }
         }
 
-        // 发送消息给相关用户
-        List<String> messageType = bo.getMessageType();
-        if (CollUtil.isNotEmpty(messageType)) {
+        // 设置任务状态并执行对应的任务操作
+        boolean result = false;
+        switch (op) {
+            case DELEGATE_TASK -> {
+                flowParams.hisStatus(TaskStatusEnum.DEPUTE.getStatus());
+                result = taskService.depute(taskId, flowParams);
+            }
+            case TRANSFER_TASK -> {
+                flowParams.hisStatus(TaskStatusEnum.TRANSFER.getStatus());
+                result = taskService.transfer(taskId, flowParams);
+            }
+            case ADD_SIGNATURE -> {
+                flowParams.hisStatus(TaskStatusEnum.SIGN.getStatus());
+                result = taskService.addSignature(taskId, flowParams);
+            }
+            case REDUCTION_SIGNATURE -> {
+                flowParams.hisStatus(TaskStatusEnum.SIGN_OFF.getStatus());
+                result = taskService.reductionSignature(taskId, flowParams);
+            }
+        }
+
+        // 操作执行成功后再发送消息
+        if (result && CollUtil.isNotEmpty(bo.getMessageType())) {
             List<Long> userIdList = new ArrayList<>();
             if (StrUtil.isNotBlank(bo.getUserId())) {
                 userIdList.add(Convert.toLong(bo.getUserId()));
@@ -770,33 +790,14 @@ public class FlwTaskServiceImpl implements IFlwTaskService {
             }
             if (CollUtil.isNotEmpty(userIdList)) {
                 flwCommonService.sendMessage(
-                    messageType,
+                    bo.getMessageType(),
                     StringUtils.isNotBlank(bo.getMessage()) ? bo.getMessage() : "单据「" + op.getDesc() + "」通知",
                     "单据「" + op.getDesc() + "」提醒",
                     remoteUserService.selectListByIds(userIdList)
                 );
             }
         }
-        // 设置任务状态并执行对应的任务操作
-        switch (op) {
-            case DELEGATE_TASK -> {
-                flowParams.hisStatus(TaskStatusEnum.DEPUTE.getStatus());
-                return taskService.depute(taskId, flowParams);
-            }
-            case TRANSFER_TASK -> {
-                flowParams.hisStatus(TaskStatusEnum.TRANSFER.getStatus());
-                return taskService.transfer(taskId, flowParams);
-            }
-            case ADD_SIGNATURE -> {
-                flowParams.hisStatus(TaskStatusEnum.SIGN.getStatus());
-                return taskService.addSignature(taskId, flowParams);
-            }
-            case REDUCTION_SIGNATURE -> {
-                flowParams.hisStatus(TaskStatusEnum.SIGN_OFF.getStatus());
-                return taskService.reductionSignature(taskId, flowParams);
-            }
-        }
-        return false;
+        return result;
     }
 
     /**
