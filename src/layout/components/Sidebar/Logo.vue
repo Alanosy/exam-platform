@@ -2,18 +2,17 @@
   <div
     class="sidebar-logo-container"
     :class="{ collapse: collapse }"
-    :style="{ backgroundColor: sideTheme === 'theme-dark' ? variables.menuBackground : variables.menuLightBackground }"
   >
     <transition :enter-active-class="proxy?.animate.logoAnimate.enter" mode="out-in">
       <router-link v-if="collapse" key="collapse" class="sidebar-logo-link" to="/">
         <img v-if="logo" :src="logo" class="sidebar-logo" />
-        <h1 v-else class="sidebar-title" :style="{ color: sideTheme === 'theme-dark' ? variables.logoTitleColor : variables.logoLightTitleColor }">
+        <h1 v-else class="sidebar-title">
           {{ title }}
         </h1>
       </router-link>
       <router-link v-else key="expand" class="sidebar-logo-link" to="/">
         <img v-if="logo" :src="logo" class="sidebar-logo" />
-        <h1 class="sidebar-title" :style="{ color: sideTheme === 'theme-dark' ? variables.logoTitleColor : variables.logoLightTitleColor }">
+        <h1 class="sidebar-title">
           {{ title }}
         </h1>
       </router-link>
@@ -26,6 +25,7 @@ import variables from '@/assets/styles/variables.module.scss';
 import logo from '@/assets/logo/logo.png';
 import { useSettingsStore } from '@/store/modules/settings';
 const { proxy } = getCurrentInstance() as ComponentInternalInstance;
+import { NavTypeEnum } from '@/enums/NavTypeEnum';
 
 defineProps({
   collapse: {
@@ -37,6 +37,28 @@ defineProps({
 const title = import.meta.env.VITE_APP_LOGO_TITLE;
 const settingsStore = useSettingsStore();
 const sideTheme = computed(() => settingsStore.sideTheme);
+
+// 获取Logo背景色
+const getLogoBackground = computed(() => {
+  if (settingsStore.isDark) {
+    return 'var(--sidebar-bg)'
+  }
+  if (settingsStore.navType == NavTypeEnum.TOP) {
+    return variables.menuLightBackground
+  }
+  return sideTheme.value === 'theme-dark' ? variables.menuBg : variables.menuLightBackground
+})
+
+// 获取Logo文字颜色
+const getLogoTextColor = computed(() => {
+  if (settingsStore.isDark) {
+    return 'var(--sidebar-text)'
+  }
+  if (settingsStore.navType == NavTypeEnum.TOP) {
+    return variables.logoLightTitleColor
+  }
+  return sideTheme.value === 'theme-dark' ? variables.logoTitleColor : variables.logoLightTitleColor
+})
 </script>
 
 <style lang="scss" scoped>
@@ -51,10 +73,9 @@ const sideTheme = computed(() => settingsStore.sideTheme);
 
 .sidebar-logo-container {
   position: relative;
-  width: 100%;
   height: 50px;
   line-height: 50px;
-  background: #2b2f3a;
+  background: v-bind(getLogoBackground);
   text-align: center;
   overflow: hidden;
 
@@ -67,21 +88,17 @@ const sideTheme = computed(() => settingsStore.sideTheme);
       height: 32px;
       vertical-align: middle;
       margin-right: 12px;
+      margin-left: 12px;
     }
 
     & .sidebar-title {
       display: inline-block;
       margin: 0;
-      color: #fff;
+      color: v-bind(getLogoTextColor);
       font-weight: 600;
       line-height: 50px;
       font-size: 14px;
-      font-family:
-        Avenir,
-        Helvetica Neue,
-        Arial,
-        Helvetica,
-        sans-serif;
+      font-family: Avenir, Helvetica Neue, Arial, Helvetica, sans-serif;
       vertical-align: middle;
     }
   }

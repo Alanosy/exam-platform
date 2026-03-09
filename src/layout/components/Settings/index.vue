@@ -1,5 +1,40 @@
 <template>
   <el-drawer v-model="showSettings" :with-header="false" direction="rtl" size="300px" close-on-click-modal>
+    <h3 class="drawer-title">菜单导航设置</h3>
+    <div class="nav-wrap">
+      <el-tooltip content="左侧菜单" placement="bottom">
+        <div
+          class="item left"
+          @click="handleNavType(NavTypeEnum.LEFT)"
+          :style="{ '--theme': theme }"
+          :class="{ activeItem: navType == NavTypeEnum.LEFT }"
+        >
+          <b></b><b></b>
+        </div>
+      </el-tooltip>
+
+      <el-tooltip content="混合菜单" placement="bottom">
+        <div
+          class="item mix"
+          @click="handleNavType(NavTypeEnum.MIX)"
+          :style="{ '--theme': theme }"
+          :class="{ activeItem: navType == NavTypeEnum.MIX }"
+        >
+          <b></b><b></b>
+        </div>
+      </el-tooltip>
+      <el-tooltip content="顶部菜单" placement="bottom">
+        <div
+          class="item top"
+          @click="handleNavType(NavTypeEnum.TOP)"
+          :style="{ '--theme': theme }"
+          :class="{ activeItem: navType == NavTypeEnum.TOP }"
+        >
+          <b></b><b></b>
+        </div>
+      </el-tooltip>
+    </div>
+
     <h3 class="drawer-title">主题风格设置</h3>
 
     <div class="setting-drawer-block-checbox">
@@ -44,13 +79,6 @@
     <el-divider />
 
     <h3 class="drawer-title">系统布局配置</h3>
-
-    <div class="drawer-item">
-      <span>开启 TopNav</span>
-      <span class="comp-style">
-        <el-switch v-model="settingsStore.topNav" class="drawer-switch" @change="topNavChange" />
-      </span>
-    </div>
 
     <div class="drawer-item">
       <span>开启 Tags-Views</span>
@@ -101,6 +129,7 @@ import { useSettingsStore } from '@/store/modules/settings';
 import { usePermissionStore } from '@/store/modules/permission';
 import { handleThemeStyle } from '@/utils/theme';
 import { SideThemeEnum } from '@/enums/SideThemeEnum';
+import { NavTypeEnum } from '@/enums/NavTypeEnum';
 import defaultSettings from '@/settings';
 
 const { proxy } = getCurrentInstance() as ComponentInternalInstance;
@@ -113,7 +142,7 @@ const theme = ref(settingsStore.theme);
 const sideTheme = ref(settingsStore.sideTheme);
 const storeSettings = computed(() => settingsStore);
 const predefineColors = ref(['#409EFF', '#ff4500', '#ff8c00', '#ffd700', '#90ee90', '#00ced1', '#1e90ff', '#c71585']);
-
+const navType = ref(settingsStore.navType);
 // 是否暗黑模式
 const isDark = useDark({
   storageKey: 'useDarkKey',
@@ -130,11 +159,26 @@ watch(isDark, () => {
 });
 const toggleDark = () => useToggle(isDark);
 
-const topNavChange = (val: any) => {
-  if (!val) {
-    appStore.toggleSideBarHide(false);
-    permissionStore.setSidebarRouters(permissionStore.defaultRoutes as any);
-  }
+/** 菜单导航设置 */
+watch(
+  () => navType,
+  (val: string) => {
+    if (val.value === NavTypeEnum.TOP) {
+      appStore.toggleSideBarHide(true);
+      permissionStore.setSidebarRouters(permissionStore.defaultRoutes as any);
+    } else if (val.value === NavTypeEnum.LEFT) {
+      appStore.toggleSideBarHide(false);
+      permissionStore.setSidebarRouters(permissionStore.defaultRoutes as any);
+    } else if (val.value === NavTypeEnum.MIX) {
+      appStore.toggleSideBarHide(false);
+    }
+  },
+  { immediate: true, deep: true }
+);
+
+const handleNavType = (val: NavTypeEnum) => {
+  settingsStore.navType = val;
+  navType.value = val;
 };
 
 const dynamicTitleChange = () => {
@@ -158,7 +202,6 @@ const handleTheme = (val: string) => {
 const saveSetting = () => {
   proxy?.$modal.loading('正在保存到本地，请稍候...');
   const settings = useStorage<LayoutSetting>('layout-setting', defaultSettings);
-  settings.value.topNav = storeSettings.value.topNav;
   settings.value.tagsView = storeSettings.value.tagsView;
   settings.value.tagsIcon = storeSettings.value.tagsIcon;
   settings.value.fixedHeader = storeSettings.value.fixedHeader;
@@ -166,6 +209,7 @@ const saveSetting = () => {
   settings.value.dynamicTitle = storeSettings.value.dynamicTitle;
   settings.value.sideTheme = storeSettings.value.sideTheme;
   settings.value.theme = storeSettings.value.theme;
+  settings.value.navType = storeSettings.value.navType;
   setTimeout(() => {
     proxy?.$modal.closeLoading();
   }, 1000);
@@ -241,6 +285,69 @@ defineExpose({
   .comp-style {
     float: right;
     margin: -3px 8px 0px 0px;
+  }
+}
+
+// 导航模式
+.nav-wrap {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  margin-top: 10px;
+  margin-bottom: 20px;
+
+  .activeItem {
+    border: 2px solid #{'var(--theme)'} !important;
+  }
+
+  .item {
+    position: relative;
+    margin-right: 16px;
+    cursor: pointer;
+    width: 56px;
+    height: 48px;
+    border-radius: 4px;
+    background: #f0f2f5;
+    border: 2px solid transparent;
+  }
+
+  .left {
+    b:first-child {
+      display: block;
+      height: 30%;
+      background: #fff;
+    }
+    b:last-child {
+      width: 30%;
+      background: #1b2a47;
+      position: absolute;
+      height: 100%;
+      top: 0;
+      border-radius: 4px 0 0 4px;
+    }
+  }
+  .mix {
+    b:first-child {
+      border-radius: 4px 4px 0 0;
+      display: block;
+      height: 30%;
+      background: #1b2a47;
+    }
+    b:last-child {
+      width: 30%;
+      background: #1b2a47;
+      position: absolute;
+      height: 70%;
+      border-radius: 0 0 0 4px;
+    }
+  }
+  .top {
+    b:first-child {
+      display: block;
+      height: 30%;
+      background: #1b2a47;
+      border-radius: 4px 4px 0 0;
+    }
   }
 }
 </style>

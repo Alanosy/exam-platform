@@ -1,5 +1,6 @@
 import type { PropType as VuePropType, ComponentInternalInstance as ComponentInstance } from 'vue';
 import { LanguageEnum } from '@/enums/LanguageEnum';
+import { NavTypeEnum } from '@/enums/NavTypeEnum';
 
 declare global {
   /** vue Instance */
@@ -90,9 +91,9 @@ declare global {
   }
   declare interface LayoutSetting {
     /**
-     * 是否显示顶部导航
+     * 默认布局
      */
-    topNav: boolean;
+    navType: NavTypeEnum;
 
     /**
      * 是否显示多标签导航
