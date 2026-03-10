@@ -43,7 +43,7 @@ export interface ButtonList {
 }
 export interface FlowCopyVo {
   userId: string | number;
-  userName: string;
+  nickName: string;
 }
 
 export interface TaskOperationBo {
