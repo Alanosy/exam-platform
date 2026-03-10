@@ -83,11 +83,13 @@ public class WorkflowGlobalListener implements GlobalListener {
             NodeExtVo nodeExt = nodeExtService.parseNodeExt(ext, variable);
             Set<String> copyList = nodeExt.getCopySettings();
             if (CollUtil.isNotEmpty(copyList)) {
+                List<Long> userIds = StreamUtils.toList(copyList, Convert::toLong);
+                Map<Long, String> nickNameMap = remoteUserService.selectUserNicksByIds(userIds);
                 List<FlowCopyBo> list = StreamUtils.toList(copyList, x -> {
                     FlowCopyBo bo = new FlowCopyBo();
                     Long id = Convert.toLong(x);
                     bo.setUserId(id);
-                    bo.setNickName(remoteUserService.selectNicknameById(id));
+                    bo.setNickName(nickNameMap.getOrDefault(id, StringUtils.EMPTY));
                     return bo;
                 });
                 variable.put(FlowConstant.FLOW_COPY_LIST, list);

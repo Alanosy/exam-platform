@@ -1,5 +1,6 @@
 package org.dromara.common.core.service.impl;
 
+import cn.hutool.core.collection.CollUtil;
 import com.github.benmanes.caffeine.cache.Cache;
 import org.apache.dubbo.config.annotation.DubboReference;
 import org.dromara.common.core.constant.CacheConstants;
@@ -43,6 +44,9 @@ public class DictServiceImpl implements DictService {
         List<RemoteDictDataVo> datas = (List<RemoteDictDataVo>) ceffeine.get(CacheConstants.SYS_DICT_KEY + "remote:" + dictType, k -> {
             return remoteDictService.selectDictDataByType(dictType);
         });
+        if (CollUtil.isEmpty(datas)) {
+            return StringUtils.EMPTY;
+        }
         Map<String, String> map = StreamUtils.toMap(datas, RemoteDictDataVo::getDictValue, RemoteDictDataVo::getDictLabel);
         if (StringUtils.containsAny(dictValue, separator)) {
             return Arrays.stream(dictValue.split(separator))
@@ -68,6 +72,9 @@ public class DictServiceImpl implements DictService {
         List<RemoteDictDataVo> datas = (List<RemoteDictDataVo>) ceffeine.get(CacheConstants.SYS_DICT_KEY + "remote:" + dictType, k -> {
             return remoteDictService.selectDictDataByType(dictType);
         });
+        if (CollUtil.isEmpty(datas)) {
+            return StringUtils.EMPTY;
+        }
         Map<String, String> map = StreamUtils.toMap(datas, RemoteDictDataVo::getDictLabel, RemoteDictDataVo::getDictValue);
         if (StringUtils.containsAny(dictLabel, separator)) {
             return Arrays.stream(dictLabel.split(separator))
@@ -87,6 +94,9 @@ public class DictServiceImpl implements DictService {
     @Override
     public Map<String, String> getAllDictByDictType(String dictType) {
         List<RemoteDictDataVo> list = remoteDictService.selectDictDataByType(dictType);
+        if (CollUtil.isEmpty(list)) {
+            return new HashMap<>();
+        }
         // 保证顺序
         LinkedHashMap<String, String> map = new LinkedHashMap<>();
         for (RemoteDictDataVo vo : list) {

@@ -5,6 +5,7 @@ import cn.hutool.core.util.ObjectUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.dubbo.config.annotation.DubboReference;
+import org.dromara.common.core.exception.ServiceException;
 import org.dromara.common.core.utils.SpringUtils;
 import org.dromara.common.core.utils.StreamUtils;
 import org.dromara.common.core.utils.StringUtils;
@@ -129,6 +130,9 @@ public class FlwCommonServiceImpl implements IFlwCommonService {
     @Override
     public String applyNodeCode(Long definitionId) {
         List<Node> firstBetweenNode = FlowEngine.nodeService().getFirstBetweenNode(definitionId, new HashMap<>());
+        if (CollUtil.isEmpty(firstBetweenNode)) {
+            throw new ServiceException("流程定义缺少申请人节点，请检查流程定义配置");
+        }
         return firstBetweenNode.get(0).getNodeCode();
     }
 

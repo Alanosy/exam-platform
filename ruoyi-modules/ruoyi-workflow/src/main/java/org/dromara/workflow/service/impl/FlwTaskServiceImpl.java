@@ -131,6 +131,9 @@ public class FlwTaskServiceImpl implements IFlwTaskService {
             // 已存在流程
             BusinessStatusEnum.checkStartStatus(flowInstance.getFlowStatus());
             List<Task> taskList = taskService.list(new FlowTask().setInstanceId(flowInstance.getId()));
+            if (CollUtil.isEmpty(taskList)) {
+                throw new ServiceException("流程实例缺少任务，请检查流程定义配置");
+            }
             taskService.mergeVariable(flowInstance, variables);
             insService.updateById(flowInstance);
             RemoteStartProcessReturn dto = new RemoteStartProcessReturn();
@@ -160,6 +163,9 @@ public class FlwTaskServiceImpl implements IFlwTaskService {
         this.buildFlowInstanceBizExt(instance, bizExt);
         // 申请人执行流程
         List<Task> taskList = taskService.list(new FlowTask().setInstanceId(instance.getId()));
+        if (CollUtil.isEmpty(taskList)) {
+            throw new ServiceException("流程启动失败，未生成任务");
+        }
         if (taskList.size() > 1) {
             throw new ServiceException("请检查流程第一个环节是否为申请人！");
         }
@@ -222,6 +228,9 @@ public class FlwTaskServiceImpl implements IFlwTaskService {
             throw new ServiceException("流程任务不存在或任务已审批！");
         }
         Instance ins = insService.getById(flowTask.getInstanceId());
+        if (ObjectUtil.isNull(ins)) {
+            throw new ServiceException("流程实例不存在");
+        }
         // 检查流程状态是否为草稿、已撤销或已退回状态，若是则执行流程提交监听
         if (BusinessStatusEnum.isDraftOrCancelOrBack(ins.getFlowStatus())) {
             variables.put(SUBMIT, true);
@@ -485,6 +494,9 @@ public class FlwTaskServiceImpl implements IFlwTaskService {
             throw new ServiceException("任务不存在！");
         }
         Instance inst = insService.getById(task.getInstanceId());
+        if (ObjectUtil.isNull(inst)) {
+            throw new ServiceException("流程实例不存在");
+        }
         BusinessStatusEnum.checkBackStatus(inst.getFlowStatus());
         Long definitionId = task.getDefinitionId();
         String applyNodeCode = flwCommonService.applyNodeCode(definitionId);
@@ -516,6 +528,9 @@ public class FlwTaskServiceImpl implements IFlwTaskService {
     @Override
     public List<Node> getBackTaskNode(Long taskId, String nowNodeCode) {
         FlowTask task = flowTaskMapper.selectById(taskId);
+        if (ObjectUtil.isNull(task)) {
+            throw new ServiceException("任务不存在！");
+        }
         List<Node> nodeCodes = nodeService.getByNodeCodes(Collections.singletonList(nowNodeCode), task.getDefinitionId());
         if (!CollUtil.isNotEmpty(nodeCodes)) {
             return nodeCodes;
@@ -600,7 +615,13 @@ public class FlwTaskServiceImpl implements IFlwTaskService {
         }
         FlowTaskVo flowTaskVo = BeanUtil.toBean(task, FlowTaskVo.class);
         Instance instance = insService.getById(task.getInstanceId());
+        if (ObjectUtil.isNull(instance)) {
+            throw new ServiceException("流程实例不存在");
+        }
         Definition definition = defService.getById(task.getDefinitionId());
+        if (ObjectUtil.isNull(definition)) {
+            throw new ServiceException("流程定义不存在");
+        }
         flowTaskVo.setFlowStatus(instance.getFlowStatus());
         flowTaskVo.setVersion(definition.getVersion());
         flowTaskVo.setFlowCode(definition.getFlowCode());
@@ -643,11 +664,23 @@ public class FlwTaskServiceImpl implements IFlwTaskService {
         Long taskId = bo.getTaskId();
         Map<String, Object> variables = bo.getVariables();
         Task task = taskService.getById(taskId);
+        if (ObjectUtil.isNull(task)) {
+            throw new ServiceException("任务不存在！");
+        }
         Instance instance = insService.getById(task.getInstanceId());
+        if (ObjectUtil.isNull(instance)) {
+            throw new ServiceException("流程实例不存在");
+        }
         Definition definition = defService.getById(task.getDefinitionId());
+        if (ObjectUtil.isNull(definition)) {
+            throw new ServiceException("流程定义不存在");
+        }
         Map<String, Object> mergeVariable = MapUtil.mergeAll(instance.getVariableMap(), variables);
         // 获取下一节点列表
         List<Node> nextNodeList = nodeService.getNextNodeList(task.getDefinitionId(), task.getNodeCode(), null, SkipType.PASS.getKey(), mergeVariable);
+        if (CollUtil.isEmpty(nextNodeList)) {
+            return new ArrayList<>();
+        }
         List<FlowNode> nextFlowNodes = BeanUtil.copyToList(nextNodeList, FlowNode.class);
         // 只获取中间节点
         nextFlowNodes = StreamUtils.filter(nextFlowNodes, node -> NodeType.BETWEEN.getKey().equals(node.getNodeType()));
@@ -751,7 +784,13 @@ public class FlwTaskServiceImpl implements IFlwTaskService {
 
         Long taskId = bo.getTaskId();
         Task task = taskService.getById(taskId);
+        if (ObjectUtil.isNull(task)) {
+            throw new ServiceException("任务不存在！");
+        }
         FlowNode flowNode = getByNodeCode(task.getNodeCode(), task.getDefinitionId());
+        if (ObjectUtil.isNull(flowNode)) {
+            throw new ServiceException("流程节点不存在");
+        }
         if (op == TaskOperationEnum.ADD_SIGNATURE || op == TaskOperationEnum.REDUCTION_SIGNATURE) {
             if (CooperateType.isOrSign(flowNode.getNodeRatio())) {
                 throw new ServiceException(task.getNodeName() + "不是会签或票签节点！");
