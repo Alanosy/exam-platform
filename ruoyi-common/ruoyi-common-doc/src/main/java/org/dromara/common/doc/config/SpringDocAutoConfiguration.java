@@ -9,8 +9,6 @@ import lombok.RequiredArgsConstructor;
 import org.dromara.common.core.utils.ServletUtils;
 import org.dromara.common.core.utils.StringUtils;
 import org.dromara.common.doc.config.properties.SpringDocProperties;
-import org.dromara.common.doc.core.enhancer.SaTokenJavadocResolver;
-import org.dromara.common.doc.core.enhancer.SaTokenMetadataResolver;
 import org.dromara.common.doc.core.resolver.JavadocResolver;
 import org.dromara.common.doc.core.resolver.SaTokenAnnotationMetadataJavadocResolver;
 import org.dromara.common.doc.handler.OpenApiHandler;

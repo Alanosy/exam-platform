@@ -87,7 +87,7 @@ public class WorkflowGlobalListener implements GlobalListener {
                     FlowCopyBo bo = new FlowCopyBo();
                     Long id = Convert.toLong(x);
                     bo.setUserId(id);
-                    bo.setUserName(remoteUserService.selectUserNameById(id));
+                    bo.setNickName(remoteUserService.selectNicknameById(id));
                     return bo;
                 });
                 variable.put(FlowConstant.FLOW_COPY_LIST, list);
@@ -162,7 +162,7 @@ public class WorkflowGlobalListener implements GlobalListener {
             flowTask.setPermissionList(List.of(userIdArray));
             // 移除已处理的状态变量
             variable.remove(nodeKey);
-            FlowEngine.insService().removeVariables(flowTask.getInstanceId(),nodeKey);
+            FlowEngine.insService().removeVariables(flowTask.getInstanceId(), nodeKey);
         }
     }
 

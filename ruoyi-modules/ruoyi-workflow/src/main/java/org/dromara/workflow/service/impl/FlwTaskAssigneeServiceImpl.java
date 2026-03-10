@@ -252,7 +252,7 @@ public class FlwTaskAssigneeServiceImpl implements IFlwTaskAssigneeService, Hand
 
         List<Long> longIds = StreamUtils.toList(ids, Convert::toLong);
         Map<Long, String> rawMap = switch (type) {
-            case USER -> remoteUserService.selectUserNamesByIds(longIds);
+            case USER -> remoteUserService.selectUserNicksByIds(longIds);
             case ROLE -> remoteRoleService.selectRoleNamesByIds(longIds);
             case DEPT -> remoteDeptService.selectDeptNamesByIds(longIds);
             case POST -> remotePostService.selectPostNamesByIds(longIds);

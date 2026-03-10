@@ -399,12 +399,12 @@ public class RemoteUserServiceImpl implements RemoteUserService {
     }
 
     /**
-     * 根据用户 ID 列表查询用户名称映射关系
+     * 根据用户 ID 列表查询用户昵称映射关系
      *
      * @param userIds 用户 ID 列表
-     * @return Map，其中 key 为用户 ID，value 为对应的用户名称
+     * @return Map，其中 key 为用户 ID，value 为对应的用户昵称
      */
-    public Map<Long, String> selectUserNamesByIds(List<Long> userIds) {
+    public Map<Long, String> selectUserNicksByIds(List<Long> userIds) {
         if (CollUtil.isEmpty(userIds)) {
             return Collections.emptyMap();
         }
