@@ -26,6 +26,7 @@ import SideBar from './components/Sidebar/index.vue';
 import { AppMain, Navbar, Settings, TagsView } from './components';
 import { useAppStore } from '@/store/modules/app';
 import { useSettingsStore } from '@/store/modules/settings';
+import { NavTypeEnum } from '@/enums/NavTypeEnum';
 import { initWebSocket } from '@/utils/websocket';
 import { initSSE } from '@/utils/sse';
 
@@ -35,6 +36,13 @@ const sidebar = computed(() => useAppStore().sidebar);
 const device = computed(() => useAppStore().device);
 const needTagsView = computed(() => settingsStore.tagsView);
 const fixedHeader = computed(() => settingsStore.fixedHeader);
+const layout = computed(() => settingsStore.navType);
+
+// 根据布局模式判断是否显示侧边栏
+const showSidebar = computed(() => {
+  if (sidebar.value.hide) return false;
+  return layout.value === NavTypeEnum.LEFT || layout.value === NavTypeEnum.MIX;
+});
 
 const classObj = computed(() => ({
   hideSidebar: !sidebar.value.opened,

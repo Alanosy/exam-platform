@@ -282,3 +282,9 @@ h6 {
 .top-right-btn {
   margin-left: auto;
 }
+
+/* horizontal el menu */
+.el-menu--horizontal .el-menu-item .svg-icon + span,
+.el-menu--horizontal .el-sub-menu__title .svg-icon + span {
+  margin-left: 3px;
+}
