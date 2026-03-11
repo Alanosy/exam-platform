@@ -655,13 +655,17 @@ onMounted(() => {
 .dict-actions {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px 10px;
+  gap: 10px;
   margin: 8px 0 12px;
 }
 
 .dict-actions :deep(.el-button) {
   height: 32px;
   padding: 0 14px;
+}
+
+.dict-actions :deep(.el-button + .el-button) {
+  margin-left: 0;
 }
 
 .dict-table-wrap {
