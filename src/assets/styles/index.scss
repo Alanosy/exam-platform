@@ -14,18 +14,20 @@ body {
   -moz-osx-font-smoothing: grayscale;
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
+  background: var(--el-bg-color-page);
   font-family:
-    Helvetica Neue,
-    Helvetica,
-    PingFang SC,
-    Hiragino Sans GB,
-    Microsoft YaHei,
-    Arial,
+    'MiSans',
+    'HarmonyOS Sans SC',
+    'PingFang SC',
+    'Source Han Sans SC',
+    'Noto Sans SC',
+    'Hiragino Sans GB',
+    'Microsoft YaHei',
     sans-serif;
 }
 
 label {
-  font-weight: 700;
+  font-weight: 600;
 }
 
 html {
@@ -116,11 +118,18 @@ aside {
   background: #eef1f6;
   padding: 8px 24px;
   margin-bottom: 20px;
-  border-radius: 2px;
+  border-radius: var(--app-radius-md);
   display: block;
   line-height: 32px;
   font-size: 16px;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+  font-family:
+    'MiSans',
+    'HarmonyOS Sans SC',
+    'PingFang SC',
+    'Source Han Sans SC',
+    'Noto Sans SC',
+    'Hiragino Sans GB',
+    'Microsoft YaHei',
     sans-serif;
   color: #2c3e50;
   -webkit-font-smoothing: antialiased;
@@ -139,21 +148,27 @@ aside {
 //main-container全局样式
 .app-container {
   padding: 20px;
+  background: var(--app-surface-bg);
+  border: 1px solid var(--app-surface-border);
+  border-radius: var(--app-radius-lg);
+  box-shadow: var(--app-shadow-sm);
 }
 
 // search面板样式
 .panel,
 .search {
   margin-bottom: 0.75rem;
-  border-radius: 0.25rem;
+  border-radius: var(--app-radius-lg);
   border: 1px solid var(--el-border-color-light);
   background-color: var(--el-bg-color-overlay);
   padding: 0.75rem;
-  transition: all ease 0.3s;
+  box-shadow: 0 0 0 rgba(0, 0, 0, 0);
+  transition: box-shadow 0.2s ease, transform 0.2s ease, border-color 0.2s ease;
 
   &:hover {
-    box-shadow: 0 2px 12px #0000001a;
-    transition: all ease 0.3s;
+    box-shadow: var(--app-shadow-sm);
+    border-color: var(--el-border-color);
+    transform: translateY(-1px);
   }
 }
 

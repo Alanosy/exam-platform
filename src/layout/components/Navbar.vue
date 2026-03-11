@@ -238,8 +238,9 @@ watch(
   height: 50px;
   overflow: hidden;
   position: relative;
-  //background: #fff;
-  box-shadow: 0 1px 4px rgba(0, 21, 41, 0.08);
+  background: var(--el-bg-color);
+  border-bottom: 1px solid var(--el-border-color-lighter);
+  box-shadow: none;
   display: flex;
   align-items: center;
   // padding: 0 8px;
@@ -258,7 +259,7 @@ watch(
     margin-right: 8px;
 
     &:hover {
-      background: rgba(0, 0, 0, 0.025);
+      background: var(--el-fill-color-lighter);
     }
   }
 
@@ -304,7 +305,7 @@ watch(
       padding: 0 8px;
       height: 100%;
       font-size: 18px;
-      color: #5a5e66;
+      color: var(--el-text-color-regular);
       vertical-align: text-bottom;
 
       &.hover-effect {
@@ -312,7 +313,7 @@ watch(
         transition: background 0.3s;
 
         &:hover {
-          background: rgba(0, 0, 0, 0.025);
+          background: var(--el-fill-color-lighter);
         }
       }
     }
@@ -328,7 +329,7 @@ watch(
           cursor: pointer;
           width: 40px;
           height: 40px;
-          border-radius: 10px;
+          border-radius: var(--app-radius-md);
           margin-top: 10px;
         }
 

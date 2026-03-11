@@ -27,8 +27,12 @@
       <template #header>
         <el-row :gutter="10" class="mb8">
           <el-col :span="1.5" v-if="tab === 'waiting'">
-            <el-button type="primary" plain icon="Edit" :disabled="multiple" @click="handleUserOpen()">修改办理人 </el-button>
-            <el-button type="primary" plain icon="Bell" :disabled="multiple" @click="handleUrgeTaskOpen()">催办 </el-button>
+            <el-button class="todo-action-btn todo-action-btn--primary" type="primary" plain icon="Edit" :disabled="multiple" @click="handleUserOpen()"
+              >修改办理人
+            </el-button>
+            <el-button class="todo-action-btn todo-action-btn--warning" type="warning" plain icon="Bell" :disabled="multiple" @click="handleUrgeTaskOpen()"
+              >催办
+            </el-button>
           </el-col>
           <right-toolbar v-model:show-search="showSearch" @query-table="handleQuery"></right-toolbar>
         </el-row>
@@ -277,3 +281,59 @@ onMounted(() => {
   getWaitingList();
 });
 </script>
+
+<style lang="scss" scoped>
+.todo-action-btn {
+  height: 32px;
+  padding: 0 14px;
+  border-radius: var(--app-radius-md);
+  font-weight: 600;
+  --el-button-bg-color: var(--el-fill-color-lighter);
+  --el-button-border-color: var(--el-border-color-light);
+  --el-button-text-color: var(--el-text-color-regular);
+  --el-button-hover-bg-color: var(--el-fill-color-light);
+  --el-button-hover-border-color: var(--el-border-color);
+}
+
+.todo-action-btn--primary {
+  --el-button-text-color: var(--el-color-primary);
+  --el-button-border-color: var(--el-color-primary-light-5);
+  --el-button-bg-color: var(--el-color-primary-light-9);
+  --el-button-hover-bg-color: var(--el-color-primary-light-8);
+  --el-button-hover-border-color: var(--el-color-primary-light-5);
+}
+
+.todo-action-btn--warning {
+  --el-button-text-color: var(--el-color-warning);
+  --el-button-border-color: var(--el-color-warning-light-5);
+  --el-button-bg-color: var(--el-color-warning-light-9);
+  --el-button-hover-bg-color: var(--el-color-warning-light-8);
+  --el-button-hover-border-color: var(--el-color-warning-light-5);
+}
+
+:global(html.dark) {
+  .todo-action-btn {
+    --el-button-bg-color: rgba(148, 163, 184, 0.12);
+    --el-button-border-color: rgba(148, 163, 184, 0.3);
+    --el-button-text-color: var(--el-text-color-regular);
+    --el-button-hover-bg-color: rgba(148, 163, 184, 0.2);
+    --el-button-hover-border-color: rgba(148, 163, 184, 0.45);
+  }
+
+  .todo-action-btn--primary {
+    --el-button-bg-color: rgba(99, 113, 150, 0.14);
+    --el-button-border-color: rgba(99, 113, 150, 0.45);
+    --el-button-text-color: #c4cfdd;
+    --el-button-hover-bg-color: rgba(99, 113, 150, 0.22);
+    --el-button-hover-border-color: rgba(99, 113, 150, 0.65);
+  }
+
+  .todo-action-btn--warning {
+    --el-button-bg-color: rgba(214, 149, 59, 0.16);
+    --el-button-border-color: rgba(214, 149, 59, 0.55);
+    --el-button-text-color: #ffe6bb;
+    --el-button-hover-bg-color: rgba(214, 149, 59, 0.24);
+    --el-button-hover-border-color: rgba(214, 149, 59, 0.75);
+  }
+}
+</style>
