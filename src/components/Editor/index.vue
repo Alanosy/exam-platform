@@ -1,15 +1,13 @@
 <template>
   <div>
     <el-upload
-      v-if="type === 'url'"
-      :action="upload.url"
+      v-if="type"
+      action=""
       :before-upload="handleBeforeUpload"
-      :on-success="handleUploadSuccess"
-      :on-error="handleUploadError"
+      :http-request="handleUploadRequest"
       class="editor-img-uploader"
       name="file"
       :show-file-list="false"
-      :headers="upload.headers"
     >
       <i ref="uploadRef"></i>
     </el-upload>
@@ -31,7 +29,7 @@ import '@vueup/vue-quill/dist/vue-quill.snow.css';
 
 import { QuillEditor, Quill } from '@vueup/vue-quill';
 import { propTypes } from '@/utils/propTypes';
-import { globalHeaders } from '@/utils/request';
+import type { UploadRequestHandler, UploadRequestOptions } from 'element-plus';
 
 defineEmits(['update:modelValue']);
 
@@ -47,15 +45,11 @@ const props = defineProps({
   /* 上传文件大小限制(MB) */
   fileSize: propTypes.number.def(5),
   /* 类型（base64格式、url格式） */
-  type: propTypes.string.def('url')
+  type: propTypes.string.def('base64')
 });
 
 const { proxy } = getCurrentInstance() as ComponentInternalInstance;
 
-const upload = reactive<UploadOption>({
-  headers: globalHeaders(),
-  url: import.meta.env.VITE_APP_BASE_API + '/resource/oss/upload'
-});
 const quillEditorRef = ref();
 const uploadRef = ref<HTMLDivElement>();
 
@@ -116,28 +110,9 @@ watch(
   { immediate: true }
 );
 
-// 图片上传成功返回图片地址
-const handleUploadSuccess = (res: any) => {
-  // 如果上传成功
-  if (res.code === 200) {
-    // 获取富文本实例
-    const quill = toRaw(quillEditorRef.value).getQuill();
-    // 获取光标位置
-    const length = quill.selection.savedRange.index;
-    // 插入图片，res为服务器返回的图片链接地址
-    quill.insertEmbed(length, 'image', res.data.url);
-    // 调整光标到最后
-    quill.setSelection(length + 1);
-    proxy?.$modal.closeLoading();
-  } else {
-    proxy?.$modal.msgError('图片插入失败');
-    proxy?.$modal.closeLoading();
-  }
-};
-
 // 图片上传前拦截
 const handleBeforeUpload = (file: any) => {
-  const type = ['image/jpeg', 'image/jpg', 'image/png', 'image/svg'];
+  const type = ['image/jpeg', 'image/jpg', 'image/png', 'image/svg', 'image/svg+xml'];
   const isJPG = type.includes(file.type);
   //检验文件格式
   if (!isJPG) {
@@ -156,9 +131,41 @@ const handleBeforeUpload = (file: any) => {
   return true;
 };
 
-// 图片失败拦截
-const handleUploadError = (err: any) => {
-  proxy?.$modal.msgError('上传文件失败');
+// base64 模式插入图片
+const handleUploadRequest: UploadRequestHandler = (options: UploadRequestOptions) => {
+  return new Promise<void>((resolve, reject) => {
+    const file = options.file as File;
+    const quill = toRaw(quillEditorRef.value)?.getQuill();
+    if (!quill) {
+      proxy?.$modal.msgError('编辑器未就绪');
+      proxy?.$modal.closeLoading();
+      reject(new Error('editor not ready'));
+      return;
+    }
+    const reader = new FileReader();
+    reader.onload = () => {
+      const base64 = reader.result as string;
+      const range = quill.selection?.savedRange;
+      const length = range ? range.index : quill.getLength();
+      quill.insertEmbed(length, 'image', base64);
+      quill.setSelection(length + 1);
+      proxy?.$modal.closeLoading();
+      options.onSuccess?.({ url: base64 });
+      resolve();
+    };
+    reader.onerror = () => {
+      proxy?.$modal.msgError('图片插入失败');
+      proxy?.$modal.closeLoading();
+      const err = Object.assign(new Error('read image failed'), {
+        status: 0,
+        method: 'POST',
+        url: options.action || ''
+      });
+      options.onError?.(err as any);
+      reject(err);
+    };
+    reader.readAsDataURL(file);
+  });
 };
 </script>
 
