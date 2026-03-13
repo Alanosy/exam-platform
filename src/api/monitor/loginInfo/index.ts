@@ -5,7 +5,7 @@ import { AxiosPromise } from 'axios';
 // 查询登录日志列表
 export function list(query: LoginInfoQuery): AxiosPromise<LoginInfoVO[]> {
   return request({
-    url: '/monitor/loginInfo/list',
+    url: '/monitor/logininfor/list',
     method: 'get',
     params: query
   });
@@ -14,7 +14,7 @@ export function list(query: LoginInfoQuery): AxiosPromise<LoginInfoVO[]> {
 // 删除登录日志
 export function delLoginInfo(infoId: string | number | Array<string | number>) {
   return request({
-    url: '/monitor/loginInfo/' + infoId,
+    url: '/monitor/logininfor/' + infoId,
     method: 'delete'
   });
 }
@@ -22,7 +22,7 @@ export function delLoginInfo(infoId: string | number | Array<string | number>) {
 // 解锁用户登录状态
 export function unlockLoginInfo(userName: string | Array<string>) {
   return request({
-    url: '/monitor/loginInfo/unlock/' + userName,
+    url: '/monitor/logininfor/unlock/' + userName,
     method: 'get'
   });
 }
@@ -30,7 +30,7 @@ export function unlockLoginInfo(userName: string | Array<string>) {
 // 清空登录日志
 export function cleanLoginInfo() {
   return request({
-    url: '/monitor/loginInfo/clean',
+    url: '/monitor/logininfor/clean',
     method: 'delete'
   });
 }

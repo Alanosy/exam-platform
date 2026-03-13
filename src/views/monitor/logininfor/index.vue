@@ -39,20 +39,20 @@
       <template #header>
         <el-row :gutter="10" class="mb8">
           <el-col :span="1.5">
-            <el-button v-hasPermi="['monitor:logininfo:remove']" type="danger" plain icon="Delete" :disabled="multiple" @click="handleDelete()">
+            <el-button v-hasPermi="['monitor:logininfor:remove']" type="danger" plain icon="Delete" :disabled="multiple" @click="handleDelete()">
               删除
             </el-button>
           </el-col>
           <el-col :span="1.5">
-            <el-button v-hasPermi="['monitor:logininfo:remove']" type="danger" plain icon="Delete" @click="handleClean">清空</el-button>
+            <el-button v-hasPermi="['monitor:logininfor:remove']" type="danger" plain icon="Delete" @click="handleClean">清空</el-button>
           </el-col>
           <el-col :span="1.5">
-            <el-button v-hasPermi="['monitor:logininfo:unlock']" type="primary" plain icon="Unlock" :disabled="single" @click="handleUnlock">
+            <el-button v-hasPermi="['monitor:logininfor:unlock']" type="primary" plain icon="Unlock" :disabled="single" @click="handleUnlock">
               解锁
             </el-button>
           </el-col>
           <el-col :span="1.5">
-            <el-button v-hasPermi="['monitor:logininfo:export']" type="warning" plain icon="Download" @click="handleExport">导出</el-button>
+            <el-button v-hasPermi="['monitor:logininfor:export']" type="warning" plain icon="Download" @click="handleExport">导出</el-button>
           </el-col>
           <right-toolbar v-model:show-search="showSearch" @query-table="getList"></right-toolbar>
         </el-row>
@@ -105,9 +105,9 @@
   </div>
 </template>
 
-<script setup name="LoginInfo" lang="ts">
-import { list, delLoginInfo, cleanLoginInfo, unlockLoginInfo } from '@/api/monitor/logininfo';
-import { LoginInfoQuery, LoginInfoVO } from '@/api/monitor/logininfo/types';
+<script setup name="Logininfor" lang="ts">
+import { list, delLoginInfo, cleanLoginInfo, unlockLoginInfo } from '@/api/monitor/loginInfo';
+import { LoginInfoQuery, LoginInfoVO } from '@/api/monitor/loginInfo/types';
 
 const { proxy } = getCurrentInstance() as ComponentInternalInstance;
 const { sys_device_type } = toRefs<any>(proxy?.useDict('sys_device_type'));
@@ -195,11 +195,11 @@ const handleUnlock = async () => {
 /** 导出按钮操作 */
 const handleExport = () => {
   proxy?.download(
-    'monitor/loginInfo/export',
+    'monitor/logininfor/export',
     {
       ...queryParams.value
     },
-    `logininfo_${new Date().getTime()}.xlsx`
+    `logininfor_${new Date().getTime()}.xlsx`
   );
 };
 
