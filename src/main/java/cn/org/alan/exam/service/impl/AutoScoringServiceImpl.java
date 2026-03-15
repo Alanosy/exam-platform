@@ -1,9 +1,11 @@
 package cn.org.alan.exam.service.impl;
 
+import cn.hutool.http.HttpUtil;
 import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
 import cn.org.alan.exam.common.exception.ServiceRuntimeException;
+import cn.org.alan.exam.config.OnlineExamConfig;
 import cn.org.alan.exam.mapper.ExamQuAnswerMapper;
 import cn.org.alan.exam.model.entity.ExamQuAnswer;
 import cn.org.alan.exam.service.IAuthService;
@@ -20,7 +22,9 @@ import org.springframework.transaction.TransactionDefinition;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.DefaultTransactionDefinition;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -37,9 +41,51 @@ public class AutoScoringServiceImpl extends ServiceImpl<ExamQuAnswerMapper, Exam
     @Autowired
     private PlatformTransactionManager platformTransactionManager;
 
+    @Autowired
+    private OnlineExamConfig onlineExamConfig;
+
     @Override
     @Async
     public void autoScoringExam(Integer examId, Integer userId) {
+        // 优先委托 Agent 微服务批改（Agent 服务内部完成读取/评分/回写）
+        if (tryAgentScoring(examId, userId)) {
+            return;
+        }
+        // 回退原有 Coze/LLM 评分流程
+        cozeScoring(examId, userId);
+    }
+
+    /**
+     * 委托 Agent 微服务进行主观题批改。
+     * 仅在 online-exam.agent.scoring-enabled=true 时启用；失败返回 false 以便回退。
+     */
+    private boolean tryAgentScoring(Integer examId, Integer userId) {
+        OnlineExamConfig.AgentConfig agent = onlineExamConfig.getAgent();
+        if (agent == null || !Boolean.TRUE.equals(agent.getScoringEnabled())) {
+            return false;
+        }
+        String baseUrl = agent.getBaseUrl();
+        if (baseUrl == null || baseUrl.isEmpty()) {
+            return false;
+        }
+        Map<String, Object> body = new HashMap<>();
+        body.put("examId", examId);
+        body.put("userId", userId);
+        try {
+            String resp = HttpUtil.post(baseUrl + "/api/agent/grading/subjective", JSONUtil.toJsonStr(body), 60000);
+            JSONObject obj = JSONUtil.parseObj(resp);
+            // Agent 服务返回 code=1 表示成功
+            return obj.getInt("code") != null && obj.getInt("code") == 1;
+        } catch (Exception e) {
+            // Agent 服务调用失败，回退 Coze
+            return false;
+        }
+    }
+
+    /**
+     * 原有 Coze/LLM 评分流程
+     */
+    private void cozeScoring(Integer examId, Integer userId) {
         int maxAttempts = 3; // 最大重试次数
         long retryDelay = 5000; // 每次重试之间的间隔时间（毫秒）
 

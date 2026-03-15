@@ -114,6 +114,10 @@ online-exam:
       enabled: true #是否启用验证码登录
   auto-scoring:
     enabled: true #是否启用AI自动阅卷功能
+  # Agent 微服务集成：启用后主观题批改优先委托 agent 服务，失败自动回退 Coze
+  agent:
+    scoring-enabled: false
+    base-url: http://127.0.0.1:8081
 system:
   register:
     enabled: true  # 控制是否开放注册功能
