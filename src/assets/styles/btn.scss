@@ -45,7 +45,7 @@
   font-size: 14px;
   color: #fff;
   padding: 14px 36px;
-  border-radius: 8px;
+  border-radius: var(--app-radius-md);
   border: none;
   outline: none;
   transition: 600ms ease all;
@@ -95,5 +95,5 @@
   margin: 0;
   padding: 10px 15px;
   font-size: 14px;
-  border-radius: 4px;
+  border-radius: var(--app-radius-sm);
 }

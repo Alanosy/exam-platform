@@ -1,4 +1,5 @@
 import { LanguageEnum } from '@/enums/LanguageEnum';
+import { NavTypeEnum } from '@/enums/NavTypeEnum';
 
 const setting: DefaultSettings = {
   /**
@@ -18,9 +19,9 @@ const setting: DefaultSettings = {
   showSettings: true,
 
   /**
-   * 是否显示顶部导航
+   * 默认布局
    */
-  topNav: false,
+  navType: NavTypeEnum.LEFT,
 
   /**
    * 是否显示 tagsView
@@ -35,7 +36,7 @@ const setting: DefaultSettings = {
   /**
    * 是否固定头部
    */
-  fixedHeader: false,
+  fixedHeader: true,
 
   /**
    * 是否显示logo

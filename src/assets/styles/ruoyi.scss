@@ -74,7 +74,7 @@ h6 {
 }
 
 .el-form .el-form-item__label {
-  font-weight: 700;
+  font-weight: 600;
 }
 .el-dialog:not(.is-fullscreen) {
   margin-top: 6vh !important;
@@ -127,7 +127,7 @@ h6 {
   margin-top: 5px;
   border: 1px solid #e5e6e7;
   background: #ffffff none;
-  border-radius: 4px;
+  border-radius: var(--app-radius-md);
   width: 100%;
 }
 
@@ -190,10 +190,25 @@ h6 {
 .el-card__header {
   padding: 14px 15px 7px !important;
   min-height: 40px;
+  background: var(--el-fill-color-blank);
+  border-bottom: 1px solid var(--el-border-color-light);
 }
 
 .el-card__body {
   padding: 15px 20px 20px 20px !important;
+}
+
+.el-card {
+  border-radius: var(--app-radius-lg);
+  box-shadow: var(--app-shadow-sm);
+  border-color: var(--el-border-color-lighter);
+  overflow: hidden;
+  transition: box-shadow 0.2s ease, transform 0.2s ease;
+}
+
+.el-card:hover {
+  box-shadow: var(--app-shadow-md);
+  transform: translateY(-1px);
 }
 
 .card-box {
@@ -281,4 +296,10 @@ h6 {
 /* 表格右侧工具栏样式 */
 .top-right-btn {
   margin-left: auto;
+}
+
+/* horizontal el menu */
+.el-menu--horizontal .el-menu-item .svg-icon + span,
+.el-menu--horizontal .el-sub-menu__title .svg-icon + span {
+  margin-left: 3px;
 }

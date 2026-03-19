@@ -74,6 +74,9 @@
 
     .el-dialog {
       margin: 0 auto !important;
+      border-radius: var(--app-radius-lg);
+      box-shadow: var(--app-shadow-md);
+      overflow: hidden;
 
       .el-dialog__body {
         padding: 15px !important;
@@ -108,6 +111,8 @@
 
 // dropdown
 .el-dropdown-menu {
+  border-radius: var(--app-radius-md);
+  box-shadow: var(--app-shadow-sm);
   a {
     display: block;
   }
@@ -150,4 +155,123 @@
 /* 设置 el-message-box 消息弹框内容强制换行 */
 .el-message-box .el-message-box__message {
   word-break: break-word;
+}
+
+.el-message-box {
+  border-radius: var(--app-radius-lg);
+  box-shadow: var(--app-shadow-md);
+}
+
+.el-message,
+.el-notification,
+.el-alert {
+  border-radius: var(--app-radius-md);
+  box-shadow: var(--app-shadow-sm);
+}
+
+// Modern rounded inputs
+.el-input__wrapper,
+.el-textarea__inner,
+.el-select__wrapper,
+.el-date-editor,
+.el-range-editor,
+.el-input-number,
+.el-input-number__decrease,
+.el-input-number__increase {
+  border-radius: var(--app-radius-md);
+  transition: box-shadow 0.2s ease, border-color 0.2s ease, background-color 0.2s ease;
+}
+
+.el-input__wrapper.is-focus,
+.el-textarea__inner:focus,
+.el-select__wrapper.is-focus,
+.el-date-editor.is-focus,
+.el-range-editor.is-focus {
+  box-shadow: 0 0 0 2px var(--el-color-primary-light-8);
+}
+
+// Buttons
+.el-button {
+  border-radius: var(--app-radius-md);
+  transition: transform 0.15s ease, box-shadow 0.2s ease, background-color 0.2s ease, border-color 0.2s ease;
+}
+
+.el-button:not(.is-text):not(.is-link):hover {
+  transform: translateY(-1px);
+  box-shadow: var(--app-shadow-sm);
+}
+
+// Tags and badges
+.el-tag {
+  border-radius: var(--app-radius-md);
+}
+
+// Cards, popovers, drawers
+.el-popover,
+.el-tooltip__popper,
+.el-popper {
+  border-radius: var(--app-radius-md);
+  box-shadow: var(--app-shadow-sm);
+}
+
+.el-drawer {
+  border-radius: var(--app-radius-lg);
+  box-shadow: var(--app-shadow-md);
+}
+
+.el-drawer__header {
+  margin-bottom: 0;
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--el-border-color-light);
+}
+
+// Table polish
+.el-table {
+  border-radius: var(--app-radius-lg);
+  overflow: hidden;
+  box-shadow: var(--app-shadow-sm);
+  border: 1px solid var(--el-border-color-lighter);
+}
+
+.el-table__header-wrapper,
+.el-table__body-wrapper {
+  background: var(--el-bg-color);
+}
+
+.el-table__row:hover td.el-table__cell {
+  background-color: var(--el-fill-color-light) !important;
+}
+
+// Tabs
+.el-tabs__header {
+  margin: 0 0 12px 0;
+}
+
+.el-tabs__item {
+  border-radius: var(--app-radius-md);
+  margin: 0 2px;
+}
+
+.el-tabs__nav-wrap::after {
+  background-color: var(--el-border-color-lighter);
+}
+
+// Pagination
+.el-pagination .btn-prev,
+.el-pagination .btn-next,
+.el-pagination .el-pager li {
+  border-radius: var(--app-radius-sm);
+  transition: background-color 0.2s ease, color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.el-pagination .el-pager li.is-active {
+  box-shadow: var(--app-shadow-sm);
+}
+
+// Breadcrumb
+.el-breadcrumb {
+  padding: 0;
+  background: transparent;
+  border: none;
+  border-radius: 0;
 }

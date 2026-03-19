@@ -6,6 +6,7 @@
     transition: margin-left 0.28s;
     margin-left: $base-sidebar-width;
     position: relative;
+    background: var(--el-bg-color-page);
   }
 
   .sidebarHide {
@@ -88,7 +89,7 @@
     // menu hover
     .theme-dark .sub-menu-title-noDropdown,
     .theme-dark .el-sub-menu__title {
-      border-radius: 8px;
+      border-radius: var(--app-radius-md);
       margin: 1px 5px 1px 5px;
       &:hover {
         background-color: $base-sub-menu-title-hover !important;
@@ -96,7 +97,7 @@
     }
     .sub-menu-title-noDropdown,
     .el-sub-menu__title {
-      border-radius: 8px;
+      border-radius: var(--app-radius-md);
       margin: 1px 5px 1px 5px;
       &:hover {
         background-color: rgba(0, 0, 0, 0.05) !important;
@@ -110,7 +111,7 @@
     & .nest-menu .el-sub-menu > .el-sub-menu__title,
     & .el-sub-menu .el-menu-item {
       min-width: calc($base-sidebar-width - 20px) !important;
-      border-radius: 8px;
+      border-radius: var(--app-radius-md);
       height: 45px;
       margin: 1px 5px 1px 5px;
       &:not(.is-active):hover {
@@ -121,7 +122,7 @@
     & .theme-dark .nest-menu .el-sub-menu > .el-sub-menu__title,
     & .theme-dark .el-sub-menu .el-menu-item {
       background-color: $base-sub-menu-background !important;
-      border-radius: 8px;
+      border-radius: var(--app-radius-md);
       height: 45px;
       margin: 1px 5px 1px 5px;
 
@@ -137,7 +138,7 @@
 
     & .theme-dark .nest-menu .el-sub-menu > .el-sub-menu__title,
     & .theme-dark .el-menu-item {
-      border-radius: 8px;
+      border-radius: var(--app-radius-md);
       height: 45px;
       margin: 1px 5px 1px 5px;
 
@@ -153,7 +154,7 @@
 
     & .nest-menu .el-sub-menu > .el-sub-menu__title,
     & .el-menu-item {
-      border-radius: 8px;
+      border-radius: var(--app-radius-md);
       height: 45px;
       margin: 1px 5px 1px 5px;
 
@@ -196,9 +197,9 @@
 
     & .el-sub-menu {
       overflow: hidden;
-      border-radius: 8px;
+      border-radius: var(--app-radius-md);
       .el-sub-menu__title.el-tooltip__trigger {
-        border-radius: 8px;
+        border-radius: var(--app-radius-md);
         height: 45px;
       }
 
@@ -286,11 +287,11 @@
 }
 // 收起菜单后悬浮的菜单样式
 .el-popper.is-pure{
-  border-radius: 8px;
+  border-radius: var(--app-radius-md);
   .el-menu--popup{
-    border-radius: 8px;
+    border-radius: var(--app-radius-md);
   }
   .el-menu-item{
-    border-radius: 4px;
+    border-radius: var(--app-radius-sm);
   }
 }
