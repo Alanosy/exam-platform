@@ -42,19 +42,19 @@
           <template #header>
             <el-row :gutter="10" class="mb8">
               <el-col :span="1.5">
-                <el-button type="primary" icon="Plus" @click="handleAdd()">添加</el-button>
+                <el-button v-hasPermi="['workflow:definition:add']" type="primary" icon="Plus" @click="handleAdd()">添加</el-button>
               </el-col>
               <el-col :span="1.5">
-                <el-button type="success" icon="Edit" :disabled="single" @click="handleUpdate()">修改</el-button>
+                <el-button v-hasPermi="['workflow:definition:edit']" type="success" icon="Edit" :disabled="single" @click="handleUpdate()">修改</el-button>
               </el-col>
               <el-col :span="1.5">
-                <el-button type="danger" icon="Delete" :disabled="multiple" @click="handleDelete()">删除</el-button>
+                <el-button v-hasPermi="['workflow:definition:remove']" type="danger" icon="Delete" :disabled="multiple" @click="handleDelete()">删除</el-button>
               </el-col>
               <el-col :span="1.5">
-                <el-button type="primary" icon="UploadFilled" @click="uploadDialog.visible = true">部署流程文件</el-button>
+                <el-button v-hasPermi="['workflow:definition:import']" type="primary" icon="UploadFilled" @click="uploadDialog.visible = true">部署流程文件</el-button>
               </el-col>
               <el-col :span="1.5">
-                <el-button type="warning" icon="Download" :disabled="single" @click="handleExportDef">导出</el-button>
+                <el-button v-hasPermi="['workflow:definition:export']" type="warning" icon="Download" :disabled="single" @click="handleExportDef">导出</el-button>
               </el-col>
               <right-toolbar v-model:show-search="showSearch" @query-table="handleQuery"></right-toolbar>
             </el-row>
@@ -74,6 +74,7 @@
               <el-table-column align="center" prop="activityStatus" label="激活状态" width="130">
                 <template #default="scope">
                   <el-switch
+                    v-hasPermi="['workflow:definition:active']"
                     v-model="scope.row.activityStatus"
                     :active-value="1"
                     :inactive-value="0"
@@ -92,21 +93,21 @@
                 <template #default="scope">
                   <el-row :gutter="10" class="mb8">
                     <el-col :span="1.5">
-                      <el-button link type="primary" size="small" icon="Delete" @click="handleDelete(scope.row)">删除流程</el-button>
+                      <el-button v-hasPermi="['workflow:definition:remove']" link type="primary" size="small" icon="Delete" @click="handleDelete(scope.row)">删除流程</el-button>
                     </el-col>
                     <el-col :span="1.5">
-                      <el-button link type="primary" size="small" icon="CopyDocument" @click="handleCopyDef(scope.row)">复制流程</el-button>
+                      <el-button v-hasPermi="['workflow:definition:copy']" link type="primary" size="small" icon="CopyDocument" @click="handleCopyDef(scope.row)">复制流程</el-button>
                     </el-col>
                   </el-row>
                   <el-row :gutter="10" class="mb8">
                     <el-col :span="1.5">
-                      <el-button link type="primary" v-if="scope.row.isPublish === 0" icon="Pointer" size="small" @click="design(scope.row)"
+                      <el-button v-hasPermi="['workflow:definition:query']" link type="primary" v-if="scope.row.isPublish === 0" icon="Pointer" size="small" @click="design(scope.row)"
                         >流程设计</el-button
                       >
-                      <el-button link type="primary" v-else icon="View" size="small" @click="designView(scope.row)">查看流程</el-button>
+                      <el-button v-hasPermi="['workflow:definition:query']" link type="primary" v-else icon="View" size="small" @click="designView(scope.row)">查看流程</el-button>
                     </el-col>
                     <el-col v-if="scope.row.isPublish !== 1" :span="1.5">
-                      <el-button link type="primary" size="small" icon="CircleCheck" @click="handlePublish(scope.row)">发布流程</el-button>
+                      <el-button v-hasPermi="['workflow:definition:publish']" link type="primary" size="small" icon="CircleCheck" @click="handlePublish(scope.row)">发布流程</el-button>
                     </el-col>
                   </el-row>
                 </template>
