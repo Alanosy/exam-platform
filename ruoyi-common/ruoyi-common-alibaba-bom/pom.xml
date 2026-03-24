@@ -14,7 +14,7 @@
     </description>
 
     <properties>
-        <revision>2.5.3</revision>
+        <revision>2.6.0</revision>
         <spring-cloud-alibaba.version>2025.0.0.0</spring-cloud-alibaba.version>
         <seata.version>2.5.0</seata.version>
         <nacos.client.version>2.5.1</nacos.client.version>
