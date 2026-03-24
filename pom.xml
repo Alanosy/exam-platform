@@ -13,11 +13,11 @@
     <description>Dromara RuoYi-Cloud-Plus微服务系统</description>
 
     <properties>
-        <revision>2.5.3</revision>
+        <revision>2.6.0</revision>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <java.version>17</java.version>
-        <spring-boot.version>3.5.9</spring-boot.version>
+        <spring-boot.version>3.5.12</spring-boot.version>
         <spring-cloud.version>2025.0.1</spring-cloud.version>
         <spring-boot-admin.version>3.5.6</spring-boot-admin.version>
         <mybatis.version>3.5.19</mybatis.version>
@@ -38,13 +38,13 @@
         <logstash.version>7.4</logstash.version>
         <easy-es.version>3.0.1</easy-es.version>
         <elasticsearch-client.version>7.17.28</elasticsearch-client.version>
-        <skywalking-toolkit.version>9.5.0</skywalking-toolkit.version>
-        <bouncycastle.version>1.80</bouncycastle.version>
+        <skywalking-toolkit.version>9.6.0</skywalking-toolkit.version>
+        <bouncycastle.version>1.83</bouncycastle.version>
         <mapstruct-plus.version>1.5.0</mapstruct-plus.version>
         <mapstruct-plus.lombok.version>0.2.0</mapstruct-plus.lombok.version>
         <justauth.version>1.16.7</justauth.version>
         <!-- 离线IP地址定位库 -->
-        <ip2region.version>3.3.2</ip2region.version>
+        <ip2region.version>3.3.4</ip2region.version>
         <!-- 临时修复 fastjson 漏洞 -->
         <fastjson.version>1.2.83</fastjson.version>
         <!-- OSS 配置 -->
@@ -263,7 +263,7 @@
             <!-- 加密包引入 -->
             <dependency>
                 <groupId>org.bouncycastle</groupId>
-                <artifactId>bcprov-jdk15to18</artifactId>
+                <artifactId>bcpkix-jdk18on</artifactId>
                 <version>${bouncycastle.version}</version>
             </dependency>
 
@@ -388,6 +388,7 @@
     <modules>
         <module>ruoyi-auth</module>
         <module>ruoyi-gateway</module>
+        <module>ruoyi-gateway-mvc</module>
         <module>ruoyi-visual</module>
         <module>ruoyi-modules</module>
         <module>ruoyi-api</module>
@@ -407,8 +408,7 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>${maven-compiler-plugin.version}</version>
                 <configuration>
-                    <source>${java.version}</source>
-                    <target>${java.version}</target>
+                    <release>${java.version}</release>
                     <encoding>${project.build.sourceEncoding}</encoding>
                     <annotationProcessorPaths>
                         <path>

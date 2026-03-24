@@ -5,7 +5,7 @@ spring:
       primary: master
       seata: false
       datasource:
-        # 主库数据源
+        # 主库数据源 (主数据源内包含代码生成数据表 增加其他数据库不要修改主数据源 否则数据无法存储)
         master:
           type: ${spring.datasource.type}
           driver-class-name: com.mysql.cj.jdbc.Driver

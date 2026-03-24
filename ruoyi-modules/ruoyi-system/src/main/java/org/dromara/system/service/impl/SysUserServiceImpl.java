@@ -231,7 +231,7 @@ public class SysUserServiceImpl implements ISysUserService {
     }
 
     /**
-     * 校验用户名称是否唯一
+     * 校验用户账号是否唯一
      *
      * @param user 用户信息
      * @return 结果
@@ -494,6 +494,11 @@ public class SysUserServiceImpl implements ISysUserService {
         // 非超级管理员，禁止包含超级管理员角色
         if (!LoginHelper.isSuperAdmin(userId)) {
             roleList.remove(SystemConstants.SUPER_ADMIN_ID);
+        }
+
+        // 移除超管角色后若无剩余角色，说明仅选了超管角色且不允许分配，显式报错
+        if (roleList.isEmpty()) {
+            throw new ServiceException("不允许为普通用户分配超级管理员角色，请至少选择一个其他角色");
         }
 
         // 校验是否有权限访问这些角色（含数据权限控制）

@@ -67,7 +67,8 @@ public class RemoteCompleteTask implements Serializable {
 
     public Map<String, Object> getVariables() {
         if (variables == null) {
-            return new HashMap<>(16);
+            variables = new HashMap<>(16);
+            return variables;
         }
         variables.entrySet().removeIf(entry -> Objects.isNull(entry.getValue()));
         return variables;

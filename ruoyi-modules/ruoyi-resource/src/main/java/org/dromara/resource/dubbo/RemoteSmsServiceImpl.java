@@ -30,6 +30,8 @@ public class RemoteSmsServiceImpl implements RemoteSmsService {
      * @return SmsBlend 实例，代表指定供应商类型
      */
     private SmsBlend getSmsBlend() {
+        // 自动获取一个短信服务商
+        // return SmsFactory.getSmsBlend();
         // 可自定义厂商配置获取规则 例如根据租户获取 或 负载均衡多个厂商等
         return SmsFactory.getSmsBlend("config1");
     }
