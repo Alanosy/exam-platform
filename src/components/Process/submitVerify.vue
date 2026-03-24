@@ -14,7 +14,7 @@
       <el-form-item label="抄送" v-if="buttonObj.copy">
         <el-button type="primary" icon="Plus" circle @click="openUserSelectCopy" />
         <el-tag v-for="user in selectCopyUserList" :key="user.userId" closable style="margin: 2px" @close="handleCopyCloseTag(user)">
-          {{ user.userName }}
+          {{ user.nickName }}
         </el-tag>
       </el-form-item>
       <el-form-item v-if="buttonObj.pop && nestNodeList && nestNodeList.length > 0" label="下一步审批人" prop="assigneeMap">
@@ -80,7 +80,13 @@
     <!-- 加签组件 -->
     <UserSelect ref="multiInstanceUserRef" :multiple="true" @confirm-call-back="addMultiInstanceUser"></UserSelect>
     <!-- 弹窗选人 -->
-    <UserSelect ref="porUserRef" :data="form.assigneeMap[nodeCode]" :multiple="true" :userIds="popUserIds" @confirm-call-back="handlePopUser"></UserSelect>
+    <UserSelect
+      ref="porUserRef"
+      :data="form.assigneeMap[nodeCode]"
+      :multiple="true"
+      :userIds="popUserIds"
+      @confirm-call-back="handlePopUser"
+    ></UserSelect>
 
     <!-- 驳回开始 -->
     <el-dialog v-model="backVisible" draggable title="驳回" width="40%" :close-on-click-modal="false">
@@ -265,7 +271,7 @@ const openDialog = async (id?: string) => {
   selectCopyUserList.value = task.value.copyList;
   selectCopyUserIds.value = task.value.copyList.map((e) => e.userId).join(',');
   varNodeList.value = task.value.varList;
-  console.log('varNodeList', varNodeList.value)
+  console.log('varNodeList', varNodeList.value);
   buttonDisabled.value = false;
   try {
     const data = {
@@ -310,7 +316,7 @@ const handleCompleteTask = async () => {
     selectCopyUserList.value.forEach((e) => {
       const copyUser = {
         userId: e.userId,
-        userName: e.userName
+        nickName: e.nickName
       };
       flowCopyList.push(copyUser);
     });
@@ -397,7 +403,8 @@ const addMultiInstanceUser = async (data) => {
     const taskOperationBo = reactive<TaskOperationBo>({
       userIds: data.map((e) => e.userId),
       taskId: taskId.value,
-      message: form.value.message
+      message: form.value.message,
+      messageType: ['1']
     });
     await proxy?.$modal.confirm('是否确认提交？');
     loading.value = true;
@@ -421,7 +428,8 @@ const deleteMultiInstanceUser = async (row) => {
   const taskOperationBo = reactive<TaskOperationBo>({
     userIds: [row.userId],
     taskId: taskId.value,
-    message: form.value.message
+    message: form.value.message,
+    messageType: ['1']
   });
   await taskOperation(taskOperationBo, 'reductionSignature').finally(() => {
     loading.value = false;
@@ -441,7 +449,8 @@ const handleTransferTask = async (data) => {
     const taskOperationBo = reactive<TaskOperationBo>({
       userId: data[0].userId,
       taskId: taskId.value,
-      message: form.value.message
+      message: form.value.message,
+      messageType: ['1']
     });
     await proxy?.$modal.confirm('是否确认提交？');
     loading.value = true;
@@ -468,7 +477,8 @@ const handleDelegateTask = async (data) => {
     const taskOperationBo = reactive<TaskOperationBo>({
       userId: data[0].userId,
       taskId: taskId.value,
-      message: form.value.message
+      message: form.value.message,
+      messageType: ['1']
     });
     await proxy?.$modal.confirm('是否确认提交？');
     loading.value = true;

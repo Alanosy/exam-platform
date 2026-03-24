@@ -1,9 +1,14 @@
 <template>
-  <div class="navbar">
+  <div class="navbar" :class="'nav' + navType">
     <hamburger id="hamburger-container" :is-active="appStore.sidebar.opened" class="hamburger-container" @toggle-click="toggleSideBar" />
-    <breadcrumb v-if="!settingsStore.topNav" id="breadcrumb-container" class="breadcrumb-container" />
-    <top-nav v-if="settingsStore.topNav" id="topmenu-container" class="topmenu-container" />
 
+    <breadcrumb v-if="navType == NavTypeEnum.LEFT" id="breadcrumb-container" class="breadcrumb-container" />
+    <top-nav v-if="navType == NavTypeEnum.MIX" id="topmenu-container" class="topmenu-container" />
+
+    <template v-if="navType == NavTypeEnum.TOP">
+      <logo v-show="showLogo" :collapse="false"></logo>
+      <top-bar id="topbar-container" class="topbar-container" />
+    </template>
     <div class="right-menu flex align-center">
       <template v-if="appStore.device !== 'mobile'">
         <el-select
@@ -99,6 +104,9 @@ import { TenantVO } from '@/api/types';
 import notice from './notice/index.vue';
 import router from '@/router';
 import { ElMessageBoxOptions } from 'element-plus/es/components/message-box/src/message-box.type';
+import { NavTypeEnum } from '@/enums/NavTypeEnum';
+import Logo from "@/layout/components/Sidebar/Logo.vue";
+import TopBar from './TopBar'
 
 const appStore = useAppStore();
 const userStore = useUserStore();
@@ -109,6 +117,9 @@ const newNotice = ref(<number>0);
 const { proxy } = getCurrentInstance() as ComponentInternalInstance;
 
 const userId = ref(userStore.userId);
+const navType = computed(() => settingsStore.navType);
+const showLogo = computed(() => settingsStore.sidebarLogo);
+
 const companyName = ref(undefined);
 const tenantList = ref<TenantVO[]>([]);
 // 是否切换了租户
@@ -201,6 +212,12 @@ watch(
 </script>
 
 <style lang="scss" scoped>
+.navbar.navtop {
+  .hamburger-container {
+    display: none !important;
+  }
+}
+
 :deep(.el-select .el-input__wrapper) {
   height: 30px;
 }
@@ -221,24 +238,34 @@ watch(
   height: 50px;
   overflow: hidden;
   position: relative;
-  //background: #fff;
-  box-shadow: 0 1px 4px rgba(0, 21, 41, 0.08);
+  background: var(--el-bg-color);
+  border-bottom: 1px solid var(--el-border-color-lighter);
+  box-shadow: none;
+  display: flex;
+  align-items: center;
+  // padding: 0 8px;
+  box-sizing: border-box;
 
   .hamburger-container {
     line-height: 46px;
     height: 100%;
-    float: left;
+    //float: left;
     cursor: pointer;
     transition: background 0.3s;
     -webkit-tap-highlight-color: transparent;
+    display: flex;
+    align-items: center;
+    flex-shrink: 0;
+    margin-right: 8px;
 
     &:hover {
-      background: rgba(0, 0, 0, 0.025);
+      background: var(--el-fill-color-lighter);
     }
   }
 
   .breadcrumb-container {
-    float: left;
+    //float: left;
+    flex-shrink: 0;
   }
 
   .topmenu-container {
@@ -246,16 +273,28 @@ watch(
     left: 50px;
   }
 
+  .topbar-container {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    align-items: center;
+    overflow: hidden;
+    margin-left: 8px;
+  }
+
+
   .errLog-container {
     display: inline-block;
     vertical-align: top;
   }
 
   .right-menu {
-    float: right;
+    //float: right;
     height: 100%;
     line-height: 50px;
     display: flex;
+    align-items: center;
+    margin-left: auto;
 
     &:focus {
       outline: none;
@@ -266,7 +305,7 @@ watch(
       padding: 0 8px;
       height: 100%;
       font-size: 18px;
-      color: #5a5e66;
+      color: var(--el-text-color-regular);
       vertical-align: text-bottom;
 
       &.hover-effect {
@@ -274,7 +313,7 @@ watch(
         transition: background 0.3s;
 
         &:hover {
-          background: rgba(0, 0, 0, 0.025);
+          background: var(--el-fill-color-lighter);
         }
       }
     }
@@ -290,7 +329,7 @@ watch(
           cursor: pointer;
           width: 40px;
           height: 40px;
-          border-radius: 10px;
+          border-radius: var(--app-radius-md);
           margin-top: 10px;
         }
 
