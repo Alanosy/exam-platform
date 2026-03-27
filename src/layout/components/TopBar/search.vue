@@ -1,10 +1,11 @@
 <template>
   <div class="layout-search-dialog">
-    <el-dialog v-model="state.isShowSearch" destroy-on-close :show-close="false">
-      <template #footer>
+    <el-dialog v-model="state.isShowSearch" destroy-on-close :show-close="false" width="600px" top="12vh">
+      <div class="layout-search-dialog__content">
         <el-autocomplete
           ref="layoutMenuAutocompleteRef"
           v-model="state.menuQuery"
+          class="layout-search-dialog__autocomplete"
           :fetch-suggestions="menuSearch"
           placeholder="搜索"
           :fit-input-width="true"
@@ -20,7 +21,7 @@
             </div>
           </template>
         </el-autocomplete>
-      </template>
+      </div>
     </el-dialog>
   </div>
 </template>
@@ -132,27 +133,29 @@ defineExpose({
 
 <style lang="scss" scoped>
 .layout-search-dialog {
-  position: relative;
   :deep(.el-dialog) {
-    padding: 0;
+    border-radius: 14px;
+    overflow: visible;
     .el-dialog__header,
-    .el-dialog__body {
+    .el-dialog__footer {
       display: none;
     }
-    .el-dialog__footer {
-      width: 100%;
-      position: absolute;
-      left: 50%;
-      transform: translateX(-50%);
-      top: -53vh;
+    .el-dialog__body {
+      padding: 20px;
     }
   }
-  :deep(.el-autocomplete) {
-    width: 560px;
-    position: absolute;
-    top: 150px;
-    left: 50%;
-    transform: translateX(-50%);
+
+  &__content {
+    width: 100%;
+  }
+
+  &__autocomplete {
+    width: 100%;
+  }
+
+  :deep(.el-input__wrapper) {
+    min-height: 44px;
+    border-radius: 10px;
   }
 }
 </style>
