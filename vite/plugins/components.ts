@@ -6,7 +6,9 @@ export default (path: any) => {
   return Components({
     resolvers: [
       // 自动导入 Element Plus 组件
-      ElementPlusResolver(),
+      ElementPlusResolver({
+        importStyle: false
+      }),
       // 自动注册图标组件
       IconsResolver({
         enabledCollections: ['ep']

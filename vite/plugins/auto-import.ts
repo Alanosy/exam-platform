@@ -12,7 +12,9 @@ export default (path: any) => {
     },
     resolvers: [
       // 自动导入 Element Plus 相关函数ElMessage, ElMessageBox... (带样式)
-      ElementPlusResolver()
+      ElementPlusResolver({
+        importStyle: false
+      })
     ],
     vueTemplate: true, // 是否在 vue 模板中自动导入
     dts: path.resolve(path.resolve(__dirname, '../../src'), 'types', 'auto-imports.d.ts')
