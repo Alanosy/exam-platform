@@ -88,6 +88,7 @@
               and b.del_flag = '0'
               and c.del_flag = '0'
               and a.node_type in ('1','3','4')
+              and a.flow_status <![CDATA[ <> ]]> 'copy'
         ) t
         ${ew.getCustomSqlSegment}
     </select>
