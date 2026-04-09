@@ -79,6 +79,7 @@ public class VerifyTokenFilter extends OncePerRequestFilter {
             // responseUtil.response(response, Result.failed("token无效或已过期，请重新登录"), 401);
             return;
         }
+
         // 如果 Token 已续签，更新 Redis 中的 Token 并设置到响应头
         if (!refreshedToken.equals(token)) {
             stringRedisTemplate.opsForValue().set("token" + request.getSession().getId(), refreshedToken, 30, TimeUnit.MINUTES);

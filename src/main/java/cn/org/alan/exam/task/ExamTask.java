@@ -55,32 +55,6 @@ public class ExamTask {
         List<UserExamsScore> userExamsScores = userExamsScoreMapper.selectList(query);
         //  获取当前时间
         LocalDateTime now = LocalDateTime.now();
-//         if(userExamsScores.size()>0){
-//             for (UserExamsScore userExamsScore : userExamsScores) {
-//                 try {
-//                     // 查找到具体考试到信息
-//                     Integer examId = userExamsScore.getExamId();
-//                     Exam exam = examMapper.selectById(examId);
-//                     // 3. 获取考试信息
-//                     if(exam == null) {
-//                         log.error("考试不存在，examId: {}", exam.getId());
-//                         continue;
-//                     }
-//
-//                     LocalDateTime endTime = exam.getEndTime();
-//                     // 4. 检查是否超时
-//                     if(now.isAfter(exam.getEndTime())) {
-//                         // 5. 调用交卷函数
-//                         handExam(userExamsScore);
-//
-//                         log.info("自动交卷成功，用户ID: {}, 考试ID: {}",
-//                                 userExamsScore.getUserId(), userExamsScore.getExamId());
-//                     }
-//                 } catch (Exception e) {
-//                     log.error("自动交卷处理异常，用户考试记录ID: {}", userExamsScore.getId(), e);
-//                 }
-//             }
-//         }
         for (UserExamsScore userExamsScore : userExamsScores) {
             try {
                 // 查找到具体考试的信息
@@ -91,7 +65,6 @@ public class ExamTask {
                     log.error("考试不存在，examId: {}", examId);
                     continue;
                 }
-
                 // 计算考试结束时间
                 LocalDateTime userStartTime = userExamsScore.getCreateTime();//获取用户实际的开始时间 (UserExamsScore 记录的创建时间
                 if (userStartTime == null) {

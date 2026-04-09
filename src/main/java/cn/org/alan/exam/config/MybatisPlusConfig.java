@@ -20,8 +20,7 @@ import org.springframework.context.annotation.Configuration;
  * @Date 2024/3/28 3:57 PM
  */
 @Configuration
-// mapper 包扫描
-@MapperScan("cn.org.alan.exam.mapper")
+@MapperScan("cn.org.alan.exam.mapper") // mapper 包扫描
 public class MybatisPlusConfig {
     @Resource
     private FiledFullHandler filedFullHandler;
@@ -34,8 +33,7 @@ public class MybatisPlusConfig {
     @Bean
     public MybatisPlusInterceptor mybatisPlusInterceptor() {
         MybatisPlusInterceptor interceptor = new MybatisPlusInterceptor();
-        interceptor.addInnerInterceptor(new
-                PaginationInnerInterceptor(DbType.MYSQL));
+        interceptor.addInnerInterceptor(new PaginationInnerInterceptor(DbType.MYSQL));
         // 添加元数据对象处理器
         return interceptor;
     }

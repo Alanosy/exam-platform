@@ -215,8 +215,11 @@ public class ExamServiceImpl extends ServiceImpl<ExamMapper, Exam> implements IE
                 if (questionsByType.size() < count) {
                     throw new ServiceRuntimeException("题库中类型为" + quType + "的题目数量不足" + count + "个！");
                 }
+                // 获取试题id
                 List<Integer> typeQuestionIds = questionsByType.stream().map(Question::getId).collect(Collectors.toList());
+                // 打乱顺序
                 Collections.shuffle(typeQuestionIds);
+                // 取前n个 n代表设置的提数
                 List<Integer> sampledIds = typeQuestionIds.subList(0, count);
                 // 插入试题
                 if (!sampledIds.isEmpty()) {
