@@ -75,7 +75,7 @@
 
 | 工具  | 版本号   | 下载                                                         |
 | ----- | -------- | ------------------------------------------------------------ |
-| JDK   | **18**   | https://www.oracle.com/cn/java/technologies/downloads/#java8 |
+| JDK   | **17**   | https://www.oracle.com/cn/java/technologies/downloads/#java8 |
 | MySQL | **8**    | https://dev.mysql.com/downloads/mysql/5.7.html               |
 | Redis | **7**    | https://redis.io/download                                    |
 | Nginx | **1.22** | http://nginx.org/en/download.html                            |
