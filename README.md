@@ -16,7 +16,7 @@
 
 如遇到Bug可以在issue中提出，会仔细回答各位
 
-如果遇到部署问题，也可以加入下方的QQ群，会给大家解答，QQ群文件中放有该项目的配套资料
+如果遇到部署问题，也可以在最下面找到联系方式，会给大家解答，也有项目的配套资料可以免费领取，包含ER图、设计资料、nginx反向代理配置文件、演讲ppt等全套资料
 
 **=>如果各位喜欢，麻烦各位大佬点点Star<=**
 
@@ -27,14 +27,6 @@
 3. 数据库Sql文件在lib文件夹中
 
 ****
-
-#### 其他服务（有偿）
-
-博主提供代部署服务
-
-提供接单服务，价格从优
-
-提供讲解，或写文档服务
 
 #### 功能介绍
 
@@ -50,11 +42,12 @@
 
 <table>
     <tr>
-        <td><img src="https://github.com/Alanosy/online-exam-system-backend/blob/master/img/管理端.png"/></td>
-        <td><img src="https://github.com/Alanosy/online-exam-system-backend/blob/master/img/教师端.png"/></td>
-      	<td><img src="https://github.com/Alanosy/online-exam-system-backend/blob/master/img/学生端.png"/></td>
+        <td><img src="http://bucket.alan.org.cn/blog/2026/04/10/01-04-41-80771fc50a6fa5472b1ce441721b9b33-dacd41.png"/></td>
+        <td><img src="http://bucket.alan.org.cn/blog/2026/04/10/01-07-38-0aaab4c596d622c45935de321f16abc6-0d82a8.png"/></td>
+      	<td><img src="http://bucket.alan.org.cn/blog/2026/04/10/01-04-54-8df2f72d9681a6279de6527250d62751-c22b74.png"/></td>
     </tr>
 </table>
+
 
 #### 安装
 
@@ -64,21 +57,27 @@
    git clone https://github.com/Alanosy/online-exam-system-backend.git
    ```
 
-2. 导入IDEA，配置好maven、java版本（需要java8版本）
+2. 导入IDEA，配置好maven、java版本（需要java17版本）
 
 3. 配置application-dev.yml，配置好mysql和redis。（注意：最好使用Mysql5.7版本）
 
 4. 如果需要上传图片需要配置阿里云OSS或者本地自己部署Minio服务然后在配置文件中配置
 
-5. 配置好后直接点运行就可以使用了，如果运行不起来，可以加入QQ群提问
+5. 配置好后直接点运行就可以使用了，如果运行不起来，可以在下方👇找到联系方式提问
+
+#### 详细的部署教程
+
+详细部署请关注微信公众号：「程序员阿祥」，回复「考试系统部署教程」获取，包含环境的详细部署，下载地址+步骤截图等等，超详细
+
+<img src="http://bucket.alan.org.cn/blog/2026/04/10/00-49-07-36ff4c5cbd94a3e12e16101f244b9d11-def072.png" alt="image-20260410003958744" style="zoom:50%;" />
 
 #### 开发环境
 
 | 工具  | 版本号   | 下载                                                         |
 | ----- | -------- | ------------------------------------------------------------ |
-| JDK   | **8**    | https://www.oracle.com/cn/java/technologies/downloads/#java8 |
-| MySQL | **5.7**  | https://dev.mysql.com/downloads/mysql/5.7.html               |
-| Redis | **5**    | https://redis.io/download                                    |
+| JDK   | **18**   | https://www.oracle.com/cn/java/technologies/downloads/#java8 |
+| MySQL | **8**    | https://dev.mysql.com/downloads/mysql/5.7.html               |
+| Redis | **7**    | https://redis.io/download                                    |
 | Nginx | **1.22** | http://nginx.org/en/download.html                            |
 
 #### 相关文档
@@ -89,19 +88,18 @@
         <td>技术栈</td>
     </tr>
   <tr>
-        <td><img src="https://github.com/Alanosy/online-exam-system-backend/blob/master/img/%E5%8A%9F%E8%83%BD%E7%BB%93%E6%9E%84%E5%9B%BE.drawio.png"/></td>
-        <td><img src="https://github.com/Alanosy/online-exam-system-backend/blob/master/img/技术栈.png"/></td>
+        <td><img src="http://bucket.alan.org.cn/blog/2026/04/10/00-58-06-0307a664f6cd8a3bd076a07c0a7b9193-6e0051.png"/></td>
+        <td><img src="http://bucket.alan.org.cn/blog/2026/04/10/00-59-57-7a167ec462964f16eb815f17041568f4-8855a8.png"/></td>
     </tr>
   <tr>
         <td>ER图</td>
         <td>连接池</td>
     </tr>
   <tr>
-        <td><img src="https://github.com/Alanosy/online-exam-system-backend/blob/master/img/ER图.png"/></td>
-        <td><img src="https://github.com/Alanosy/online-exam-system-backend/blob/master/img/连接池.png"/></td>
+        <td><img src="http://bucket.alan.org.cn/blog/2026/04/10/01-00-11-fb042558424b8161d92a43fce7a4c672-a4da5a.png"/></td>
+        <td><img src="http://bucket.alan.org.cn/blog/2026/04/10/01-03-28-5068cf8ac437f500bf7da410975774d1-c2c277.png"/></td>
     </tr>
 </table>
-
 
 #### 参与贡献
 
@@ -112,11 +110,27 @@
 
 #### 联系方式
 
-QQ群：1034380536  <=可以先加这个
+QQ群：1034380536 （已满）
 
 微信：fignet
 
 邮箱：fignet@163.com
+
+#### 最新联系方式
+
+微信公众号关注「程序员阿祥」，回复「考试系统交流群」获取最新在线交流群
+
+#### 其他服务（有偿）
+
+博主提供代部署服务(50rmb)
+
+提供讲解服务等等
+
+#### 最后
+
+本项目还在开发当中，存在着bug还请谅解，也希望你加入到我们一起开发该项目
+
+该项目正在升级，重新架构并引入Agent
 
 ## 许可证
 
