@@ -134,7 +134,7 @@ defineExpose({
 <style lang="scss" scoped>
 .layout-search-dialog {
   :deep(.el-dialog) {
-    border-radius: 14px;
+    border-radius: var(--app-radius-base);
     overflow: visible;
     .el-dialog__header,
     .el-dialog__footer {
@@ -155,7 +155,7 @@ defineExpose({
 
   :deep(.el-input__wrapper) {
     min-height: 44px;
-    border-radius: 10px;
+    border-radius: var(--app-radius-md);
   }
 }
 </style>

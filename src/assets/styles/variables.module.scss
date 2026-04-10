@@ -27,9 +27,10 @@
   --tags-view-active-border-color: var(--el-color-primary);
 
   // Modern rounded style + soft shadows
-  --app-radius-sm: 6px;
-  --app-radius-md: 10px;
-  --app-radius-lg: 14px;
+  --app-radius-base: 14px;
+  --app-radius-sm: calc(var(--app-radius-base) - 8px);
+  --app-radius-md: calc(var(--app-radius-base) - 4px);
+  --app-radius-lg: var(--app-radius-base);
   --app-shadow-sm: 0 1px 2px rgba(15, 23, 42, 0.08), 0 6px 16px rgba(15, 23, 42, 0.08);
   --app-shadow-md: 0 8px 24px rgba(15, 23, 42, 0.12);
   --app-shadow-lg: 0 12px 32px rgba(15, 23, 42, 0.16);

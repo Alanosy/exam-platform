@@ -150,7 +150,7 @@ aside {
   padding: 20px;
   background: var(--app-surface-bg);
   border: 1px solid var(--app-surface-border);
-  border-radius: var(--app-radius-lg);
+  border-radius: var(--app-radius-base);
   box-shadow: var(--app-shadow-sm);
 }
 
@@ -158,9 +158,8 @@ aside {
 .panel,
 .search {
   margin-bottom: 0.75rem;
-  border-radius: var(--app-radius-lg);
+  border-radius: var(--app-radius-base);
   border: 1px solid var(--el-border-color-light);
-  background-color: var(--el-bg-color-overlay);
   padding: 0.75rem;
   box-shadow: 0 0 0 rgba(0, 0, 0, 0);
   transition: box-shadow 0.2s ease, transform 0.2s ease, border-color 0.2s ease;
