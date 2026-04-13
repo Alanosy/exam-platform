@@ -404,6 +404,7 @@ public class RemoteUserServiceImpl implements RemoteUserService {
      * @param userIds 用户 ID 列表
      * @return Map，其中 key 为用户 ID，value 为对应的用户昵称
      */
+    @Override
     public Map<Long, String> selectUserNicksByIds(List<Long> userIds) {
         if (CollUtil.isEmpty(userIds)) {
             return Collections.emptyMap();
