@@ -14,7 +14,7 @@
         <el-select
           v-if="userId === 1 && tenantEnabled"
           v-model="companyName"
-          class="min-w-244px"
+          class="min-w-244px mr-2"
           clearable
           filterable
           reserve-keyword
@@ -34,7 +34,7 @@
         </el-tooltip>
         <!-- 消息 -->
         <el-tooltip :content="proxy.$t('navbar.message')" effect="dark" placement="bottom">
-          <div>
+          <div style="display:flex;align-items:center">
             <el-popover placement="bottom" trigger="click" transition="el-zoom-in-top" :width="300" :persistent="false">
               <template #reference>
                 <el-badge :value="newNotice > 0 ? newNotice : ''" :max="99">
@@ -296,12 +296,6 @@ watch(
 
     &:focus {
       outline: none;
-    }
-
-    // 消息等有包裹层的图标，确保中间层不破坏对齐
-    & > * {
-      display: flex;
-      align-items: center;
     }
 
     .right-menu-item {
