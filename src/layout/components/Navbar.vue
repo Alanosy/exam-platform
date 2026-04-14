@@ -38,7 +38,7 @@
             <el-popover placement="bottom" trigger="click" transition="el-zoom-in-top" :width="300" :persistent="false">
               <template #reference>
                 <el-badge :value="newNotice > 0 ? newNotice : ''" :max="99">
-                  <div class="right-menu-item hover-effect" style="display: block"><svg-icon icon-class="message" /></div>
+                  <div class="right-menu-item hover-effect"><svg-icon icon-class="message" /></div>
                 </el-badge>
               </template>
               <template #default>
@@ -289,9 +289,7 @@ watch(
   }
 
   .right-menu {
-    //float: right;
     height: 100%;
-    line-height: 50px;
     display: flex;
     align-items: center;
     margin-left: auto;
@@ -300,20 +298,29 @@ watch(
       outline: none;
     }
 
+    // 消息等有包裹层的图标，确保中间层不破坏对齐
+    & > * {
+      display: flex;
+      align-items: center;
+    }
+
     .right-menu-item {
-      display: inline-block;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
       padding: 0 8px;
-      height: 100%;
+      height: 32px;
       font-size: 18px;
       color: var(--el-text-color-regular);
-      vertical-align: text-bottom;
+      border-radius: var(--app-radius-md);
 
       &.hover-effect {
         cursor: pointer;
-        transition: background 0.3s;
+        transition: background 0.2s ease, color 0.2s ease;
 
         &:hover {
-          background: var(--el-fill-color-lighter);
+          background: var(--el-fill-color-light);
+          color: var(--el-color-primary);
         }
       }
     }
@@ -322,7 +329,7 @@ watch(
       margin-right: 40px;
 
       .avatar-wrapper {
-        margin-top: 5px;
+        margin-top: 0;
         position: relative;
 
         .user-avatar {
@@ -330,7 +337,8 @@ watch(
           width: 40px;
           height: 40px;
           border-radius: var(--app-radius-md);
-          margin-top: 10px;
+          margin-top: 0;
+          display: block;
         }
 
         i {

@@ -199,7 +199,13 @@ const themeChange = (val: string) => {
 };
 const radiusBaseChange = (val: number) => {
   settingsStore.radiusBase = val;
-  document.documentElement.style.setProperty('--app-radius-base', `${val}px`);
+  const el = document.documentElement;
+  el.style.setProperty('--app-radius-base', `${val}px`);
+  el.style.setProperty('--app-radius-sm', `${Math.round(val * 0.6)}px`);
+  el.style.setProperty('--app-radius-md', `${val}px`);
+  el.style.setProperty('--app-radius-lg', `${Math.round(val * 1.4)}px`);
+  el.style.setProperty('--el-border-radius-base', `${val}px`);
+  el.style.setProperty('--el-border-radius-small', `${Math.round(val * 0.6)}px`);
 };
 const handleTheme = (val: string) => {
   sideTheme.value = val;

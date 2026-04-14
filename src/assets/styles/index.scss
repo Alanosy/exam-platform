@@ -115,7 +115,7 @@ div:focus {
 }
 
 aside {
-  background: #eef1f6;
+  background: var(--el-fill-color-light);
   padding: 8px 24px;
   margin-bottom: 20px;
   border-radius: var(--app-radius-md);
@@ -131,43 +131,43 @@ aside {
     'Hiragino Sans GB',
     'Microsoft YaHei',
     sans-serif;
-  color: #2c3e50;
+  color: var(--el-text-color-primary);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 
   a {
-    color: #337ab7;
+    color: var(--el-color-primary);
     cursor: pointer;
 
     &:hover {
-      color: rgb(32, 160, 255);
+      color: var(--el-color-primary-light-3);
     }
   }
 }
 
 //main-container全局样式
 .app-container {
-  padding: 20px;
-  background: var(--app-surface-bg);
-  border: 1px solid var(--app-surface-border);
-  border-radius: var(--app-radius-base);
-  box-shadow: var(--app-shadow-sm);
+  padding: 16px;
+  background: transparent;
+  border: none;
+  border-radius: 0;
+  box-shadow: none;
 }
 
 // search面板样式
 .panel,
 .search {
-  margin-bottom: 0.75rem;
+  margin-bottom: 12px;
   border-radius: var(--app-radius-base);
-  border: 1px solid var(--el-border-color-light);
-  padding: 0.75rem;
-  box-shadow: 0 0 0 rgba(0, 0, 0, 0);
-  transition: box-shadow 0.2s ease, transform 0.2s ease, border-color 0.2s ease;
+  border: 1px solid var(--el-border-color-lighter);
+  padding: 16px;
+  background: var(--app-surface-bg);
+  box-shadow: var(--app-shadow-sm);
+  transition: box-shadow 0.2s ease, border-color 0.2s ease;
 
   &:hover {
-    box-shadow: var(--app-shadow-sm);
-    border-color: var(--el-border-color);
-    transform: translateY(-1px);
+    box-shadow: var(--app-shadow-md);
+    border-color: var(--el-border-color-light);
   }
 }
 

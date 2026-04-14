@@ -243,9 +243,9 @@ onMounted(() => {
   height: 34px;
   width: 100%;
   background-color: var(--el-bg-color);
-  border: 1px solid var(--el-border-color-light);
-  border-radius: var(--app-radius-md);
-  box-shadow: var(--app-shadow-sm);
+  border-top: none;
+  border-bottom: 1px solid var(--el-border-color-lighter);
+  box-shadow: none;
   .tags-view-wrapper {
     .tags-view-item {
       display: inline-block;
@@ -275,12 +275,12 @@ onMounted(() => {
         margin-right: 15px;
       }
       &.active {
-        background-color: #42b983;
+        background-color: var(--tags-view-active-bg);
         color: #fff;
-        border-color: #42b983;
+        border-color: var(--tags-view-active-border-color);
         &::before {
           content: '';
-          background: #fff;
+          background: rgba(255, 255, 255, 0.7);
           display: inline-block;
           width: 8px;
           height: 8px;

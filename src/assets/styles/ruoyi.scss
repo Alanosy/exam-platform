@@ -77,7 +77,7 @@ h6 {
   font-weight: 600;
 }
 .el-dialog:not(.is-fullscreen) {
-  margin-top: 6vh !important;
+  margin-top: 0 !important;
 }
 
 .el-dialog.scrollbar .el-dialog__body {
@@ -125,8 +125,8 @@ h6 {
 /* tree border */
 .tree-border {
   margin-top: 5px;
-  border: 1px solid #e5e6e7;
-  background: #ffffff none;
+  border: 1px solid var(--el-border-color-light);
+  background: var(--el-bg-color);
   border-radius: var(--app-radius-md);
   width: 100%;
 }
@@ -203,12 +203,11 @@ h6 {
   box-shadow: var(--app-shadow-sm);
   border-color: var(--el-border-color-lighter);
   overflow: hidden;
-  transition: box-shadow 0.2s ease, transform 0.2s ease;
+  transition: box-shadow 0.2s ease;
 }
 
 .el-card:hover {
   box-shadow: var(--app-shadow-md);
-  transform: translateY(-1px);
 }
 
 .card-box {

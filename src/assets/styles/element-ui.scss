@@ -192,7 +192,7 @@
 
 // Buttons
 .el-button {
-  border-radius: var(--app-radius-md);
+  border-radius: var(--el-border-radius-base);
   transition: transform 0.15s ease, box-shadow 0.2s ease, background-color 0.2s ease, border-color 0.2s ease;
 }
 
