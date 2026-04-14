@@ -76,6 +76,6 @@ const setting: DefaultSettings = {
   /**
    * 页面圆角大小
    */
-  radiusBase: 14
+  radiusBase: 10
 };
 export default setting;
