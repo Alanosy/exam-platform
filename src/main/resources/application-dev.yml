@@ -70,8 +70,8 @@ minio:
 coze:
   api:
     base-url: https://api.coze.cn
-    token: pat_Llg2ljT7ys05CspdfZjOoAlz6Tw6GrHKbFyODI2nWiChK3GeGkBLLJOiV4CwUvVz
-    bot: 7485788594561564723
+    token: pat_XgTPR0ALTlqNxJza1Y1Kh1JV0LYwBDkueBOPZLrE1D6snWV1zkYQFqaYPu72XEuO
+    bot: 7629366617792774171
 
 # Dify Api
 dify:
@@ -112,6 +112,8 @@ online-exam:
   login:
     captcha:
       enabled: true #是否启用验证码登录
+  auto-scoring:
+    enabled: true #是否启用AI自动阅卷功能
 system:
   register:
     enabled: true  # 控制是否开放注册功能

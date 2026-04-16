@@ -2,6 +2,7 @@ package cn.org.alan.exam.service.impl;
 
 import cn.org.alan.exam.common.exception.ServiceRuntimeException;
 import cn.org.alan.exam.common.result.Result;
+import cn.org.alan.exam.config.OnlineExamConfig;
 import cn.org.alan.exam.converter.ExamConverter;
 import cn.org.alan.exam.converter.ExamQuAnswerConverter;
 import cn.org.alan.exam.mapper.*;
@@ -36,7 +37,6 @@ import java.util.stream.Collectors;
 
 /**
  * 考试服务实现类
- *
  */
 @Service
 public class ExamServiceImpl extends ServiceImpl<ExamMapper, Exam> implements IExamService {
@@ -73,6 +73,8 @@ public class ExamServiceImpl extends ServiceImpl<ExamMapper, Exam> implements IE
     private CertificateUserMapper certificateUserMapper;
     @Resource
     private IAutoScoringService autoScoringService;
+    @Resource
+    private OnlineExamConfig onlineExamConfig;
 
     @Override
     @Transactional
@@ -127,9 +129,9 @@ public class ExamServiceImpl extends ServiceImpl<ExamMapper, Exam> implements IE
         quTypeToCount.put(4, exam.getSaqCount());
         int sortCounter = 0;
         // 自己选题
-        if("0".equals(examAddForm.getAddQuype())){
+        if ("0".equals(examAddForm.getAddQuype())) {
 
-            if(StringUtils.isBlank(examAddForm.getQuIds())){
+            if (StringUtils.isBlank(examAddForm.getQuIds())) {
                 throw new ServiceException("自己选题的时候不能不选试题");
             }
             Integer examId = exam.getId();
@@ -196,7 +198,7 @@ public class ExamServiceImpl extends ServiceImpl<ExamMapper, Exam> implements IE
             }
         }
         // 随机抽题
-        if("1".equals(examAddForm.getAddQuype())){
+        if ("1".equals(examAddForm.getAddQuype())) {
             // 开始抽题
             for (Map.Entry<Integer, Integer> entry : quTypeToCount.entrySet()) {
                 Map<Integer, Integer> questionSortMap = new HashMap<>();
@@ -987,7 +989,7 @@ public class ExamServiceImpl extends ServiceImpl<ExamMapper, Exam> implements IE
         long secondsDifference = Duration.between(userStartTime, nowTime).getSeconds();
         int userTime = (int) secondsDifference; // 注意 long 转 int 可能的溢出
 
-        // 确定是否需要人工阅卷
+        // 确定是否需要阅卷
         int whetherMark = -1; // 默认无需阅卷
         if (examOne.getSaqCount() != null && examOne.getSaqCount() > 0) {
             whetherMark = 0; // 有简答题，设置为待阅卷
@@ -1018,21 +1020,35 @@ public class ExamServiceImpl extends ServiceImpl<ExamMapper, Exam> implements IE
             }
         }
 
-        // 如果需要阅卷，调用自动评分
-        if (whetherMark == 0) {
-            return Result.success("提交成功，待老师阅卷");
+        // 如果需要阅卷且启用了AI阅卷，调用AI自动评分
+        // 检查是否启用了AI自动阅卷
+        if (whetherMark == 0 && onlineExamConfig.getAutoScoring() != null && Boolean.TRUE.equals(onlineExamConfig.getAutoScoring().getEnabled())) {
+            // 异步调用AI阅卷，不阻塞主流程
+            try {
+                autoScoringService.autoScoringExam(examId, SecurityUtil.getUserId());
+                // return Result.success("提交成功，AI正在自动阅卷");
+            } catch (Exception e) {
+                // AI阅卷失败不影响交卷，记录日志即可
+                // log.error("AI阅卷失败，考试ID: {}, 用户ID: {}", examId, SecurityUtil.getUserId(), e);
+                // return Result.success("提交成功，待老师阅卷");
+            }
+            handOutCer(examId, examOne);
         }
 
         // 如果无需阅卷，检查是否需要发放证书
         if (whetherMark == -1 && examOne.getCertificateId() != null && examOne.getPassedScore() != null && calculatedScore >= examOne.getPassedScore()) {
-            CertificateUser certificateUser = new CertificateUser();
-            certificateUser.setCertificateId(examOne.getCertificateId());
-            certificateUser.setUserId(SecurityUtil.getUserId());
-            certificateUser.setExamId(examId);
-            certificateUser.setCode(ClassTokenGenerator.generateClassToken(18));
-            certificateUserMapper.insert(certificateUser);
+            handOutCer(examId, examOne);
         }
         return Result.success("交卷成功");
+    }
+
+    private void handOutCer(Integer examId, Exam examOne) {
+        CertificateUser certificateUser = new CertificateUser();
+        certificateUser.setCertificateId(examOne.getCertificateId());
+        certificateUser.setUserId(SecurityUtil.getUserId());
+        certificateUser.setExamId(examId);
+        certificateUser.setCode(ClassTokenGenerator.generateClassToken(18));
+        certificateUserMapper.insert(certificateUser);
     }
 
     @Override
