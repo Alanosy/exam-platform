@@ -81,7 +81,7 @@ public class AutoScoringServiceImpl extends ServiceImpl<ExamQuAnswerMapper, Exam
                     ExamQuAnswer examQuAnswer = new ExamQuAnswer();
                     examQuAnswer.setQuestionId(Integer.valueOf(item.getStr("题目ID")));
                     examQuAnswer.setAiScore(Integer.valueOf(item.getStr("最终得分")));
-                    examQuAnswer.setAiReason(item.getStr("扣分原因"));
+                    examQuAnswer.setAiReason(item.getStr("扣分明细"));
 
                     // 构建查询条件
                     LambdaQueryWrapper<ExamQuAnswer> queryWrapper = new LambdaQueryWrapper<>();
