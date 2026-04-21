@@ -65,9 +65,10 @@ public class RedisConfiguration {
                 // 缓存 Lua 脚本 减少网络传输(redisson 大部分的功能都是基于 Lua 脚本实现)
                 .setUseScriptCache(true)
                 .setCodec(codec);
-            if (SpringUtils.isVirtual()) {
-                config.setNettyExecutor(new VirtualThreadTaskExecutor("redisson-"));
-            }
+            // netty 对虚拟线程适配有问题 暂时禁止使用
+            //if (SpringUtils.isVirtual()) {
+            //    config.setNettyExecutor(new VirtualThreadTaskExecutor("redisson-"));
+            //}
             RedissonProperties.SingleServerConfig singleServerConfig = redissonProperties.getSingleServerConfig();
             if (ObjectUtil.isNotNull(singleServerConfig)) {
                 // 使用单机模式
