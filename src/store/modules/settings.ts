@@ -15,7 +15,8 @@ export const useSettingsStore = defineStore('setting', () => {
     dynamicTitle: defaultSettings.dynamicTitle,
     sideTheme: defaultSettings.sideTheme,
     theme: defaultSettings.theme,
-    navType: defaultSettings.navType
+    navType: defaultSettings.navType,
+    radiusBase: defaultSettings.radiusBase
   });
   const title = ref<string>(defaultSettings.title);
   const theme = ref<string>(storageSetting.value.theme);
@@ -29,6 +30,7 @@ export const useSettingsStore = defineStore('setting', () => {
   const animationEnable = ref<boolean>(defaultSettings.animationEnable);
   const dark = ref<boolean>(defaultSettings.dark);
   const navType = ref<NavTypeEnum>(storageSetting.value.navType || NavTypeEnum.LEFT);
+  const radiusBase = ref<number>(storageSetting.value.radiusBase ?? defaultSettings.radiusBase);
 
   const setTitle = (value: string) => {
     title.value = value;
@@ -47,6 +49,7 @@ export const useSettingsStore = defineStore('setting', () => {
     animationEnable,
     dark,
     navType,
+    radiusBase,
     setTitle
   };
 });

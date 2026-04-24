@@ -74,7 +74,7 @@
 
     .el-dialog {
       margin: 0 auto !important;
-      border-radius: var(--app-radius-lg);
+      border-radius: var(--app-radius-base);
       box-shadow: var(--app-shadow-md);
       overflow: hidden;
 
@@ -158,7 +158,7 @@
 }
 
 .el-message-box {
-  border-radius: var(--app-radius-lg);
+  border-radius: var(--app-radius-base);
   box-shadow: var(--app-shadow-md);
 }
 
@@ -192,7 +192,7 @@
 
 // Buttons
 .el-button {
-  border-radius: var(--app-radius-md);
+  border-radius: var(--el-border-radius-base);
   transition: transform 0.15s ease, box-shadow 0.2s ease, background-color 0.2s ease, border-color 0.2s ease;
 }
 
@@ -215,7 +215,7 @@
 }
 
 .el-drawer {
-  border-radius: var(--app-radius-lg);
+  border-radius: var(--app-radius-base);
   box-shadow: var(--app-shadow-md);
 }
 
@@ -227,7 +227,7 @@
 
 // Table polish
 .el-table {
-  border-radius: var(--app-radius-lg);
+  border-radius: var(--app-radius-base);
   overflow: hidden;
   box-shadow: var(--app-shadow-sm);
   border: 1px solid var(--el-border-color-lighter);

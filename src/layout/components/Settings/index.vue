@@ -75,6 +75,12 @@
         <el-switch v-model="isDark" class="drawer-switch" @change="toggleDark" />
       </span>
     </div>
+    <div class="drawer-item">
+      <span>页面圆角</span>
+      <span class="comp-style">
+        <el-slider v-model="radiusBase" :min="0" :max="32" :step="2" style="width: 120px" @change="radiusBaseChange" />
+      </span>
+    </div>
 
     <el-divider />
 
@@ -143,6 +149,7 @@ const sideTheme = ref(settingsStore.sideTheme);
 const storeSettings = computed(() => settingsStore);
 const predefineColors = ref(['#409EFF', '#ff4500', '#ff8c00', '#ffd700', '#90ee90', '#00ced1', '#1e90ff', '#c71585']);
 const navType = ref(settingsStore.navType);
+const radiusBase = ref(settingsStore.radiusBase);
 // 是否暗黑模式
 const isDark = useDark({
   storageKey: 'useDarkKey',
@@ -190,6 +197,16 @@ const themeChange = (val: string) => {
   settingsStore.theme = val;
   handleThemeStyle(val);
 };
+const radiusBaseChange = (val: number) => {
+  settingsStore.radiusBase = val;
+  const el = document.documentElement;
+  el.style.setProperty('--app-radius-base', `${val}px`);
+  el.style.setProperty('--app-radius-sm', `${Math.round(val * 0.6)}px`);
+  el.style.setProperty('--app-radius-md', `${val}px`);
+  el.style.setProperty('--app-radius-lg', `${Math.round(val * 1.4)}px`);
+  el.style.setProperty('--el-border-radius-base', `${val}px`);
+  el.style.setProperty('--el-border-radius-small', `${Math.round(val * 0.6)}px`);
+};
 const handleTheme = (val: string) => {
   sideTheme.value = val;
   if (isDark.value && val === SideThemeEnum.LIGHT) {
@@ -210,6 +227,7 @@ const saveSetting = () => {
   settings.value.sideTheme = storeSettings.value.sideTheme;
   settings.value.theme = storeSettings.value.theme;
   settings.value.navType = storeSettings.value.navType;
+  settings.value.radiusBase = storeSettings.value.radiusBase;
   setTimeout(() => {
     proxy?.$modal.closeLoading();
   }, 1000);
@@ -222,6 +240,10 @@ const resetSetting = () => {
 const openSetting = () => {
   showSettings.value = true;
 };
+
+onMounted(() => {
+  radiusBaseChange(storeSettings.value.radiusBase);
+});
 
 defineExpose({
   openSetting
