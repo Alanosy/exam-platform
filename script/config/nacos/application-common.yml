@@ -32,13 +32,6 @@ dubbo:
   consumer:
     # 超时时间
     timeout: 3000
-  metadata-report:
-    # Redis集群开关
-    cluster: false
-    parameters:
-      # 集群地址 cluster 为 true 生效
-      # 集群把所有Redis集群节点写到这里就行了
-      backup: 127.0.0.1:6379,127.0.0.1:6381
   # 自定义配置
   custom:
     # 全局请求log

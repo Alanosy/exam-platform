@@ -109,7 +109,7 @@ public class VelocityUtils {
      *
      * @return 模板列表
      */
-    public static List<String> getTemplateList(String tplCategory) {
+    public static List<String> getTemplateList(String tplCategory, String dsName) {
         List<String> templates = new ArrayList<>();
         templates.add("vm/java/domain.java.vm");
         templates.add("vm/java/vo.java.vm");
@@ -119,7 +119,7 @@ public class VelocityUtils {
         templates.add("vm/java/serviceImpl.java.vm");
         templates.add("vm/java/controller.java.vm");
         templates.add("vm/xml/mapper.xml.vm");
-        DataBaseType dataBaseType = DataBaseHelper.getDataBaseType();
+        DataBaseType dataBaseType = DataBaseHelper.getDataBaseType(dsName);
         if (dataBaseType.isOracle()) {
             templates.add("vm/sql/oracle/sql.vm");
         } else if (dataBaseType.isPostgreSql()) {

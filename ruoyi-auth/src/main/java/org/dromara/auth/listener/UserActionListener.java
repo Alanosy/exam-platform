@@ -14,6 +14,7 @@ import org.dromara.common.core.constant.Constants;
 import org.dromara.common.core.utils.MessageUtils;
 import org.dromara.common.core.utils.ServletUtils;
 import org.dromara.common.core.utils.SpringUtils;
+import org.dromara.common.core.utils.StringUtils;
 import org.dromara.common.core.utils.ip.AddressUtils;
 import org.dromara.common.log.event.LogininforEvent;
 import org.dromara.common.redis.utils.RedisUtils;
@@ -77,7 +78,7 @@ public class UserActionListener implements SaTokenListener {
         SpringUtils.context().publishEvent(logininforEvent);
         // 更新登录信息
         remoteUserService.recordLoginInfo((Long) loginParameter.getExtra(LoginHelper.USER_KEY), ip);
-        log.info("user doLogin, useId:{}, token:{}", loginId, tokenValue);
+        log.info("user doLogin, useId:{}, token:***{}", loginId, StringUtils.right(tokenValue, 8));
     }
 
     /**
@@ -89,7 +90,7 @@ public class UserActionListener implements SaTokenListener {
         TenantHelper.dynamic(tenantId, () -> {
             RedisUtils.deleteObject(CacheConstants.ONLINE_TOKEN_KEY + tokenValue);
         });
-        log.info("user doLogout, useId:{}, token:{}", loginId, tokenValue);
+        log.info("user doLogout, useId:{}, token:***{}", loginId, StringUtils.right(tokenValue, 8));
     }
 
     /**
@@ -101,7 +102,7 @@ public class UserActionListener implements SaTokenListener {
         TenantHelper.dynamic(tenantId, () -> {
             RedisUtils.deleteObject(CacheConstants.ONLINE_TOKEN_KEY + tokenValue);
         });
-        log.info("user doLogoutByLoginId, useId:{}, token:{}", loginId, tokenValue);
+        log.info("user doLogoutByLoginId, useId:{}, token:***{}", loginId, StringUtils.right(tokenValue, 8));
     }
 
     /**
@@ -113,7 +114,7 @@ public class UserActionListener implements SaTokenListener {
         TenantHelper.dynamic(tenantId, () -> {
             RedisUtils.deleteObject(CacheConstants.ONLINE_TOKEN_KEY + tokenValue);
         });
-        log.info("user doReplaced, useId:{}, token:{}", loginId, tokenValue);
+        log.info("user doReplaced, useId:{}, token:***{}", loginId, StringUtils.right(tokenValue, 8));
     }
 
     /**

@@ -19,6 +19,8 @@ dubbo:
     password: ${spring.cloud.nacos.password}
     parameters:
       namespace: ${spring.profiles.active}
+  # 已经采用框架内 Redisson 实现元数据中心
+  # 以下配置不用管占位用 不然 dubbo 会直接用 nacos 当注册中心 直接配好框架自带的 Redisson 即可
   metadata-report:
     address: redis://${spring.data.redis.host:localhost}:${spring.data.redis.port:6379}
     group: DUBBO_GROUP
