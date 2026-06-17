@@ -61,14 +61,6 @@ export const delTable = (tableId: string | number | Array<string | number>) => {
   });
 };
 
-// 生成代码（自定义路径）
-export const genCode = (tableId: string | number) => {
-  return request({
-    url: '/tool/gen/genCode/' + tableId,
-    method: 'get'
-  });
-};
-
 // 同步数据库
 export const synchDb = (tableId: string | number) => {
   return request({

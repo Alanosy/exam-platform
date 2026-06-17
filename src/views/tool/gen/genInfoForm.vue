@@ -82,44 +82,6 @@
         </el-form-item>
       </el-col>
 
-      <el-col :span="12">
-        <el-form-item prop="genType">
-          <template #label>
-            生成代码方式
-            <el-tooltip content="默认为zip压缩包下载，也可以自定义生成路径" placement="top">
-              <el-icon><question-filled /></el-icon>
-            </el-tooltip>
-          </template>
-          <el-radio v-model="infoForm.genType" value="0">zip压缩包</el-radio>
-          <el-radio v-model="infoForm.genType" value="1">自定义路径</el-radio>
-        </el-form-item>
-      </el-col>
-
-      <el-col v-if="infoForm.genType == '1'" :span="24">
-        <el-form-item prop="genPath">
-          <template #label>
-            自定义路径
-            <el-tooltip content="填写磁盘绝对路径，若不填写，则生成到当前Web项目下" placement="top">
-              <el-icon><question-filled /></el-icon>
-            </el-tooltip>
-          </template>
-          <el-input v-model="infoForm.genPath">
-            <template #append>
-              <el-dropdown>
-                <el-button type="primary">
-                  最近路径快速选择
-                  <i class="el-icon-arrow-down el-icon--right"></i>
-                </el-button>
-                <template #dropdown>
-                  <el-dropdown-menu>
-                    <el-dropdown-item @click="infoForm.genPath = '/'">恢复默认的生成基础路径</el-dropdown-item>
-                  </el-dropdown-menu>
-                </template>
-              </el-dropdown>
-            </template>
-          </el-input>
-        </el-form-item>
-      </el-col>
     </el-row>
 
     <template v-if="info.tplCategory == 'tree'">

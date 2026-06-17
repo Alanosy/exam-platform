@@ -7,7 +7,6 @@ import { NavTypeEnum } from '@/enums/NavTypeEnum';
 
 export const useSettingsStore = defineStore('setting', () => {
   const storageSetting = useStorage<LayoutSetting>('layout-setting', {
-    topNav: defaultSettings.topNav,
     tagsView: defaultSettings.tagsView,
     tagsIcon: defaultSettings.tagsIcon,
     fixedHeader: defaultSettings.fixedHeader,

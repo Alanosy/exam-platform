@@ -67,6 +67,29 @@ html.dark {
     --el-color-primary-light-9: #262727;
   }
 
+  .el-table {
+    --el-table-current-row-bg-color: var(--el-color-primary-dark-7)
+  }
+
+  .el-dropdown__popper {
+    --el-dropdown-menuItem-hover-fill: var(--el-color-primary-dark-7)
+  }
+
+  .el-button {
+    --el-button-hover-bg-color: var(--el-color-primary-dark-9);
+    --el-button-hover-border-color: var(--el-color-primary-dark-7);
+  }
+
+  .el-button.is-plain {
+    --el-button-hover-bg-color: var(--el-fill-color-light);
+    --el-button-hover-border-color: var(--el-color-primary);
+  }
+
+  .el-button.is-dashed {
+    --el-button-hover-bg-color: var(--el-fill-color-light);
+    --el-button-hover-border-color: var(--el-color-primary);
+  }
+
   .el-button--primary {
     --el-button-bg-color: #2b6bd3;
     --el-button-border-color: #3a7be8;
@@ -81,6 +104,18 @@ html.dark {
     --el-button-bg-color: rgba(43, 107, 211, 0.12);
     --el-button-border-color: rgba(58, 123, 232, 0.5);
     --el-button-text-color: #dbe8ff;
+    --el-button-hover-text-color: var(--el-color-white);
+    --el-button-hover-bg-color: var(--el-color-primary);
+    --el-button-hover-border-color: var(--el-color-primary);
+    --el-button-active-bg-color: rgba(43, 107, 211, 0.28);
+    --el-button-active-border-color: rgba(43, 107, 211, 0.8);
+  }
+
+  .el-button--primary.is-dashed {
+    --el-button-bg-color: rgba(43, 107, 211, 0.12);
+    --el-button-border-color: rgba(58, 123, 232, 0.5);
+    --el-button-text-color: #dbe8ff;
+    --el-button-hover-text-color: #dbe8ff;
     --el-button-hover-bg-color: rgba(58, 123, 232, 0.2);
     --el-button-hover-border-color: rgba(58, 123, 232, 0.7);
     --el-button-active-bg-color: rgba(43, 107, 211, 0.28);
@@ -101,6 +136,18 @@ html.dark {
     --el-button-bg-color: rgba(31, 138, 90, 0.12);
     --el-button-border-color: rgba(41, 164, 109, 0.5);
     --el-button-text-color: #dbf6e8;
+    --el-button-hover-text-color: var(--el-color-white);
+    --el-button-hover-bg-color: var(--el-color-success);
+    --el-button-hover-border-color: var(--el-color-success);
+    --el-button-active-bg-color: rgba(31, 138, 90, 0.28);
+    --el-button-active-border-color: rgba(31, 138, 90, 0.8);
+  }
+
+  .el-button--success.is-dashed {
+    --el-button-bg-color: rgba(31, 138, 90, 0.12);
+    --el-button-border-color: rgba(41, 164, 109, 0.5);
+    --el-button-text-color: #dbf6e8;
+    --el-button-hover-text-color: #dbf6e8;
     --el-button-hover-bg-color: rgba(41, 164, 109, 0.2);
     --el-button-hover-border-color: rgba(41, 164, 109, 0.7);
     --el-button-active-bg-color: rgba(31, 138, 90, 0.28);
@@ -121,6 +168,18 @@ html.dark {
     --el-button-bg-color: rgba(184, 121, 34, 0.12);
     --el-button-border-color: rgba(214, 149, 59, 0.5);
     --el-button-text-color: #ffecc8;
+    --el-button-hover-text-color: var(--el-color-white);
+    --el-button-hover-bg-color: var(--el-color-warning);
+    --el-button-hover-border-color: var(--el-color-warning);
+    --el-button-active-bg-color: rgba(184, 121, 34, 0.28);
+    --el-button-active-border-color: rgba(184, 121, 34, 0.8);
+  }
+
+  .el-button--warning.is-dashed {
+    --el-button-bg-color: rgba(184, 121, 34, 0.12);
+    --el-button-border-color: rgba(214, 149, 59, 0.5);
+    --el-button-text-color: #ffecc8;
+    --el-button-hover-text-color: #ffecc8;
     --el-button-hover-bg-color: rgba(214, 149, 59, 0.2);
     --el-button-hover-border-color: rgba(214, 149, 59, 0.7);
     --el-button-active-bg-color: rgba(184, 121, 34, 0.28);
@@ -141,6 +200,18 @@ html.dark {
     --el-button-bg-color: rgba(178, 74, 74, 0.12);
     --el-button-border-color: rgba(209, 96, 96, 0.5);
     --el-button-text-color: #ffd6d6;
+    --el-button-hover-text-color: var(--el-color-white);
+    --el-button-hover-bg-color: var(--el-color-danger);
+    --el-button-hover-border-color: var(--el-color-danger);
+    --el-button-active-bg-color: rgba(178, 74, 74, 0.28);
+    --el-button-active-border-color: rgba(178, 74, 74, 0.8);
+  }
+
+  .el-button--danger.is-dashed {
+    --el-button-bg-color: rgba(178, 74, 74, 0.12);
+    --el-button-border-color: rgba(209, 96, 96, 0.5);
+    --el-button-text-color: #ffd6d6;
+    --el-button-hover-text-color: #ffd6d6;
     --el-button-hover-bg-color: rgba(209, 96, 96, 0.2);
     --el-button-hover-border-color: rgba(209, 96, 96, 0.7);
     --el-button-active-bg-color: rgba(178, 74, 74, 0.28);
@@ -161,6 +232,18 @@ html.dark {
     --el-button-bg-color: rgba(75, 85, 99, 0.16);
     --el-button-border-color: rgba(102, 112, 133, 0.55);
     --el-button-text-color: #e5e7eb;
+    --el-button-hover-text-color: var(--el-color-white);
+    --el-button-hover-bg-color: var(--el-color-info);
+    --el-button-hover-border-color: var(--el-color-info);
+    --el-button-active-bg-color: rgba(75, 85, 99, 0.3);
+    --el-button-active-border-color: rgba(75, 85, 99, 0.85);
+  }
+
+  .el-button--info.is-dashed {
+    --el-button-bg-color: rgba(75, 85, 99, 0.16);
+    --el-button-border-color: rgba(102, 112, 133, 0.55);
+    --el-button-text-color: #e5e7eb;
+    --el-button-hover-text-color: #e5e7eb;
     --el-button-hover-bg-color: rgba(102, 112, 133, 0.22);
     --el-button-hover-border-color: rgba(102, 112, 133, 0.75);
     --el-button-active-bg-color: rgba(75, 85, 99, 0.3);
