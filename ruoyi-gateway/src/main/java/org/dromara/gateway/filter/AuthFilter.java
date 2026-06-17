@@ -63,8 +63,6 @@ public class AuthFilter {
                         // }
                     });
             }).setError(e -> {
-                ServerHttpResponse response = SaReactorSyncHolder.getExchange().getResponse();
-                response.getHeaders().set(SaTokenConsts.CONTENT_TYPE_KEY, SaTokenConsts.CONTENT_TYPE_APPLICATION_JSON);
                 if (e instanceof NotLoginException) {
                     return SaResult.error(e.getMessage()).setCode(HttpStatus.UNAUTHORIZED);
                 }

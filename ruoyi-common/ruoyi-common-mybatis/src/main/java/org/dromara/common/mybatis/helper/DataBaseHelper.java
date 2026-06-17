@@ -2,10 +2,12 @@ package org.dromara.common.mybatis.helper;
 
 import cn.hutool.core.convert.Convert;
 import com.baomidou.dynamic.datasource.DynamicRoutingDataSource;
+import com.baomidou.dynamic.datasource.toolkit.DynamicDataSourceContextHolder;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.dromara.common.core.exception.ServiceException;
 import org.dromara.common.core.utils.SpringUtils;
+import org.dromara.common.core.utils.sql.SqlUtil;
 import org.dromara.common.mybatis.enums.DataBaseType;
 
 import javax.sql.DataSource;
@@ -14,6 +16,8 @@ import java.sql.DatabaseMetaData;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * 数据库助手
@@ -24,6 +28,7 @@ import java.util.List;
 public class DataBaseHelper {
 
     private static final DynamicRoutingDataSource DS = SpringUtils.getBean(DynamicRoutingDataSource.class);
+    private static final Map<String, DataBaseType> DB_TYPE_CACHE = new ConcurrentHashMap<>();
 
     /**
      * 获取当前数据源对应的数据库类型
@@ -37,13 +42,17 @@ public class DataBaseHelper {
      */
     public static DataBaseType getDataBaseType() {
         DataSource dataSource = DS.determineDataSource();
-        try (Connection conn = dataSource.getConnection()) {
-            DatabaseMetaData metaData = conn.getMetaData();
-            String databaseProductName = metaData.getDatabaseProductName();
-            return DataBaseType.find(databaseProductName);
-        } catch (SQLException e) {
-            throw new RuntimeException("获取数据库类型失败", e);
-        }
+        String dsKey = DynamicDataSourceContextHolder.peek();
+        final String key = dsKey != null ? dsKey : "primary";
+        return DB_TYPE_CACHE.computeIfAbsent(key, k -> {
+            try (Connection conn = dataSource.getConnection()) {
+                DatabaseMetaData metaData = conn.getMetaData();
+                String databaseProductName = metaData.getDatabaseProductName();
+                return DataBaseType.find(databaseProductName);
+            } catch (SQLException e) {
+                throw new RuntimeException("获取数据库类型失败", e);
+            }
+        });
     }
 
     /**
@@ -55,13 +64,15 @@ public class DataBaseHelper {
      */
     public static DataBaseType getDataBaseType(String dsName) {
         DataSource dataSource = DS.getDataSource(dsName);
-        try (Connection conn = dataSource.getConnection()) {
-            DatabaseMetaData metaData = conn.getMetaData();
-            String databaseProductName = metaData.getDatabaseProductName();
-            return DataBaseType.find(databaseProductName);
-        } catch (SQLException e) {
-            throw new RuntimeException("获取数据库类型失败", e);
-        }
+        return DB_TYPE_CACHE.computeIfAbsent(dsName, k -> {
+            try (Connection conn = dataSource.getConnection()) {
+                DatabaseMetaData metaData = conn.getMetaData();
+                String databaseProductName = metaData.getDatabaseProductName();
+                return DataBaseType.find(databaseProductName);
+            } catch (SQLException e) {
+                throw new RuntimeException("获取数据库类型失败", e);
+            }
+        });
     }
 
     /**
@@ -79,6 +90,8 @@ public class DataBaseHelper {
      */
     public static String findInSet(Object var1, String var2) {
         String var = Convert.toStr(var1);
+        SqlUtil.filterKeyword(var);
+        SqlUtil.filterKeyword(var2);
         return switch (getDataBaseType()) {
             // instr(',0,100,101,' , ',100,') <> 0
             case ORACLE -> "instr(','||%s||',' , ',%s,') <> 0".formatted(var2, var);
@@ -92,7 +105,9 @@ public class DataBaseHelper {
     }
 
     /**
-     * 获取当前加载的数据库名
+     * 获取当前注册的数据源名称列表。
+     *
+     * @return 数据源名称列表
      */
     public static List<String> getDataSourceNameList() {
         return new ArrayList<>(DS.getDataSources().keySet());

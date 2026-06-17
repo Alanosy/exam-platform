@@ -6,7 +6,10 @@ import cn.dev33.satoken.httpauth.basic.SaHttpBasicUtil;
 import cn.dev33.satoken.interceptor.SaInterceptor;
 import cn.dev33.satoken.same.SaSameUtil;
 import cn.dev33.satoken.util.SaResult;
+import cn.dev33.satoken.util.SaTokenConsts;
+import jakarta.servlet.http.HttpServletResponse;
 import org.dromara.common.core.constant.HttpStatus;
+import org.dromara.common.core.utils.ServletUtils;
 import org.dromara.common.core.utils.SpringUtils;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.context.annotation.Bean;
@@ -42,6 +45,9 @@ public class SecurityConfiguration implements WebMvcConfigurer {
                 if (SaManager.getConfig().getCheckSameToken()) {
                     SaSameUtil.checkCurrentRequestToken();
                 }
+                // 对响应体设置默认头 后续代码可以覆盖
+                HttpServletResponse response = ServletUtils.getResponse();
+                response.setContentType(SaTokenConsts.CONTENT_TYPE_APPLICATION_JSON);
             })
             .setError(e -> SaResult.error("认证失败，无法访问系统资源").setCode(HttpStatus.UNAUTHORIZED));
     }

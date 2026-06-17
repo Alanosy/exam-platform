@@ -13,12 +13,12 @@
     <description>Dromara RuoYi-Cloud-Plus微服务系统</description>
 
     <properties>
-        <revision>2.6.1</revision>
+        <revision>2.6.2</revision>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <java.version>17</java.version>
-        <spring-boot.version>3.5.14</spring-boot.version>
-        <spring-cloud.version>2025.0.2</spring-cloud.version>
+        <spring-boot.version>3.5.15</spring-boot.version>
+        <spring-cloud.version>2025.0.3</spring-cloud.version>
         <spring-boot-admin.version>3.5.8</spring-boot-admin.version>
         <mybatis.version>3.5.19</mybatis.version>
         <mybatis-plus.version>3.5.16</mybatis-plus.version>

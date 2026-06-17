@@ -3,7 +3,6 @@ package org.dromara.gateway.filter;
 import cn.dev33.satoken.exception.NotLoginException;
 import cn.dev33.satoken.filter.SaServletFilter;
 import cn.dev33.satoken.httpauth.basic.SaHttpBasicUtil;
-import cn.dev33.satoken.interceptor.SaInterceptor;
 import cn.dev33.satoken.router.SaRouter;
 import cn.dev33.satoken.stp.StpUtil;
 import cn.dev33.satoken.util.SaResult;
@@ -14,23 +13,19 @@ import org.dromara.common.core.utils.SpringUtils;
 import org.dromara.common.core.utils.StringUtils;
 import org.dromara.common.satoken.utils.LoginHelper;
 import org.dromara.gateway.config.properties.IgnoreWhiteProperties;
-import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.Ordered;
-import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 /**
- * [Sa-Token 权限认证] 拦截器配置
+ * [Sa-Token 权限认证] 过滤器配置
  *
  * @author Lion Li
  */
 @Configuration
-public class AuthFilter implements WebMvcConfigurer {
+public class AuthFilter {
 
     private final IgnoreWhiteProperties ignoreWhite;
 
@@ -38,31 +33,39 @@ public class AuthFilter implements WebMvcConfigurer {
         this.ignoreWhite = ignoreWhite;
     }
 
-    @Override
-    public void addInterceptors(InterceptorRegistry registry) {
-        registry.addInterceptor(new SaInterceptor(handler -> SaRouter.match("/**")
-            .notMatch(ignoreWhite.getWhites())
-            .check(() -> {
-                HttpServletRequest request = ServletUtils.getRequest();
+    /**
+     * 注册 Sa-Token 全局过滤器
+     */
+    @Bean
+    public SaServletFilter authSaServletFilter() {
+        return new SaServletFilter()
+            .addInclude("/**")
+            .addExclude("/favicon.ico", "/actuator", "/actuator/**", "/resource/sse")
+            .setAuth(obj -> SaRouter.match("/**")
+                .notMatch(ignoreWhite.getWhites())
+                .check(() -> {
+                    HttpServletRequest request = ServletUtils.getRequest();
+
+                    StpUtil.checkLogin();
+
+                    String headerCid = request.getHeader(LoginHelper.CLIENT_KEY);
+                    String paramCid = ServletUtils.getParameter(LoginHelper.CLIENT_KEY);
+                    Object extra = StpUtil.getExtra(LoginHelper.CLIENT_KEY);
+                    String clientId = extra == null ? null : extra.toString();
+                    if (!StringUtils.equalsAny(clientId, headerCid, paramCid)) {
+                        throw NotLoginException.newInstance(StpUtil.getLoginType(),
+                            "-100", "客户端ID与Token不匹配",
+                            StpUtil.getTokenValue());
+                    }
+                }))
+            .setError(e -> {
                 HttpServletResponse response = ServletUtils.getResponse();
-                if (response != null) {
-                    response.setContentType(SaTokenConsts.CONTENT_TYPE_APPLICATION_JSON);
+                response.setContentType(SaTokenConsts.CONTENT_TYPE_APPLICATION_JSON);
+                if (e instanceof NotLoginException) {
+                    return SaResult.error(e.getMessage()).setCode(HttpStatus.UNAUTHORIZED);
                 }
-
-                StpUtil.checkLogin();
-
-                String headerCid = request.getHeader(LoginHelper.CLIENT_KEY);
-                String paramCid = ServletUtils.getParameter(LoginHelper.CLIENT_KEY);
-                Object extra = StpUtil.getExtra(LoginHelper.CLIENT_KEY);
-                String clientId = extra == null ? null : extra.toString();
-                if (!StringUtils.equalsAny(clientId, headerCid, paramCid)) {
-                    throw NotLoginException.newInstance(StpUtil.getLoginType(),
-                        "-100", "客户端ID与Token不匹配",
-                        StpUtil.getTokenValue());
-                }
-            })))
-            .addPathPatterns("/**")
-            .excludePathPatterns("/favicon.ico", "/actuator", "/actuator/**", "/resource/sse");
+                return SaResult.error("认证失败，无法访问系统资源").setCode(HttpStatus.UNAUTHORIZED);
+            });
     }
 
     /**
