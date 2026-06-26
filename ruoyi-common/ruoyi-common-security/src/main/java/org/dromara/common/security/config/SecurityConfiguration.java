@@ -45,9 +45,12 @@ public class SecurityConfiguration implements WebMvcConfigurer {
                 if (SaManager.getConfig().getCheckSameToken()) {
                     SaSameUtil.checkCurrentRequestToken();
                 }
-                // 对响应体设置默认头 后续代码可以覆盖
-                HttpServletResponse response = ServletUtils.getResponse();
-                response.setContentType(SaTokenConsts.CONTENT_TYPE_APPLICATION_JSON);
+                String requestUri = ServletUtils.getRequest().getRequestURI();
+                if (!requestUri.contains("/sse")) {
+                    // 对响应体设置默认头 后续代码可以覆盖
+                    HttpServletResponse response = ServletUtils.getResponse();
+                    response.setContentType(SaTokenConsts.CONTENT_TYPE_APPLICATION_JSON);
+                }
             })
             .setError(e -> SaResult.error("认证失败，无法访问系统资源").setCode(HttpStatus.UNAUTHORIZED));
     }
