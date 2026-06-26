@@ -21,6 +21,20 @@ spring:
     gateway:
       # 打印请求日志(自定义)
       requestLog: true
+      # Gateway MVC 转发使用的 HttpClient5 连接池配置
+      httpclient:
+        # 总最大连接数
+        max-conn-total: 1000
+        # 单个下游路由最大连接数，SSE 长连接较多时需按并发量调整
+        max-conn-per-route: 500
+        # 连接池满时等待可用连接的时间
+        connection-request-timeout: 3s
+        # SSE 场景通常不设置响应超时，避免长连接被网关主动断开
+        # response-timeout: 60s
+        # 连接最大存活时间，不配置则使用 HttpClient5 默认值
+        # connection-time-to-live: 10m
+        # 空闲连接可用性校验间隔
+        validate-after-inactivity: 30s
       server:
         webmvc:
           discovery:

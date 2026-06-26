@@ -24,6 +24,21 @@ spring:
       requestLog: true
       server:
         webflux:
+          # Gateway WebFlux 转发使用的 Reactor Netty 连接池配置
+          httpclient:
+            pool:
+              # 使用固定连接池，避免 SSE 长连接占满默认连接池后快速拒绝普通请求
+              type: fixed
+              # 总最大连接数
+              max-connections: 1000
+              # 连接池满时等待可用连接的时间，单位毫秒
+              acquire-timeout: 3000
+              # 空闲连接最大保留时间
+              max-idle-time: 30s
+              # 后台空闲连接回收间隔
+              eviction-interval: 30s
+            # SSE 场景通常不设置响应超时，避免长连接被网关主动断开
+            # response-timeout: 60s
           discovery:
             locator:
               lowerCaseServiceId: true
