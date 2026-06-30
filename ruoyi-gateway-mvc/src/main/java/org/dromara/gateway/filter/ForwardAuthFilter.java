@@ -10,15 +10,13 @@ import org.dromara.gateway.filter.support.MutableHttpServletRequest;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
-import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 
 /**
  * 转发请求头过滤器:
- * 1. 动态透传 X-Forwarded-Prefix
- * 2. 转发内部 same-token
+ * 1. 转发内部 same-token
  *
  * @author Lion Li
  */
@@ -36,26 +34,12 @@ public class ForwardAuthFilter extends OncePerRequestFilter {
         throws ServletException, IOException {
         MutableHttpServletRequest newRequest = null;
 
-        String forwardedPrefix = resolveForwardedPrefix(request);
-        if (forwardedPrefix != null) {
-            newRequest = getOrCreateMutableRequest(request, newRequest);
-            newRequest.putHeader("X-Forwarded-Prefix", forwardedPrefix);
-        }
-
         if (SaManager.getConfig().getCheckSameToken()) {
             newRequest = getOrCreateMutableRequest(request, newRequest);
             newRequest.putHeader(SaSameUtil.SAME_TOKEN, SaSameUtil.getToken());
         }
 
         filterChain.doFilter(newRequest == null ? request : newRequest, response);
-    }
-
-    private String resolveForwardedPrefix(HttpServletRequest request) {
-        String[] pathSegments = StringUtils.tokenizeToStringArray(request.getRequestURI(), "/");
-        if (pathSegments.length == 0) {
-            return null;
-        }
-        return "/" + pathSegments[0];
     }
 
     private MutableHttpServletRequest getOrCreateMutableRequest(HttpServletRequest request,
