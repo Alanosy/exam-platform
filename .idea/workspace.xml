@@ -4,7 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="9f91ae12-c926-451e-b026-1b3559a4a2f9" name="Changes" comment="修复日志没有记录问题" />
+    <list default="true" id="9f91ae12-c926-451e-b026-1b3559a4a2f9" name="Changes" comment="fix(exam): 智能体评分没生效问题" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -13,17 +13,46 @@
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
+  <component name="GitHubPullRequestSearchHistory">{
+  &quot;lastFilter&quot;: {
+    &quot;state&quot;: &quot;OPEN&quot;,
+    &quot;assignee&quot;: &quot;Alanosy&quot;
+  }
+}</component>
+  <component name="GithubPullRequestsUISettings">{
+  &quot;selectedUrlAndAccountId&quot;: {
+    &quot;url&quot;: &quot;https://github.com/Alanosy/online-exam-system-backend.git&quot;,
+    &quot;accountId&quot;: &quot;2918b9d3-6b77-435a-b807-6323e7ead95d&quot;
+  }
+}</component>
+  <component name="HighlightingSettingsPerFile">
+    <setting file="jar:///Library/maven/mvn_repo/com/baomidou/mybatis-plus-core/3.5.5/mybatis-plus-core-3.5.5.jar!/com/baomidou/mybatisplus/core/mapper/BaseMapper.class" root0="SKIP_INSPECTION" />
+  </component>
+  <component name="KubernetesApiPersistence">{}</component>
+  <component name="KubernetesApiProvider">{
+  &quot;isMigrated&quot;: true
+}</component>
   <component name="MavenImportPreferences">
     <option name="generalSettings">
       <MavenGeneralSettings>
         <option name="localRepository" value="/Library/maven/mvn_repo" />
-        <option name="useMavenConfig" value="true" />
         <option name="userSettingsFile" value="/Library/maven/conf/settings.xml" />
       </MavenGeneralSettings>
     </option>
   </component>
+  <component name="MavenRunner">
+    <option name="delegateBuildToMaven" value="true" />
+  </component>
+  <component name="ProblemsViewState">
+    <option name="selectedTabId" value="DEPENDENCY_CHECKER_PROBLEMS_TAB" />
+  </component>
+  <component name="ProjectColorInfo">{
+  &quot;customColor&quot;: &quot;&quot;,
+  &quot;associatedIndex&quot;: 0
+}</component>
   <component name="ProjectId" id="2wJRQPZKnTi5P5NMtvMiLuUfKDT" />
   <component name="ProjectLevelVcsManager">
+    <OptionsSetting value="false" id="Update" />
     <ConfirmationsSetting value="2" id="Add" />
   </component>
   <component name="ProjectViewState">
@@ -32,20 +61,39 @@
   </component>
   <component name="PropertiesComponent">{
   &quot;keyToString&quot;: {
+    &quot;Maven.CozeUtil.executor&quot;: &quot;Run&quot;,
+    &quot;Maven.exam [clean].executor&quot;: &quot;Run&quot;,
+    &quot;Maven.exam [install,--non-recursive].executor&quot;: &quot;Run&quot;,
+    &quot;Maven.exam [install].executor&quot;: &quot;Run&quot;,
+    &quot;Maven.exam [package].executor&quot;: &quot;Run&quot;,
+    &quot;Maven.exam [verify].executor&quot;: &quot;Run&quot;,
     &quot;RequestMappingsPanelOrder0&quot;: &quot;0&quot;,
     &quot;RequestMappingsPanelOrder1&quot;: &quot;1&quot;,
     &quot;RequestMappingsPanelWidth0&quot;: &quot;75&quot;,
     &quot;RequestMappingsPanelWidth1&quot;: &quot;75&quot;,
     &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
     &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;Spring Boot.ExamApplication.executor&quot;: &quot;Debug&quot;,
     &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;master&quot;,
     &quot;last_opened_file_path&quot;: &quot;/Users/alan/Downloads/aa/online-exam-system-backend/src/main/java/cn/org/alan/exam/converter&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
     &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
     &quot;project.structure.last.edited&quot;: &quot;Project&quot;,
-    &quot;project.structure.proportion&quot;: &quot;0.0&quot;,
+    &quot;project.structure.proportion&quot;: &quot;0.18163672&quot;,
     &quot;project.structure.side.proportion&quot;: &quot;0.2&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.pluginManager&quot;,
-    &quot;spring.configuration.checksum&quot;: &quot;654816f85dfe2115674e7115c7d1ea51&quot;
+    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.lookFeel&quot;,
+    &quot;spring.configuration.checksum&quot;: &quot;654816f85dfe2115674e7115c7d1ea51&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  },
+  &quot;keyToStringList&quot;: {
+    &quot;DatabaseDriversLRU&quot;: [
+      &quot;mysql&quot;
+    ]
   }
 }</component>
   <component name="ReactorSettings">
@@ -67,7 +115,27 @@
       <recent name="cn.org.alan.exam.model.form.like" />
     </key>
   </component>
-  <component name="RunManager">
+  <component name="RunDashboard">
+    <option name="configurationTypes">
+      <set>
+        <option value="SpringBootApplicationConfigurationType" />
+      </set>
+    </option>
+  </component>
+  <component name="RunManager" selected="Spring Boot.ExamApplication">
+    <configuration name="CozeUtil" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="cn.org.alan.exam.utils.agent.impl.CozeUtil" />
+      <module name="exam" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="cn.org.alan.exam.utils.agent.impl.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
     <configuration name="ExamApplication" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot">
       <module name="exam" />
       <option name="SPRING_BOOT_MAIN_CLASS" value="cn.org.alan.exam.ExamApplication" />
@@ -75,8 +143,24 @@
         <option name="Make" enabled="true" />
       </method>
     </configuration>
+    <recent_temporary>
+      <list>
+        <item itemvalue="Application.CozeUtil" />
+      </list>
+    </recent_temporary>
+  </component>
+  <component name="SharedIndexes">
+    <attachedChunks>
+      <set>
+        <option value="bundled-jdk-9823dce3aa75-fbdcb00ec9e3-intellij.indexing.shared.core-IU-251.26094.121" />
+        <option value="bundled-js-predefined-d6986cc7102b-b26f3e71634d-JavaScript-IU-251.26094.121" />
+      </set>
+    </attachedChunks>
   </component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="StructureViewState">
+    <option name="selectedTab" value="Logical" />
+  </component>
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
       <changelist id="9f91ae12-c926-451e-b026-1b3559a4a2f9" name="Changes" comment="" />
@@ -107,6 +191,44 @@
       <workItem from="1749657393739" duration="130000" />
       <workItem from="1749658195328" duration="321000" />
       <workItem from="1750591035013" duration="111000" />
+      <workItem from="1753514187803" duration="1880000" />
+      <workItem from="1756826889713" duration="122000" />
+      <workItem from="1756911698151" duration="660000" />
+      <workItem from="1757143315795" duration="313000" />
+      <workItem from="1757951184702" duration="921000" />
+      <workItem from="1758032255230" duration="745000" />
+      <workItem from="1758037567797" duration="2841000" />
+      <workItem from="1759537456245" duration="321000" />
+      <workItem from="1759537888841" duration="195000" />
+      <workItem from="1759538105577" duration="1523000" />
+      <workItem from="1759540080459" duration="3351000" />
+      <workItem from="1759597506003" duration="95000" />
+      <workItem from="1764499625638" duration="694000" />
+      <workItem from="1764510452799" duration="214000" />
+      <workItem from="1764776700059" duration="393000" />
+      <workItem from="1765104184677" duration="1860000" />
+      <workItem from="1765119007767" duration="2997000" />
+      <workItem from="1765638020391" duration="300000" />
+      <workItem from="1766496811208" duration="126000" />
+      <workItem from="1767334386926" duration="947000" />
+      <workItem from="1767539502991" duration="1858000" />
+      <workItem from="1767710419586" duration="1192000" />
+      <workItem from="1768046627870" duration="93000" />
+      <workItem from="1774097876288" duration="4095000" />
+      <workItem from="1774105951263" duration="38000" />
+      <workItem from="1774966013901" duration="653000" />
+      <workItem from="1774967116458" duration="1592000" />
+      <workItem from="1774970495473" duration="670000" />
+      <workItem from="1775657613392" duration="4114000" />
+      <workItem from="1775662339353" duration="1585000" />
+      <workItem from="1775744891128" duration="5735000" />
+      <workItem from="1775978200007" duration="1210000" />
+      <workItem from="1776093138046" duration="3799000" />
+      <workItem from="1776180615542" duration="1168000" />
+      <workItem from="1776348107888" duration="5142000" />
+      <workItem from="1776528566829" duration="1819000" />
+      <workItem from="1776589407665" duration="2416000" />
+      <workItem from="1777547400647" duration="632000" />
     </task>
     <task id="LOCAL-00001" summary="添加新功能：讨论功能，Ai阅卷、题库添加分类管理、成绩分析添加查看用户试卷、添加考试可以直接选题和抽题">
       <created>1745760494820</created>
@@ -150,7 +272,39 @@
       <option name="project" value="LOCAL" />
       <updated>1748195672588</updated>
     </task>
-    <option name="localTasksCounter" value="7" />
+    <task id="LOCAL-00007" summary="修复日志没有记录问题">
+      <option name="closed" value="true" />
+      <created>1759546198259</created>
+      <option name="number" value="00007" />
+      <option name="presentableId" value="LOCAL-00007" />
+      <option name="project" value="LOCAL" />
+      <updated>1759546198259</updated>
+    </task>
+    <task id="LOCAL-00008" summary="提交最新代码">
+      <option name="closed" value="true" />
+      <created>1775752373726</created>
+      <option name="number" value="00008" />
+      <option name="presentableId" value="LOCAL-00008" />
+      <option name="project" value="LOCAL" />
+      <updated>1775752373727</updated>
+    </task>
+    <task id="LOCAL-00009" summary="feat(exam): 添加智能体阅卷">
+      <option name="closed" value="true" />
+      <created>1776352525250</created>
+      <option name="number" value="00009" />
+      <option name="presentableId" value="LOCAL-00009" />
+      <option name="project" value="LOCAL" />
+      <updated>1776352525250</updated>
+    </task>
+    <task id="LOCAL-00010" summary="fix(exam): 智能体评分没生效问题">
+      <option name="closed" value="true" />
+      <created>1776528660282</created>
+      <option name="number" value="00010" />
+      <option name="presentableId" value="LOCAL-00010" />
+      <option name="project" value="LOCAL" />
+      <updated>1776528660282</updated>
+    </task>
+    <option name="localTasksCounter" value="11" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -185,10 +339,38 @@
     <MESSAGE value="修复考试时间不正确问题，修复自选试题组卷倒是考试乱序没分类问题" />
     <MESSAGE value="修复教师阅卷的分页问题" />
     <MESSAGE value="修复日志没有记录问题" />
-    <option name="LAST_COMMIT_MESSAGE" value="修复日志没有记录问题" />
+    <MESSAGE value="提交最新代码" />
+    <MESSAGE value="feat(exam): 添加智能体阅卷" />
+    <MESSAGE value="fix(exam): 智能体评分没生效问题" />
+    <option name="LAST_COMMIT_MESSAGE" value="fix(exam): 智能体评分没生效问题" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" type="java-method">
+          <url>file://$PROJECT_DIR$/src/main/java/cn/org/alan/exam/service/IUserBookService.java</url>
+          <line>42</line>
+          <properties class="cn.org.alan.exam.service.IUserBookService" method="getBookOne">
+            <option name="EMULATED" value="true" />
+            <option name="WATCH_EXIT" value="false" />
+          </properties>
+          <option name="timeStamp" value="5" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-method">
+          <url>file://$PROJECT_DIR$/src/main/java/cn/org/alan/exam/service/IUserBookService.java</url>
+          <line>26</line>
+          <properties class="cn.org.alan.exam.service.IUserBookService" method="getPage">
+            <option name="EMULATED" value="true" />
+            <option name="WATCH_EXIT" value="false" />
+          </properties>
+          <option name="timeStamp" value="6" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/cn/org/alan/exam/utils/agent/impl/CozeUtil.java</url>
+          <line>60</line>
+          <option name="timeStamp" value="11" />
+        </line-breakpoint>
+      </breakpoints>
       <breakpoints-dialog>
         <breakpoints-dialog>
           <selected-grouping-rules>
