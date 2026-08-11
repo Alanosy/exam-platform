@@ -48,3 +48,11 @@ mvnw.cmd
 **/target/
 **/out/
 .DS_Store
+
+# Python / Agent specific ignores
+**/venv/
+**/__pycache__/
+**/*.pyc
+online-exam-agent/.env
+online-exam-agent/.DS_Store
+online-exam-agent/venv/
