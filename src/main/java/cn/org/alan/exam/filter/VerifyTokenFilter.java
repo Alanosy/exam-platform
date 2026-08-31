@@ -82,7 +82,7 @@ public class VerifyTokenFilter extends OncePerRequestFilter {
 
         // 如果 Token 已续签，更新 Redis 中的 Token 并设置到响应头
         if (!refreshedToken.equals(token)) {
-            stringRedisTemplate.opsForValue().set("token" + request.getSession().getId(), refreshedToken, 30, TimeUnit.MINUTES);
+            stringRedisTemplate.opsForValue().set("token:" + sessionId, refreshedToken, 30, TimeUnit.MINUTES);
             response.setHeader("Authorization", "Bearer " + refreshedToken);
         }
 
