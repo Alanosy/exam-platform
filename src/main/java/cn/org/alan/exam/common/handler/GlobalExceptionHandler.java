@@ -110,7 +110,7 @@ public class GlobalExceptionHandler {
      */
     @ExceptionHandler(AccessDeniedException.class)
     public Result<String> handleAccessDeniedException(AccessDeniedException e) {
-        log.error(e.getMessage(), e.getClass());
+        log.error("AccessDeniedException: {}, 原因: {}", e.getMessage(), e.getCause());
         return Result.failed("你没有该资源的访问权限");
     }
 

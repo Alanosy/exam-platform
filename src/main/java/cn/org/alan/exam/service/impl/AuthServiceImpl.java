@@ -25,6 +25,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.StringRedisTemplate;
@@ -61,6 +62,7 @@ import java.util.Map;
  * @Version
  * @Date 2024/3/28 1:33 PM
  */
+@Slf4j
 @Service
 public class AuthServiceImpl implements IAuthService {
     private static final String HEARTBEAT_KEY_PREFIX = "user:heartbeat:";
@@ -141,7 +143,7 @@ public class AuthServiceImpl implements IAuthService {
         // 创建token
         String token = jwtUtil.createJwt(userInfo, userPermissions.stream().map(String::valueOf).collect(java.util.stream.Collectors.toList()));
         // 把token放到redis中
-        stringRedisTemplate.opsForValue().set("token:" + request.getSession().getId(), token, 30, TimeUnit.MINUTES);
+        stringRedisTemplate.opsForValue().set("token:" + token, token, 30, TimeUnit.MINUTES);
 
         // 封装用户的身份信息，为后续的身份验证和授权操作提供必要的输入
         // 创建UsernamePasswordAuthenticationToken  参数：用户信息，密码，权限列表
@@ -396,19 +398,21 @@ public class AuthServiceImpl implements IAuthService {
         // 更新session_key
         user.setWxSessionKey(SecretUtils.desEncrypt(sessionKey));
         userMapper.updateById(user);
-        
+
         // 生成token
         user.setPassword(null);
         List<String> permissions = roleMapper.selectCodeById(user.getRoleId());
         List<SimpleGrantedAuthority> userPermissions = permissions.stream()
                 .map(permission -> new SimpleGrantedAuthority("role_" + permission)).collect(java.util.stream.Collectors.toList());
-        
+
+        log.info("小程序登录，用户: {}, 原始权限: {}, 存储权限: {}", user.getUserName(), permissions, userPermissions);
+
         SysUserDetails sysUserDetails = new SysUserDetails(user);
         sysUserDetails.setPermissions(userPermissions);
         String userInfo = objectMapper.writeValueAsString(user);
         String token = jwtUtil.createJwt(userInfo, userPermissions.stream().map(String::valueOf).collect(java.util.stream.Collectors.toList()));
-        stringRedisTemplate.opsForValue().set("token:" + request.getSession().getId(), token, 30, TimeUnit.MINUTES);
-        
+        stringRedisTemplate.opsForValue().set("token:" + token, token, 30, TimeUnit.MINUTES);
+
         UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken =
                 new UsernamePasswordAuthenticationToken(sysUserDetails, user.getPassword(), userPermissions);
         usernamePasswordAuthenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
@@ -499,7 +503,7 @@ public class AuthServiceImpl implements IAuthService {
         sysUserDetails.setPermissions(userPermissions);
         String userInfo = objectMapper.writeValueAsString(user);
         String token = jwtUtil.createJwt(userInfo, userPermissions.stream().map(String::valueOf).collect(java.util.stream.Collectors.toList()));
-        stringRedisTemplate.opsForValue().set("token:" + request.getSession().getId(), token, 30, TimeUnit.MINUTES);
+        stringRedisTemplate.opsForValue().set("token:" + token, token, 30, TimeUnit.MINUTES);
         
         UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken =
                 new UsernamePasswordAuthenticationToken(sysUserDetails, user.getPassword(), userPermissions);

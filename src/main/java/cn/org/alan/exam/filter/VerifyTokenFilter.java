@@ -56,6 +56,8 @@ public class VerifyTokenFilter extends OncePerRequestFilter {
             throws ServletException, IOException {
         // 获取token
         String token = request.getHeader("Authorization");
+        String uri = request.getRequestURI();
+        log.info("请求URI: {}, Token存在: {}", uri, StringUtils.isNotBlank(token));
 
         // 判断是否为空
         if (StringUtils.isBlank(token)) {
@@ -68,21 +70,26 @@ public class VerifyTokenFilter extends OncePerRequestFilter {
             token = token.substring(7);
         }
         // 从Redis中获取存储的JWT
-        String sessionId = request.getSession().getId();
-        String storedToken = stringRedisTemplate.opsForValue().get("token:" + sessionId);
+        String storedToken = stringRedisTemplate.opsForValue().get("token:" + token);
+        log.info("Redis token检查 - storedToken存在: {}, token匹配: {}", StringUtils.isNotBlank(storedToken), token.equals(storedToken));
+
         if (StringUtils.isBlank(storedToken) || !token.equals(storedToken)) {
+            log.warn("Redis token验证失败 - storedToken为空或不匹配");
             rejectIfProtected(request, response, filterChain);
             return;
         }
         // 验证并尝试续签 Token
         String refreshedToken = jwtUtil.verifyAndRefreshToken(token);
+        log.info("Token续签验证 - 原token: {}, 续签后token: {}", token.substring(0, Math.min(20, token.length())), refreshedToken == null ? "null" : refreshedToken.substring(0, Math.min(20, refreshedToken.length())));
+
         if (refreshedToken == null) {
+            log.warn("Token验证失败");
             rejectIfProtected(request, response, filterChain);
             return;
         }
         // 如果 Token 已续签，更新 Redis 中的 Token 并设置到响应头
         if (!refreshedToken.equals(token)) {
-            stringRedisTemplate.opsForValue().set("token:" + request.getSession().getId(), refreshedToken, 30, TimeUnit.MINUTES);
+            stringRedisTemplate.opsForValue().set("token:" + refreshedToken, refreshedToken, 30, TimeUnit.MINUTES);
             response.setHeader("Authorization", "Bearer " + refreshedToken);
         }
 
@@ -97,6 +104,8 @@ public class VerifyTokenFilter extends OncePerRequestFilter {
         List<SimpleGrantedAuthority> permissions = authList.stream()
                 .map(SimpleGrantedAuthority::new)
                 .collect(Collectors.toList());
+
+        log.info("Token验证通过，用户: {}, 权限: {}", sysUser.getUserName(), permissions);
 
         // 创建登录用户
         SysUserDetails securityUser = new SysUserDetails(sysUser);
