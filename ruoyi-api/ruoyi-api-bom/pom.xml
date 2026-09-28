@@ -83,6 +83,27 @@
                 <version>${revision}</version>
             </dependency>
 
+            <!-- 考试-练习服务接口 -->
+            <dependency>
+                <groupId>org.dromara</groupId>
+                <artifactId>ruoyi-api-exam-practice</artifactId>
+                <version>${revision}</version>
+            </dependency>
+
+            <!-- 考试-证书服务接口 -->
+            <dependency>
+                <groupId>org.dromara</groupId>
+                <artifactId>ruoyi-api-exam-cert</artifactId>
+                <version>${revision}</version>
+            </dependency>
+
+            <!-- 考试-防作弊服务接口 -->
+            <dependency>
+                <groupId>org.dromara</groupId>
+                <artifactId>ruoyi-api-exam-proctor</artifactId>
+                <version>${revision}</version>
+            </dependency>
+
         </dependencies>
     </dependencyManagement>
 </project>

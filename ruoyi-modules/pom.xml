@@ -20,6 +20,9 @@
         <module>ruoyi-exam-answer</module>
         <module>ruoyi-exam-mark</module>
         <module>ruoyi-exam-stat</module>
+        <module>ruoyi-exam-practice</module>
+        <module>ruoyi-exam-cert</module>
+        <module>ruoyi-exam-proctor</module>
     </modules>
 
     <artifactId>ruoyi-modules</artifactId>

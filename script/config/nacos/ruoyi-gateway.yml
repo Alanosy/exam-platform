@@ -140,3 +140,24 @@ spring:
                 - Path=/stat/**
               filters:
                 - StripPrefix=1
+            # 考试-练习服务
+            - id: ruoyi-exam-practice
+              uri: lb://ruoyi-exam-practice
+              predicates:
+                - Path=/practice/**
+              filters:
+                - StripPrefix=1
+            # 考试-证书服务
+            - id: ruoyi-exam-cert
+              uri: lb://ruoyi-exam-cert
+              predicates:
+                - Path=/cert/**
+              filters:
+                - StripPrefix=1
+            # 考试-防作弊服务
+            - id: ruoyi-exam-proctor
+              uri: lb://ruoyi-exam-proctor
+              predicates:
+                - Path=/proctor/**
+              filters:
+                - StripPrefix=1

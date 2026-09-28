@@ -19,6 +19,9 @@
         <module>ruoyi-api-exam-answer</module>
         <module>ruoyi-api-exam-mark</module>
         <module>ruoyi-api-exam-stat</module>
+        <module>ruoyi-api-exam-practice</module>
+        <module>ruoyi-api-exam-cert</module>
+        <module>ruoyi-api-exam-proctor</module>
     </modules>
 
     <artifactId>ruoyi-api</artifactId>
