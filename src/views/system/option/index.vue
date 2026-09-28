@@ -7,8 +7,8 @@
             <el-form-item label="试题ID" prop="questionId">
               <el-input v-model="queryParams.questionId" placeholder="请输入试题ID" clearable @keyup.enter="handleQuery" />
             </el-form-item>
-            <el-form-item label="选项标识 A/B/C/D" prop="optionKey">
-              <el-input v-model="queryParams.optionKey" placeholder="请输入选项标识 A/B/C/D" clearable @keyup.enter="handleQuery" />
+            <el-form-item label="选项标识" prop="optionKey">
+              <el-input v-model="queryParams.optionKey" placeholder="请输入选项标识" clearable @keyup.enter="handleQuery" />
             </el-form-item>
             <el-form-item label="排序号" prop="sort">
               <el-input v-model="queryParams.sort" placeholder="请输入排序号" clearable @keyup.enter="handleQuery" />
@@ -45,8 +45,8 @@
         <el-table-column type="selection" width="55" align="center" />
         <el-table-column label="主键ID" align="center" prop="id" v-if="true" />
         <el-table-column label="试题ID" align="center" prop="questionId" />
-        <el-table-column label="选项标识 A/B/C/D" align="center" prop="optionKey" />
-        <el-table-column label="选项内容富文本" align="center" prop="optionContent" />
+        <el-table-column label="选项标识" align="center" prop="optionKey" />
+        <el-table-column label="选项内容" align="center" prop="optionContent" />
         <el-table-column label="排序号" align="center" prop="sort" />
         <el-table-column label="操作" align="center" fixed="right" class-name="small-padding fixed-width">
           <template #default="scope">
@@ -68,10 +68,10 @@
         <el-form-item label="试题ID" prop="questionId">
           <el-input v-model="form.questionId" placeholder="请输入试题ID" />
         </el-form-item>
-        <el-form-item label="选项标识 A/B/C/D" prop="optionKey">
-          <el-input v-model="form.optionKey" placeholder="请输入选项标识 A/B/C/D" />
+        <el-form-item label="选项标识" prop="optionKey">
+          <el-input v-model="form.optionKey" placeholder="请输入选项标识" />
         </el-form-item>
-        <el-form-item label="选项内容富文本">
+        <el-form-item label="选项内容">
           <editor v-model="form.optionContent" :min-height="192"/>
         </el-form-item>
         <el-form-item label="排序号" prop="sort">

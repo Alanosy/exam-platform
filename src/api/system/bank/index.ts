@@ -33,7 +33,7 @@ export const getBank = (id: string | number): AxiosPromise<BankVO> => {
  */
 export const addBank = (data: BankForm) => {
   return request({
-    url: '/system/bank',
+    url: '/bank',
     method: 'post',
     data: data
   });
@@ -45,7 +45,7 @@ export const addBank = (data: BankForm) => {
  */
 export const updateBank = (data: BankForm) => {
   return request({
-    url: '/system/bank',
+    url: '/bank',
     method: 'put',
     data: data
   });

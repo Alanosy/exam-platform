@@ -4,24 +4,24 @@
       <div v-show="showSearch" class="mb-[10px]">
         <el-card shadow="hover">
           <el-form ref="queryFormRef" :model="queryParams" :inline="true">
-            <el-form-item label="所属题库ID" prop="bankId">
+            <el-form-item label="所属题库" prop="bankId">
               <el-input v-model="queryParams.bankId" placeholder="请输入所属题库ID" clearable @keyup.enter="handleQuery" />
             </el-form-item>
-            <el-form-item label="题干富文本" prop="title">
+            <el-form-item label="题干" prop="title">
               <el-input v-model="queryParams.title" placeholder="请输入题干富文本" clearable @keyup.enter="handleQuery" />
             </el-form-item>
-            <el-form-item label="难度 easy简单 medium中等 hard困难" prop="difficulty">
+            <el-form-item label="难度" prop="difficulty">
               <el-input v-model="queryParams.difficulty" placeholder="请输入难度 easy简单 medium中等 hard困难" clearable @keyup.enter="handleQuery" />
             </el-form-item>
-            <el-form-item label="题目默认分值" prop="score">
+            <!-- <el-form-item label="默认分值" prop="score">
               <el-input v-model="queryParams.score" placeholder="请输入题目默认分值" clearable @keyup.enter="handleQuery" />
             </el-form-item>
-            <el-form-item label="试题解析富文本" prop="analysis">
+            <el-form-item label="试题解析" prop="analysis">
               <el-input v-model="queryParams.analysis" placeholder="请输入试题解析富文本" clearable @keyup.enter="handleQuery" />
             </el-form-item>
-            <el-form-item label="题目创建人ID" prop="createUser">
+            <el-form-item label="创建人" prop="createUser">
               <el-input v-model="queryParams.createUser" placeholder="请输入题目创建人ID" clearable @keyup.enter="handleQuery" />
-            </el-form-item>
+            </el-form-item> -->
             <el-form-item>
               <el-button type="primary" icon="Search" @click="handleQuery">搜索</el-button>
               <el-button icon="Refresh" @click="resetQuery">重置</el-button>
@@ -53,15 +53,15 @@
       <el-table v-loading="loading" border :data="questionList" @selection-change="handleSelectionChange">
         <el-table-column type="selection" width="55" align="center" />
         <el-table-column label="主键ID" align="center" prop="id" v-if="true" />
-        <el-table-column label="所属题库ID" align="center" prop="bankId" />
-        <el-table-column label="题干富文本" align="center" prop="title" />
-        <el-table-column label="题型 SINGLE单选,MULTIPLE多选,JUDGE判断,BLANK填空,SHORT_ANSWER简答,ESSAY论述,CODE代码题,UPLOAD_FILE文件上传,MATCH匹配题" align="center" prop="questionType" />
-        <el-table-column label="难度 easy简单 medium中等 hard困难" align="center" prop="difficulty" />
+        <el-table-column label="所属题库" align="center" prop="bankId" />
+        <el-table-column label="题干" align="center" prop="title" />
+        <el-table-column label="题型" align="center" prop="questionType" />
+        <el-table-column label="难度" align="center" prop="difficulty" />
         <el-table-column label="题目默认分值" align="center" prop="score" />
-        <el-table-column label="试题解析富文本" align="center" prop="analysis" />
-        <el-table-column label="参考答案JSON，不同题型结构不同" align="center" prop="answer" />
-        <el-table-column label="题目创建人ID" align="center" prop="createUser" />
-        <el-table-column label="0草稿 1启用 2废弃" align="center" prop="status" />
+        <el-table-column label="试题解析" align="center" prop="analysis" />
+        <el-table-column label="参考答案" align="center" prop="answer" />
+        <el-table-column label="创建人" align="center" prop="createUser" />
+        <el-table-column label="状态" align="center" prop="status" />
         <el-table-column label="操作" align="center" fixed="right" class-name="small-padding fixed-width">
           <template #default="scope">
             <el-tooltip content="修改" placement="top">
@@ -79,22 +79,22 @@
     <!-- 添加或修改试题主对话框 -->
     <el-dialog :title="dialog.title" v-model="dialog.visible" width="500px" append-to-body>
       <el-form ref="questionFormRef" :model="form" :rules="rules" label-width="80px">
-        <el-form-item label="所属题库ID" prop="bankId">
+        <el-form-item label="所属题库" prop="bankId">
           <el-input v-model="form.bankId" placeholder="请输入所属题库ID" />
         </el-form-item>
-        <el-form-item label="题干富文本" prop="title">
+        <el-form-item label="题干" prop="title">
             <el-input v-model="form.title" type="textarea" placeholder="请输入内容" />
         </el-form-item>
-        <el-form-item label="难度 easy简单 medium中等 hard困难" prop="difficulty">
+        <el-form-item label="难度" prop="difficulty">
           <el-input v-model="form.difficulty" placeholder="请输入难度 easy简单 medium中等 hard困难" />
         </el-form-item>
-        <el-form-item label="题目默认分值" prop="score">
+        <el-form-item label="默认分值" prop="score">
           <el-input v-model="form.score" placeholder="请输入题目默认分值" />
         </el-form-item>
-        <el-form-item label="试题解析富文本" prop="analysis">
+        <el-form-item label="试题解析" prop="analysis">
             <el-input v-model="form.analysis" type="textarea" placeholder="请输入内容" />
         </el-form-item>
-        <el-form-item label="题目创建人ID" prop="createUser">
+        <el-form-item label="创建人" prop="createUser">
           <el-input v-model="form.createUser" placeholder="请输入题目创建人ID" />
         </el-form-item>
       </el-form>

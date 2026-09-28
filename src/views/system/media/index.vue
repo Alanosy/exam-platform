@@ -7,7 +7,7 @@
             <el-form-item label="试题ID" prop="questionId">
               <el-input v-model="queryParams.questionId" placeholder="请输入试题ID" clearable @keyup.enter="handleQuery" />
             </el-form-item>
-            <el-form-item label="资源访问地址MinIO" prop="mediaUrl">
+            <el-form-item label="资源访问地址" prop="mediaUrl">
               <el-input v-model="queryParams.mediaUrl" placeholder="请输入资源访问地址MinIO" clearable @keyup.enter="handleQuery" />
             </el-form-item>
             <el-form-item label="原始文件名" prop="mediaName">
@@ -48,8 +48,8 @@
         <el-table-column type="selection" width="55" align="center" />
         <el-table-column label="主键ID" align="center" prop="id" v-if="true" />
         <el-table-column label="试题ID" align="center" prop="questionId" />
-        <el-table-column label="media_type:image图片,audio音频,video视频" align="center" prop="mediaType" />
-        <el-table-column label="资源访问地址MinIO" align="center" prop="mediaUrl" />
+        <el-table-column label="媒体类型" align="center" prop="mediaType" />
+        <el-table-column label="资源访问地址" align="center" prop="mediaUrl" />
         <el-table-column label="原始文件名" align="center" prop="mediaName" />
         <el-table-column label="展示顺序" align="center" prop="sort" />
         <el-table-column label="操作" align="center" fixed="right" class-name="small-padding fixed-width">
@@ -72,7 +72,7 @@
         <el-form-item label="试题ID" prop="questionId">
           <el-input v-model="form.questionId" placeholder="请输入试题ID" />
         </el-form-item>
-        <el-form-item label="资源访问地址MinIO" prop="mediaUrl">
+        <el-form-item label="资源访问地址" prop="mediaUrl">
             <el-input v-model="form.mediaUrl" type="textarea" placeholder="请输入内容" />
         </el-form-item>
         <el-form-item label="原始文件名" prop="mediaName">
