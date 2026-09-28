@@ -98,3 +98,45 @@ spring:
                 - Path=/test-mq/**
               filters:
                 - StripPrefix=1
+            # 考试-题库服务
+            - id: ruoyi-exam-question
+              uri: lb://ruoyi-exam-question
+              predicates:
+                - Path=/question/**
+              filters:
+                - StripPrefix=1
+            # 考试-试卷服务
+            - id: ruoyi-exam-paper
+              uri: lb://ruoyi-exam-paper
+              predicates:
+                - Path=/paper/**
+              filters:
+                - StripPrefix=1
+            # 考试-考试管理服务
+            - id: ruoyi-exam-manage
+              uri: lb://ruoyi-exam-manage
+              predicates:
+                - Path=/exam/**
+              filters:
+                - StripPrefix=1
+            # 考试-答题服务
+            - id: ruoyi-exam-answer
+              uri: lb://ruoyi-exam-answer
+              predicates:
+                - Path=/answer/**
+              filters:
+                - StripPrefix=1
+            # 考试-阅卷服务
+            - id: ruoyi-exam-mark
+              uri: lb://ruoyi-exam-mark
+              predicates:
+                - Path=/mark/**
+              filters:
+                - StripPrefix=1
+            # 考试-统计服务
+            - id: ruoyi-exam-stat
+              uri: lb://ruoyi-exam-stat
+              predicates:
+                - Path=/stat/**
+              filters:
+                - StripPrefix=1

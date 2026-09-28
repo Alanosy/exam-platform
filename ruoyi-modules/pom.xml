@@ -14,6 +14,12 @@
         <module>ruoyi-job</module>
         <module>ruoyi-resource</module>
         <module>ruoyi-workflow</module>
+        <module>ruoyi-exam-question</module>
+        <module>ruoyi-exam-paper</module>
+        <module>ruoyi-exam-manage</module>
+        <module>ruoyi-exam-answer</module>
+        <module>ruoyi-exam-mark</module>
+        <module>ruoyi-exam-stat</module>
     </modules>
 
     <artifactId>ruoyi-modules</artifactId>

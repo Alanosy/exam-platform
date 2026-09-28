@@ -17,6 +17,16 @@ datasource:
     url: jdbc:mysql://localhost:3306/ry-workflow?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=true&serverTimezone=GMT%2B8&rewriteBatchedStatements=true&allowPublicKeyRetrieval=true&nullCatalogMeansCurrent=true
     username: root
     password: password
+  # 考试主库 题库/试卷/考试/阅卷/统计
+  exam:
+    url: jdbc:mysql://localhost:3306/ry-exam?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=true&serverTimezone=GMT%2B8&rewriteBatchedStatements=true&allowPublicKeyRetrieval=true
+    username: root
+    password: password
+  # 答卷成绩库 高并发大表 独立库便于分库分表
+  exam-answer:
+    url: jdbc:mysql://localhost:3306/ry-exam-answer?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=true&serverTimezone=GMT%2B8&rewriteBatchedStatements=true&allowPublicKeyRetrieval=true
+    username: root
+    password: password
 #  system-oracle:
 #    url: jdbc:oracle:thin:@//localhost:1521/XE
 #    username: ROOT

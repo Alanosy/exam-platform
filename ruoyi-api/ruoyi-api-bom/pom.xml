@@ -41,6 +41,48 @@
                 <version>${revision}</version>
             </dependency>
 
+            <!-- 考试-题库服务接口 -->
+            <dependency>
+                <groupId>org.dromara</groupId>
+                <artifactId>ruoyi-api-exam-question</artifactId>
+                <version>${revision}</version>
+            </dependency>
+
+            <!-- 考试-试卷服务接口 -->
+            <dependency>
+                <groupId>org.dromara</groupId>
+                <artifactId>ruoyi-api-exam-paper</artifactId>
+                <version>${revision}</version>
+            </dependency>
+
+            <!-- 考试-考试管理服务接口 -->
+            <dependency>
+                <groupId>org.dromara</groupId>
+                <artifactId>ruoyi-api-exam-manage</artifactId>
+                <version>${revision}</version>
+            </dependency>
+
+            <!-- 考试-答题服务接口 -->
+            <dependency>
+                <groupId>org.dromara</groupId>
+                <artifactId>ruoyi-api-exam-answer</artifactId>
+                <version>${revision}</version>
+            </dependency>
+
+            <!-- 考试-阅卷服务接口 -->
+            <dependency>
+                <groupId>org.dromara</groupId>
+                <artifactId>ruoyi-api-exam-mark</artifactId>
+                <version>${revision}</version>
+            </dependency>
+
+            <!-- 考试-统计服务接口 -->
+            <dependency>
+                <groupId>org.dromara</groupId>
+                <artifactId>ruoyi-api-exam-stat</artifactId>
+                <version>${revision}</version>
+            </dependency>
+
         </dependencies>
     </dependencyManagement>
 </project>
