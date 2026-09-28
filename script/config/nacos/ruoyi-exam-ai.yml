@@ -1,0 +1,33 @@
+# ruoyi-exam-ai 服务配置
+# =================================================
+
+spring:
+  datasource:
+    dynamic:
+      # AI 服务以查询为主（题库 / 试卷 / 答卷快照），归 exam 主库
+      primary: master
+      datasource:
+        master:
+          type: ${spring.datasource.type}
+          driver-class-name: com.mysql.cj.jdbc.Driver
+          url: ${datasource.exam.url}
+          username: ${datasource.exam.username}
+          password: ${datasource.exam.password}
+
+# AI Agent（Python FastAPI）服务发现配置
+ai:
+  agent:
+    # 服务名（与 Nacos 注册一致，禁止修改）
+    service-name: ruoyi-exam-agent
+    # 走服务发现 lb://ruoyi-exam-agent 时使用的 REST 基路径
+    base-path: /
+    # 单次请求超时（毫秒）
+    connect-timeout: 5000
+    read-timeout: 60000
+    # 重试
+    max-retries: 2
+    # 异步批量场景走 RocketMQ（先留接口，启用 MQ 后填）
+    mq:
+      enabled: false
+      topic: ai-agent-task
+      consumer-group: ruoyi-exam-ai-consumer

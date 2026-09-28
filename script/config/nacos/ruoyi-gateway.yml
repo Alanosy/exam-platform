@@ -161,3 +161,10 @@ spring:
                 - Path=/proctor/**
               filters:
                 - StripPrefix=1
+            # 考试-AI 服务（Java 网关层，转发至 Python FastAPI Agent）
+            - id: ruoyi-exam-ai
+              uri: lb://ruoyi-exam-ai
+              predicates:
+                - Path=/ai/**
+              filters:
+                - StripPrefix=1

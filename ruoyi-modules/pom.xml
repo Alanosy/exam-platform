@@ -23,6 +23,7 @@
         <module>ruoyi-exam-practice</module>
         <module>ruoyi-exam-cert</module>
         <module>ruoyi-exam-proctor</module>
+        <module>ruoyi-exam-ai</module>
     </modules>
 
     <artifactId>ruoyi-modules</artifactId>

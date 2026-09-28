@@ -104,6 +104,13 @@
                 <version>${revision}</version>
             </dependency>
 
+            <!-- 考试-AI 服务接口 -->
+            <dependency>
+                <groupId>org.dromara</groupId>
+                <artifactId>ruoyi-api-exam-ai</artifactId>
+                <version>${revision}</version>
+            </dependency>
+
         </dependencies>
     </dependencyManagement>
 </project>
