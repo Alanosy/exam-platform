@@ -47,7 +47,11 @@ const props = defineProps({
   /* 上传文件大小限制(MB) */
   fileSize: propTypes.number.def(5),
   /* 类型（base64格式、url格式） */
-  type: propTypes.string.def('url')
+  type: propTypes.string.def('url'),
+  /* 精简工具栏，用于行内、小面积录入（如试题选项） */
+  simple: propTypes.bool.def(false),
+  /* 占位提示 */
+  placeholder: propTypes.string.def('请输入内容')
 });
 
 const { proxy } = getCurrentInstance() as ComponentInternalInstance;
@@ -59,6 +63,31 @@ const upload = reactive<UploadOption>({
 const quillEditorRef = ref();
 const uploadRef = ref<HTMLDivElement>();
 
+// 完整工具栏
+const TOOLBAR_FULL = [
+  ['bold', 'italic', 'underline', 'strike'], // 加粗 斜体 下划线 删除线
+  ['blockquote', 'code-block'], // 引用  代码块
+  [{ list: 'ordered' }, { list: 'bullet' }], // 有序、无序列表
+  [{ indent: '-1' }, { indent: '+1' }], // 缩进
+  [{ size: ['small', false, 'large', 'huge'] }], // 字体大小
+  [{ header: [1, 2, 3, 4, 5, 6, false] }], // 标题
+  [{ color: [] }, { background: [] }], // 字体颜色、字体背景颜色
+  [{ align: [] }], // 对齐方式
+  ['clean'], // 清除文本格式
+  ['link', 'image', 'video'] // 链接、图片、视频
+];
+
+// 精简工具栏，保留富文本录入最常用的能力
+const TOOLBAR_SIMPLE = [
+  ['bold', 'italic', 'underline', 'strike'],
+  ['code-block'],
+  [{ list: 'ordered' }, { list: 'bullet' }],
+  [{ size: ['small', false, 'large', 'huge'] }],
+  [{ color: [] }, { background: [] }],
+  ['clean'],
+  ['link', 'image']
+];
+
 const options = ref<any>({
   theme: 'snow',
   bounds: document.body,
@@ -66,18 +95,7 @@ const options = ref<any>({
   modules: {
     // 工具栏配置
     toolbar: {
-      container: [
-        ['bold', 'italic', 'underline', 'strike'], // 加粗 斜体 下划线 删除线
-        ['blockquote', 'code-block'], // 引用  代码块
-        [{ list: 'ordered' }, { list: 'bullet' }], // 有序、无序列表
-        [{ indent: '-1' }, { indent: '+1' }], // 缩进
-        [{ size: ['small', false, 'large', 'huge'] }], // 字体大小
-        [{ header: [1, 2, 3, 4, 5, 6, false] }], // 标题
-        [{ color: [] }, { background: [] }], // 字体颜色、字体背景颜色
-        [{ align: [] }], // 对齐方式
-        ['clean'], // 清除文本格式
-        ['link', 'image', 'video'] // 链接、图片、视频
-      ],
+      container: props.simple ? TOOLBAR_SIMPLE : TOOLBAR_FULL,
       handlers: {
         image: (value: boolean) => {
           if (value) {
@@ -90,7 +108,7 @@ const options = ref<any>({
       }
     }
   },
-  placeholder: '请输入内容',
+  placeholder: props.placeholder,
   readOnly: props.readOnly
 });
 

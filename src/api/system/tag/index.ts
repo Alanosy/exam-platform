@@ -1,6 +1,6 @@
 import request from '@/utils/request';
 import { AxiosPromise } from 'axios';
-import { TagVO, TagForm, TagQuery } from '@/api/tag/types';
+import { TagVO, TagForm, TagQuery } from '@/api/system/tag/types';
 
 /**
  * 查询试题标签列表
@@ -10,7 +10,7 @@ import { TagVO, TagForm, TagQuery } from '@/api/tag/types';
 
 export const listTag = (query?: TagQuery): AxiosPromise<TagVO[]> => {
   return request({
-    url: '/tag/list',
+    url: '/question/tag/list',
     method: 'get',
     params: query
   });
@@ -22,7 +22,7 @@ export const listTag = (query?: TagQuery): AxiosPromise<TagVO[]> => {
  */
 export const getTag = (id: string | number): AxiosPromise<TagVO> => {
   return request({
-    url: '/tag/' + id,
+    url: '/question/tag/' + id,
     method: 'get'
   });
 };
@@ -33,7 +33,7 @@ export const getTag = (id: string | number): AxiosPromise<TagVO> => {
  */
 export const addTag = (data: TagForm) => {
   return request({
-    url: '/tag',
+    url: '/question/tag',
     method: 'post',
     data: data
   });
@@ -45,7 +45,7 @@ export const addTag = (data: TagForm) => {
  */
 export const updateTag = (data: TagForm) => {
   return request({
-    url: '/tag',
+    url: '/question/tag',
     method: 'put',
     data: data
   });
@@ -57,7 +57,7 @@ export const updateTag = (data: TagForm) => {
  */
 export const delTag = (id: string | number | Array<string | number>) => {
   return request({
-    url: '/tag/' + id,
+    url: '/question/tag/' + id,
     method: 'delete'
   });
 };

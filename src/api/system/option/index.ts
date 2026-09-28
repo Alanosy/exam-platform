@@ -1,6 +1,6 @@
 import request from '@/utils/request';
 import { AxiosPromise } from 'axios';
-import { OptionVO, OptionForm, OptionQuery } from '@/api/option/types';
+import { OptionVO, OptionForm, OptionQuery } from '@/api/system/option/types';
 
 /**
  * 查询试题选项列表
@@ -10,7 +10,7 @@ import { OptionVO, OptionForm, OptionQuery } from '@/api/option/types';
 
 export const listOption = (query?: OptionQuery): AxiosPromise<OptionVO[]> => {
   return request({
-    url: '/option/list',
+    url: '/question/option/list',
     method: 'get',
     params: query
   });
@@ -22,7 +22,7 @@ export const listOption = (query?: OptionQuery): AxiosPromise<OptionVO[]> => {
  */
 export const getOption = (id: string | number): AxiosPromise<OptionVO> => {
   return request({
-    url: '/option/' + id,
+    url: '/question/option/' + id,
     method: 'get'
   });
 };
@@ -33,7 +33,7 @@ export const getOption = (id: string | number): AxiosPromise<OptionVO> => {
  */
 export const addOption = (data: OptionForm) => {
   return request({
-    url: '/option',
+    url: '/question/option',
     method: 'post',
     data: data
   });
@@ -45,7 +45,7 @@ export const addOption = (data: OptionForm) => {
  */
 export const updateOption = (data: OptionForm) => {
   return request({
-    url: '/option',
+    url: '/question/option',
     method: 'put',
     data: data
   });
@@ -57,7 +57,7 @@ export const updateOption = (data: OptionForm) => {
  */
 export const delOption = (id: string | number | Array<string | number>) => {
   return request({
-    url: '/option/' + id,
+    url: '/question/option/' + id,
     method: 'delete'
   });
 };

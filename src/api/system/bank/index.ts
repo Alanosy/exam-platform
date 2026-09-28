@@ -1,6 +1,6 @@
 import request from '@/utils/request';
 import { AxiosPromise } from 'axios';
-import { BankVO, BankForm, BankQuery } from '@/api/bank/types';
+import { BankVO, BankForm, BankQuery } from '@/api/system/bank/types';
 
 /**
  * 查询题库列表
@@ -10,7 +10,7 @@ import { BankVO, BankForm, BankQuery } from '@/api/bank/types';
 
 export const listBank = (query?: BankQuery): AxiosPromise<BankVO[]> => {
   return request({
-    url: '/bank/list',
+    url: '/question/bank/list',
     method: 'get',
     params: query
   });
@@ -22,7 +22,7 @@ export const listBank = (query?: BankQuery): AxiosPromise<BankVO[]> => {
  */
 export const getBank = (id: string | number): AxiosPromise<BankVO> => {
   return request({
-    url: '/bank/' + id,
+    url: '/question/bank/' + id,
     method: 'get'
   });
 };
@@ -33,7 +33,7 @@ export const getBank = (id: string | number): AxiosPromise<BankVO> => {
  */
 export const addBank = (data: BankForm) => {
   return request({
-    url: '/bank',
+    url: '/question/bank',
     method: 'post',
     data: data
   });
@@ -45,7 +45,7 @@ export const addBank = (data: BankForm) => {
  */
 export const updateBank = (data: BankForm) => {
   return request({
-    url: '/bank',
+    url: '/question/bank',
     method: 'put',
     data: data
   });
@@ -57,7 +57,7 @@ export const updateBank = (data: BankForm) => {
  */
 export const delBank = (id: string | number | Array<string | number>) => {
   return request({
-    url: '/bank/' + id,
+    url: '/question/bank/' + id,
     method: 'delete'
   });
 };

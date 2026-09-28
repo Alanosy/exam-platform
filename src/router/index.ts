@@ -88,13 +88,27 @@ export const constantRoutes: RouteRecordRaw[] = [
         meta: { title: '个人中心', icon: 'user' }
       }
     ]
+  },
+  {
+    // 试题编辑整页（新增 / 修改复用同一个页面）
+    // activeMenu 指向后台「试题管理」菜单的路由地址，需要与实际菜单保持一致
+    path: '/system/question/edit/:questionId?',
+    component: Layout,
+    hidden: true,
+    redirect: 'noRedirect',
+    children: [
+      {
+        path: '',
+        component: () => import('@/views/system/question/edit.vue'),
+        name: 'QuestionEdit',
+        meta: { title: '试题编辑', activeMenu: '/system/question' }
+      }
+    ]
   }
 ];
 
 // 动态路由，基于用户权限动态去加载
-export const dynamicRoutes: RouteRecordRaw[] = [
-
-];
+export const dynamicRoutes: RouteRecordRaw[] = [];
 
 /**
  * 创建路由

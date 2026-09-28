@@ -1,6 +1,6 @@
 import request from '@/utils/request';
 import { AxiosPromise } from 'axios';
-import { MediaVO, MediaForm, MediaQuery } from '@/api/media/types';
+import { MediaVO, MediaForm, MediaQuery } from '@/api/system/media/types';
 
 /**
  * 查询试题多媒体附件列表
@@ -10,7 +10,7 @@ import { MediaVO, MediaForm, MediaQuery } from '@/api/media/types';
 
 export const listMedia = (query?: MediaQuery): AxiosPromise<MediaVO[]> => {
   return request({
-    url: '/media/list',
+    url: '/question/media/list',
     method: 'get',
     params: query
   });
@@ -22,7 +22,7 @@ export const listMedia = (query?: MediaQuery): AxiosPromise<MediaVO[]> => {
  */
 export const getMedia = (id: string | number): AxiosPromise<MediaVO> => {
   return request({
-    url: '/media/' + id,
+    url: '/question/media/' + id,
     method: 'get'
   });
 };
@@ -33,7 +33,7 @@ export const getMedia = (id: string | number): AxiosPromise<MediaVO> => {
  */
 export const addMedia = (data: MediaForm) => {
   return request({
-    url: '/media',
+    url: '/question/media',
     method: 'post',
     data: data
   });
@@ -45,7 +45,7 @@ export const addMedia = (data: MediaForm) => {
  */
 export const updateMedia = (data: MediaForm) => {
   return request({
-    url: '/media',
+    url: '/question/media',
     method: 'put',
     data: data
   });
@@ -57,7 +57,7 @@ export const updateMedia = (data: MediaForm) => {
  */
 export const delMedia = (id: string | number | Array<string | number>) => {
   return request({
-    url: '/media/' + id,
+    url: '/question/media/' + id,
     method: 'delete'
   });
 };

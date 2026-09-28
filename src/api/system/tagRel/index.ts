@@ -1,6 +1,6 @@
 import request from '@/utils/request';
 import { AxiosPromise } from 'axios';
-import { TagRelVO, TagRelForm, TagRelQuery } from '@/api/tagRel/types';
+import { TagRelVO, TagRelForm, TagRelQuery } from '@/api/system/tagRel/types';
 
 /**
  * 查询试题标签关联列表
@@ -10,7 +10,7 @@ import { TagRelVO, TagRelForm, TagRelQuery } from '@/api/tagRel/types';
 
 export const listTagRel = (query?: TagRelQuery): AxiosPromise<TagRelVO[]> => {
   return request({
-    url: '/tagRel/list',
+    url: '/question/tagRel/list',
     method: 'get',
     params: query
   });
@@ -22,7 +22,7 @@ export const listTagRel = (query?: TagRelQuery): AxiosPromise<TagRelVO[]> => {
  */
 export const getTagRel = (id: string | number): AxiosPromise<TagRelVO> => {
   return request({
-    url: '/tagRel/' + id,
+    url: '/question/tagRel/' + id,
     method: 'get'
   });
 };
@@ -33,7 +33,7 @@ export const getTagRel = (id: string | number): AxiosPromise<TagRelVO> => {
  */
 export const addTagRel = (data: TagRelForm) => {
   return request({
-    url: '/tagRel',
+    url: '/question/tagRel',
     method: 'post',
     data: data
   });
@@ -45,7 +45,7 @@ export const addTagRel = (data: TagRelForm) => {
  */
 export const updateTagRel = (data: TagRelForm) => {
   return request({
-    url: '/tagRel',
+    url: '/question/tagRel',
     method: 'put',
     data: data
   });
@@ -57,7 +57,7 @@ export const updateTagRel = (data: TagRelForm) => {
  */
 export const delTagRel = (id: string | number | Array<string | number>) => {
   return request({
-    url: '/tagRel/' + id,
+    url: '/question/tagRel/' + id,
     method: 'delete'
   });
 };

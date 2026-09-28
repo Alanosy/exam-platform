@@ -5,23 +5,28 @@
         <el-card shadow="hover">
           <el-form ref="queryFormRef" :model="queryParams" :inline="true">
             <el-form-item label="所属题库" prop="bankId">
-              <el-input v-model="queryParams.bankId" placeholder="请输入所属题库ID" clearable @keyup.enter="handleQuery" />
+              <el-select v-model="queryParams.bankId" filterable clearable placeholder="请选择题库" class="w-[200px]">
+                <el-option v-for="item in bankList" :key="item.id" :label="item.bankName" :value="item.id" />
+              </el-select>
             </el-form-item>
             <el-form-item label="题干" prop="title">
-              <el-input v-model="queryParams.title" placeholder="请输入题干富文本" clearable @keyup.enter="handleQuery" />
+              <el-input v-model="queryParams.title" placeholder="请输入题干" clearable @keyup.enter="handleQuery" />
+            </el-form-item>
+            <el-form-item label="题型" prop="questionType">
+              <el-select v-model="queryParams.questionType" clearable placeholder="请选择题型" class="w-[160px]">
+                <el-option v-for="item in QUESTION_TYPES" :key="item.value" :label="item.label" :value="item.value" />
+              </el-select>
             </el-form-item>
             <el-form-item label="难度" prop="difficulty">
-              <el-input v-model="queryParams.difficulty" placeholder="请输入难度 easy简单 medium中等 hard困难" clearable @keyup.enter="handleQuery" />
+              <el-select v-model="queryParams.difficulty" clearable placeholder="请选择难度" class="w-[140px]">
+                <el-option v-for="item in DIFFICULTY_OPTIONS" :key="item.value" :label="item.label" :value="item.value" />
+              </el-select>
             </el-form-item>
-            <!-- <el-form-item label="默认分值" prop="score">
-              <el-input v-model="queryParams.score" placeholder="请输入题目默认分值" clearable @keyup.enter="handleQuery" />
+            <el-form-item label="状态" prop="status">
+              <el-select v-model="queryParams.status" clearable placeholder="请选择状态" class="w-[120px]">
+                <el-option v-for="item in STATUS_OPTIONS" :key="item.value" :label="item.label" :value="item.value" />
+              </el-select>
             </el-form-item>
-            <el-form-item label="试题解析" prop="analysis">
-              <el-input v-model="queryParams.analysis" placeholder="请输入试题解析富文本" clearable @keyup.enter="handleQuery" />
-            </el-form-item>
-            <el-form-item label="创建人" prop="createUser">
-              <el-input v-model="queryParams.createUser" placeholder="请输入题目创建人ID" clearable @keyup.enter="handleQuery" />
-            </el-form-item> -->
             <el-form-item>
               <el-button type="primary" icon="Search" @click="handleQuery">搜索</el-button>
               <el-button icon="Refresh" @click="resetQuery">重置</el-button>
@@ -38,10 +43,14 @@
             <el-button type="primary" plain icon="Plus" @click="handleAdd" v-hasPermi="['system:question:add']">新增</el-button>
           </el-col>
           <el-col :span="1.5">
-            <el-button type="success" plain icon="Edit" :disabled="single" @click="handleUpdate()" v-hasPermi="['system:question:edit']">修改</el-button>
+            <el-button type="success" plain icon="Edit" :disabled="single" @click="handleUpdate()" v-hasPermi="['system:question:edit']"
+              >修改</el-button
+            >
           </el-col>
           <el-col :span="1.5">
-            <el-button type="danger" plain icon="Delete" :disabled="multiple" @click="handleDelete()" v-hasPermi="['system:question:remove']">删除</el-button>
+            <el-button type="danger" plain icon="Delete" :disabled="multiple" @click="handleDelete()" v-hasPermi="['system:question:remove']"
+              >删除</el-button
+            >
           </el-col>
           <el-col :span="1.5">
             <el-button type="warning" plain icon="Download" @click="handleExport" v-hasPermi="['system:question:export']">导出</el-button>
@@ -52,19 +61,36 @@
 
       <el-table v-loading="loading" border :data="questionList" @selection-change="handleSelectionChange">
         <el-table-column type="selection" width="55" align="center" />
-        <el-table-column label="主键ID" align="center" prop="id" v-if="true" />
-        <el-table-column label="所属题库" align="center" prop="bankId" />
-        <el-table-column label="题干" align="center" prop="title" />
-        <el-table-column label="题型" align="center" prop="questionType" />
-        <el-table-column label="难度" align="center" prop="difficulty" />
-        <el-table-column label="题目默认分值" align="center" prop="score" />
-        <el-table-column label="试题解析" align="center" prop="analysis" />
-        <el-table-column label="参考答案" align="center" prop="answer" />
-        <el-table-column label="创建人" align="center" prop="createUser" />
-        <el-table-column label="状态" align="center" prop="status" />
-        <el-table-column label="操作" align="center" fixed="right" class-name="small-padding fixed-width">
+        <el-table-column label="主键ID" align="center" prop="id" v-if="true" width="90" />
+        <el-table-column label="所属题库" align="center" prop="bankId" min-width="140">
+          <template #default="{ row }">
+            <span>{{ bankNameMap[row.bankId] ?? row.bankId }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="题干" prop="title" min-width="260" show-overflow-tooltip>
+          <template #default="{ row }">
+            <span>{{ plainText(row.title) || '-' }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="题型" align="center" prop="questionType" width="110">
+          <template #default="{ row }">
+            <el-tag size="small" effect="plain">{{ getQuestionTypeLabel(row.questionType) }}</el-tag>
+          </template>
+        </el-table-column>
+        <el-table-column label="难度" align="center" prop="difficulty" width="90">
+          <template #default="{ row }">
+            <el-tag size="small" :type="difficultyTagType(row.difficulty)" effect="light">{{ getDifficultyLabel(row.difficulty) }}</el-tag>
+          </template>
+        </el-table-column>
+        <el-table-column label="分值" align="center" prop="score" width="80" />
+        <el-table-column label="状态" align="center" prop="status" width="90">
+          <template #default="{ row }">
+            <el-tag size="small" :type="statusTagType(row.status)" effect="light">{{ getStatusLabel(row.status) }}</el-tag>
+          </template>
+        </el-table-column>
+        <el-table-column label="操作" align="center" fixed="right" width="120" class-name="small-padding fixed-width">
           <template #default="scope">
-            <el-tooltip content="修改" placement="top">
+            <el-tooltip content="编辑" placement="top">
               <el-button link type="primary" icon="Edit" @click="handleUpdate(scope.row)" v-hasPermi="['system:question:edit']"></el-button>
             </el-tooltip>
             <el-tooltip content="删除" placement="top">
@@ -76,46 +102,22 @@
 
       <pagination v-show="total > 0" :total="total" v-model:page="queryParams.pageNum" v-model:limit="queryParams.pageSize" @pagination="getList" />
     </el-card>
-    <!-- 添加或修改试题主对话框 -->
-    <el-dialog :title="dialog.title" v-model="dialog.visible" width="500px" append-to-body>
-      <el-form ref="questionFormRef" :model="form" :rules="rules" label-width="80px">
-        <el-form-item label="所属题库" prop="bankId">
-          <el-input v-model="form.bankId" placeholder="请输入所属题库ID" />
-        </el-form-item>
-        <el-form-item label="题干" prop="title">
-            <el-input v-model="form.title" type="textarea" placeholder="请输入内容" />
-        </el-form-item>
-        <el-form-item label="难度" prop="difficulty">
-          <el-input v-model="form.difficulty" placeholder="请输入难度 easy简单 medium中等 hard困难" />
-        </el-form-item>
-        <el-form-item label="默认分值" prop="score">
-          <el-input v-model="form.score" placeholder="请输入题目默认分值" />
-        </el-form-item>
-        <el-form-item label="试题解析" prop="analysis">
-            <el-input v-model="form.analysis" type="textarea" placeholder="请输入内容" />
-        </el-form-item>
-        <el-form-item label="创建人" prop="createUser">
-          <el-input v-model="form.createUser" placeholder="请输入题目创建人ID" />
-        </el-form-item>
-      </el-form>
-      <template #footer>
-        <div class="dialog-footer">
-          <el-button :loading="buttonLoading" type="primary" @click="submitForm">确 定</el-button>
-          <el-button @click="cancel">取 消</el-button>
-        </div>
-      </template>
-    </el-dialog>
   </div>
 </template>
 
 <script setup name="Question" lang="ts">
-import { listQuestion, getQuestion, delQuestion, addQuestion, updateQuestion } from '@/api/system/question';
-import { QuestionVO, QuestionQuery, QuestionForm } from '@/api/system/question/types';
+import { useRouter } from 'vue-router';
+import { listQuestion, delQuestion } from '@/api/system/question';
+import { QuestionVO, QuestionQuery } from '@/api/system/question/types';
+import { listBank } from '@/api/system/bank';
+import { BankVO } from '@/api/system/bank/types';
+import { DIFFICULTY_OPTIONS, QUESTION_TYPES, STATUS_OPTIONS, getDifficultyLabel, getQuestionTypeLabel, getStatusLabel } from './questionMeta';
 
 const { proxy } = getCurrentInstance() as ComponentInternalInstance;
+const router = useRouter();
 
 const questionList = ref<QuestionVO[]>([]);
-const buttonLoading = ref(false);
+const bankList = ref<BankVO[]>([]);
 const loading = ref(true);
 const showSearch = ref(true);
 const ids = ref<Array<string | number>>([]);
@@ -124,157 +126,127 @@ const multiple = ref(true);
 const total = ref(0);
 
 const queryFormRef = ref<ElFormInstance>();
-const questionFormRef = ref<ElFormInstance>();
 
-const dialog = reactive<DialogOption>({
-  visible: false,
-  title: ''
-});
-
-const initFormData: QuestionForm = {
-  id: undefined,
+const queryParams = ref<QuestionQuery>({
+  pageNum: 1,
+  pageSize: 10,
   bankId: undefined,
   title: undefined,
   questionType: undefined,
   difficulty: undefined,
-  score: undefined,
-  analysis: undefined,
-  answer: undefined,
-  createUser: undefined,
   status: undefined,
-}
-const data = reactive<PageData<QuestionForm, QuestionQuery>>({
-  form: {...initFormData},
-  queryParams: {
-    pageNum: 1,
-    pageSize: 10,
-    bankId: undefined,
-    title: undefined,
-    questionType: undefined,
-    difficulty: undefined,
-    score: undefined,
-    analysis: undefined,
-    answer: undefined,
-    createUser: undefined,
-    status: undefined,
-    params: {
-    }
-  },
-  rules: {
-    id: [
-      { required: true, message: "主键ID不能为空", trigger: "blur" }
-    ],
-    bankId: [
-      { required: true, message: "所属题库ID不能为空", trigger: "blur" }
-    ],
-    title: [
-      { required: true, message: "题干富文本不能为空", trigger: "blur" }
-    ],
-    questionType: [
-      { required: true, message: "题型 SINGLE单选,MULTIPLE多选,JUDGE判断,BLANK填空,SHORT_ANSWER简答,ESSAY论述,CODE代码题,UPLOAD_FILE文件上传,MATCH匹配题不能为空", trigger: "change" }
-    ],
-    createUser: [
-      { required: true, message: "题目创建人ID不能为空", trigger: "blur" }
-    ],
-    status: [
-      { required: true, message: "0草稿 1启用 2废弃不能为空", trigger: "change" }
-    ],
-  }
+  params: {}
 });
 
-const { queryParams, form, rules } = toRefs(data);
+const bankNameMap = computed<Record<string, string>>(() => {
+  const map: Record<string, string> = {};
+  bankList.value.forEach((item) => {
+    map[String(item.id)] = item.bankName;
+  });
+  return map;
+});
+
+/** 富文本转纯文本，用于列表展示 */
+const plainText = (html?: string): string => {
+  if (!html) return '';
+  return html
+    .replace(/<[^>]*>/g, '')
+    .replace(/&nbsp;/g, ' ')
+    .trim();
+};
+
+const difficultyTagType = (value?: string) => {
+  if (value === 'easy') return 'success';
+  if (value === 'medium') return 'warning';
+  if (value === 'hard') return 'danger';
+  return 'info';
+};
+
+const statusTagType = (value?: number) => {
+  if (value === 1) return 'success';
+  if (value === 2) return 'info';
+  return 'warning';
+};
 
 /** 查询试题主列表 */
 const getList = async () => {
   loading.value = true;
-  const res = await listQuestion(queryParams.value);
-  questionList.value = res.rows;
-  total.value = res.total;
-  loading.value = false;
-}
+  try {
+    const res = await listQuestion(queryParams.value);
+    questionList.value = res.rows;
+    total.value = res.total;
+  } finally {
+    loading.value = false;
+  }
+};
 
-/** 取消按钮 */
-const cancel = () => {
-  reset();
-  dialog.visible = false;
-}
-
-/** 表单重置 */
-const reset = () => {
-  form.value = {...initFormData};
-  questionFormRef.value?.resetFields();
-}
+/** 加载题库下拉 */
+const loadBankList = async () => {
+  try {
+    const res = await listBank({ pageNum: 1, pageSize: 500 });
+    bankList.value = res.rows ?? [];
+  } catch {
+    bankList.value = [];
+  }
+};
 
 /** 搜索按钮操作 */
 const handleQuery = () => {
   queryParams.value.pageNum = 1;
   getList();
-}
+};
 
 /** 重置按钮操作 */
 const resetQuery = () => {
   queryFormRef.value?.resetFields();
   handleQuery();
-}
+};
 
 /** 多选框选中数据 */
 const handleSelectionChange = (selection: QuestionVO[]) => {
-  ids.value = selection.map(item => item.id);
+  ids.value = selection.map((item) => item.id);
   single.value = selection.length != 1;
   multiple.value = !selection.length;
-}
+};
 
-/** 新增按钮操作 */
+/** 新增按钮操作：跳转到整页编辑 */
 const handleAdd = () => {
-  reset();
-  dialog.visible = true;
-  dialog.title = "添加试题主";
-}
+  router.push({ name: 'QuestionEdit' });
+};
 
-/** 修改按钮操作 */
-const handleUpdate = async (row?: QuestionVO) => {
-  reset();
-  const _id = row?.id || ids.value[0]
-  const res = await getQuestion(_id);
-  Object.assign(form.value, res.data);
-  dialog.visible = true;
-  dialog.title = "修改试题主";
-}
-
-/** 提交按钮 */
-const submitForm = () => {
-  questionFormRef.value?.validate(async (valid: boolean) => {
-    if (valid) {
-      buttonLoading.value = true;
-      if (form.value.id) {
-        await updateQuestion(form.value).finally(() =>  buttonLoading.value = false);
-      } else {
-        await addQuestion(form.value).finally(() =>  buttonLoading.value = false);
-      }
-      proxy?.$modal.msgSuccess("操作成功");
-      dialog.visible = false;
-      await getList();
-    }
-  });
-}
+/** 修改按钮操作：跳转到整页编辑 */
+const handleUpdate = (row?: QuestionVO) => {
+  const _id = row?.id || ids.value[0];
+  router.push({ name: 'QuestionEdit', params: { questionId: _id } });
+};
 
 /** 删除按钮操作 */
 const handleDelete = async (row?: QuestionVO) => {
   const _ids = row?.id || ids.value;
-  await proxy?.$modal.confirm('是否确认删除试题主编号为"' + _ids + '"的数据项？').finally(() => loading.value = false);
+  await proxy?.$modal.confirm('是否确认删除试题主编号为"' + _ids + '"的数据项？').finally(() => (loading.value = false));
   await delQuestion(_ids);
-  proxy?.$modal.msgSuccess("删除成功");
+  proxy?.$modal.msgSuccess('删除成功');
   await getList();
-}
+};
 
 /** 导出按钮操作 */
 const handleExport = () => {
-  proxy?.download('system/question/export', {
-    ...queryParams.value
-  }, `question_${new Date().getTime()}.xlsx`)
-}
+  proxy?.download(
+    'question/export',
+    {
+      ...queryParams.value
+    },
+    `question_${new Date().getTime()}.xlsx`
+  );
+};
 
-onMounted(() => {
+onMounted(async () => {
+  await loadBankList();
+  await getList();
+});
+
+/** 从编辑页返回列表时刷新数据 */
+onActivated(() => {
   getList();
 });
 </script>

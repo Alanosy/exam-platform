@@ -1,6 +1,6 @@
 import request from '@/utils/request';
 import { AxiosPromise } from 'axios';
-import { QuestionVO, QuestionForm, QuestionQuery } from '@/api/question/types';
+import { QuestionVO, QuestionForm, QuestionQuery } from '@/api/system/question/types';
 
 /**
  * 查询试题主列表
@@ -34,6 +34,21 @@ export const getQuestion = (id: string | number): AxiosPromise<QuestionVO> => {
 export const addQuestion = (data: QuestionForm) => {
   return request({
     url: '/question',
+    method: 'post',
+    data: data
+  });
+};
+
+/**
+ * 新增试题（含选项）
+ *
+ * 试题与选项一次提交同时落库，返回新建试题ID。
+ * 答案为空时后端会按选项的 isRight 反推正确答案。
+ * @param data
+ */
+export const createQuestion = (data: QuestionForm) => {
+  return request({
+    url: '/question/create',
     method: 'post',
     data: data
   });
