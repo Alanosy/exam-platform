@@ -3,6 +3,8 @@ package cn.org.alan.exam.controller;
 import cn.org.alan.exam.common.group.UserGroup;
 import cn.org.alan.exam.common.result.Result;
 import cn.org.alan.exam.model.form.auth.LoginForm;
+import cn.org.alan.exam.model.form.auth.MiniprogramBindForm;
+import cn.org.alan.exam.model.form.auth.MiniprogramLoginForm;
 import cn.org.alan.exam.model.form.user.UserForm;
 import cn.org.alan.exam.service.IAuthService;
 
@@ -113,6 +115,34 @@ public class AuthController {
     @PostMapping("/track-presence")
     public Result<String> trackPresence(HttpServletRequest request) {
         return iAuthService.sendHeartbeat(request);
+    }
+
+    /**
+     * 小程序微信登录
+     *
+     * @param request
+     * @param miniprogramLoginForm
+     * @return
+     */
+    @ApiOperation("小程序微信登录")
+    @PostMapping("/miniprogram/login")
+    public Result<String> miniprogramLogin(HttpServletRequest request,
+                                           @Validated @RequestBody MiniprogramLoginForm miniprogramLoginForm) {
+        return iAuthService.miniprogramLogin(request, miniprogramLoginForm);
+    }
+
+    /**
+     * 小程序绑定已有账号
+     *
+     * @param request
+     * @param miniprogramBindForm
+     * @return
+     */
+    @ApiOperation("小程序绑定已有账号")
+    @PostMapping("/miniprogram/bind")
+    public Result<String> miniprogramBind(HttpServletRequest request,
+                                          @Validated @RequestBody MiniprogramBindForm miniprogramBindForm) {
+        return iAuthService.miniprogramBind(request, miniprogramBindForm);
     }
 
 }

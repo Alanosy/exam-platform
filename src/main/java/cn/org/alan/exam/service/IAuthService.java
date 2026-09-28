@@ -2,6 +2,8 @@ package cn.org.alan.exam.service;
 
 import cn.org.alan.exam.common.result.Result;
 import cn.org.alan.exam.model.form.auth.LoginForm;
+import cn.org.alan.exam.model.form.auth.MiniprogramBindForm;
+import cn.org.alan.exam.model.form.auth.MiniprogramLoginForm;
 import cn.org.alan.exam.model.form.user.UserForm;
 
 import javax.servlet.http.HttpServletRequest;
@@ -67,4 +69,22 @@ public interface IAuthService {
      * @return
      */
     Result<String> sendHeartbeat(HttpServletRequest request);
+
+    /**
+     * 小程序微信登录
+     *
+     * @param request
+     * @param miniprogramLoginForm
+     * @return
+     */
+    Result<String> miniprogramLogin(HttpServletRequest request, MiniprogramLoginForm miniprogramLoginForm);
+
+    /**
+     * 小程序绑定已有账号
+     *
+     * @param request
+     * @param miniprogramBindForm
+     * @return
+     */
+    Result<String> miniprogramBind(HttpServletRequest request, MiniprogramBindForm miniprogramBindForm);
 }

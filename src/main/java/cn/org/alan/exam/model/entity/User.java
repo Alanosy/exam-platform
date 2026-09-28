@@ -62,4 +62,19 @@ public class User implements Serializable {
     @ApiModelProperty("逻辑删除字段")
     private Integer isDeleted;
 
+    @ApiModelProperty("微信openid")
+    private String wxOpenid;
+
+    @ApiModelProperty("微信unionid")
+    private String wxUnionid;
+
+    @ApiModelProperty("微信会话密钥（加密存储）")
+    private String wxSessionKey;
+
+    @ApiModelProperty("微信昵称")
+    private String wxNickname;
+
+    @ApiModelProperty("微信头像URL")
+    private String wxAvatar;
+
 }

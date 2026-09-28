@@ -53,3 +53,5 @@ mvnw.cmd
 .idea/jarRepositories.xml
 /.idea
 .idea/jarRepositories.xml
+.idea/workspace.xml
+/.idea

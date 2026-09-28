@@ -119,6 +119,16 @@ online-exam:
   login:
     captcha:
       enabled: true #是否启用验证码登录
+
+# 微信小程序配置
+wx:
+  miniprogram:
+    appid: wx617393d89da0b466  # 请替换为实际的小程序appid
+    secret: 50d29e1344bdf28d81b3c877f83fcf89  # 请替换为实际的小程序secret
+    login:
+      enabled: true
+      auto-register: false  # 是否允许自动注册
+
 system:
   register:
     enabled: true  # 控制是否开放注册功能

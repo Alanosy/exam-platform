@@ -12,6 +12,8 @@ import cn.org.alan.exam.model.entity.Log;
 import cn.org.alan.exam.model.entity.User;
 import cn.org.alan.exam.model.entity.UserDailyLoginDuration;
 import cn.org.alan.exam.model.form.auth.LoginForm;
+import cn.org.alan.exam.model.form.auth.MiniprogramBindForm;
+import cn.org.alan.exam.model.form.auth.MiniprogramLoginForm;
 import cn.org.alan.exam.model.form.user.UserForm;
 import cn.org.alan.exam.service.IAuthService;
 import cn.org.alan.exam.service.ILogService;
@@ -26,6 +28,8 @@ import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.client.RestTemplate;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -46,6 +50,8 @@ import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.HashMap;
+import java.util.Map;
 
 
 /**
@@ -76,10 +82,16 @@ public class AuthServiceImpl implements IAuthService {
     private UserDailyLoginDurationMapper userDailyLoginDurationMapper;
     @Value("${online-exam.login.captcha.enabled}")
     private boolean captchaEnabled;
+    @Value("${wx.miniprogram.appid}")
+    private String wxAppid;
+    @Value("${wx.miniprogram.secret}")
+    private String wxSecret;
     @Autowired
     HttpServletRequest httpServletRequest;
     @Autowired
     private ILogService logService;
+    @Autowired
+    private RestTemplate restTemplate;
 
     /**
      * 登录
@@ -337,5 +349,173 @@ public class AuthServiceImpl implements IAuthService {
             }
         }
         return Result.success("请求成功");
+    }
+
+    /**
+     * 小程序微信登录
+     *
+     * @param request
+     * @param miniprogramLoginForm
+     * @return
+     */
+    @SneakyThrows(IOException.class)
+    @Override
+    public Result<String> miniprogramLogin(HttpServletRequest request, MiniprogramLoginForm miniprogramLoginForm) {
+        // 调用微信接口获取openid和session_key
+        String url = "https://api.weixin.qq.com/sns/jscode2session?appid=" + wxAppid
+                + "&secret=" + wxSecret
+                + "&js_code=" + miniprogramLoginForm.getCode()
+                + "&grant_type=authorization_code";
+        
+        ResponseEntity<String> response = restTemplate.getForEntity(url, String.class);
+        String responseBody = response.getBody();
+        
+        // 解析微信返回的JSON
+        Map<String, Object> wxResponse = objectMapper.readValue(responseBody, Map.class);
+        String openid = (String) wxResponse.get("openid");
+        String sessionKey = (String) wxResponse.get("session_key");
+        
+        if (StringUtils.isBlank(openid)) {
+            throw new ServiceRuntimeException("微信登录失败，获取openid失败");
+        }
+        
+        // 根据openid查询用户
+        LambdaQueryWrapper<User> wrapper = new LambdaQueryWrapper<>();
+        wrapper.eq(User::getWxOpenid, openid);
+        User user = userMapper.selectOne(wrapper);
+        
+        if (Objects.isNull(user)) {
+            // 用户不存在，需要绑定账号
+            return Result.failed("该微信未绑定账号，请先绑定");
+        }
+        
+        if (user.getIsDeleted() == 1) {
+            throw new ServiceRuntimeException("该用户已注销");
+        }
+        
+        // 更新session_key
+        user.setWxSessionKey(SecretUtils.desEncrypt(sessionKey));
+        userMapper.updateById(user);
+        
+        // 生成token
+        user.setPassword(null);
+        List<String> permissions = roleMapper.selectCodeById(user.getRoleId());
+        List<SimpleGrantedAuthority> userPermissions = permissions.stream()
+                .map(permission -> new SimpleGrantedAuthority("role_" + permission)).collect(java.util.stream.Collectors.toList());
+        
+        SysUserDetails sysUserDetails = new SysUserDetails(user);
+        sysUserDetails.setPermissions(userPermissions);
+        String userInfo = objectMapper.writeValueAsString(user);
+        String token = jwtUtil.createJwt(userInfo, userPermissions.stream().map(String::valueOf).collect(java.util.stream.Collectors.toList()));
+        stringRedisTemplate.opsForValue().set("token:" + request.getSession().getId(), token, 30, TimeUnit.MINUTES);
+        
+        UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken =
+                new UsernamePasswordAuthenticationToken(sysUserDetails, user.getPassword(), userPermissions);
+        usernamePasswordAuthenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+        SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
+        
+        // 记录日志
+        String device = httpServletRequest.getHeader("User-Agent");
+        String ipRegion = Optional.ofNullable(IPUtils.getIPRegion(httpServletRequest)).orElse("暂无信息");
+        Log log = Log.builder()
+                .place(ipRegion)
+                .device(extractDeviceType(device))
+                .behavior("小程序登录")
+                .userId(user.getId()).build();
+        logService.add(log);
+        
+        return Result.success("登录成功", token);
+    }
+
+    /**
+     * 小程序绑定已有账号
+     *
+     * @param request
+     * @param miniprogramBindForm
+     * @return
+     */
+    @SneakyThrows(IOException.class)
+    @Override
+    public Result<String> miniprogramBind(HttpServletRequest request, MiniprogramBindForm miniprogramBindForm) {
+        // 调用微信接口获取openid和session_key
+        String url = "https://api.weixin.qq.com/sns/jscode2session?appid=" + wxAppid
+                + "&secret=" + wxSecret
+                + "&js_code=" + miniprogramBindForm.getCode()
+                + "&grant_type=authorization_code";
+        
+        ResponseEntity<String> response = restTemplate.getForEntity(url, String.class);
+        String responseBody = response.getBody();
+        
+        // 解析微信返回的JSON
+        Map<String, Object> wxResponse = objectMapper.readValue(responseBody, Map.class);
+        String openid = (String) wxResponse.get("openid");
+        String sessionKey = (String) wxResponse.get("session_key");
+        
+        if (StringUtils.isBlank(openid)) {
+            throw new ServiceRuntimeException("微信登录失败，获取openid失败");
+        }
+        
+        // 验证账号密码
+        LambdaQueryWrapper<User> wrapper = new LambdaQueryWrapper<>();
+        wrapper.eq(User::getUserName, miniprogramBindForm.getUsername());
+        User user = userMapper.selectOne(wrapper);
+        
+        if (Objects.isNull(user)) {
+            throw new ServiceRuntimeException("该用户不存在");
+        }
+        if (user.getIsDeleted() == 1) {
+            throw new ServiceRuntimeException("该用户已注销");
+        }
+        
+        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+        if (StringUtils.isBlank(miniprogramBindForm.getPassword())) {
+            throw new ServiceRuntimeException("密码不能为空");
+        }
+        // 小程序发送明文密码，无需解密
+        if (!encoder.matches(miniprogramBindForm.getPassword(), user.getPassword())) {
+            throw new ServiceRuntimeException("密码错误");
+        }
+        
+        // 检查该openid是否已被其他用户绑定
+        LambdaQueryWrapper<User> openidWrapper = new LambdaQueryWrapper<>();
+        openidWrapper.eq(User::getWxOpenid, openid);
+        User existingUser = userMapper.selectOne(openidWrapper);
+        if (existingUser != null && !existingUser.getId().equals(user.getId())) {
+            throw new ServiceRuntimeException("该微信已绑定其他账号");
+        }
+        
+        // 绑定微信信息
+        user.setWxOpenid(openid);
+        user.setWxSessionKey(SecretUtils.desEncrypt(sessionKey));
+        userMapper.updateById(user);
+        
+        // 生成token
+        user.setPassword(null);
+        List<String> permissions = roleMapper.selectCodeById(user.getRoleId());
+        List<SimpleGrantedAuthority> userPermissions = permissions.stream()
+                .map(permission -> new SimpleGrantedAuthority("role_" + permission)).collect(java.util.stream.Collectors.toList());
+        
+        SysUserDetails sysUserDetails = new SysUserDetails(user);
+        sysUserDetails.setPermissions(userPermissions);
+        String userInfo = objectMapper.writeValueAsString(user);
+        String token = jwtUtil.createJwt(userInfo, userPermissions.stream().map(String::valueOf).collect(java.util.stream.Collectors.toList()));
+        stringRedisTemplate.opsForValue().set("token:" + request.getSession().getId(), token, 30, TimeUnit.MINUTES);
+        
+        UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken =
+                new UsernamePasswordAuthenticationToken(sysUserDetails, user.getPassword(), userPermissions);
+        usernamePasswordAuthenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+        SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
+        
+        // 记录日志
+        String device = httpServletRequest.getHeader("User-Agent");
+        String ipRegion = Optional.ofNullable(IPUtils.getIPRegion(httpServletRequest)).orElse("暂无信息");
+        Log log = Log.builder()
+                .place(ipRegion)
+                .device(extractDeviceType(device))
+                .behavior("小程序绑定账号")
+                .userId(user.getId()).build();
+        logService.add(log);
+        
+        return Result.success("绑定成功", token);
     }
 }

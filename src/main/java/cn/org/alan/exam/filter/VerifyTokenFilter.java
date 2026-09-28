@@ -124,6 +124,8 @@ public class VerifyTokenFilter extends OncePerRequestFilter {
         String uri = request.getRequestURI();
         return uri.startsWith("/api/auths/")
                 || "/api/users/register".equals(uri)
+                || "/api/user/info".equals(uri)
+                || "/api/stat/allCounts".equals(uri)
                 || uri.startsWith("/static/")
                 || "/".equals(uri)
                 || "/favicon.png".equals(uri)
