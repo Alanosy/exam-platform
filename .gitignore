@@ -48,3 +48,8 @@ mvnw.cmd
 **/target/
 **/out/
 .DS_Store
+.idea/jarRepositories.xml
+/.idea
+.idea/jarRepositories.xml
+/.idea
+.idea/jarRepositories.xml
