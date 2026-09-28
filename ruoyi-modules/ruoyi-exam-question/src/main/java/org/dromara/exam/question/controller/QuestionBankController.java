@@ -32,7 +32,7 @@ import org.dromara.common.mybatis.core.page.TableDataInfo;
 @Validated
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/bank")
+@RequestMapping("/question/bank")
 public class QuestionBankController extends BaseController {
 
     private final IQuestionBankService questionBankService;

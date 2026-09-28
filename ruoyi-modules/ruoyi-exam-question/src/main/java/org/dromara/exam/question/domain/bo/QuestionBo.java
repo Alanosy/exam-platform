@@ -7,7 +7,10 @@ import org.dromara.common.core.validate.EditGroup;
 import io.github.linpeilie.annotations.AutoMapper;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.*;
+
+import java.util.List;
 
 /**
  * 试题主业务对象 question
@@ -66,8 +69,9 @@ public class QuestionBo extends BaseEntity {
 
     /**
      * 题目创建人ID
+     *
+     * <p>不强制前端传递，为空时由后端取当前登录用户填充
      */
-    @NotNull(message = "题目创建人ID不能为空", groups = { AddGroup.class, EditGroup.class })
     private Long createUser;
 
     /**
@@ -76,5 +80,10 @@ public class QuestionBo extends BaseEntity {
     @NotNull(message = "0草稿 1启用 2废弃不能为空", groups = { AddGroup.class, EditGroup.class })
     private Long status;
 
+    /**
+     * 选项列表，新增试题时随试题一并提交（仅客观题需要）
+     */
+    @Valid
+    private List<QuestionOptionSaveBo> options;
 
 }

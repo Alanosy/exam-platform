@@ -32,7 +32,7 @@ import org.dromara.common.mybatis.core.page.TableDataInfo;
 @Validated
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/option")
+@RequestMapping("/question/option")
 public class QuestionOptionController extends BaseController {
 
     private final IQuestionOptionService questionOptionService;

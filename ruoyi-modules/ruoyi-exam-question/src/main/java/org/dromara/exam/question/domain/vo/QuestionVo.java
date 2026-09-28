@@ -1,6 +1,8 @@
 package org.dromara.exam.question.domain.vo;
 
 import org.dromara.exam.question.domain.Question;
+import org.dromara.exam.question.domain.vo.QuestionOptionVo;
+import cn.idev.excel.annotation.ExcelIgnore;
 import cn.idev.excel.annotation.ExcelIgnoreUnannotated;
 import cn.idev.excel.annotation.ExcelProperty;
 import io.github.linpeilie.annotations.AutoMapper;
@@ -8,6 +10,7 @@ import lombok.Data;
 
 import java.io.Serial;
 import java.io.Serializable;
+import java.util.List;
 
 
 /**
@@ -84,5 +87,10 @@ public class QuestionVo implements Serializable {
     @ExcelProperty(value = "0草稿 1启用 2废弃")
     private Long status;
 
+    /**
+     * 选项列表，详情接口随试题一并返回（客观题使用）
+     */
+    @ExcelIgnore
+    private List<QuestionOptionVo> options;
 
 }

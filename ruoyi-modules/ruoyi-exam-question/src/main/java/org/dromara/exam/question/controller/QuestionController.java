@@ -81,6 +81,23 @@ public class QuestionController extends BaseController {
     }
 
     /**
+     * 新增试题（含选项）
+     *
+     * <p>试题与选项一次提交同时落库：先写 question 拿到主键，再批量写 question_option。
+     * 答案为空时由后端按选项的 isRight 反推 rightKeys。
+     *
+     * @param bo 试题主（含 options）
+     * @return 新建试题的主键ID
+     */
+    @SaCheckPermission("system:question:add")
+    @Log(title = "试题主", businessType = BusinessType.INSERT)
+    @RepeatSubmit()
+    @PostMapping("/create")
+    public R<Long> create(@Validated(AddGroup.class) @RequestBody QuestionBo bo) {
+        return R.ok("新增成功", questionService.createQuestion(bo));
+    }
+
+    /**
      * 修改试题主
      */
     @SaCheckPermission("system:question:edit")

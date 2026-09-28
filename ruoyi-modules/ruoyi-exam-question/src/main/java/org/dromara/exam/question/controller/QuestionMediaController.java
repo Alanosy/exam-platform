@@ -32,7 +32,7 @@ import org.dromara.common.mybatis.core.page.TableDataInfo;
 @Validated
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/media")
+@RequestMapping("/question/media")
 public class QuestionMediaController extends BaseController {
 
     private final IQuestionMediaService questionMediaService;

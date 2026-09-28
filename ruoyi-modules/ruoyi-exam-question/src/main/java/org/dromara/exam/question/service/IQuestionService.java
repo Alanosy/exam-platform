@@ -50,6 +50,17 @@ public interface IQuestionService {
     Boolean insertByBo(QuestionBo bo);
 
     /**
+     * 新增试题（含选项）
+     *
+     * <p>一个接口同时写入试题与选项，选项通过 {@code bo.options} 传入；
+     * 答案为空时按选项的 isRight 反推正确答案。整个过程在一个事务内完成。
+     *
+     * @param bo 试题主（含选项）
+     * @return 新建试题的主键ID
+     */
+    Long createQuestion(QuestionBo bo);
+
+    /**
      * 修改试题主
      *
      * @param bo 试题主

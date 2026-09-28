@@ -32,7 +32,7 @@ import org.dromara.common.mybatis.core.page.TableDataInfo;
 @Validated
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/tag")
+@RequestMapping("/question/tag")
 public class QuestionTagController extends BaseController {
 
     private final IQuestionTagService questionTagService;
