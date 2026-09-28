@@ -1,0 +1,80 @@
+package org.dromara.exam.question.domain.bo;
+
+import org.dromara.exam.question.domain.Question;
+import org.dromara.common.mybatis.core.domain.BaseEntity;
+import org.dromara.common.core.validate.AddGroup;
+import org.dromara.common.core.validate.EditGroup;
+import io.github.linpeilie.annotations.AutoMapper;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import jakarta.validation.constraints.*;
+
+/**
+ * 试题主业务对象 question
+ *
+ * @author LionLi
+ * @date 2026-09-28
+ */
+@Data
+@EqualsAndHashCode(callSuper = true)
+@AutoMapper(target = Question.class, reverseConvertGenerate = false)
+public class QuestionBo extends BaseEntity {
+
+    /**
+     * 主键ID
+     */
+    @NotNull(message = "主键ID不能为空", groups = { EditGroup.class })
+    private Long id;
+
+    /**
+     * 所属题库ID
+     */
+    @NotNull(message = "所属题库ID不能为空", groups = { AddGroup.class, EditGroup.class })
+    private Long bankId;
+
+    /**
+     * 题干富文本
+     */
+    @NotBlank(message = "题干富文本不能为空", groups = { AddGroup.class, EditGroup.class })
+    private String title;
+
+    /**
+     * 题型 SINGLE单选,MULTIPLE多选,JUDGE判断,BLANK填空,SHORT_ANSWER简答,ESSAY论述,CODE代码题,UPLOAD_FILE文件上传,MATCH匹配题
+     */
+    @NotBlank(message = "题型 SINGLE单选,MULTIPLE多选,JUDGE判断,BLANK填空,SHORT_ANSWER简答,ESSAY论述,CODE代码题,UPLOAD_FILE文件上传,MATCH匹配题不能为空", groups = { AddGroup.class, EditGroup.class })
+    private String questionType;
+
+    /**
+     * 难度 easy简单 medium中等 hard困难
+     */
+    private String difficulty;
+
+    /**
+     * 题目默认分值
+     */
+    private Long score;
+
+    /**
+     * 试题解析富文本
+     */
+    private String analysis;
+
+    /**
+     * 参考答案JSON，不同题型结构不同
+     */
+    private String answer;
+
+    /**
+     * 题目创建人ID
+     */
+    @NotNull(message = "题目创建人ID不能为空", groups = { AddGroup.class, EditGroup.class })
+    private Long createUser;
+
+    /**
+     * 0草稿 1启用 2废弃
+     */
+    @NotNull(message = "0草稿 1启用 2废弃不能为空", groups = { AddGroup.class, EditGroup.class })
+    private Long status;
+
+
+}
