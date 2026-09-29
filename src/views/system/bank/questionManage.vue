@@ -7,17 +7,17 @@
         </el-form-item>
         <el-form-item label="题型" prop="questionType">
           <el-select v-model="queryParams.questionType" clearable placeholder="请选择题型" class="w-[160px]">
-            <el-option v-for="item in QUESTION_TYPES" :key="item.value" :label="item.label" :value="item.value" />
+            <el-option v-for="item in questionTypeOptions" :key="item.value" :label="item.label" :value="item.value" />
           </el-select>
         </el-form-item>
         <el-form-item label="难度" prop="difficulty">
           <el-select v-model="queryParams.difficulty" clearable placeholder="请选择难度" class="w-[140px]">
-            <el-option v-for="item in DIFFICULTY_OPTIONS" :key="item.value" :label="item.label" :value="item.value" />
+            <el-option v-for="item in questionDifficultyOptions" :key="item.value" :label="item.label" :value="item.value" />
           </el-select>
         </el-form-item>
         <el-form-item label="状态" prop="status">
           <el-select v-model="queryParams.status" clearable placeholder="请选择状态" class="w-[120px]">
-            <el-option v-for="item in STATUS_OPTIONS" :key="item.value" :label="item.label" :value="item.value" />
+            <el-option v-for="item in questionStatusOptions" :key="item.value" :label="item.label" :value="item.value" />
           </el-select>
         </el-form-item>
         <el-form-item>
@@ -62,18 +62,20 @@
         </el-table-column>
         <el-table-column label="题型" align="center" prop="questionType" width="110">
           <template #default="{ row }">
-            <el-tag size="small" effect="plain">{{ getQuestionTypeLabel(row.questionType) }}</el-tag>
+            <el-tag size="small" effect="plain">{{ questionTypeLabel(row.questionType) }}</el-tag>
           </template>
         </el-table-column>
         <el-table-column label="难度" align="center" prop="difficulty" width="90">
           <template #default="{ row }">
-            <el-tag size="small" :type="difficultyTagType(row.difficulty)" effect="light">{{ getDifficultyLabel(row.difficulty) }}</el-tag>
+            <el-tag size="small" :type="questionDifficultyTagType(row.difficulty)" effect="light">{{
+              questionDifficultyLabel(row.difficulty)
+            }}</el-tag>
           </template>
         </el-table-column>
         <el-table-column label="分值" align="center" prop="score" width="80" />
         <el-table-column label="状态" align="center" prop="status" width="90">
           <template #default="{ row }">
-            <el-tag size="small" :type="statusTagType(row.status)" effect="light">{{ getStatusLabel(row.status) }}</el-tag>
+            <el-tag size="small" :type="questionStatusTagType(row.status)" effect="light">{{ questionStatusLabel(row.status) }}</el-tag>
           </template>
         </el-table-column>
         <el-table-column label="操作" align="center" fixed="right" width="140" class-name="small-padding fixed-width">
@@ -128,10 +130,22 @@ import { listQuestion, delQuestion, changeQuestionBank } from '@/api/system/ques
 import { QuestionVO, QuestionQuery } from '@/api/system/question/types';
 import { listBank } from '@/api/system/bank';
 import { BankVO } from '@/api/system/bank/types';
-import { DIFFICULTY_OPTIONS, QUESTION_TYPES, STATUS_OPTIONS, getDifficultyLabel, getQuestionTypeLabel, getStatusLabel } from '@/views/system/question/questionMeta';
+import { useQuestionDicts } from '@/views/system/question/useQuestionDict';
 
 const { proxy } = getCurrentInstance() as ComponentInternalInstance;
 const router = useRouter();
+
+// 题型 / 难度 / 状态统一走字典（question_type / question_difficulty / question_status）
+const {
+  questionTypeOptions,
+  questionDifficultyOptions,
+  questionStatusOptions,
+  questionTypeLabel,
+  questionDifficultyLabel,
+  questionStatusLabel,
+  questionDifficultyTagType,
+  questionStatusTagType
+} = useQuestionDicts();
 
 const visible = defineModel<boolean>('visible', { default: false });
 
@@ -185,19 +199,6 @@ const plainText = (html?: string): string => {
     .replace(/<[^>]*>/g, '')
     .replace(/&nbsp;/g, ' ')
     .trim();
-};
-
-const difficultyTagType = (value?: string) => {
-  if (value === 'easy') return 'success';
-  if (value === 'medium') return 'warning';
-  if (value === 'hard') return 'danger';
-  return 'info';
-};
-
-const statusTagType = (value?: number) => {
-  if (value === 1) return 'success';
-  if (value === 2) return 'info';
-  return 'warning';
 };
 
 /** 查询当前题库下的试题 */

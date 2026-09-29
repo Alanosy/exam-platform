@@ -131,7 +131,11 @@ export const getQuestionTypeLabel = (value?: string): string => {
   return getQuestionTypeMeta(value).label;
 };
 
-/** 难度 easy简单 medium中等 hard困难 */
+/**
+ * 难度 easy简单 medium中等 hard困难
+ *
+ * 仅作为 question_difficulty 字典未配置时的兜底，正常以字典为准，见 useQuestionDict.ts
+ */
 export const DIFFICULTY_OPTIONS = [
   { value: 'easy', label: '简单' },
   { value: 'medium', label: '中等' },
@@ -142,7 +146,11 @@ export const getDifficultyLabel = (value?: string): string => {
   return DIFFICULTY_OPTIONS.find((item) => item.value === value)?.label ?? value ?? '';
 };
 
-/** 状态 0草稿 1启用 2废弃 */
+/**
+ * 状态 0草稿 1启用 2废弃
+ *
+ * 仅作为 question_status 字典未配置时的兜底，正常以字典为准，见 useQuestionDict.ts
+ */
 export const STATUS_OPTIONS = [
   { value: 0, label: '草稿' },
   { value: 1, label: '启用' },
@@ -153,7 +161,11 @@ export const getStatusLabel = (value?: number): string => {
   return STATUS_OPTIONS.find((item) => item.value === value)?.label ?? String(value ?? '');
 };
 
-/** 代码题可选语言 */
+/**
+ * 代码题可选语言
+ *
+ * 仅作为 code_languages 字典未配置时的兜底，正常以字典为准，见 useQuestionDict.ts
+ */
 export const CODE_LANGUAGES = [
   { value: 'java', label: 'Java' },
   { value: 'python', label: 'Python' },

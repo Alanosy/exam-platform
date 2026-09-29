@@ -4,7 +4,7 @@
       <div class="flex items-center gap-2">
         <el-button plain icon="Back" @click="goBack">返回</el-button>
         <span class="text-[16px] font-500">{{ isEdit ? '编辑试题' : '新增试题' }}</span>
-        <el-tag v-if="meta.label" size="small" effect="plain">{{ meta.label }}</el-tag>
+        <el-tag v-if="questionTypeLabel(form.questionType)" size="small" effect="plain">{{ questionTypeLabel(form.questionType) }}</el-tag>
       </div>
       <div class="flex items-center gap-2">
         <el-button plain @click="submitForm(0)">存为草稿</el-button>
@@ -21,7 +21,7 @@
           <el-col :span="6">
             <el-form-item label="题型" prop="questionType">
               <el-select v-model="form.questionType" placeholder="请选择题型" class="w-full" @change="handleTypeChange">
-                <el-option v-for="item in QUESTION_TYPES" :key="item.value" :label="item.label" :value="item.value" />
+                <el-option v-for="item in questionTypeOptions" :key="item.value" :label="item.label" :value="item.value" />
               </el-select>
             </el-form-item>
           </el-col>
@@ -35,7 +35,7 @@
           <el-col :span="6">
             <el-form-item label="难度" prop="difficulty">
               <el-select v-model="form.difficulty" placeholder="请选择难度" class="w-full">
-                <el-option v-for="item in DIFFICULTY_OPTIONS" :key="item.value" :label="item.label" :value="item.value" />
+                <el-option v-for="item in questionDifficultyOptions" :key="item.value" :label="item.label" :value="item.value" />
               </el-select>
             </el-form-item>
           </el-col>
@@ -47,7 +47,7 @@
         </el-row>
         <el-form-item label="状态">
           <el-radio-group v-model="form.status">
-            <el-radio v-for="item in STATUS_OPTIONS" :key="item.value" :value="item.value">{{ item.label }}</el-radio>
+            <el-radio v-for="item in questionStatusOptions" :key="item.value" :value="item.value">{{ item.label }}</el-radio>
           </el-radio-group>
         </el-form-item>
       </el-form>
@@ -138,7 +138,7 @@
         <el-form label-width="96px" class="mb-[12px]">
           <el-form-item label="编程语言">
             <el-select v-model="codeForm.language" filterable allow-create placeholder="选择或输入语言" class="w-[240px]">
-              <el-option v-for="item in CODE_LANGUAGES" :key="item.value" :label="item.label" :value="item.value" />
+              <el-option v-for="item in codeLanguageOptions" :key="item.value" :label="item.label" :value="item.value" />
             </el-select>
           </el-form-item>
           <el-form-item label="参考实现">
@@ -183,17 +183,8 @@ import { listOption } from '@/api/system/option';
 import { OptionVO } from '@/api/system/option/types';
 import { listBank } from '@/api/system/bank';
 import { BankVO } from '@/api/system/bank/types';
-import {
-  CODE_LANGUAGES,
-  DIFFICULTY_OPTIONS,
-  QUESTION_TYPES,
-  STATUS_OPTIONS,
-  getQuestionTypeMeta,
-  optionKeyOf,
-  parseAnswer,
-  QuestionAnswerPayload,
-  QuestionTypeMeta
-} from './questionMeta';
+import { getQuestionTypeMeta, optionKeyOf, parseAnswer, QuestionAnswerPayload, QuestionTypeMeta } from './questionMeta';
+import { useQuestionDicts } from './useQuestionDict';
 
 /**
  * 列表页路由地址，需要与后台「试题管理」菜单的路由地址保持一致
@@ -203,6 +194,9 @@ const QUESTION_LIST_PATH = '/system/question';
 const { proxy } = getCurrentInstance() as ComponentInternalInstance;
 const route = useRoute();
 const router = useRouter();
+
+// 题型 / 难度 / 状态 / 代码语言统一走字典，字典加载完成后页面自动刷新
+const { questionTypeOptions, questionDifficultyOptions, questionStatusOptions, codeLanguageOptions, questionTypeLabel } = useQuestionDicts();
 
 /** 路由上的试题ID，为空表示新增 */
 const questionId = computed<string | undefined>(() => (route.params.questionId as string) || undefined);
@@ -250,6 +244,9 @@ const pairRows = ref<Array<{ left: string; right: string }>>([]);
 const answerText = ref('');
 const codeForm = reactive({ language: '', answer: '', remark: '' });
 
+/** 代码题默认语言：取字典第一项，字典没配时回退 java */
+const defaultLanguage = computed(() => String(codeLanguageOptions.value[0]?.value ?? 'java'));
+
 const answerCardTitleMap: Record<string, string> = {
   option: '选项与正确答案',
   blank: '填空参考答案',
@@ -290,7 +287,7 @@ const initAnswerArea = () => {
   } else if (mode === 'pairs') {
     pairRows.value = defaultPairRows();
   } else if (mode === 'code') {
-    if (!codeForm.language) codeForm.language = 'java';
+    if (!codeForm.language) codeForm.language = defaultLanguage.value;
   }
 };
 
@@ -388,7 +385,7 @@ const handleTypeChange = (value: string) => {
   }
   if (hasAnswerContent(prev)) {
     proxy?.$modal
-      .confirm(`切换为「${next.label}」会清空当前已录入的答案内容，是否继续？`)
+      .confirm(`切换为「${questionTypeLabel(value)}」会清空当前已录入的答案内容，是否继续？`)
       .then(() => {
         form.questionType = value;
         applyTypeChange(prev, next);
@@ -440,7 +437,7 @@ const restoreAnswer = (answerStr?: string, options: QuestionOption[] = []) => {
       answerText.value = answer?.answer ?? '';
       break;
     case 'code':
-      codeForm.language = answer?.language ?? 'java';
+      codeForm.language = answer?.language ?? defaultLanguage.value;
       codeForm.answer = answer?.answer ?? '';
       codeForm.remark = answer?.remark ?? '';
       break;
