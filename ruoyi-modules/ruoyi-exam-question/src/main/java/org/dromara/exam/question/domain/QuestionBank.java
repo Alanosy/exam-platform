@@ -43,6 +43,11 @@ public class QuestionBank extends TenantEntity {
     private Long creatorId;
 
     /**
+     * 所属分类ID（question_bank_category.id）
+     */
+    private Long categoryId;
+
+    /**
      * 可见性 private私有 / public公开
      */
     private String visibility;
@@ -50,7 +55,7 @@ public class QuestionBank extends TenantEntity {
     /**
      * 状态 0草稿 1正常 2归档
      */
-    private Long status;
+    private String  status;
 
     /**
      * 逻辑删除 0未删 1已删

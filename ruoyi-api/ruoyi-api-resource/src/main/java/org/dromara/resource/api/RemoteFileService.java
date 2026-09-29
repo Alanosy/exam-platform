@@ -35,4 +35,15 @@ public interface RemoteFileService {
      * @return 列表
      */
     List<RemoteFile> selectByIds(String ossIds);
+
+    /**
+     * 按文件访问地址物理删除对象存储文件
+     *
+     * <p>只有业务侧确认该文件已无人引用（如试题已删除、富文本里的图片已被移除）时才调用，
+     * 删除时会同时清理桶里的对象和 sys_oss 表记录。
+     *
+     * @param urls 文件访问地址集合
+     * @return 实际删除的文件数量
+     */
+    Integer deleteByUrls(List<String> urls);
 }

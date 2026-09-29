@@ -1,5 +1,6 @@
 package org.dromara.resource.dubbo;
 
+import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.convert.Convert;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -20,6 +21,7 @@ import org.dromara.resource.service.ISysOssService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -92,5 +94,36 @@ public class RemoteFileServiceImpl implements RemoteFileService {
     public List<RemoteFile> selectByIds(String ossIds){
         List<SysOssVo> sysOssVos = sysOssService.listByIds(StringUtils.splitTo(ossIds, Convert::toLong));
         return MapstructUtils.convert(sysOssVos, RemoteFile.class);
+    }
+
+    /**
+     * 按文件访问地址物理删除对象存储文件
+     *
+     * @param urls 文件访问地址集合
+     * @return 实际删除的文件数量
+     */
+    @Transactional(rollbackFor = Exception.class)
+    @Override
+    public Integer deleteByUrls(List<String> urls) {
+        if (CollUtil.isEmpty(urls)) {
+            return 0;
+        }
+        List<SysOssVo> list = sysOssService.listByUrls(urls);
+        if (CollUtil.isEmpty(list)) {
+            return 0;
+        }
+        List<Long> ossIds = new ArrayList<>();
+        for (SysOssVo vo : list) {
+            OssClient storage = OssFactory.instance(vo.getService());
+            try {
+                storage.delete(vo.getUrl());
+            } catch (Exception e) {
+                // 桶里的对象已不存在时不应中断整批清理
+                log.warn("删除对象存储文件失败 url={}, {}", vo.getUrl(), e.getMessage());
+            }
+            ossIds.add(vo.getOssId());
+        }
+        sysOssService.deleteWithValidByIds(ossIds, false);
+        return ossIds.size();
     }
 }
