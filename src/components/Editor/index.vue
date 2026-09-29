@@ -46,6 +46,8 @@ const props = defineProps({
   readOnly: propTypes.bool.def(false),
   /* 上传文件大小限制(MB) */
   fileSize: propTypes.number.def(5),
+  /* 插入图片时的默认最大宽度(px)，超出则按原始比例等比缩小；0 表示不限制 */
+  imageMaxWidth: propTypes.number.def(480),
   /* 类型（base64格式、url格式） */
   type: propTypes.string.def('url'),
   /* 精简工具栏，用于行内、小面积录入（如试题选项） */
@@ -206,18 +208,44 @@ onMounted(() => {
   nextTick(() => applyContent(props.modelValue));
 });
 
+/** 读原图真实尺寸，用于等比换算；取不到（跨域/格式异常）时按不缩放处理 */
+const loadImageSize = (url: string): Promise<{ width: number; height: number } | null> =>
+  new Promise((resolve) => {
+    const img = new Image();
+    img.onload = () => resolve({ width: img.naturalWidth, height: img.naturalHeight });
+    img.onerror = () => resolve(null);
+    img.src = url;
+  });
+
+/**
+ * 插入图片并按默认最大宽度等比缩放
+ *
+ * quill 的 image blot 支持 width / height 属性，通过 formatText 写进去会落到文档模型里，
+ * 随 root.innerHTML 一起保存；只在原图比上限宽时才缩，小图不会被放大。
+ */
+const insertImage = async (url: string) => {
+  const quill = toRaw(quillEditorRef.value).getQuill();
+  // 获取光标位置
+  const length = quill.selection.savedRange.index;
+  // 插入图片，res为服务器返回的图片链接地址
+  quill.insertEmbed(length, 'image', url);
+
+  const size = await loadImageSize(url);
+  if (size && props.imageMaxWidth > 0 && size.width > props.imageMaxWidth) {
+    const width = props.imageMaxWidth;
+    const height = Math.max(1, Math.round((size.height * width) / size.width));
+    quill.formatText(length, 1, 'width', String(width), 'user');
+    quill.formatText(length, 1, 'height', String(height), 'user');
+  }
+  // 调整光标到最后
+  quill.setSelection(length + 1);
+};
+
 // 图片上传成功返回图片地址
-const handleUploadSuccess = (res: any) => {
+const handleUploadSuccess = async (res: any) => {
   // 如果上传成功
   if (res.code === 200) {
-    // 获取富文本实例
-    const quill = toRaw(quillEditorRef.value).getQuill();
-    // 获取光标位置
-    const length = quill.selection.savedRange.index;
-    // 插入图片，res为服务器返回的图片链接地址
-    quill.insertEmbed(length, 'image', res.data.url);
-    // 调整光标到最后
-    quill.setSelection(length + 1);
+    await insertImage(res.data.url);
     // 通知业务侧：本图片已上传成功，可登记到媒体表，避免弃稿后变成孤儿文件
     emit('uploadSuccess', { mediaType: 'image', mediaUrl: res.data.url, mediaName: res.data.fileName, ossId: res.data.ossId });
     proxy?.$modal.closeLoading();
@@ -257,6 +285,12 @@ const handleUploadError = (err: any) => {
 <style>
 .editor-img-uploader {
   display: none;
+}
+/* 编辑器内的图片宽度不超过编辑区，高度按比例自适应，避免原图把版面撑破 */
+.ql-editor img {
+  max-width: 100%;
+  height: auto;
+  cursor: pointer;
 }
 .editor,
 .ql-toolbar {

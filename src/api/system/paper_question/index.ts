@@ -1,6 +1,6 @@
 import request from '@/utils/request';
 import { AxiosPromise } from 'axios';
-import { QuestionVO, QuestionForm, QuestionQuery } from '@/api/system/question/types';
+import { QuestionVO, QuestionForm, QuestionQuery } from '@/api/paper/question/types';
 
 /**
  * 查询试卷-试题中间列表
@@ -10,7 +10,7 @@ import { QuestionVO, QuestionForm, QuestionQuery } from '@/api/system/question/t
 
 export const listQuestion = (query?: QuestionQuery): AxiosPromise<QuestionVO[]> => {
   return request({
-    url: '/system/question/list',
+    url: '/paper/question/list',
     method: 'get',
     params: query
   });
@@ -22,7 +22,7 @@ export const listQuestion = (query?: QuestionQuery): AxiosPromise<QuestionVO[]> 
  */
 export const getQuestion = (id: string | number): AxiosPromise<QuestionVO> => {
   return request({
-    url: '/system/question/' + id,
+    url: '/paper/question/' + id,
     method: 'get'
   });
 };
@@ -33,7 +33,7 @@ export const getQuestion = (id: string | number): AxiosPromise<QuestionVO> => {
  */
 export const addQuestion = (data: QuestionForm) => {
   return request({
-    url: '/system/question',
+    url: '/paper/question',
     method: 'post',
     data: data
   });
@@ -45,7 +45,7 @@ export const addQuestion = (data: QuestionForm) => {
  */
 export const updateQuestion = (data: QuestionForm) => {
   return request({
-    url: '/system/question',
+    url: '/paper/question',
     method: 'put',
     data: data
   });
@@ -57,7 +57,7 @@ export const updateQuestion = (data: QuestionForm) => {
  */
 export const delQuestion = (id: string | number | Array<string | number>) => {
   return request({
-    url: '/system/question/' + id,
+    url: '/paper/question/' + id,
     method: 'delete'
   });
 };

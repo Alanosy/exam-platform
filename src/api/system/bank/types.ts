@@ -20,7 +20,7 @@ export interface BankVO {
   creatorId: string | number;
 
   /**
-   * 创建人名称（后端由 creatorId 翻译）
+   * 创建人昵称（后端由 creatorId 翻译，与试卷/考试模块一致）
    */
   creatorName: string;
 
@@ -43,7 +43,6 @@ export interface BankVO {
    * 状态 0草稿 1正常 2归档
    */
   status: number;
-
 }
 
 export interface BankForm extends BaseEntity {
@@ -81,11 +80,9 @@ export interface BankForm extends BaseEntity {
    * 所属分类ID
    */
   categoryId?: string | number;
-
 }
 
 export interface BankQuery extends PageQuery {
-
   /**
    * 题库名称
    */
@@ -121,6 +118,3 @@ export interface BankQuery extends PageQuery {
    */
   params?: any;
 }
-
-
-

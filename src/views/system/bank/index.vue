@@ -80,7 +80,11 @@
             <span>{{ row.categoryName || '-' }}</span>
           </template>
         </el-table-column>
-        <el-table-column label="创建人" align="center" prop="creatorName" show-overflow-tooltip />
+        <el-table-column label="创建人" align="center" prop="creatorName" width="120" show-overflow-tooltip>
+          <template #default="scope">
+            <span>{{ scope.row.creatorName || scope.row.creatorId || '-' }}</span>
+          </template>
+        </el-table-column>
         <el-table-column label="可见性" align="center" prop="visibility">
           <template #default="scope">
             <dict-tag :options="bank_visibility_type" :value="scope.row.visibility" />

@@ -106,6 +106,40 @@ export const constantRoutes: RouteRecordRaw[] = [
         meta: { title: '试题编辑', activeMenu: '/system/question', noCache: true }
       }
     ]
+  },
+  {
+    // 试卷组卷整页（新增 / 编辑复用同一个页面）
+    // activeMenu 指向后台「试卷管理」菜单的路由地址，需要与实际菜单保持一致
+    path: '/system/paper/edit/:paperId?',
+    component: Layout,
+    hidden: true,
+    redirect: 'noRedirect',
+    children: [
+      {
+        path: '',
+        component: () => import('@/views/system/paper/edit/index.vue'),
+        name: 'PaperEdit',
+        // noCache：不进 keep-alive 缓存，避免新增时残留上一份试卷的录入内容
+        meta: { title: '试卷组卷', activeMenu: '/system/paper', noCache: true }
+      }
+    ]
+  },
+  {
+    // 考试配置整页（新增 / 编辑复用同一个页面）
+    // activeMenu 指向后台「考试管理」菜单的路由地址，需要与实际菜单保持一致
+    path: '/system/exam/edit/:examId?',
+    component: Layout,
+    hidden: true,
+    redirect: 'noRedirect',
+    children: [
+      {
+        path: '',
+        component: () => import('@/views/system/exam/edit/index.vue'),
+        name: 'ExamEdit',
+        // noCache：不进 keep-alive 缓存，避免新增时残留上一场考试的配置
+        meta: { title: '考试配置', activeMenu: '/system/exam', noCache: true }
+      }
+    ]
   }
 ];
 
