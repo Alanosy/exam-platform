@@ -73,7 +73,7 @@
                   <span>{{ proxy.parseTime(scope.row.createTime) }}</span>
                 </template>
               </el-table-column>
-              <el-table-column label="操作" fixed="right" align="center" width="120" class-name="small-padding fixed-width">
+              <el-table-column label="操作" fixed="right" align="center" min-width="120" class-name="small-padding fixed-width">
                 <template #default="scope">
                   <el-tooltip content="修改" placement="top">
                     <el-button v-hasPermi="['system:dict:edit']" link type="primary" icon="Edit" @click="handleTypeUpdate(scope.row)"></el-button>
@@ -158,7 +158,7 @@
             <el-table v-loading="dataLoading" border :data="dataList" @selection-change="handleDataSelectionChange">
               <el-table-column type="selection" width="55" align="center" />
               <el-table-column v-if="false" label="字典编码" align="center" prop="dictCode" />
-              <el-table-column label="字典标签" align="center" prop="dictLabel" width="80">
+              <el-table-column label="字典标签" align="center" prop="dictLabel" min-width="80">
                 <template #default="scope">
                   <span
                     v-if="
@@ -182,7 +182,7 @@
                   <span>{{ proxy.parseTime(scope.row.createTime) }}</span>
                 </template>
               </el-table-column>
-              <el-table-column label="操作" fixed="right" align="center" width="120" class-name="small-padding fixed-width">
+              <el-table-column label="操作" fixed="right" align="center" min-width="120" class-name="small-padding fixed-width">
                 <template #default="scope">
                   <el-tooltip content="修改" placement="top">
                     <el-button v-hasPermi="['system:dict:edit']" link type="primary" icon="Edit" @click="handleDataUpdate(scope.row)"></el-button>

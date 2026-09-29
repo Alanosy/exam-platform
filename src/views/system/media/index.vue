@@ -40,6 +40,9 @@
           <el-col :span="1.5">
             <el-button type="warning" plain icon="Download" @click="handleExport" v-hasPermi="['system:media:export']">导出</el-button>
           </el-col>
+          <el-col :span="1.5">
+            <el-button type="info" plain icon="DeleteFilled" @click="handleCleanUnused" v-hasPermi="['system:media:remove']">清理孤儿附件</el-button>
+          </el-col>
           <right-toolbar v-model:showSearch="showSearch" @queryTable="getList"></right-toolbar>
         </el-row>
       </template>
@@ -93,7 +96,7 @@
 </template>
 
 <script setup name="Media" lang="ts">
-import { listMedia, getMedia, delMedia, addMedia, updateMedia } from '@/api/system/media';
+import { listMedia, getMedia, delMedia, addMedia, updateMedia, cleanUnusedMedia } from '@/api/system/media';
 import { MediaVO, MediaQuery, MediaForm } from '@/api/system/media/types';
 
 const { proxy } = getCurrentInstance() as ComponentInternalInstance;
@@ -243,9 +246,18 @@ const handleDelete = async (row?: MediaVO) => {
   await getList();
 }
 
+/** 清理孤儿附件（上传后长时间没落到任何试题上的文件） */
+const handleCleanUnused = async () => {
+  await proxy?.$modal.confirm('确认清理 24 小时前上传、且至今未归属任何试题的附件？文件会从对象存储删除，不可恢复。');
+  const res = await cleanUnusedMedia(24);
+  proxy?.$modal.msgSuccess(`清理完成，共 ${res.data ?? 0} 条`);
+  await getList();
+};
+
 /** 导出按钮操作 */
 const handleExport = () => {
-  proxy?.download('system/media/export', {
+  // 网关只转发 /question/** ，system 前缀会打到 system 服务上导致 404
+  proxy?.download('question/media/export', {
     ...queryParams.value
   }, `media_${new Date().getTime()}.xlsx`)
 }

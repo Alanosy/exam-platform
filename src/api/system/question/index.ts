@@ -67,6 +67,20 @@ export const updateQuestion = (data: QuestionForm) => {
 };
 
 /**
+ * 批量切换试题所属题库
+ * @param ids 试题主键集合
+ * @param bankId 目标题库ID
+ */
+export const changeQuestionBank = (ids: Array<string | number>, bankId: string | number) => {
+  return request({
+    url: '/question/changeBank',
+    method: 'put',
+    params: { bankId },
+    data: ids
+  });
+};
+
+/**
  * 删除试题主
  * @param id
  */

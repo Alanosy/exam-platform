@@ -39,6 +39,31 @@ export interface QuestionOption {
   isRight?: boolean;
 }
 
+/**
+ * 随试题一并提交的媒体附件（由富文本里的图片/音视频解析而来）
+ */
+export interface QuestionMediaSave {
+  /**
+   * 附件类型 image图片 / audio音频 / video视频
+   */
+  mediaType: string;
+
+  /**
+   * 资源访问地址
+   */
+  mediaUrl: string;
+
+  /**
+   * 原始文件名
+   */
+  mediaName?: string;
+
+  /**
+   * 展示顺序
+   */
+  sort?: number;
+}
+
 export interface QuestionVO {
   /**
    * 主键ID
@@ -49,6 +74,11 @@ export interface QuestionVO {
    * 所属题库ID
    */
   bankId: string | number;
+
+  /**
+   * 所属题库名称（后端由 bankId 翻译）
+   */
+  bankName?: string;
 
   /**
    * 题干富文本
@@ -151,6 +181,14 @@ export interface QuestionForm extends BaseEntity {
    * 选项列表，新增/修改时随试题一并提交
    */
   options?: QuestionOption[];
+
+  /**
+   * 媒体附件列表，新增/修改时随试题一并提交
+   *
+   * 由题库 / 选项 / 解析富文本中的图片与音视频解析而来，
+   * 后端据此维护 question_media，并建立与对象存储文件的引用关系。
+   */
+  medias?: QuestionMediaSave[];
 }
 
 export interface QuestionQuery extends PageQuery {

@@ -58,7 +58,13 @@
         <span class="mr-2">题干</span>
         <el-text type="danger" size="small">*</el-text>
       </template>
-      <editor v-model="form.title" :height="240" :min-height="200" placeholder="请输入题干内容，支持富文本与图片" />
+      <editor
+        v-model="form.title"
+        :height="240"
+        :min-height="200"
+        placeholder="请输入题干内容，支持富文本与图片"
+        @upload-success="handleMediaUpload"
+      />
     </el-card>
 
     <el-card shadow="never" class="mb-[12px]">
@@ -84,6 +90,7 @@
               :min-height="80"
               :read-only="!!meta.fixedOptions"
               placeholder="请输入选项内容"
+              @upload-success="handleMediaUpload"
             />
           </div>
           <div class="flex items-center gap-1 shrink-0 pt-[8px]">
@@ -123,7 +130,7 @@
 
       <!-- 简答 / 论述 / 文件上传：参考答案富文本 -->
       <template v-else-if="meta.answerMode === 'text'">
-        <editor v-model="answerText" :height="240" :min-height="180" placeholder="请输入参考答案" />
+        <editor v-model="answerText" :height="240" :min-height="180" placeholder="请输入参考答案" @upload-success="handleMediaUpload" />
       </template>
 
       <!-- 代码题：语言 + 参考实现 -->
@@ -160,7 +167,7 @@
       <template #header>
         <span>试题解析</span>
       </template>
-      <editor v-model="form.analysis" :height="220" :min-height="180" placeholder="请输入整题解析，支持富文本" />
+      <editor v-model="form.analysis" :height="220" :min-height="180" placeholder="请输入整题解析，支持富文本" @upload-success="handleMediaUpload" />
     </el-card>
   </div>
 </template>
@@ -170,7 +177,8 @@ import { useRoute, useRouter } from 'vue-router';
 import type { FormRules } from 'element-plus';
 import Editor from '@/components/Editor/index.vue';
 import { createQuestion, getQuestion, updateQuestion } from '@/api/system/question';
-import { QuestionForm, QuestionOption, QuestionVO } from '@/api/system/question/types';
+import { QuestionForm, QuestionOption, QuestionVO, QuestionMediaSave } from '@/api/system/question/types';
+import { draftMedia } from '@/api/system/media';
 import { listOption } from '@/api/system/option';
 import { OptionVO } from '@/api/system/option/types';
 import { listBank } from '@/api/system/bank';
@@ -206,7 +214,8 @@ const bankList = ref<BankVO[]>([]);
 
 const form = reactive<QuestionForm>({
   id: undefined,
-  bankId: undefined,
+  // 支持从题库管理页进入时带上默认题库：/system/question/edit?bankId=xx
+  bankId: (route.query.bankId as string) || undefined,
   title: '',
   questionType: 'SINGLE',
   difficulty: 'easy',
@@ -452,6 +461,13 @@ const loadBankList = async () => {
   }
 };
 
+/** 保证当前题库一定在下拉选项中，避免修改时只回显一个裸 id */
+const ensureBankOption = (id?: string | number, name?: string) => {
+  if (id === undefined || id === null || id === '') return;
+  if (bankList.value.some((item) => String(item.id) === String(id))) return;
+  bankList.value = [{ id, bankName: name || `题库 ${id}` } as BankVO, ...bankList.value];
+};
+
 const loadDetail = async (id: string | number) => {
   const res = await getQuestion(id);
   const data = res.data as QuestionVO;
@@ -483,6 +499,7 @@ const loadDetail = async (id: string | number) => {
     }
   }
   restoreAnswer(data.answer, options);
+  ensureBankOption(data.bankId, data.bankName);
 };
 
 /* ------------------------------------ 提交 ------------------------------------ */
@@ -545,6 +562,57 @@ const validateForm = async (): Promise<boolean> => {
   }
 };
 
+/* ---------------------------- 富文本媒体附件 ---------------------------- */
+
+/** 富文本上传成功后立即登记一条草稿记录，避免放弃编辑后文件变成孤儿 */
+const handleMediaUpload = async (media: QuestionMediaSave) => {
+  try {
+    await draftMedia({ mediaType: media.mediaType, mediaUrl: media.mediaUrl, mediaName: media.mediaName });
+  } catch {
+    // 登记失败不影响写题本身，只是少了这条孤儿回收依据
+  }
+};
+
+/** 从 url 里取原始文件名 */
+const fileNameFromUrl = (url: string): string => {
+  try {
+    const clean = url.split('?')[0];
+    return decodeURIComponent(clean.substring(clean.lastIndexOf('/') + 1));
+  } catch {
+    return url;
+  }
+};
+
+/**
+ * 解析本次提交的富文本里所有图片 / 音视频地址
+ *
+ * 题干、选项、解析、参考答案四处都会用到富文本，全部扫一遍按地址去重，
+ * 交给后端写入 question_media，建立试题与对象存储文件的引用关系。
+ */
+const buildMedias = (): QuestionMediaSave[] => {
+  const htmlList: string[] = [form.title ?? '', form.analysis ?? ''];
+  optionRows.value.forEach((row) => htmlList.push(row.content));
+  if (meta.value.answerMode === 'text') {
+    htmlList.push(answerText.value);
+  }
+
+  const medias: QuestionMediaSave[] = [];
+  const seen = new Set<string>();
+  htmlList.forEach((html) => {
+    if (!html) return;
+    const doc = new DOMParser().parseFromString(html, 'text/html');
+    doc.querySelectorAll('img, video, audio, source').forEach((el) => {
+      const src = el.getAttribute('src');
+      if (!src || seen.has(src)) return;
+      seen.add(src);
+      const tag = el.tagName.toLowerCase();
+      const mediaType = tag === 'img' ? 'image' : tag === 'audio' ? 'audio' : 'video';
+      medias.push({ mediaType, mediaUrl: src, mediaName: fileNameFromUrl(src), sort: medias.length + 1 });
+    });
+  });
+  return medias;
+};
+
 const submitForm = async (status?: number) => {
   if (!stripHtml(form.title)) {
     proxy?.$modal.msgError('题干不能为空');
@@ -573,6 +641,8 @@ const submitForm = async (status?: number) => {
         }))
       : []
   };
+  // 富文本里的图片 / 音视频一并提交，后端据此维护 question_media
+  payload.medias = buildMedias();
 
   buttonLoading.value = true;
   try {

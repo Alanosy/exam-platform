@@ -61,10 +61,10 @@
 
       <el-table v-loading="loading" border :data="questionList" @selection-change="handleSelectionChange">
         <el-table-column type="selection" width="55" align="center" />
-        <el-table-column label="主键ID" align="center" prop="id" v-if="true" width="90" />
+        <el-table-column label="序号" align="center" width="60" type="index" :index="indexMethod" />
         <el-table-column label="所属题库" align="center" prop="bankId" min-width="140">
           <template #default="{ row }">
-            <span>{{ bankNameMap[row.bankId] ?? row.bankId }}</span>
+            <span>{{ row.bankName || bankNameMap[row.bankId] || row.bankId }}</span>
           </template>
         </el-table-column>
         <el-table-column label="题干" prop="title" min-width="260" show-overflow-tooltip>
@@ -137,6 +137,11 @@ const queryParams = ref<QuestionQuery>({
   status: undefined,
   params: {}
 });
+
+/** 表格序号（跨页连续自增） */
+const indexMethod = (index: number) => {
+  return (queryParams.value.pageNum - 1) * queryParams.value.pageSize + index + 1;
+};
 
 const bankNameMap = computed<Record<string, string>>(() => {
   const map: Record<string, string> = {};

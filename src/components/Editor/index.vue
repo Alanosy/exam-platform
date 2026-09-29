@@ -33,7 +33,7 @@ import { QuillEditor, Quill } from '@vueup/vue-quill';
 import { propTypes } from '@/utils/propTypes';
 import { globalHeaders } from '@/utils/request';
 
-defineEmits(['update:modelValue']);
+const emit = defineEmits(['update:modelValue', 'uploadSuccess']);
 
 const props = defineProps({
   /* 编辑器的内容 */
@@ -146,6 +146,8 @@ const handleUploadSuccess = (res: any) => {
     quill.insertEmbed(length, 'image', res.data.url);
     // 调整光标到最后
     quill.setSelection(length + 1);
+    // 通知业务侧：本图片已上传成功，可登记到媒体表，避免弃稿后变成孤儿文件
+    emit('uploadSuccess', { mediaType: 'image', mediaUrl: res.data.url, mediaName: res.data.fileName, ossId: res.data.ossId });
     proxy?.$modal.closeLoading();
   } else {
     proxy?.$modal.msgError('图片插入失败');

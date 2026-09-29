@@ -61,3 +61,31 @@ export const delMedia = (id: string | number | Array<string | number>) => {
     method: 'delete'
   });
 };
+
+/**
+ * 登记一笔尚未挂到试题上的上传记录
+ *
+ * 富文本里插入图片时文件已经进了对象存储，但试题可能还没保存。
+ * 这里先落一条 questionId 为空的记录，试题保存时回填；
+ * 始终没回填的由后端清理任务按保留时长回收（连同对象存储里的文件）。
+ * @param data 媒体附件信息
+ */
+export const draftMedia = (data: { mediaType: string; mediaUrl: string; mediaName?: string }) => {
+  return request({
+    url: '/question/media/draft',
+    method: 'post',
+    data: data
+  });
+};
+
+/**
+ * 清理长时间未挂到任何试题上的媒体附件与对象存储文件
+ * @param retainHours 保留时长（小时），默认 24
+ */
+export const cleanUnusedMedia = (retainHours?: number) => {
+  return request({
+    url: '/question/media/cleanUnused',
+    method: 'post',
+    params: { retainHours }
+  });
+};

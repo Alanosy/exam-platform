@@ -7,14 +7,33 @@
             <el-form-item label="题库名称" prop="bankName">
               <el-input v-model="queryParams.bankName" placeholder="请输入题库名称" clearable @keyup.enter="handleQuery" />
             </el-form-item>
-            <el-form-item label="题库描述" prop="bankDesc">
+            <!-- <el-form-item label="题库描述" prop="bankDesc">
               <el-input v-model="queryParams.bankDesc" placeholder="请输入题库描述" clearable @keyup.enter="handleQuery" />
-            </el-form-item>
-            <el-form-item label="创建人" prop="creatorId">
-              <el-input v-model="queryParams.creatorId" placeholder="请输入创建人用户ID" clearable @keyup.enter="handleQuery" />
-            </el-form-item>
+            </el-form-item> -->
+            <!-- <el-form-item label="创建人" prop="creatorId">
+              <el-input v-model="queryParams.creatorId" placeholder="按创建人用户ID筛选" clearable @keyup.enter="handleQuery" />
+            </el-form-item> -->
             <el-form-item label="可见性" prop="visibility">
-              <el-input v-model="queryParams.visibility" placeholder="请输入可见性 private私有 / public公开" clearable @keyup.enter="handleQuery" />
+              <el-select v-model="queryParams.visibility" placeholder="请选择可见性" clearable>
+                <el-option v-for="dict in bank_visibility_type" :key="dict.value" :label="dict.label" :value="dict.value" />
+              </el-select>
+            </el-form-item>
+            <el-form-item label="状态" prop="status">
+              <el-select v-model="queryParams.status" placeholder="请选择状态" clearable>
+                <el-option v-for="dict in bank_status" :key="dict.value" :label="dict.label" :value="dict.value" />
+              </el-select>
+            </el-form-item>
+            <el-form-item label="题库分类" prop="categoryId">
+              <el-tree-select
+                v-model="queryParams.categoryId"
+                :data="bankCategoryOptions"
+                :props="{ value: 'id', label: 'categoryName', children: 'children' } as any"
+                value-key="id"
+                placeholder="请选择题库分类"
+                check-strictly
+                clearable
+                class="w-[200px]"
+              />
             </el-form-item>
             <el-form-item>
               <el-button type="primary" icon="Search" @click="handleQuery">搜索</el-button>
@@ -42,22 +61,43 @@
           <el-col :span="1.5">
             <el-button type="warning" plain icon="Download" @click="handleExport" v-hasPermi="['system:bank:export']">导出</el-button>
           </el-col>
+          <el-col :span="1.5">
+            <el-button type="info" plain icon="Management" :disabled="single" @click="handleManage()" v-hasPermi="['system:question:list']"
+              >管理试题</el-button
+            >
+          </el-col>
           <right-toolbar v-model:showSearch="showSearch" @queryTable="getList"></right-toolbar>
         </el-row>
       </template>
 
       <el-table v-loading="loading" border :data="bankList" @selection-change="handleSelectionChange">
         <el-table-column type="selection" width="55" align="center" />
-        <el-table-column label="主键" align="center" prop="id" v-if="true" />
+        <el-table-column label="序号" align="center" width="60" type="index" :index="indexMethod" />
         <el-table-column label="题库名称" align="center" prop="bankName" />
-        <el-table-column label="题库描述" align="center" prop="bankDesc" />
-        <el-table-column label="创建人" align="center" prop="creatorId" />
-        <el-table-column label="可见性" align="center" prop="visibility" />
-        <el-table-column label="状态" align="center" prop="status" />
+        <el-table-column label="题库描述" align="center" prop="bankDesc" show-overflow-tooltip />
+        <el-table-column label="题库分类" align="center" prop="categoryName" min-width="120">
+          <template #default="{ row }">
+            <span>{{ row.categoryName || '-' }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="创建人" align="center" prop="creatorName" show-overflow-tooltip />
+        <el-table-column label="可见性" align="center" prop="visibility">
+          <template #default="scope">
+            <dict-tag :options="bank_visibility_type" :value="scope.row.visibility" />
+          </template>
+        </el-table-column>
+        <el-table-column label="状态" align="center" prop="status">
+          <template #default="scope">
+            <dict-tag :options="bank_status" :value="scope.row.status" />
+          </template>
+        </el-table-column>
         <el-table-column label="操作" align="center" fixed="right" class-name="small-padding fixed-width">
           <template #default="scope">
             <el-tooltip content="修改" placement="top">
               <el-button link type="primary" icon="Edit" @click="handleUpdate(scope.row)" v-hasPermi="['system:bank:edit']"></el-button>
+            </el-tooltip>
+            <el-tooltip content="管理试题" placement="top">
+              <el-button link type="primary" icon="Management" @click="handleManage(scope.row)" v-hasPermi="['system:question:list']"></el-button>
             </el-tooltip>
             <el-tooltip content="删除" placement="top">
               <el-button link type="primary" icon="Delete" @click="handleDelete(scope.row)" v-hasPermi="['system:bank:remove']"></el-button>
@@ -77,14 +117,27 @@
         <el-form-item label="题库描述" prop="bankDesc">
           <el-input v-model="form.bankDesc" type="textarea" placeholder="请输入内容" />
         </el-form-item>
-        <el-form-item label="创建人" prop="creatorId">
-          <el-input v-model="form.creatorId" placeholder="请输入创建人用户ID" />
+        <el-form-item label="题库分类" prop="categoryId">
+          <el-tree-select
+            v-model="form.categoryId"
+            :data="bankCategoryOptions"
+            :props="{ value: 'id', label: 'categoryName', children: 'children' } as any"
+            value-key="id"
+            placeholder="请选择题库分类"
+            check-strictly
+            clearable
+            class="w-full"
+          />
         </el-form-item>
         <el-form-item label="可见性" prop="visibility">
-          <el-input v-model="form.visibility" placeholder="请输入可见性 private私有 / public公开" />
+          <el-select v-model="form.visibility" placeholder="请选择可见性">
+            <el-option v-for="dict in bank_visibility_type" :key="dict.value" :label="dict.label" :value="dict.value" />
+          </el-select>
         </el-form-item>
-        <el-form-item label="状态" prop="visibility">
-          <el-input v-model="form.status" placeholder="请输入状态" />
+        <el-form-item label="状态" prop="status">
+          <el-select v-model="form.status" placeholder="请选择状态">
+            <el-option v-for="dict in bank_status" :key="dict.value" :label="dict.label" :value="dict.value" />
+          </el-select>
         </el-form-item>
       </el-form>
       <template #footer>
@@ -94,14 +147,26 @@
         </div>
       </template>
     </el-dialog>
+
+    <!-- 题库下的试题管理（分页查看 / 筛选 / 批量操作） -->
+    <question-manage v-model:visible="manageVisible" :bank-id="currentBank.id" :bank-name="currentBank.bankName" />
   </div>
 </template>
 
 <script setup name="Bank" lang="ts">
 import { listBank, getBank, delBank, addBank, updateBank } from '@/api/system/bank';
 import { BankVO, BankQuery, BankForm } from '@/api/system/bank/types';
+import { treeBankCategory } from '@/api/system/bankCategory';
+import { BankCategoryTreeVO } from '@/api/system/bankCategory/types';
+import QuestionManage from './questionManage.vue';
 
 const { proxy } = getCurrentInstance() as ComponentInternalInstance;
+
+// 题库可见性、状态字典（下拉框选项）
+const { bank_visibility_type, bank_status } = toRefs<any>(proxy?.useDict('bank_visibility_type', 'bank_status'));
+
+// 题库分类树（新增/修改/筛选共用）
+const bankCategoryOptions = ref<BankCategoryTreeVO[]>([]);
 
 const bankList = ref<BankVO[]>([]);
 const buttonLoading = ref(false);
@@ -120,11 +185,15 @@ const dialog = reactive<DialogOption>({
   title: ''
 });
 
+// 试题管理弹窗：当前操作的题库
+const manageVisible = ref(false);
+const currentBank = ref<{ id?: string | number; bankName?: string }>({});
+
 const initFormData: BankForm = {
   id: undefined,
   bankName: undefined,
   bankDesc: undefined,
-  creatorId: undefined,
+  categoryId: undefined,
   visibility: undefined,
   status: undefined
 };
@@ -136,6 +205,7 @@ const data = reactive<PageData<BankForm, BankQuery>>({
     bankName: undefined,
     bankDesc: undefined,
     creatorId: undefined,
+    categoryId: undefined,
     visibility: undefined,
     status: undefined,
     params: {}
@@ -143,13 +213,29 @@ const data = reactive<PageData<BankForm, BankQuery>>({
   rules: {
     id: [{ required: true, message: '主键ID不能为空', trigger: 'blur' }],
     bankName: [{ required: true, message: '题库名称不能为空', trigger: 'blur' }],
-    creatorId: [{ required: true, message: '创建人用户ID不能为空', trigger: 'blur' }],
-    visibility: [{ required: true, message: '可见性 private私有 / public公开不能为空', trigger: 'blur' }],
-    status: [{ required: true, message: '状态 0草稿 1正常 2归档不能为空', trigger: 'change' }]
+    visibility: [{ required: true, message: '可见性不能为空', trigger: 'change' }],
+    status: [{ required: true, message: '状态不能为空', trigger: 'change' }]
   }
 });
 
 const { queryParams, form, rules } = toRefs(data);
+
+/** 下拉框默认选中字典的第一项 */
+const setDefaultSelectValue = () => {
+  if (!form.value.visibility && bank_visibility_type.value?.length) {
+    form.value.visibility = bank_visibility_type.value[0].value;
+  }
+  if ((form.value.status === undefined || form.value.status === null || form.value.status === '') && bank_status.value?.length) {
+    form.value.status = bank_status.value[0].value;
+  }
+};
+// 字典异步加载完成后，补一次默认值
+watch([bank_visibility_type, bank_status], setDefaultSelectValue);
+
+/** 表格序号（跨页连续自增） */
+const indexMethod = (index: number) => {
+  return (queryParams.value.pageNum - 1) * queryParams.value.pageSize + index + 1;
+};
 
 /** 查询题库列表 */
 const getList = async () => {
@@ -170,6 +256,8 @@ const cancel = () => {
 const reset = () => {
   form.value = { ...initFormData };
   bankFormRef.value?.resetFields();
+  // resetFields 会把字段还原为初始值，之后再赋默认选中项
+  setDefaultSelectValue();
 };
 
 /** 搜索按钮操作 */
@@ -203,7 +291,8 @@ const handleUpdate = async (row?: BankVO) => {
   reset();
   const _id = row?.id || ids.value[0];
   const res = await getBank(_id);
-  Object.assign(form.value, res.data);
+  // 后端返回的 status 是数字，下拉框的字典值是字符串，统一转成字符串才能回显选中
+  Object.assign(form.value, { ...res.data, status: res.data.status?.toString() });
   dialog.visible = true;
   dialog.title = '修改题库';
 };
@@ -225,6 +314,17 @@ const submitForm = () => {
   });
 };
 
+/** 管理题库下的试题 */
+const handleManage = async (row?: BankVO) => {
+  const bankId = row?.id || ids.value[0];
+  if (!bankId) {
+    return;
+  }
+  const rowData = row ?? bankList.value.find((item) => String(item.id) === String(bankId));
+  currentBank.value = { id: bankId, bankName: rowData?.bankName };
+  manageVisible.value = true;
+};
+
 /** 删除按钮操作 */
 const handleDelete = async (row?: BankVO) => {
   const _ids = row?.id || ids.value;
@@ -237,7 +337,7 @@ const handleDelete = async (row?: BankVO) => {
 /** 导出按钮操作 */
 const handleExport = () => {
   proxy?.download(
-    'system/bank/export',
+    'question/bank/export',
     {
       ...queryParams.value
     },
@@ -245,7 +345,18 @@ const handleExport = () => {
   );
 };
 
+/** 加载题库分类树 */
+const loadBankCategoryTree = async () => {
+  try {
+    const res = await treeBankCategory();
+    bankCategoryOptions.value = proxy?.handleTree<BankCategoryTreeVO>(res.data, 'id', 'parentId') ?? [];
+  } catch {
+    bankCategoryOptions.value = [];
+  }
+};
+
 onMounted(() => {
+  loadBankCategoryTree();
   getList();
 });
 </script>
