@@ -52,9 +52,9 @@ public class QuestionBankVo implements Serializable {
     private Long creatorId;
 
     /**
-     * 创建人名称（由 creatorId 翻译，仅用于接口返回展示）
+     * 创建人名称（由 creatorId 翻译成用户昵称，仅用于接口返回展示；与试卷/考试模块保持一致）
      */
-    @Translation(type = TransConstant.USER_ID_TO_NAME, mapper = "creatorId")
+    @Translation(type = TransConstant.USER_ID_TO_NICKNAME, mapper = "creatorId")
     private String creatorName;
 
     /**

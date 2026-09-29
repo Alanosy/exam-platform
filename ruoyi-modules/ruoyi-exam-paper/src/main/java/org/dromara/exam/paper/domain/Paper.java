@@ -75,7 +75,8 @@ public class Paper extends TenantEntity {
     private Date shareExpireTime;
 
     /**
-     * 随机抽题规则，paper_type=RANDOM时生效：{bankId,questionType,difficulty,count,scorePerQuestion}
+     * 随机抽题规则(JSON数组)，paper_type=RANDOM时生效，用于重新抽题：
+     * [{bankId,questionType,difficulty,count,score}]
      */
     private String randomRule;
 
@@ -88,6 +89,51 @@ public class Paper extends TenantEntity {
      * 创建人ID
      */
     private Long creatorId;
+
+    /**
+     * 试卷分类，取字典 paper_category 的字典值
+     */
+    private String category;
+
+    /**
+     * 默认单题分值，手动选题未单独指定分值时使用
+     */
+    private Long defaultScore;
+
+    /**
+     * 是否开启题目乱序 0否 1是
+     */
+    private String questionShuffle;
+
+    /**
+     * 是否开启选项乱序 0否 1是
+     */
+    private String optionShuffle;
+
+    /**
+     * 客观题是否自动判分 0否 1是
+     */
+    private String autoJudge;
+
+    /**
+     * 主观题是否人工阅卷 0否 1是
+     */
+    private String manualReview;
+
+    /**
+     * 是否支持部分得分 0否 1是
+     */
+    private String partialScore;
+
+    /**
+     * 答错是否扣分 0否 1是
+     */
+    private String wrongDeduct;
+
+    /**
+     * 可见范围 SELF仅自己可编辑 / SHARED共享给其他管理员
+     */
+    private String shareScope;
 
     /**
      * 逻辑删除 0未删 1已删

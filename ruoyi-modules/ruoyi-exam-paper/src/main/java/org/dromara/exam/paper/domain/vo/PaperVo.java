@@ -1,8 +1,12 @@
 package org.dromara.exam.paper.domain.vo;
 
 import java.util.Date;
+import java.util.List;
 
 import org.dromara.exam.paper.domain.Paper;
+import org.dromara.common.translation.annotation.Translation;
+import org.dromara.common.translation.constant.TransConstant;
+import cn.idev.excel.annotation.ExcelIgnore;
 import cn.idev.excel.annotation.ExcelIgnoreUnannotated;
 import cn.idev.excel.annotation.ExcelProperty;
 import io.github.linpeilie.annotations.AutoMapper;
@@ -99,10 +103,77 @@ public class PaperVo implements Serializable {
     private String status;
 
     /**
-     * 创建人ID
+     * 创建人ID，新增时由后端取当前登录用户填充
      */
     @ExcelProperty(value = "创建人ID")
     private Long creatorId;
+
+    /**
+     * 创建人名称，由 creatorId 翻译得到，不落库
+     */
+    @ExcelProperty(value = "创建人")
+    @Translation(type = TransConstant.USER_ID_TO_NICKNAME, mapper = "creatorId")
+    private String creatorName;
+
+    /**
+     * 试卷分类，取字典 paper_category 的字典值
+     */
+    @ExcelProperty(value = "试卷分类")
+    private String category;
+
+    /**
+     * 默认单题分值
+     */
+    @ExcelProperty(value = "默认单题分值")
+    private Long defaultScore;
+
+    /**
+     * 是否开启题目乱序 0否 1是
+     */
+    @ExcelProperty(value = "题目乱序")
+    private String questionShuffle;
+
+    /**
+     * 是否开启选项乱序 0否 1是
+     */
+    @ExcelProperty(value = "选项乱序")
+    private String optionShuffle;
+
+    /**
+     * 客观题是否自动判分 0否 1是
+     */
+    @ExcelProperty(value = "客观题自动判分")
+    private String autoJudge;
+
+    /**
+     * 主观题是否人工阅卷 0否 1是
+     */
+    @ExcelProperty(value = "主观题人工阅卷")
+    private String manualReview;
+
+    /**
+     * 是否支持部分得分 0否 1是
+     */
+    @ExcelProperty(value = "部分得分")
+    private String partialScore;
+
+    /**
+     * 答错是否扣分 0否 1是
+     */
+    @ExcelProperty(value = "答错扣分")
+    private String wrongDeduct;
+
+    /**
+     * 可见范围 SELF仅自己可编辑 / SHARED共享给其他管理员
+     */
+    @ExcelProperty(value = "可见范围")
+    private String shareScope;
+
+    /**
+     * 本试卷已选试题明细，详情接口随试卷一并返回，按 sort 升序
+     */
+    @ExcelIgnore
+    private List<PaperQuestionVo> questions;
 
 
 }

@@ -23,6 +23,8 @@ import org.dromara.common.excel.utils.ExcelUtil;
 import org.dromara.exam.question.domain.vo.QuestionImportVo;
 import org.dromara.exam.question.domain.vo.QuestionVo;
 import org.dromara.exam.question.domain.bo.QuestionBo;
+import org.dromara.exam.question.domain.bo.QuestionIdsBo;
+import org.dromara.exam.question.domain.bo.QuestionRandomBo;
 import org.dromara.exam.question.listener.QuestionImportListener;
 import org.dromara.exam.question.service.IQuestionImportService;
 import org.dromara.exam.question.service.IQuestionService;
@@ -96,6 +98,32 @@ public class QuestionController extends BaseController {
         QuestionImportListener listener = new QuestionImportListener();
         ExcelUtil.importExcel(file.getInputStream(), QuestionImportVo.class, listener);
         return R.ok(questionImportService.importQuestions(listener.getRows(), bankId));
+    }
+
+    /**
+     * 随机抽题（组卷使用）
+     *
+     * <p>按题库 / 题型 / 难度筛选后随机抽取，候选不足时返回实际能抽到的全部试题。
+     *
+     * @param bo 抽题条件
+     * @return 抽中的试题列表
+     */
+    @SaCheckPermission("system:question:list")
+    @GetMapping("/random")
+    public R<List<QuestionVo>> random(QuestionRandomBo bo) {
+        return R.ok(questionService.randomQuestions(bo));
+    }
+
+    /**
+     * 按ID批量查询试题（组卷回显使用），保持传入顺序
+     *
+     * @param bo 试题ID集合
+     * @return 试题列表
+     */
+    @SaCheckPermission("system:question:list")
+    @PostMapping("/listByIds")
+    public R<List<QuestionVo>> listByIds(@Validated @RequestBody QuestionIdsBo bo) {
+        return R.ok(questionService.queryByIds(bo.getIds()));
     }
 
     /**

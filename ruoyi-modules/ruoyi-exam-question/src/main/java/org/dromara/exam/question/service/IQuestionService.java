@@ -2,6 +2,7 @@ package org.dromara.exam.question.service;
 
 import org.dromara.exam.question.domain.vo.QuestionVo;
 import org.dromara.exam.question.domain.bo.QuestionBo;
+import org.dromara.exam.question.domain.bo.QuestionRandomBo;
 import org.dromara.common.mybatis.core.page.TableDataInfo;
 import org.dromara.common.mybatis.core.page.PageQuery;
 
@@ -85,4 +86,23 @@ public interface IQuestionService {
      * @return 是否移动成功
      */
     Boolean updateBank(Collection<Long> ids, Long bankId);
+
+    /**
+     * 按ID批量查询试题，保持传入顺序
+     *
+     * @param ids 试题主键集合
+     * @return 试题列表
+     */
+    List<QuestionVo> queryByIds(Collection<Long> ids);
+
+    /**
+     * 随机抽题（组卷使用）
+     *
+     * <p>先按题库 / 题型 / 难度筛出候选题，再随机打乱取前 count 条，
+     * 候选不足时返回实际能抽到的全部试题，不报错。
+     *
+     * @param bo 抽题条件
+     * @return 抽中的试题列表（已打乱顺序）
+     */
+    List<QuestionVo> randomQuestions(QuestionRandomBo bo);
 }

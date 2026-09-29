@@ -81,6 +81,22 @@ public class PaperController extends BaseController {
     }
 
     /**
+     * 组卷保存：试卷信息 + 已选试题一次提交
+     *
+     * <p>有主键走修改、无主键走新增，试题明细按传入顺序全量覆盖写入 paper_question。
+     *
+     * @param bo 试卷信息（含 questions 试题明细）
+     * @return 试卷主键ID
+     */
+    @SaCheckPermission("system:paper:edit")
+    @Log(title = "试卷主", businessType = BusinessType.UPDATE)
+    @RepeatSubmit()
+    @PostMapping("/save")
+    public R<Long> save(@RequestBody PaperBo bo) {
+        return R.ok("组卷保存成功", paperService.saveWithQuestions(bo));
+    }
+
+    /**
      * 修改试卷主
      */
     @SaCheckPermission("system:paper:edit")

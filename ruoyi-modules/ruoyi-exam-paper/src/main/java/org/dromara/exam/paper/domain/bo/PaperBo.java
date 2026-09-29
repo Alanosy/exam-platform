@@ -7,8 +7,10 @@ import org.dromara.common.core.validate.EditGroup;
 import io.github.linpeilie.annotations.AutoMapper;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.*;
 import java.util.Date;
+import java.util.List;
 
 /**
  * 试卷主业务对象 paper
@@ -87,10 +89,60 @@ public class PaperBo extends BaseEntity {
     private String status;
 
     /**
-     * 创建人ID
+     * 创建人ID，不传时后端取当前登录用户填充
      */
-    @NotNull(message = "创建人ID不能为空", groups = { AddGroup.class, EditGroup.class })
     private Long creatorId;
+
+    /**
+     * 试卷分类，取字典 paper_category 的字典值
+     */
+    private String category;
+
+    /**
+     * 默认单题分值，手动选题未单独指定分值时使用
+     */
+    private Long defaultScore;
+
+    /**
+     * 是否开启题目乱序 0否 1是
+     */
+    private String questionShuffle;
+
+    /**
+     * 是否开启选项乱序 0否 1是
+     */
+    private String optionShuffle;
+
+    /**
+     * 客观题是否自动判分 0否 1是
+     */
+    private String autoJudge;
+
+    /**
+     * 主观题是否人工阅卷 0否 1是
+     */
+    private String manualReview;
+
+    /**
+     * 是否支持部分得分 0否 1是
+     */
+    private String partialScore;
+
+    /**
+     * 答错是否扣分 0否 1是
+     */
+    private String wrongDeduct;
+
+    /**
+     * 可见范围 SELF仅自己可编辑 / SHARED共享给其他管理员
+     */
+    private String shareScope;
+
+    /**
+     * 本试卷的试题明细，组卷接口 /paper/save 使用，按数组顺序落 sort
+     */
+    @Valid
+    private List<PaperQuestionSaveBo> questions;
 
 
 }

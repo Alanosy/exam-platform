@@ -21,6 +21,7 @@ import org.dromara.resource.api.RemoteFileService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.dromara.exam.question.domain.bo.QuestionBo;
+import org.dromara.exam.question.domain.bo.QuestionRandomBo;
 import org.dromara.exam.question.domain.bo.QuestionMediaSaveBo;
 import org.dromara.exam.question.domain.bo.QuestionOptionSaveBo;
 import org.dromara.exam.question.domain.vo.QuestionVo;
@@ -35,6 +36,9 @@ import org.dromara.exam.question.mapper.QuestionOptionMapper;
 import org.dromara.exam.question.service.IQuestionService;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -493,5 +497,62 @@ public class QuestionServiceImpl implements IQuestionService {
         lqw.in(Question::getId, ids);
         lqw.set(Question::getBankId, bankId);
         return baseMapper.update(null, lqw) > 0;
+    }
+
+    /**
+     * 按ID批量查询试题，保持传入顺序
+     */
+    @Override
+    public List<QuestionVo> queryByIds(Collection<Long> ids) {
+        if (CollUtil.isEmpty(ids)) {
+            return new ArrayList<>();
+        }
+        LambdaQueryWrapper<Question> lqw = Wrappers.lambdaQuery();
+        lqw.in(Question::getId, ids);
+        List<QuestionVo> list = baseMapper.selectVoList(lqw);
+        // selectVoList 的 in 查询不保证顺序，这里按传入的 ids 重排，保证组卷回显顺序稳定
+        Map<Long, Integer> order = new HashMap<>();
+        int index = 0;
+        for (Long id : new LinkedHashSet<>(ids)) {
+            order.put(id, index++);
+        }
+        list.sort(Comparator.comparingInt(vo -> order.getOrDefault(vo.getId(), Integer.MAX_VALUE)));
+        return list;
+    }
+
+    /**
+     * 随机抽题
+     *
+     * <p>先按条件查出候选题（只取启用状态的题），再打乱顺序取前 count 条。
+     * 候选数量不足 count 时返回全部候选题，由前端提示「可选题不足」。
+     */
+    @Override
+    public List<QuestionVo> randomQuestions(QuestionRandomBo bo) {
+        int count = bo.getCount() == null || bo.getCount() <= 0 ? 10 : Math.min(bo.getCount(), 500);
+
+        LambdaQueryWrapper<Question> lqw = Wrappers.lambdaQuery();
+        lqw.eq(ObjectUtil.isNotNull(bo.getBankId()), Question::getBankId, bo.getBankId());
+        lqw.eq(StringUtils.isNotBlank(bo.getQuestionType()), Question::getQuestionType, bo.getQuestionType());
+        lqw.eq(StringUtils.isNotBlank(bo.getDifficulty()), Question::getDifficulty, bo.getDifficulty());
+        // 只抽启用状态的题：历史数据里启用可能是 "1" 也可能是 "enabled"，这里两种都认
+        lqw.in(Question::getStatus, List.of("1", "enabled"));
+        if (CollUtil.isNotEmpty(bo.getExcludeIds())) {
+            lqw.notIn(Question::getId, bo.getExcludeIds());
+        }
+        List<Question> candidates = baseMapper.selectList(lqw);
+        if (CollUtil.isEmpty(candidates)) {
+            return new ArrayList<>();
+        }
+        Collections.shuffle(candidates);
+        List<Long> picked = candidates.stream().limit(count).map(Question::getId).toList();
+
+        List<QuestionVo> vos = baseMapper.selectVoList(Wrappers.<Question>lambdaQuery().in(Question::getId, picked));
+        // 保持打乱后的顺序，避免二次查询把顺序洗回 id 升序
+        Map<Long, Integer> order = new HashMap<>();
+        for (int i = 0; i < picked.size(); i++) {
+            order.put(picked.get(i), i);
+        }
+        vos.sort(Comparator.comparingInt(vo -> order.getOrDefault(vo.getId(), Integer.MAX_VALUE)));
+        return vos;
     }
 }
