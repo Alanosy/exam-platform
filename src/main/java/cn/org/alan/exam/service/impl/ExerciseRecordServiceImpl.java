@@ -287,6 +287,7 @@ public class ExerciseRecordServiceImpl extends ServiceImpl<ExerciseRecordMapper,
             LambdaQueryWrapper<Option> optionWrapper = new LambdaQueryWrapper<>();
             optionWrapper.eq(Option::getQuId, temp.getId());
             List<Option> options = optionMapper.selectList(optionWrapper);
+            options.sort(Comparator.comparing(option -> option.getSort() == null ? 0 : option.getSort()));
             if (temp.getQuType() == 4) {
                 exerciseRecordDetailVO.setOption(null);
             } else {
@@ -350,6 +351,7 @@ public class ExerciseRecordServiceImpl extends ServiceImpl<ExerciseRecordMapper,
                         Option option = optionMapper.selectOne(optionLambdaQueryWrapper2);
                         sorts.add(option.getSort());
                     }
+                    sorts.sort(Comparator.naturalOrder());
                     // 设置自己选的选项，选项为顺序 1为A，2为B...
                     List<String> shortList = sorts.stream().map(String::valueOf).collect(Collectors.toList());
                     String myOption = String.join(",", shortList);
