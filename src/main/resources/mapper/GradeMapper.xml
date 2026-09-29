@@ -57,9 +57,6 @@
     <select id="getAllGrade" resultType="cn.org.alan.exam.model.vo.grade.GradeVO">
         select *
         from t_grade g
-        <if test="roleCode == 2">
-            right join t_user_grade ug on ug.g_id = g.id
-        </if>
         <where>
             g.is_deleted = 0
             <if test="roleCode == 2 ">

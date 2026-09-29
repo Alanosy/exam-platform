@@ -513,6 +513,12 @@ public class ExamServiceImpl extends ServiceImpl<ExamMapper, Exam> implements IE
         examQuDetailVO.setContent(shell.getContent());
         examQuDetailVO.setQuType(shell.getQuType());
         List<OptionVO> optionVOS = quContentCacheService.toOptionVOList(shell);
+        // 简答题选项内容是标准答案，考试中不下发
+        if (shell.getQuType() != null && shell.getQuType() == 4) {
+            for (OptionVO opt : optionVOS) {
+                opt.setContent("");
+            }
+        }
         // 填空题作答中不展示标准答案，仅保留空位信息（id/sort）
         if (shell.getQuType() != null && shell.getQuType() == 5) {
             for (OptionVO opt : optionVOS) {
@@ -554,7 +560,7 @@ public class ExamServiceImpl extends ServiceImpl<ExamMapper, Exam> implements IE
                             }
                             break;
                         case 4:
-                            temp.setContent(answerContent);
+                            examQuDetailVO.setUserAnswer(answerContent);
                             examQuDetailVO.setAnswerList(optionVOS);
                             break;
                         case 5:

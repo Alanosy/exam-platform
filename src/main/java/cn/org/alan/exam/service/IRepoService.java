@@ -59,9 +59,10 @@ public interface IRepoService extends IService<Repo> {
      * @param pageSize   每页记录数
      * @param title      标题
      * @param categoryId 分类ID
+     * @param isExercise 是否开启刷题
      * @return 返回结果响应
      */
-    Result<IPage<RepoVO>> pagingRepo(Integer pageNum, Integer pageSize, String title, Integer categoryId);
+    Result<IPage<RepoVO>> pagingRepo(Integer pageNum, Integer pageSize, String title, Integer categoryId, Integer isExercise);
 
     /**
      * 分页获取可刷题库列表
@@ -83,5 +84,14 @@ public interface IRepoService extends IService<Repo> {
      * 按分类查询题库的方法
      */
     Result<IPage<RepoVO>> getReposByCategory(Integer categoryId, Integer pageNum, Integer pageSize);
+
+    /**
+     * 题库上移/下移
+     *
+     * @param id          题库ID
+     * @param direction   方向
+     * @return 响应结果
+     */
+    Result<String> sortRepo(Integer id, String direction);
     
 }

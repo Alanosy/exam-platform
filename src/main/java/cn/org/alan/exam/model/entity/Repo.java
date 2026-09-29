@@ -54,4 +54,7 @@ public class Repo implements Serializable {
     
     @ApiModelProperty(value = "分类ID")
     private Integer categoryId;
+
+    @ApiModelProperty(value = "显示排序，越小越靠前")
+    private Integer sort;
 }

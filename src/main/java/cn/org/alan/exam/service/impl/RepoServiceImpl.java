@@ -69,6 +69,10 @@ public class RepoServiceImpl extends ServiceImpl<RepoMapper, Repo> implements IR
         if (row < 1) {
             throw new ServiceRuntimeException("添加题库条数<1");
         }
+        LambdaUpdateWrapper<Repo> sortWrapper = new LambdaUpdateWrapper<Repo>()
+                .eq(Repo::getId, repo.getId())
+                .set(Repo::getSort, repo.getId());
+        repoMapper.update(sortWrapper);
         saveRepoGrades(repo.getId(), gradeIdList);
         return Result.success("新增题库成功");
     }
@@ -127,14 +131,14 @@ public class RepoServiceImpl extends ServiceImpl<RepoMapper, Repo> implements IR
     }
 
     @Override
-    public Result<IPage<RepoVO>> pagingRepo(Integer pageNum, Integer pageSize, String title, Integer categoryId) {
+    public Result<IPage<RepoVO>> pagingRepo(Integer pageNum, Integer pageSize, String title, Integer categoryId, Integer isExercise) {
         IPage<RepoVO> page = new Page<>(pageNum, pageSize);
         Integer roleCode = SecurityUtil.getRoleCode();
         Integer userId = SecurityUtil.getUserId();
         if (roleCode == 2) {
-            page = repoMapper.pagingRepo(page, title, userId, categoryId);
+            page = repoMapper.pagingRepo(page, title, userId, categoryId, isExercise);
         } else {
-            page = repoMapper.pagingRepo(page, title, 0, categoryId);
+            page = repoMapper.pagingRepo(page, title, 0, categoryId, isExercise);
         }
 
         List<RepoVO> records = page.getRecords();
@@ -235,7 +239,8 @@ public class RepoServiceImpl extends ServiceImpl<RepoMapper, Repo> implements IR
         Page<Repo> page = new Page<>(pageNum, pageSize);
         LambdaQueryWrapper<Repo> wrapper = new LambdaQueryWrapper<>();
         wrapper.in(Repo::getCategoryId, categoryIds)
-               .orderByDesc(Repo::getCreateTime);
+               .orderByAsc(Repo::getSort)
+               .orderByAsc(Repo::getId);
 
         Integer userId = SecurityUtil.getUserId();
         Integer roleCode = SecurityUtil.getRoleCode();
@@ -261,6 +266,58 @@ public class RepoServiceImpl extends ServiceImpl<RepoMapper, Repo> implements IR
         fillGradeIds(result.getRecords());
 
         return Result.success("根据分类查询题库成功", result);
+    }
+
+    @Override
+    @Transactional
+    public Result<String> sortRepo(Integer id, String direction) {
+        Repo current = repoMapper.selectById(id);
+        if (current == null) {
+            return Result.failed("题库不存在");
+        }
+        Integer roleCode = SecurityUtil.getRoleCode();
+        Integer userId = SecurityUtil.getUserId();
+        if (roleCode != null && roleCode == 2 && !userId.equals(current.getUserId())) {
+            return Result.failed("无权调整该题库");
+        }
+        boolean up;
+        if ("up".equalsIgnoreCase(direction)) {
+            up = true;
+        } else if ("down".equalsIgnoreCase(direction)) {
+            up = false;
+        } else {
+            return Result.failed("direction 仅支持 up/down");
+        }
+
+        LambdaQueryWrapper<Repo> neighborWrapper = new LambdaQueryWrapper<>();
+        if (roleCode != null && roleCode == 2) {
+            neighborWrapper.eq(Repo::getUserId, userId);
+        }
+        Integer currentSort = current.getSort() == null ? 0 : current.getSort();
+        if (up) {
+            neighborWrapper.lt(Repo::getSort, currentSort)
+                    .orderByDesc(Repo::getSort)
+                    .orderByDesc(Repo::getId)
+                    .last("limit 1");
+        } else {
+            neighborWrapper.gt(Repo::getSort, currentSort)
+                    .orderByAsc(Repo::getSort)
+                    .orderByAsc(Repo::getId)
+                    .last("limit 1");
+        }
+        Repo neighbor = repoMapper.selectOne(neighborWrapper);
+        if (neighbor == null) {
+            return Result.failed(up ? "已经是第一个题库" : "已经是最后一个题库");
+        }
+
+        Integer neighborSort = neighbor.getSort() == null ? 0 : neighbor.getSort();
+        repoMapper.update(new LambdaUpdateWrapper<Repo>()
+                .eq(Repo::getId, current.getId())
+                .set(Repo::getSort, neighborSort));
+        repoMapper.update(new LambdaUpdateWrapper<Repo>()
+                .eq(Repo::getId, neighbor.getId())
+                .set(Repo::getSort, currentSort));
+        return Result.success("排序调整成功");
     }
 
     private List<Integer> parseAndCheckGradeIds(String gradeIds) {

@@ -376,6 +376,7 @@ CREATE TABLE `t_repo` (
   `create_time` datetime DEFAULT NULL COMMENT '创建时间',
   `is_deleted` int(11) NOT NULL DEFAULT '0' COMMENT '逻辑删除：0代表未删除，1代表删除',
   `is_exercise` int(11) NOT NULL DEFAULT '0' COMMENT '是否开启刷题 0否 1是',
+  `sort` int(11) NOT NULL DEFAULT '0' COMMENT '显示排序，越小越靠前',
   PRIMARY KEY (`id`) USING BTREE,
   KEY `idx_repo_user_del` (`user_id`,`is_deleted`) USING BTREE,
   KEY `idx_repo_category` (`category_id`) USING BTREE

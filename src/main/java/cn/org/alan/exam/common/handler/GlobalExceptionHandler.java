@@ -124,7 +124,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(MaxUploadSizeExceededException.class)
     public Result<String> handlerMaxUploadSizeExceededException(MaxUploadSizeExceededException e) {
         log.error(e.getMessage(), e.getClass());
-        return Result.failed("文件太大，最大上传5MB");
+        return Result.failed("文件太大，最大上传10MB");
     }
 
     /**

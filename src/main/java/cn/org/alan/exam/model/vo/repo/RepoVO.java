@@ -34,4 +34,6 @@ public class RepoVO {
     private Integer questionCount;
     // 绑定的班级ID列表
     private List<Integer> gradeIds;
+    // 显示排序
+    private Integer sort;
 }

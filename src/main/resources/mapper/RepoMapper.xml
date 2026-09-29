@@ -11,6 +11,7 @@
             r.create_time,
             r.is_exercise as isExercise,
             r.category_id as categoryId,
+            r.sort,
             (select count(q.id) from t_question q where q.repo_id = r.id and q.is_deleted = 0) as questionCount
         from t_repo r 
         join t_user u on r.user_id = u.id
@@ -25,7 +26,11 @@
             <if test='categoryId != null'>
                 and r.category_id = #{categoryId}
             </if>
+            <if test='isExercise != null'>
+                and r.is_exercise = #{isExercise}
+            </if>
         </trim>
+        order by r.sort asc, r.id asc
     </select>
 
     <!-- 分页获取可刷题库信息：必须开启刷题且绑定学生所在班级（支持多班级） -->

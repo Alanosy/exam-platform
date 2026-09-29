@@ -91,6 +91,7 @@ public class RepoController {
      * @param pageSize   每页记录数
      * @param title      题库名
      * @param categoryId 分类ID
+     * @param isExercise 是否开启刷题
      * @return 响应结果
      */
     @ApiOperation("分页查询题库")
@@ -99,8 +100,9 @@ public class RepoController {
     public Result<IPage<RepoVO>> pagingRepo(@RequestParam(value = "pageNum", required = false, defaultValue = "1") Integer pageNum,
                                             @RequestParam(value = "pageSize", required = false, defaultValue = "10") Integer pageSize,
                                             @RequestParam(value = "title", required = false) String title,
-                                            @RequestParam(value = "categoryId", required = false) Integer categoryId) {
-        return iRepoService.pagingRepo(pageNum, pageSize, title, categoryId);
+                                            @RequestParam(value = "categoryId", required = false) Integer categoryId,
+                                            @RequestParam(value = "isExercise", required = false) Integer isExercise) {
+        return iRepoService.pagingRepo(pageNum, pageSize, title, categoryId, isExercise);
     }
     
     /**
@@ -119,6 +121,21 @@ public class RepoController {
             @RequestParam(value = "pageNum", required = false, defaultValue = "1") Integer pageNum,
             @RequestParam(value = "pageSize", required = false, defaultValue = "10") Integer pageSize) {
         return iRepoService.getReposByCategory(categoryId, pageNum, pageSize);
+    }
+
+    /**
+     * 题库上移/下移
+     *
+     * @param id         题库ID
+     * @param direction  方向
+     * @return 响应结果
+     */
+    @ApiOperation("题库上移/下移")
+    @PutMapping("/{id}/sort")
+    @PreAuthorize("hasAnyAuthority('role_teacher','role_admin')")
+    public Result<String> sortRepo(@PathVariable("id") Integer id,
+                                   @RequestParam("direction") String direction) {
+        return iRepoService.sortRepo(id, direction);
     }
 
 }

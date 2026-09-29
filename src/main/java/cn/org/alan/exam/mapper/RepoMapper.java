@@ -28,12 +28,14 @@ public interface RepoMapper extends BaseMapper<Repo> {
      * @param title      题库名
      * @param userId     用户名
      * @param categoryId 分类ID
+     * @param isExercise 是否开启刷题
      * @return 响应结果
      */
     IPage<RepoVO> pagingRepo(@Param("page") IPage<RepoVO> page, 
                              @Param("title") String title,
                              @Param("userId") Integer userId,
-                             @Param("categoryId") Integer categoryId);
+                             @Param("categoryId") Integer categoryId,
+                             @Param("isExercise") Integer isExercise);
 
     /**
      * 分页获取可刷题库列表
