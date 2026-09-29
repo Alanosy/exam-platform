@@ -1,10 +1,9 @@
 package org.dromara.exam.question.service;
 
+import org.dromara.exam.question.domain.vo.QuestionMediaVo;
 import org.dromara.exam.question.domain.bo.QuestionMediaBo;
-import org.dromara.exam.question.domain.bo.QuestionMediaSaveBo;
 import org.dromara.common.mybatis.core.page.TableDataInfo;
 import org.dromara.common.mybatis.core.page.PageQuery;
-import org.dromara.exam.question.domain.vo.QuestionMediaVo;
 
 import java.util.Collection;
 import java.util.List;
@@ -66,24 +65,4 @@ public interface IQuestionMediaService {
      * @return 是否删除成功
      */
     Boolean deleteWithValidByIds(Collection<Long> ids, Boolean isValid);
-
-    /**
-     * 登记一笔尚未挂到试题上的上传记录
-     *
-     * <p>富文本里插入图片时对象已经进了存储桶，但此时试题可能还没保存。这里先落一条
-     * question_id 为空的记录，待试题保存时再回填 question_id；始终没回填的会被
-     * {@link #cleanUnused(int)} 清理掉，避免弃稿图片永久占用存储。
-     *
-     * @param bo 媒体附件信息
-     * @return 新增记录的主键
-     */
-    Long insertDraft(QuestionMediaSaveBo bo);
-
-    /**
-     * 清理长时间未挂到任何试题上的媒体附件（含对象存储里的文件）
-     *
-     * @param retainHours 保留时长（小时），超过该时长仍未归属试题的记录会被清理
-     * @return 清理的记录数量
-     */
-    Integer cleanUnused(int retainHours);
 }

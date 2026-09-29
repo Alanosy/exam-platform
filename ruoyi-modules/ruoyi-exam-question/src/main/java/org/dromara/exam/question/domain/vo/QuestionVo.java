@@ -7,12 +7,9 @@ import cn.idev.excel.annotation.ExcelIgnoreUnannotated;
 import cn.idev.excel.annotation.ExcelProperty;
 import io.github.linpeilie.annotations.AutoMapper;
 import lombok.Data;
-import org.dromara.exam.question.translation.ExamTransConstant;
-import org.dromara.common.translation.annotation.Translation;
 
 import java.io.Serial;
 import java.io.Serializable;
-import java.math.BigDecimal;
 import java.util.List;
 
 
@@ -43,12 +40,6 @@ public class QuestionVo implements Serializable {
     private Long bankId;
 
     /**
-     * 所属题库名称（由 bankId 翻译，仅用于接口返回展示）
-     */
-    @Translation(type = ExamTransConstant.BANK_ID_TO_NAME, mapper = "bankId")
-    private String bankName;
-
-    /**
      * 题干富文本
      */
     @ExcelProperty(value = "题干富文本")
@@ -70,7 +61,7 @@ public class QuestionVo implements Serializable {
      * 题目默认分值
      */
     @ExcelProperty(value = "题目默认分值")
-    private BigDecimal score;
+    private Long score;
 
     /**
      * 试题解析富文本
@@ -94,7 +85,7 @@ public class QuestionVo implements Serializable {
      * 0草稿 1启用 2废弃
      */
     @ExcelProperty(value = "0草稿 1启用 2废弃")
-    private String status;
+    private Long status;
 
     /**
      * 选项列表，详情接口随试题一并返回（客观题使用）

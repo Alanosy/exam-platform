@@ -1,7 +1,6 @@
 package org.dromara.resource.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
-import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.convert.Convert;
 import cn.hutool.core.util.ObjectUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
@@ -259,33 +258,6 @@ public class SysOssServiceImpl implements ISysOssService {
             storage.delete(sysOss.getUrl());
         }
         return baseMapper.deleteByIds(ids) > 0;
-    }
-
-    /**
-     * 根据一组文件访问地址查询对应的 SysOssVo 列表
-     *
-     * @param urls 文件访问地址集合
-     * @return 命中的 OSS 对象列表
-     */
-    @Override
-    public List<SysOssVo> listByUrls(Collection<String> urls) {
-        if (CollUtil.isEmpty(urls)) {
-            return List.of();
-        }
-        List<SysOssVo> result = new ArrayList<>();
-        for (String url : urls) {
-            if (StringUtils.isBlank(url)) {
-                continue;
-            }
-            LambdaQueryWrapper<SysOss> lqw = Wrappers.lambdaQuery();
-            lqw.eq(SysOss::getUrl, url).last("limit 1");
-            SysOss sysOss = baseMapper.selectOne(lqw);
-            if (ObjectUtil.isNotNull(sysOss)) {
-                // 这里只需要原始 url 去做删除，返回对象保持数据库里的原始地址
-                result.add(MapstructUtils.convert(sysOss, SysOssVo.class));
-            }
-        }
-        return result;
     }
 
     /**

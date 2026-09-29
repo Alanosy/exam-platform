@@ -11,7 +11,6 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.*;
 
 import java.util.List;
-import java.math.BigDecimal;
 
 /**
  * 试题主业务对象 question
@@ -55,10 +54,8 @@ public class QuestionBo extends BaseEntity {
 
     /**
      * 题目默认分值
-     *
-     * <p>数据库为 decimal(5,2)，支持 5.5 这类带小数的分值
      */
-    private BigDecimal score;
+    private Long score;
 
     /**
      * 试题解析富文本
@@ -81,20 +78,12 @@ public class QuestionBo extends BaseEntity {
      * 0草稿 1启用 2废弃
      */
     @NotNull(message = "0草稿 1启用 2废弃不能为空", groups = { AddGroup.class, EditGroup.class })
-    private String  status;
+    private Long status;
 
     /**
      * 选项列表，新增试题时随试题一并提交（仅客观题需要）
      */
     @Valid
     private List<QuestionOptionSaveBo> options;
-
-    /**
-     * 媒体附件列表，随试题一并提交
-     *
-     * <p>由前端从题干 / 选项 / 解析 / 参考答案的富文本里解析出来的图片、音频、视频，
-     * 后端据此维护 question_media，建立试题与对象存储文件之间的引用关系。
-     */
-    private List<QuestionMediaSaveBo> medias;
 
 }

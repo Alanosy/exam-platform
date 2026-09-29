@@ -120,20 +120,4 @@ public class QuestionController extends BaseController {
                           @PathVariable("ids") Long[] ids) {
         return toAjax(questionService.deleteWithValidByIds(List.of(ids), true));
     }
-
-    /**
-     * 批量切换试题所属题库
-     *
-     * @param ids    试题主键集合
-     * @param bankId 目标题库ID
-     */
-    @SaCheckPermission("system:question:edit")
-    @Log(title = "试题主", businessType = BusinessType.UPDATE)
-    @PutMapping("/changeBank")
-    public R<Void> changeBank(@NotEmpty(message = "主键不能为空")
-                              @RequestBody List<Long> ids,
-                              @NotNull(message = "目标题库不能为空")
-                              @RequestParam("bankId") Long bankId) {
-        return toAjax(questionService.updateBank(ids, bankId));
-    }
 }

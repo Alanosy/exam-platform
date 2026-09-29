@@ -50,16 +50,4 @@ public class RemoteFileServiceMock implements RemoteFileService {
         return List.of();
     }
 
-    /**
-     * 按文件访问地址物理删除对象存储文件
-     *
-     * @param urls 文件访问地址集合
-     * @return 实际删除的文件数量
-     */
-    @Override
-    public Integer deleteByUrls(List<String> urls) {
-        log.warn("服务调用异常 -> 降级处理");
-        return 0;
-    }
-
 }

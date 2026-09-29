@@ -6,7 +6,6 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 import java.io.Serial;
-import java.math.BigDecimal;
 
 /**
  * 试题主对象 question
@@ -51,7 +50,7 @@ public class Question extends TenantEntity {
     /**
      * 题目默认分值
      */
-    private BigDecimal score;
+    private Long score;
 
     /**
      * 试题解析富文本
@@ -71,7 +70,7 @@ public class Question extends TenantEntity {
     /**
      * 0草稿 1启用 2废弃
      */
-    private String status;
+    private Long status;
 
     /**
      * 逻辑删除 0未删 1已删

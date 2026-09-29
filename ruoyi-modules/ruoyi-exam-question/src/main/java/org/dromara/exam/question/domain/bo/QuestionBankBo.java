@@ -38,14 +38,10 @@ public class QuestionBankBo extends BaseEntity {
     private String bankDesc;
 
     /**
-     * 创建人用户ID（新增时由后端自动填充当前登录用户，仅用于列表查询条件）
+     * 创建人用户ID
      */
+    @NotNull(message = "创建人用户ID不能为空", groups = { AddGroup.class, EditGroup.class })
     private Long creatorId;
-
-    /**
-     * 所属分类ID（传父级时会自动带上其下所有子分类）
-     */
-    private Long categoryId;
 
     /**
      * 可见性 private私有 / public公开
@@ -56,8 +52,8 @@ public class QuestionBankBo extends BaseEntity {
     /**
      * 状态 0草稿 1正常 2归档
      */
-    @NotBlank(message = "状态 0草稿 1正常 2归档不能为空", groups = { AddGroup.class, EditGroup.class })
-    private String  status;
+    @NotNull(message = "状态 0草稿 1正常 2归档不能为空", groups = { AddGroup.class, EditGroup.class })
+    private Long status;
 
 
 }

@@ -92,12 +92,4 @@ public interface ISysOssService {
      * @return 结果
      */
     Boolean deleteWithValidByIds(Collection<Long> ids, Boolean isValid);
-
-    /**
-     * 根据一组文件访问地址查询对应的 SysOssVo 列表
-     *
-     * @param urls 文件访问地址集合
-     * @return 命中的 OSS 对象列表
-     */
-    List<SysOssVo> listByUrls(Collection<String> urls);
 }
