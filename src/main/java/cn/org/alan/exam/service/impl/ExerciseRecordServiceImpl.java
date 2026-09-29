@@ -296,7 +296,13 @@ public class ExerciseRecordServiceImpl extends ServiceImpl<ExerciseRecordMapper,
 
             if (temp.getQuType() == 4 && options.size() > 0) {
                 exerciseRecordDetailVO.setRightOption(options.get(0).getContent());
+            } else if (temp.getQuType() == 5 && options.size() > 0) {
+                // 填空题：返回答案内容，用 ||| 分隔
+                exerciseRecordDetailVO.setRightOption(options.stream()
+                        .map(Option::getContent)
+                        .collect(Collectors.joining(BlankPlaceholderUtil.ANSWER_DELIMITER)));
             } else {
+                // 客观题：返回选项索引
                 String current = "";
                 ArrayList<Integer> strings = new ArrayList<>();
                 for (Option temp1 : options) {
@@ -389,6 +395,11 @@ public class ExerciseRecordServiceImpl extends ServiceImpl<ExerciseRecordMapper,
                 case 4:
                     exerciseRecordDetailVO.setMyOption(null);
                     exerciseRecordDetailVO.setIsRight(-1);
+                    break;
+                case 5:
+                    // 填空题：用户答案存储在 answer 字段中
+                    exerciseRecordDetailVO.setMyOption(exerciseRecord.getAnswer());
+                    exerciseRecordDetailVO.setIsRight(exerciseRecord.getIsRight());
                     break;
                 default:
                     break;

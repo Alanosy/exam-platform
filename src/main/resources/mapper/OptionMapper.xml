@@ -15,14 +15,19 @@
     <select id="selectAllByQuestionId" resultType="cn.org.alan.exam.model.entity.Option">
         select id, qu_id, is_right, image, content, sort
         from t_option
-        where qu_id = #{id}
+        where qu_id = #{id} and is_deleted = 0
     </select>
 
     <!-- 获取单题选项 -->
     <select id="selectOptionByqId" resultType="cn.org.alan.exam.model.entity.Option">
         select id, qu_id, image, content, sort
         from t_option
-        where qu_id = #{id}
+        where qu_id = #{id} and is_deleted = 0
     </select>
+
+    <!-- 根据试题ID物理删除所有选项（绕过逻辑删除） -->
+    <delete id="physicalDeleteByQuId">
+        delete from t_option where qu_id = #{quId}
+    </delete>
 
 </mapper>

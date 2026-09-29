@@ -36,4 +36,12 @@ public interface OptionMapper extends BaseMapper<Option> {
      * @return 结果集
      */
     List<Option> selectOptionByqId(Integer id);
+
+    /**
+     * 根据试题ID物理删除所有选项（绕过逻辑删除）
+     *
+     * @param quId 试题id
+     * @return 影响行数
+     */
+    Integer physicalDeleteByQuId(Integer quId);
 }

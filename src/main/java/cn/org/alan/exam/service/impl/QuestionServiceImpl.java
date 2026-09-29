@@ -181,11 +181,10 @@ public class QuestionServiceImpl extends ServiceImpl<QuestionMapper, Question> i
             question.setLevel(3);
         }
         questionMapper.updateById(question);
-        // 填空题选项数量可能变化：先删后插；其它题型按原逻辑更新
+        // 处理选项更新
         if (quType != null && quType == 5) {
-            LambdaQueryWrapper<Option> delWrapper = new LambdaQueryWrapper<Option>()
-                    .eq(Option::getQuId, question.getId());
-            optionMapper.delete(delWrapper);
+            // 填空题：先物理删除所有旧选项，再插入新选项
+            optionMapper.physicalDeleteByQuId(question.getId());
             final int[] sort = {0};
             options.forEach(option -> {
                 option.setId(null);
@@ -195,8 +194,19 @@ public class QuestionServiceImpl extends ServiceImpl<QuestionMapper, Question> i
             });
             optionMapper.insertBatch(options);
         } else if (options != null) {
+            // 其他题型：根据 isDeleted 标记删除，更新或插入新选项
             for (Option option : options) {
-                optionMapper.updateById(option);
+                if (option.getId() != null && option.getIsDeleted() != null && option.getIsDeleted() == 1) {
+                    // 标记为删除的选项，执行逻辑删除
+                    optionMapper.deleteById(option.getId());
+                } else if (option.getId() != null) {
+                    // 更新现有选项
+                    optionMapper.updateById(option);
+                } else {
+                    // 插入新选项
+                    option.setQuId(question.getId());
+                    optionMapper.insert(option);
+                }
             }
         }
         quContentCacheService.evict(question.getId());
