@@ -101,7 +101,9 @@ export const constantRoutes: RouteRecordRaw[] = [
         path: '',
         component: () => import('@/views/system/question/edit.vue'),
         name: 'QuestionEdit',
-        meta: { title: '试题编辑', activeMenu: '/system/question' }
+        // noCache：试题编辑页不进 keep-alive 缓存。
+        // 该路由是动态路由，关闭页签时缓存不会被清理，复用实例会导致「点新增还残留上一道题的内容」。
+        meta: { title: '试题编辑', activeMenu: '/system/question', noCache: true }
       }
     ]
   }

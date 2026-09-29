@@ -203,6 +203,23 @@ const questionId = computed<string | undefined>(() => (route.params.questionId a
 const isEdit = computed(() => !!questionId.value);
 const buttonLoading = ref(false);
 
+/**
+ * 新建试题的默认状态：取字典里的「启用 / enabled」那一项，
+ * 字典没配或没有这一项时兜底 1（0草稿 1启用 2废弃）。
+ */
+const defaultStatus = computed<QuestionForm['status']>(() => {
+  const enabled = questionStatusOptions.value.find(
+    (item) => /^enabled$/i.test(String(item.value)) || /启用|enabled/i.test(String(item.label))
+  );
+  return enabled ? enabled.value : 1;
+});
+
+/** 当前状态值是否命中可选项，用于判断字典异步加载后是否需要补默认值 */
+const isStatusValid = (value?: QuestionForm['status']): boolean => {
+  if (value === undefined || value === null || value === '') return false;
+  return questionStatusOptions.value.some((item) => String(item.value) === String(value));
+};
+
 const formRef = ref<ElFormInstance>();
 const bankList = ref<BankVO[]>([]);
 
@@ -216,7 +233,7 @@ const form = reactive<QuestionForm>({
   score: 5,
   analysis: '',
   answer: undefined,
-  status: 1,
+  status: defaultStatus.value,
   options: []
 });
 
@@ -458,6 +475,45 @@ const loadBankList = async () => {
   }
 };
 
+/**
+ * 当前页面的标识：新增 / 修改不同试题都算不同的页面
+ */
+const pageKey = computed(() => `${questionId.value ?? ''}|${(route.query.bankId as string) ?? ''}`);
+
+/**
+ * 清空整页录入数据
+ *
+ * 新增与修改共用同一个组件实例，切进来时必须把上一次的输入全部清掉，
+ * 否则会出现「点新增还残留上一道题的内容」。
+ */
+const resetPage = () => {
+  clearAnswerArea();
+  Object.assign(form, {
+    id: undefined,
+    bankId: (route.query.bankId as string) || undefined,
+    title: '',
+    questionType: 'SINGLE',
+    difficulty: 'easy',
+    score: 5,
+    analysis: '',
+    answer: undefined,
+    status: defaultStatus.value,
+    options: []
+  });
+  formRef.value?.clearValidate();
+};
+
+/** 按当前路由初始化页面：修改走详情回显，新增走空白默认 */
+const initPage = async () => {
+  resetPage();
+  const id = questionId.value;
+  if (id) {
+    await loadDetail(id);
+  } else {
+    initAnswerArea();
+  }
+};
+
 /** 保证当前题库一定在下拉选项中，避免修改时只回显一个裸 id */
 const ensureBankOption = (id?: string | number, name?: string) => {
   if (id === undefined || id === null || id === '') return;
@@ -671,10 +727,20 @@ const goBack = () => {
 
 onMounted(async () => {
   await loadBankList();
-  if (questionId.value) {
-    await loadDetail(questionId.value);
-  } else {
-    initAnswerArea();
+  await initPage();
+});
+
+// 新增 ⇄ 修改、切换到另一道题时，组件实例可能被复用（不会重新走 mounted），
+// 这里保证路由一变就按最新路由重新初始化，避免残留上一次的输入
+watch(pageKey, () => {
+  initPage();
+});
+
+// 状态字典是异步返回的，加载完成后给新建页补上默认状态（启用 / enabled），
+// 否则默认值可能不命中任何选项，一个都选不中
+watch(questionStatusOptions, () => {
+  if (!form.id && !isStatusValid(form.status)) {
+    form.status = defaultStatus.value;
   }
 });
 </script>

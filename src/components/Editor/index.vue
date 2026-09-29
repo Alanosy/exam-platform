@@ -17,11 +17,11 @@
   <div class="editor">
     <quill-editor
       ref="quillEditorRef"
-      v-model:content="content"
       content-type="html"
       :options="options"
       :style="styles"
-      @text-change="(e: any) => $emit('update:modelValue', content)"
+      @ready="handleEditorReady"
+      @text-change="handleTextChange"
     />
   </div>
 </template>
@@ -123,16 +123,88 @@ const styles = computed(() => {
   return style;
 });
 
-const content = ref('');
+/** 取 quill 实例；quill 是异步实例化的，未就绪时返回 null */
+const getQuill = (): any => {
+  try {
+    return (toRaw(quillEditorRef.value) as any)?.getQuill?.() ?? null;
+  } catch {
+    return null;
+  }
+};
+
+/** 空内容归一化，避免 '' 与 '<p><br></p>' 互相判不等导致反复写入 */
+const normalizeHtml = (html?: string): string => {
+  const value = (html ?? '').trim();
+  return !value || value === '<p></p>' || value === '<p><br></p>' || value === '<br>' ? '' : value;
+};
+
+/**
+ * 手动同步 ql-blank
+ *
+ * quill 只在 text-change 时切换 ql-blank，外部静默写入内容不会触发该逻辑，
+ * 于是会出现「内容已经回显，placeholder 还挂在那」的现象，这里兜底校正。
+ */
+const syncPlaceholder = () => {
+  const quill = getQuill();
+  const root = quill?.root as HTMLElement | undefined;
+  if (!quill || !root) return;
+  const hasText = (quill.getText() ?? '').replace(/[\u200b\ufeff]/g, '').trim().length > 0;
+  const hasEmbed = !!root.querySelector('img, video, audio, iframe');
+  root.classList.toggle('ql-blank', !hasText && !hasEmbed);
+};
+
+/**
+ * 写入内容：必须走 quill 的文档模型（clipboard.convert + setContents）
+ *
+ * 直接给 root.innerHTML 赋值只会改 DOM，quill 内部的 delta 仍然是空的，
+ * 表现就是内容看得见、placeholder 消不掉、光标点不进去、键盘输不进去。
+ */
+const applyContent = (html?: string) => {
+  const quill = getQuill();
+  if (!quill) return;
+  // 内容一致时不用重复写入；但 DOM 被清空（quill 初始化时会清一次）时要补写，否则编辑器点不进去
+  if (normalizeHtml(quill.root.innerHTML) === normalizeHtml(html) && quill.root.firstChild) {
+    syncPlaceholder();
+    return;
+  }
+  try {
+    // clipboard.convert 把 html 解析成 delta，setContents 再走 quill 的文档模型落到编辑器里
+    quill.setContents(quill.clipboard.convert(html ?? ''), 'silent');
+  } catch {
+    // 模型写入失败时至少保证内容可见
+    quill.root.innerHTML = html ?? '';
+  }
+  syncPlaceholder();
+};
+
+/** 编辑器就绪后补写一次内容（初始化时 quill 可能还没实例化） */
+const handleEditorReady = () => {
+  applyContent(props.modelValue);
+  // 只读状态由 options 决定，这里确保与当前 prop 一致
+  getQuill()?.enable(!props.readOnly);
+};
+
+/** 用户输入时把最新 html 同步给父级的 v-model */
+const handleTextChange = () => {
+  emit('update:modelValue', getQuill()?.root.innerHTML ?? '');
+  syncPlaceholder();
+};
+
 watch(
   () => props.modelValue,
-  (v: string) => {
-    if (v !== content.value) {
-      content.value = v || '<p></p>';
-    }
-  },
-  { immediate: true }
+  (v) => applyContent(v as string)
 );
+
+// options 里的 readOnly 只在初始化时读取一次，后续变化需要手动生效
+watch(
+  () => props.readOnly,
+  (v) => getQuill()?.enable(!v)
+);
+
+onMounted(() => {
+  // 兜底：ready 事件早于值就绪时再补一次
+  nextTick(() => applyContent(props.modelValue));
+});
 
 // 图片上传成功返回图片地址
 const handleUploadSuccess = (res: any) => {

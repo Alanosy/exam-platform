@@ -116,9 +116,9 @@ export interface QuestionVO {
   createUser: number;
 
   /**
-   * 0草稿 1启用 2废弃
+   * 0草稿 1启用 2废弃（字典值可能是数字也可能是字符串，统一按 string | number 处理）
    */
-  status: number;
+  status: string | number;
 
   /**
    * 选项列表，详情接口返回时携带
@@ -173,9 +173,9 @@ export interface QuestionForm extends BaseEntity {
   createUser?: number;
 
   /**
-   * 0草稿 1启用 2废弃
+   * 0草稿 1启用 2废弃（字典值可能是数字也可能是字符串，统一按 string | number 处理）
    */
-  status?: number;
+  status?: string | number;
 
   /**
    * 选项列表，新增/修改时随试题一并提交
@@ -233,9 +233,9 @@ export interface QuestionQuery extends PageQuery {
   createUser?: number;
 
   /**
-   * 0草稿 1启用 2废弃
+   * 0草稿 1启用 2废弃（字典值可能是数字也可能是字符串，统一按 string | number 处理）
    */
-  status?: number;
+  status?: string | number;
 
   /**
    * 日期范围参数
