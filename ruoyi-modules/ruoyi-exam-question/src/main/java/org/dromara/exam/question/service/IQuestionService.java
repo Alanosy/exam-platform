@@ -76,4 +76,13 @@ public interface IQuestionService {
      * @return 是否删除成功
      */
     Boolean deleteWithValidByIds(Collection<Long> ids, Boolean isValid);
+
+    /**
+     * 批量切换试题所属题库
+     *
+     * @param ids    试题主键集合
+     * @param bankId 目标题库ID
+     * @return 是否移动成功
+     */
+    Boolean updateBank(Collection<Long> ids, Long bankId);
 }

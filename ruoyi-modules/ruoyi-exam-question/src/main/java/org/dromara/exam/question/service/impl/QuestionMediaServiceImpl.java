@@ -1,21 +1,29 @@
 package org.dromara.exam.question.service.impl;
 
 import org.dromara.common.core.utils.MapstructUtils;
+import org.dromara.common.core.utils.StreamUtils;
 import org.dromara.common.core.utils.StringUtils;
 import org.dromara.common.mybatis.core.page.TableDataInfo;
 import org.dromara.common.mybatis.core.page.PageQuery;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
+import cn.hutool.core.collection.CollUtil;
+import cn.hutool.core.date.DateUtil;
+import cn.hutool.core.util.ObjectUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.dubbo.config.annotation.DubboReference;
+import org.dromara.resource.api.RemoteFileService;
 import org.springframework.stereotype.Service;
 import org.dromara.exam.question.domain.bo.QuestionMediaBo;
+import org.dromara.exam.question.domain.bo.QuestionMediaSaveBo;
 import org.dromara.exam.question.domain.vo.QuestionMediaVo;
 import org.dromara.exam.question.domain.QuestionMedia;
 import org.dromara.exam.question.mapper.QuestionMediaMapper;
 import org.dromara.exam.question.service.IQuestionMediaService;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Collection;
@@ -32,6 +40,9 @@ import java.util.Collection;
 public class QuestionMediaServiceImpl implements IQuestionMediaService {
 
     private final QuestionMediaMapper baseMapper;
+
+    @DubboReference
+    private RemoteFileService remoteFileService;
 
     /**
      * 查询试题多媒体附件
@@ -132,5 +143,52 @@ public class QuestionMediaServiceImpl implements IQuestionMediaService {
             //TODO 做一些业务上的校验,判断是否需要校验
         }
         return baseMapper.deleteByIds(ids) > 0;
+    }
+
+    /**
+     * 登记一笔尚未挂到试题上的上传记录
+     *
+     * @param bo 媒体附件信息
+     * @return 新增记录的主键
+     */
+    @Override
+    public Long insertDraft(QuestionMediaSaveBo bo) {
+        QuestionMedia add = new QuestionMedia();
+        add.setMediaType(bo.getMediaType());
+        add.setMediaUrl(bo.getMediaUrl());
+        add.setMediaName(bo.getMediaName());
+        add.setSort(ObjectUtil.isNull(bo.getSort()) ? 0L : bo.getSort());
+        // questionId 留空表示尚未归属任何试题，由清理任务统一回收
+        add.setQuestionId(null);
+        baseMapper.insert(add);
+        return add.getId();
+    }
+
+    /**
+     * 清理长时间未挂到任何试题上的媒体附件（含对象存储里的文件）
+     *
+     * @param retainHours 保留时长（小时），超过该时长仍未归属试题的记录会被清理
+     * @return 清理的记录数量
+     */
+    @Override
+    public Integer cleanUnused(int retainHours) {
+        // question_id 为空的记录说明上传后一直没有落到任何试题上
+        LambdaQueryWrapper<QuestionMedia> lqw = Wrappers.lambdaQuery();
+        lqw.isNull(QuestionMedia::getQuestionId);
+        lqw.lt(QuestionMedia::getCreateTime, DateUtil.offsetHour(new Date(), -retainHours));
+        List<QuestionMedia> unused = baseMapper.selectList(lqw);
+        if (CollUtil.isEmpty(unused)) {
+            return 0;
+        }
+        List<Long> ids = StreamUtils.toList(unused, QuestionMedia::getId);
+        List<String> urls = StreamUtils.toList(unused, QuestionMedia::getMediaUrl);
+        baseMapper.deleteByIds(ids);
+        // 文件已无任何引用，连同对象存储里的数据一起删除
+        try {
+            remoteFileService.deleteByUrls(urls);
+        } catch (Exception e) {
+            log.warn("清理对象存储孤儿文件失败，记录已删除 url={}", urls, e);
+        }
+        return ids.size();
     }
 }

@@ -19,6 +19,7 @@ import org.dromara.common.log.enums.BusinessType;
 import org.dromara.common.excel.utils.ExcelUtil;
 import org.dromara.exam.question.domain.vo.QuestionMediaVo;
 import org.dromara.exam.question.domain.bo.QuestionMediaBo;
+import org.dromara.exam.question.domain.bo.QuestionMediaSaveBo;
 import org.dromara.exam.question.service.IQuestionMediaService;
 import org.dromara.common.mybatis.core.page.TableDataInfo;
 
@@ -65,7 +66,7 @@ public class QuestionMediaController extends BaseController {
     @SaCheckPermission("system:media:query")
     @GetMapping("/{id}")
     public R<QuestionMediaVo> getInfo(@NotNull(message = "主键不能为空")
-                                     @PathVariable("id") Long id) {
+                                      @PathVariable("id") Long id) {
         return R.ok(questionMediaService.queryById(id));
     }
 
@@ -102,5 +103,29 @@ public class QuestionMediaController extends BaseController {
     public R<Void> remove(@NotEmpty(message = "主键不能为空")
                           @PathVariable("ids") Long[] ids) {
         return toAjax(questionMediaService.deleteWithValidByIds(List.of(ids), true));
+    }
+
+    /**
+     * 登记一笔尚未挂到试题上的上传记录（富文本里插入媒体时调用）
+     *
+     * <p>试题可能还不存在，先记一条 questionId 为空的记录；试题保存时回填归属，
+     * 始终没回填的由清理任务按保留时长回收，连同对象存储里的文件一起删除。
+     */
+    @SaCheckPermission("system:media:add")
+    @PostMapping("/draft")
+    public R<Long> draft(@RequestBody QuestionMediaSaveBo bo) {
+        return R.ok(questionMediaService.insertDraft(bo));
+    }
+
+    /**
+     * 清理长时间未挂到任何试题上的媒体附件与对象存储文件
+     *
+     * @param retainHours 保留时长（小时），默认 24 小时
+     */
+    @SaCheckPermission("system:media:remove")
+    @Log(title = "试题多媒体附件", businessType = BusinessType.DELETE)
+    @PostMapping("/cleanUnused")
+    public R<Integer> cleanUnused(@RequestParam(value = "retainHours", required = false, defaultValue = "24") Integer retainHours) {
+        return R.ok(questionMediaService.cleanUnused(retainHours));
     }
 }
