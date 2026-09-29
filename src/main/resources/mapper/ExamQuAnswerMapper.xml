@@ -18,18 +18,36 @@
         and question_id = #{questionId}
     </select>
 
-    <!--获取用户主观题作答（简答 + 填空）；已阅优先人工分；填空始终返回，是否可改分看 fillNeedMark-->
+    <!--获取用户作答；客观题返回选项排序，主观题返回作答内容；已阅优先人工分-->
     <select id="selectUserAnswer" resultType="cn.org.alan.exam.model.vo.answer.UserAnswerDetailVO">
         select q.id as quId,
             q.content as quTitle,
             q.image as quImg,
             eqa.user_id as userId,
             eqa.exam_id as examId,
-            eqa.answer_content as answer,
-            (select GROUP_CONCAT(o.content ORDER BY o.sort SEPARATOR '|||')
+            CASE
+                WHEN eqa.question_type in (1, 2, 3) THEN (
+                    select GROUP_CONCAT(o.sort ORDER BY o.sort SEPARATOR ',')
+                    from t_option o
+                    where o.qu_id = q.id
+                      and (o.is_deleted = 0 or o.is_deleted is null)
+                      and find_in_set(o.id, eqa.answer_id)
+                )
+                ELSE eqa.answer_content
+            END as answer,
+            CASE
+                WHEN eqa.question_type in (1, 2, 3) THEN (
+                    select GROUP_CONCAT(o.sort ORDER BY o.sort SEPARATOR ',')
+                    from t_option o
+                    where o.qu_id = q.id
+                      and (o.is_deleted = 0 or o.is_deleted is null)
+                      and o.is_right = 1
+                )
+                ELSE (select GROUP_CONCAT(o.content ORDER BY o.sort SEPARATOR '|||')
              from t_option o
              where o.qu_id = q.id and (o.is_deleted = 0 or o.is_deleted is null)
-            ) as refAnswer,
+                )
+            END as refAnswer,
             (select ms.score from t_manual_score ms where ms.exam_qu_answer_id = eqa.id order by ms.id desc limit 1) as manualScore,
             COALESCE(
                 (select ms.score from t_manual_score ms where ms.exam_qu_answer_id = eqa.id order by ms.id desc limit 1),
@@ -42,15 +60,17 @@
             eqa.ai_reason as aiReason,
             COALESCE(e.fill_need_mark, 0) as fillNeedMark,
             COALESCE(eq.score,
-                CASE WHEN eqa.question_type = 5 THEN e.fill_score ELSE e.saq_score END
+                CASE
+                    WHEN eqa.question_type = 5 THEN e.fill_score
+                    WHEN eqa.question_type = 4 THEN e.saq_score
+                END
             ) as totalScore,
             eqa.question_type as quType
         from t_exam_qu_answer as eqa
         left join t_question as q on eqa.question_id = q.id
         left join t_exam as e on e.id = eqa.exam_id
         left join t_exam_question eq on eq.exam_id = eqa.exam_id and eq.question_id = eqa.question_id
-        where eqa.question_type in (4, 5)
-        and eqa.user_id = #{userId}
+        where eqa.user_id = #{userId}
         and eqa.exam_id = #{examId}
         order by eq.sort asc, eqa.id asc
     </select>

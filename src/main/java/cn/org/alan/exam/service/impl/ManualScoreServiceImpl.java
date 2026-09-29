@@ -61,6 +61,16 @@ public class ManualScoreServiceImpl extends ServiceImpl<ManualScoreMapper, Manua
     }
 
     @Override
+    public Result<List<UserAnswerDetailVO>> getMyDetail(Integer examId) {
+        Result<AnswerPaperSummaryVO> summaryResult = getMyPaperSummary(examId);
+        if (summaryResult.getCode() == null || summaryResult.getCode() != 1) {
+            return Result.failed(summaryResult.getMsg());
+        }
+        return Result.success("查询成功",
+                examQuAnswerMapper.selectUserAnswer(SecurityUtil.getUserId(), examId));
+    }
+
+    @Override
     @Transactional
     public Result<String> correct(List<CorrectAnswerFrom> correctAnswerFroms) {
         if (correctAnswerFroms == null || correctAnswerFroms.isEmpty()) {
@@ -191,6 +201,29 @@ public class ManualScoreServiceImpl extends ServiceImpl<ManualScoreMapper, Manua
         AnswerPaperSummaryVO summary = userExamsScoreMapper.selectPaperSummary(examId, userId);
         if (summary == null) {
             return Result.failed("未找到该考生的交卷记录");
+        }
+        return Result.success("查询成功", summary);
+    }
+
+    @Override
+    public Result<AnswerPaperSummaryVO> getMyPaperSummary(Integer examId) {
+        Integer userId = SecurityUtil.getUserId();
+        if (userId == null) {
+            return Result.failed("登录已过期，请重新登录");
+        }
+
+        UserExamsScore scoreRecord = userExamsScoreMapper.selectOne(new LambdaQueryWrapper<UserExamsScore>()
+                .select(UserExamsScore::getId, UserExamsScore::getState)
+                .eq(UserExamsScore::getExamId, examId)
+                .eq(UserExamsScore::getUserId, userId)
+                .last("limit 1"));
+        if (scoreRecord == null || scoreRecord.getState() == null || scoreRecord.getState() != 1) {
+            return Result.failed("未找到你的交卷记录");
+        }
+
+        AnswerPaperSummaryVO summary = userExamsScoreMapper.selectPaperSummary(examId, userId);
+        if (summary == null) {
+            return Result.failed("未找到你的交卷记录");
         }
         return Result.success("查询成功", summary);
     }

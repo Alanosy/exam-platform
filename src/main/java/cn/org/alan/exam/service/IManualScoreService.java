@@ -28,6 +28,14 @@ public interface IManualScoreService extends IService<ManualScore> {
      */
     Result<List<UserAnswerDetailVO>> getDetail(Integer userId, Integer examId);
 
+    /**
+     * 学生查询本人试卷作答信息
+     *
+     * @param examId 试卷ID
+     * @return
+     */
+    Result<List<UserAnswerDetailVO>> getMyDetail(Integer examId);
+
 
     /**
      * 批改试卷
@@ -59,5 +67,13 @@ public interface IManualScoreService extends IService<ManualScore> {
      * 阅卷/查看答卷摘要
      */
     Result<AnswerPaperSummaryVO> paperSummary(Integer examId, Integer userId);
+
+    /**
+     * 学生查询本人试卷摘要
+     *
+     * @param examId 试卷ID
+     * @return
+     */
+    Result<AnswerPaperSummaryVO> getMyPaperSummary(Integer examId);
 
 }

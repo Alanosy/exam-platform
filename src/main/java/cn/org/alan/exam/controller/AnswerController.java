@@ -47,6 +47,19 @@ public class AnswerController {
     }
 
     /**
+     * 学生查询本人答卷作答信息
+     *
+     * @param examId 试卷ID
+     * @return
+     */
+    @ApiOperation("学生查询本人答卷作答信息")
+    @GetMapping("/my/detail")
+    @PreAuthorize("hasAuthority('role_student')")
+    public Result<List<UserAnswerDetailVO>> myDetail(@RequestParam Integer examId) {
+        return manualScoreService.getMyDetail(examId);
+    }
+
+    /**
      * 批改试卷
      *
      * @return
@@ -96,5 +109,18 @@ public class AnswerController {
     public Result<AnswerPaperSummaryVO> paperSummary(@RequestParam Integer examId,
                                                      @RequestParam Integer userId) {
         return manualScoreService.paperSummary(examId, userId);
+    }
+
+    /**
+     * 学生查询本人答卷摘要
+     *
+     * @param examId 试卷ID
+     * @return
+     */
+    @ApiOperation("学生查询本人答卷摘要")
+    @GetMapping("/my/exam/summary")
+    @PreAuthorize("hasAuthority('role_student')")
+    public Result<AnswerPaperSummaryVO> myPaperSummary(@RequestParam Integer examId) {
+        return manualScoreService.getMyPaperSummary(examId);
     }
 }

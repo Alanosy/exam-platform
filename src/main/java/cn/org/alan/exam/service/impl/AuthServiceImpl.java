@@ -29,6 +29,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.data.redis.core.script.DefaultRedisScript;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -94,6 +95,15 @@ public class AuthServiceImpl implements IAuthService {
     private ILogService logService;
     @Autowired
     private RestTemplate restTemplate;
+
+    private static final DefaultRedisScript<Long> MARK_CAPTCHA_VERIFIED_SCRIPT = new DefaultRedisScript<>(
+            "if string.upper(redis.call('GET', KEYS[1])) == string.upper(ARGV[1]) then "
+                    + "redis.call('DEL', KEYS[1]) "
+                    + "redis.call('SET', KEYS[2], '1', 'EX', 300) "
+                    + "return 1 "
+                    + "end "
+                    + "return 0",
+            Long.class);
 
     /**
      * 登录
@@ -251,18 +261,19 @@ public class AuthServiceImpl implements IAuthService {
      */
     @Override
     public Result<String> verifyCode(HttpServletRequest request, String code) {
+        if (StringUtils.isBlank(code)) {
+            throw new ServiceRuntimeException("请输入验证码");
+        }
         String key = "code" + request.getSession().getId();
-        String rightCode = stringRedisTemplate.opsForValue().get(key);
-        if (StringUtils.isBlank(rightCode)) {
-            throw new ServiceRuntimeException("验证码已过期");
+        String verifiedKey = "isVerifyCode" + request.getSession().getId();
+        Long verified = stringRedisTemplate.execute(
+                MARK_CAPTCHA_VERIFIED_SCRIPT,
+                java.util.Arrays.asList(key, verifiedKey),
+                code);
+        if (verified == null || verified == 0) {
+            String rightCode = stringRedisTemplate.opsForValue().get(key);
+            throw new ServiceRuntimeException(StringUtils.isBlank(rightCode) ? "验证码已过期" : "验证码错误");
         }
-        if (!rightCode.equalsIgnoreCase(code)) {
-            throw new ServiceRuntimeException("验证码错误");
-        }
-        // 验证码校验后redis清除验证码，避免重复使用
-        stringRedisTemplate.delete(key);
-        // 验证码校验后redis存入校验成功，避免用户登录和注册时不验证验证码直接提交
-        stringRedisTemplate.opsForValue().set("isVerifyCode" + request.getSession().getId(), "1", 5, TimeUnit.MINUTES);
         return Result.success("验证码校验成功");
     }
 
