@@ -1,12 +1,15 @@
 package org.dromara.exam.question.controller;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import lombok.RequiredArgsConstructor;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.constraints.*;
 import cn.dev33.satoken.annotation.SaCheckPermission;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.validation.annotation.Validated;
 import org.dromara.common.idempotent.annotation.RepeatSubmit;
 import org.dromara.common.log.annotation.Log;
@@ -17,8 +20,11 @@ import org.dromara.common.core.validate.AddGroup;
 import org.dromara.common.core.validate.EditGroup;
 import org.dromara.common.log.enums.BusinessType;
 import org.dromara.common.excel.utils.ExcelUtil;
+import org.dromara.exam.question.domain.vo.QuestionImportVo;
 import org.dromara.exam.question.domain.vo.QuestionVo;
 import org.dromara.exam.question.domain.bo.QuestionBo;
+import org.dromara.exam.question.listener.QuestionImportListener;
+import org.dromara.exam.question.service.IQuestionImportService;
 import org.dromara.exam.question.service.IQuestionService;
 import org.dromara.common.mybatis.core.page.TableDataInfo;
 
@@ -36,6 +42,8 @@ import org.dromara.common.mybatis.core.page.TableDataInfo;
 public class QuestionController extends BaseController {
 
     private final IQuestionService questionService;
+
+    private final IQuestionImportService questionImportService;
 
     /**
      * 查询试题主列表
@@ -55,6 +63,39 @@ public class QuestionController extends BaseController {
     public void export(QuestionBo bo, HttpServletResponse response) {
         List<QuestionVo> list = questionService.queryList(bo);
         ExcelUtil.exportExcel(list, "试题主", QuestionVo.class, response);
+    }
+
+    /**
+     * 下载试题导入模板
+     *
+     * <p>空模板 + 题库名称 / 题型 / 难度 / 状态四列下拉，用户按模板填完即可直接上传。
+     */
+    @SaCheckPermission("system:question:add")
+    @PostMapping("/importTemplate")
+    public void importTemplate(HttpServletResponse response) {
+        ExcelUtil.exportExcel(new ArrayList<QuestionImportVo>(), "试题导入模板", QuestionImportVo.class, response,
+            questionImportService.buildTemplateOptions());
+    }
+
+    /**
+     * 批量导入试题
+     *
+     * <p>整批校验通过后整批入库，任意一行不通过则全部回滚，并把每一行的错误原因返回给前端。
+     *
+     * @param file   上传的 Excel
+     * @param bankId Excel 未填写题库名称时使用的默认题库
+     */
+    @SaCheckPermission("system:question:add")
+    @Log(title = "试题主", businessType = BusinessType.IMPORT)
+    @PostMapping(value = "/importData", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public R<String> importData(@RequestPart("file") MultipartFile file,
+                                @RequestParam(value = "bankId", required = false) Long bankId) throws Exception {
+        if (file.isEmpty()) {
+            return R.fail("请选择要上传的文件");
+        }
+        QuestionImportListener listener = new QuestionImportListener();
+        ExcelUtil.importExcel(file.getInputStream(), QuestionImportVo.class, listener);
+        return R.ok(questionImportService.importQuestions(listener.getRows(), bankId));
     }
 
     /**
