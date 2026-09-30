@@ -1,0 +1,370 @@
+// 全局SCSS变量
+:root {
+  --menuBg: #1f2d3d;
+  --menuColor: #bfcbd9;
+  --menuActiveText: #f4f4f5;
+  --menuHover: #263445;
+
+  --subMenuBg: #1f2d3d;
+  --subMenuActiveText: #f4f4f5;
+  --subMenuHover: #001528;
+  --subMenuTitleHover: #293444;
+
+  // 菜单栏缩进
+  --el-menu-base-level-padding: 12px;
+  --el-menu-level-padding: 8px;
+  --el-menu-item-height: 50px;
+
+  --fixedHeaderBg: #ffffff;
+  --tableHeaderBg: #f8f8f9;
+  --tableHeaderTextColor: #515a6e;
+
+  // ele
+  --brder-color: #e8e8e8;
+
+  // 添加 tag 相关变量
+  --tags-view-active-bg: var(--el-color-primary);
+  --tags-view-active-border-color: var(--el-color-primary);
+
+  // Modern rounded style + soft shadows
+  --app-radius-base: 8px;
+  --app-radius-sm: calc(var(--app-radius-base) * 0.6);
+  --app-radius-md: var(--app-radius-base);
+  --app-radius-lg: calc(var(--app-radius-base) * 1.4);
+  --app-radius-lg: var(--app-radius-base);
+  --app-shadow-sm: 0 1px 2px rgba(15, 23, 42, 0.08), 0 6px 16px rgba(15, 23, 42, 0.08);
+  --app-shadow-md: 0 8px 24px rgba(15, 23, 42, 0.12);
+  --app-shadow-lg: 0 12px 32px rgba(15, 23, 42, 0.16);
+  --app-surface-bg: #ffffff;
+  --app-surface-border: var(--el-border-color-lighter);
+
+  // Element Plus tokens
+  --el-border-radius-base: var(--app-radius-md);
+  --el-border-radius-small: var(--app-radius-sm);
+  --el-border-radius-round: 999px;
+  --el-box-shadow-light: var(--app-shadow-sm);
+  --el-box-shadow: var(--app-shadow-md);
+  --el-bg-color-page: #f5f7fb;
+}
+
+html.dark {
+  --menuBg: #1d1e1f;
+  --menuColor: #bfcbd9;
+  --menuActiveText: #f4f4f5;
+  --menuHover: #171819;
+
+  --subMenuBg: #1d1e1f;
+  --subMenuActiveText: #f4f4f5;
+  --subMenuHover: #171819;
+  --subMenuTitleHover: #171819;
+
+  --fixedHeaderBg: #171819;
+  --tableHeaderBg: var(--el-bg-color);
+  --tableHeaderTextColor: var(--el-text-color);
+
+  // 覆盖ele 高亮当前行的标准暗色
+  .el-tree-node__content {
+    --el-color-primary-light-9: #262727;
+  }
+
+  .el-table {
+    --el-table-current-row-bg-color: var(--el-color-primary-dark-7)
+  }
+
+  .el-dropdown__popper {
+    --el-dropdown-menuItem-hover-fill: var(--el-color-primary-dark-7)
+  }
+
+  .el-button {
+    --el-button-hover-bg-color: var(--el-color-primary-dark-9);
+    --el-button-hover-border-color: var(--el-color-primary-dark-7);
+  }
+
+  .el-button.is-plain {
+    --el-button-hover-bg-color: var(--el-fill-color-light);
+    --el-button-hover-border-color: var(--el-color-primary);
+  }
+
+  .el-button.is-dashed {
+    --el-button-hover-bg-color: var(--el-fill-color-light);
+    --el-button-hover-border-color: var(--el-color-primary);
+  }
+
+  .el-button--primary {
+    --el-button-bg-color: #2b6bd3;
+    --el-button-border-color: #3a7be8;
+    --el-button-text-color: #eef4ff;
+    --el-button-hover-bg-color: #3a7be8;
+    --el-button-hover-border-color: #3a7be8;
+    --el-button-active-bg-color: #255fb8;
+    --el-button-active-border-color: #255fb8;
+  }
+
+  .el-button--primary.is-plain {
+    --el-button-bg-color: rgba(43, 107, 211, 0.12);
+    --el-button-border-color: rgba(58, 123, 232, 0.5);
+    --el-button-text-color: #dbe8ff;
+    --el-button-hover-text-color: var(--el-color-white);
+    --el-button-hover-bg-color: var(--el-color-primary);
+    --el-button-hover-border-color: var(--el-color-primary);
+    --el-button-active-bg-color: rgba(43, 107, 211, 0.28);
+    --el-button-active-border-color: rgba(43, 107, 211, 0.8);
+  }
+
+  .el-button--primary.is-dashed {
+    --el-button-bg-color: rgba(43, 107, 211, 0.12);
+    --el-button-border-color: rgba(58, 123, 232, 0.5);
+    --el-button-text-color: #dbe8ff;
+    --el-button-hover-text-color: #dbe8ff;
+    --el-button-hover-bg-color: rgba(58, 123, 232, 0.2);
+    --el-button-hover-border-color: rgba(58, 123, 232, 0.7);
+    --el-button-active-bg-color: rgba(43, 107, 211, 0.28);
+    --el-button-active-border-color: rgba(43, 107, 211, 0.8);
+  }
+
+  .el-button--success {
+    --el-button-bg-color: #1f8a5a;
+    --el-button-border-color: #29a46d;
+    --el-button-text-color: #eefaf4;
+    --el-button-hover-bg-color: #29a46d;
+    --el-button-hover-border-color: #29a46d;
+    --el-button-active-bg-color: #1b784f;
+    --el-button-active-border-color: #1b784f;
+  }
+
+  .el-button--success.is-plain {
+    --el-button-bg-color: rgba(31, 138, 90, 0.12);
+    --el-button-border-color: rgba(41, 164, 109, 0.5);
+    --el-button-text-color: #dbf6e8;
+    --el-button-hover-text-color: var(--el-color-white);
+    --el-button-hover-bg-color: var(--el-color-success);
+    --el-button-hover-border-color: var(--el-color-success);
+    --el-button-active-bg-color: rgba(31, 138, 90, 0.28);
+    --el-button-active-border-color: rgba(31, 138, 90, 0.8);
+  }
+
+  .el-button--success.is-dashed {
+    --el-button-bg-color: rgba(31, 138, 90, 0.12);
+    --el-button-border-color: rgba(41, 164, 109, 0.5);
+    --el-button-text-color: #dbf6e8;
+    --el-button-hover-text-color: #dbf6e8;
+    --el-button-hover-bg-color: rgba(41, 164, 109, 0.2);
+    --el-button-hover-border-color: rgba(41, 164, 109, 0.7);
+    --el-button-active-bg-color: rgba(31, 138, 90, 0.28);
+    --el-button-active-border-color: rgba(31, 138, 90, 0.8);
+  }
+
+  .el-button--warning {
+    --el-button-bg-color: #b87922;
+    --el-button-border-color: #d6953b;
+    --el-button-text-color: #fff7e6;
+    --el-button-hover-bg-color: #d6953b;
+    --el-button-hover-border-color: #d6953b;
+    --el-button-active-bg-color: #a56c1d;
+    --el-button-active-border-color: #a56c1d;
+  }
+
+  .el-button--warning.is-plain {
+    --el-button-bg-color: rgba(184, 121, 34, 0.12);
+    --el-button-border-color: rgba(214, 149, 59, 0.5);
+    --el-button-text-color: #ffecc8;
+    --el-button-hover-text-color: var(--el-color-white);
+    --el-button-hover-bg-color: var(--el-color-warning);
+    --el-button-hover-border-color: var(--el-color-warning);
+    --el-button-active-bg-color: rgba(184, 121, 34, 0.28);
+    --el-button-active-border-color: rgba(184, 121, 34, 0.8);
+  }
+
+  .el-button--warning.is-dashed {
+    --el-button-bg-color: rgba(184, 121, 34, 0.12);
+    --el-button-border-color: rgba(214, 149, 59, 0.5);
+    --el-button-text-color: #ffecc8;
+    --el-button-hover-text-color: #ffecc8;
+    --el-button-hover-bg-color: rgba(214, 149, 59, 0.2);
+    --el-button-hover-border-color: rgba(214, 149, 59, 0.7);
+    --el-button-active-bg-color: rgba(184, 121, 34, 0.28);
+    --el-button-active-border-color: rgba(184, 121, 34, 0.8);
+  }
+
+  .el-button--danger {
+    --el-button-bg-color: #b24a4a;
+    --el-button-border-color: #d16060;
+    --el-button-text-color: #ffecec;
+    --el-button-hover-bg-color: #d16060;
+    --el-button-hover-border-color: #d16060;
+    --el-button-active-bg-color: #9c3f3f;
+    --el-button-active-border-color: #9c3f3f;
+  }
+
+  .el-button--danger.is-plain {
+    --el-button-bg-color: rgba(178, 74, 74, 0.12);
+    --el-button-border-color: rgba(209, 96, 96, 0.5);
+    --el-button-text-color: #ffd6d6;
+    --el-button-hover-text-color: var(--el-color-white);
+    --el-button-hover-bg-color: var(--el-color-danger);
+    --el-button-hover-border-color: var(--el-color-danger);
+    --el-button-active-bg-color: rgba(178, 74, 74, 0.28);
+    --el-button-active-border-color: rgba(178, 74, 74, 0.8);
+  }
+
+  .el-button--danger.is-dashed {
+    --el-button-bg-color: rgba(178, 74, 74, 0.12);
+    --el-button-border-color: rgba(209, 96, 96, 0.5);
+    --el-button-text-color: #ffd6d6;
+    --el-button-hover-text-color: #ffd6d6;
+    --el-button-hover-bg-color: rgba(209, 96, 96, 0.2);
+    --el-button-hover-border-color: rgba(209, 96, 96, 0.7);
+    --el-button-active-bg-color: rgba(178, 74, 74, 0.28);
+    --el-button-active-border-color: rgba(178, 74, 74, 0.8);
+  }
+
+  .el-button--info {
+    --el-button-bg-color: #4b5563;
+    --el-button-border-color: #667085;
+    --el-button-text-color: #f3f4f6;
+    --el-button-hover-bg-color: #667085;
+    --el-button-hover-border-color: #667085;
+    --el-button-active-bg-color: #3f4753;
+    --el-button-active-border-color: #3f4753;
+  }
+
+  .el-button--info.is-plain {
+    --el-button-bg-color: rgba(75, 85, 99, 0.16);
+    --el-button-border-color: rgba(102, 112, 133, 0.55);
+    --el-button-text-color: #e5e7eb;
+    --el-button-hover-text-color: var(--el-color-white);
+    --el-button-hover-bg-color: var(--el-color-info);
+    --el-button-hover-border-color: var(--el-color-info);
+    --el-button-active-bg-color: rgba(75, 85, 99, 0.3);
+    --el-button-active-border-color: rgba(75, 85, 99, 0.85);
+  }
+
+  .el-button--info.is-dashed {
+    --el-button-bg-color: rgba(75, 85, 99, 0.16);
+    --el-button-border-color: rgba(102, 112, 133, 0.55);
+    --el-button-text-color: #e5e7eb;
+    --el-button-hover-text-color: #e5e7eb;
+    --el-button-hover-bg-color: rgba(102, 112, 133, 0.22);
+    --el-button-hover-border-color: rgba(102, 112, 133, 0.75);
+    --el-button-active-bg-color: rgba(75, 85, 99, 0.3);
+    --el-button-active-border-color: rgba(75, 85, 99, 0.85);
+  }
+
+  .el-switch {
+    --el-switch-on-color: var(--el-color-primary-dark-6);
+    --el-switch-border-color: var(--el-color-primary-light-2);
+  }
+
+  .el-tag--primary {
+    --el-tag-bg-color: var(--el-color-primary-dark-6);
+    --el-tag-border-color: var(--el-color-primary-light-2);
+  }
+
+  .el-tag--success {
+    --el-tag-bg-color: rgba(31, 138, 90, 0.18);
+    --el-tag-border-color: rgba(41, 164, 109, 0.6);
+    --el-tag-text-color: #c7f2df;
+  }
+
+  .el-tag--warning {
+    --el-tag-bg-color: rgba(184, 121, 34, 0.18);
+    --el-tag-border-color: rgba(214, 149, 59, 0.6);
+    --el-tag-text-color: #ffe6bb;
+  }
+
+  .el-tag--danger {
+    --el-tag-bg-color: rgba(178, 74, 74, 0.18);
+    --el-tag-border-color: rgba(209, 96, 96, 0.6);
+    --el-tag-text-color: #ffd0d0;
+  }
+
+  .el-tag--info {
+    --el-tag-bg-color: rgba(75, 85, 99, 0.18);
+    --el-tag-border-color: rgba(102, 112, 133, 0.6);
+    --el-tag-text-color: #e5e7eb;
+  }
+
+  // 在深色模式下使用更深的颜色
+  --tags-view-active-bg: var(--el-color-primary-dark-6);
+  --tags-view-active-border-color: var(--el-color-primary-light-2);
+
+  // Modern rounded style + soft shadows (dark)
+  --app-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.28), 0 8px 18px rgba(0, 0, 0, 0.25);
+  --app-shadow-md: 0 10px 26px rgba(0, 0, 0, 0.35);
+  --app-shadow-lg: 0 14px 34px rgba(0, 0, 0, 0.4);
+  --app-surface-bg: #151922;
+  --app-surface-border: var(--el-border-color);
+  --el-bg-color-page: #0f1115;
+  // vxe-table 主题
+  --vxe-font-color: #98989e;
+  --vxe-primary-color: #2c7ecf;
+  --vxe-icon-background-color: #98989e;
+  --vxe-table-font-color: #98989e;
+  --vxe-table-resizable-color: #95969a;
+  --vxe-table-header-background-color: #28282a;
+  --vxe-table-body-background-color: #151518;
+  --vxe-table-background-color: #4a5663;
+  --vxe-table-border-width: 1px;
+  --vxe-table-border-color: #37373a;
+  --vxe-toolbar-background-color: #37373a;
+
+  // ele
+  --brder-color: #37373a;
+}
+
+// base color
+$blue: #324157;
+$light-blue: #3a71a8;
+$red: #c03639;
+$pink: #e65d6e;
+$green: #30b08f;
+$tiffany: #4ab7bd;
+$yellow: #fec171;
+$panGreen: #30b08f;
+
+// 默认菜单主题风格
+$base-menu-color: var(--menuColor);
+$base-menu-hover: var(--menuHover);
+$base-menu-color-active: var(--menuActiveText);
+$base-menu-background: var(--menuBg);
+$base-logo-title-color: #ffffff;
+
+$base-menu-light-color: rgba(0, 0, 0, 0.7);
+$base-menu-light-background: #ffffff;
+$base-logo-light-title-color: #001529;
+
+$base-sub-menu-background: var(--subMenuBg);
+$base-sub-menu-hover: var(--subMenuHover);
+$base-sub-menu-title-hover: var(--subMenuTitleHover);
+// 表单头背景色和标题颜色
+$fixed-header-bg: var(--fixedHeaderBg);
+$table-header-bg: var(--tableHeaderBg);
+$table-header-text-color: var(--tableHeaderTextColor);
+
+$--color-primary: #409eff;
+$--color-success: #67c23a;
+$--color-warning: #e6a23c;
+$--color-danger: #f56c6c;
+$--color-info: #909399;
+
+$base-sidebar-width: 200px;
+
+// the :export directive is the magic sauce for webpack
+// https://www.bluematador.com/blog/how-to-share-variables-between-js-and-sass
+:export {
+  menuColor: $base-menu-color;
+  menuLightColor: $base-menu-light-color;
+  menuColorActive: $base-menu-color-active;
+  menuBackground: $base-menu-background;
+  menuLightBackground: $base-menu-light-background;
+  subMenuBackground: $base-sub-menu-background;
+  subMenuHover: $base-sub-menu-hover;
+  sideBarWidth: $base-sidebar-width;
+  logoTitleColor: $base-logo-title-color;
+  logoLightTitleColor: $base-logo-light-title-color;
+  primaryColor: $--color-primary;
+  successColor: $--color-success;
+  dangerColor: $--color-danger;
+  infoColor: $--color-info;
+  warningColor: $--color-warning;
+}
