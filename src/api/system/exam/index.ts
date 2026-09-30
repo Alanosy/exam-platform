@@ -1,6 +1,6 @@
 import request from '@/utils/request';
 import { AxiosPromise } from 'axios';
-import { ExamVO, ExamForm, ExamQuery } from '@/api/system/exam/types';
+import { ExamVO, ExamForm, ExamQuery, ExamJoinVO } from '@/api/system/exam/types';
 
 /**
  * 查询考试主列表
@@ -59,6 +59,30 @@ export const refreshJoinCode = (id: string | number): AxiosPromise<string> => {
   return request({
     url: `/exam/${id}/joinCode/refresh`,
     method: 'post'
+  });
+};
+
+/**
+ * 按加入码查询公开考试的加入信息
+ * @param code 加入码
+ */
+export const getExamJoinInfo = (code: string): AxiosPromise<ExamJoinVO> => {
+  return request({
+    url: `/exam/join/${code}`,
+    method: 'get'
+  });
+};
+
+/**
+ * 通过加入码加入公开考试，需要参与密码时传 password
+ * @param code 加入码
+ * @param password 参与密码
+ */
+export const joinExam = (code: string, password?: string): AxiosPromise<number> => {
+  return request({
+    url: `/exam/join/${code}`,
+    method: 'post',
+    data: { password }
   });
 };
 

@@ -63,7 +63,6 @@
         :height="240"
         :min-height="200"
         placeholder="请输入题干内容，支持富文本与图片"
-        @upload-success="handleMediaUpload"
       />
     </el-card>
 
@@ -90,7 +89,6 @@
               :min-height="80"
               :read-only="!!meta.fixedOptions"
               placeholder="请输入选项内容"
-              @upload-success="handleMediaUpload"
             />
           </div>
           <div class="flex items-center gap-1 shrink-0 pt-[8px]">
@@ -130,7 +128,7 @@
 
       <!-- 简答 / 论述 / 文件上传：参考答案富文本 -->
       <template v-else-if="meta.answerMode === 'text'">
-        <editor v-model="answerText" :height="240" :min-height="180" placeholder="请输入参考答案" @upload-success="handleMediaUpload" />
+        <editor v-model="answerText" :height="240" :min-height="180" placeholder="请输入参考答案" />
       </template>
 
       <!-- 代码题：语言 + 参考实现 -->
@@ -167,7 +165,12 @@
       <template #header>
         <span>试题解析</span>
       </template>
-      <editor v-model="form.analysis" :height="220" :min-height="180" placeholder="请输入整题解析，支持富文本" @upload-success="handleMediaUpload" />
+      <editor
+        v-model="form.analysis"
+        :height="220"
+        :min-height="180"
+        placeholder="请输入整题解析，支持富文本"
+      />
     </el-card>
   </div>
 </template>
@@ -177,8 +180,7 @@ import { useRoute, useRouter } from 'vue-router';
 import type { FormRules } from 'element-plus';
 import Editor from '@/components/Editor/index.vue';
 import { createQuestion, getQuestion, updateQuestion } from '@/api/system/question';
-import { QuestionForm, QuestionOption, QuestionVO, QuestionMediaSave } from '@/api/system/question/types';
-import { draftMedia } from '@/api/system/media';
+import { QuestionForm, QuestionOption, QuestionVO } from '@/api/system/question/types';
 import { listOption } from '@/api/system/option';
 import { OptionVO } from '@/api/system/option/types';
 import { listBank } from '@/api/system/bank';
@@ -615,56 +617,7 @@ const validateForm = async (): Promise<boolean> => {
   }
 };
 
-/* ---------------------------- 富文本媒体附件 ---------------------------- */
-
-/** 富文本上传成功后立即登记一条草稿记录，避免放弃编辑后文件变成孤儿 */
-const handleMediaUpload = async (media: QuestionMediaSave) => {
-  try {
-    await draftMedia({ mediaType: media.mediaType, mediaUrl: media.mediaUrl, mediaName: media.mediaName });
-  } catch {
-    // 登记失败不影响写题本身，只是少了这条孤儿回收依据
-  }
-};
-
-/** 从 url 里取原始文件名 */
-const fileNameFromUrl = (url: string): string => {
-  try {
-    const clean = url.split('?')[0];
-    return decodeURIComponent(clean.substring(clean.lastIndexOf('/') + 1));
-  } catch {
-    return url;
-  }
-};
-
-/**
- * 解析本次提交的富文本里所有图片 / 音视频地址
- *
- * 题干、选项、解析、参考答案四处都会用到富文本，全部扫一遍按地址去重，
- * 交给后端写入 question_media，建立试题与对象存储文件的引用关系。
- */
-const buildMedias = (): QuestionMediaSave[] => {
-  const htmlList: string[] = [form.title ?? '', form.analysis ?? ''];
-  optionRows.value.forEach((row) => htmlList.push(row.content));
-  if (meta.value.answerMode === 'text') {
-    htmlList.push(answerText.value);
-  }
-
-  const medias: QuestionMediaSave[] = [];
-  const seen = new Set<string>();
-  htmlList.forEach((html) => {
-    if (!html) return;
-    const doc = new DOMParser().parseFromString(html, 'text/html');
-    doc.querySelectorAll('img, video, audio, source').forEach((el) => {
-      const src = el.getAttribute('src');
-      if (!src || seen.has(src)) return;
-      seen.add(src);
-      const tag = el.tagName.toLowerCase();
-      const mediaType = tag === 'img' ? 'image' : tag === 'audio' ? 'audio' : 'video';
-      medias.push({ mediaType, mediaUrl: src, mediaName: fileNameFromUrl(src), sort: medias.length + 1 });
-    });
-  });
-  return medias;
-};
+/* ------------------------------------ 提交 ------------------------------------ */
 
 const submitForm = async (status?: number) => {
   if (!stripHtml(form.title)) {
@@ -694,9 +647,7 @@ const submitForm = async (status?: number) => {
         }))
       : []
   };
-  // 富文本里的图片 / 音视频一并提交，后端据此维护 question_media
-  payload.medias = buildMedias();
-
+  // 富文本里的图片以访问地址的形式已经嵌在 title / 选项 / 解析 的 HTML 里，随本包一起落库
   buttonLoading.value = true;
   try {
     if (form.id) {

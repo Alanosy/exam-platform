@@ -94,6 +94,45 @@ export interface AntiCheatConfig {
   fullScreen: number;
 }
 
+/** 考生通过加入链接看到的考试概要（不含参与密码本身） */
+export interface ExamJoinVO {
+  /** 考试ID */
+  examId: string | number;
+
+  /** 考试名称 */
+  examName: string;
+
+  /** 考试描述 */
+  examDesc: string;
+
+  /** 开始时间 */
+  startTime: string;
+
+  /** 结束时间 */
+  endTime: string;
+
+  /** 考试限时（分钟），0 表示沿用试卷时长 */
+  duration: number;
+
+  /** 状态 not_start未开始 / ongoing进行中 / finished已结束 / archived已归档 */
+  status: string;
+
+  /** 加入链接有效期，为空表示与考试结束时间一致 */
+  joinExpireTime: string;
+
+  /** 是否需要输入参与密码 */
+  needPassword: boolean;
+
+  /** 当前登录用户是否已加入本场考试 */
+  joined: boolean;
+
+  /** 当前是否允许加入 */
+  joinable: boolean;
+
+  /** 不允许加入时的原因，允许加入时为空 */
+  joinTip: string;
+}
+
 export interface ExamQuery extends PageQuery {
   /** 考试名称（模糊匹配） */
   examName?: string;

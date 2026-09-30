@@ -140,6 +140,54 @@ export const constantRoutes: RouteRecordRaw[] = [
         meta: { title: '考试配置', activeMenu: '/system/exam', noCache: true }
       }
     ]
+  },
+  {
+    // 考生通过公开链接加入考试：/exam/join/{joinCode}
+    // 不带 Layout，独立整页展示；未登录时由 permission.ts 的路由守卫拦到 /login?redirect=...
+    path: '/exam/join/:code',
+    component: () => import('@/views/exam/join/index.vue'),
+    name: 'ExamJoin',
+    hidden: true,
+    meta: { title: '加入考试', noCache: true }
+  },
+  {
+    // 考试中心：查看自己参加的所有考试
+    path: '/exam/center',
+    component: Layout,
+    hidden: true,
+    redirect: 'noRedirect',
+    children: [
+      {
+        path: '',
+        component: () => import('@/views/exam/center/index.vue'),
+        name: 'ExamCenter',
+        meta: { title: '考试中心', noCache: true }
+      }
+    ]
+  },
+  {
+    // 开考前的考试说明确认页
+    path: '/exam/brief/:examId',
+    component: () => import('@/views/exam/brief/index.vue'),
+    name: 'ExamBrief',
+    hidden: true,
+    meta: { title: '考试须知', noCache: true }
+  },
+  {
+    // 答题页：全屏专注，交卷后同页切换到成绩视图
+    path: '/exam/answer/:recordId',
+    component: () => import('@/views/exam/answer/index.vue'),
+    name: 'ExamAnswer',
+    hidden: true,
+    meta: { title: '在线答题', noCache: true }
+  },
+  {
+    // 成绩页：单独进入某份答卷的成绩（答题页交卷后也在本页展示成绩）
+    path: '/exam/result/:recordId',
+    component: () => import('@/views/exam/answer/index.vue'),
+    name: 'ExamResult',
+    hidden: true,
+    meta: { title: '考试成绩', noCache: true }
   }
 ];
 

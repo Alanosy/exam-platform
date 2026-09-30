@@ -33,7 +33,7 @@ import { QuillEditor, Quill } from '@vueup/vue-quill';
 import { propTypes } from '@/utils/propTypes';
 import { globalHeaders } from '@/utils/request';
 
-const emit = defineEmits(['update:modelValue', 'uploadSuccess']);
+const emit = defineEmits(['update:modelValue']);
 
 const props = defineProps({
   /* 编辑器的内容 */
@@ -46,8 +46,8 @@ const props = defineProps({
   readOnly: propTypes.bool.def(false),
   /* 上传文件大小限制(MB) */
   fileSize: propTypes.number.def(5),
-  /* 插入图片时的默认最大宽度(px)，超出则按原始比例等比缩小；0 表示不限制 */
-  imageMaxWidth: propTypes.number.def(480),
+  /* 插入图片时的默认最大高度(px)，超出则按原始比例等比缩小；0 表示不限制 */
+  imageMaxHeight: propTypes.number.def(100),
   /* 类型（base64格式、url格式） */
   type: propTypes.string.def('url'),
   /* 精简工具栏，用于行内、小面积录入（如试题选项） */
@@ -230,10 +230,11 @@ const insertImage = async (url: string) => {
   // 插入图片，res为服务器返回的图片链接地址
   quill.insertEmbed(length, 'image', url);
 
+  // 原图比上限高时才缩，小图不会被放大；宽度按原始比例换算，避免拉伸变形
   const size = await loadImageSize(url);
-  if (size && props.imageMaxWidth > 0 && size.width > props.imageMaxWidth) {
-    const width = props.imageMaxWidth;
-    const height = Math.max(1, Math.round((size.height * width) / size.width));
+  if (size && props.imageMaxHeight > 0 && size.height > props.imageMaxHeight) {
+    const height = props.imageMaxHeight;
+    const width = Math.max(1, Math.round((size.width * height) / size.height));
     quill.formatText(length, 1, 'width', String(width), 'user');
     quill.formatText(length, 1, 'height', String(height), 'user');
   }
@@ -241,13 +242,10 @@ const insertImage = async (url: string) => {
   quill.setSelection(length + 1);
 };
 
-// 图片上传成功返回图片地址
+// 图片上传成功：把返回的访问地址直接嵌进富文本，URL 随 HTML 一起保存
 const handleUploadSuccess = async (res: any) => {
-  // 如果上传成功
   if (res.code === 200) {
     await insertImage(res.data.url);
-    // 通知业务侧：本图片已上传成功，可登记到媒体表，避免弃稿后变成孤儿文件
-    emit('uploadSuccess', { mediaType: 'image', mediaUrl: res.data.url, mediaName: res.data.fileName, ossId: res.data.ossId });
     proxy?.$modal.closeLoading();
   } else {
     proxy?.$modal.msgError('图片插入失败');
