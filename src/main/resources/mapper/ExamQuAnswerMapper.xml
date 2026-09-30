@@ -12,7 +12,7 @@
 
     <!-- 获取单题作答信息 -->
     <select id="questionAnalyse" resultType="cn.org.alan.exam.model.vo.score.QuestionAnalyseVO">
-        select count(case where is_right = 1 then 1 end) as rightCount, count(*) as totalCount
+        select count(case when is_right = 1 then 1 end) as rightCount, count(*) as totalCount
         from t_exam_qu_answer
         where exam_id = #{examId}
         and question_id = #{questionId}
