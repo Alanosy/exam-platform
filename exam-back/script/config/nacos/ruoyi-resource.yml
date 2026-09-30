@@ -1,0 +1,91 @@
+spring:
+  datasource:
+    dynamic:
+      # 设置默认的数据源或者数据源组,默认值即为 master
+      primary: master
+      datasource:
+        # 主库数据源
+        master:
+          type: ${spring.datasource.type}
+          driver-class-name: com.mysql.cj.jdbc.Driver
+          url: ${datasource.system-master.url}
+          username: ${datasource.system-master.username}
+          password: ${datasource.system-master.password}
+#        oracle:
+#          type: ${spring.datasource.type}
+#          driverClassName: oracle.jdbc.OracleDriver
+#          url: ${datasource.system-oracle.url}
+#          username: ${datasource.system-oracle.username}
+#          password: ${datasource.system-oracle.password}
+#        postgres:
+#          type: ${spring.datasource.type}
+#          driverClassName: org.postgresql.Driver
+#          url: ${datasource.system-postgres.url}
+#          username: ${datasource.system-postgres.username}
+#          password: ${datasource.system-postgres.password}
+
+# 默认/推荐使用sse推送
+sse:
+  enabled: true
+  path: /sse
+
+websocket:
+  # 如果关闭 需要和前端开关一起关闭
+  enabled: false
+  # 路径
+  path: /websocket
+  # 设置访问源地址
+  allowedOrigins: '*'
+
+mail:
+  enabled: false
+  host: smtp.163.com
+  port: 465
+  # 是否需要用户名密码验证
+  auth: true
+  # 发送方，遵循RFC-822标准
+  from: xxx@163.com
+  # 用户名（注意：如果使用foxmail邮箱，此处user为qq号）
+  user: xxx@163.com
+  # 密码（注意，某些邮箱需要为SMTP服务单独设置密码，详情查看相关帮助）
+  pass: xxxxxxxxxx
+  # 使用 STARTTLS安全连接，STARTTLS是对纯文本通信协议的扩展。
+  starttlsEnable: true
+  # 使用SSL安全连接
+  sslEnable: true
+  # SMTP超时时长，单位毫秒，缺省值不超时
+  timeout: 0
+  # Socket连接超时值，单位毫秒，缺省值不超时
+  connectionTimeout: 0
+
+# sms 短信 支持 阿里云 腾讯云 云片 等等各式各样的短信服务商
+# https://sms4j.com/doc3/ 差异配置文档地址 支持单厂商多配置，可以配置多个同时使用
+sms:
+  # 配置源类型用于标定配置来源(interface,yaml)
+  config-type: yaml
+  # 用于标定yml中的配置是否开启短信拦截，接口配置不受此限制
+  restricted: true
+  # 短信拦截限制单手机号每分钟最大发送，只对开启了拦截的配置有效
+  minute-max: 1
+  # 短信拦截限制单手机号每日最大发送量，只对开启了拦截的配置有效
+  account-max: 30
+  # 以下配置来自于 org.dromara.sms4j.provider.config.BaseConfig类中
+  blends:
+    # 唯一ID 用于发送短信寻找具体配置 随便定义别用中文即可
+    # 可以同时存在两个相同厂商 例如: ali1 ali2 两个不同的阿里短信账号 也可用于区分租户
+    config1:
+      # 框架定义的厂商名称标识，标定此配置是哪个厂商，详细请看厂商标识介绍部分
+      supplier: alibaba
+      # 有些称为accessKey有些称之为apiKey，也有称为sdkKey或者appId。
+      access-key-id: 您的accessKey
+      # 称为accessSecret有些称之为apiSecret
+      access-key-secret: 您的accessKeySecret
+      signature: 您的短信签名
+      sdk-app-id: 您的sdkAppId
+    config2:
+      # 厂商标识，标定此配置是哪个厂商，详细请看厂商标识介绍部分
+      supplier: tencent
+      access-key-id: 您的accessKey
+      access-key-secret: 您的accessKeySecret
+      signature: 您的短信签名
+      sdk-app-id: 您的sdkAppId

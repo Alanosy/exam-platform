@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <groupId>org.dromara</groupId>
+        <artifactId>ruoyi-cloud-plus</artifactId>
+        <version>${revision}</version>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+
+    <modules>
+        <module>ruoyi-common-bom</module>
+        <module>ruoyi-common-alibaba-bom</module>
+        <module>ruoyi-common-log</module>
+        <module>ruoyi-common-service-impl</module>
+        <module>ruoyi-common-excel</module>
+        <module>ruoyi-common-core</module>
+        <module>ruoyi-common-redis</module>
+        <module>ruoyi-common-doc</module>
+        <module>ruoyi-common-security</module>
+        <module>ruoyi-common-satoken</module>
+        <module>ruoyi-common-web</module>
+        <module>ruoyi-common-mybatis</module>
+        <module>ruoyi-common-job</module>
+        <module>ruoyi-common-dubbo</module>
+        <module>ruoyi-common-seata</module>
+        <module>ruoyi-common-loadbalancer</module>
+        <module>ruoyi-common-oss</module>
+        <module>ruoyi-common-ratelimiter</module>
+        <module>ruoyi-common-idempotent</module>
+        <module>ruoyi-common-mail</module>
+        <module>ruoyi-common-sms</module>
+        <module>ruoyi-common-logstash</module>
+        <module>ruoyi-common-elasticsearch</module>
+        <module>ruoyi-common-skylog</module>
+        <module>ruoyi-common-prometheus</module>
+        <module>ruoyi-common-translation</module>
+        <module>ruoyi-common-sensitive</module>
+        <module>ruoyi-common-json</module>
+        <module>ruoyi-common-encrypt</module>
+        <module>ruoyi-common-tenant</module>
+        <module>ruoyi-common-websocket</module>
+        <module>ruoyi-common-social</module>
+        <module>ruoyi-common-nacos</module>
+        <module>ruoyi-common-bus</module>
+        <module>ruoyi-common-sse</module>
+    </modules>
+
+    <artifactId>ruoyi-common</artifactId>
+    <packaging>pom</packaging>
+
+    <description>
+        ruoyi-common通用模块
+    </description>
+
+</project>

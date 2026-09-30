@@ -1,0 +1,47 @@
+spring:
+  datasource:
+    type: com.zaxxer.hikari.HikariDataSource
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: ${datasource.job.url}
+    username: ${datasource.job.username}
+    password: ${datasource.job.password}
+    hikari:
+      connection-timeout: 30000
+      validation-timeout: 5000
+      minimum-idle: 10
+      maximum-pool-size: 20
+      idle-timeout: 600000
+      max-lifetime: 900000
+      keepaliveTime: 30000
+  cloud:
+    nacos:
+      discovery:
+        metadata:
+          # 解决 er 服务有 context-path 无法监控问题
+          management.context-path: ${server.servlet.context-path}/actuator
+          # 监控账号密码
+          username: ruoyi
+          userpassword: 123456
+
+# snail-job 服务端配置
+snail-job:
+  # 服务端节点IP(默认按照`NetUtil.getLocalIpStr()`)
+  server-host:
+  # 服务端netty的端口号
+  server-port: 17888
+  # 合并日志默认保存天数
+  merge-Log-days: 1
+  # 合并日志默认的条数
+  merge-Log-num: 500
+  # 配置每批次拉取重试数据的大小
+  retry-pull-page-size: 100
+  # 配置日志保存时间（单位：天）
+  log-storage: 7
+  # bucket的总数量
+  bucket-total: 128
+  # Dashboard 任务容错天数
+  summary-day: 7
+  # 配置负载均衡周期时间
+  load-balance-cycle-time: 10
+  # 重试任务拉取的并行度
+  retry-max-pull-parallel: 2

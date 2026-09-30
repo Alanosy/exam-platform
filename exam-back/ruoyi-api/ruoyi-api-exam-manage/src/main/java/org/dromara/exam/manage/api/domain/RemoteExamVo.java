@@ -1,0 +1,69 @@
+package org.dromara.exam.manage.api.domain;
+
+import lombok.Data;
+
+import java.io.Serial;
+import java.io.Serializable;
+import java.util.Date;
+
+/**
+ * 考试信息（跨服务传输用）
+ *
+ * <p>答题服务开考前用它校验时间、迟到、重考次数等规则，
+ * 只包含考生侧需要的字段，不含参与密码等敏感配置。
+ *
+ * @author LionLi
+ * @date 2026-09-30
+ */
+@Data
+public class RemoteExamVo implements Serializable {
+
+    @Serial
+    private static final long serialVersionUID = 1L;
+
+    /** 考试ID */
+    private Long examId;
+
+    /** 考试名称 */
+    private String examName;
+
+    /** 考试描述 */
+    private String examDesc;
+
+    /** 关联试卷ID */
+    private Long paperId;
+
+    /** 开始时间 */
+    private Date startTime;
+
+    /** 结束时间 */
+    private Date endTime;
+
+    /** 限时(分钟)，0沿用试卷time_limit */
+    private Long duration;
+
+    /** 是否允许迟到入场 0否 1是 */
+    private Long allowLate;
+
+    /** 允许迟到分钟数 */
+    private Long lateMinute;
+
+    /** 是否允许重考 0否 1是 */
+    private Long allowRetry;
+
+    /** 最大重考次数 */
+    private Long maxRetryCount;
+
+    /** 答案展示 none / after_submit / after_exam */
+    private String showAnswerMode;
+
+    /** 防作弊配置JSON */
+    private String antiCheatConfig;
+
+    /** not_start / ongoing / finished / archived */
+    private String status;
+
+    /** white白名单 / public公开链接 */
+    private String participantType;
+
+}

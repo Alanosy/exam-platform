@@ -1,0 +1,98 @@
+# 安全配置
+security:
+  # 不校验白名单
+  ignore:
+    whites:
+      - /auth/code
+      - /auth/logout
+      - /auth/login
+      - /auth/binding/*
+      - /auth/register
+      - /auth/tenant/list
+      - /resource/sms/code
+      - /resource/sse/close
+      - /*/v3/api-docs
+      - /*/error
+      - /csrf
+      - /warm-flow-ui/**
+
+spring:
+  cloud:
+    gateway:
+      # 打印请求日志(自定义)
+      requestLog: true
+      # Gateway MVC 转发使用的 HttpClient5 连接池配置
+      httpclient:
+        # 总最大连接数
+        max-conn-total: 1000
+        # 单个下游路由最大连接数，SSE 长连接较多时需按并发量调整
+        max-conn-per-route: 500
+        # 连接池满时等待可用连接的时间
+        connection-request-timeout: 3s
+        # SSE 场景通常不设置响应超时，避免长连接被网关主动断开
+        # response-timeout: 60s
+        # 连接最大存活时间，不配置则使用 HttpClient5 默认值
+        # connection-time-to-live: 10m
+        # 空闲连接可用性校验间隔
+        validate-after-inactivity: 30s
+      server:
+        webmvc:
+          discovery:
+            locator:
+              lowerCaseServiceId: true
+              enabled: true
+          routes:
+            # 认证中心
+            - id: ruoyi-auth
+              uri: lb://ruoyi-auth
+              predicates:
+                - Path=/auth/**
+              filters:
+                - StripPrefix=1
+            # 代码生成
+            - id: ruoyi-gen
+              uri: lb://ruoyi-gen
+              predicates:
+                - Path=/tool/**
+              filters:
+                - StripPrefix=1
+            # 系统模块
+            - id: ruoyi-system
+              uri: lb://ruoyi-system
+              predicates:
+                - Path=/system/**,/monitor/**
+              filters:
+                - StripPrefix=1
+            # 资源服务
+            - id: ruoyi-resource
+              uri: lb://ruoyi-resource
+              predicates:
+                - Path=/resource/**
+              filters:
+                - StripPrefix=1
+            # workflow服务
+            - id: ruoyi-workflow
+              uri: lb://ruoyi-workflow
+              predicates:
+                - Path=/workflow/**
+              filters:
+                - StripPrefix=1
+            # warm-flow服务
+            - id: warm-flow
+              uri: lb://ruoyi-workflow
+              predicates:
+                - Path=/warm-flow-ui/**,/warm-flow/**
+            # 演示服务
+            - id: ruoyi-demo
+              uri: lb://ruoyi-demo
+              predicates:
+                - Path=/demo/**
+              filters:
+                - StripPrefix=1
+            # MQ演示服务
+            - id: ruoyi-test-mq
+              uri: lb://ruoyi-test-mq
+              predicates:
+                - Path=/test-mq/**
+              filters:
+                - StripPrefix=1

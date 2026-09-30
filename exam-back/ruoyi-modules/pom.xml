@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <groupId>org.dromara</groupId>
+        <artifactId>ruoyi-cloud-plus</artifactId>
+        <version>${revision}</version>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+
+    <modules>
+        <module>ruoyi-system</module>
+        <module>ruoyi-gen</module>
+        <module>ruoyi-job</module>
+        <module>ruoyi-resource</module>
+        <module>ruoyi-workflow</module>
+        <module>ruoyi-exam-question</module>
+        <module>ruoyi-exam-paper</module>
+        <module>ruoyi-exam-manage</module>
+        <module>ruoyi-exam-answer</module>
+        <module>ruoyi-exam-mark</module>
+        <module>ruoyi-exam-stat</module>
+        <module>ruoyi-exam-practice</module>
+        <module>ruoyi-exam-cert</module>
+        <module>ruoyi-exam-proctor</module>
+        <module>ruoyi-exam-ai</module>
+    </modules>
+
+    <artifactId>ruoyi-modules</artifactId>
+    <packaging>pom</packaging>
+
+    <description>
+        ruoyi-modules业务模块
+    </description>
+
+    <dependencies>
+        <!-- 自定义负载均衡(多团队开发使用) -->
+<!--        <dependency>-->
+<!--            <groupId>org.dromara</groupId>-->
+<!--            <artifactId>ruoyi-common-loadbalancer</artifactId>-->
+<!--        </dependency>-->
+
+        <!-- ELK 日志收集 -->
+<!--        <dependency>-->
+<!--            <groupId>org.dromara</groupId>-->
+<!--            <artifactId>ruoyi-common-logstash</artifactId>-->
+<!--        </dependency>-->
+
+        <!-- skywalking 日志收集 -->
+<!--        <dependency>-->
+<!--            <groupId>org.dromara</groupId>-->
+<!--            <artifactId>ruoyi-common-skylog</artifactId>-->
+<!--        </dependency>-->
+
+        <!-- prometheus 监控 -->
+<!--        <dependency>-->
+<!--            <groupId>org.dromara</groupId>-->
+<!--            <artifactId>ruoyi-common-prometheus</artifactId>-->
+<!--        </dependency>-->
+
+    </dependencies>
+
+</project>

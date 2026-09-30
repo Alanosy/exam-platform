@@ -1,0 +1,13 @@
+spring:
+  datasource:
+    dynamic:
+      # 设置默认的数据源或者数据源组,默认值即为 master
+      primary: master
+      datasource:
+        # 主库数据源 答卷成绩库(独立库 高并发大表)
+        master:
+          type: ${spring.datasource.type}
+          driver-class-name: com.mysql.cj.jdbc.Driver
+          url: ${datasource.exam-answer.url}
+          username: ${datasource.exam-answer.username}
+          password: ${datasource.exam-answer.password}

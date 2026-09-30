@@ -1,0 +1,1 @@
+customDubboLoadBalancer=org.dromara.common.loadbalance.core.CustomDubboLoadBalancer

@@ -1,0 +1,170 @@
+# 安全配置
+security:
+  # 不校验白名单
+  ignore:
+    whites:
+      - /auth/code
+      - /auth/logout
+      - /auth/login
+      - /auth/binding/*
+      - /auth/register
+      - /auth/tenant/list
+      - /resource/sms/code
+      - /resource/sse/close
+      - /*/v3/api-docs
+      - /*/error
+      - /csrf
+      - /warm-flow-ui/**
+
+spring:
+  cloud:
+    # 网关配置
+    gateway:
+      # 打印请求日志(自定义)
+      requestLog: true
+      server:
+        webflux:
+          # Gateway WebFlux 转发使用的 Reactor Netty 连接池配置
+          httpclient:
+            pool:
+              # 使用固定连接池，避免 SSE 长连接占满默认连接池后快速拒绝普通请求
+              type: fixed
+              # 总最大连接数
+              max-connections: 1000
+              # 连接池满时等待可用连接的时间，单位毫秒
+              acquire-timeout: 3000
+              # 空闲连接最大保留时间
+              max-idle-time: 30s
+              # 后台空闲连接回收间隔
+              eviction-interval: 30s
+            # SSE 场景通常不设置响应超时，避免长连接被网关主动断开
+            # response-timeout: 60s
+          discovery:
+            locator:
+              lowerCaseServiceId: true
+              enabled: true
+          routes:
+            # 认证中心
+            - id: ruoyi-auth
+              uri: lb://ruoyi-auth
+              predicates:
+                - Path=/auth/**
+              filters:
+                - StripPrefix=1
+            # 代码生成
+            - id: ruoyi-gen
+              uri: lb://ruoyi-gen
+              predicates:
+                - Path=/tool/**
+              filters:
+                - StripPrefix=1
+            # 系统模块
+            - id: ruoyi-system
+              uri: lb://ruoyi-system
+              predicates:
+                - Path=/system/**,/monitor/**
+              filters:
+                - StripPrefix=1
+            # 资源服务
+            - id: ruoyi-resource
+              uri: lb://ruoyi-resource
+              predicates:
+                - Path=/resource/**
+              filters:
+                - StripPrefix=1
+            # workflow服务
+            - id: ruoyi-workflow
+              uri: lb://ruoyi-workflow
+              predicates:
+                - Path=/workflow/**
+              filters:
+                - StripPrefix=1
+            # warm-flow服务
+            - id: warm-flow
+              uri: lb://ruoyi-workflow
+              predicates:
+                - Path=/warm-flow-ui/**,/warm-flow/**
+            # 演示服务
+            - id: ruoyi-demo
+              uri: lb://ruoyi-demo
+              predicates:
+                - Path=/demo/**
+              filters:
+                - StripPrefix=1
+            # MQ演示服务
+            - id: ruoyi-test-mq
+              uri: lb://ruoyi-test-mq
+              predicates:
+                - Path=/test-mq/**
+              filters:
+                - StripPrefix=1
+            # 考试-题库服务
+            - id: ruoyi-exam-question
+              uri: lb://ruoyi-exam-question
+              predicates:
+                - Path=/question/**
+              filters:
+                - StripPrefix=1
+            # 考试-试卷服务
+            - id: ruoyi-exam-paper
+              uri: lb://ruoyi-exam-paper
+              predicates:
+                - Path=/paper/**
+              filters:
+                - StripPrefix=1
+            # 考试-考试管理服务
+            - id: ruoyi-exam-manage
+              uri: lb://ruoyi-exam-manage
+              predicates:
+                - Path=/exam/**
+              filters:
+                - StripPrefix=1
+            # 考试-答题服务
+            - id: ruoyi-exam-answer
+              uri: lb://ruoyi-exam-answer
+              predicates:
+                - Path=/answer/**
+              filters:
+                - StripPrefix=1
+            # 考试-阅卷服务
+            - id: ruoyi-exam-mark
+              uri: lb://ruoyi-exam-mark
+              predicates:
+                - Path=/mark/**
+              filters:
+                - StripPrefix=1
+            # 考试-统计服务
+            - id: ruoyi-exam-stat
+              uri: lb://ruoyi-exam-stat
+              predicates:
+                - Path=/stat/**
+              filters:
+                - StripPrefix=1
+            # 考试-练习服务
+            - id: ruoyi-exam-practice
+              uri: lb://ruoyi-exam-practice
+              predicates:
+                - Path=/practice/**
+              filters:
+                - StripPrefix=1
+            # 考试-证书服务
+            - id: ruoyi-exam-cert
+              uri: lb://ruoyi-exam-cert
+              predicates:
+                - Path=/cert/**
+              filters:
+                - StripPrefix=1
+            # 考试-防作弊服务
+            - id: ruoyi-exam-proctor
+              uri: lb://ruoyi-exam-proctor
+              predicates:
+                - Path=/proctor/**
+              filters:
+                - StripPrefix=1
+            # 考试-AI 服务（Java 网关层，转发至 Python FastAPI Agent）
+            - id: ruoyi-exam-ai
+              uri: lb://ruoyi-exam-ai
+              predicates:
+                - Path=/ai/**
+              filters:
+                - StripPrefix=1
