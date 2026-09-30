@@ -4,7 +4,12 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="9f91ae12-c926-451e-b026-1b3559a4a2f9" name="Changes" comment="fix(exam): 智能体评分没生效问题" />
+    <list default="true" id="9f91ae12-c926-451e-b026-1b3559a4a2f9" name="Changes" comment="fix(exam): 智能体评分没生效问题">
+      <change beforePath="$PROJECT_DIR$/.idea/dataSources.local.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources.local.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/dataSources/4f33d8c9-cb56-4853-b5df-51db040a44d9.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/jarRepositories.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/jarRepositories.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -342,7 +347,7 @@
     <MESSAGE value="提交最新代码" />
     <MESSAGE value="feat(exam): 添加智能体阅卷" />
     <MESSAGE value="fix(exam): 智能体评分没生效问题" />
-    <option name="LAST_COMMIT_MESSAGE" value="fix(exam): 智能体评分没生效问题" />
+    <option name="LAST_COMMIT_MESSAGE" value="" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -350,7 +355,7 @@
         <line-breakpoint enabled="true" type="java-method">
           <url>file://$PROJECT_DIR$/src/main/java/cn/org/alan/exam/service/IUserBookService.java</url>
           <line>42</line>
-          <properties class="cn.org.alan.exam.service.IUserBookService" method="getBookOne">
+          <properties class="cn.org.alan.exam.service.IUserBookService">
             <option name="EMULATED" value="true" />
             <option name="WATCH_EXIT" value="false" />
           </properties>
@@ -359,7 +364,7 @@
         <line-breakpoint enabled="true" type="java-method">
           <url>file://$PROJECT_DIR$/src/main/java/cn/org/alan/exam/service/IUserBookService.java</url>
           <line>26</line>
-          <properties class="cn.org.alan.exam.service.IUserBookService" method="getPage">
+          <properties class="cn.org.alan.exam.service.IUserBookService">
             <option name="EMULATED" value="true" />
             <option name="WATCH_EXIT" value="false" />
           </properties>
