@@ -4,6 +4,7 @@ import org.apache.dubbo.config.spring.context.annotation.EnableDubbo;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.metrics.buffering.BufferingApplicationStartup;
+import org.springframework.scheduling.annotation.EnableScheduling;
 
 /**
  * 答题服务
@@ -11,6 +12,8 @@ import org.springframework.boot.context.metrics.buffering.BufferingApplicationSt
  * @author ruoyi
  */
 @EnableDubbo
+// 超时未交卷的答卷由定时任务兜底自动交卷
+@EnableScheduling
 @SpringBootApplication
 public class RuoYiExamAnswerApplication {
     public static void main(String[] args) {

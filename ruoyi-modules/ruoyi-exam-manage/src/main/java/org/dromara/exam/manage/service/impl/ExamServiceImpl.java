@@ -17,13 +17,17 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.dromara.exam.manage.domain.bo.ExamBo;
 import org.dromara.exam.manage.domain.vo.ExamVo;
+import org.dromara.exam.manage.domain.vo.ExamJoinVo;
 import org.dromara.exam.manage.domain.Exam;
+import org.dromara.exam.manage.domain.ExamInvite;
 import org.dromara.exam.manage.mapper.ExamMapper;
+import org.dromara.exam.manage.mapper.ExamInviteMapper;
 import org.dromara.exam.manage.service.IExamService;
 
 import java.util.List;
 import java.util.Map;
 import java.util.Collection;
+import java.util.Date;
 
 /**
  * 考试主Service业务层处理
@@ -42,7 +46,15 @@ public class ExamServiceImpl implements IExamService {
     /** 加入码长度 */
     private static final int JOIN_CODE_LENGTH = 10;
 
+    /** 邀请记录里「通过链接加入」的类型 */
+    private static final String INVITE_TYPE_LINK = "link";
+
+    /** 邀请记录里「已进入考试」的状态 */
+    private static final String INVITE_STATUS_ACCEPT = "accept";
+
     private final ExamMapper baseMapper;
+
+    private final ExamInviteMapper examInviteMapper;
 
     /**
      * 查询考试主
@@ -200,6 +212,120 @@ public class ExamServiceImpl implements IExamService {
         update.setJoinCode(code);
         baseMapper.updateById(update);
         return code;
+    }
+
+    /**
+     * 按加入码查询公开考试的加入信息
+     *
+     * @param joinCode 加入码
+     * @return 加入信息
+     */
+    @Override
+    public ExamJoinVo queryJoinInfo(String joinCode) {
+        Exam exam = selectByJoinCode(joinCode);
+        String account = LoginHelper.getUsername();
+
+        ExamJoinVo vo = new ExamJoinVo();
+        vo.setExamId(exam.getId());
+        vo.setExamName(exam.getExamName());
+        vo.setExamDesc(exam.getExamDesc());
+        vo.setStartTime(exam.getStartTime());
+        vo.setEndTime(exam.getEndTime());
+        vo.setDuration(exam.getDuration());
+        vo.setStatus(exam.getStatus());
+        vo.setJoinExpireTime(exam.getJoinExpireTime());
+        // 只告诉前端要不要输密码，密码本身不下发
+        vo.setNeedPassword(StringUtils.isNotBlank(exam.getJoinPassword()));
+        vo.setJoined(joined(exam.getId(), account));
+        String tip = joinTip(exam);
+        vo.setJoinable(tip == null);
+        vo.setJoinTip(tip);
+        return vo;
+    }
+
+    /**
+     * 通过加入码加入公开考试
+     *
+     * @param joinCode 加入码
+     * @param password 参与密码
+     * @return 考试ID
+     */
+    @Override
+    public Long joinByCode(String joinCode, String password) {
+        Exam exam = selectByJoinCode(joinCode);
+        String tip = joinTip(exam);
+        if (StringUtils.isNotBlank(tip)) {
+            throw new ServiceException(tip);
+        }
+        if (StringUtils.isNotBlank(exam.getJoinPassword()) && !exam.getJoinPassword().equals(password)) {
+            throw new ServiceException("参与密码错误");
+        }
+        String account = LoginHelper.getUsername();
+        if (StringUtils.isBlank(account)) {
+            throw new ServiceException("登录状态已失效，请重新登录");
+        }
+        // 重复点「加入」不重复记记录
+        if (joined(exam.getId(), account)) {
+            return exam.getId();
+        }
+        ExamInvite invite = new ExamInvite();
+        invite.setExamId(exam.getId());
+        invite.setInviteAccount(account);
+        invite.setInviteType(INVITE_TYPE_LINK);
+        invite.setInviteStatus(INVITE_STATUS_ACCEPT);
+        invite.setInviteTime(new Date());
+        examInviteMapper.insert(invite);
+        return exam.getId();
+    }
+
+    /**
+     * 按加入码取考试，顺带校验链接本身是否可用
+     */
+    private Exam selectByJoinCode(String joinCode) {
+        if (StringUtils.isBlank(joinCode)) {
+            throw new ServiceException("加入码不能为空");
+        }
+        LambdaQueryWrapper<Exam> lqw = Wrappers.lambdaQuery();
+        lqw.eq(Exam::getJoinCode, joinCode).last("limit 1");
+        Exam exam = baseMapper.selectOne(lqw);
+        if (ObjectUtil.isNull(exam)) {
+            throw new ServiceException("加入链接无效，请向考试组织者确认");
+        }
+        if (!PARTICIPANT_PUBLIC.equals(exam.getParticipantType())) {
+            throw new ServiceException("该考试未开放公开链接加入");
+        }
+        return exam;
+    }
+
+    /**
+     * 判断当前能否加入，可以加入时返回 null，否则返回不可加入的原因
+     */
+    private String joinTip(Exam exam) {
+        if ("archived".equals(exam.getStatus())) {
+            return "该考试已归档，无法加入";
+        }
+        if ("finished".equals(exam.getStatus())) {
+            return "该考试已结束，无法加入";
+        }
+        Date now = new Date();
+        // 链接有效期优先于考试结束时间，没配就与考试结束时间一致
+        Date expireTime = ObjectUtil.isNotNull(exam.getJoinExpireTime()) ? exam.getJoinExpireTime() : exam.getEndTime();
+        if (ObjectUtil.isNotNull(expireTime) && expireTime.before(now)) {
+            return ObjectUtil.isNotNull(exam.getJoinExpireTime()) ? "加入链接已过期" : "该考试已结束，无法加入";
+        }
+        return null;
+    }
+
+    /**
+     * 当前账号是否已经通过链接加入过这场考试
+     */
+    private boolean joined(Long examId, String account) {
+        if (StringUtils.isBlank(account)) {
+            return false;
+        }
+        LambdaQueryWrapper<ExamInvite> lqw = Wrappers.lambdaQuery();
+        lqw.eq(ExamInvite::getExamId, examId).eq(ExamInvite::getInviteAccount, account).eq(ExamInvite::getInviteType, INVITE_TYPE_LINK).last("limit 1");
+        return ObjectUtil.isNotNull(examInviteMapper.selectOne(lqw));
     }
 
     /**

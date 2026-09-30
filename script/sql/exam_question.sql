@@ -91,24 +91,11 @@ CREATE TABLE `question_bank`  (
 ) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci COMMENT = '题库表' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
--- Table structure for question_media
+-- 说明：原 question_media（试题多媒体附件表）已废弃并随代码一并删除。
+-- 富文本里的图片不再单独登记，访问地址以 <img src> 的形式直接存在
+-- question.title / question_option.option_content / question.analysis 里。
+-- 已经在用的旧库如需落库清理，可手动执行：DROP TABLE IF EXISTS `question_media`;
 -- ----------------------------
-DROP TABLE IF EXISTS `question_media`;
-CREATE TABLE `question_media`  (
-                                   `id` bigint(0) NOT NULL AUTO_INCREMENT COMMENT '主键ID',
-                                   `question_id` bigint(0) NOT NULL COMMENT '试题ID',
-                                   `media_type` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT 'media_type:image图片,audio音频,video视频',
-                                   `media_url` varchar(500) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '资源访问地址MinIO',
-                                   `media_name` varchar(200) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '原始文件名',
-                                   `sort` int(0) NOT NULL DEFAULT 0 COMMENT '展示顺序',
-                                   `tenant_id` bigint(0) NULL DEFAULT NULL COMMENT '租户ID',
-                                   `del_flag` tinyint(0) NOT NULL DEFAULT 0 COMMENT '逻辑删除 0未删 1已删',
-                                   `create_time` datetime(0) NULL DEFAULT CURRENT_TIMESTAMP(0) COMMENT '创建时间',
-                                   `update_time` datetime(0) NULL DEFAULT CURRENT_TIMESTAMP(0) ON UPDATE CURRENT_TIMESTAMP(0) COMMENT '更新时间',
-                                   PRIMARY KEY (`id`) USING BTREE,
-                                   INDEX `idx_question_id`(`question_id`) USING BTREE,
-                                   INDEX `idx_del_flag`(`del_flag`) USING BTREE
-) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci COMMENT = '试题多媒体附件表' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Table structure for question_option

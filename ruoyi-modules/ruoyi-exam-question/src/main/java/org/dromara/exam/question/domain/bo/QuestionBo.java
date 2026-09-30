@@ -85,16 +85,11 @@ public class QuestionBo extends BaseEntity {
 
     /**
      * 选项列表，新增试题时随试题一并提交（仅客观题需要）
+     *
+     * <p>富文本（题干 / 选项 / 解析）里的图片以 {@code <img src="url">} 的形式直接存在各自的 HTML 里，
+     * 不需要额外提交媒体列表。
      */
     @Valid
     private List<QuestionOptionSaveBo> options;
-
-    /**
-     * 媒体附件列表，随试题一并提交
-     *
-     * <p>由前端从题干 / 选项 / 解析 / 参考答案的富文本里解析出来的图片、音频、视频，
-     * 后端据此维护 question_media，建立试题与对象存储文件之间的引用关系。
-     */
-    private List<QuestionMediaSaveBo> medias;
 
 }

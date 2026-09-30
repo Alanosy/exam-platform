@@ -1,6 +1,7 @@
 package org.dromara.exam.manage.service;
 
 import org.dromara.exam.manage.domain.vo.ExamVo;
+import org.dromara.exam.manage.domain.vo.ExamJoinVo;
 import org.dromara.exam.manage.domain.bo.ExamBo;
 import org.dromara.common.mybatis.core.page.TableDataInfo;
 import org.dromara.common.mybatis.core.page.PageQuery;
@@ -64,6 +65,29 @@ public interface IExamService {
      * @return 新的加入码
      */
     String refreshJoinCode(Long id);
+
+    /**
+     * 按加入码查询公开考试的加入信息
+     *
+     * <p>考生打开加入链接时展示的考试概要，不含参与密码本身；
+     * 同时回传链接当前是否可加入，以及当前登录用户是否已经加入过。
+     *
+     * @param joinCode 加入码
+     * @return 加入信息
+     */
+    ExamJoinVo queryJoinInfo(String joinCode);
+
+    /**
+     * 通过加入码加入公开考试
+     *
+     * <p>校验链接有效性、参与密码、有效期与考试状态，通过后写一条邀请记录，
+     * 供考试中心查询「我参与的考试」。同一账号重复加入只记一条。
+     *
+     * @param joinCode 加入码
+     * @param password 参与密码，考试未设置密码时传空
+     * @return 考试ID
+     */
+    Long joinByCode(String joinCode, String password);
 
     /**
      * 校验并批量删除考试主信息
