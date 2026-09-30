@@ -8,10 +8,14 @@ import org.dromara.common.core.validate.AddGroup;
 import org.dromara.common.idempotent.annotation.RepeatSubmit;
 import org.dromara.common.log.annotation.Log;
 import org.dromara.common.log.enums.BusinessType;
+import org.dromara.common.mybatis.core.page.PageQuery;
+import org.dromara.common.mybatis.core.page.TableDataInfo;
 import org.dromara.common.web.core.BaseController;
 import org.dromara.exam.answer.domain.bo.AnswerSaveBo;
+import org.dromara.exam.answer.domain.bo.ExamRecordBo;
 import org.dromara.exam.answer.domain.vo.ExamCenterVo;
 import org.dromara.exam.answer.domain.vo.ExamPaperVo;
+import org.dromara.exam.answer.domain.vo.ExamRecordVo;
 import org.dromara.exam.answer.domain.vo.ExamResultVo;
 import org.dromara.exam.answer.service.IExamRecordService;
 import org.springframework.validation.annotation.Validated;
@@ -41,6 +45,18 @@ public class ExamRecordController extends BaseController {
     @GetMapping("/center")
     public R<List<ExamCenterVo>> center() {
         return R.ok(examRecordService.listMyCenter());
+    }
+
+    /**
+     * 我的考试记录（分页）
+     *
+     * @param bo        查询条件
+     * @param pageQuery 分页参数
+     */
+    @SaCheckLogin
+    @GetMapping("/records")
+    public TableDataInfo<ExamRecordVo> records(ExamRecordBo bo, PageQuery pageQuery) {
+        return examRecordService.listMyRecords(bo, pageQuery);
     }
 
     /**

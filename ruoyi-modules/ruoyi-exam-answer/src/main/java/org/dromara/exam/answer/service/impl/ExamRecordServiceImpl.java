@@ -3,21 +3,27 @@ package org.dromara.exam.answer.service.impl;
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.StrUtil;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.dubbo.config.annotation.DubboReference;
 import org.dromara.common.core.exception.ServiceException;
 import org.dromara.common.json.utils.JsonUtils;
 import org.dromara.common.core.utils.StringUtils;
+import org.dromara.common.mybatis.core.page.PageQuery;
+import org.dromara.common.mybatis.core.page.TableDataInfo;
 import org.dromara.common.satoken.utils.LoginHelper;
 import org.dromara.exam.answer.domain.ExamAnswer;
 import org.dromara.exam.answer.domain.ExamRecord;
 import org.dromara.exam.answer.domain.bo.AnswerSaveBo;
+import org.dromara.exam.answer.domain.bo.ExamRecordBo;
 import org.dromara.exam.answer.domain.vo.ExamCenterVo;
 import org.dromara.exam.answer.domain.vo.ExamOptionVo;
 import org.dromara.exam.answer.domain.vo.ExamPaperVo;
 import org.dromara.exam.answer.domain.vo.ExamQuestionVo;
+import org.dromara.exam.answer.domain.vo.ExamRecordVo;
 import org.dromara.exam.answer.domain.vo.ExamResultQuestionVo;
 import org.dromara.exam.answer.domain.vo.ExamResultVo;
 import org.dromara.exam.answer.mapper.ExamAnswerMapper;
@@ -179,6 +185,99 @@ public class ExamRecordServiceImpl implements IExamRecordService {
         list.sort(Comparator.comparing((ExamCenterVo vo) -> order.getOrDefault(vo.getMyStatus(), 9))
             .thenComparing(ExamCenterVo::getStartTime, Comparator.nullsLast(Comparator.reverseOrder())));
         return list;
+    }
+
+    /* ---------------------------------- 考试记录 ---------------------------------- */
+
+    @Override
+    public TableDataInfo<ExamRecordVo> listMyRecords(ExamRecordBo bo, PageQuery pageQuery) {
+        String account = currentAccount();
+        // 查询条件可能整个不传（GET 无参时 Spring 也会给个空对象，这里再兜一层）
+        if (ObjectUtil.isNull(bo)) {
+            bo = new ExamRecordBo();
+        }
+        LambdaQueryWrapper<ExamRecord> lqw = Wrappers.lambdaQuery();
+        // 只查自己的：账号一律走登录态，不信前端传的
+        lqw.eq(ExamRecord::getAccount, account);
+        lqw.eq(ObjectUtil.isNotNull(bo.getExamId()), ExamRecord::getExamId, bo.getExamId());
+        lqw.eq(StringUtils.isNotBlank(bo.getStatus()), ExamRecord::getStatus, bo.getStatus());
+        // 注意：Boolean 不能直接三元拆箱，未传时为 null 会 NPE
+        lqw.eq(ObjectUtil.isNotNull(bo.getPassed()), ExamRecord::getPassed, Boolean.TRUE.equals(bo.getPassed()) ? 1L : 0L);
+        lqw.orderByDesc(ExamRecord::getSubmitTime).orderByDesc(ExamRecord::getStartTime).orderByDesc(ExamRecord::getId);
+
+        Page<ExamRecord> page = baseMapper.selectPage(pageQuery.build(), lqw);
+        List<ExamRecord> records = page.getRecords();
+        List<ExamRecordVo> voList = new ArrayList<>();
+        if (CollUtil.isNotEmpty(records)) {
+            // 考试名 / 试卷名都不在本库，同一次查询里按 ID 缓存，避免一行一次 Dubbo 调用
+            Map<Long, RemoteExamVo> examMap = new HashMap<>();
+            Map<Long, RemotePaperVo> paperMap = new HashMap<>();
+            Map<Long, List<ExamAnswer>> answersMap = selectAnswersOf(records.stream().map(ExamRecord::getId).toList());
+            for (ExamRecord record : records) {
+                RemoteExamVo exam = ObjectUtil.isNull(record.getExamId()) ? null
+                    : examMap.computeIfAbsent(record.getExamId(), remoteExamService::queryExam);
+                RemotePaperVo paper = ObjectUtil.isNull(record.getPaperId()) ? null
+                    : paperMap.computeIfAbsent(record.getPaperId(), remotePaperService::queryPaper);
+                List<ExamAnswer> answers = answersMap.getOrDefault(record.getId(), List.of());
+                voList.add(toRecordVo(record, exam, paper, answers));
+            }
+        }
+        Page<ExamRecordVo> voPage = new Page<>(page.getCurrent(), page.getSize(), page.getTotal());
+        voPage.setRecords(voList);
+        return TableDataInfo.build(voPage);
+    }
+
+    /**
+     * 一次性取回这些答卷的所有作答，按答卷分组
+     */
+    private Map<Long, List<ExamAnswer>> selectAnswersOf(List<Long> recordIds) {
+        if (CollUtil.isEmpty(recordIds)) {
+            return Map.of();
+        }
+        List<ExamAnswer> answers = examAnswerMapper.selectList(
+            Wrappers.lambdaQuery(ExamAnswer.class).in(ExamAnswer::getRecordId, recordIds));
+        return answers.stream().collect(Collectors.groupingBy(ExamAnswer::getRecordId));
+    }
+
+    /**
+     * 答卷 → 考试记录行
+     */
+    private ExamRecordVo toRecordVo(ExamRecord record, RemoteExamVo exam, RemotePaperVo paper, List<ExamAnswer> answers) {
+        ExamRecordVo vo = new ExamRecordVo();
+        vo.setRecordId(record.getId());
+        vo.setExamId(record.getExamId());
+        vo.setExamName(ObjectUtil.isNull(exam) ? null : exam.getExamName());
+        vo.setPaperId(record.getPaperId());
+        vo.setPaperName(ObjectUtil.isNull(paper) ? null : paper.getPaperName());
+        vo.setAttemptNo(record.getAttemptNo());
+        vo.setStatus(record.getStatus());
+        vo.setStartTime(record.getStartTime());
+        vo.setSubmitTime(record.getSubmitTime());
+        vo.setUsedSeconds(record.getUsedSeconds());
+        vo.setDurationMinutes(record.getDurationMinutes());
+        vo.setQuestionCount(record.getQuestionCount());
+        vo.setAnsweredCount(record.getAnsweredCount());
+        vo.setCorrectCount((int) answers.stream().filter(a -> Integer.valueOf(ExamAnswer.CORRECT_YES).equals(a.getCorrect())).count());
+        vo.setWrongCount((int) answers.stream().filter(a -> Integer.valueOf(ExamAnswer.CORRECT_NO).equals(a.getCorrect())).count());
+        vo.setObjectiveScore(record.getObjectiveScore());
+        vo.setSubjectiveScore(record.getSubjectiveScore());
+        vo.setTotalScore(record.getTotalScore());
+        vo.setPaperTotalScore(paperTotalScore(paper));
+        vo.setPassScore(record.getPassScore());
+        vo.setPassed(ObjectUtil.equal(1L, record.getPassed()));
+        vo.setAutoSubmit(ObjectUtil.equal(1L, record.getAutoSubmit()));
+        vo.setShowAnswer(ObjectUtil.isNotNull(exam) && showAnswer(exam));
+        return vo;
+    }
+
+    /**
+     * 试卷总分，试卷被删时退回 0，避免前端显示 undefined
+     */
+    private BigDecimal paperTotalScore(RemotePaperVo paper) {
+        if (ObjectUtil.isNull(paper)) {
+            return null;
+        }
+        return BigDecimal.valueOf(ObjectUtil.defaultIfNull(paper.getTotalScore(), 0L));
     }
 
     /* ----------------------------------- 开考 ----------------------------------- */
@@ -635,8 +734,17 @@ public class ExamRecordServiceImpl implements IExamRecordService {
         vo.setPassed(ObjectUtil.equal(1L, record.getPassed()));
         vo.setUsedSeconds(record.getUsedSeconds());
         vo.setExamName(exam.getExamName());
+        vo.setPaperId(record.getPaperId());
         vo.setPaperName(ObjectUtil.isNull(paper) ? null : paper.getPaperName());
-        vo.setPaperTotalScore(ObjectUtil.isNull(paper) ? null : BigDecimal.valueOf(ObjectUtil.defaultIfNull(paper.getTotalScore(), 0L)));
+        vo.setPaperTotalScore(paperTotalScore(paper));
+        vo.setAttemptNo(record.getAttemptNo());
+        vo.setStartTime(record.getStartTime());
+        vo.setSubmitTime(record.getSubmitTime());
+        vo.setDurationMinutes(record.getDurationMinutes());
+        vo.setQuestionCount(record.getQuestionCount());
+        vo.setAnsweredCount(record.getAnsweredCount());
+        vo.setCorrectCount((int) answerMap.values().stream().filter(a -> Integer.valueOf(ExamAnswer.CORRECT_YES).equals(a.getCorrect())).count());
+        vo.setWrongCount((int) answerMap.values().stream().filter(a -> Integer.valueOf(ExamAnswer.CORRECT_NO).equals(a.getCorrect())).count());
         vo.setAutoSubmit(ObjectUtil.equal(1L, record.getAutoSubmit()));
         vo.setShowAnswer(showAnswer(exam));
 
@@ -648,14 +756,23 @@ public class ExamRecordServiceImpl implements IExamRecordService {
                 continue;
             }
             ExamAnswer answer = answerMap.get(question.getQuestionId());
+            String myAnswer = ObjectUtil.isNull(answer) ? null : answer.getAnswerContent();
             ExamResultQuestionVo q = new ExamResultQuestionVo();
             q.setQuestionId(question.getQuestionId());
             q.setQuestionType(question.getQuestionType());
             q.setTitle(question.getTitle());
             q.setSort(sort++);
             q.setScore(scoreOf(item, question));
+            q.setMyAnswer(myAnswer);
+            q.setMyAnswerText(toAnswerText(question.getQuestionType(), myAnswer, false));
+            // 选项原样带回，前端才能把 A/B/C 还原成可读的选项内容
+            q.setOptions(ObjectUtil.isNull(question.getOptions()) ? null : question.getOptions().stream().map(option -> {
+                ExamOptionVo optionVo = new ExamOptionVo();
+                optionVo.setOptionKey(option.getOptionKey());
+                optionVo.setOptionContent(option.getOptionContent());
+                return optionVo;
+            }).toList());
             if (ObjectUtil.isNotNull(answer)) {
-                q.setMyAnswer(answer.getAnswerContent());
                 q.setGainedScore(answer.getScore());
                 q.setCorrect(answer.getCorrect());
             } else {
@@ -664,12 +781,72 @@ public class ExamRecordServiceImpl implements IExamRecordService {
             }
             if (Boolean.TRUE.equals(vo.getShowAnswer())) {
                 q.setStandardAnswer(question.getAnswer());
+                q.setStandardAnswerText(toAnswerText(question.getQuestionType(), question.getAnswer(), true));
                 q.setAnalysis(question.getAnalysis());
             }
             voList.add(q);
         }
         vo.setQuestions(voList);
         return vo;
+    }
+
+    /**
+     * 答案 JSON → 人话
+     *
+     * <p>存的是结构化 JSON（{choices:[A]} / {blanks:[{text}]} / {rightKeys:[A]} / {text}），
+     * 直接给考生看是天书，这里按题型翻成人能读的字符串。
+     *
+     * @param questionType 题型
+     * @param json         答案JSON
+     * @param standard     true 处理参考答案，false 处理考生作答
+     */
+    private String toAnswerText(String questionType, String json, boolean standard) {
+        if (StringUtils.isBlank(json)) {
+            return null;
+        }
+        if (TYPE_BLANK.equals(questionType)) {
+            BlankAnswer parsed = parse(json, BlankAnswer.class);
+            if (ObjectUtil.isNull(parsed) || CollUtil.isEmpty(parsed.getBlanks())) {
+                return plainText(json);
+            }
+            List<String> parts = new ArrayList<>();
+            for (int i = 0; i < parsed.getBlanks().size(); i++) {
+                BlankItem blank = parsed.getBlanks().get(i);
+                String text = standard
+                    ? (CollUtil.isEmpty(blank.getAnswers()) ? "" : String.join(" / ", blank.getAnswers()))
+                    : blank.getText();
+                parts.add("第" + (i + 1) + "空：" + (StringUtils.isBlank(text) ? "未作答" : text));
+            }
+            return String.join("；", parts);
+        }
+        if (TYPE_SINGLE.equals(questionType) || TYPE_MULTIPLE.equals(questionType) || TYPE_JUDGE.equals(questionType)) {
+            OptionAnswer parsed = parse(json, OptionAnswer.class);
+            if (ObjectUtil.isNull(parsed)) {
+                return plainText(json);
+            }
+            List<String> keys = standard ? parsed.getRightKeys() : parsed.getChoices();
+            if (CollUtil.isEmpty(keys)) {
+                return standard ? null : "未作答";
+            }
+            return String.join("、", keys);
+        }
+        return plainText(json);
+    }
+
+    /**
+     * 主观题：答案可能是 {text} / {answer}，也可能压根不是 JSON
+     */
+    private String plainText(String json) {
+        TextAnswer parsed = parse(json, TextAnswer.class);
+        if (ObjectUtil.isNotNull(parsed)) {
+            if (StringUtils.isNotBlank(parsed.getText())) {
+                return parsed.getText();
+            }
+            if (StringUtils.isNotBlank(parsed.getAnswer())) {
+                return parsed.getAnswer();
+            }
+        }
+        return json;
     }
 
     /**
@@ -826,5 +1003,14 @@ public class ExamRecordServiceImpl implements IExamRecordService {
     public static class BlankItem {
         private List<String> answers;
         private String text;
+    }
+
+    /**
+     * 主观题答案 {text:".."}，参考答案有时写成 {answer:".."}
+     */
+    @lombok.Data
+    public static class TextAnswer {
+        private String text;
+        private String answer;
     }
 }

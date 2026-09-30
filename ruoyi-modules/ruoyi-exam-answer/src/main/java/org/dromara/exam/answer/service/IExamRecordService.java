@@ -1,8 +1,12 @@
 package org.dromara.exam.answer.service;
 
+import org.dromara.common.mybatis.core.page.PageQuery;
+import org.dromara.common.mybatis.core.page.TableDataInfo;
 import org.dromara.exam.answer.domain.bo.AnswerSaveBo;
+import org.dromara.exam.answer.domain.bo.ExamRecordBo;
 import org.dromara.exam.answer.domain.vo.ExamCenterVo;
 import org.dromara.exam.answer.domain.vo.ExamPaperVo;
+import org.dromara.exam.answer.domain.vo.ExamRecordVo;
 import org.dromara.exam.answer.domain.vo.ExamResultVo;
 
 import java.util.List;
@@ -23,6 +27,17 @@ public interface IExamRecordService {
      * @return 每个我参与过的考试一张卡片，带「当前该做什么」的状态
      */
     List<ExamCenterVo> listMyCenter();
+
+    /**
+     * 我的考试记录（分页）
+     *
+     * <p>一次答卷一行，带考试名、第几次、用时、得分、及格情况。
+     *
+     * @param bo        查询条件（考试 / 状态 / 是否及格）
+     * @param pageQuery 分页参数
+     * @return 考试记录分页
+     */
+    TableDataInfo<ExamRecordVo> listMyRecords(ExamRecordBo bo, PageQuery pageQuery);
 
     /**
      * 开始 / 继续考试

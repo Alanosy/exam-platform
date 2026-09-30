@@ -6,16 +6,18 @@ import java.io.Serial;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Date;
-import java.util.List;
 
 /**
- * 交卷结果与成绩详情
+ * 考试记录（我的每一次考试）
+ *
+ * <p>列表页一行就是一次答卷：哪场考试、第几次、什么时候考的、得了多少分。
+ * 考试名与试卷名不在本服务库里，通过 Dubbo 从 manage / paper 服务取回后拼上。
  *
  * @author LionLi
  * @date 2026-09-30
  */
 @Data
-public class ExamResultVo implements Serializable {
+public class ExamRecordVo implements Serializable {
 
     @Serial
     private static final long serialVersionUID = 1L;
@@ -38,11 +40,17 @@ public class ExamResultVo implements Serializable {
     /** 第几次参加，从1开始 */
     private Integer attemptNo;
 
+    /** answering答题中 / submitted已交卷 / expired超时作废 */
+    private String status;
+
     /** 开考时间 */
     private Date startTime;
 
     /** 交卷时间 */
     private Date submitTime;
+
+    /** 用时（秒） */
+    private Integer usedSeconds;
 
     /** 本场限时（分钟），0不限时 */
     private Long durationMinutes;
@@ -59,13 +67,10 @@ public class ExamResultVo implements Serializable {
     /** 判错的题数 */
     private Integer wrongCount;
 
-    /** answering / submitted / expired */
-    private String status;
-
     /** 客观题得分 */
     private BigDecimal objectiveScore;
 
-    /** 主观题得分（人工阅卷后才有） */
+    /** 主观题得分 */
     private BigDecimal subjectiveScore;
 
     /** 总分 */
@@ -80,16 +85,10 @@ public class ExamResultVo implements Serializable {
     /** 是否及格 */
     private Boolean passed;
 
-    /** 用时（秒） */
-    private Integer usedSeconds;
-
     /** 是否超时自动交卷 */
     private Boolean autoSubmit;
 
-    /** 是否展示答案与解析（受考试 show_answer_mode 控制） */
+    /** 该考试当前是否允许看答案与解析 */
     private Boolean showAnswer;
-
-    /** 每题结果，showAnswer=false 时不带正确答案与解析 */
-    private List<ExamResultQuestionVo> questions;
 
 }
