@@ -30,6 +30,7 @@
             <el-button v-if="result.showAnswer" plain @click="showDetail = !showDetail">
               {{ showDetail ? '收起解析' : '查看答案与解析' }}
             </el-button>
+            <el-button plain @click="goRecordDetail">答题记录</el-button>
             <el-button type="primary" @click="goCenter">返回考试中心</el-button>
           </template>
         </el-result>
@@ -42,10 +43,10 @@
               </el-tag>
               <span class="ml-2">第 {{ q.sort }} 题（{{ q.score }} 分，得 {{ q.gainedScore }} 分）</span>
             </div>
-            <div class="ql-editor ql-content" v-html="q.title"></div>
+            <div class="detail-question ql-editor" v-html="q.title"></div>
             <div class="detail-answer">你的作答：{{ readableAnswer(q.myAnswer) }}</div>
             <div v-if="q.standardAnswer" class="detail-answer">参考答案：{{ readableAnswer(q.standardAnswer) }}</div>
-            <div v-if="q.analysis" class="ql-editor ql-content detail-analysis" v-html="q.analysis"></div>
+            <div v-if="q.analysis" class="detail-analysis ql-editor" v-html="q.analysis"></div>
           </div>
         </div>
       </el-card>
@@ -79,8 +80,10 @@
             @change="(val: string) => saveChoice([val])"
           >
             <el-radio v-for="op in current.options ?? []" :key="op.optionKey" :value="op.optionKey" class="option-item">
-              <span class="option-key">{{ op.optionKey }}</span>
-              <span class="ql-editor ql-content option-content" v-html="op.optionContent"></span>
+              <span class="option-inner">
+                <span class="option-key">{{ op.optionKey }}</span>
+                <span class="option-content ql-editor" v-html="op.optionContent"></span>
+              </span>
             </el-radio>
           </el-radio-group>
 
@@ -91,9 +94,16 @@
             class="option-group"
             @change="(val: string[]) => saveChoice(val)"
           >
-            <el-checkbox v-for="op in current.options ?? []" :key="op.optionKey" :value="op.optionKey" class="option-item">
-              <span class="option-key">{{ op.optionKey }}</span>
-              <span class="ql-editor ql-content option-content" v-html="op.optionContent"></span>
+            <el-checkbox
+              v-for="op in current.options ?? []"
+              :key="op.optionKey"
+              :value="op.optionKey"
+              class="option-item option-item-multiple"
+            >
+              <span class="option-inner">
+                <span class="option-key">{{ op.optionKey }}</span>
+                <span class="option-content ql-editor" v-html="op.optionContent"></span>
+              </span>
             </el-checkbox>
           </el-checkbox-group>
 
@@ -419,6 +429,9 @@ const doSubmit = async () => {
 
 const goCenter = () => router.push('/exam/center');
 
+/** 成绩视图里跳完整的逐题答题记录 */
+const goRecordDetail = () => router.push(`/exam/record/${recordId.value}`);
+
 // 同一个组件服务两个路由：/exam/answer/{id} 答题，/exam/result/{id} 直接看成绩
 onMounted(() => {
   if (route.path.startsWith('/exam/result')) {
@@ -496,34 +509,97 @@ onBeforeUnmount(stopTimer);
   margin-bottom: 18px;
   font-size: 15px;
   color: #303133;
+
+  /* quill 的 .ql-editor 自带 height:100% + 12px/15px 内边距，展示场景要还原掉 */
+  &.ql-editor {
+    height: auto;
+    padding: 0;
+    overflow: visible;
+    line-height: 1.8;
+  }
 }
 
 .option-group {
   display: flex;
   flex-direction: column;
+  gap: 10px;
+  width: 100%;
 }
 
 .option-item {
   display: flex !important;
   align-items: flex-start !important;
+  width: 100%;
   height: auto !important;
-  padding: 10px 12px;
-  margin: 0 0 8px !important;
-  border: 1px solid #ebeef5;
+  min-height: 48px;
+  padding: 12px 14px !important;
+  margin: 0 !important;
+  background: #fff;
+  border: 1px solid #e4e7ed;
   border-radius: 8px;
+  transition:
+    border-color 0.2s,
+    background-color 0.2s;
+
+  &:hover {
+    background: #f7faff;
+    border-color: #a0cfff;
+  }
+
+  &.is-checked {
+    background: #ecf5ff;
+    border-color: #409eff;
+  }
+
+  /* 控件本体（圆圈 / 方框）放在最左，跟首行文字对齐 */
+  :deep(.el-radio__input),
+  :deep(.el-checkbox__input) {
+    flex-shrink: 0;
+    margin-top: 3px;
+  }
+
+  /* 标签区域撑满整行，否则内容会缩在左边一小块 */
+  :deep(.el-radio__label),
+  :deep(.el-checkbox__label) {
+    display: block;
+    flex: 1;
+    min-width: 0;
+    padding-left: 10px;
+    font-size: 15px;
+    line-height: 1.7;
+    color: #303133;
+    white-space: normal;
+    word-break: break-word;
+  }
+}
+
+.option-inner {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  width: 100%;
 }
 
 .option-key {
-  display: inline-block;
-  width: 22px;
+  flex-shrink: 0;
+  min-width: 20px;
+  font-size: 15px;
   font-weight: 600;
+  line-height: 1.7;
   color: #606266;
 }
 
 .option-content {
   flex: 1;
-  font-size: 14px;
+  min-width: 0;
+  /* 抵消 quill 给 .ql-editor 加的固定高度 + 12px/15px 内边距，否则内容会被压成一小团 */
+  height: auto;
+  padding: 0;
+  overflow: visible;
+  font-size: 15px;
   line-height: 1.7;
+  color: #303133;
+  white-space: normal;
 }
 
 .blank-item {
@@ -701,12 +777,31 @@ onBeforeUnmount(stopTimer);
   color: #606266;
 }
 
+.detail-question {
+  font-size: 14px;
+  line-height: 1.8;
+  color: #303133;
+
+  /* 同上：还原 quill 阅读区样式 */
+  &.ql-editor {
+    height: auto;
+    padding: 0;
+    overflow: visible;
+  }
+}
+
 .detail-analysis {
   padding: 8px 12px;
   margin-top: 8px;
   font-size: 13px;
+  line-height: 1.8;
   background: #fafcff;
   border-radius: 6px;
+
+  &.ql-editor {
+    height: auto;
+    overflow: visible;
+  }
 }
 
 @media (width <= 900px) {

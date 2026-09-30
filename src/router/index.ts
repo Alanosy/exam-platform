@@ -188,6 +188,29 @@ export const constantRoutes: RouteRecordRaw[] = [
     name: 'ExamResult',
     hidden: true,
     meta: { title: '考试成绩', noCache: true }
+  },
+  {
+    // 考试记录：我参加过的每一次考试，一行一次答卷
+    path: '/exam/records',
+    component: Layout,
+    hidden: true,
+    redirect: 'noRedirect',
+    children: [
+      {
+        path: '',
+        component: () => import('@/views/exam/records/index.vue'),
+        name: 'ExamRecords',
+        meta: { title: '考试记录', noCache: true }
+      }
+    ]
+  },
+  {
+    // 答题记录详情：逐题看自己的作答、正确答案、解析与得分
+    path: '/exam/record/:recordId',
+    component: () => import('@/views/exam/records/detail.vue'),
+    name: 'ExamRecordDetail',
+    hidden: true,
+    meta: { title: '答题记录', noCache: true }
   }
 ];
 

@@ -4,7 +4,10 @@
       <template #header>
         <div class="flex items-center justify-between">
           <span class="font-medium">考试中心</span>
-          <el-button plain icon="Refresh" @click="loadList">刷新</el-button>
+          <div class="flex items-center gap-2">
+            <el-button plain icon="Tickets" @click="goRecords">考试记录</el-button>
+            <el-button plain icon="Refresh" @click="loadList">刷新</el-button>
+          </div>
         </div>
       </template>
 
@@ -102,7 +105,11 @@ const loadList = async () => {
 /** 进说明页确认后再开考；已经在答题中时说明页会直接续上原来的答卷 */
 const goBrief = (item: ExamCenterVO) => router.push(`/exam/brief/${item.examId}`);
 
-const goResult = (item: ExamCenterVO) => router.push(`/exam/result/${item.recordId}`);
+/** 已交卷的考试直接进答题记录详情，能看到逐题作答与解析 */
+const goResult = (item: ExamCenterVO) => router.push(`/exam/record/${item.recordId}`);
+
+/** 已交卷的考试直接进答题记录详情，能看到逐题作答 */
+const goRecords = () => router.push('/exam/records');
 
 onMounted(loadList);
 </script>

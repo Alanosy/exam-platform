@@ -106,6 +106,93 @@ export interface ExamPaperVO {
   startTime: string;
 }
 
+/** 考试记录列表：一次答卷一行 */
+export interface ExamRecordVO {
+  /** 答卷记录ID */
+  recordId: string | number;
+
+  /** 考试ID */
+  examId: string | number;
+
+  /** 考试名称 */
+  examName: string;
+
+  /** 试卷ID */
+  paperId: string | number;
+
+  /** 试卷名称 */
+  paperName: string;
+
+  /** 第几次参加，从 1 开始 */
+  attemptNo: number;
+
+  /** answering答题中 / submitted已交卷 / expired超时作废 */
+  status: string;
+
+  /** 开考时间 */
+  startTime: string;
+
+  /** 交卷时间 */
+  submitTime: string;
+
+  /** 用时（秒） */
+  usedSeconds: number;
+
+  /** 限时（分钟），0 不限时 */
+  durationMinutes: number;
+
+  /** 题目总数 */
+  questionCount: number;
+
+  /** 已作答题目数 */
+  answeredCount: number;
+
+  /** 判对题数 */
+  correctCount: number;
+
+  /** 判错题数 */
+  wrongCount: number;
+
+  /** 客观题得分 */
+  objectiveScore: number;
+
+  /** 主观题得分 */
+  subjectiveScore: number;
+
+  /** 我的总分 */
+  totalScore: number;
+
+  /** 试卷总分 */
+  paperTotalScore: number;
+
+  /** 及格分 */
+  passScore: number;
+
+  /** 是否及格 */
+  passed: boolean;
+
+  /** 是否超时自动交卷 */
+  autoSubmit: boolean;
+
+  /** 该考试当前是否允许看答案与解析 */
+  showAnswer: boolean;
+}
+
+/** 考试记录查询条件 */
+export interface ExamRecordQuery {
+  /** 考试ID */
+  examId?: string | number;
+
+  /** 状态 answering / submitted / expired */
+  status?: string;
+
+  /** 是否及格 */
+  passed?: boolean;
+
+  pageNum?: number;
+  pageSize?: number;
+}
+
 /** 成绩详情里的单题结果 */
 export interface ExamResultQuestionVO {
   questionId: string | number;
@@ -117,8 +204,14 @@ export interface ExamResultQuestionVO {
   /** 0未判 1正确 2错误 */
   correct: number;
   myAnswer?: string;
+  /** 我的作答，人话版 */
+  myAnswerText?: string;
   standardAnswer?: string;
+  /** 参考答案，人话版，仅 showAnswer=true 时有值 */
+  standardAnswerText?: string;
   analysis?: string;
+  /** 选项，客观题才有 */
+  options?: ExamOptionVO[];
 }
 
 /** 交卷结果 / 成绩 */
@@ -126,9 +219,20 @@ export interface ExamResultVO {
   recordId: string | number;
   examId: string | number;
   examName: string;
+  paperId: string | number;
   paperName: string;
   /** answering / submitted / expired */
   status: string;
+  /** 第几次参加，从 1 开始 */
+  attemptNo: number;
+  startTime: string;
+  submitTime: string;
+  /** 限时（分钟），0 不限时 */
+  durationMinutes: number;
+  questionCount: number;
+  answeredCount: number;
+  correctCount: number;
+  wrongCount: number;
   objectiveScore: number;
   subjectiveScore: number;
   totalScore: number;

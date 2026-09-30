@@ -1,6 +1,6 @@
 import request from '@/utils/request';
 import { AxiosPromise } from 'axios';
-import { ExamCenterVO, ExamPaperVO, ExamResultVO, AnswerSaveForm } from '@/api/exam/answer/types';
+import { ExamCenterVO, ExamPaperVO, ExamResultVO, ExamRecordVO, ExamRecordQuery, AnswerSaveForm } from '@/api/exam/answer/types';
 
 /**
  * 我的考试列表（考试中心）
@@ -9,6 +9,18 @@ export const listMyExams = (): AxiosPromise<ExamCenterVO[]> => {
   return request({
     url: '/answer/record/center',
     method: 'get'
+  });
+};
+
+/**
+ * 我的考试记录（分页）
+ * @param query 查询条件 + 分页参数
+ */
+export const getExamRecords = (query: ExamRecordQuery): AxiosPromise<ExamRecordVO[]> => {
+  return request({
+    url: '/answer/record/records',
+    method: 'get',
+    params: query
   });
 };
 
