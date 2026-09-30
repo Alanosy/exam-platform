@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.org.alan.exam.mapper.UserMapper">
+
+    <sql id="simpleFiled">
+        u.id,u.user_name,u.real_name,u.avatar,u.create_time,u.status
+    </sql>
+
+    <!-- 批量添加用户 -->
+    <insert id="insertBatchUser">
+        insert into t_user
+        values
+        <foreach collection="list" item="user" separator=",">
+            (null,#{user.userName},#{user.realName},#{user.password},
+            null,#{user.roleId},null,#{user.createTime},1,0)
+        </foreach>
+    </insert>
+
+    <!-- 批量移除班级 -->
+    <update id="removeUserGrade">
+        UPDATE t_user
+        SET grade_id = null
+        WHERE id IN
+        <foreach item="userId" collection="userIds" open="(" separator="," close=")">
+            #{userId}
+        </foreach>
+    </update>
+
+    <!-- 用户退出班级 -->
+    <update id="userExitGrade">
+        update t_user u
+        set u.grade_id = null
+        where u.id = #{userId}
+    </update>
+
+    <!-- 获取用户信息 -->
+    <select id="info" resultType="cn.org.alan.exam.model.vo.user.UserVO">
+        select
+        <include refid="simpleFiled"/>
+        ,r.role_name,g.grade_name,g.id as gradeId
+        <!--用户表、角色表、班级表-->
+        from t_user u
+        join t_role r on u.role_id = r.id
+        left join t_grade g on u.grade_id = g.id
+        where u.id = #{userId}
+    </select>
+
+
+    <!-- 分页获取用户信息 -->
+    <select id="pagingUser" resultType="cn.org.alan.exam.model.vo.user.UserVO">
+        select u.id,
+        u.user_name,
+        u.real_name,
+        u.role_id as roleId,
+        u.create_time,
+        g.grade_name,
+        g.user_id
+        from t_user as u
+        <if test="roleId == null || roleId == 0">
+            left join t_grade as g on u.grade_id = g.id
+        </if>
+        <if test="roleId != null and roleId == 1">
+            left join t_grade as g on u.grade_id = g.id and g.id in
+            <foreach collection="gradeIdList" item="gId" open="(" close=")" separator=",">
+                #{gId}
+            </foreach>
+        </if>
+        <trim prefixOverrides="and" prefix="where">
+            u.is_deleted = 0
+            <if test="gradeId != null and gradeId != 0">
+                and u.grade_id = #{gradeId}
+            </if>
+            <if test='realName != null and realName !=""'>
+                and u.real_name like concat('%',#{realName},'%')
+            </if>
+            <if test="roleId != null and roleId == 1">
+                and u.role_id = 1 and g.is_deleted = 0
+            </if>
+            <if test="roleId == null ">
+                and u.role_id in(1,2,3)
+            </if>
+        </trim>
+        order by u.create_time desc
+    </select>
+
+    <select id="stuExamPage">
+        SELECT *
+        FROM t_user
+        WHERE id in (SELECT grade_id FROM t_exam_grade WHERE exam_id= #{exam_id})
+    </select>
+
+    <!-- 获得管理员ID列表 -->
+    <select id="getAdminList" resultType="java.lang.Integer">
+        select id from t_user where role_id = 3
+    </select>
+
+</mapper>

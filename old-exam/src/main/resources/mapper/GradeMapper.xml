@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.org.alan.exam.mapper.GradeMapper">
+
+    <select id="countAllGrades" resultType="long">
+        SELECT COUNT(*) FROM t_grade
+    </select>
+
+    <select id="getGradeCount" resultType="java.lang.Integer">
+        SELECT COUNT(*) FROM t_grade WHERE id in (SELECT grade_id FROM t_exam_grade WHERE exam_id= #{exam_id})
+    </select>
+
+    <!-- 分页查找班级 -->
+    <select id="selectGradePage" resultType="cn.org.alan.exam.model.vo.grade.GradeVO">
+        SELECT
+        g.id,
+        g.grade_name AS gradeName,
+        g.user_id AS userId,
+        u.user_name AS userName,
+        g.code,
+        (SELECT COUNT(*) FROM t_user k WHERE k.grade_id = g.id AND k.is_deleted = 0) AS gradeCount
+        FROM t_grade g
+        JOIN t_user u ON g.user_id = u.id
+        <where>
+            <!--班级未删除的-->
+            g.is_deleted = 0
+            <!--查询班级名-->
+            <if test="gradeName != null and gradeName != ''">
+                AND g.grade_name LIKE CONCAT('%', #{gradeName}, '%')
+            </if>
+            <if test="roleCode == 2 ">
+                <if test="gradeIdList != null and gradeIdList.size() > 0">
+                    and g.id IN
+                    <foreach collection="gradeIdList" item="gId" open="(" separator="," close=")">
+                        #{gId}
+                    </foreach>
+                </if>
+                <!-- 当 gradeIdList 为空时，添加一个条件使得结果为空 -->
+                <if test="gradeIdList == null or gradeIdList.size() == 0">
+                    and 1=3
+                </if>
+            </if>
+        </where>
+    </select>
+
+    <!-- 根据班级代码获取班级对象 -->
+    <select id="getGradeByCode" resultType="cn.org.alan.exam.model.entity.Grade">
+        select *
+        from t_grade
+        where
+        code = #{code}
+    </select>
+
+    <!-- 获得所有班级 -->
+    <select id="getAllGrade" resultType="cn.org.alan.exam.model.vo.grade.GradeVO">
+        select *
+        from t_grade g
+        <if test="roleCode == 2">
+            right join t_user_grade ug on ug.g_id = g.id
+        </if>
+        <where>
+            g.is_deleted = 0
+            <if test="roleCode == 2 ">
+                <if test="gradeIdList != null and gradeIdList.size() > 0">
+                    and g.id IN
+                    <foreach collection="gradeIdList" item="gId" open="(" separator="," close=")">
+                        #{gId}
+                    </foreach>
+                </if>
+                <!-- 当 gradeIdList 为空时，添加一个条件使得结果为空 -->
+                <if test="gradeIdList == null or gradeIdList.size() == 0">
+                    and 1=3
+                </if>
+            </if>
+        </where>
+    </select>
+
+</mapper>

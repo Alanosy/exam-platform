@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.org.alan.exam.mapper.ExamMapper">
+
+    <!--获取自己创建的考试，考试id，考试考试标题，是否需要阅卷-->
+    <select id="selectMarkedList" resultType="cn.org.alan.exam.model.vo.answer.AnswerExamVO">
+        select id as examId, title as examTitle, 1 as neededMark
+        from t_exam
+        <trim prefix="where" prefixOverrides="and">
+            is_deleted = 0 and saq_count > 0
+            <if test="role == 'role_teacher'">
+                and user_id = #{userId}
+            </if>
+            <if test="examName != null">
+                and title like concat('%',#{examName},'%')
+            </if>
+        </trim>
+    </select>
+
+    <!-- 查询学生的考试记录 -->
+    <select id="getExamRecordPage" resultType="cn.org.alan.exam.model.vo.record.ExamRecordVO">
+        select e.id as id,e.title as title,e.exam_duration as examDuration,e.passed_score as passedScore,
+        e.gross_score as grossScore,e.max_count as maxCount,e.user_id as userId,e.certificate_id as certificateId,
+        e.radio_count as radioCount,e.radio_score as radioScore,e.multi_count as multi_count,e.multi_score as
+        multiScore,
+        e.judge_count as judgeCount,e.judge_score as judgeScore,e.saq_count as saqCount,e.saq_score as saqScore,
+        e.start_time as startTime,e.end_time as endTime,e.create_time as createTime,u.user_time as userTime,u.user_score
+        as userScore,
+        u.limit_time as limitTime
+        from t_exam e
+        join t_user_exams_score as u on u.exam_id = e.id
+        where u.user_id = #{userId} and u.whether_mark in (-1,1) and e.is_deleted = 0
+        <if test='examName!=null and examName!=""'>
+            and e.title like concat('%',#{examName},'%')
+        </if>
+        order by u.create_time
+        <if test="isASC">
+            ASC
+        </if>
+        <if test="!isASC">
+            DESC
+        </if>
+    </select>
+
+    <!-- 查询教师创建的考试记录 -->
+    <select id="getTeacherExamRecordPage" resultType="cn.org.alan.exam.model.vo.record.ExamRecordVO">
+        select e.id as id,e.title as title,e.exam_duration as examDuration,e.passed_score as passedScore,
+        e.gross_score as grossScore,e.max_count as maxCount,e.user_id as userId,e.certificate_id as certificateId,
+        e.radio_count as radioCount,e.radio_score as radioScore,e.multi_count as multi_count,e.multi_score as
+        multiScore,
+        e.judge_count as judgeCount,e.judge_score as judgeScore,e.saq_count as saqCount,e.saq_score as saqScore,
+        e.start_time as startTime,e.end_time as endTime,e.create_time as createTime,u.user_time as userTime,u.user_score
+        as userScore,
+        u.limit_time as limitTime
+        from t_exam e
+        join t_user_exams_score as u on u.exam_id = e.id
+        where e.user_id = #{userId} and u.whether_mark in (-1,1)
+        <if test='examName!=null and examName!=""'>
+            and e.title like concat('%',#{examName},'%')
+        </if>
+        order by u.create_time
+        <if test="isASC">
+            ASC
+        </if>
+        <if test="!isASC">
+            DESC
+        </if>
+    </select>
+
+    <!-- 查询所有考试记录（管理员） -->
+    <select id="getAllExamRecordPage" resultType="cn.org.alan.exam.model.vo.record.ExamRecordVO">
+        select e.id as id,e.title as title,e.exam_duration as examDuration,e.passed_score as passedScore,
+        e.gross_score as grossScore,e.max_count as maxCount,e.user_id as userId,e.certificate_id as certificateId,
+        e.radio_count as radioCount,e.radio_score as radioScore,e.multi_count as multi_count,e.multi_score as
+        multiScore,
+        e.judge_count as judgeCount,e.judge_score as judgeScore,e.saq_count as saqCount,e.saq_score as saqScore,
+        e.start_time as startTime,e.end_time as endTime,e.create_time as createTime,u.user_time as userTime,u.user_score
+        as userScore,
+        u.limit_time as limitTime
+        from t_exam e
+        join t_user_exams_score as u on u.exam_id = e.id
+        where u.whether_mark in (-1,1)
+        <if test='examName!=null and examName!=""'>
+            and e.title like concat('%',#{examName},'%')
+        </if>
+        order by u.create_time
+        <if test="isASC">
+            ASC
+        </if>
+        <if test="!isASC">
+            DESC
+        </if>
+    </select>
+
+</mapper>

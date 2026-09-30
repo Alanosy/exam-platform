@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.org.alan.exam.mapper.UserDailyLoginDurationMapper">
+
+    <!-- 获取每天在线时长日志 -->
+    <select id="getDaily" resultType="cn.org.alan.exam.model.vo.stat.DailyVO">
+        select *
+        from t_user_daily_login_duration
+        where user_id = #{userId}
+        order by login_date DESC
+        limit 15
+    </select>
+
+    <!-- 获得当天记录 -->
+    <select id="getTodayRecord" resultType="cn.org.alan.exam.model.entity.UserDailyLoginDuration">
+        select *
+        from t_user_daily_login_duration
+        where user_id = #{userId} and login_date = #{date}
+    </select>
+
+</mapper>

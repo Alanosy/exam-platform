@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.org.alan.exam.mapper.RoleMapper">
+
+    <!-- 获取角色代码 -->
+    <select id="selectCodeById" resultType="java.lang.String">
+        select code from t_role where id = #{roleId}
+    </select>
+
+</mapper>

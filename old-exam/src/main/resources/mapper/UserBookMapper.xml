@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.org.alan.exam.mapper.UserBookMapper">
+
+    <!-- 添加用户错题本 -->
+    <insert id="addUserBookList">
+        insert into t_user_book
+        (exam_id,user_id,qu_id,create_time)
+        VALUES
+        <foreach collection="userBookArrayList" item="userBook" separator="," index="sort">
+            (#{userBook.examId},#{userBook.userId},#{userBook.quId},#{userBook.createTime})
+        </foreach>
+    </insert>
+
+    <!-- 分页查询错题本 -->
+    <select id="selectPageVo" resultType="cn.org.alan.exam.model.vo.userbook.UserPageBookVO">
+        SELECT ub.exam_id as examId,count(*) as numberOfErrors,MIN(ub.create_time) as createTime,e.title
+        FROM t_user_book ub
+        JOIN t_exam e on ub.exam_id = e.id
+        <trim prefix="where" prefixOverrides="and">
+            e.is_deleted = 0 and
+            ub.user_id = #{userId}
+            <if test='examName != null and examName!=""'>
+                and e.title like concat('%',#{examName},'%')
+            </if>
+        </trim>
+        GROUP BY ub.exam_id,e.title
+    </select>
+
+</mapper>

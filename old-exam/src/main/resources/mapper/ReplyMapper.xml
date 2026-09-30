@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.org.alan.exam.mapper.ReplyMapper">
+
+    <!--一对多映射-->
+    <resultMap id="replyChild" type="cn.org.alan.exam.model.vo.reply.ReplyVo" autoMapping="true">
+        <id column="id" property="id"/>
+        <!--<collection property="childReplies" select="selectChildReplies" autoMapping="true" column="id"/>-->
+    </resultMap>
+
+    <select id="selectReplies" resultMap="replyChild">
+        select r.id,r.user_id,r.discussion_id,u.avatar,u.real_name,r.parent_id,r.content,r.create_time,
+        (select count(*) from t_like where reply_id = r.id) as count,
+        <!-- 判断是否点赞-->
+        case when exists (select id from t_like where reply_id = r.id and user_id = #{userId}) then 1 else 0 end as
+        isLike
+        from t_reply as r
+        join t_user as u on u.id = r.user_id
+        where r.discussion_id = #{discussionId} and r.parent_id = -1
+        <if test='orderBy == 1'>
+            order by r.create_time asc
+        </if>
+        <if test='orderBy == 2'>
+            order by r.create_time desc
+        </if>
+        <if test='orderBy == 3'>
+            order by count asc
+        </if>
+        <if test='orderBy == 4'>
+            order by count desc
+        </if>
+    </select>
+    <select id="selectChildReplies" resultType="cn.org.alan.exam.model.vo.reply.ReplyVo">
+        select r.id,r.user_id,u.avatar,u.real_name,r.content,r.parent_id,r.create_time
+        from t_reply as r
+        join t_user as u on u.id = r.user_id
+        where r.parent_id = #{replyId}
+        order by r.create_time desc
+    </select>
+</mapper>

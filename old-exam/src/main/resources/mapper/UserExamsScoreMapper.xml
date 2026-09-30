@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.org.alan.exam.mapper.UserExamsScoreMapper">
+
+    <!-- 根据用户Id列表，考试Id获取该考试的最高分、最低分、平均分、参考人数、及格人数 -->
+    <select id="scoreStatistics" resultType="cn.org.alan.exam.model.vo.score.GradeScoreVO">
+        SELECT
+        ug.grade_id AS gradeId,
+        e.id AS exam_id,
+        e.title AS exam_title,
+        g.grade_name,
+        MAX(ues.user_score) AS max_score,
+        MIN(ues.user_score) AS min_score,
+        AVG(ues.user_score) AS avg_score,
+        COUNT(ues.user_id) AS attendNum
+        FROM
+        t_exam e
+        JOIN
+        t_exam_grade ug ON e.id = ug.exam_id
+        JOIN
+        t_user_exams_score ues ON e.id = ues.exam_id and ues.whether_mark in (-1,1)
+        JOIN
+        t_user u ON ues.user_id = u.id AND u.grade_id = ug.grade_id
+        JOIN
+        t_grade g ON ug.grade_id = g.id
+        <trim prefixOverrides="and" prefix="where">
+
+            e.is_deleted = 0 and ues.user_id IS NOT NULL
+            <if test="gradeId != null and gradeId != 0">
+               and ug.grade_id = #{gradeId}
+            </if>
+            <if test='examTitle != null and examTitle != ""'>
+                and e.title like concat('%',#{examTitle},'%')
+            </if>
+            <if test="roleId == 2">
+               and g.id in
+                <foreach collection="gradeIdList" item="uId" open="(" close=")" separator=",">
+                    #{uId}
+                </foreach>
+            </if>
+        </trim>
+        GROUP BY
+        ug.grade_id, e.id, e.title
+    </select>
+
+    <!-- 成绩分页查询 -->
+    <select id="pagingScore" resultType="cn.org.alan.exam.model.vo.score.UserScoreVO">
+        select ues.id,u.id as userId ,e.title, u.real_name, ues.user_time, ues.user_score, ues.limit_time, ues.count,e.id as examId
+        from t_user_exams_score as ues
+        join t_user as u on ues.user_id = u.id
+        join t_exam as e on ues.exam_id = e.id
+        <trim prefix="where" prefixOverrides="and">
+            u.grade_id = #{gradeId} and ues.exam_id = #{examId}
+            <if test='realName != null and realName != ""'>
+                and u.real_name like concat('%',#{realName},'%')
+            </if>
+        </trim>
+    </select>
+
+    <!-- 查询成绩 -->
+    <select id="selectScores" resultType="cn.org.alan.exam.model.vo.score.ExportScoreVO">
+        select u.real_name, g.grade_name, ues.user_score as score
+        from t_user_exams_score as ues
+        join t_user as u on ues.user_id = u.id
+        join t_grade as g on u.grade_id = g.id
+        where ues.exam_id = #{examId}
+        and g.id = #{gradeId}
+        order by ues.user_score desc;
+    </select>
+
+    <!-- 获取未批改用户信息 -->
+    <select id="uncorrectedUser" resultType="cn.org.alan.exam.model.vo.answer.UncorrectedUserVO">
+        select u.id as userId,
+        u.real_name as userName,
+        e.title as examTitle,
+        ues.limit_time,
+        ues.exam_id,
+        case ues.whether_mark
+        when 1 then '是'
+        when 0 then '否'
+        end as corrected
+        from t_user_exams_score as ues
+        left join t_user as u on ues.user_id = u.id
+        left join t_exam as e on ues.exam_id = e.id
+        where
+        ues.exam_id = #{examId} and ues.whether_mark = 0
+        <if test='realName!=null and realName!=""'>
+            and u.real_name like concat('%',#{realName},'%')
+        </if>
+    </select>
+
+</mapper>

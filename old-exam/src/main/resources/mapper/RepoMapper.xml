@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.org.alan.exam.mapper.RepoMapper">
+
+    <!-- 分页查询题库 -->
+    <select id="pagingRepo" resultType="cn.org.alan.exam.model.vo.repo.RepoVO">
+        select 
+            r.id,
+            u.real_name,
+            r.title,
+            r.create_time,
+            r.is_exercise as isExercise,
+            r.category_id as categoryId,
+            (select count(q.id) from t_question q where q.repo_id = r.id and q.is_deleted = 0) as questionCount
+        from t_repo r 
+        join t_user u on r.user_id = u.id
+        <trim prefix="where" prefixOverrides=" and ">
+            r.is_deleted = 0
+            <if test='title != null and title != ""'>
+                and r.title like concat('%',#{title},'%')
+            </if>
+            <if test='userId != 0'>
+                and r.user_id = #{userId}
+            </if>
+            <if test='categoryId != null'>
+                and r.category_id = #{categoryId}
+            </if>
+        </trim>
+    </select>
+
+    <!-- 分页获取可刷题库信息 -->
+    <select id="selectRepo" resultType="cn.org.alan.exam.model.vo.exercise.ExerciseRepoVO">
+        select r.id, r.title as repoTitle, count(q.id) as totalCount, r.category_id as categoryId
+        from t_repo as r
+        join t_question as q on q.repo_id = r.id
+        <where>
+            r.is_deleted = 0
+            and r.is_exercise = 1
+            <if test="userList != null and userList.size() > 0">
+                and r.user_id in
+                <foreach collection="userList" item="uId" open="(" separator="," close=")">
+                    #{uId}
+                </foreach>
+            </if>
+            <if test="userList == null or userList.size() == 0">
+                and 1 = 0 <!-- 如果 userList 为空，使条件不成立 -->
+            </if>
+            <if test="title != null and title != ''">
+                and r.title like concat('%', #{title}, '%')
+            </if>
+            <if test="categoryId != null">
+                and r.category_id = #{categoryId}
+            </if>
+        </where>
+        group by r.id
+    </select>
+
+    <!-- 查询题库列表 -->
+    <select id="selectRepoList" resultType="cn.org.alan.exam.model.vo.repo.RepoListVO">
+        select r.id,r.user_id,r.title, sum(case when q.qu_type = 1 and q.is_deleted = 0 then 1 else 0 end) as radioNum,
+        sum(case when q.qu_type = 2 and q.is_deleted = 0 then 1 else 0 end) as multiNum,
+        sum(case when q.qu_type = 3 and q.is_deleted = 0 then 1 else 0 end) as judgeNum,sum(case when q.qu_type = 4 and
+        q.is_deleted = 0 then 1 else 0 end) as saqNum
+        from t_repo as r left join t_question as q on r.id = q.repo_id
+        <trim prefix="where" prefixOverrides="and">
+            r.is_deleted = 0
+            <if test='repoTitle != null and repoTitle != ""'>
+                and r.title like concat('%',#{repoTitle},'%')
+            </if>
+            <if test="userId != 0">
+                and r.user_id = #{userId}
+            </if>
+        </trim>
+        group by r.id,r.title
+    </select>
+
+    <!-- 查找刷题记录 -->
+    <select id="selectUserExerciseRecord" resultType="cn.org.alan.exam.model.entity.Repo">
+        select *
+        from t_repo r
+        where
+        r.is_deleted = 0
+        and
+        r.id in (select uer.repo_id from t_user_exercise_record uer where uer.user_id = #{userId})
+        <if test="repoName!=null and repoName!=''">
+            and r.title like concat('%',#{repoName},'%')
+        </if>
+    </select>
+
+</mapper>

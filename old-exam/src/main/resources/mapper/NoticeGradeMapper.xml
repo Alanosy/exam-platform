@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.org.alan.exam.mapper.NoticeGradeMapper">
+
+    <!-- 添加公告和班级关系 -->
+    <insert id="addNoticeGrade">
+        insert into t_notice_grade
+        (notice_id,grade_id)
+        VALUES
+        <foreach collection="gradeIdList" item="gradeId" separator=",">
+            (#{noticeId},#{gradeId})
+        </foreach>
+    </insert>
+
+    <!-- 删除公告班级关系 -->
+    <delete id="delNoticeGrade">
+        delete from t_notice_grade
+        where notice_id = #{noticeId}
+    </delete>
+
+    <!-- 删除公告和班级关联 -->
+    <update id="deleteNoticeGrade">
+        update t_notice_grade
+        set is_deleted = 1
+        where notice_id in
+        <foreach collection="noticeIds" item="nId" open="(" separator="," close=")">
+            #{nId}
+        </foreach>
+    </update>
+
+    <!-- 获得班级关联的公告id -->
+    <select id="getNoticeIdList" resultType="java.lang.Integer">
+        select notice_id from t_notice_grade where is_deleted = 0 and grade_id = #{gradeId}
+    </select>
+
+    <!-- 获得班级关联的班级id -->
+    <select id="getGradeList" resultType="java.lang.Integer">
+        select n.grade_id from t_notice_grade n where n.notice_id = #{noticeId}
+    </select>
+
+</mapper>

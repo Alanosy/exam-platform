@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.org.alan.exam.mapper.ExamGradeMapper">
+
+    <resultMap id="examGrade" type="cn.org.alan.exam.model.vo.score.GradeScoreVO">
+        <id column="id" property="id"/>
+        <result column="passed_score" property="passedScore"/>
+    </resultMap>
+
+    <!-- 添加试卷与班级的关联 -->
+    <insert id="addExamGrade">
+        insert into t_exam_grade (exam_id, grade_id)
+        VALUES
+        <foreach collection="gradeIds" item="gId" separator=",">
+            (#{examId},#{gId})
+        </foreach>
+    </insert>
+
+    <!-- 根据考试id获取所有需要参加考试的人数 -->
+    <select id="selectClassSize" resultType="java.lang.Integer">
+        select count(*)
+        from t_exam_grade as eg
+        left join t_grade as g on eg.grade_id = g.id
+        left join t_user as u on g.id = u.grade_id
+        where eg.exam_id = #{id}
+    </select>
+
+    <!-- 查询考试班级关联列表 -->
+    <select id="selectClassExam" resultType="cn.org.alan.exam.model.vo.exam.ExamGradeListVO">
+        select *
+        from t_exam
+        where
+        is_deleted = 0 and
+        id in (select exam_id from t_exam_grade where grade_id in (select grade_id from t_user where id = #{userId}))
+        and id not in (select exam_id from t_user_exams_score where user_id = #{userId})
+        <if test="title != null">
+            and title like concat('%',#{title},'%')
+        </if>
+        order by create_time
+        <if test="isASC == true">
+            asc
+        </if>
+        <if test="isASC != true">
+            desc
+        </if>
+    </select>
+
+    <!-- 获取管理员的试卷列表 -->
+    <select id="selectAdminClassExam" resultType="cn.org.alan.exam.model.vo.exam.ExamGradeListVO">
+        select *
+        from t_exam
+        <where>
+            id not in (select exam_id from t_user_exams_score where user_id = #{userId})
+            <if test="title != null">
+                and title like concat('%',#{title},'%')
+            </if>
+        </where>
+        order by create_time
+        <if test="isASC == true">
+            asc
+        </if>
+        <if test="isASC != true">
+            desc
+        </if>
+    </select>
+
+</mapper>

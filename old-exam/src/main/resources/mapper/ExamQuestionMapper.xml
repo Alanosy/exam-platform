@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.org.alan.exam.mapper.ExamQuestionMapper">
+
+    <!-- 添加试题 -->
+    <insert id="insertQuestion">
+        insert into t_exam_question (exam_id,question_id,score,sort,type)
+        VALUES
+        <foreach collection="questionIdsAndSorts" item="item" separator="," index="sort">
+            <!--(#{examId},#{qId},#{quScore},#{sort},#{quType})-->
+            (#{examId}, #{item.questionId}, #{quScore}, #{item.sort}, #{quType})
+        </foreach>
+    </insert>
+    <!-- 添加单个试题 自己选择试题时 -->
+    <insert id="insertSingleQuestion">
+        insert into t_exam_question (exam_id,question_id,score,sort,type)
+        VALUES
+        (#{examId}, #{questionIdsAndSorts.questionId}, #{quScore}, #{questionIdsAndSorts.sort}, #{quType})
+    </insert>
+    <!-- 根据试卷ID和试题类型查询试卷与试题的联系 -->
+    <select id="getExamQuByExamIdAndQuType" resultType="cn.org.alan.exam.model.entity.ExamQuestion">
+        SELECT *
+        FROM t_exam_question
+        WHERE exam_id = #{examId}
+        AND type = #{quType}
+        ORDER BY sort ASC
+    </select>
+    <!-- 根据试卷ID和学生ID查询该学生在该场考试中所有未作答的简答题 -->
+    <select id="getUnansweredSaqQuestions" resultType="cn.org.alan.exam.model.entity.ExamQuestion">
+        SELECT q.*
+        FROM t_exam_question q
+        WHERE q.exam_id = #{examId} AND q.type = 4
+        AND NOT EXISTS (
+        SELECT 1 FROM t_exam_qu_answer a
+        WHERE a.question_id = q.question_id
+        AND a.user_id = #{userId}
+        AND a.exam_id = #{examId}
+        )
+    </select>
+
+</mapper>

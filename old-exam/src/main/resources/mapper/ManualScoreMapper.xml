@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.org.alan.exam.mapper.ManualScoreMapper">
+
+    <!--批量新增主观题分数-->
+    <insert id="insertList">
+        insert into t_manual_score(id, exam_qu_answer_id, user_id, score, create_time)
+        values
+        <foreach collection="manualScores" item="manualScore" separator=",">
+            (null,#{manualScore.examQuAnswerId},#{manualScore.userId},#{manualScore.score},#{manualScore.createTime})
+        </foreach>
+    </insert>
+
+</mapper>

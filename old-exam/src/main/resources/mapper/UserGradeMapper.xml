@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.org.alan.exam.mapper.UserGradeMapper">
+
+    <!-- 老师退出班级 -->
+    <delete id="teacherExitClass">
+        delete from t_user_grade
+        where u_id = #{userId} and g_id = #{gradeId}
+    </delete>
+
+    <!-- 根据班级id获取班级的所有老师 -->
+    <select id="getUserListByGradeId" resultType="java.lang.Integer">
+        select ug.u_id
+        from t_user_grade ug
+        where ug.g_id = #{gradeId}
+    </select>
+
+    <!-- 教师id获取老师的所有班级id -->
+    <select id="getGradeIdListByUserId" resultType="java.lang.Integer">
+        select ug.g_id
+        from t_user_grade ug
+        where ug.u_id = #{userId}
+    </select>
+
+</mapper>

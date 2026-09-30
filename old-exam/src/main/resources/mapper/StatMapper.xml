@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.org.alan.exam.mapper.StatMapper">
+
+    <!-- 各班人数统计 -->
+    <select id="StudentGradeCount" resultType="cn.org.alan.exam.model.vo.stat.GradeStudentVO">
+        SELECT
+        g.id,
+        g.grade_name,
+        count(s.id) AS totalStudent
+        FROM t_grade g
+        LEFT JOIN t_user s
+        ON g.id = s.grade_id
+        and s.is_deleted = 0
+        <where>
+            g.is_deleted = 0
+            <if test="roleId == 2">
+                AND g.id in
+                <foreach collection="gradeIdList" item="gId" open="(" separator="," close=")">
+                    #{gId}
+                </foreach>
+            </if>
+        </where>
+        GROUP BY g.id
+    </select>
+
+    <!-- 各班试卷统计 -->
+    <select id="ExamGradeCount" resultType="cn.org.alan.exam.model.vo.stat.GradeExamVO">
+        select g.id as id ,g.grade_name ,count(e.id) as total
+        from t_exam_grade as eg
+        <!--join t_grade as g on eg.grade_id = g.id-->
+        right join t_grade as g on eg.grade_id = g.id
+        left join t_exam as e on eg.exam_id = e.id
+        and e.is_deleted = 0
+        <where>
+            g.is_deleted = 0
+            <if test="roleId == 2">
+                AND g.id in
+                <foreach collection="gradeIdList" item="gId" open="(" separator="," close=")">
+                    #{gId}
+                </foreach>
+            </if>
+        </where>
+        group by g.id,
+        g.grade_name
+    </select>
+
+</mapper>

@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.org.alan.exam.mapper.OptionMapper">
+
+    <!-- 批量添加选型 -->
+    <insert id="insertBatch">
+        insert into t_option
+        values
+        <foreach collection="options" item="option" separator="," index="i">
+            (null,#{option.quId},#{option.isRight},#{option.image},#{option.content},#{i},0)
+        </foreach>
+    </insert>
+
+    <!-- 根据试题id获取所有选项 -->
+    <select id="selectAllByQuestionId" resultType="cn.org.alan.exam.model.entity.Option">
+        select id, qu_id, is_right, image, content, sort
+        from t_option
+        where qu_id = #{id}
+    </select>
+
+    <!-- 获取单题选项 -->
+    <select id="selectOptionByqId" resultType="cn.org.alan.exam.model.entity.Option">
+        select id, qu_id, image, content, sort
+        from t_option
+        where qu_id = #{id}
+    </select>
+
+</mapper>

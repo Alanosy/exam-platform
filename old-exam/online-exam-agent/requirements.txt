@@ -1,0 +1,22 @@
+# Agent 微服务依赖（Python + FastAPI + LangGraph + LangChain + LangSmith + Pydantic）
+fastapi==0.110.3
+uvicorn[standard]==0.29.0
+pydantic==2.7.1
+pydantic-settings==2.2.1
+python-dotenv==1.0.1
+
+# 数据库
+sqlalchemy==2.0.30
+pymysql==1.1.0
+cryptography==42.0.0
+
+# JWT（与考试系统共享密钥，HS256）
+PyJWT==2.8.0
+
+# LangChain 生态
+langchain==0.2.6
+langchain-core==0.2.22
+langchain-openai==0.1.14
+langchain-community==0.2.6
+langgraph==0.1.8
+faiss-cpu==1.8.0

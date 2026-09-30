@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.org.alan.exam.mapper.CertificateMapper">
+
+    <!-- 分页查找学生自己获得的证书 -->
+    <select id="selectMyCertificate" resultType="cn.org.alan.exam.model.vo.certificate.MyCertificateVO">
+        SELECT tcu.code as code,tcu.create_time as createTime,tc.certification_nuit as certificationNuit,tc.image as
+        image,
+        tc.certificate_name as certificateName,tcu.certificate_id as id,te.title as examName,tcu.exam_id as examId
+        FROM t_certificate_user tcu
+        LEFT JOIN t_certificate tc ON tc.id = tcu.certificate_id
+        LEFT JOIN t_exam te ON tcu.exam_id = te.id
+        WHERE
+        tc.is_deleted = 0 and
+        tcu.user_id = #{userId}
+        <if test='examName!=null and examName!=""'>
+            and te.title like concat('%',#{examName},'%')
+        </if>
+        ORDER BY tcu.create_time ASC
+    </select>
+
+    <!-- 教师和管理员分页查询证书 -->
+    <select id="selectCertificatePage" resultType="cn.org.alan.exam.model.entity.Certificate">
+        SELECT *
+        FROM t_certificate
+        <trim prefix="where" prefixOverrides="and">
+            is_deleted = 0
+            <if test='certificateName!=null and certificateName!=""'>
+                and certificate_name like concat('%',#{certificateName},'%')
+            </if>
+            <if test='certificationUnit!=null and certificationUnit!=""'>
+                and certification_nuit like concat('%',#{certificationUnit},'%')
+            </if>
+        </trim>
+    </select>
+
+</mapper>

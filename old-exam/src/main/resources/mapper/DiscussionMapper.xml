@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.org.alan.exam.mapper.DiscussionMapper">
+
+    <select id="selectOwnerPage" resultType="cn.org.alan.exam.model.vo.discussion.PageDiscussionVo">
+        select d.id,d.title,u.real_name as sender,d.create_time
+        from t_discussion as d
+        join t_user as u on d.user_id = u.id
+        join t_grade as g on d.grade_id = g.id
+        <trim prefix="where" prefixOverrides="and">
+            d.user_id = #{userId}
+            <if test='title != null and title != ""'>
+                and d.title like concat('%',#{title},'%')
+            </if>
+            <if test='gradeId != 0 and gradeId != null'  >
+                and d.grade_id = #{gradeId}
+            </if>
+        </trim>
+        order by d.create_time desc
+    </select>
+    <select id="selectDetail" resultType="cn.org.alan.exam.model.vo.discussion.DiscussionDetailVo">
+        select d.id,d.title,u.real_name as sender,d.content,g.grade_name,d.create_time
+        from t_discussion as d
+        join t_user as u on d.user_id = u.id
+        join t_grade as g on d.grade_id = g.id
+        where d.id = #{id}
+    </select>
+    <select id="selectDiscussionByGradePage"
+            resultType="cn.org.alan.exam.model.vo.discussion.PageDiscussionVo">
+        select d.id,d.title,u.real_name as sender,d.create_time
+        from t_discussion as d
+        join t_user as u on d.user_id = u.id
+        join t_grade as g on d.grade_id = g.id
+        <trim prefix="where" prefixOverrides="and">
+            <if test='title != null and title != ""'>
+                and d.title like concat('%',#{title},'%')
+            </if>
+            and d.grade_id = #{gradeId}
+        </trim>
+        order by d.create_time desc
+    </select>
+</mapper>
