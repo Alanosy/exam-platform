@@ -31,12 +31,17 @@ export const formatCountdown = (millis: number): string => {
   return days > 0 ? `${days} 天 ${clock}` : clock;
 };
 
+/** 两次校准差值小于这个值就不更新，免得每次轮询都让倒计时数字来回跳 */
+const MIN_OFFSET_DELTA = 1_000;
+
 export function useServerClock() {
   const serverOffset = ref(Number(sessionStorage.getItem(OFFSET_KEY)) || 0);
   /** 本地时钟读数，每秒走一次，驱动倒计时 */
   const nowTs = ref(Date.now());
   /** 校准后的「服务端现在」 */
   const serverNow = computed(() => nowTs.value + serverOffset.value);
+  /** 本轮挂载后是否已经校准过一次 */
+  let synced = false;
 
   let timer: ReturnType<typeof setInterval> | undefined;
 
@@ -63,8 +68,14 @@ export function useServerClock() {
     }
     const receivedAt = Date.now();
     const roundTrip = Number.isFinite(sentAt) ? (receivedAt - (sentAt as number)) / 2 : 0;
-    serverOffset.value = serverTs + roundTrip - receivedAt;
+    const nextOffset = serverTs + roundTrip - receivedAt;
     nowTs.value = receivedAt;
+    // 已经校准过、且这次和上次差不到一秒就不折腾：轮询时反复微调会让倒计时数字看着在抖
+    if (synced && Math.abs(nextOffset - serverOffset.value) < MIN_OFFSET_DELTA) {
+      return;
+    }
+    synced = true;
+    serverOffset.value = nextOffset;
     sessionStorage.setItem(OFFSET_KEY, String(serverOffset.value));
   };
 

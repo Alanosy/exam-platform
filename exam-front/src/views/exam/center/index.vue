@@ -87,6 +87,7 @@ import { listMyExams } from '@/api/exam/answer';
 import type { ExamCenterVO } from '@/api/exam/answer/types';
 import { useExamDicts } from '@/hooks/useExamDicts';
 import { formatCountdown, toTs, useServerClock } from '@/hooks/useServerClock';
+import { plainTip } from '@/utils/tip';
 
 const router = useRouter();
 // 首屏先显示骨架屏，避免数据回来前闪一下空状态
@@ -183,37 +184,39 @@ const inEntryWindow = (item: ExamCenterVO): boolean => {
 /**
  * 能不能点「开始考试」
  *
- * <p>后端放行当然能点；后端还停在「未开始 / 迟到」但只要服务端时间没过最晚入场时间，
+ * <p>后端放行当然能点；后端还停在「未开始 / 迟到」但服务端时间已到点、且没过最晚入场时间时，
  * 也把按钮放开——不然整点守在这儿的人，倒计时一归零按钮还没来得及点就变灰了。
- * 这是对「人不可能卡在整秒点按钮」的兜底，不是绕过规则：窗口一过照样进不去。
+ * 这是对「人不可能卡在整秒点按钮」的兜底，不是绕过规则：没到点、或窗口过了，都进不去。
  */
 const canStartOf = (item: ExamCenterVO): boolean => {
   if (item.canStart === true) return true;
   if (item.myStatus !== 'not_start' && item.myStatus !== 'late') return false;
+  // 倒计时没走完不放行：提前放开按钮，点进去只会被后端一句「考试尚未开始」打回来
+  if (!hasStarted(item)) return false;
   return inEntryWindow(item);
 };
 
 const countdownText = (item: ExamCenterVO): string => formatCountdown(millisToStart(item));
 
 /**
- * 卡片上的状态提示
+ * 卡片上的状态提示：一律一句话，具体时间交给倒计时说
  *
- * <p>未开始：倒计时到开考；已开考且还在入场窗口里：提示还剩多久截止入场，
- * 让人知道现在能进、但得快点，而不是一过整点就冷冰冰一句「已超过允许入场时间」。
+ * <p>未开始：倒计时到开考；已开考且还在入场窗口里：还剩多久能进；
+ * 窗口过了：一句结论。不再往里塞「（最晚 xx:xx 前入场）」这类括号补充。
  */
 const statusTip = (item: ExamCenterVO): string => {
   if (item.myStatus === 'not_start') {
     if (!hasStarted(item)) {
       const countdown = countdownText(item);
-      return countdown ? `距开始还有 ${countdown}` : item.tip || '考试尚未开始';
+      return countdown ? `距开始还有 ${countdown}` : '考试尚未开始';
     }
-    return inEntryWindow(item) ? '考试已开始，可以入场了' : item.tip || '考试已开始';
+    return inEntryWindow(item) ? '考试已开始，可以入场了' : plainTip(item.tip) || '考试尚未开始';
   }
-  // 已开考：还在入场窗口就提醒截止倒计时，别等过期了才知道
+  // 已开考：还在入场窗口就提醒还剩多久能进，别等过期了才知道
   if (inEntryWindow(item) && item.myStatus !== 'answering' && item.myStatus !== 'submitted') {
-    return `入场截止还剩 ${formatCountdown(millisToDeadline(item))}（最晚 ${formatTime(item.latestEntryTime)} 前入场）`;
+    return `入场截止还剩 ${formatCountdown(millisToDeadline(item))}`;
   }
-  return item.tip || '';
+  return plainTip(item.tip);
 };
 
 /** 入场截止倒计时是催人的，用警告色；其余用提示色 */

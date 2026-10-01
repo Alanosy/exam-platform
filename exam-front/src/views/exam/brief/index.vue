@@ -62,6 +62,7 @@ import { listMyExams, startExam } from '@/api/exam/answer';
 import type { ExamCenterVO } from '@/api/exam/answer/types';
 import { useExamDicts } from '@/hooks/useExamDicts';
 import { formatCountdown, toTs, useServerClock } from '@/hooks/useServerClock';
+import { plainTip } from '@/utils/tip';
 
 const route = useRoute();
 const router = useRouter();
@@ -104,8 +105,13 @@ const { serverNow, syncServerTime } = useServerClock();
 const startTs = computed(() => toTs(info.value.startTime));
 /** 距离开考还有多久（毫秒），没配开始时间或已开考都是 0 */
 const millisToStart = computed(() => (Number.isNaN(startTs.value) ? 0 : Math.max(0, startTs.value - serverNow.value)));
-/** 服务端时间是否已经到点（后端还有 10 秒提前量，所以到点了后端一定放行） */
-const started = computed(() => millisToStart.value === 0 && !Number.isNaN(startTs.value));
+/**
+ * 服务端时间是否已经到点
+ *
+ * <p>没配开始时间的练习考试 millisToStart 恒为 0，等同随时可考；
+ * 配了的按服务端时间判，后端还有 10 秒提前量，所以到点了后端一定放行。
+ */
+const started = computed(() => millisToStart.value === 0);
 /** 距离「最晚入场时间」还有多久（毫秒），后端没给这个时间就是 NaN */
 const millisToDeadline = computed(() => {
   const deadline = toTs(info.value.latestEntryTime);
@@ -124,6 +130,8 @@ const waiting = computed(() => info.value.myStatus === 'not_start' && !started.v
 const canStart = computed(() => {
   if (info.value.canStart === true) return true;
   if (info.value.myStatus !== 'not_start' && info.value.myStatus !== 'late') return false;
+  // 倒计时没走完不放行：提前放开按钮，点进去只会被后端一句「考试尚未开始」打回来
+  if (!started.value) return false;
   return inWindow.value;
 });
 
@@ -136,22 +144,29 @@ const startLabel = computed(() => {
 });
 
 const waitTip = computed(() => {
-  if (waiting.value) return `距开始还有 ${countdownText.value}（以服务器时间为准），到点后本页会自动进入，不用退出重进`;
-  // 已开考且还在入场窗口：提醒还剩多久截止，别让人以为随时都能进
+  if (waiting.value) return `距开始还有 ${countdownText.value}，到点后本页自动进入`;
+  // 已开考且还在入场窗口：提醒还剩多久能进，别让人以为随时都能进
   if (inWindow.value && (info.value.myStatus === 'not_start' || info.value.myStatus === 'late')) {
-    return `入场截止还剩 ${formatCountdown(millisToDeadline.value)}（最晚 ${formatTime(info.value.latestEntryTime)} 前入场）`;
+    return `入场截止还剩 ${formatCountdown(millisToDeadline.value)}`;
   }
-  return info.value.tip || '';
+  return plainTip(info.value.tip);
 });
 
-/** 说明页直接复用考试中心的数据，避免再开一个查询接口 */
-const loadInfo = async () => {
+/**
+ * 说明页直接复用考试中心的数据，避免再开一个查询接口
+ *
+ * @param silent 静默刷新：不切骨架屏。轮询时如果切骨架屏，整张卡片会被替换掉，
+ *               倒计时每走一秒页面就闪一下，所以到点轮询一律走静默。
+ */
+const loadInfo = async (silent = false) => {
   const examId = route.params.examId as string;
   if (!examId) {
     errorMsg.value = '缺少考试ID';
     return;
   }
-  loading.value = true;
+  if (!silent) {
+    loading.value = true;
+  }
   const sentAt = Date.now();
   try {
     const res = await listMyExams();
@@ -164,7 +179,10 @@ const loadInfo = async () => {
     }
     info.value = hit;
   } catch (e: any) {
-    errorMsg.value = (e instanceof Error && e.message) || '加载考试信息失败';
+    // 静默刷新失败不打断当前页面：数据还在，只是没更新而已
+    if (!silent) {
+      errorMsg.value = (e instanceof Error && e.message) || '加载考试信息失败';
+    }
   } finally {
     loading.value = false;
   }
@@ -177,9 +195,9 @@ const handleStart = async () => {
     const res = await startExam(info.value.examId);
     await router.push(`/exam/answer/${res.data}`);
   } catch (e: any) {
-    // 卡在开考那一两秒时后端可能还没放行，拉一次最新状态，别把人晾在报错上
+    // 卡在开考那一两秒时后端可能还没放行，静默拉一次最新状态，别把人晾在报错上
     ElMessage.error((e instanceof Error && e.message) || '开始考试失败');
-    await loadInfo();
+    await loadInfo(true);
   } finally {
     starting.value = false;
   }
@@ -187,21 +205,26 @@ const handleStart = async () => {
 
 const goCenter = () => router.push('/exam/center');
 
-onMounted(loadInfo);
+onMounted(() => loadInfo());
 
 let lastReloadAt = 0;
 
-// 到点了但后端还没放行：最多每 3 秒拉一次，拿到「可以考」为止
+/**
+ * 只在「已经到点、但后端还没放行」时静默轮询
+ *
+ * <p>开考前（waiting）完全不用刷：倒计时是本地按服务端时钟算的，刷了也刷不出新状态，
+ * 反而每 3 秒换一次骨架屏让整页闪。到点后最多每 3 秒拉一次，拿到「可以考」为止。
+ */
 watch(serverNow, () => {
   const pendingStart = info.value.myStatus === 'not_start' || info.value.myStatus === 'late';
-  if (!pendingStart || !inWindow.value || info.value.canStart) {
+  if (!pendingStart || waiting.value || !inWindow.value || info.value.canStart) {
     return;
   }
   if (Date.now() - lastReloadAt < 3_000) {
     return;
   }
   lastReloadAt = Date.now();
-  void loadInfo();
+  void loadInfo(true);
 });
 </script>
 

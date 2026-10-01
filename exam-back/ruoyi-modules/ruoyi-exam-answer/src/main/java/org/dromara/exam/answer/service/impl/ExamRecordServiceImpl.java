@@ -1,7 +1,6 @@
 package org.dromara.exam.answer.service.impl;
 
 import cn.hutool.core.collection.CollUtil;
-import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
@@ -219,12 +218,11 @@ public class ExamRecordServiceImpl implements IExamRecordService {
                 tip = ObjectUtil.isNull(lastSubmitted) ? "考试已结束，你未参加" : null;
             } else if (isNotStarted(now, exam)) {
                 myStatus = "not_start";
-                tip = "考试尚未开始，开始时间 " + DateUtil.formatDateTime(exam.getStartTime());
+                // 具体开考时间由前端倒计时体现，这里只给一句话的结论
+                tip = "考试尚未开始";
             } else if (isLate(now, exam)) {
                 myStatus = ObjectUtil.isNull(lastSubmitted) ? "late" : "submitted";
-                tip = ObjectUtil.isNull(lastSubmitted)
-                    ? "已超过最晚入场时间（" + DateUtil.formatDateTime(latestEntryTime(exam)) + " 前入场），无法参加本次考试"
-                    : null;
+                tip = ObjectUtil.isNull(lastSubmitted) ? "已超过最晚入场时间，无法参加本次考试" : null;
             } else if (!canRetry(exam, submittedList.size())) {
                 myStatus = "blocked";
                 tip = "已达到该考试允许的考试次数";
@@ -378,7 +376,7 @@ public class ExamRecordServiceImpl implements IExamRecordService {
             throw new ServiceException("考试已结束");
         }
         if (isLate(now, exam)) {
-            throw new ServiceException("已超过最晚入场时间（" + DateUtil.formatDateTime(latestEntryTime(exam)) + " 前入场），无法参加本次考试");
+            throw new ServiceException("已超过最晚入场时间，无法参加本次考试");
         }
 
         List<ExamRecord> records = selectMyRecords(examId, account);
