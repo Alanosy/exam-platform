@@ -44,8 +44,12 @@
               <span class="ml-2">第 {{ q.sort }} 题（{{ q.score }} 分，得 {{ q.gainedScore }} 分）</span>
             </div>
             <div class="detail-question ql-editor" v-html="q.title"></div>
-            <div class="detail-answer">你的作答：{{ readableAnswer(q.myAnswer) }}</div>
-            <div v-if="q.standardAnswer" class="detail-answer">参考答案：{{ readableAnswer(q.standardAnswer) }}</div>
+            <div class="detail-answer">
+              你的作答：<span class="answer-html ql-editor" v-html="readableAnswer(q.myAnswer)"></span>
+            </div>
+            <div v-if="q.standardAnswer" class="detail-answer">
+              参考答案：<span class="answer-html ql-editor" v-html="readableAnswer(q.standardAnswer)"></span>
+            </div>
             <div v-if="q.analysis" class="detail-analysis ql-editor" v-html="q.analysis"></div>
           </div>
         </div>
@@ -115,10 +119,29 @@
             </div>
           </div>
 
-          <!-- 主观题 / 代码题 -->
-          <div v-else class="text-group">
-            <el-input v-model="textAnswer" type="textarea" :rows="8" placeholder="请输入你的作答" @blur="saveText" />
+          <!-- 主观题用富文本：可以贴图、加粗、列公式，跟出卷时看到的排版一致 -->
+          <div v-else-if="!isCode" class="text-group">
+            <editor
+              v-model="textAnswer"
+              :simple="true"
+              :height="240"
+              :min-height="180"
+              placeholder="请输入你的作答，支持富文本与图片"
+              @blur="saveText"
+            />
             <div class="text-tip">主观题作答会在离开本题或交卷时保存</div>
+          </div>
+          <!-- 代码题保持纯文本，富文本会破坏缩进与语法字符 -->
+          <div v-else class="text-group">
+            <el-input
+              v-model="textAnswer"
+              type="textarea"
+              :rows="8"
+              class="plain-answer"
+              placeholder="请输入代码"
+              @blur="saveText"
+            />
+            <div class="text-tip">代码题请用纯文本作答，保留缩进</div>
           </div>
 
           <div class="question-actions">
@@ -173,22 +196,13 @@
 import '@vueup/vue-quill/dist/vue-quill.snow.css';
 import { getExamPaper, saveAnswer, submitExam, getExamResult } from '@/api/exam/answer';
 import type { ExamPaperVO, ExamQuestionVO, ExamResultVO } from '@/api/exam/answer/types';
+import { useExamDicts } from '@/hooks/useExamDicts';
 
 const route = useRoute();
 const router = useRouter();
 
-/** 题型中文名 */
-const TYPE_LABEL: Record<string, string> = {
-  SINGLE: '单选题',
-  MULTIPLE: '多选题',
-  JUDGE: '判断题',
-  BLANK: '填空题',
-  SHORT_ANSWER: '简答题',
-  ESSAY: '论述题',
-  CODE: '代码题',
-  UPLOAD_FILE: '文件上传题',
-  MATCH: '匹配题'
-};
+/** 题型文案走字典，改字典即可，不用改代码 */
+const { questionTypeLabel } = useExamDicts();
 
 // 首屏必须先落在骨架屏上：初始 render 发生在 onMounted 之前，
 // 若这里给 false，会直接渲染答题区并因 questions 为空而报 Cannot read properties of undefined
@@ -219,7 +233,18 @@ const textAnswer = ref('');
 const current = computed<ExamQuestionVO | null>(() => questions.value[currentIndex.value] ?? null);
 const answeredCount = computed(() => Object.keys(answers).filter((key) => answers[key]).length);
 
-const typeLabel = (type: string) => TYPE_LABEL[type] ?? '问答题';
+/** 代码题保持纯文本输入，富文本会破坏缩进 */
+const isCode = computed(() => current.value?.questionType === 'CODE');
+
+const typeLabel = (type: string) => questionTypeLabel(type);
+
+/** 富文本编辑器返回 HTML，要去标签后再判断是否真的写了内容 */
+const plainOf = (html: string): string => {
+  if (!html) return '';
+  const div = document.createElement('div');
+  div.innerHTML = html;
+  return (div.textContent ?? '').replace(/\s+/g, '').trim();
+};
 
 const pad = (n: number) => String(n).padStart(2, '0');
 const clockText = computed(() => {
@@ -282,7 +307,8 @@ const persistCurrent = async (silent = true) => {
     if (!blankAnswers.value.some((item) => item && item.trim())) return;
     content = JSON.stringify({ blanks: blankAnswers.value.map((text) => ({ text: text ?? '' })) });
   } else {
-    if (!textAnswer.value.trim()) return;
+    // 富文本空内容会残留 <p><br></p>，要去标签后再判空
+    if (!plainOf(textAnswer.value)) return;
     content = JSON.stringify({ text: textAnswer.value });
   }
   if (answers[question.questionId] === content) return;
@@ -621,6 +647,15 @@ onBeforeUnmount(stopTimer);
   color: #909399;
 }
 
+/* 代码题用等宽字体，缩进才对得上 */
+.plain-answer {
+  :deep(textarea) {
+    font-family: Menlo, Monaco, Consolas, monospace;
+    font-size: 13px;
+    line-height: 1.6;
+  }
+}
+
 .question-actions {
   display: flex;
   gap: 10px;
@@ -775,6 +810,18 @@ onBeforeUnmount(stopTimer);
   margin-top: 6px;
   font-size: 13px;
   color: #606266;
+}
+
+/* 作答与参考答案可能是富文本：还原 quill 阅读区样式，避免被压成一小团 */
+.answer-html {
+  &.ql-editor {
+    display: inline-block;
+    height: auto;
+    padding: 0;
+    overflow: visible;
+    vertical-align: top;
+    line-height: 1.7;
+  }
 }
 
 .detail-question {
