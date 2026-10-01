@@ -50,6 +50,13 @@
             </el-form-item>
           </el-col>
           <el-col :span="12">
+            <el-form-item label="考试限时" prop="duration">
+              <el-input-number v-model="form.duration" :min="0" :precision="0" controls-position="right" class="w-full" />
+              <div class="mt-1 text-xs text-gray-400">分钟，0 表示不限时</div>
+            </el-form-item>
+          </el-col>
+          <!-- 起止时间挨着放，填的时候不用在限时和结束时间之间跳 -->
+          <el-col :span="12">
             <el-form-item label="开始时间" prop="startTime">
               <el-date-picker
                 v-model="form.startTime"
@@ -69,12 +76,6 @@
                 :placeholder="isFormal ? '请选择结束时间' : '留空表示长期有效'"
                 class="w-full"
               />
-            </el-form-item>
-          </el-col>
-          <el-col :span="12">
-            <el-form-item label="考试限时" prop="duration">
-              <el-input-number v-model="form.duration" :min="0" :precision="0" controls-position="right" class="w-full" />
-              <div class="mt-1 text-xs text-gray-400">分钟，0 表示不限时</div>
             </el-form-item>
           </el-col>
           <el-col :span="12">

@@ -31,15 +31,10 @@
       <div v-else class="exam-grid">
         <el-card v-for="item in filtered" :key="item.examId" shadow="hover" class="exam-card">
           <template #header>
-            <div class="flex items-start justify-between gap-2">
-              <div class="flex items-center gap-1 min-w-0">
-                <!-- 考试类型单独成列：正式考试和练习考试一眼分得开 -->
-                <dict-tag :options="examTypeOptions" :value="item.examType || '1'" />
-                <!-- 自己创建的标出来，顺便验证 owner 字段有没有从后端回来 -->
-                <el-tag v-if="isMine(item)" size="small" type="warning" effect="plain">我创建的</el-tag>
-                <span class="exam-name" :title="item.examName">{{ item.examName }}</span>
-              </div>
-              <dict-tag :options="examMyStatusOptions" :value="item.myStatus" />
+            <div class="flex items-center gap-1 min-w-0">
+              <!-- 考试类型单独成列：正式考试和练习考试一眼分得开 -->
+              <dict-tag :options="examTypeOptions" :value="item.examType || '1'" />
+              <span class="exam-name" :title="item.examName">{{ item.examName }}</span>
             </div>
           </template>
 
@@ -64,11 +59,11 @@
               </el-tag>
             </span>
           </div>
-          <!-- 未开始时这里显示倒计时，到点自动换成「正在进入」，别让人对着一个死按钮发呆 -->
+          <!-- 未开始显示倒计时；开考后如果还在入场窗口内，提示还剩多久截止 -->
           <el-alert
             v-if="statusTip(item)"
             class="mt-[10px]"
-            :type="item.myStatus === 'late' || item.myStatus === 'blocked' ? 'warning' : 'info'"
+            :type="tipType(item)"
             :closable="false"
             show-icon
             :title="statusTip(item)"
@@ -98,8 +93,8 @@ const router = useRouter();
 const loading = ref(true);
 const list = ref<ExamCenterVO[]>([]);
 
-// 考试类型与我的状态都走字典，改字典文案即可，不用改代码
-const { examTypeOptions, examMyStatusOptions } = useExamDicts();
+// 考试类型走字典，改字典文案即可，不用改代码
+const { examTypeOptions } = useExamDicts();
 
 /** 标签页：全部 / 正式考试 / 练习刷题 */
 const activeType = ref<string>('all');
@@ -167,36 +162,63 @@ const millisToStart = (item: ExamCenterVO): number => {
   return Math.max(0, startTs - serverNow.value);
 };
 
+/** 距离「最晚入场时间」还有多久（毫秒），已过期返回 0；后端没给这个时间返回 NaN */
+const millisToDeadline = (item: ExamCenterVO): number => {
+  const deadline = toTs(item.latestEntryTime);
+  if (Number.isNaN(deadline)) return Number.NaN;
+  return Math.max(0, deadline - serverNow.value);
+};
+
+/**
+ * 是否还在入场窗口里（以服务端时间对比后端下发的最晚入场时间）
+ *
+ * <p>后端没下发 latestEntryTime（比如服务跑的还是旧代码）时返回 false，
+ * 这时不敢自己放开按钮，免得点了又被后端一句「已超过入场时间」打回来。
+ */
+const inEntryWindow = (item: ExamCenterVO): boolean => {
+  const left = millisToDeadline(item);
+  return !Number.isNaN(left) && left > 0;
+};
+
 /**
  * 能不能点「开始考试」
  *
- * <p>后端放行当然能点；后端还停在「未开始」但服务端时间确实到点了，也先把按钮放开，
- * 免得干等下一次刷新。这里是按时间实时算出来的，不是记在内存里的一次性状态，
- * 所以退出去再进来（组件重新挂载）也不会莫名其妙又变回不能点。
+ * <p>后端放行当然能点；后端还停在「未开始 / 迟到」但只要服务端时间没过最晚入场时间，
+ * 也把按钮放开——不然整点守在这儿的人，倒计时一归零按钮还没来得及点就变灰了。
+ * 这是对「人不可能卡在整秒点按钮」的兜底，不是绕过规则：窗口一过照样进不去。
  */
-const canStartOf = (item: ExamCenterVO): boolean =>
-  item.canStart === true || (item.myStatus === 'not_start' && hasStarted(item));
+const canStartOf = (item: ExamCenterVO): boolean => {
+  if (item.canStart === true) return true;
+  if (item.myStatus !== 'not_start' && item.myStatus !== 'late') return false;
+  return inEntryWindow(item);
+};
 
 const countdownText = (item: ExamCenterVO): string => formatCountdown(millisToStart(item));
 
 /**
  * 卡片上的状态提示
  *
- * <p>未开始时给倒计时，让人知道还要等多久；到点后即使接口还没刷回来说「可以考」，
- * 也先提示正在进入，别让人对着一个一动不动的「未开始」猜是不是卡了。
+ * <p>未开始：倒计时到开考；已开考且还在入场窗口里：提示还剩多久截止入场，
+ * 让人知道现在能进、但得快点，而不是一过整点就冷冰冰一句「已超过允许入场时间」。
  */
 const statusTip = (item: ExamCenterVO): string => {
-  const started = hasStarted(item);
   if (item.myStatus === 'not_start') {
-    if (started) return '考试已开始，正在进入…';
-    const countdown = countdownText(item);
-    return countdown ? `距开始还有 ${countdown}` : item.tip || '考试尚未开始';
+    if (!hasStarted(item)) {
+      const countdown = countdownText(item);
+      return countdown ? `距开始还有 ${countdown}` : item.tip || '考试尚未开始';
+    }
+    return inEntryWindow(item) ? '考试已开始，可以入场了' : item.tip || '考试已开始';
   }
-  if (item.myStatus === 'pending' && started && item.latestEntryTime) {
-    return `最晚 ${formatTime(item.latestEntryTime)} 前入场`;
+  // 已开考：还在入场窗口就提醒截止倒计时，别等过期了才知道
+  if (inEntryWindow(item) && item.myStatus !== 'answering' && item.myStatus !== 'submitted') {
+    return `入场截止还剩 ${formatCountdown(millisToDeadline(item))}（最晚 ${formatTime(item.latestEntryTime)} 前入场）`;
   }
   return item.tip || '';
 };
+
+/** 入场截止倒计时是催人的，用警告色；其余用提示色 */
+const tipType = (item: ExamCenterVO): 'warning' | 'info' =>
+  item.myStatus === 'late' || item.myStatus === 'blocked' || (hasStarted(item) && inEntryWindow(item)) ? 'warning' : 'info';
 
 const loadList = async (silent = false) => {
   // 静默刷新不切骨架屏，否则倒计时最后几分钟页面会一直闪
@@ -238,9 +260,9 @@ watch(serverNow, () => {
       hitStart = true;
     }
   }
-  // 临近开考的每 10 秒静默刷一次，避免时钟漂移导致状态滞后
-  const imminent = list.value.some((item) => item.myStatus === 'not_start' && millisToStart(item) <= IMMINENT_MS);
-  if (hitStart || (imminent && Date.now() - lastReloadAt > 10_000)) {
+  // 临近开考的定期静默刷一次，让「可以考」尽快落到后端状态上，避免时钟漂移
+  const needSync = list.value.some((item) => item.myStatus === 'not_start' && millisToStart(item) <= IMMINENT_MS);
+  if (hitStart || (needSync && Date.now() - lastReloadAt > 10_000)) {
     lastReloadAt = Date.now();
     void loadList(true);
   }

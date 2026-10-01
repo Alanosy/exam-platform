@@ -106,15 +106,26 @@ const startTs = computed(() => toTs(info.value.startTime));
 const millisToStart = computed(() => (Number.isNaN(startTs.value) ? 0 : Math.max(0, startTs.value - serverNow.value)));
 /** 服务端时间是否已经到点（后端还有 10 秒提前量，所以到点了后端一定放行） */
 const started = computed(() => millisToStart.value === 0 && !Number.isNaN(startTs.value));
+/** 距离「最晚入场时间」还有多久（毫秒），后端没给这个时间就是 NaN */
+const millisToDeadline = computed(() => {
+  const deadline = toTs(info.value.latestEntryTime);
+  return Number.isNaN(deadline) ? Number.NaN : Math.max(0, deadline - serverNow.value);
+});
+/** 是否还在入场窗口里：后端没下发最晚入场时间时不敢自己放行 */
+const inWindow = computed(() => !Number.isNaN(millisToDeadline.value) && millisToDeadline.value > 0);
 const waiting = computed(() => info.value.myStatus === 'not_start' && !started.value);
 
 /**
  * 能不能开考
  *
- * <p>后端说了能就能；后端还停在「未开始」但服务端时间已经到点时也放开，
- * 两边口径一致，不会再出现「列表能点进来、说明页说没开始」。
+ * <p>后端说了能就能；后端还停在「未开始 / 迟到」但只要服务端时间没过最晚入场时间也放开，
+ * 与考试中心同一口径，不会出现「列表能点进来、说明页说没开始」。
  */
-const canStart = computed(() => info.value.canStart === true || (info.value.myStatus === 'not_start' && started.value));
+const canStart = computed(() => {
+  if (info.value.canStart === true) return true;
+  if (info.value.myStatus !== 'not_start' && info.value.myStatus !== 'late') return false;
+  return inWindow.value;
+});
 
 const countdownText = computed(() => formatCountdown(millisToStart.value));
 
@@ -125,9 +136,12 @@ const startLabel = computed(() => {
 });
 
 const waitTip = computed(() => {
-  if (info.value.myStatus !== 'not_start') return info.value.tip || '';
   if (waiting.value) return `距开始还有 ${countdownText.value}（以服务器时间为准），到点后本页会自动进入，不用退出重进`;
-  return '考试已开始，正在进入…';
+  // 已开考且还在入场窗口：提醒还剩多久截止，别让人以为随时都能进
+  if (inWindow.value && (info.value.myStatus === 'not_start' || info.value.myStatus === 'late')) {
+    return `入场截止还剩 ${formatCountdown(millisToDeadline.value)}（最晚 ${formatTime(info.value.latestEntryTime)} 前入场）`;
+  }
+  return info.value.tip || '';
 });
 
 /** 说明页直接复用考试中心的数据，避免再开一个查询接口 */
@@ -179,7 +193,8 @@ let lastReloadAt = 0;
 
 // 到点了但后端还没放行：最多每 3 秒拉一次，拿到「可以考」为止
 watch(serverNow, () => {
-  if (!started.value || info.value.canStart || info.value.myStatus !== 'not_start') {
+  const pendingStart = info.value.myStatus === 'not_start' || info.value.myStatus === 'late';
+  if (!pendingStart || !inWindow.value || info.value.canStart) {
     return;
   }
   if (Date.now() - lastReloadAt < 3_000) {

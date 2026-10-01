@@ -47,6 +47,9 @@ RuoYi-Cloud-Plus 2.6.2 微服务（Spring Boot 3 + Dubbo + MyBatis-Plus + 多租
 - 前端 `views/exam/center/index.vue` 与 `views/exam/brief/index.vue` 共用
   `src/hooks/useServerClock.ts`（`serverNow` / `syncServerTime` / `toTs` / `formatCountdown`）：
   未开始显示倒计时，到点先乐观放开按钮再静默刷列表。
+- **入场窗口以「最晚入场时间 latestEntryTime」为准，不是开始时间**：开考后仍在窗口内就保持
+  可进并提示「入场截止还剩 mm:ss」；后端没下发该字段（旧产物）时前端**不自行放开**。
+  出现「刚到点就迟到」先怀疑 exam-answer 没重新编译。
 - **前端的乐观放开必须严格不早于后端**（不叠后端的提前量），且必须**由时间实时算出**，
   不能存成一次性内存标记——组件重新挂载会丢，表现为「退出来就进不去了」。
 
