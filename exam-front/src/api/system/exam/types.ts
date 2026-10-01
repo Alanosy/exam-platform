@@ -11,6 +11,9 @@ export interface ExamVO {
   /** 关联试卷ID */
   paperId: string | number;
 
+  /** 考试类型 1正式考试 / 2练习考试 */
+  examType: string;
+
   /** 开始时间 */
   startTime: string;
 
@@ -65,6 +68,8 @@ export interface ExamForm extends BaseEntity {
   examName?: string;
   examDesc?: string;
   paperId?: string | number;
+  /** 考试类型 1正式考试 / 2练习考试 */
+  examType?: string;
   startTime?: string;
   endTime?: string;
   duration?: number;
@@ -139,6 +144,9 @@ export interface ExamQuery extends PageQuery {
 
   /** 参加方式 */
   participantType?: string;
+
+  /** 考试类型 1正式考试 / 2练习考试 */
+  examType?: string;
 
   /** 状态 */
   status?: string;

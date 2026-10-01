@@ -7,14 +7,19 @@
             <el-form-item label="考试名称" prop="examName">
               <el-input v-model="queryParams.examName" placeholder="请输入考试名称" clearable @keyup.enter="handleQuery" />
             </el-form-item>
+            <el-form-item label="考试类型" prop="examType">
+              <el-select v-model="queryParams.examType" placeholder="请选择考试类型" clearable>
+                <el-option v-for="item in examTypeOptions" :key="item.value" :label="item.label" :value="item.value" />
+              </el-select>
+            </el-form-item>
             <el-form-item label="状态" prop="status">
               <el-select v-model="queryParams.status" placeholder="请选择状态" clearable>
-                <el-option v-for="item in statusOptions" :key="item.value" :label="item.label" :value="item.value" />
+                <el-option v-for="item in examStatusOptions" :key="item.value" :label="item.label" :value="item.value" />
               </el-select>
             </el-form-item>
             <el-form-item label="参加方式" prop="participantType">
               <el-select v-model="queryParams.participantType" placeholder="请选择参加方式" clearable>
-                <el-option v-for="item in participantTypeOptions" :key="item.value" :label="item.label" :value="item.value" />
+                <el-option v-for="item in examParticipantTypeOptions" :key="item.value" :label="item.label" :value="item.value" />
               </el-select>
             </el-form-item>
             <el-form-item>
@@ -60,6 +65,11 @@
             <span>{{ paperNameOf(scope.row.paperId) }}</span>
           </template>
         </el-table-column>
+        <el-table-column label="考试类型" align="center" prop="examType" width="110">
+          <template #default="scope">
+            <dict-tag :options="examTypeOptions" :value="scope.row.examType" />
+          </template>
+        </el-table-column>
         <el-table-column label="考试时间" align="center" min-width="300">
           <template #default="scope">
             <span>{{ formatTime(scope.row.startTime) }} ~ {{ formatTime(scope.row.endTime) }}</span>
@@ -72,16 +82,12 @@
         </el-table-column>
         <el-table-column label="参加方式" align="center" prop="participantType" width="110">
           <template #default="scope">
-            <el-tag :type="scope.row.participantType === 'public' ? 'success' : 'info'">
-              {{ getOptionLabel(participantTypeOptions, scope.row.participantType) }}
-            </el-tag>
+            <dict-tag :options="examParticipantTypeOptions" :value="scope.row.participantType" />
           </template>
         </el-table-column>
         <el-table-column label="状态" align="center" prop="status" width="100">
           <template #default="scope">
-            <el-tag :type="getStatusTagType(scope.row.status)">
-              {{ getOptionLabel(statusOptions, scope.row.status) }}
-            </el-tag>
+            <dict-tag :options="examStatusOptions" :value="scope.row.status" />
           </template>
         </el-table-column>
         <el-table-column label="创建人" align="center" width="120" :show-overflow-tooltip="true">
@@ -89,7 +95,7 @@
             <span>{{ scope.row.creatorName || scope.row.creatorId || '-' }}</span>
           </template>
         </el-table-column>
-        <el-table-column label="操作" align="center" fixed="right" width="120" class-name="small-padding fixed-width">
+        <el-table-column label="操作" align="center" fixed="right" width="200" class-name="small-padding fixed-width">
           <template #default="scope">
             <el-tooltip content="配置考试" placement="top">
               <el-button link type="primary" icon="Edit" @click="handleUpdate(scope.row)" v-hasPermi="['system:exam:edit']"></el-button>
@@ -97,6 +103,21 @@
             <el-tooltip content="删除" placement="top">
               <el-button link type="primary" icon="Delete" @click="handleDelete(scope.row)" v-hasPermi="['system:exam:remove']"></el-button>
             </el-tooltip>
+            <!-- 只有公开考试的链接发出去才有用：白名单考试别人凭链接也进不来 -->
+            <template v-if="isPublicExam(scope.row)">
+              <el-tooltip content="复制考试链接" placement="top">
+                <el-button link type="success" icon="Link" @click="copyText(joinLinkOf(scope.row), '考试链接已复制')"></el-button>
+              </el-tooltip>
+              <el-tooltip :content="scope.row.joinPassword ? '复制参与密码' : '该考试未设置参与密码'" placement="top">
+                <el-button
+                  link
+                  type="warning"
+                  icon="Key"
+                  :disabled="!scope.row.joinPassword"
+                  @click="copyText(scope.row.joinPassword, '参与密码已复制')"
+                ></el-button>
+              </el-tooltip>
+            </template>
           </template>
         </el-table-column>
       </el-table>
@@ -113,39 +134,48 @@ import { listExam, delExam } from '@/api/system/exam';
 import { ExamVO, ExamQuery } from '@/api/system/exam/types';
 import { listPaper } from '@/api/system/paper';
 import { PaperVO } from '@/api/system/paper/types';
+import { useExamDicts } from '@/hooks/useExamDicts';
 
-type Option = { label: string; value: string };
+/** 状态 / 参加方式 / 考试类型都走字典，文案与配色在「字典管理」里改即可 */
+const { examTypeOptions, examStatusOptions, examParticipantTypeOptions } = useExamDicts();
 
-/** 状态：not_start未开始 / ongoing进行中 / finished已结束 / archived已归档 */
-const statusOptions: Option[] = [
-  { label: '未开始', value: 'not_start' },
-  { label: '进行中', value: 'ongoing' },
-  { label: '已结束', value: 'finished' },
-  { label: '已归档', value: 'archived' }
-];
-/** 参加方式：white白名单 / public公开链接 */
-const participantTypeOptions: Option[] = [
-  { label: '白名单', value: 'white' },
-  { label: '公开链接', value: 'public' }
-];
-/** 答案展示时机 */
-const showAnswerModeOptions: Option[] = [
-  { label: '不展示', value: 'none' },
-  { label: '交卷后展示', value: 'after_submit' },
-  { label: '考试结束后展示', value: 'after_exam' }
-];
-
-const getOptionLabel = (options: Option[], value: string) => options.find((item) => item.value === value)?.label ?? value;
-
-const getStatusTagType = (status: string) => {
-  if (status === 'ongoing') return 'success';
-  if (status === 'finished') return 'info';
-  if (status === 'archived') return 'warning';
-  return 'primary';
-};
+/** 考生端加入考试的页面路径，与路由 /exam/join/:code、配置页 JOIN_PATH 保持一致 */
+const JOIN_PATH = '/exam/join/';
 
 const { proxy } = getCurrentInstance() as ComponentInternalInstance;
 const router = useRouter();
+
+/** 只有公开考试（有加入码）才给复制链接与密码 */
+const isPublicExam = (row: ExamVO) => row.participantType === 'public' && !!row.joinCode;
+
+/** 拼成可直接发出去的完整链接：带上部署时的上下文路径 */
+const joinLinkOf = (row: ExamVO) => `${window.location.origin}${import.meta.env.VITE_APP_CONTEXT_PATH}${JOIN_PATH}${row.joinCode}`;
+
+/**
+ * 复制到剪贴板。
+ * navigator.clipboard 只在 HTTPS / localhost 安全上下文可用，
+ * 开发环境用 http://ip 访问时会静默失败，这里退回 execCommand 兜底。
+ */
+const copyText = async (text: string, tip: string) => {
+  if (!text) return;
+  try {
+    if (navigator.clipboard && window.isSecureContext) {
+      await navigator.clipboard.writeText(text);
+    } else {
+      const input = document.createElement('textarea');
+      input.value = text;
+      input.style.position = 'fixed';
+      input.style.opacity = '0';
+      document.body.appendChild(input);
+      input.select();
+      document.execCommand('copy');
+      document.body.removeChild(input);
+    }
+    proxy?.$modal.msgSuccess(tip);
+  } catch {
+    proxy?.$modal.msgError('复制失败，请手动复制');
+  }
+};
 
 const examList = ref<ExamVO[]>([]);
 const loading = ref(true);
@@ -169,6 +199,7 @@ const queryParams = ref<ExamQuery>({
   pageSize: 10,
   examName: undefined,
   participantType: undefined,
+  examType: undefined,
   status: undefined
 });
 
