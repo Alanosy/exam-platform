@@ -249,25 +249,7 @@ const participantTypeOptions = [
 const EXAM_TYPE_FORMAL = '1';
 const EXAM_TYPE_PRACTICE = '2';
 
-/** 正式考试才强制要求起止时间 */
-const isFormal = computed(() => form.examType === EXAM_TYPE_FORMAL);
-
-// 切到练习时按练习的默认规则重置：时间可空、可反复参加
-watch(
-  () => form.examType,
-  (val) => {
-    if (val === EXAM_TYPE_PRACTICE) {
-      form.allowRetry = 1;
-      if (!form.maxRetryCount || form.maxRetryCount < 1) {
-        form.maxRetryCount = 1;
-      }
-    } else if (val === EXAM_TYPE_FORMAL) {
-      // 正式考试默认不允许重考，需要的话由用户手动打开
-      form.allowRetry = 0;
-    }
-  }
-);
-
+/** 新增时的初始表单值，编辑回显前也会用它先把表单清空 */
 const initFormData: ExamForm = {
   id: undefined,
   examName: undefined,
@@ -290,7 +272,28 @@ const initFormData: ExamForm = {
   status: 'not_start'
 };
 
+// form 必须先于下面的 computed / watch 声明：Vue 创建 watch 时会立即执行一次 getter，
+// 放在后面会命中 TDZ（ReferenceError: Cannot access 'form' before initialization）
 const form = reactive<ExamForm & { paperName?: string }>({ ...initFormData });
+
+/** 正式考试才强制要求起止时间 */
+const isFormal = computed(() => form.examType === EXAM_TYPE_FORMAL);
+
+// 切到练习时按练习的默认规则重置：时间可空、可反复参加
+watch(
+  () => form.examType,
+  (val) => {
+    if (val === EXAM_TYPE_PRACTICE) {
+      form.allowRetry = 1;
+      if (!form.maxRetryCount || form.maxRetryCount < 1) {
+        form.maxRetryCount = 1;
+      }
+    } else if (val === EXAM_TYPE_FORMAL) {
+      // 正式考试默认不允许重考，需要的话由用户手动打开
+      form.allowRetry = 0;
+    }
+  }
+);
 
 const defaultAntiCheat: AntiCheatConfig = { switchScreen: 0, copyPaste: 1, camera: 0, fullScreen: 0 };
 const antiCheat = reactive<AntiCheatConfig>({ ...defaultAntiCheat });

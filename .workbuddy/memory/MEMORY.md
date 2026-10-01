@@ -10,6 +10,8 @@ RuoYi-Cloud-Plus 2.6.2 微服务（Spring Boot 3 + Dubbo + MyBatis-Plus + 多租
 - 不改动公共模块（ruoyi-common / ruoyi-api 公共部分等）。
 - 不改已存在的表结构（需要时另出 update 脚本，且幂等）。
 - **不自动执行 `mvn` 编译和 `git push`**，需要时提示用户自己跑。
+- **每完成一批改动就 `git add` + `git commit`（只提交不 push）**（2026-10-01 起用户明确要求）。
+  起因：`exam-front/src/api` 与 `views` 被误删，因长期「不自动提交」导致当天全部工作无法找回。
 
 ## mapstruct-plus 转换器（踩过坑，务必遵守）
 
@@ -23,6 +25,15 @@ RuoYi-Cloud-Plus 2.6.2 微服务（Spring Boot 3 + Dubbo + MyBatis-Plus + 多租
   unmappedTargetPolicy = ReportingPolicy.IGNORE) interface XxxConvert extends BaseMapper<实体, RemoteXxxVo>`。
   已有 `ExamConvert` / `PaperConvert` / `QuestionConvert` / `ExamRecordConvert` / `ExamAnswerConvert`。
 - 排查：看 `ruoyi-xxx/target/generated-sources/annotations` 有没有生成 `XxxToYyyMapper.java`。
+
+## Vue 3.5 的 watch 会同步执行 getter（TDZ 坑）
+
+`<script setup>` 里 `watch(() => x.y, cb)` **必须写在 `const x = ...` 之后**：
+即便没有 `immediate`，Vue 创建 watch 时也会同步跑一次 getter 取初值
+（`@vue/reactivity` `watch()`：`immediate ? job(true) : oldValue = effect.run()`），
+变量还在 TDZ 就抛 `ReferenceError: Cannot access 'x' before initialization`。
+`computed` 是惰性的可以后置；普通函数体里引用后置变量也没事（运行时才调）。
+本项目在 `views/system/exam/edit/index.vue` 上踩过一次（考试编辑页白屏）。
 
 ## 其它已确认的坑
 
