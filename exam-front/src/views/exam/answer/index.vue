@@ -168,8 +168,18 @@
               {{ proctorRule?.switchScreen ? `切屏上限 ${proctorRule.switchScreen} 次` : '切屏不限' }}
             </el-tag>
           </div>
-          <video v-show="cameraOpen" ref="proctorVideo" class="proctor-video" muted autoplay playsinline></video>
-          <div v-if="proctorRule?.camera === 1 && !cameraOpen && !cameraError" class="proctor-camera-tip">正在获取摄像头画面…</div>
+          <video
+            id="proctor-video"
+            v-show="cameraOpen"
+            ref="proctorVideo"
+            class="proctor-video"
+            muted
+            autoplay
+            playsinline
+          ></video>
+          <div v-if="proctorRule?.camera === 1 && !cameraReady && !cameraError" class="proctor-camera-tip">
+            {{ cameraOpen ? '正在获取摄像头画面…' : '正在申请摄像头权限…' }}
+          </div>
           <div v-if="cameraError" class="proctor-camera-error">{{ cameraError }}</div>
           <div class="proctor-counts">
             <div class="proctor-count">
@@ -208,6 +218,7 @@
 
 <script setup lang="ts" name="ExamAnswer">
 import '@vueup/vue-quill/dist/vue-quill.snow.css';
+import { nextTick } from 'vue';
 import { getExamPaper, saveAnswer, submitExam, getExamResult } from '@/api/exam/answer';
 import type { ExamPaperVO, ExamQuestionVO, ExamResultVO } from '@/api/exam/answer/types';
 import { useExamDicts } from '@/hooks/useExamDicts';
@@ -247,6 +258,7 @@ const {
   exitFullscreenCount,
   cameraCount,
   cameraOpen,
+  cameraReady,
   cameraError,
   videoRef: proctorVideo,
   start: startProctorWatch,
@@ -439,6 +451,10 @@ const loadPaper = async () => {
     }
     fillInput(questions.value[0]);
     startTimer();
+    // 必须先让页面真正渲染出来再开监考：答题区整块是 v-if="loading"，
+    // 骨架屏状态下右侧监考卡片（含 <video>）还不存在，此时开摄像头会永远拿不到画面
+    loading.value = false;
+    await nextTick();
     // 防作弊最后开：它失败也不能影响已经能答题的页面
     await startProctorWatch(String(data.examId ?? ''));
   } catch (e: any) {

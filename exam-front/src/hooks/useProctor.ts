@@ -27,6 +27,9 @@ const nowText = (): string => {
   return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`;
 };
 
+/** 答题页 <video> 的固定 id：模板 ref 之外再留一条找元素的路 */
+const VIDEO_ID = 'proctor-video';
+
 const deviceInfo = (): string => {
   const nav = window.navigator;
   return `${nav.platform} · ${window.screen.width}x${window.screen.height} · ${nav.language}`;
@@ -41,8 +44,10 @@ export function useProctor(options: UseProctorOptions) {
   const pasteCount = ref(0);
   const exitFullscreenCount = ref(0);
   const cameraCount = ref(0);
-  /** 摄像头是否真的打开（页面据此显示小窗） */
+  /** 摄像头是否打开（拿到设备流，页面据此显示小窗） */
   const cameraOpen = ref(false);
+  /** 画面是否真的出来了（拿到流 ≠ 有画面，解码完才算，抓拍只在就绪后进行） */
+  const cameraReady = ref(false);
   const cameraError = ref('');
   /** 页面里 <video> 的引用，抓拍从这里取画面 */
   const videoRef = ref<HTMLVideoElement | null>(null);
@@ -322,103 +327,242 @@ export function useProctor(options: UseProctorOptions) {
 
   /* --------------------------------- 摄像头 --------------------------------- */
 
-  const capture = async (eventType = 'periodic'): Promise<void> => {
-    const video = videoRef.value;
-    if (!video || !cameraOpen.value || !sessionId.value) {
-      return;
-    }
-    // 画面还没真正出来就抓，会得到一张纯黑图，不如跳过等下一轮
-    if (video.readyState < 2 || video.videoWidth === 0 || video.videoHeight === 0) {
-      return;
-    }
+  /** 与模板 <video> 约定的 id：万一模板 ref 没绑上，还能按 id 兜底找到元素 */
+  const findVideo = (): HTMLVideoElement | null =>
+    videoRef.value ?? (document.getElementById(VIDEO_ID) as HTMLVideoElement | null);
+
+  /** 整帧平均亮度极低就是没出画面，这种图传上去没意义 */
+  const isBlankFrame = (canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D): boolean => {
     try {
-      const canvas = document.createElement('canvas');
-      // 按摄像头真实比例缩放，避免拉伸出黑边
-      canvas.width = 320;
-      canvas.height = Math.round((320 * video.videoHeight) / video.videoWidth);
-      const ctx = canvas.getContext('2d');
-      if (!ctx) {
-        return;
+      const { data } = ctx.getImageData(0, 0, canvas.width, canvas.height);
+      let sum = 0;
+      let count = 0;
+      // 隔点采样，够判断又不至于每次抓拍都遍历全部像素
+      for (let i = 0; i < data.length; i += 16) {
+        sum += data[i] + data[i + 1] + data[i + 2];
+        count += 3;
       }
-      ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-      const blob = await new Promise<Blob | null>((resolve) => canvas.toBlob(resolve, 'image/jpeg', 0.7));
-      if (!blob) {
-        return;
-      }
-      await uploadProctorSnapshot(sessionId.value, blob, eventType);
-      cameraCount.value += 1;
+      return count > 0 && sum / count < 6;
     } catch {
-      // 抓拍失败不打断答题，下一轮还会再试
+      return false;
     }
   };
 
   /**
-   * 等 <video> 挂载
+   * 抓拍一帧并上传
    *
-   * <p>监考卡片是 v-if="proctorId"，拿到会话 ID 后 DOM 要等下一轮渲染才有这个元素，
-   * 直接取 ref 会是 null，画面永远挂不上去（表现就是小窗全黑、抓拍也是黑的）。
+   * <p>返回是否真的抓到一张：画面没解码出来（readyState/videoWidth 不满足）
+   * 或整帧全黑时直接跳过等下一轮 —— 监考端收到一堆黑图比少几张更糟。
    */
-  const waitVideo = async (): Promise<HTMLVideoElement | null> => {
-    for (let i = 0; i < 30; i++) {
-      if (videoRef.value) {
-        return videoRef.value;
+  const capture = async (eventType = 'periodic'): Promise<boolean> => {
+    const video = findVideo();
+    if (!video || !cameraOpen.value || !sessionId.value) {
+      return false;
+    }
+    if (video.readyState < 2 || video.videoWidth === 0 || video.videoHeight === 0) {
+      return false;
+    }
+    try {
+      const canvas = document.createElement('canvas');
+      canvas.width = 320;
+      // 按摄像头真实比例缩放，避免拉伸出黑边
+      canvas.height = Math.max(1, Math.round((320 * video.videoHeight) / video.videoWidth));
+      const ctx = canvas.getContext('2d');
+      if (!ctx) {
+        return false;
       }
-      await new Promise((r) => setTimeout(r, 100));
+      ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+      if (isBlankFrame(canvas, ctx)) {
+        return false;
+      }
+      const blob = await new Promise<Blob | null>((resolve) => canvas.toBlob(resolve, 'image/jpeg', 0.7));
+      if (!blob) {
+        return false;
+      }
+      await uploadProctorSnapshot(sessionId.value, blob, eventType);
+      cameraCount.value += 1;
+      return true;
+    } catch {
+      // 抓拍失败不打断答题，下一轮还会再试
+      return false;
+    }
+  };
+
+  /** 入场抓拍：画面可能还没解码出来，重试几轮，抓到一张就停 */
+  const captureWithRetry = async (eventType: string, rounds = 6): Promise<void> => {
+    for (let i = 0; i < rounds; i++) {
+      if (stopped || (await capture(eventType))) {
+        return;
+      }
+      await new Promise((r) => setTimeout(r, 1000));
+    }
+  };
+
+  /**
+   * 等 <video> 真正挂载
+   *
+   * <p>监考卡片受 v-if 控制（会话ID、页面 loading 等），开考瞬间 DOM 往往还没渲染出来，
+   * 直接取 ref 会是 null。这里轮询等待，超时交给调用方决定是否重试。
+   */
+  const waitVideo = async (timeoutMs = 10_000): Promise<HTMLVideoElement | null> => {
+    const deadline = Date.now() + timeoutMs;
+    while (Date.now() < deadline) {
+      const el = findVideo();
+      if (el) {
+        videoRef.value = el;
+        return el;
+      }
+      await new Promise((r) => setTimeout(r, 200));
     }
     return null;
   };
 
-  const openCamera = async (): Promise<void> => {
-    try {
-      stream = await navigator.mediaDevices.getUserMedia({ video: { width: 320, height: 240 }, audio: false });
-    } catch {
-      cameraError.value = '未获取到摄像头，请检查权限与设备';
-      push('camera_deny', cameraError.value);
+  const ensurePlaying = async (video: HTMLVideoElement): Promise<void> => {
+    if (!video.paused) {
       return;
     }
-    // 先把小窗显示出来再挂流：display:none 的 <video> 在部分浏览器里不解码画面，抓出来是纯黑
-    cameraOpen.value = true;
-    cameraError.value = '';
-    await nextTick();
-    const video = videoRef.value ?? (await waitVideo());
-    if (!video) {
-      cameraError.value = '摄像头画面未就绪，请刷新页面重试';
-      return;
-    }
-    video.srcObject = stream;
-    video.muted = true;
-    // 等元数据就绪再 play，否则第一帧还没解码就开始抓拍
-    await new Promise<void>((resolve) => {
-      const timer = setTimeout(() => {
-        video.removeEventListener('loadedmetadata', onReady);
-        resolve();
-      }, 3000);
-      function onReady(): void {
-        clearTimeout(timer);
-        video.removeEventListener('loadedmetadata', onReady);
-        resolve();
-      }
-      video.addEventListener('loadedmetadata', onReady);
-    });
     try {
       await video.play();
     } catch {
-      // 静音自动播放一般都能过，过不了就等用户交互，不影响抓拍
+      // 自动播放被拦（少数浏览器要求用户手势）就等下一轮，不打断答题
+    }
+  };
+
+  /** 等画面解码出来：拿到流只是第一步，readyState 没到 2 拍出来就是黑图 */
+  const waitFrame = async (video: HTMLVideoElement, timeoutMs = 8_000): Promise<boolean> => {
+    const deadline = Date.now() + timeoutMs;
+    while (Date.now() < deadline) {
+      if (video.readyState >= 2 && video.videoWidth > 0) {
+        return true;
+      }
+      await ensurePlaying(video);
+      await new Promise((r) => setTimeout(r, 200));
+    }
+    return false;
+  };
+
+  const startCaptureTimer = (): void => {
+    if (cameraTimer) {
+      return;
     }
     const interval = Math.max(15, rule.value?.cameraInterval ?? 60) * 1000;
     cameraTimer = setInterval(() => void capture('periodic'), interval);
-    // 入场先来一张，监考端能确认「这个人对得上号」。
-    // 画面可能还没解码出来，所以重试几轮，拿到一张就停（抓不到会被 capture 自己跳过）
-    void (async () => {
-      for (let i = 0; i < 5; i++) {
-        await new Promise((r) => setTimeout(r, 1000));
-        const before = cameraCount.value;
-        await capture('enter');
-        if (cameraCount.value > before) {
-          return;
-        }
+  };
+
+  /** 把设备流挂到 <video> 并开始抓拍，成功返回 true */
+  const attachStream = async (video: HTMLVideoElement): Promise<boolean> => {
+    if (video.srcObject !== stream) {
+      video.srcObject = stream;
+    }
+    video.muted = true;
+    video.playsInline = true;
+    if (!(await waitFrame(video))) {
+      return false;
+    }
+    cameraReady.value = true;
+    cameraError.value = '';
+    startCaptureTimer();
+    // 入场先来一张，监考端能确认「这个人对得上号」
+    void captureWithRetry('enter');
+    return true;
+  };
+
+  /** 后台重试挂流：应对「开考时页面还没渲染完」这类时序问题，不再一棍子打死 */
+  const retryAttach = async (rounds = 15): Promise<void> => {
+    for (let i = 0; i < rounds; i++) {
+      if (stopped) {
+        return;
       }
-    })();
+      await new Promise((r) => setTimeout(r, 2_000));
+      const video = findVideo();
+      if (!video) {
+        continue;
+      }
+      if (await attachStream(video)) {
+        return;
+      }
+    }
+    if (!cameraReady.value) {
+      cameraError.value = '摄像头画面未就绪，请检查设备后刷新页面重试';
+    }
+  };
+
+  const cameraErrorMessage = (e: unknown): string => {
+    switch ((e as DOMException | undefined)?.name ?? '') {
+      case 'NotAllowedError':
+      case 'SecurityError':
+        return '摄像头权限被拒绝，请在浏览器地址栏允许后重试';
+      case 'NotFoundError':
+      case 'DevicesNotFoundError':
+        return '未检测到摄像头设备';
+      case 'NotReadableError':
+      case 'TrackStartError':
+        return '摄像头被其它程序占用，请关闭后重试';
+      case 'OverconstrainedError':
+        return '摄像头不支持当前分辨率要求';
+      default:
+        return '未获取到摄像头，请检查权限与设备';
+    }
+  };
+
+  /**
+   * 摄像头保活：定时盯一眼画面还在不在
+   *
+   * <p>切标签页回来、浏览器自动暂停、DOM 重建都可能让画面断掉，
+   * 只靠开考那一次挂流不够，断了要能自己接回去。
+   */
+  const keepCameraAlive = (): void => {
+    const video = findVideo();
+    if (!video || !cameraOpen.value) {
+      return;
+    }
+    if (stream && video.srcObject !== stream) {
+      video.srcObject = stream;
+      video.muted = true;
+    }
+    if (video.paused) {
+      void ensurePlaying(video);
+    }
+    const ready = video.readyState >= 2 && video.videoWidth > 0;
+    if (!ready) {
+      cameraReady.value = false;
+      return;
+    }
+    if (!cameraReady.value) {
+      cameraReady.value = true;
+      cameraError.value = '';
+      startCaptureTimer();
+      void captureWithRetry('enter');
+      return;
+    }
+    // 设备被拔掉或被系统回收：如实提示，别假装正常
+    if (stream && stream.getVideoTracks().some((t) => t.readyState === 'ended')) {
+      cameraError.value = '摄像头连接已断开，请检查设备';
+    }
+  };
+
+  const openCamera = async (): Promise<void> => {
+    if (!navigator.mediaDevices?.getUserMedia) {
+      cameraError.value = '当前环境不支持摄像头（需通过 HTTPS 或 localhost 访问）';
+      push('camera_deny', cameraError.value);
+      return;
+    }
+    try {
+      stream = await navigator.mediaDevices.getUserMedia({ video: { width: 640, height: 480 }, audio: false });
+    } catch (e) {
+      cameraError.value = cameraErrorMessage(e);
+      push('camera_deny', cameraError.value);
+      return;
+    }
+    // 先把小窗显示出来再挂流：display:none 的 <video> 在部分浏览器里不解码画面
+    cameraOpen.value = true;
+    cameraError.value = '';
+    await nextTick();
+    const video = await waitVideo();
+    if (!video || !(await attachStream(video))) {
+      cameraError.value = '正在等待摄像头画面…';
+      void retryAttach();
+    }
   };
 
   /* --------------------------------- 生命周期 --------------------------------- */
@@ -444,10 +588,11 @@ export function useProctor(options: UseProctorOptions) {
         .then((res) => syncCounts(res.data))
         .catch(() => undefined);
     }, 30_000);
-    // 开发者工具与全屏状态一起查：两者都是「事件不一定来」的状态类检测
+    // 开发者工具、全屏状态、摄像头画面一起查：三者都是「事件不一定来」的状态类检测
     devtoolTimer = setInterval(() => {
       checkDevtool();
       checkFullscreen();
+      keepCameraAlive();
     }, 3_000);
   };
 
@@ -465,6 +610,7 @@ export function useProctor(options: UseProctorOptions) {
     stream?.getTracks().forEach((track) => track.stop());
     stream = null;
     cameraOpen.value = false;
+    cameraReady.value = false;
     channel?.close();
     channel = null;
     if (document.fullscreenElement) {
@@ -537,6 +683,7 @@ export function useProctor(options: UseProctorOptions) {
     exitFullscreenCount,
     cameraCount,
     cameraOpen,
+    cameraReady,
     cameraError,
     videoRef,
     warning,
