@@ -26,7 +26,15 @@
           <el-descriptions-item label="考试说明">{{ info.examDesc || '暂无说明' }}</el-descriptions-item>
         </el-descriptions>
 
-        <el-alert v-if="info.tip" class="brief-alert" type="warning" :closable="false" show-icon :title="info.tip" />
+        <!-- 未开始时这里显示倒计时，到点本页自己会刷新并放开按钮，不用手动退出去再进来 -->
+        <el-alert
+          v-if="waitTip"
+          class="brief-alert"
+          :type="canStart ? 'success' : 'warning'"
+          :closable="false"
+          show-icon
+          :title="waitTip"
+        />
 
         <div class="brief-rules">
           <div class="brief-rules-title">答题注意事项</div>
@@ -39,8 +47,8 @@
         </div>
 
         <div class="brief-actions">
-          <el-button type="primary" size="large" :loading="starting" :disabled="!info.canStart" @click="handleStart">
-            {{ info.myStatus === 'answering' ? '继续答题' : '确认并开始考试' }}
+          <el-button type="primary" size="large" :loading="starting" :disabled="!canStart" @click="handleStart">
+            {{ startLabel }}
           </el-button>
           <el-button size="large" plain @click="goCenter">返回考试中心</el-button>
         </div>
@@ -53,6 +61,7 @@
 import { listMyExams, startExam } from '@/api/exam/answer';
 import type { ExamCenterVO } from '@/api/exam/answer/types';
 import { useExamDicts } from '@/hooks/useExamDicts';
+import { formatCountdown, toTs, useServerClock } from '@/hooks/useServerClock';
 
 const route = useRoute();
 const router = useRouter();
@@ -89,6 +98,38 @@ const formatTime = (value?: string): string => {
 
 const timeRange = computed(() => `${formatTime(info.value.startTime)} 至 ${formatTime(info.value.endTime)}`);
 
+/** 倒计时与「到点没有」都按服务端时钟算，别用考生电脑的时间 */
+const { serverNow, syncServerTime } = useServerClock();
+
+const startTs = computed(() => toTs(info.value.startTime));
+/** 距离开考还有多久（毫秒），没配开始时间或已开考都是 0 */
+const millisToStart = computed(() => (Number.isNaN(startTs.value) ? 0 : Math.max(0, startTs.value - serverNow.value)));
+/** 服务端时间是否已经到点（后端还有 10 秒提前量，所以到点了后端一定放行） */
+const started = computed(() => millisToStart.value === 0 && !Number.isNaN(startTs.value));
+const waiting = computed(() => info.value.myStatus === 'not_start' && !started.value);
+
+/**
+ * 能不能开考
+ *
+ * <p>后端说了能就能；后端还停在「未开始」但服务端时间已经到点时也放开，
+ * 两边口径一致，不会再出现「列表能点进来、说明页说没开始」。
+ */
+const canStart = computed(() => info.value.canStart === true || (info.value.myStatus === 'not_start' && started.value));
+
+const countdownText = computed(() => formatCountdown(millisToStart.value));
+
+const startLabel = computed(() => {
+  if (info.value.myStatus === 'answering') return '继续答题';
+  if (waiting.value) return `距开始 ${countdownText.value}`;
+  return '确认并开始考试';
+});
+
+const waitTip = computed(() => {
+  if (info.value.myStatus !== 'not_start') return info.value.tip || '';
+  if (waiting.value) return `距开始还有 ${countdownText.value}（以服务器时间为准），到点后本页会自动进入，不用退出重进`;
+  return '考试已开始，正在进入…';
+});
+
 /** 说明页直接复用考试中心的数据，避免再开一个查询接口 */
 const loadInfo = async () => {
   const examId = route.params.examId as string;
@@ -97,9 +138,12 @@ const loadInfo = async () => {
     return;
   }
   loading.value = true;
+  const sentAt = Date.now();
   try {
     const res = await listMyExams();
-    const hit = (res.data ?? []).find((item) => String(item.examId) === examId);
+    const rows = res.data ?? [];
+    const hit = rows.find((item) => String(item.examId) === examId);
+    syncServerTime(rows.find((item) => item.serverTime)?.serverTime, sentAt);
     if (!hit) {
       errorMsg.value = '你还没有加入该考试，或该考试已不存在';
       return;
@@ -118,6 +162,10 @@ const handleStart = async () => {
     // 后端有答题中的答卷时会直接返回原答卷，实现中途退出续答
     const res = await startExam(info.value.examId);
     await router.push(`/exam/answer/${res.data}`);
+  } catch (e: any) {
+    // 卡在开考那一两秒时后端可能还没放行，拉一次最新状态，别把人晾在报错上
+    ElMessage.error((e instanceof Error && e.message) || '开始考试失败');
+    await loadInfo();
   } finally {
     starting.value = false;
   }
@@ -126,6 +174,20 @@ const handleStart = async () => {
 const goCenter = () => router.push('/exam/center');
 
 onMounted(loadInfo);
+
+let lastReloadAt = 0;
+
+// 到点了但后端还没放行：最多每 3 秒拉一次，拿到「可以考」为止
+watch(serverNow, () => {
+  if (!started.value || info.value.canStart || info.value.myStatus !== 'not_start') {
+    return;
+  }
+  if (Date.now() - lastReloadAt < 3_000) {
+    return;
+  }
+  lastReloadAt = Date.now();
+  void loadInfo();
+});
 </script>
 
 <style scoped lang="scss">

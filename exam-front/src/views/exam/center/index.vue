@@ -91,6 +91,7 @@
 import { listMyExams } from '@/api/exam/answer';
 import type { ExamCenterVO } from '@/api/exam/answer/types';
 import { useExamDicts } from '@/hooks/useExamDicts';
+import { formatCountdown, toTs, useServerClock } from '@/hooks/useServerClock';
 
 const router = useRouter();
 // 首屏先显示骨架屏，避免数据回来前闪一下空状态
@@ -129,15 +130,6 @@ const emptyTip = computed(() => {
   return '暂无该类型的考试';
 });
 
-/** 把后端给的时间串转成时间戳，解析不出来返回 NaN */
-const toTs = (value?: string): number => {
-  if (!value) return Number.NaN;
-  const text = String(value).trim();
-  // 后端给的是本地时间串（yyyy-MM-dd HH:mm:ss），按本地时区解析，别当成 UTC
-  const ts = new Date(text.includes('T') ? text : text.replace(' ', 'T')).getTime();
-  return Number.isNaN(ts) ? Number.NaN : ts;
-};
-
 const formatTime = (value?: string): string => {
   if (!value) return '-';
   const ts = toTs(value);
@@ -149,52 +141,43 @@ const formatTime = (value?: string): string => {
 
 const timeRange = (item: ExamCenterVO) => `${formatTime(item.startTime)} 至 ${formatTime(item.endTime)}`;
 
-/**
- * 本地时钟和服务端时钟的差值（服务端 - 本地）
- *
- * <p>考生电脑时间不准时，按本地时间算的倒计时会早一截或晚一截，
- * 按钮要么早亮（点进去被后端拒绝）要么晚亮（干等），这里用接口返回的 serverTime 校准。
- */
-const serverOffset = ref(0);
-/** 每秒走一次，驱动倒计时 */
-const nowTs = ref(Date.now());
-/** 校准后的「现在」 */
-const serverNow = computed(() => nowTs.value + serverOffset.value);
+/** 倒计时与到点判定一律以服务端时钟为准，别信本地时间 */
+const { serverNow, syncServerTime } = useServerClock();
 
-/** 与后端一致的提前入场余量：到点前后这 10 秒都算已经开考 */
-const EARLY_GRACE_MS = 10_000;
-/** 倒计时最后这段时间里提高刷新频率，保证整点前后状态是对的 */
+/** 倒计时最后这段时间内提高刷新频率，保证整点前后状态是对的 */
 const IMMINENT_MS = 60_000;
 
-/** 本地已判定开考、但列表还没刷回来的考试，先把开始按钮放出来，避免干等一次接口往返 */
-const startedIds = ref<Set<string>>(new Set());
-
-/** 没配开始时间的练习考试随时可考；配了的按服务端时间判，留 10 秒提前量 */
+/**
+ * 是否已经开考
+ *
+ * <p>只按「到了开始时间」判，不跟着后端叠那 10 秒提前量：
+ * 前端可以比后端保守，绝不能比后端激进，否则就会出现
+ * 「列表里能点进去、说明页却说还没开始」这种割裂。
+ */
 const hasStarted = (item: ExamCenterVO): boolean => {
   const startTs = toTs(item.startTime);
   if (Number.isNaN(startTs)) return true;
-  return serverNow.value >= startTs - EARLY_GRACE_MS;
+  return serverNow.value >= startTs;
 };
 
 /** 距离开考还有多久（毫秒），已开考返回 0 */
 const millisToStart = (item: ExamCenterVO): number => {
   const startTs = toTs(item.startTime);
   if (Number.isNaN(startTs)) return 0;
-  return Math.max(0, startTs - EARLY_GRACE_MS - serverNow.value);
+  return Math.max(0, startTs - serverNow.value);
 };
 
+/**
+ * 能不能点「开始考试」
+ *
+ * <p>后端放行当然能点；后端还停在「未开始」但服务端时间确实到点了，也先把按钮放开，
+ * 免得干等下一次刷新。这里是按时间实时算出来的，不是记在内存里的一次性状态，
+ * 所以退出去再进来（组件重新挂载）也不会莫名其妙又变回不能点。
+ */
 const canStartOf = (item: ExamCenterVO): boolean =>
-  item.canStart === true || (item.myStatus === 'not_start' && startedIds.value.has(String(item.examId)));
+  item.canStart === true || (item.myStatus === 'not_start' && hasStarted(item));
 
-/** 倒计时文案：超过一天带天数，否则 hh:mm:ss */
-const countdownText = (item: ExamCenterVO): string => {
-  const left = Math.floor(millisToStart(item) / 1000);
-  if (left <= 0) return '';
-  const days = Math.floor(left / 86400);
-  const pad = (n: number) => String(n).padStart(2, '0');
-  const clock = `${pad(Math.floor((left % 86400) / 3600))}:${pad(Math.floor((left % 3600) / 60))}:${pad(left % 60)}`;
-  return days > 0 ? `${days} 天 ${clock}` : clock;
-};
+const countdownText = (item: ExamCenterVO): string => formatCountdown(millisToStart(item));
 
 /**
  * 卡片上的状态提示
@@ -220,14 +203,11 @@ const loadList = async (silent = false) => {
   if (!silent) {
     loading.value = true;
   }
+  const sentAt = Date.now();
   try {
     const res = await listMyExams();
     list.value = res.data ?? [];
-    const serverTs = toTs(list.value.find((item) => item.serverTime)?.serverTime);
-    if (!Number.isNaN(serverTs)) {
-      serverOffset.value = serverTs - Date.now();
-      nowTs.value = Date.now();
-    }
+    syncServerTime(list.value.find((item) => item.serverTime)?.serverTime, sentAt);
   } finally {
     loading.value = false;
   }
@@ -242,31 +222,28 @@ const goResult = (item: ExamCenterVO) => router.push(`/exam/record/${item.record
 /** 已交卷的考试直接进答题记录详情，能看到逐题作答 */
 const goRecords = () => router.push('/exam/records');
 
-let timer: ReturnType<typeof setInterval> | undefined;
+/** 已经因为到点触发过刷新的考试，别每秒都刷一遍 */
+const refreshedIds = new Set<string>();
 let lastReloadAt = 0;
 
-onMounted(() => {
-  loadList();
-  timer = setInterval(() => {
-    nowTs.value = Date.now();
-    let hitStart = false;
-    for (const item of list.value) {
-      if (item.myStatus === 'not_start' && hasStarted(item) && !startedIds.value.has(String(item.examId))) {
-        startedIds.value.add(String(item.examId));
-        hitStart = true;
-      }
-    }
-    // 有考试刚开考：立刻刷一次拿权威状态；临近开考的每 10 秒静默刷一次，避免时钟漂移
-    const imminent = list.value.some((item) => item.myStatus === 'not_start' && millisToStart(item) <= IMMINENT_MS);
-    if (hitStart || (imminent && Date.now() - lastReloadAt > 10_000)) {
-      lastReloadAt = Date.now();
-      void loadList(true);
-    }
-  }, 1000);
-});
+onMounted(loadList);
 
-onBeforeUnmount(() => {
-  if (timer) clearInterval(timer);
+// 时钟每走一秒检查一次：有考试刚到开考时间就刷一次列表，拿后端权威状态
+watch(serverNow, () => {
+  let hitStart = false;
+  for (const item of list.value) {
+    const key = String(item.examId);
+    if (item.myStatus === 'not_start' && hasStarted(item) && !refreshedIds.has(key)) {
+      refreshedIds.add(key);
+      hitStart = true;
+    }
+  }
+  // 临近开考的每 10 秒静默刷一次，避免时钟漂移导致状态滞后
+  const imminent = list.value.some((item) => item.myStatus === 'not_start' && millisToStart(item) <= IMMINENT_MS);
+  if (hitStart || (imminent && Date.now() - lastReloadAt > 10_000)) {
+    lastReloadAt = Date.now();
+    void loadList(true);
+  }
 });
 </script>
 

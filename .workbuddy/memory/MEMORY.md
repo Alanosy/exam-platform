@@ -44,7 +44,11 @@ RuoYi-Cloud-Plus 2.6.2 微服务（Spring Boot 3 + Dubbo + MyBatis-Plus + 多租
   **「不允许迟到」管的是晚到几分钟的人，不是晚一秒就把守时的人踢出去。**
 - `isLate(now, exam)`：超过最晚入场时间才算迟到。
 - `ExamCenterVo` 带 `serverTime`（前端倒计时的准绳，别信本地时钟）与 `latestEntryTime`。
-- 前端 `views/exam/center/index.vue`：未开始显示倒计时，到点先乐观放开按钮再静默刷列表。
+- 前端 `views/exam/center/index.vue` 与 `views/exam/brief/index.vue` 共用
+  `src/hooks/useServerClock.ts`（`serverNow` / `syncServerTime` / `toTs` / `formatCountdown`）：
+  未开始显示倒计时，到点先乐观放开按钮再静默刷列表。
+- **前端的乐观放开必须严格不早于后端**（不叠后端的提前量），且必须**由时间实时算出**，
+  不能存成一次性内存标记——组件重新挂载会丢，表现为「退出来就进不去了」。
 
 ## 其它已确认的坑
 
