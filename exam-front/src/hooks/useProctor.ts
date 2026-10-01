@@ -61,6 +61,8 @@ export function useProctor(options: UseProctorOptions) {
   let lastDevtoolAt = 0;
   let lastMultitabAt = 0;
   let wasFullscreen = false;
+  /** 考试窗口当前是否有焦点，用来识别「有焦点 → 没焦点」的变化沿 */
+  let windowFocused = true;
 
   const queue: ProctorEventBO[] = [];
   let flushTimer: ReturnType<typeof setInterval> | undefined;
@@ -134,15 +136,25 @@ export function useProctor(options: UseProctorOptions) {
 
   /* ------------------------------- 各类行为采集 ------------------------------- */
 
-  /** 切屏 / 离屏：visibilitychange 与 blur 常常同时触发，1.5 秒内只算一次 */
-  const markSwitch = (): void => {
+  /**
+   * 记一次切屏
+   *
+   * <p>「切屏」不止切换标签页：切到别的软件窗口（微信、钉钉、另一个浏览器窗口）
+   * 时页面并没有 hidden，只是浏览器窗口失去了焦点，同样属于离开考试画面，必须一起算。
+   * visibilitychange 与 blur 常常同时触发，1.5 秒内只算一次。
+   */
+  const markSwitch = (reason: string): void => {
     if (throttled(lastSwitchAt, 1500)) {
       return;
     }
     lastSwitchAt = Date.now();
     switchCount.value += 1;
     const max = rule.value?.switchScreen ?? 0;
-    push('switch_screen', '离开了考试页面');
+    push('switch_screen', reason);
+    // 切走前抓拍一张：监考端能确认「离开那一刻屏幕前是谁」
+    if (cameraReady.value) {
+      void capture('switch_screen');
+    }
     if (max > 0) {
       warn(`已切屏 ${switchCount.value} 次，最多 ${max} 次，超过将自动交卷`);
     } else {
@@ -150,19 +162,51 @@ export function useProctor(options: UseProctorOptions) {
     }
   };
 
+  /** 切换标签页 / 最小化：页面进入后台 */
   const onVisibilityChange = (): void => {
     if (document.hidden) {
-      markSwitch();
+      markSwitch('切换了浏览器标签页或最小化窗口');
+    }
+    windowFocused = document.hasFocus();
+  };
+
+  /**
+   * 浏览器窗口失去焦点：切到其它软件或另一个浏览器窗口
+   *
+   * <p>这种场景下 document.hidden 仍是 false（页面「可见」），老逻辑只记了一条 blur，
+   * 结果切到别的应用去查资料完全不计入切屏次数。
+   */
+  const onBlur = (): void => {
+    if (document.hidden || !document.hasFocus()) {
+      markSwitch('浏览器窗口失去焦点（切换到了其它窗口或应用）');
+    } else {
+      // 极少数情况：事件来了但焦点其实还在（点浏览器地址栏等），只记流水不计数
+      push('blur', '窗口短暂失去焦点');
+    }
+    windowFocused = false;
+  };
+
+  /** 焦点回到考试页面：顺带抓拍一张，监考端能看到「人回来了」 */
+  const onFocus = (): void => {
+    windowFocused = true;
+    if (cameraReady.value) {
+      void capture('resume');
     }
   };
 
-  const onBlur = (): void => {
-    // 页面整个被切走时 visibilitychange 已经记过一次，这里只记「窗口失焦但页面还看得见」
-    if (document.hidden) {
-      markSwitch();
-    } else {
-      push('blur', '窗口失去焦点');
+  /**
+   * 焦点状态兜底检查
+   *
+   * <p>blur 事件不是每次都来：系统级切换（mac 调度中心 / 切换桌面）、全屏下 alt-tab、
+   * 部分浏览器最小化时都可能丢事件。所以定时看一眼真实焦点状态，
+   * 只在「有焦点 → 没焦点」这个变化沿上记一次，避免持续离屏被反复计数。
+   */
+  const checkFocus = (): void => {
+    const focused = document.hasFocus() && !document.hidden;
+    if (!focused && windowFocused) {
+      markSwitch('考试窗口失去焦点（可能切换到了其它应用）');
     }
+    windowFocused = focused;
   };
 
   const clipboardText = (e: ClipboardEvent): string => (e.clipboardData?.getData('text') ?? '').slice(0, 200);
@@ -570,6 +614,7 @@ export function useProctor(options: UseProctorOptions) {
   const bind = (): void => {
     document.addEventListener('visibilitychange', onVisibilityChange);
     window.addEventListener('blur', onBlur);
+    window.addEventListener('focus', onFocus);
     document.addEventListener('copy', onCopy, true);
     document.addEventListener('cut', onCut, true);
     document.addEventListener('paste', onPaste, true);
@@ -578,6 +623,8 @@ export function useProctor(options: UseProctorOptions) {
     document.addEventListener('fullscreenchange', onFullscreenChange);
     // 进页面时可能已经是全屏（比如从全屏的考试中心点进来），别把这当成一次退出
     wasFullscreen = inFullscreenNow();
+    // 同理：考生可能是在别的窗口里打开试卷、页面自己加载完的，别把这当成一次切屏
+    windowFocused = document.hasFocus() && !document.hidden;
     flushTimer = setInterval(() => void flush(), 5_000);
     heartbeatTimer = setInterval(() => {
       if (!sessionId.value || stopped) {
@@ -588,10 +635,11 @@ export function useProctor(options: UseProctorOptions) {
         .then((res) => syncCounts(res.data))
         .catch(() => undefined);
     }, 30_000);
-    // 开发者工具、全屏状态、摄像头画面一起查：三者都是「事件不一定来」的状态类检测
+    // 开发者工具、全屏状态、窗口焦点、摄像头画面一起查：四者都是「事件不一定来」的状态类检测
     devtoolTimer = setInterval(() => {
       checkDevtool();
       checkFullscreen();
+      checkFocus();
       keepCameraAlive();
     }, 3_000);
   };
@@ -599,6 +647,7 @@ export function useProctor(options: UseProctorOptions) {
   const unbind = (): void => {
     document.removeEventListener('visibilitychange', onVisibilityChange);
     window.removeEventListener('blur', onBlur);
+    window.removeEventListener('focus', onFocus);
     document.removeEventListener('copy', onCopy, true);
     document.removeEventListener('cut', onCut, true);
     document.removeEventListener('paste', onPaste, true);
