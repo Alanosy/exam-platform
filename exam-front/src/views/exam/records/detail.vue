@@ -33,8 +33,7 @@
             <div>及格分 {{ result.passScore ?? 0 }} 分 · 用时 {{ usedText(result.usedSeconds) }}</div>
             <div>
               共 {{ result.questionCount ?? 0 }} 题 · 已答 {{ result.answeredCount ?? 0 }} 题 · 对
-              <span class="text-right">{{ result.correctCount ?? 0 }}</span> 题 · 错
-              <span class="text-wrong">{{ result.wrongCount ?? 0 }}</span> 题
+              <span class="text-right">{{ result.correctCount ?? 0 }}</span> 题 · 错 <span class="text-wrong">{{ result.wrongCount ?? 0 }}</span> 题
             </div>
           </div>
         </div>
@@ -167,7 +166,12 @@ const usedText = (seconds?: number): string => {
 
 /** 服务端给的是「A、C」这种人话文本，切回数组方便比对 */
 const splitKeys = (text?: string): string[] =>
-  text ? text.split('、').map((item) => item.trim()).filter(Boolean) : [];
+  text
+    ? text
+        .split('、')
+        .map((item) => item.trim())
+        .filter(Boolean)
+    : [];
 
 const myKeys = (q: ExamResultQuestionVO): string[] => splitKeys(q.myAnswerText);
 const rightKeys = (q: ExamResultQuestionVO): string[] => splitKeys(q.standardAnswerText);

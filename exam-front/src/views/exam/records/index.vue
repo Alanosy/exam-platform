@@ -93,13 +93,7 @@
         </el-table-column>
       </el-table>
 
-      <pagination
-        v-show="total > 0"
-        v-model:page="queryParams.pageNum"
-        v-model:limit="queryParams.pageSize"
-        :total="total"
-        @pagination="getList"
-      />
+      <pagination v-show="total > 0" v-model:page="queryParams.pageNum" v-model:limit="queryParams.pageSize" :total="total" @pagination="getList" />
 
       <el-empty v-if="!loading && total === 0" description="还没有考试记录，先去考试中心参加一场考试吧" />
     </el-card>

@@ -44,9 +44,7 @@
               <span class="ml-2">第 {{ q.sort }} 题（{{ q.score }} 分，得 {{ q.gainedScore }} 分）</span>
             </div>
             <div class="detail-question ql-editor" v-html="q.title"></div>
-            <div class="detail-answer">
-              你的作答：<span class="answer-html ql-editor" v-html="readableAnswer(q.myAnswer)"></span>
-            </div>
+            <div class="detail-answer">你的作答：<span class="answer-html ql-editor" v-html="readableAnswer(q.myAnswer)"></span></div>
             <div v-if="q.standardAnswer" class="detail-answer">
               参考答案：<span class="answer-html ql-editor" v-html="readableAnswer(q.standardAnswer)"></span>
             </div>
@@ -98,12 +96,7 @@
             class="option-group"
             @change="(val: string[]) => saveChoice(val)"
           >
-            <el-checkbox
-              v-for="op in current.options ?? []"
-              :key="op.optionKey"
-              :value="op.optionKey"
-              class="option-item option-item-multiple"
-            >
+            <el-checkbox v-for="op in current.options ?? []" :key="op.optionKey" :value="op.optionKey" class="option-item option-item-multiple">
               <span class="option-inner">
                 <span class="option-key">{{ op.optionKey }}</span>
                 <span class="option-content ql-editor" v-html="op.optionContent"></span>
@@ -133,14 +126,7 @@
           </div>
           <!-- 代码题保持纯文本，富文本会破坏缩进与语法字符 -->
           <div v-else class="text-group">
-            <el-input
-              v-model="textAnswer"
-              type="textarea"
-              :rows="8"
-              class="plain-answer"
-              placeholder="请输入代码"
-              @blur="saveText"
-            />
+            <el-input v-model="textAnswer" type="textarea" :rows="8" class="plain-answer" placeholder="请输入代码" @blur="saveText" />
             <div class="text-tip">代码题请用纯文本作答，保留缩进</div>
           </div>
 

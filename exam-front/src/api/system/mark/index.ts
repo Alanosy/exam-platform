@@ -1,14 +1,6 @@
 import request from '@/utils/request';
 import { AxiosPromise } from 'axios';
-import type {
-  MarkExamVO,
-  MarkExamQuery,
-  MarkTaskVO,
-  MarkTaskQuery,
-  MarkQuestionVO,
-  MarkLogVO,
-  MarkScoreForm
-} from '@/api/system/mark/types';
+import type { MarkExamVO, MarkExamQuery, MarkTaskVO, MarkTaskQuery, MarkQuestionVO, MarkLogVO, MarkScoreForm } from '@/api/system/mark/types';
 
 /**
  * 阅卷列表：按考试聚合，只统计正式考试

@@ -70,11 +70,6 @@
         </el-table-column>
         <el-table-column label="试卷总分" align="center" prop="totalScore" />
         <el-table-column label="及格分数" align="center" prop="passScore" />
-        <el-table-column label="考试时长" align="center" prop="timeLimit">
-          <template #default="scope">
-            <span>{{ scope.row.timeLimit === 0 || scope.row.timeLimit === null ? '不限时' : scope.row.timeLimit + ' 分钟' }}</span>
-          </template>
-        </el-table-column>
         <el-table-column label="状态" align="center" prop="status">
           <template #default="scope">
             <el-tag :type="getStatusTagType(scope.row.status)">
@@ -87,11 +82,6 @@
             <el-tag :type="scope.row.visibility === 'public' ? 'success' : 'info'">
               {{ getOptionLabel(visibilityOptions, scope.row.visibility) }}
             </el-tag>
-          </template>
-        </el-table-column>
-        <el-table-column label="分享过期时间" align="center" prop="shareExpireTime" width="180">
-          <template #default="scope">
-            <span>{{ scope.row.shareExpireTime ? parseTime(scope.row.shareExpireTime, '{y}-{m}-{d}') : '永久有效' }}</span>
           </template>
         </el-table-column>
         <el-table-column label="创建人" align="center" prop="creatorName" width="120" :show-overflow-tooltip="true">

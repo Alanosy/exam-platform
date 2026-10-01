@@ -25,9 +25,7 @@
                 :stroke-width="8"
                 :show-text="false"
               />
-              <span class="progress-stat">
-                已掌握 {{ masteredCount }} · 未掌握 {{ questions.length - masteredCount }}
-              </span>
+              <span class="progress-stat"> 已掌握 {{ masteredCount }} · 未掌握 {{ questions.length - masteredCount }} </span>
             </div>
             <el-button link icon="Close" @click="goBack">退出重刷</el-button>
           </div>
@@ -56,12 +54,7 @@
             <div class="ql-editor ql-content question-title" v-html="current.title"></div>
 
             <!-- 单选 / 判断 -->
-            <el-radio-group
-              v-if="isSingleChoice"
-              v-model="choice"
-              class="option-group"
-              :disabled="!!result"
-            >
+            <el-radio-group v-if="isSingleChoice" v-model="choice" class="option-group" :disabled="!!result">
               <el-radio
                 v-for="opt in current.options ?? []"
                 :key="opt.optionKey"
@@ -78,12 +71,7 @@
             </el-radio-group>
 
             <!-- 多选 -->
-            <el-checkbox-group
-              v-else-if="current.questionType === 'MULTIPLE'"
-              v-model="choices"
-              class="option-group"
-              :disabled="!!result"
-            >
+            <el-checkbox-group v-else-if="current.questionType === 'MULTIPLE'" v-model="choices" class="option-group" :disabled="!!result">
               <el-checkbox
                 v-for="opt in current.options ?? []"
                 :key="opt.optionKey"
@@ -122,11 +110,7 @@
             <!-- 即时判分 -->
             <div v-if="result" class="judge-box" :class="judgeClass">
               <div class="judge-title">
-                <el-tag
-                  :type="result.correct === true ? 'success' : result.correct === false ? 'danger' : 'info'"
-                  size="small"
-                  effect="dark"
-                >
+                <el-tag :type="result.correct === true ? 'success' : result.correct === false ? 'danger' : 'info'" size="small" effect="dark">
                   {{ result.correct === true ? '回答正确' : result.correct === false ? '回答错误' : '已记录作答' }}
                 </el-tag>
                 <span v-if="result.autoMastered" class="judge-tip">连续答对已达标，这道题已自动移出错题本</span>
@@ -148,15 +132,11 @@
 
             <div class="question-actions">
               <el-button :disabled="currentIndex === 0" @click="prev">上一题</el-button>
-              <el-button v-if="!result" type="primary" :loading="submitting" :disabled="!canSubmit" @click="handleSubmit">
-                提交作答
-              </el-button>
+              <el-button v-if="!result" type="primary" :loading="submitting" :disabled="!canSubmit" @click="handleSubmit"> 提交作答 </el-button>
               <el-button v-else type="primary" @click="next">
                 {{ currentIndex >= questions.length - 1 ? '完成重刷' : '下一题' }}
               </el-button>
-              <el-button v-if="result && current.masterStatus !== 'MASTERED'" type="success" plain @click="handleMaster">
-                标记为已掌握
-              </el-button>
+              <el-button v-if="result && current.masterStatus !== 'MASTERED'" type="success" plain @click="handleMaster"> 标记为已掌握 </el-button>
             </div>
           </div>
         </div>
@@ -204,7 +184,6 @@ const router = useRouter();
 
 const {
   wrongSourceTypeOptions,
-  wrongMasterStatusOptions,
   wrongMasterStatusLabel,
   wrongMasterStatusTagType,
   questionTypeLabel,

@@ -42,11 +42,6 @@ export interface PaperVO {
   passScore: number;
 
   /**
-   * 考试时长(分钟)，0 表示不限时
-   */
-  timeLimit: number;
-
-  /**
    * 可见性：private私有 / public公开
    */
   visibility: string;
@@ -55,11 +50,6 @@ export interface PaperVO {
    * 公开分享密码，公开模式生效，空则无密码
    */
   sharePassword: string;
-
-  /**
-   * 分享过期时间，空则永久有效
-   */
-  shareExpireTime: string;
 
   /**
    * 随机抽题规则(JSON)，组卷模式为 RANDOM 时生效
@@ -164,11 +154,6 @@ export interface PaperForm extends BaseEntity {
   passScore?: number;
 
   /**
-   * 考试时长(分钟)，0 表示不限时
-   */
-  timeLimit?: number;
-
-  /**
    * 可见性：private私有 / public公开
    */
   visibility?: string;
@@ -177,11 +162,6 @@ export interface PaperForm extends BaseEntity {
    * 公开分享密码，公开模式生效，空则无密码
    */
   sharePassword?: string;
-
-  /**
-   * 分享过期时间，空则永久有效
-   */
-  shareExpireTime?: string;
 
   /**
    * 随机抽题规则(JSON)，组卷模式为 RANDOM 时生效

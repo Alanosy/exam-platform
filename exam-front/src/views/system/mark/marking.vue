@@ -13,9 +13,7 @@
           <div class="flex items-center gap-2">
             <el-button plain icon="View" @click="logVisible = true">阅卷日志</el-button>
             <el-button plain icon="MagicStick" :loading="aiLoading" @click="handleAiPreview">AI 预评</el-button>
-            <el-button type="primary" :loading="finishing" :disabled="questions.length === 0" @click="handleFinish">
-              完成阅卷
-            </el-button>
+            <el-button type="primary" :loading="finishing" :disabled="questions.length === 0" @click="handleFinish"> 完成阅卷 </el-button>
           </div>
         </div>
       </template>
@@ -147,12 +145,7 @@ import { useExamDicts } from '@/hooks/useExamDicts';
 const route = useRoute();
 const router = useRouter();
 
-const {
-  markLogActionOptions,
-  questionTypeLabel,
-  questionDifficultyLabel,
-  questionDifficultyTagType
-} = useExamDicts();
+const { markLogActionOptions, questionTypeLabel, questionDifficultyLabel, questionDifficultyTagType } = useExamDicts();
 
 const { proxy } = getCurrentInstance() as ComponentInternalInstance;
 
@@ -177,13 +170,7 @@ const saving = reactive<Record<string, boolean>>({});
 const markedCount = computed(
   () => questions.value.filter((item) => item.status === 'marked' || (item.score !== undefined && item.score !== null)).length
 );
-const totalScore = computed(() =>
-  Number(
-    questions.value
-      .reduce((sum, item) => sum + Number(scoreForm[item.itemId]?.score ?? 0), 0)
-      .toFixed(1)
-  )
-);
+const totalScore = computed(() => Number(questions.value.reduce((sum, item) => sum + Number(scoreForm[item.itemId]?.score ?? 0), 0).toFixed(1)));
 const fullScore = computed(() => Number(questions.value.reduce((sum, item) => sum + Number(item.fullScore ?? 0), 0).toFixed(1)));
 
 const pad = (n: number) => String(n).padStart(2, '0');

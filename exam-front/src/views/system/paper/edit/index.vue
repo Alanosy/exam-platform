@@ -265,12 +265,6 @@
                 <el-input-number v-model="form.defaultScore" :min="0" :precision="1" controls-position="right" class="w-full" />
               </el-form-item>
             </el-col>
-            <el-col :span="12">
-              <el-form-item label="考试时长" prop="timeLimit">
-                <el-input-number v-model="form.timeLimit" :min="0" :precision="0" controls-position="right" class="w-full" />
-                <span class="ml-2 text-xs text-gray-400">分钟，0 表示不限时</span>
-              </el-form-item>
-            </el-col>
           </el-row>
           <el-form-item label="试卷描述" prop="paperDesc">
             <el-input v-model="form.paperDesc" type="textarea" :rows="3" maxlength="500" show-word-limit placeholder="请输入试卷描述" />
@@ -386,7 +380,6 @@ const initFormData: PaperForm = {
   paperType: 'MANUAL',
   totalScore: 0,
   passScore: 0,
-  timeLimit: 0,
   visibility: 'private',
   status: 'draft',
   category: undefined,
@@ -684,10 +677,8 @@ const initPage = async () => {
     paperType: data.paperType ?? 'MANUAL',
     totalScore: data.totalScore ?? 0,
     passScore: data.passScore ?? 0,
-    timeLimit: data.timeLimit ?? 0,
     visibility: data.visibility ?? 'private',
     sharePassword: data.sharePassword,
-    shareExpireTime: data.shareExpireTime,
     status: data.status ?? 'draft',
     category: data.category,
     defaultScore: data.defaultScore ?? 0,
