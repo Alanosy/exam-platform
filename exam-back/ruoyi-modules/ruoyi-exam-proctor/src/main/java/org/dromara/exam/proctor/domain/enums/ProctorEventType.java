@@ -37,6 +37,9 @@ public enum ProctorEventType {
     /** 退出全屏 */
     EXIT_FULLSCREEN("exit_fullscreen", "退出全屏", "warn", "exit_fullscreen_count"),
 
+    /** 进入全屏：只记流水，配合退出全屏能看出「进去了多久又退出来」 */
+    ENTER_FULLSCREEN("enter_fullscreen", "进入全屏", "info", null),
+
     /** 摄像头抓拍：定时或触发式，图片另存 exam_proctor_snapshot */
     CAMERA("camera", "摄像头抓拍", "info", "camera_count"),
 

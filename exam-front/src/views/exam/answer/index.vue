@@ -169,6 +169,7 @@
             </el-tag>
           </div>
           <video v-show="cameraOpen" ref="proctorVideo" class="proctor-video" muted autoplay playsinline></video>
+          <div v-if="proctorRule?.camera === 1 && !cameraOpen && !cameraError" class="proctor-camera-tip">正在获取摄像头画面…</div>
           <div v-if="cameraError" class="proctor-camera-error">{{ cameraError }}</div>
           <div class="proctor-counts">
             <div class="proctor-count">
@@ -740,8 +741,19 @@ onBeforeUnmount(stopTimer);
   width: 100%;
   height: 140px;
   object-fit: cover;
-  background: #1f1f1f;
+  /* 画面没出来时是浅灰底，别做成黑色——否则「还没拿到画面」和「摄像头是黑的」分不清 */
+  background: #f5f7fa;
   border-radius: 8px;
+}
+
+.proctor-camera-tip {
+  padding: 8px 10px;
+  margin-bottom: 10px;
+  font-size: 12px;
+  color: #909399;
+  background: #f5f7fa;
+  border-radius: 6px;
+  text-align: center;
 }
 
 .proctor-camera-error {

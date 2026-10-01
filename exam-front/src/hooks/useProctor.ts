@@ -1,4 +1,4 @@
-import { onBeforeUnmount, ref } from 'vue';
+import { nextTick, onBeforeUnmount, ref } from 'vue';
 import { finishProctor, proctorHeartbeat, reportProctorEvents, startProctor, uploadProctorSnapshot } from '@/api/exam/proctor';
 import type { ProctorEventBO, ProctorRule } from '@/api/exam/proctor/types';
 
@@ -241,23 +241,62 @@ export function useProctor(options: UseProctorOptions) {
     }
   };
 
-  const onFullscreenChange = (): void => {
-    const inFullscreen = !!document.fullscreenElement;
-    if (wasFullscreen && !inFullscreen) {
-      exitFullscreenCount.value += 1;
-      push('exit_fullscreen', '退出了全屏');
-      const max = rule.value?.maxExitFullscreen ?? 0;
-      warn(max > 0 ? `已退出全屏 ${exitFullscreenCount.value} 次，最多 ${max} 次` : '考试要求全屏作答，请重新进入全屏');
+  /** 兼容内核前缀：Safari 只有 webkitFullscreenElement */
+  const inFullscreenNow = (): boolean => {
+    const doc = document as Document & { webkitFullscreenElement?: Element | null };
+    return !!doc.fullscreenElement || !!doc.webkitFullscreenElement;
+  };
+
+  /** 记一次「退出全屏」：只有真的进去过才记，避免没进过全屏的人被反复计数 */
+  const markExitFullscreen = (reason: string): void => {
+    if (!wasFullscreen) {
+      return;
     }
-    wasFullscreen = inFullscreen;
+    wasFullscreen = false;
+    exitFullscreenCount.value += 1;
+    push('exit_fullscreen', reason);
+    const max = rule.value?.maxExitFullscreen ?? 0;
+    warn(max > 0 ? `已退出全屏 ${exitFullscreenCount.value} 次，最多 ${max} 次` : '考试要求全屏作答，请重新进入全屏');
+  };
+
+  const onFullscreenChange = (): void => {
+    if (inFullscreenNow()) {
+      wasFullscreen = true;
+      push('enter_fullscreen', '进入全屏');
+      return;
+    }
+    markExitFullscreen('退出了全屏');
+  };
+
+  /**
+   * 全屏状态兜底检查
+   *
+   * <p>只靠 fullscreenchange 会漏：F11 是浏览器级全屏，压根不触发这个事件；
+   * Esc 退出时偶尔也收不到。所以定时看一眼真实状态，退出过就补记一次。
+   */
+  const checkFullscreen = (): void => {
+    if (rule.value?.fullScreen !== 1) {
+      return;
+    }
+    if (inFullscreenNow()) {
+      wasFullscreen = true;
+      return;
+    }
+    markExitFullscreen('检测到未处于全屏状态');
   };
 
   /** 浏览器要求全屏必须由用户手势触发，所以提供按钮让人点一下 */
   const enterFullscreen = async (): Promise<void> => {
     try {
-      await document.documentElement.requestFullscreen();
+      const el = document.documentElement as HTMLElement & { webkitRequestFullscreen?: () => Promise<void> };
+      if (el.requestFullscreen) {
+        await el.requestFullscreen();
+      } else if (el.webkitRequestFullscreen) {
+        await el.webkitRequestFullscreen();
+      }
+      // 进入成功与否交给 fullscreenchange / 定时检查去认，这里不乐观置位
     } catch {
-      warn('当前浏览器不允许自动进入全屏，请手动按 F11');
+      warn('当前浏览器不允许自动进入全屏，请手动按 F11 后不要再退出');
     }
   };
 
@@ -268,11 +307,20 @@ export function useProctor(options: UseProctorOptions) {
     if (!video || !cameraOpen.value || !sessionId.value) {
       return;
     }
+    // 画面还没真正出来就抓，会得到一张纯黑图，不如跳过等下一轮
+    if (video.readyState < 2 || video.videoWidth === 0 || video.videoHeight === 0) {
+      return;
+    }
     try {
       const canvas = document.createElement('canvas');
+      // 按摄像头真实比例缩放，避免拉伸出黑边
       canvas.width = 320;
-      canvas.height = 240;
-      canvas.getContext('2d')?.drawImage(video, 0, 0, canvas.width, canvas.height);
+      canvas.height = Math.round((320 * video.videoHeight) / video.videoWidth);
+      const ctx = canvas.getContext('2d');
+      if (!ctx) {
+        return;
+      }
+      ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
       const blob = await new Promise<Blob | null>((resolve) => canvas.toBlob(resolve, 'image/jpeg', 0.7));
       if (!blob) {
         return;
@@ -284,23 +332,73 @@ export function useProctor(options: UseProctorOptions) {
     }
   };
 
+  /**
+   * 等 <video> 挂载
+   *
+   * <p>监考卡片是 v-if="proctorId"，拿到会话 ID 后 DOM 要等下一轮渲染才有这个元素，
+   * 直接取 ref 会是 null，画面永远挂不上去（表现就是小窗全黑、抓拍也是黑的）。
+   */
+  const waitVideo = async (): Promise<HTMLVideoElement | null> => {
+    for (let i = 0; i < 30; i++) {
+      if (videoRef.value) {
+        return videoRef.value;
+      }
+      await new Promise((r) => setTimeout(r, 100));
+    }
+    return null;
+  };
+
   const openCamera = async (): Promise<void> => {
     try {
       stream = await navigator.mediaDevices.getUserMedia({ video: { width: 320, height: 240 }, audio: false });
-      if (videoRef.value) {
-        videoRef.value.srcObject = stream;
-        await videoRef.value.play().catch(() => undefined);
-      }
-      cameraOpen.value = true;
-      cameraError.value = '';
-      const interval = Math.max(15, rule.value?.cameraInterval ?? 60) * 1000;
-      cameraTimer = setInterval(() => void capture('periodic'), interval);
-      // 入场先来一张，监考端能确认「这个人对得上号」
-      setTimeout(() => void capture('enter'), 1500);
     } catch {
       cameraError.value = '未获取到摄像头，请检查权限与设备';
       push('camera_deny', cameraError.value);
+      return;
     }
+    // 先把小窗显示出来再挂流：display:none 的 <video> 在部分浏览器里不解码画面，抓出来是纯黑
+    cameraOpen.value = true;
+    cameraError.value = '';
+    await nextTick();
+    const video = videoRef.value ?? (await waitVideo());
+    if (!video) {
+      cameraError.value = '摄像头画面未就绪，请刷新页面重试';
+      return;
+    }
+    video.srcObject = stream;
+    video.muted = true;
+    // 等元数据就绪再 play，否则第一帧还没解码就开始抓拍
+    await new Promise<void>((resolve) => {
+      const timer = setTimeout(() => {
+        video.removeEventListener('loadedmetadata', onReady);
+        resolve();
+      }, 3000);
+      function onReady(): void {
+        clearTimeout(timer);
+        video.removeEventListener('loadedmetadata', onReady);
+        resolve();
+      }
+      video.addEventListener('loadedmetadata', onReady);
+    });
+    try {
+      await video.play();
+    } catch {
+      // 静音自动播放一般都能过，过不了就等用户交互，不影响抓拍
+    }
+    const interval = Math.max(15, rule.value?.cameraInterval ?? 60) * 1000;
+    cameraTimer = setInterval(() => void capture('periodic'), interval);
+    // 入场先来一张，监考端能确认「这个人对得上号」。
+    // 画面可能还没解码出来，所以重试几轮，拿到一张就停（抓不到会被 capture 自己跳过）
+    void (async () => {
+      for (let i = 0; i < 5; i++) {
+        await new Promise((r) => setTimeout(r, 1000));
+        const before = cameraCount.value;
+        await capture('enter');
+        if (cameraCount.value > before) {
+          return;
+        }
+      }
+    })();
   };
 
   /* --------------------------------- 生命周期 --------------------------------- */
@@ -314,13 +412,19 @@ export function useProctor(options: UseProctorOptions) {
     document.addEventListener('contextmenu', onContextMenu, true);
     document.addEventListener('keydown', onKeyDown, true);
     document.addEventListener('fullscreenchange', onFullscreenChange);
+    // 进页面时可能已经是全屏（比如从全屏的考试中心点进来），别把这当成一次退出
+    wasFullscreen = inFullscreenNow();
     flushTimer = setInterval(() => void flush(), 5_000);
     heartbeatTimer = setInterval(() => {
       if (sessionId.value && !stopped) {
         void proctorHeartbeat(sessionId.value).catch(() => undefined);
       }
     }, 30_000);
-    devtoolTimer = setInterval(checkDevtool, 3_000);
+    // 开发者工具与全屏状态一起查：两者都是「事件不一定来」的状态类检测
+    devtoolTimer = setInterval(() => {
+      checkDevtool();
+      checkFullscreen();
+    }, 3_000);
   };
 
   const unbind = (): void => {
