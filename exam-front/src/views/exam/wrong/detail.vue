@@ -11,6 +11,8 @@
             <span class="source-name" :title="sourceName">{{ sourceName || '全部来源' }}</span>
           </div>
           <div class="flex items-center gap-2">
+            <!-- 有来源筛选时给个出口，否则「是真没有」还是「被条件筛没了」分不清 -->
+            <el-button v-if="sourceId" plain @click="viewAllSources">查看全部来源</el-button>
             <el-button plain icon="RefreshRight" :disabled="total === 0" @click="practiceAll">一键重刷</el-button>
             <el-button plain icon="Refresh" @click="getList">刷新</el-button>
           </div>
@@ -232,10 +234,24 @@ const practiceOne = (wrongId: string) => {
   });
 };
 
+/** 清掉来源条件，看所有来源的错题（不带 sourceId，后端就不按来源过滤） */
+const viewAllSources = () => router.push({ path: '/exam/wrong/detail' });
+
 const goBack = () => router.push('/exam/wrong');
 
 initFromQuery();
 onMounted(getList);
+
+// 同路由只改 query 时组件会被复用、onMounted 不再触发，
+// 「查看全部来源」这种只清参数的跳转就靠这里刷新
+watch(
+  () => route.query,
+  () => {
+    initFromQuery();
+    queryParams.value.pageNum = 1;
+    getList();
+  }
+);
 </script>
 
 <style scoped lang="scss">
