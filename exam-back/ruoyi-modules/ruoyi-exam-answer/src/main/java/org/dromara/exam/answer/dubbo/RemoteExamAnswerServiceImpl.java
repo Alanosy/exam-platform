@@ -4,6 +4,7 @@ import cn.hutool.core.util.ObjectUtil;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.dubbo.config.annotation.DubboReference;
 import org.apache.dubbo.config.annotation.DubboService;
 import org.dromara.common.core.utils.MapstructUtils;
 import org.dromara.common.core.utils.StringUtils;
@@ -14,12 +15,18 @@ import org.dromara.exam.answer.api.domain.RemoteMarkWriteBackBo;
 import org.dromara.exam.answer.api.domain.RemoteRecordVo;
 import org.dromara.exam.answer.domain.ExamAnswer;
 import org.dromara.exam.answer.domain.ExamRecord;
+import org.dromara.common.tenant.helper.TenantHelper;
 import org.dromara.exam.answer.mapper.ExamAnswerMapper;
 import org.dromara.exam.answer.mapper.ExamRecordMapper;
+import org.dromara.exam.cert.api.RemoteCertService;
+import org.dromara.exam.cert.api.domain.RemoteCertIssueBo;
+import org.dromara.exam.paper.api.RemotePaperService;
+import org.dromara.exam.paper.api.domain.RemotePaperVo;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.util.Date;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -41,6 +48,12 @@ public class RemoteExamAnswerServiceImpl implements RemoteExamAnswerService {
     private final ExamRecordMapper examRecordMapper;
 
     private final ExamAnswerMapper examAnswerMapper;
+
+    @DubboReference
+    private RemoteCertService remoteCertService;
+
+    @DubboReference
+    private RemotePaperService remotePaperService;
 
     /**
      * 查询答卷记录
@@ -155,6 +168,43 @@ public class RemoteExamAnswerServiceImpl implements RemoteExamAnswerService {
         }
         examRecordMapper.updateById(update);
         log.info("阅卷结果回写完成 recordId={}, 主观题分={}, 完成={}", record.getId(), update.getSubjectiveScore(), bo.getFinished());
+        // 成绩到这里才算定稿：交卷时因为有主观题没阅所以没发证书，这里补发
+        if (Boolean.TRUE.equals(bo.getFinished()) && ObjectUtil.equal(1L, update.getPassed())) {
+            record.setTotalScore(update.getTotalScore());
+            record.setPassed(update.getPassed());
+            issueCertificate(record);
+        }
+    }
+
+    /**
+     * 阅卷完成后补发证书
+     *
+     * <p>含主观题的卷子，交卷那一刻只有客观题分，总分要等阅完才知道，
+     * 所以证书只能在这里发 —— 早发了分数对不上，晚发了考生查不到证书。
+     *
+     * <p>发不出证书不影响成绩落库，异常只记 warn。
+     */
+    private void issueCertificate(ExamRecord record) {
+        try {
+            RemotePaperVo paper = remotePaperService.queryPaper(record.getPaperId());
+            RemoteCertIssueBo certBo = new RemoteCertIssueBo();
+            certBo.setExamId(record.getExamId());
+            certBo.setRecordId(record.getId());
+            certBo.setUserId(record.getUserId());
+            certBo.setAccount(record.getAccount());
+            certBo.setAttemptNo(record.getAttemptNo());
+            certBo.setScore(record.getTotalScore());
+            certBo.setPassScore(ObjectUtil.defaultIfNull(record.getPassScore(), BigDecimal.ZERO));
+            certBo.setTotalScore(ObjectUtil.isNull(paper) ? null
+                : BigDecimal.valueOf(ObjectUtil.defaultIfNull(paper.getTotalScore(), 0L)));
+            certBo.setPassed(Boolean.TRUE);
+            certBo.setSubmitTime(ObjectUtil.defaultIfNull(record.getSubmitTime(), new Date()));
+            // 跨服务调用拿不到租户上下文，显式带过去
+            certBo.setTenantId(TenantHelper.getTenantId());
+            remoteCertService.issueOnPass(certBo);
+        } catch (Exception e) {
+            log.warn("颁发证书失败 recordId={}, {}", record.getId(), e.getMessage());
+        }
     }
 
     private RemoteRecordVo toVo(ExamRecord record) {

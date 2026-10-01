@@ -30,6 +30,8 @@ import org.dromara.exam.answer.domain.vo.ExamResultVo;
 import org.dromara.exam.answer.mapper.ExamAnswerMapper;
 import org.dromara.exam.answer.mapper.ExamRecordMapper;
 import org.dromara.exam.answer.service.IExamRecordService;
+import org.dromara.exam.cert.api.RemoteCertService;
+import org.dromara.exam.cert.api.domain.RemoteCertIssueBo;
 import org.dromara.common.tenant.helper.TenantHelper;
 import org.dromara.exam.manage.api.RemoteExamService;
 import org.dromara.exam.manage.api.domain.RemoteExamInviteVo;
@@ -148,6 +150,9 @@ public class ExamRecordServiceImpl implements IExamRecordService {
     @DubboReference
     private RemoteProctorService remoteProctorService;
 
+    @DubboReference
+    private RemoteCertService remoteCertService;
+
     /* ---------------------------------- 考试中心 ---------------------------------- */
 
     @Override
@@ -165,6 +170,11 @@ public class ExamRecordServiceImpl implements IExamRecordService {
         if (CollUtil.isNotEmpty(invites)) {
             // 同一场考试可能有多条邀请记录（短信 + 链接），按考试去重
             examIds.addAll(invites.stream().map(RemoteExamInviteVo::getExamId).filter(ObjectUtil::isNotNull).toList());
+        }
+        // 白名单：被指派到的考试不用拿链接，直接出现在考试中心里
+        List<Long> whiteExamIds = remoteExamService.listExamIdsByWhiteUser(userId);
+        if (CollUtil.isNotEmpty(whiteExamIds)) {
+            examIds.addAll(whiteExamIds);
         }
         if (examIds.isEmpty()) {
             return List.of();
@@ -363,12 +373,16 @@ public class ExamRecordServiceImpl implements IExamRecordService {
         if (EXAM_ARCHIVED.equals(exam.getStatus())) {
             throw new ServiceException("该考试已归档，无法参加");
         }
-        // 准入：自己建的考试直接放行，其余人必须有邀请 / 加入记录（白名单方式后续再扩）
+        // 准入：自己建的考试直接放行；其余人要么在白名单里，要么已经有邀请 / 加入记录
         boolean owner = isOwner(exam);
         if (!owner) {
-            RemoteExamInviteVo invite = remoteExamService.queryInvite(examId, account);
-            if (ObjectUtil.isNull(invite)) {
-                throw new ServiceException("你还没有加入该考试，请先通过邀请链接加入");
+            // 白名单考生不走加入链接，自然没有邀请记录，这里认名单，不去查 invite
+            boolean whitelisted = Boolean.TRUE.equals(remoteExamService.isWhiteUser(examId, LoginHelper.getUserId()));
+            if (!whitelisted) {
+                RemoteExamInviteVo invite = remoteExamService.queryInvite(examId, account);
+                if (ObjectUtil.isNull(invite)) {
+                    throw new ServiceException("你还没有加入该考试，请先通过邀请链接加入");
+                }
             }
         }
 
@@ -919,15 +933,57 @@ public class ExamRecordServiceImpl implements IExamRecordService {
         update.setTotalScore(objective);
         update.setAutoSubmit(auto ? 1L : 0L);
         BigDecimal passScore = ObjectUtil.defaultIfNull(record.getPassScore(), BigDecimal.ZERO);
-        update.setPassed(objective.compareTo(passScore) >= 0 ? 1L : 0L);
+        boolean passed = objective.compareTo(passScore) >= 0;
+        update.setPassed(passed ? 1L : 0L);
         update.setAnsweredCount(answerMap.size());
         baseMapper.updateById(update);
         record.setStatus(ExamRecord.STATUS_SUBMITTED);
+        record.setSubmitTime(update.getSubmitTime());
+        record.setTotalScore(update.getTotalScore());
+        record.setPassed(update.getPassed());
         // 成绩落库后再同步错题与阅卷任务，下游写失败不能把交卷结果带崩
         syncWrongQuestions(record, wrongList);
         syncMarkQuestions(record, objective, markList);
         // 顺手通知防作弊服务收掉监考会话：考生交完卷直接关浏览器时也不会一直挂着「作答中」
         finishProctor(record);
+        // 没有主观题时成绩到这里就定了，可以发证书；
+        // 含主观题的卷子要等阅卷完成（RemoteExamAnswerServiceImpl#writeBackMark）再发，
+        // 否则证书上写的是客观题分，考生阅完卷分数变了，证书就对不上成绩了
+        if (passed && CollUtil.isEmpty(markList)) {
+            issueCertificate(record, exam.getExamName(), objective, paperTotalScore(paper));
+        }
+    }
+
+    /**
+     * 及格颁发证书
+     *
+     * <p>证书服务没部署、这场考试没配证书、模板被停用，这些都只是发不出证书，
+     * 绝不能影响交卷本身，所以异常一律吞掉只记 warn。
+     *
+     * @param examName   考试名称，写进证书正文
+     * @param score      最终得分
+     * @param totalScore 试卷总分
+     */
+    private void issueCertificate(ExamRecord record, String examName, BigDecimal score, BigDecimal totalScore) {
+        try {
+            RemoteCertIssueBo bo = new RemoteCertIssueBo();
+            bo.setExamId(record.getExamId());
+            bo.setExamName(examName);
+            bo.setRecordId(record.getId());
+            bo.setUserId(record.getUserId());
+            bo.setAccount(record.getAccount());
+            bo.setAttemptNo(record.getAttemptNo());
+            bo.setScore(score);
+            bo.setPassScore(ObjectUtil.defaultIfNull(record.getPassScore(), BigDecimal.ZERO));
+            bo.setTotalScore(totalScore);
+            bo.setPassed(Boolean.TRUE);
+            bo.setSubmitTime(ObjectUtil.defaultIfNull(record.getSubmitTime(), new Date()));
+            // 跨服务调用拿不到租户上下文，显式带过去
+            bo.setTenantId(TenantHelper.getTenantId());
+            remoteCertService.issueOnPass(bo);
+        } catch (Exception e) {
+            log.warn("颁发证书失败 recordId={}, {}", record.getId(), e.getMessage());
+        }
     }
 
     /**

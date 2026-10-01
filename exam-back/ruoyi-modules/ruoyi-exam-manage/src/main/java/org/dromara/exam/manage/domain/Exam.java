@@ -103,6 +103,14 @@ public class Exam extends TenantEntity {
     private String antiCheatConfig;
 
     /**
+     * 及格证书模板ID（exam_certificate 主键，由证书服务维护）
+     *
+     * <p>为空表示本场考试不发证书。及格判定用试卷上的及格分（paper.pass_score），
+     * 考生及格后由答题服务通知证书服务颁发。
+     */
+    private Long certId;
+
+    /**
      * 考生准入类型 white白名单 / public公开链接
      */
     private String participantType;

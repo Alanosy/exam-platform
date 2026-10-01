@@ -159,6 +159,22 @@ export const constantRoutes: RouteRecordRaw[] = [
     ]
   },
   {
+    // 证书管理：维护证书模板、查看与吊销已颁发的证书
+    // 后台菜单（path=cert）会生成 /cert，这里再注册一份 /system/cert
+    path: '/system/cert',
+    component: Layout,
+    hidden: true,
+    redirect: 'noRedirect',
+    children: [
+      {
+        path: '',
+        component: () => import('@/views/system/cert/index.vue'),
+        name: 'SystemCert',
+        meta: { title: '证书管理', noCache: true }
+      }
+    ]
+  },
+  {
     // 阅卷管理：先按考试看有哪些卷要阅，再点进去看作答用户，最后逐题打分
     path: '/system/mark',
     component: Layout,
@@ -247,6 +263,21 @@ export const constantRoutes: RouteRecordRaw[] = [
         component: () => import('@/views/exam/records/index.vue'),
         name: 'ExamRecords',
         meta: { title: '考试记录', noCache: true }
+      }
+    ]
+  },
+  {
+    // 我的证书：考试及格后自动颁发的证书，可查看与打印
+    path: '/exam/certs',
+    component: Layout,
+    hidden: true,
+    redirect: 'noRedirect',
+    children: [
+      {
+        path: '',
+        component: () => import('@/views/exam/certs/index.vue'),
+        name: 'ExamMyCerts',
+        meta: { title: '我的证书', noCache: true }
       }
     ]
   },

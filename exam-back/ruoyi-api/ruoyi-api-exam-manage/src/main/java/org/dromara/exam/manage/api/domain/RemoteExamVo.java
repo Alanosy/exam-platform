@@ -63,6 +63,9 @@ public class RemoteExamVo implements Serializable {
     /** 防作弊配置JSON */
     private String antiCheatConfig;
 
+    /** 及格证书模板ID，为空表示本场考试不发证书 */
+    private Long certId;
+
     /** not_start / ongoing / finished / archived */
     private String status;
 

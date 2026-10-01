@@ -41,6 +41,9 @@ export interface ExamVO {
   /** 防作弊配置（JSON） */
   antiCheatConfig: string;
 
+  /** 及格证书模板ID，为空表示本场考试不发证书 */
+  certId?: string | number;
+
   /** 参加方式 white白名单 / public公开链接 */
   participantType: string;
 
@@ -61,6 +64,9 @@ export interface ExamVO {
 
   /** 创建人名称，由后端按 creatorId 翻译，仅用于展示 */
   creatorName: string;
+
+  /** 白名单人数，非白名单考试为 0，后端查询时统计回填 */
+  whiteUserCount?: number;
 }
 
 export interface ExamForm extends BaseEntity {
@@ -85,6 +91,8 @@ export interface ExamForm extends BaseEntity {
   joinExpireTime?: string;
   status?: string;
   creatorId?: string | number;
+  /** 及格证书模板ID，留空表示不发证书 */
+  certId?: string | number;
 }
 
 /** 防作弊配置，序列化成 JSON 存 exam.anti_cheat_config */
@@ -146,6 +154,27 @@ export interface ExamJoinVO {
 
   /** 不允许加入时的原因，允许加入时为空 */
   joinTip: string;
+}
+
+/** 白名单考生：exam_user 里只存 userId，昵称 / 部门名由后端远程补全后一起返回 */
+export interface ExamWhiteUserVO {
+  /** 考生用户ID */
+  userId: string | number;
+
+  /** 登录账号 */
+  userName: string;
+
+  /** 用户昵称 */
+  nickName: string;
+
+  /** 所属部门ID */
+  deptId: string | number;
+
+  /** 所属部门名称 */
+  deptName: string;
+
+  /** 手机号码 */
+  phonenumber: string;
 }
 
 export interface ExamQuery extends PageQuery {

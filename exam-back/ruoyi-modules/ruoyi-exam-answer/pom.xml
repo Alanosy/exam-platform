@@ -159,6 +159,12 @@
             <artifactId>ruoyi-api-exam-proctor</artifactId>
         </dependency>
 
+        <!-- 及格后通知证书服务颁发证书 -->
+        <dependency>
+            <groupId>org.dromara</groupId>
+            <artifactId>ruoyi-api-exam-cert</artifactId>
+        </dependency>
+
     </dependencies>
 
     <build>

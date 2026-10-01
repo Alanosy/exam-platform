@@ -27,6 +27,7 @@
             </div>
           </template>
           <template #extra>
+            <el-button v-if="cert" type="warning" plain icon="Medal" @click="certVisible = true">查看证书</el-button>
             <el-button v-if="result.showAnswer" plain @click="showDetail = !showDetail">
               {{ showDetail ? '收起解析' : '查看答案与解析' }}
             </el-button>
@@ -213,6 +214,35 @@
         <el-button type="primary" :loading="submitting" @click="doSubmit">确认交卷</el-button>
       </template>
     </el-dialog>
+
+    <!-- 证书：这场考试配了证书模板且已及格才有 -->
+    <el-dialog v-model="certVisible" title="我的证书" width="900px" append-to-body>
+      <div v-if="cert">
+        <certificate-paper
+          :title="cert.title"
+          :subtitle="cert.subtitle"
+          :content="cert.content"
+          :issuer="cert.issuer"
+          :bg-color="cert.bgColor"
+          :bg-url="cert.bgUrl"
+          :seal-url="cert.sealUrl"
+          :orientation="cert.orientation"
+          :holder="cert.nickName || cert.account"
+          :cert-no="cert.certNo"
+          :issue-date="formatDate(cert.issueTime)"
+          :expire-date="cert.expireTime ? formatDate(cert.expireTime) : '长期有效'"
+        />
+        <el-descriptions :column="3" border size="small" class="mt-[12px]">
+          <el-descriptions-item label="证书编号">{{ cert.certNo || '-' }}</el-descriptions-item>
+          <el-descriptions-item label="颁发时间">{{ formatTime(cert.issueTime) }}</el-descriptions-item>
+          <el-descriptions-item label="有效期至">{{ cert.expireTime ? formatDate(cert.expireTime) : '永久有效' }}</el-descriptions-item>
+        </el-descriptions>
+      </div>
+      <template #footer>
+        <el-button @click="certVisible = false">关闭</el-button>
+        <el-button type="primary" icon="Printer" @click="printCert">打印证书</el-button>
+      </template>
+    </el-dialog>
   </div>
 </template>
 
@@ -221,6 +251,9 @@ import '@vueup/vue-quill/dist/vue-quill.snow.css';
 import { nextTick } from 'vue';
 import { getExamPaper, saveAnswer, submitExam, getExamResult } from '@/api/exam/answer';
 import type { ExamPaperVO, ExamQuestionVO, ExamResultVO } from '@/api/exam/answer/types';
+import CertificatePaper from '@/components/CertificatePaper.vue';
+import { getMyCertificateByRecord } from '@/api/exam/cert';
+import type { CertificateRecordVO } from '@/api/exam/cert/types';
 import { useExamDicts } from '@/hooks/useExamDicts';
 import { useProctor } from '@/hooks/useProctor';
 
@@ -272,6 +305,51 @@ const {
   },
   onWarn: (msg) => ElMessage.warning(msg)
 });
+
+/* ---------------------------------- 证书 ----------------------------------
+ * 及格后由后端自动颁发，含主观题的卷子要等阅卷完成才有，
+ * 所以这里是「查到就显示入口」，查不到就当没有，不影响看成绩。
+ */
+const cert = ref<CertificateRecordVO | undefined>(undefined);
+const certVisible = ref(false);
+
+const loadCert = async (id: string): Promise<void> => {
+  if (!id) return;
+  try {
+    const res = await getMyCertificateByRecord(id);
+    cert.value = res.data ?? undefined;
+  } catch {
+    cert.value = undefined;
+  }
+};
+
+/** 证书上的日期只要年月日 */
+const certDate = (value?: string): string => {
+  if (!value) return '-';
+  const date = new Date(String(value).replace(/-/g, '/'));
+  if (Number.isNaN(date.getTime())) return value;
+  return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}`;
+};
+
+const formatDate = certDate;
+const formatTime = (value?: string): string => {
+  if (!value) return '-';
+  const date = new Date(String(value).replace(/-/g, '/'));
+  if (Number.isNaN(date.getTime())) return value;
+  return `${certDate(value)} ${pad(date.getHours())}:${pad(date.getMinutes())}`;
+};
+
+// 成绩出来后才知道有没有证书，跟着 result 走
+watch(
+  () => result.value?.recordId,
+  (id) => {
+    if (id) {
+      void loadCert(String(id));
+    }
+  }
+);
+
+const printCert = (): void => window.print();
 
 /** 题目ID → 作答内容（JSON 字符串） */
 const answers = reactive<Record<string, string>>({});

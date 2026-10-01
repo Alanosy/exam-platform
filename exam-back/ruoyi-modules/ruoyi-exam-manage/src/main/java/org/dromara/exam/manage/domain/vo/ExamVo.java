@@ -113,6 +113,11 @@ public class ExamVo implements Serializable {
     private String antiCheatConfig;
 
     /**
+     * 及格证书模板ID，为空表示本场考试不发证书
+     */
+    private Long certId;
+
+    /**
      * 考生准入类型 white白名单 / public公开链接
      */
     @ExcelProperty(value = "参加方式")
@@ -154,6 +159,12 @@ public class ExamVo implements Serializable {
     @ExcelProperty(value = "创建人")
     @Translation(type = TransConstant.USER_ID_TO_NICKNAME, mapper = "creatorId")
     private String creatorName;
+
+    /**
+     * 白名单人数，非白名单考试为 0，由查列表时批量统计回填，不落库
+     */
+    @ExcelProperty(value = "白名单人数")
+    private Long whiteUserCount;
 
 
 }

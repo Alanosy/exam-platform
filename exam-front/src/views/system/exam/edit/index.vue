@@ -277,6 +277,38 @@
         </el-form>
       </el-card>
 
+      <!-- 及格证书：不配就不发，配了才在考生及格时自动颁发 -->
+      <el-card shadow="never" class="mb-[12px]">
+        <template #header><span>及格证书</span></template>
+        <el-form :model="form" label-width="100px">
+          <el-row :gutter="16">
+            <el-col :span="12">
+              <el-form-item label="证书模板">
+                <el-select v-model="form.certId" placeholder="不发证书" clearable filterable class="w-full">
+                  <el-option v-for="item in certOptions" :key="item.id" :label="item.certName" :value="item.id">
+                    <span>{{ item.certName }}</span>
+                    <span class="ml-2 text-xs text-gray-400">
+                      {{ item.validType === '1' ? `有效 ${item.validDays ?? 0} 天` : '永久有效' }}
+                    </span>
+                  </el-option>
+                </el-select>
+                <div class="mt-1 text-xs text-gray-400">
+                  考生达到试卷及格分后自动颁发，留空表示本场考试不发证书
+                </div>
+              </el-form-item>
+            </el-col>
+            <el-col :span="12">
+              <el-form-item label="证书说明">
+                <div class="text-xs text-gray-400 leading-6">
+                  及格分取自所选试卷的及格分；含主观题的卷子要等阅卷完成后才颁发。<br />
+                  证书模板在「证书管理」里维护，停用的模板不会自动颁发。
+                </div>
+              </el-form-item>
+            </el-col>
+          </el-row>
+        </el-form>
+      </el-card>
+
       <!-- 第二步底部操作栏：能退回上一步，也能就地保存，不必再滚回页头 -->
       <div class="flex items-center justify-between">
         <el-button plain icon="ArrowLeft" @click="prevStep">上一步：基本信息</el-button>
@@ -296,6 +328,8 @@ import { getExam, addExam, updateExam, refreshJoinCode } from '@/api/system/exam
 import { ExamForm, AntiCheatConfig } from '@/api/system/exam/types';
 import { listPaper } from '@/api/system/paper';
 import { PaperVO } from '@/api/system/paper/types';
+import { listCertificateOptions } from '@/api/exam/cert';
+import type { CertificateOptionVO } from '@/api/exam/cert/types';
 import { useExamDicts } from '@/hooks/useExamDicts';
 import { buildJoinLink } from '@/utils/joinLink';
 
@@ -351,7 +385,8 @@ const initFormData: ExamForm = {
   joinCode: undefined,
   joinPassword: undefined,
   joinExpireTime: undefined,
-  status: 'not_start'
+  status: 'not_start',
+  certId: undefined
 };
 
 // form 必须先于下面的 computed / watch 声明：Vue 创建 watch 时会立即执行一次 getter，
@@ -442,6 +477,21 @@ const loadPaperList = async () => {
 
 const onPaperChange = (paperId: string | number) => {
   form.paperName = paperList.value.find((item) => String(item.id) === String(paperId))?.paperName;
+};
+
+/* ---------------------------------- 证书下拉 ---------------------------------- */
+
+const certOptions = ref<CertificateOptionVO[]>([]);
+
+/** 只拉启用中的模板：停用的不该再被选到新考试上 */
+const loadCertOptions = async () => {
+  try {
+    const res = await listCertificateOptions();
+    certOptions.value = res.data ?? [];
+  } catch {
+    // 证书服务没起来时只是选不了证书，不能让整个考试编辑页打不开
+    certOptions.value = [];
+  }
 };
 
 /* ---------------------------------- 加入链接 ---------------------------------- */
@@ -549,7 +599,8 @@ const initPage = async () => {
     joinCode: data.joinCode,
     joinPassword: data.joinPassword,
     joinExpireTime: data.joinExpireTime,
-    status: data.status ?? 'not_start'
+    status: data.status ?? 'not_start',
+    certId: data.certId ?? undefined
   });
   parseAntiCheat(data.antiCheatConfig);
 };
@@ -657,6 +708,7 @@ const goBack = () => {
 
 onMounted(async () => {
   await loadPaperList();
+  await loadCertOptions();
   await initPage();
 });
 </script>

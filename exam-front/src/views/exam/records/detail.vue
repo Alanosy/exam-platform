@@ -18,6 +18,7 @@
               <el-tag :type="result.passed ? 'success' : 'danger'" size="small" effect="plain">
                 {{ result.passed ? '及格' : '未及格' }}
               </el-tag>
+              <el-button v-if="cert" type="warning" plain size="small" icon="Medal" @click="certVisible = true">查看证书</el-button>
               <el-button plain size="small" @click="goRecords">返回考试记录</el-button>
             </div>
           </div>
@@ -120,13 +121,45 @@
         <el-empty v-if="shownQuestions.length === 0" description="没有符合条件的题目" />
       </el-card>
     </template>
+
+    <!-- 证书：及格且这场考试配了证书模板才会有 -->
+    <el-dialog v-model="certVisible" title="我的证书" width="900px" append-to-body>
+      <div v-if="cert">
+        <certificate-paper
+          :title="cert.title"
+          :subtitle="cert.subtitle"
+          :content="cert.content"
+          :issuer="cert.issuer"
+          :bg-color="cert.bgColor"
+          :bg-url="cert.bgUrl"
+          :seal-url="cert.sealUrl"
+          :orientation="cert.orientation"
+          :holder="cert.nickName || cert.account"
+          :cert-no="cert.certNo"
+          :issue-date="formatDate(cert.issueTime)"
+          :expire-date="cert.expireTime ? formatDate(cert.expireTime) : '长期有效'"
+        />
+        <el-descriptions :column="3" border size="small" class="mt-[12px]">
+          <el-descriptions-item label="证书编号">{{ cert.certNo || '-' }}</el-descriptions-item>
+          <el-descriptions-item label="颁发时间">{{ formatTime(cert.issueTime) }}</el-descriptions-item>
+          <el-descriptions-item label="有效期至">{{ cert.expireTime ? formatDate(cert.expireTime) : '永久有效' }}</el-descriptions-item>
+        </el-descriptions>
+      </div>
+      <template #footer>
+        <el-button @click="certVisible = false">关闭</el-button>
+        <el-button type="primary" icon="Printer" @click="printCert">打印证书</el-button>
+      </template>
+    </el-dialog>
   </div>
 </template>
 
 <script setup lang="ts" name="ExamRecordDetail">
 import '@vueup/vue-quill/dist/vue-quill.snow.css';
+import CertificatePaper from '@/components/CertificatePaper.vue';
 import { getExamResult } from '@/api/exam/answer';
 import type { ExamResultVO, ExamResultQuestionVO } from '@/api/exam/answer/types';
+import { getMyCertificateByRecord } from '@/api/exam/cert';
+import type { CertificateRecordVO } from '@/api/exam/cert/types';
 import { useExamDicts } from '@/hooks/useExamDicts';
 
 const route = useRoute();
@@ -157,6 +190,13 @@ const formatTime = (value?: string): string => {
   return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())} ${pad(date.getHours())}:${pad(date.getMinutes())}`;
 };
 
+const formatDate = (value?: string): string => {
+  if (!value) return '-';
+  const date = new Date(String(value).replace(/-/g, '/'));
+  if (Number.isNaN(date.getTime())) return value;
+  return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}`;
+};
+
 const usedText = (seconds?: number): string => {
   if (seconds === undefined || seconds === null) return '-';
   const m = Math.floor(seconds / 60);
@@ -178,6 +218,27 @@ const rightKeys = (q: ExamResultQuestionVO): string[] => splitKeys(q.standardAns
 
 const goRecords = () => router.push('/exam/records');
 
+/* ---------------------------------- 证书 ---------------------------------- */
+
+const cert = ref<CertificateRecordVO | undefined>(undefined);
+const certVisible = ref(false);
+
+/**
+ * 及格不一定有证书：这场考试得配了证书模板才会发。
+ * 没发到就当没有（按钮不显示），证书服务挂了也不能影响看成绩。
+ */
+const loadCert = async () => {
+  if (!recordId.value) return;
+  try {
+    const res = await getMyCertificateByRecord(recordId.value);
+    cert.value = res.data ?? undefined;
+  } catch {
+    cert.value = undefined;
+  }
+};
+
+const printCert = () => window.print();
+
 const loadResult = async () => {
   if (!recordId.value) {
     errorMsg.value = '缺少答卷ID';
@@ -198,7 +259,10 @@ const loadResult = async () => {
   }
 };
 
-onMounted(loadResult);
+onMounted(async () => {
+  await loadResult();
+  await loadCert();
+});
 </script>
 
 <style scoped lang="scss">

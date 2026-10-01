@@ -105,6 +105,11 @@ public class ExamBo extends BaseEntity {
     private String antiCheatConfig;
 
     /**
+     * 及格证书模板ID，为空表示本场考试不发证书
+     */
+    private Long certId;
+
+    /**
      * 考生准入类型 white白名单 / public公开链接
      */
     @NotBlank(message = "参加方式不能为空", groups = { AddGroup.class, EditGroup.class })
