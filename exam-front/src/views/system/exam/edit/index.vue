@@ -37,19 +37,37 @@
             </el-form-item>
           </el-col>
           <el-col :span="12">
+            <el-form-item label="考试类型" prop="examType">
+              <el-radio-group v-model="form.examType">
+                <el-radio v-for="item in examTypeOptions" :key="item.value" :value="item.value">
+                  {{ item.label }}
+                </el-radio>
+              </el-radio-group>
+              <div class="mt-1 text-xs text-gray-400">
+                {{ isFormal ? '正式考试：必须设定起止时间，成绩计入考试记录' : '练习考试：可不设时间长期有效，可反复参加，不强制阅卷' }}
+              </div>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
             <el-form-item label="开始时间" prop="startTime">
               <el-date-picker
                 v-model="form.startTime"
                 type="datetime"
                 value-format="YYYY-MM-DD HH:mm:ss"
-                placeholder="请选择开始时间"
+                :placeholder="isFormal ? '请选择开始时间' : '留空表示立即开放'"
                 class="w-full"
               />
             </el-form-item>
           </el-col>
           <el-col :span="12">
             <el-form-item label="结束时间" prop="endTime">
-              <el-date-picker v-model="form.endTime" type="datetime" value-format="YYYY-MM-DD HH:mm:ss" placeholder="请选择结束时间" class="w-full" />
+              <el-date-picker
+                v-model="form.endTime"
+                type="datetime"
+                value-format="YYYY-MM-DD HH:mm:ss"
+                :placeholder="isFormal ? '请选择结束时间' : '留空表示长期有效'"
+                class="w-full"
+              />
             </el-form-item>
           </el-col>
           <el-col :span="12">
@@ -61,7 +79,7 @@
           <el-col :span="12">
             <el-form-item label="状态" prop="status">
               <el-select v-model="form.status" placeholder="请选择状态" class="w-full">
-                <el-option v-for="item in statusOptions" :key="item.value" :label="item.label" :value="item.value" />
+                <el-option v-for="item in examStatusOptions" :key="item.value" :label="item.label" :value="item.value" />
               </el-select>
             </el-form-item>
           </el-col>
@@ -148,7 +166,7 @@
             <el-col :span="12">
               <el-form-item label="答案展示" prop="showAnswerMode">
                 <el-select v-model="form.showAnswerMode" placeholder="请选择答案展示时机" class="w-full">
-                  <el-option v-for="item in showAnswerModeOptions" :key="item.value" :label="item.label" :value="item.value" />
+                  <el-option v-for="item in examShowAnswerModeOptions" :key="item.value" :label="item.label" :value="item.value" />
                 </el-select>
               </el-form-item>
             </el-col>
@@ -195,6 +213,7 @@ import { getExam, addExam, updateExam, refreshJoinCode } from '@/api/system/exam
 import { ExamForm, AntiCheatConfig } from '@/api/system/exam/types';
 import { listPaper } from '@/api/system/paper';
 import { PaperVO } from '@/api/system/paper/types';
+import { useExamDicts } from '@/hooks/useExamDicts';
 
 /** 列表页路由地址，需要与后台「考试管理」菜单的路由地址保持一致 */
 const EXAM_LIST_PATH = '/system/exam';
@@ -218,27 +237,43 @@ const basicFormRef = ref<ElFormInstance>();
 const joinFormRef = ref<ElFormInstance>();
 const ruleFormRef = ref<ElFormInstance>();
 
-const statusOptions = [
-  { label: '未开始', value: 'not_start' },
-  { label: '进行中', value: 'ongoing' },
-  { label: '已结束', value: 'finished' },
-  { label: '已归档', value: 'archived' }
-];
+/** 状态 / 考试类型 / 答案展示时机走字典；参加方式保留灰字说明，字典里放不下 tip */
+const { examTypeOptions, examStatusOptions, examShowAnswerModeOptions } = useExamDicts();
+
 const participantTypeOptions = [
   { label: '白名单', value: 'white', tip: '只有导入名单的考生可参加' },
   { label: '公开链接', value: 'public', tip: '任何人凭链接（及密码）可参加' }
 ];
-const showAnswerModeOptions = [
-  { label: '不展示', value: 'none' },
-  { label: '交卷后展示', value: 'after_submit' },
-  { label: '考试结束后展示', value: 'after_exam' }
-];
+
+/** 考试类型常量：后端 exam_type 字典里 1 正式 / 2 练习 */
+const EXAM_TYPE_FORMAL = '1';
+const EXAM_TYPE_PRACTICE = '2';
+
+/** 正式考试才强制要求起止时间 */
+const isFormal = computed(() => form.examType === EXAM_TYPE_FORMAL);
+
+// 切到练习时按练习的默认规则重置：时间可空、可反复参加
+watch(
+  () => form.examType,
+  (val) => {
+    if (val === EXAM_TYPE_PRACTICE) {
+      form.allowRetry = 1;
+      if (!form.maxRetryCount || form.maxRetryCount < 1) {
+        form.maxRetryCount = 1;
+      }
+    } else if (val === EXAM_TYPE_FORMAL) {
+      // 正式考试默认不允许重考，需要的话由用户手动打开
+      form.allowRetry = 0;
+    }
+  }
+);
 
 const initFormData: ExamForm = {
   id: undefined,
   examName: undefined,
   examDesc: undefined,
   paperId: undefined,
+  examType: EXAM_TYPE_FORMAL,
   startTime: undefined,
   endTime: undefined,
   duration: 0,
@@ -260,25 +295,29 @@ const form = reactive<ExamForm & { paperName?: string }>({ ...initFormData });
 const defaultAntiCheat: AntiCheatConfig = { switchScreen: 0, copyPaste: 1, camera: 0, fullScreen: 0 };
 const antiCheat = reactive<AntiCheatConfig>({ ...defaultAntiCheat });
 
-const basicRules: FormRules = {
+/** 结束时间必须晚于开始时间；练习考试可以不填时间，填了才校验先后 */
+const endTimeValidator = (_rule: any, value: any, callback: (e?: Error) => void) => {
+  if (value && form.startTime && new Date(value).getTime() <= new Date(form.startTime).getTime()) {
+    callback(new Error('结束时间必须晚于开始时间'));
+    return;
+  }
+  callback();
+};
+
+// 正式考试起止时间必填，练习考试可留空（长期有效），所以规则要跟着类型走
+const basicRules = computed<FormRules>(() => ({
   examName: [{ required: true, message: '请输入考试名称', trigger: 'blur' }],
   paperId: [{ required: true, message: '请选择关联试卷', trigger: 'change' }],
-  startTime: [{ required: true, message: '请选择开始时间', trigger: 'change' }],
-  endTime: [
-    { required: true, message: '请选择结束时间', trigger: 'change' },
-    {
-      validator: (_rule, value, callback) => {
-        if (value && form.startTime && new Date(value).getTime() <= new Date(form.startTime).getTime()) {
-          callback(new Error('结束时间必须晚于开始时间'));
-          return;
-        }
-        callback();
-      },
-      trigger: 'change'
-    }
-  ],
+  examType: [{ required: true, message: '请选择考试类型', trigger: 'change' }],
+  startTime: isFormal.value ? [{ required: true, message: '请选择开始时间', trigger: 'change' }] : [],
+  endTime: isFormal.value
+    ? [
+        { required: true, message: '请选择结束时间', trigger: 'change' },
+        { validator: endTimeValidator, trigger: 'change' }
+      ]
+    : [{ validator: endTimeValidator, trigger: 'change' }],
   status: [{ required: true, message: '请选择状态', trigger: 'change' }]
-};
+}));
 
 const joinRules: FormRules = {
   participantType: [{ required: true, message: '请选择参加方式', trigger: 'change' }]
@@ -307,7 +346,10 @@ const onPaperChange = (paperId: string | number) => {
 
 /* ---------------------------------- 加入链接 ---------------------------------- */
 
-const joinLink = computed(() => (form.joinCode ? `${window.location.origin}${JOIN_PATH}${form.joinCode}` : ''));
+/** 带上部署时的上下文路径，否则非根路径部署时复制出去的链接打不开 */
+const joinLink = computed(() =>
+  form.joinCode ? `${window.location.origin}${import.meta.env.VITE_APP_CONTEXT_PATH}${JOIN_PATH}${form.joinCode}` : ''
+);
 
 /** 加入码：去掉 0/1/I/O 等易混淆字符，避免考生抄错链接 */
 const JOIN_CODE_LENGTH = 10;
@@ -385,6 +427,7 @@ const initPage = async () => {
     examDesc: data.examDesc,
     paperId: data.paperId,
     paperName: paperList.value.find((item) => String(item.id) === String(data.paperId))?.paperName,
+    examType: data.examType ?? EXAM_TYPE_FORMAL,
     startTime: data.startTime,
     endTime: data.endTime,
     duration: data.duration ?? 0,
