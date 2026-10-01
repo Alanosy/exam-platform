@@ -123,6 +123,9 @@ export interface ExamRecordVO {
   /** 考试名称 */
   examName: string;
 
+  /** 考试类型 1正式考试 / 2练习考试 */
+  examType: string;
+
   /** 试卷ID */
   paperId: string | number;
 
@@ -191,6 +194,9 @@ export interface ExamRecordQuery {
 
   /** 状态 answering / submitted / expired */
   status?: string;
+
+  /** 考试类型 1正式考试 / 2练习考试 */
+  examType?: string;
 
   /** 是否及格 */
   passed?: boolean;

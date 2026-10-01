@@ -14,9 +14,14 @@
             <el-option v-for="item in examOptions" :key="item.examId" :label="item.examName" :value="item.examId" />
           </el-select>
         </el-form-item>
+        <el-form-item label="考试类型" prop="examType">
+          <el-select v-model="queryParams.examType" placeholder="全部类型" clearable style="width: 140px">
+            <el-option v-for="item in examTypeOptions" :key="item.value" :label="item.label" :value="item.value" />
+          </el-select>
+        </el-form-item>
         <el-form-item label="状态" prop="status">
           <el-select v-model="queryParams.status" placeholder="全部状态" clearable style="width: 140px">
-            <el-option v-for="item in statusOptions" :key="item.value" :label="item.label" :value="item.value" />
+            <el-option v-for="item in examRecordStatusOptions" :key="item.value" :label="item.label" :value="item.value" />
           </el-select>
         </el-form-item>
         <el-form-item label="是否及格" prop="passed">
@@ -37,9 +42,14 @@
         <el-table-column label="次数" align="center" width="80">
           <template #default="{ row }">第 {{ row.attemptNo ?? 1 }} 次</template>
         </el-table-column>
+        <el-table-column label="考试类型" align="center" width="110">
+          <template #default="{ row }">
+            <dict-tag :options="examTypeOptions" :value="row.examType" />
+          </template>
+        </el-table-column>
         <el-table-column label="状态" align="center" width="100">
           <template #default="{ row }">
-            <el-tag :type="statusTag(row.status).type" size="small" effect="light">{{ statusTag(row.status).label }}</el-tag>
+            <dict-tag :options="examRecordStatusOptions" :value="row.status" />
           </template>
         </el-table-column>
         <el-table-column label="开考时间" align="center" width="150">
@@ -99,6 +109,7 @@
 <script setup lang="ts" name="ExamRecords">
 import { getExamRecords, listMyExams } from '@/api/exam/answer';
 import type { ExamRecordVO, ExamRecordQuery, ExamCenterVO } from '@/api/exam/answer/types';
+import { useExamDicts } from '@/hooks/useExamDicts';
 
 const router = useRouter();
 // 首屏先落在 loading 上：首次 render 早于 onMounted，否则会闪一下空表格
@@ -110,18 +121,8 @@ const examOptions = ref<ExamCenterVO[]>([]);
 const queryFormRef = ref<ElFormInstance>();
 const queryParams = ref<ExamRecordQuery>({ pageNum: 1, pageSize: 10 });
 
-const statusOptions = [
-  { value: 'answering', label: '答题中' },
-  { value: 'submitted', label: '已交卷' },
-  { value: 'expired', label: '已过期' }
-];
-
-const STATUS_TAG: Record<string, { label: string; type: 'primary' | 'success' | 'warning' | 'info' | 'danger' }> = {
-  answering: { label: '答题中', type: 'warning' },
-  submitted: { label: '已交卷', type: 'success' },
-  expired: { label: '已过期', type: 'info' }
-};
-const statusTag = (status: string) => STATUS_TAG[status] ?? { label: status || '未知', type: 'info' };
+/** 考试类型与答卷状态都走字典 */
+const { examTypeOptions, examRecordStatusOptions } = useExamDicts();
 
 const pad = (n: number) => String(n).padStart(2, '0');
 
