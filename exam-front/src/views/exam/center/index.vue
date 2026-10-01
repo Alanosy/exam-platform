@@ -19,9 +19,9 @@
       </el-tabs>
 
       <el-radio-group v-model="activeOwner" class="owner-filter">
-        <el-radio-button value="all">全部</el-radio-button>
-        <el-radio-button value="mine">我创建的</el-radio-button>
-        <el-radio-button value="joined">我加入的</el-radio-button>
+        <el-radio-button value="all">全部 {{ typeCount }}</el-radio-button>
+        <el-radio-button value="mine">我创建的 {{ mineCount }}</el-radio-button>
+        <el-radio-button value="joined">我加入的 {{ joinedCount }}</el-radio-button>
       </el-radio-group>
 
       <el-empty v-if="!loading && filtered.length === 0" :description="emptyTip" />
@@ -35,6 +35,8 @@
               <div class="flex items-center gap-1 min-w-0">
                 <!-- 考试类型单独成列：正式考试和练习考试一眼分得开 -->
                 <dict-tag :options="examTypeOptions" :value="item.examType || '1'" />
+                <!-- 自己创建的标出来，顺便验证 owner 字段有没有从后端回来 -->
+                <el-tag v-if="isMine(item)" size="small" type="warning" effect="plain">我创建的</el-tag>
                 <span class="exam-name" :title="item.examName">{{ item.examName }}</span>
               </div>
               <dict-tag :options="examMyStatusOptions" :value="item.myStatus" />
@@ -95,18 +97,27 @@ const activeType = ref<string>('all');
 /** 来源筛选：全部 / 我创建的 / 我加入的 */
 const activeOwner = ref<string>('all');
 
+/** 来源判定统一走这里：后端 owner 为 Boolean，取真值即可 */
+const isMine = (item: ExamCenterVO) => item.owner === true;
+
+/** 按考试类型过滤，数量统计和列表展示都复用它 */
+const filteredOfType = (type: string): ExamCenterVO[] =>
+  type === 'all' ? list.value : list.value.filter((item) => item.examType === type);
+
 const filtered = computed(() => {
-  let result = list.value;
-  if (activeType.value !== 'all') {
-    result = result.filter((item) => item.examType === activeType.value);
-  }
+  let result = filteredOfType(activeType.value);
   if (activeOwner.value === 'mine') {
-    result = result.filter((item) => item.owner === true);
+    result = result.filter(isMine);
   } else if (activeOwner.value === 'joined') {
-    result = result.filter((item) => item.owner !== true);
+    result = result.filter((item) => !isMine(item));
   }
   return result;
 });
+
+/** 按钮上的数量：跟着当前类型页签走，方便一眼确认筛选有没有生效 */
+const typeCount = computed(() => filteredOfType(activeType.value).length);
+const mineCount = computed(() => filteredOfType(activeType.value).filter(isMine).length);
+const joinedCount = computed(() => filteredOfType(activeType.value).filter((item) => !isMine(item)).length);
 
 const emptyTip = computed(() => {
   if (activeOwner.value === 'mine') return '你还没有创建考试，去「考试管理」新建一场即可直接在这里参加';

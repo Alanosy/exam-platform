@@ -135,12 +135,10 @@ import { ExamVO, ExamQuery } from '@/api/system/exam/types';
 import { listPaper } from '@/api/system/paper';
 import { PaperVO } from '@/api/system/paper/types';
 import { useExamDicts } from '@/hooks/useExamDicts';
+import { buildJoinLink } from '@/utils/joinLink';
 
 /** 状态 / 参加方式 / 考试类型都走字典，文案与配色在「字典管理」里改即可 */
 const { examTypeOptions, examStatusOptions, examParticipantTypeOptions } = useExamDicts();
-
-/** 考生端加入考试的页面路径，与路由 /exam/join/:code、配置页 JOIN_PATH 保持一致 */
-const JOIN_PATH = '/exam/join/';
 
 const { proxy } = getCurrentInstance() as ComponentInternalInstance;
 const router = useRouter();
@@ -148,8 +146,8 @@ const router = useRouter();
 /** 只有公开考试（有加入码）才给复制链接与密码 */
 const isPublicExam = (row: ExamVO) => row.participantType === 'public' && !!row.joinCode;
 
-/** 拼成可直接发出去的完整链接：带上部署时的上下文路径 */
-const joinLinkOf = (row: ExamVO) => `${window.location.origin}${import.meta.env.VITE_APP_CONTEXT_PATH}${JOIN_PATH}${row.joinCode}`;
+/** 拼成可直接发出去的完整链接：带上部署时的上下文路径，内部会压掉多余的斜杠 */
+const joinLinkOf = (row: ExamVO) => buildJoinLink(row.joinCode);
 
 /**
  * 复制到剪贴板。

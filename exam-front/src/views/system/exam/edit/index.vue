@@ -214,11 +214,10 @@ import { ExamForm, AntiCheatConfig } from '@/api/system/exam/types';
 import { listPaper } from '@/api/system/paper';
 import { PaperVO } from '@/api/system/paper/types';
 import { useExamDicts } from '@/hooks/useExamDicts';
+import { buildJoinLink } from '@/utils/joinLink';
 
 /** 列表页路由地址，需要与后台「考试管理」菜单的路由地址保持一致 */
 const EXAM_LIST_PATH = '/system/exam';
-/** 考生端加入考试的页面路径，实际部署时按前端真实路由调整 */
-const JOIN_PATH = '/exam/join/';
 
 const { proxy } = getCurrentInstance() as ComponentInternalInstance;
 const route = useRoute();
@@ -349,10 +348,8 @@ const onPaperChange = (paperId: string | number) => {
 
 /* ---------------------------------- 加入链接 ---------------------------------- */
 
-/** 带上部署时的上下文路径，否则非根路径部署时复制出去的链接打不开 */
-const joinLink = computed(() =>
-  form.joinCode ? `${window.location.origin}${import.meta.env.VITE_APP_CONTEXT_PATH}${JOIN_PATH}${form.joinCode}` : ''
-);
+/** 带上部署时的上下文路径，否则非根路径部署时复制出去的链接打不开；工具内部会压掉多余斜杠 */
+const joinLink = computed(() => buildJoinLink(form.joinCode));
 
 /** 加入码：去掉 0/1/I/O 等易混淆字符，避免考生抄错链接 */
 const JOIN_CODE_LENGTH = 10;

@@ -133,9 +133,10 @@ public class ExamRecordServiceImpl implements IExamRecordService {
     @Override
     public List<ExamCenterVo> listMyCenter() {
         String account = currentAccount();
+        Long userId = LoginHelper.getUserId();
         // 考试中心 = 我创建的 + 我加入的：自己建的不用拿链接加入，直接能看到、能开考
         Set<Long> ownExamIds = new LinkedHashSet<>();
-        List<Long> created = remoteExamService.listExamIdsByCreator(LoginHelper.getUserId());
+        List<Long> created = remoteExamService.listExamIdsByCreator(userId);
         if (CollUtil.isNotEmpty(created)) {
             ownExamIds.addAll(created);
         }
@@ -211,7 +212,7 @@ public class ExamRecordServiceImpl implements IExamRecordService {
             vo.setMyStatus(myStatus);
             vo.setTip(tip);
             vo.setCanStart(canStart);
-            vo.setOwner(ownExamIds.contains(examId));
+            vo.setOwner(ownExamIds.contains(examId) || isOwner(exam));
             list.add(vo);
         }
 
