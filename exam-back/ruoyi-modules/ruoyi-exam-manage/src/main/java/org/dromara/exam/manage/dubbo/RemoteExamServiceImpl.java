@@ -55,6 +55,38 @@ public class RemoteExamServiceImpl implements RemoteExamService {
     }
 
     /**
+     * 查某类任务下的考试ID列表
+     */
+    @Override
+    public List<Long> listExamIdsByType(String examType) {
+        if (StringUtils.isBlank(examType)) {
+            return List.of();
+        }
+        List<Exam> exams = examMapper.selectList(
+            Wrappers.lambdaQuery(Exam.class)
+                .select(Exam::getId)
+                .eq(Exam::getExamType, examType)
+                .eq(Exam::getDelFlag, 0L));
+        return exams.stream().map(Exam::getId).toList();
+    }
+
+    /**
+     * 查某个人创建的考试ID列表
+     */
+    @Override
+    public List<Long> listExamIdsByCreator(Long creatorId) {
+        if (ObjectUtil.isNull(creatorId)) {
+            return List.of();
+        }
+        List<Exam> exams = examMapper.selectList(
+            Wrappers.lambdaQuery(Exam.class)
+                .select(Exam::getId)
+                .eq(Exam::getCreatorId, creatorId)
+                .eq(Exam::getDelFlag, 0L));
+        return exams.stream().map(Exam::getId).toList();
+    }
+
+    /**
      * 按账号查询邀请 / 加入记录
      */
     @Override

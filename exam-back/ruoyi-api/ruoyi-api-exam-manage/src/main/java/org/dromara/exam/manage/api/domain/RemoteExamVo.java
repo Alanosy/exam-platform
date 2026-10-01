@@ -33,13 +33,16 @@ public class RemoteExamVo implements Serializable {
     /** 关联试卷ID */
     private Long paperId;
 
+    /** 任务类型：1正式考试 / 2练习考试，答题服务据此决定要不要卡时间窗、允不允许反复练 */
+    private String examType;
+
     /** 开始时间 */
     private Date startTime;
 
     /** 结束时间 */
     private Date endTime;
 
-    /** 限时(分钟)，0沿用试卷time_limit */
+    /** 限时(分钟)，0不限时 */
     private Long duration;
 
     /** 是否允许迟到入场 0否 1是 */
@@ -65,5 +68,13 @@ public class RemoteExamVo implements Serializable {
 
     /** white白名单 / public公开链接 */
     private String participantType;
+
+    /**
+     * 考试创建人ID
+     *
+     * <p>答题服务用它判断「这场考试是我自己建的」：
+     * 创建人不用走邀请链接，考试中心直接列出、开考也直接放行。
+     */
+    private Long creatorId;
 
 }

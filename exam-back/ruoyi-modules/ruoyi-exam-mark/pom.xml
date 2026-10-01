@@ -117,6 +117,30 @@
             <artifactId>ruoyi-api-exam-answer</artifactId>
         </dependency>
 
+        <!-- 考试名称与考试类型（只阅正式考试） -->
+        <dependency>
+            <groupId>org.dromara</groupId>
+            <artifactId>ruoyi-api-exam-manage</artifactId>
+        </dependency>
+
+        <!-- 试卷名称与卷内题目分值 -->
+        <dependency>
+            <groupId>org.dromara</groupId>
+            <artifactId>ruoyi-api-exam-paper</artifactId>
+        </dependency>
+
+        <!-- 题干 / 参考答案 / 解析 -->
+        <dependency>
+            <groupId>org.dromara</groupId>
+            <artifactId>ruoyi-api-exam-question</artifactId>
+        </dependency>
+
+        <!-- 阅卷判错的题推进错题本 -->
+        <dependency>
+            <groupId>org.dromara</groupId>
+            <artifactId>ruoyi-api-exam-practice</artifactId>
+        </dependency>
+
     </dependencies>
 
     <build>

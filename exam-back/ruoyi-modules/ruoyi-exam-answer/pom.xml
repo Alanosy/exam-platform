@@ -141,6 +141,18 @@
             <artifactId>ruoyi-api-exam-question</artifactId>
         </dependency>
 
+        <!-- 交卷判分后把错题同步到错题本 -->
+        <dependency>
+            <groupId>org.dromara</groupId>
+            <artifactId>ruoyi-api-exam-practice</artifactId>
+        </dependency>
+
+        <!-- 交卷后把主观题推进阅卷列表 -->
+        <dependency>
+            <groupId>org.dromara</groupId>
+            <artifactId>ruoyi-api-exam-mark</artifactId>
+        </dependency>
+
     </dependencies>
 
     <build>

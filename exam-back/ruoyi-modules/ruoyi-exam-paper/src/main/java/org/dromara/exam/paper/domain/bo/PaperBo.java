@@ -57,11 +57,6 @@ public class PaperBo extends BaseEntity {
     private Long passScore;
 
     /**
-     * 考试时长(分钟)，0代表不限时
-     */
-    private Long timeLimit;
-
-    /**
      * 可见性 private私有 / public公开
      */
     @NotBlank(message = "可见性 private私有 / public公开不能为空", groups = { AddGroup.class, EditGroup.class })
@@ -71,11 +66,6 @@ public class PaperBo extends BaseEntity {
      * 公开分享密码，公开模式生效，空则无密码
      */
     private String sharePassword;
-
-    /**
-     * 分享链接过期时间，NULL永久有效
-     */
-    private Date shareExpireTime;
 
     /**
      * 随机抽题规则，paper_type=RANDOM时生效：{bankId,questionType,difficulty,count,scorePerQuestion}

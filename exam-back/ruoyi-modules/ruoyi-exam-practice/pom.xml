@@ -123,6 +123,12 @@
             <artifactId>ruoyi-api-exam-paper</artifactId>
         </dependency>
 
+        <!-- 错题来源展示需要考试名称 -->
+        <dependency>
+            <groupId>org.dromara</groupId>
+            <artifactId>ruoyi-api-exam-manage</artifactId>
+        </dependency>
+
         <!-- 自身对外接口 -->
         <dependency>
             <groupId>org.dromara</groupId>

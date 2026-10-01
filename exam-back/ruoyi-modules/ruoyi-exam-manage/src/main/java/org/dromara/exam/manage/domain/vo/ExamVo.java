@@ -53,6 +53,12 @@ public class ExamVo implements Serializable {
     private Long paperId;
 
     /**
+     * 任务类型：1正式考试 / 2练习考试
+     */
+    @ExcelProperty(value = "考试类型")
+    private String examType;
+
+    /**
      * 考试开始时间
      */
     @ExcelProperty(value = "考试开始时间")
@@ -65,7 +71,7 @@ public class ExamVo implements Serializable {
     private Date endTime;
 
     /**
-     * 本场考试限时(分钟)，0沿用试卷time_limit
+     * 本场考试限时(分钟)，0不限时；限时属于活动规则，只在本场考试上配置
      */
     @ExcelProperty(value = "考试限时(分钟)")
     private Long duration;

@@ -30,6 +30,12 @@ public class ExamPaperVo implements Serializable {
     /** 考试名称 */
     private String examName;
 
+    /** 任务类型：1正式考试 / 2练习考试 */
+    private String examType;
+
+    /** 是否刷题即时判题：做完一题立刻给答案与解析 */
+    private Boolean realTimeJudge;
+
     /** 试卷名称 */
     private String paperName;
 

@@ -23,6 +23,12 @@ public class Exam extends TenantEntity {
     @Serial
     private static final long serialVersionUID = 1L;
 
+    /** 任务类型：正式考试 */
+    public static final String TYPE_FORMAL = "1";
+
+    /** 任务类型：练习考试 */
+    public static final String TYPE_PRACTICE = "2";
+
     /**
      * 考试ID
      */
@@ -45,6 +51,13 @@ public class Exam extends TenantEntity {
     private Long paperId;
 
     /**
+     * 任务类型：1正式考试 / 2练习考试，取字典 exam_type
+     *
+     * <p>一场活动的规则全部挂在「考试」这一层，试卷只管题目与组卷属性。
+     */
+    private String examType;
+
+    /**
      * 考试开始时间
      */
     private Date startTime;
@@ -55,7 +68,7 @@ public class Exam extends TenantEntity {
     private Date endTime;
 
     /**
-     * 本场考试限时(分钟)，0沿用试卷time_limit
+     * 本场考试限时(分钟)，0不限时；限时属于活动规则，只在本场考试上配置
      */
     private Long duration;
 

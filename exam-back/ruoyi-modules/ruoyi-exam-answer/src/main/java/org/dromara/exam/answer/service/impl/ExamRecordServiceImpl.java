@@ -19,6 +19,7 @@ import org.dromara.exam.answer.domain.ExamAnswer;
 import org.dromara.exam.answer.domain.ExamRecord;
 import org.dromara.exam.answer.domain.bo.AnswerSaveBo;
 import org.dromara.exam.answer.domain.bo.ExamRecordBo;
+import org.dromara.exam.answer.domain.vo.ExamAnswerJudgeVo;
 import org.dromara.exam.answer.domain.vo.ExamCenterVo;
 import org.dromara.exam.answer.domain.vo.ExamOptionVo;
 import org.dromara.exam.answer.domain.vo.ExamPaperVo;
@@ -29,12 +30,18 @@ import org.dromara.exam.answer.domain.vo.ExamResultVo;
 import org.dromara.exam.answer.mapper.ExamAnswerMapper;
 import org.dromara.exam.answer.mapper.ExamRecordMapper;
 import org.dromara.exam.answer.service.IExamRecordService;
+import org.dromara.common.tenant.helper.TenantHelper;
 import org.dromara.exam.manage.api.RemoteExamService;
 import org.dromara.exam.manage.api.domain.RemoteExamInviteVo;
 import org.dromara.exam.manage.api.domain.RemoteExamVo;
+import org.dromara.exam.mark.api.RemoteMarkService;
+import org.dromara.exam.mark.api.domain.RemoteMarkItemSyncBo;
+import org.dromara.exam.mark.api.domain.RemoteMarkSyncBo;
 import org.dromara.exam.paper.api.RemotePaperService;
 import org.dromara.exam.paper.api.domain.RemotePaperQuestionVo;
 import org.dromara.exam.paper.api.domain.RemotePaperVo;
+import org.dromara.exam.practice.api.RemoteWrongQuestionService;
+import org.dromara.exam.practice.api.domain.RemoteWrongQuestionBo;
 import org.dromara.exam.question.api.RemoteQuestionService;
 import org.dromara.exam.question.api.domain.RemoteQuestionOptionVo;
 import org.dromara.exam.question.api.domain.RemoteQuestionVo;
@@ -90,6 +97,18 @@ public class ExamRecordServiceImpl implements IExamRecordService {
     /** 考试结束后才看答案 */
     private static final String SHOW_AFTER_EXAM = "after_exam";
 
+    /** 错题本来源：正式考试，与错题表的 source_type 取值保持一致 */
+    private static final String WRONG_SOURCE_EXAM = "EXAM";
+
+    /** 任务类型：正式考试 */
+    private static final String EXAM_TYPE_FORMAL = "1";
+
+    /** 任务类型：练习考试（刷题） */
+    private static final String EXAM_TYPE_PRACTICE = "2";
+
+    /** 答案展示：即时露出，刷题时做完一题立刻看答案与解析 */
+    private static final String SHOW_IMMEDIATE = "immediate";
+
     private final ExamRecordMapper baseMapper;
 
     private final ExamAnswerMapper examAnswerMapper;
@@ -103,18 +122,32 @@ public class ExamRecordServiceImpl implements IExamRecordService {
     @DubboReference
     private RemoteQuestionService remoteQuestionService;
 
+    @DubboReference
+    private RemoteWrongQuestionService remoteWrongQuestionService;
+
+    @DubboReference
+    private RemoteMarkService remoteMarkService;
+
     /* ---------------------------------- 考试中心 ---------------------------------- */
 
     @Override
     public List<ExamCenterVo> listMyCenter() {
         String account = currentAccount();
+        // 考试中心 = 我创建的 + 我加入的：自己建的不用拿链接加入，直接能看到、能开考
+        Set<Long> ownExamIds = new LinkedHashSet<>();
+        List<Long> created = remoteExamService.listExamIdsByCreator(LoginHelper.getUserId());
+        if (CollUtil.isNotEmpty(created)) {
+            ownExamIds.addAll(created);
+        }
         List<RemoteExamInviteVo> invites = remoteExamService.listInvitesByAccount(account);
-        if (CollUtil.isEmpty(invites)) {
+        Set<Long> examIds = new LinkedHashSet<>(ownExamIds);
+        if (CollUtil.isNotEmpty(invites)) {
+            // 同一场考试可能有多条邀请记录（短信 + 链接），按考试去重
+            examIds.addAll(invites.stream().map(RemoteExamInviteVo::getExamId).filter(ObjectUtil::isNotNull).toList());
+        }
+        if (examIds.isEmpty()) {
             return List.of();
         }
-        // 同一场考试可能有多条邀请记录（短信 + 链接），按考试去重
-        Set<Long> examIds = invites.stream().map(RemoteExamInviteVo::getExamId).filter(ObjectUtil::isNotNull)
-            .collect(Collectors.toCollection(LinkedHashSet::new));
 
         List<ExamCenterVo> list = new ArrayList<>();
         Date now = new Date();
@@ -130,6 +163,7 @@ public class ExamRecordServiceImpl implements IExamRecordService {
             ExamCenterVo vo = new ExamCenterVo();
             vo.setExamId(exam.getExamId());
             vo.setExamName(exam.getExamName());
+            vo.setExamType(exam.getExamType());
             vo.setExamDesc(exam.getExamDesc());
             vo.setStartTime(exam.getStartTime());
             vo.setEndTime(exam.getEndTime());
@@ -177,6 +211,7 @@ public class ExamRecordServiceImpl implements IExamRecordService {
             vo.setMyStatus(myStatus);
             vo.setTip(tip);
             vo.setCanStart(canStart);
+            vo.setOwner(ownExamIds.contains(examId));
             list.add(vo);
         }
 
@@ -201,6 +236,14 @@ public class ExamRecordServiceImpl implements IExamRecordService {
         lqw.eq(ExamRecord::getAccount, account);
         lqw.eq(ObjectUtil.isNotNull(bo.getExamId()), ExamRecord::getExamId, bo.getExamId());
         lqw.eq(StringUtils.isNotBlank(bo.getStatus()), ExamRecord::getStatus, bo.getStatus());
+        // 考试类型不在本库，先把这类考试的ID捞回来再下推到 SQL，保证分页条数准确
+        if (StringUtils.isNotBlank(bo.getExamType())) {
+            List<Long> examIds = remoteExamService.listExamIdsByType(bo.getExamType());
+            if (CollUtil.isEmpty(examIds)) {
+                return TableDataInfo.build();
+            }
+            lqw.in(ExamRecord::getExamId, examIds);
+        }
         // 注意：Boolean 不能直接三元拆箱，未传时为 null 会 NPE
         lqw.eq(ObjectUtil.isNotNull(bo.getPassed()), ExamRecord::getPassed, Boolean.TRUE.equals(bo.getPassed()) ? 1L : 0L);
         lqw.orderByDesc(ExamRecord::getSubmitTime).orderByDesc(ExamRecord::getStartTime).orderByDesc(ExamRecord::getId);
@@ -247,6 +290,7 @@ public class ExamRecordServiceImpl implements IExamRecordService {
         vo.setRecordId(record.getId());
         vo.setExamId(record.getExamId());
         vo.setExamName(ObjectUtil.isNull(exam) ? null : exam.getExamName());
+        vo.setExamType(ObjectUtil.isNull(exam) ? null : exam.getExamType());
         vo.setPaperId(record.getPaperId());
         vo.setPaperName(ObjectUtil.isNull(paper) ? null : paper.getPaperName());
         vo.setAttemptNo(record.getAttemptNo());
@@ -293,10 +337,13 @@ public class ExamRecordServiceImpl implements IExamRecordService {
         if (EXAM_ARCHIVED.equals(exam.getStatus())) {
             throw new ServiceException("该考试已归档，无法参加");
         }
-        // 准入：目前只放行「已加入」的考生（白名单方式后续再扩）
-        RemoteExamInviteVo invite = remoteExamService.queryInvite(examId, account);
-        if (ObjectUtil.isNull(invite)) {
-            throw new ServiceException("你还没有加入该考试，请先通过邀请链接加入");
+        // 准入：自己建的考试直接放行，其余人必须有邀请 / 加入记录（白名单方式后续再扩）
+        boolean owner = isOwner(exam);
+        if (!owner) {
+            RemoteExamInviteVo invite = remoteExamService.queryInvite(examId, account);
+            if (ObjectUtil.isNull(invite)) {
+                throw new ServiceException("你还没有加入该考试，请先通过邀请链接加入");
+            }
         }
 
         Date now = new Date();
@@ -339,9 +386,8 @@ public class ExamRecordServiceImpl implements IExamRecordService {
         record.setAttemptNo(records.size() + 1);
         record.setStatus(ExamRecord.STATUS_ANSWERING);
         record.setStartTime(now);
-        // 考试上配了限时就用考试的，否则沿用试卷时长
-        long duration = ObjectUtil.isNotNull(exam.getDuration()) && exam.getDuration() > 0
-            ? exam.getDuration() : ObjectUtil.defaultIfNull(paper.getTimeLimit(), 0L);
+        // 限时是「一场活动」的规则，只看考试上配的 duration；没配就是不限时（0）
+        long duration = ObjectUtil.isNotNull(exam.getDuration()) && exam.getDuration() > 0 ? exam.getDuration() : 0L;
         record.setDurationMinutes(duration);
         record.setQuestionCount(paperQuestions.size());
         record.setAnsweredCount(0);
@@ -353,6 +399,78 @@ public class ExamRecordServiceImpl implements IExamRecordService {
         record.setAutoSubmit(0L);
         baseMapper.insert(record);
         return record.getId();
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public ExamAnswerJudgeVo judgeAnswer(Long recordId, AnswerSaveBo bo) {
+        String account = currentAccount();
+        ExamRecord record = selectOwnRecord(recordId, account);
+        if (!ExamRecord.STATUS_ANSWERING.equals(record.getStatus())) {
+            throw new ServiceException("该答卷已提交，无法继续作答");
+        }
+        RemoteExamVo exam = remoteExamService.queryExam(record.getExamId());
+        if (ObjectUtil.isNull(exam)) {
+            throw new ServiceException("考试不存在或已删除");
+        }
+        // 只有刷题模式才允许提前判题，正式考试必须等交卷，否则答案就是提前泄了
+        if (!isRealTimeJudge(exam)) {
+            throw new ServiceException("本场考试不支持即时判题，请交卷后查看答案");
+        }
+        RemoteQuestionVo question = questionOf(record.getPaperId(), bo.getQuestionId());
+        if (ObjectUtil.isNull(question)) {
+            throw new ServiceException("该题目已被删除，无法判题");
+        }
+        // 先把作答落库，判完无论对错这份答案都算数
+        saveAnswer(recordId, bo);
+
+        boolean objective = isObjective(question.getQuestionType());
+        RemotePaperVo paper = remotePaperService.queryPaper(record.getPaperId());
+        boolean partialScore = ObjectUtil.isNotNull(paper) && "1".equals(paper.getPartialScore());
+        boolean right = objective && judge(question, bo.getAnswerContent(), partialScore);
+
+        // 本题的对错标记先写进去，页面上「已经答过哪些题」能立即反映出来；
+        // 分数不在这里算，交卷时会整体重算一遍，避免两处口径打架
+        ExamAnswer answer = examAnswerMapper.selectOne(
+            Wrappers.lambdaQuery(ExamAnswer.class)
+                .eq(ExamAnswer::getRecordId, recordId)
+                .eq(ExamAnswer::getQuestionId, bo.getQuestionId())
+                .last("limit 1"));
+        if (ObjectUtil.isNotNull(answer) && objective) {
+            answer.setCorrect(right ? ExamAnswer.CORRECT_YES : ExamAnswer.CORRECT_NO);
+            examAnswerMapper.updateById(answer);
+        }
+
+        ExamAnswerJudgeVo vo = new ExamAnswerJudgeVo();
+        vo.setQuestionId(bo.getQuestionId());
+        vo.setCorrect(objective ? right : null);
+        vo.setMyAnswerText(toAnswerText(question.getQuestionType(), bo.getAnswerContent(), false));
+        vo.setStandardAnswerText(toAnswerText(question.getQuestionType(), question.getAnswer(), true));
+        vo.setAnalysis(question.getAnalysis());
+        if (!objective) {
+            vo.setMessage("主观题不自动判分，请对照参考答案与解析自行检查");
+        } else {
+            vo.setMessage(right ? "回答正确" : "回答错误，看看解析再来一次");
+        }
+        return vo;
+    }
+
+    /**
+     * 取试卷里的某一道题
+     *
+     * @param paperId    试卷ID
+     * @param questionId 题目ID
+     * @return 题目，不存在或不属于这张卷时返回 null
+     */
+    private RemoteQuestionVo questionOf(Long paperId, Long questionId) {
+        // 先确认这道题真的在这张卷子里，否则拿到别的卷子的题也能判分了
+        List<RemotePaperQuestionVo> paperQuestions = remotePaperService.listQuestions(paperId);
+        boolean belongs = paperQuestions.stream().anyMatch(item -> item.getQuestionId().equals(questionId));
+        if (!belongs) {
+            return null;
+        }
+        List<RemoteQuestionVo> questions = remoteQuestionService.listByIds(List.of(questionId));
+        return CollUtil.isEmpty(questions) ? null : questions.get(0);
     }
 
     /* ---------------------------------- 答题页 ---------------------------------- */
@@ -429,6 +547,8 @@ public class ExamRecordServiceImpl implements IExamRecordService {
         paperVo.setRecordId(record.getId());
         paperVo.setExamId(record.getExamId());
         paperVo.setExamName(exam.getExamName());
+        paperVo.setExamType(exam.getExamType());
+        paperVo.setRealTimeJudge(isRealTimeJudge(exam));
         paperVo.setPaperName(paper.getPaperName());
         paperVo.setTotalScore(BigDecimal.valueOf(ObjectUtil.defaultIfNull(paper.getTotalScore(), 0L)));
         paperVo.setQuestions(voList);
@@ -628,6 +748,10 @@ public class ExamRecordServiceImpl implements IExamRecordService {
      * 是否还能再考一次
      */
     private boolean canRetry(RemoteExamVo exam, int submittedCount) {
+        // 练习考试不限制次数：刷题本来就该反复练，进多少次它就多一份练习记录
+        if (isPractice(exam)) {
+            return true;
+        }
         boolean allowRetry = ObjectUtil.equal(1L, exam.getAllowRetry());
         if (!allowRetry) {
             return submittedCount == 0;
@@ -635,6 +759,35 @@ public class ExamRecordServiceImpl implements IExamRecordService {
         int max = ObjectUtil.defaultIfNull(exam.getMaxRetryCount(), 1L).intValue();
         // maxRetryCount 记的是「最多考几次」，按 1 次兜底
         return submittedCount < Math.max(max, 1);
+    }
+
+    /**
+     * 是否我创建的考试
+     *
+     * <p>创建人不用走邀请链接：考试中心直接列出，开考也直接放行；
+     * 只有别人参加的考试才需要先用链接加入。
+     */
+    private boolean isOwner(RemoteExamVo exam) {
+        return ObjectUtil.isNotNull(exam)
+            && ObjectUtil.isNotNull(exam.getCreatorId())
+            && ObjectUtil.equal(exam.getCreatorId(), LoginHelper.getUserId());
+    }
+
+    /**
+     * 是否练习考试（刷题）
+     *
+     * <p>练习考试放宽两处限制：不卡「几次机会」，起止时间可以留空长期有效。
+     * 时间相关判定（isBefore / isAfter / isLate）本身对空值返回 false，天然就是长期有效。
+     */
+    private boolean isPractice(RemoteExamVo exam) {
+        return ObjectUtil.isNotNull(exam) && EXAM_TYPE_PRACTICE.equals(exam.getExamType());
+    }
+
+    /**
+     * 是否刷题即时判题模式：做完一题立刻给答案与解析
+     */
+    private boolean isRealTimeJudge(RemoteExamVo exam) {
+        return ObjectUtil.isNotNull(exam) && SHOW_IMMEDIATE.equals(exam.getShowAnswerMode());
     }
 
     /**
@@ -672,6 +825,10 @@ public class ExamRecordServiceImpl implements IExamRecordService {
         boolean partialScore = ObjectUtil.isNotNull(paper) && "1".equals(paper.getPartialScore());
 
         BigDecimal objective = BigDecimal.ZERO;
+        // 判完分顺手把答错的题收集起来，交卷收尾时一次性同步到错题本
+        List<RemoteWrongQuestionBo> wrongList = new ArrayList<>();
+        // 主观题自动判不了，收进阅卷列表等老师打分
+        List<RemoteMarkItemSyncBo> markList = new ArrayList<>();
         for (ExamAnswer answer : answerMap.values()) {
             RemoteQuestionVo question = questionMap.get(answer.getQuestionId());
             if (ObjectUtil.isNull(question)) {
@@ -684,10 +841,15 @@ public class ExamRecordServiceImpl implements IExamRecordService {
                 answer.setCorrect(right ? ExamAnswer.CORRECT_YES : ExamAnswer.CORRECT_NO);
                 answer.setScore(right || partialScore ? gainedScore(question, answer.getAnswerContent(), fullScore, partialScore) : BigDecimal.ZERO);
                 objective = objective.add(answer.getScore());
+                if (!right) {
+                    // 答错与半对（部分得分但没拿满）都进错题本
+                    wrongList.add(toWrongBo(record, answer));
+                }
             } else {
                 // 主观题留待人工阅卷，分数保持 0
                 answer.setCorrect(ExamAnswer.CORRECT_UNKNOWN);
                 answer.setScore(BigDecimal.ZERO);
+                markList.add(toMarkItemBo(answer, question.getQuestionType(), fullScore));
             }
             examAnswerMapper.updateById(answer);
         }
@@ -707,6 +869,82 @@ public class ExamRecordServiceImpl implements IExamRecordService {
         update.setAnsweredCount(answerMap.size());
         baseMapper.updateById(update);
         record.setStatus(ExamRecord.STATUS_SUBMITTED);
+        // 成绩落库后再同步错题与阅卷任务，下游写失败不能把交卷结果带崩
+        syncWrongQuestions(record, wrongList);
+        syncMarkQuestions(record, objective, markList);
+    }
+
+    /**
+     * 交卷后把主观题推进阅卷列表
+     *
+     * <p>客观题已经自动判完分，这里只送主观题；没有主观题的卷子不建任务，
+     * 免得阅卷列表里出现一堆 0 题待阅的空任务。
+     */
+    private void syncMarkQuestions(ExamRecord record, BigDecimal objectiveScore, List<RemoteMarkItemSyncBo> markList) {
+        if (CollUtil.isEmpty(markList) || ObjectUtil.isNull(record.getUserId())) {
+            return;
+        }
+        RemoteMarkSyncBo bo = new RemoteMarkSyncBo();
+        bo.setRecordId(record.getId());
+        bo.setExamId(record.getExamId());
+        bo.setPaperId(record.getPaperId());
+        bo.setUserId(record.getUserId());
+        bo.setAccount(record.getAccount());
+        bo.setAttemptNo(record.getAttemptNo());
+        bo.setSubmitTime(new Date());
+        bo.setObjectiveScore(ObjectUtil.defaultIfNull(objectiveScore, BigDecimal.ZERO));
+        bo.setPassScore(ObjectUtil.defaultIfNull(record.getPassScore(), BigDecimal.ZERO));
+        // 跨服务调用拿不到租户上下文，显式带过去
+        bo.setTenantId(TenantHelper.getTenantId());
+        bo.setItems(markList);
+        try {
+            remoteMarkService.syncSubjective(bo);
+        } catch (Exception e) {
+            log.warn("同步阅卷任务失败 recordId={}, 主观题数={}, {}", record.getId(), markList.size(), e.getMessage());
+        }
+    }
+
+    /**
+     * 作答记录 → 待阅主观题
+     */
+    private RemoteMarkItemSyncBo toMarkItemBo(ExamAnswer answer, String questionType, BigDecimal fullScore) {
+        RemoteMarkItemSyncBo bo = new RemoteMarkItemSyncBo();
+        bo.setQuestionId(answer.getQuestionId());
+        bo.setQuestionType(questionType);
+        bo.setSort(answer.getSort());
+        bo.setAnswerContent(answer.getAnswerContent());
+        bo.setFullScore(fullScore);
+        return bo;
+    }
+
+    /**
+     * 交卷后把客观题的错题同步到错题本
+     *
+     * <p>主观题要等人工 / AI 阅卷判定，由阅卷服务调同一个接口回写，这里不处理。
+     */
+    private void syncWrongQuestions(ExamRecord record, List<RemoteWrongQuestionBo> wrongList) {
+        // 访客答卷没有用户ID，按约定不做错题本
+        if (CollUtil.isEmpty(wrongList) || ObjectUtil.isNull(record.getUserId())) {
+            return;
+        }
+        try {
+            remoteWrongQuestionService.syncWrong(wrongList);
+        } catch (Exception e) {
+            log.warn("同步错题本失败 recordId={}, 错题数={}, {}", record.getId(), wrongList.size(), e.getMessage());
+        }
+    }
+
+    /**
+     * 作答记录 → 错题同步入参
+     */
+    private RemoteWrongQuestionBo toWrongBo(ExamRecord record, ExamAnswer answer) {
+        RemoteWrongQuestionBo bo = new RemoteWrongQuestionBo();
+        bo.setUserId(record.getUserId());
+        bo.setQuestionId(answer.getQuestionId());
+        bo.setSourceType(WRONG_SOURCE_EXAM);
+        bo.setSourceId(record.getExamId());
+        bo.setAnswerItemId(answer.getId());
+        return bo;
     }
 
     /**

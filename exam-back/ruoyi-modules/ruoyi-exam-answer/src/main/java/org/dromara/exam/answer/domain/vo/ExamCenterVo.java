@@ -28,6 +28,12 @@ public class ExamCenterVo implements Serializable {
     /** 考试名称 */
     private String examName;
 
+    /** 任务类型：1正式考试 / 2练习考试 */
+    private String examType;
+
+    /** 考试状态 not_start / ongoing / finished / archived */
+    private String examStatus;
+
     /** 考试描述 */
     private String examDesc;
 
@@ -41,7 +47,7 @@ public class ExamCenterVo implements Serializable {
     private Long duration;
 
     /** 考试状态 not_start / ongoing / finished / archived */
-    private String examStatus;
+//    private String examStatus;
 
     /**
      * 我在这场比赛上的状态：
@@ -70,5 +76,13 @@ public class ExamCenterVo implements Serializable {
 
     /** 是否可以开始/继续考试 */
     private Boolean canStart;
+
+    /**
+     * 是否是我创建的考试
+     *
+     * <p>自己建的考试不用走邀请链接，列表里也要能一眼认出来，
+     * 前端据此打「我创建的」标签并支持按来源筛选。
+     */
+    private Boolean owner;
 
 }

@@ -45,19 +45,29 @@ public class ExamBo extends BaseEntity {
     private Long paperId;
 
     /**
-     * 考试开始时间
+     * 任务类型：1正式考试 / 2练习考试，取字典 exam_type
+     *
+     * <p>决定后面整套规则该怎么填，所以放在第一步让用户先选
      */
-    @NotNull(message = "考试开始时间不能为空", groups = { AddGroup.class, EditGroup.class })
+    @NotBlank(message = "考试类型不能为空", groups = { AddGroup.class, EditGroup.class })
+    private String examType;
+
+    /**
+     * 考试开始时间
+     *
+     * <p>练习考试允许不填（长期有效），必填校验放在 Service 里按考试类型判断
+     */
     private Date startTime;
 
     /**
      * 考试结束时间
+     *
+     * <p>同开始时间，练习考试允许不填
      */
-    @NotNull(message = "考试结束时间不能为空", groups = { AddGroup.class, EditGroup.class })
     private Date endTime;
 
     /**
-     * 本场考试限时(分钟)，0沿用试卷time_limit
+     * 本场考试限时(分钟)，0不限时；限时属于活动规则，只在本场考试上配置
      */
     private Long duration;
 

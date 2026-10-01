@@ -31,6 +31,9 @@ public class ExamRecordVo implements Serializable {
     /** 考试名称 */
     private String examName;
 
+    /** 任务类型：1正式考试 / 2练习考试，列表要据此区分「考试记录」与「练习记录」 */
+    private String examType;
+
     /** 试卷ID */
     private Long paperId;
 

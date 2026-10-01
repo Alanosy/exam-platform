@@ -25,6 +25,9 @@ public class ExamRecordBo implements Serializable {
     /** 状态 answering / submitted / expired */
     private String status;
 
+    /** 任务类型：1正式考试 / 2练习考试，为空不区分 */
+    private String examType;
+
     /** 是否及格 */
     private Boolean passed;
 

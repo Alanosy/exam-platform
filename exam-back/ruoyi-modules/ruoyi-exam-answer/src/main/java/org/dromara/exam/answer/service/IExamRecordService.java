@@ -4,6 +4,7 @@ import org.dromara.common.mybatis.core.page.PageQuery;
 import org.dromara.common.mybatis.core.page.TableDataInfo;
 import org.dromara.exam.answer.domain.bo.AnswerSaveBo;
 import org.dromara.exam.answer.domain.bo.ExamRecordBo;
+import org.dromara.exam.answer.domain.vo.ExamAnswerJudgeVo;
 import org.dromara.exam.answer.domain.vo.ExamCenterVo;
 import org.dromara.exam.answer.domain.vo.ExamPaperVo;
 import org.dromara.exam.answer.domain.vo.ExamRecordVo;
@@ -65,6 +66,18 @@ public interface IExamRecordService {
      * @param bo       作答内容
      */
     void saveAnswer(Long recordId, AnswerSaveBo bo);
+
+    /**
+     * 刷题即时判题：保存本题作答并立刻回判分结果与解析
+     *
+     * <p>只有开了「即时看答案（immediate）」的练习考试能用；正式考试不给提前判，
+     * 避免答案提前泄露。最终成绩仍以交卷时的统一判分为准。
+     *
+     * @param recordId 答卷记录ID
+     * @param bo       作答内容
+     * @return 本题判分结果与解析
+     */
+    ExamAnswerJudgeVo judgeAnswer(Long recordId, AnswerSaveBo bo);
 
     /**
      * 交卷并判分

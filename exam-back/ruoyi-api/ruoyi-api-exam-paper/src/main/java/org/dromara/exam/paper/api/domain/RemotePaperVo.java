@@ -32,9 +32,6 @@ public class RemotePaperVo implements Serializable {
     /** 及格分 */
     private Long passScore;
 
-    /** 考试时长(分钟)，0不限时 */
-    private Long timeLimit;
-
     /** 客观题是否自动判分 0否 1是 */
     private String autoJudge;
 

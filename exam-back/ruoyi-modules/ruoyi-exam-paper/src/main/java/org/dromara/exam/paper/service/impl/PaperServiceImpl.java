@@ -109,10 +109,8 @@ public class PaperServiceImpl implements IPaperService {
         lqw.eq(StringUtils.isNotBlank(bo.getPaperType()), Paper::getPaperType, bo.getPaperType());
         lqw.eq(bo.getTotalScore() != null, Paper::getTotalScore, bo.getTotalScore());
         lqw.eq(bo.getPassScore() != null, Paper::getPassScore, bo.getPassScore());
-        lqw.eq(bo.getTimeLimit() != null, Paper::getTimeLimit, bo.getTimeLimit());
         lqw.eq(StringUtils.isNotBlank(bo.getVisibility()), Paper::getVisibility, bo.getVisibility());
         lqw.eq(StringUtils.isNotBlank(bo.getSharePassword()), Paper::getSharePassword, bo.getSharePassword());
-        lqw.eq(bo.getShareExpireTime() != null, Paper::getShareExpireTime, bo.getShareExpireTime());
         lqw.eq(StringUtils.isNotBlank(bo.getRandomRule()), Paper::getRandomRule, bo.getRandomRule());
         lqw.eq(StringUtils.isNotBlank(bo.getStatus()), Paper::getStatus, bo.getStatus());
         lqw.eq(bo.getCreatorId() != null, Paper::getCreatorId, bo.getCreatorId());
@@ -268,9 +266,6 @@ public class PaperServiceImpl implements IPaperService {
         }
         if (ObjectUtil.isNull(paper.getTotalScore())) {
             paper.setTotalScore(0L);
-        }
-        if (ObjectUtil.isNull(paper.getTimeLimit())) {
-            paper.setTimeLimit(0L);
         }
     }
 

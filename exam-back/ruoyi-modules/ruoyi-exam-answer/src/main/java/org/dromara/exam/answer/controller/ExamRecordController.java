@@ -13,6 +13,7 @@ import org.dromara.common.mybatis.core.page.TableDataInfo;
 import org.dromara.common.web.core.BaseController;
 import org.dromara.exam.answer.domain.bo.AnswerSaveBo;
 import org.dromara.exam.answer.domain.bo.ExamRecordBo;
+import org.dromara.exam.answer.domain.vo.ExamAnswerJudgeVo;
 import org.dromara.exam.answer.domain.vo.ExamCenterVo;
 import org.dromara.exam.answer.domain.vo.ExamPaperVo;
 import org.dromara.exam.answer.domain.vo.ExamRecordVo;
@@ -96,6 +97,19 @@ public class ExamRecordController extends BaseController {
                               @Validated(AddGroup.class) @RequestBody AnswerSaveBo bo) {
         examRecordService.saveAnswer(recordId, bo);
         return R.ok();
+    }
+
+    /**
+     * 刷题即时判题：保存单题作答并立刻返回对错、正确答案与解析
+     *
+     * @param recordId 答卷记录ID
+     * @param bo       作答内容
+     */
+    @SaCheckLogin
+    @PostMapping("/{recordId}/answer/judge")
+    public R<ExamAnswerJudgeVo> judgeAnswer(@NotNull(message = "答卷ID不能为空") @PathVariable("recordId") Long recordId,
+                                            @Validated(AddGroup.class) @RequestBody AnswerSaveBo bo) {
+        return R.ok(examRecordService.judgeAnswer(recordId, bo));
     }
 
     /**

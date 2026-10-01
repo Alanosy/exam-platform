@@ -101,6 +101,7 @@ public class ExamServiceImpl implements IExamService {
         // 描述是长文本，按关键词模糊匹配才有意义
         lqw.like(StringUtils.isNotBlank(bo.getExamDesc()), Exam::getExamDesc, bo.getExamDesc());
         lqw.eq(bo.getPaperId() != null, Exam::getPaperId, bo.getPaperId());
+        lqw.eq(StringUtils.isNotBlank(bo.getExamType()), Exam::getExamType, bo.getExamType());
         lqw.eq(bo.getStartTime() != null, Exam::getStartTime, bo.getStartTime());
         lqw.eq(bo.getEndTime() != null, Exam::getEndTime, bo.getEndTime());
         lqw.eq(bo.getDuration() != null, Exam::getDuration, bo.getDuration());
@@ -135,8 +136,17 @@ public class ExamServiceImpl implements IExamService {
         if (ObjectUtil.isNull(add.getDuration())) {
             add.setDuration(0L);
         }
+        // 兜底为正式考试：老数据与没选类型的场景都按最严的那套规则走
+        if (StringUtils.isBlank(add.getExamType())) {
+            add.setExamType(Exam.TYPE_FORMAL);
+        }
+        // 练习考试次数不限、随手重练，管理端默认把「允许多次作答」打开
+        if (Exam.TYPE_PRACTICE.equals(add.getExamType()) && ObjectUtil.isNull(add.getAllowRetry())) {
+            add.setAllowRetry(1L);
+        }
         fillJoinInfo(add, null);
         validEntityBeforeSave(add);
+        checkExamRules(add, null);
         boolean flag = baseMapper.insert(add) > 0;
         if (flag) {
             bo.setId(add.getId());
@@ -153,12 +163,15 @@ public class ExamServiceImpl implements IExamService {
     @Override
     public Boolean updateByBo(ExamBo bo) {
         Exam update = MapstructUtils.convert(bo, Exam.class);
-        validEntityBeforeSave(update);
+        Exam exist = ObjectUtil.isNotNull(bo.getId()) ? baseMapper.selectById(bo.getId()) : null;
+        if (ObjectUtil.isNull(exist)) {
+            throw new ServiceException("考试不存在或已删除");
+        }
+        checkExamRules(update, exist);
         // 创建人不允许被修改（与题库模块保持一致）
         update.setCreatorId(null);
         // 编辑时沿用原有的加入码，避免每次保存都换一次链接
-        Exam exist = ObjectUtil.isNotNull(bo.getId()) ? baseMapper.selectById(bo.getId()) : null;
-        fillJoinInfo(update, ObjectUtil.isNull(exist) ? null : exist.getJoinCode());
+        fillJoinInfo(update, exist.getJoinCode());
         boolean flag = baseMapper.updateById(update) > 0;
         // 全局 updateStrategy=NOT_NULL，实体里置 null 的字段不会进 UPDATE 语句，
         // 所以「公开 → 白名单」要显式清空加入码/密码/有效期
@@ -326,6 +339,37 @@ public class ExamServiceImpl implements IExamService {
         LambdaQueryWrapper<ExamInvite> lqw = Wrappers.lambdaQuery();
         lqw.eq(ExamInvite::getExamId, examId).eq(ExamInvite::getInviteAccount, account).eq(ExamInvite::getInviteType, INVITE_TYPE_LINK).last("limit 1");
         return ObjectUtil.isNotNull(examInviteMapper.selectOne(lqw));
+    }
+
+    /**
+     * 按考试类型校验活动规则
+     *
+     * <p>正式考试必须有起止时间（考试窗口的概念）；练习考试是长期可练的，
+     * 时间可以留空，只有填了才校验先后顺序。
+     *
+     * @param exam  本次要写的字段（update 时未改动的字段为 null）
+     * @param exist 库里已有的记录，新增传 null；用于补全 update 时没带的字段，避免误判
+     */
+    private void checkExamRules(Exam exam, Exam exist) {
+        String type = StringUtils.isNotBlank(exam.getExamType()) ? exam.getExamType()
+            : (ObjectUtil.isNull(exist) ? null : exist.getExamType());
+        Date startTime = ObjectUtil.isNotNull(exam.getStartTime()) ? exam.getStartTime()
+            : (ObjectUtil.isNull(exist) ? null : exist.getStartTime());
+        Date endTime = ObjectUtil.isNotNull(exam.getEndTime()) ? exam.getEndTime()
+            : (ObjectUtil.isNull(exist) ? null : exist.getEndTime());
+
+        boolean practice = Exam.TYPE_PRACTICE.equals(type);
+        if (!practice) {
+            if (ObjectUtil.isNull(startTime)) {
+                throw new ServiceException("正式考试必须填写开始时间");
+            }
+            if (ObjectUtil.isNull(endTime)) {
+                throw new ServiceException("正式考试必须填写结束时间");
+            }
+        }
+        if (ObjectUtil.isNotNull(startTime) && ObjectUtil.isNotNull(endTime) && !endTime.after(startTime)) {
+            throw new ServiceException("结束时间必须晚于开始时间");
+        }
     }
 
     /**

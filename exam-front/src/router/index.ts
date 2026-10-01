@@ -142,6 +142,35 @@ export const constantRoutes: RouteRecordRaw[] = [
     ]
   },
   {
+    // 阅卷管理：先按考试看有哪些卷要阅，再点进去看作答用户，最后逐题打分
+    path: '/system/mark',
+    component: Layout,
+    hidden: true,
+    redirect: 'noRedirect',
+    children: [
+      {
+        path: '',
+        component: () => import('@/views/system/mark/index.vue'),
+        name: 'SystemMark',
+        meta: { title: '阅卷管理', noCache: true }
+      },
+      {
+        // 某场考试下的答卷列表
+        path: 'record',
+        component: () => import('@/views/system/mark/record.vue'),
+        name: 'SystemMarkRecord',
+        meta: { title: '答卷列表', activeMenu: '/system/mark', noCache: true }
+      },
+      {
+        // 逐题阅卷打分
+        path: 'marking',
+        component: () => import('@/views/system/mark/marking.vue'),
+        name: 'SystemMarking',
+        meta: { title: '阅卷打分', activeMenu: '/system/mark', noCache: true }
+      }
+    ]
+  },
+  {
     // 考生通过公开链接加入考试：/exam/join/{joinCode}
     // 不带 Layout，独立整页展示；未登录时由 permission.ts 的路由守卫拦到 /login?redirect=...
     path: '/exam/join/:code',
@@ -211,6 +240,36 @@ export const constantRoutes: RouteRecordRaw[] = [
     name: 'ExamRecordDetail',
     hidden: true,
     meta: { title: '答题记录', noCache: true }
+  },
+  {
+    // 错题本：先按考试记录分页统计，点进去才看该场考试的错题明细
+    path: '/exam/wrong',
+    component: Layout,
+    hidden: true,
+    redirect: 'noRedirect',
+    children: [
+      {
+        path: '',
+        component: () => import('@/views/exam/wrong/index.vue'),
+        name: 'ExamWrongBook',
+        meta: { title: '错题本', noCache: true }
+      },
+      {
+        // 错题明细：某一场考试 / 某一份练习下的错题列表，挂在 Layout 下才有侧边栏与导航
+        path: 'detail',
+        component: () => import('@/views/exam/wrong/detail.vue'),
+        name: 'ExamWrongDetail',
+        meta: { title: '错题明细', noCache: true }
+      }
+    ]
+  },
+  {
+    // 重刷错题：逐题作答、即时判对错、看答案解析
+    path: '/exam/wrong/practice',
+    component: () => import('@/views/exam/wrong/practice.vue'),
+    name: 'ExamWrongPractice',
+    hidden: true,
+    meta: { title: '重刷错题', noCache: true }
   }
 ];
 
