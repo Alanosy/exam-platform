@@ -100,6 +100,9 @@
             <el-tooltip content="配置考试" placement="top">
               <el-button link type="primary" icon="Edit" @click="handleUpdate(scope.row)" v-hasPermi="['system:exam:edit']"></el-button>
             </el-tooltip>
+            <el-tooltip content="监考记录" placement="top">
+              <el-button link type="primary" icon="View" @click="goProctor(scope.row)" v-hasPermi="['exam:proctor:list']"></el-button>
+            </el-tooltip>
             <el-tooltip content="删除" placement="top">
               <el-button link type="primary" icon="Delete" @click="handleDelete(scope.row)" v-hasPermi="['system:exam:remove']"></el-button>
             </el-tooltip>
@@ -148,6 +151,9 @@ const isPublicExam = (row: ExamVO) => row.participantType === 'public' && !!row.
 
 /** 拼成可直接发出去的完整链接：带上部署时的上下文路径，内部会压掉多余的斜杠 */
 const joinLinkOf = (row: ExamVO) => buildJoinLink(row.joinCode);
+
+/** 直接看这场考试的监考记录：切屏、粘贴、摄像头抓拍都在这儿 */
+const goProctor = (row: ExamVO) => router.push(`/system/proctor?examId=${row.id}`);
 
 /**
  * 复制到剪贴板。

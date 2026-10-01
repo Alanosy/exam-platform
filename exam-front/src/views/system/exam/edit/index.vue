@@ -177,28 +177,100 @@
       </el-card>
 
       <el-card shadow="never" class="mb-[12px]">
-        <template #header><span>防作弊</span></template>
-        <el-form label-width="100px">
+        <template #header>
+          <div class="flex items-center justify-between">
+            <span>防作弊</span>
+            <span class="text-xs text-gray-400">填了次数上限的项（大于 0）才会触发强制交卷，其余只记录不拦人</span>
+          </div>
+        </template>
+        <el-form label-width="120px">
           <el-row :gutter="16">
             <el-col :span="12">
               <el-form-item label="切屏次数">
-                <el-input-number v-model="antiCheat.switchScreen" :min="0" :precision="0" controls-position="right" class="w-full" />
+                <el-input-number v-model="antiCheat.switchScreen" :min="0" :max="99" :precision="0" controls-position="right" class="w-full" />
                 <div class="mt-1 text-xs text-gray-400">超过则强制交卷，0 表示不限制</div>
               </el-form-item>
             </el-col>
             <el-col :span="12">
               <el-form-item label="禁止复制粘贴">
                 <el-switch v-model="antiCheat.copyPaste" :active-value="1" :inactive-value="0" />
+                <div class="mt-1 text-xs text-gray-400">开启后拦截复制/剪切/右键，并记录尝试行为</div>
               </el-form-item>
             </el-col>
+          </el-row>
+
+          <el-divider content-position="left">
+            <span class="text-xs text-gray-400">摄像头抓拍</span>
+          </el-divider>
+          <el-row :gutter="16">
             <el-col :span="12">
               <el-form-item label="摄像头抓拍">
                 <el-switch v-model="antiCheat.camera" :active-value="1" :inactive-value="0" />
+                <div class="mt-1 text-xs text-gray-400">考生需授权摄像头，入场与定时各抓一张</div>
               </el-form-item>
             </el-col>
             <el-col :span="12">
+              <el-form-item label="抓拍间隔">
+                <el-input-number
+                  v-model="antiCheat.cameraInterval"
+                  :min="15"
+                  :max="600"
+                  :precision="0"
+                  :disabled="antiCheat.camera !== 1"
+                  controls-position="right"
+                  class="w-full"
+                />
+                <div class="mt-1 text-xs text-gray-400">单位：秒，15 ~ 600</div>
+              </el-form-item>
+            </el-col>
+          </el-row>
+
+          <el-divider content-position="left">
+            <span class="text-xs text-gray-400">全屏与粘贴上限</span>
+          </el-divider>
+          <el-row :gutter="16">
+            <el-col :span="12">
               <el-form-item label="强制全屏">
                 <el-switch v-model="antiCheat.fullScreen" :active-value="1" :inactive-value="0" />
+                <div class="mt-1 text-xs text-gray-400">浏览器要求手动点击，答题页提供进入全屏按钮</div>
+              </el-form-item>
+            </el-col>
+            <el-col :span="12">
+              <el-form-item label="退出全屏次数">
+                <el-input-number
+                  v-model="antiCheat.maxExitFullscreen"
+                  :min="0"
+                  :max="99"
+                  :precision="0"
+                  :disabled="antiCheat.fullScreen !== 1"
+                  controls-position="right"
+                  class="w-full"
+                />
+                <div class="mt-1 text-xs text-gray-400">超过则强制交卷，0 表示不限制</div>
+              </el-form-item>
+            </el-col>
+            <el-col :span="12">
+              <el-form-item label="允许粘贴次数">
+                <el-input-number v-model="antiCheat.maxPaste" :min="0" :max="99" :precision="0" controls-position="right" class="w-full" />
+                <div class="mt-1 text-xs text-gray-400">超过则强制交卷，0 表示不限制</div>
+              </el-form-item>
+            </el-col>
+          </el-row>
+
+          <el-divider content-position="left">
+            <span class="text-xs text-gray-400">其它可疑行为检测（只记录，不强制交卷）</span>
+          </el-divider>
+          <el-row :gutter="16">
+            <el-col :span="12">
+              <el-form-item label="开发者工具">
+                <el-switch v-model="antiCheat.devtool" :active-value="1" :inactive-value="0" />
+                <div class="mt-1 text-xs text-gray-400">检测 F12、审查元素等快捷键与窗口异常</div>
+              </el-form-item>
+            </el-col>
+            <el-col :span="12">
+              <el-form-item label="多标签页检测">
+                <el-switch v-model="antiCheat.multitab" :active-value="1" :inactive-value="0" />
+                <div class="mt-1 text-xs text-gray-400">同一场答卷在多个标签页打开时告警</div>
               </el-form-item>
             </el-col>
           </el-row>
@@ -305,7 +377,22 @@ watch(
   }
 );
 
-const defaultAntiCheat: AntiCheatConfig = { switchScreen: 0, copyPaste: 1, camera: 0, fullScreen: 0 };
+/**
+ * 防作弊默认值
+ * <p>原则：默认一律「只记录、不强制」，避免老考试或没仔细配的考试把考生直接卡在门外。
+ * 只有明确填了次数上限的项（>0）才会在监考端触发强制交卷。
+ */
+const defaultAntiCheat: AntiCheatConfig = {
+  switchScreen: 0,
+  copyPaste: 1,
+  camera: 0,
+  fullScreen: 0,
+  cameraInterval: 60,
+  maxPaste: 0,
+  maxExitFullscreen: 0,
+  devtool: 1,
+  multitab: 1
+};
 const antiCheat = reactive<AntiCheatConfig>({ ...defaultAntiCheat });
 
 /** 结束时间必须晚于开始时间；练习考试可以不填时间，填了才校验先后 */
@@ -420,6 +507,17 @@ const parseAntiCheat = (json?: string) => {
   } catch {
     // 历史脏数据不阻塞编辑，按默认值兜底
   }
+  // 老配置没有新字段、或被人手改成 null：统一兜底成数字，否则数字框拿到 null 会回显异常
+  const num = (v: unknown, d: number): number => (typeof v === 'number' && !Number.isNaN(v) ? v : d);
+  antiCheat.switchScreen = num(antiCheat.switchScreen, defaultAntiCheat.switchScreen);
+  antiCheat.cameraInterval = num(antiCheat.cameraInterval, defaultAntiCheat.cameraInterval);
+  antiCheat.maxPaste = num(antiCheat.maxPaste, defaultAntiCheat.maxPaste);
+  antiCheat.maxExitFullscreen = num(antiCheat.maxExitFullscreen, defaultAntiCheat.maxExitFullscreen);
+  antiCheat.copyPaste = num(antiCheat.copyPaste, defaultAntiCheat.copyPaste);
+  antiCheat.camera = num(antiCheat.camera, defaultAntiCheat.camera);
+  antiCheat.fullScreen = num(antiCheat.fullScreen, defaultAntiCheat.fullScreen);
+  antiCheat.devtool = num(antiCheat.devtool, defaultAntiCheat.devtool);
+  antiCheat.multitab = num(antiCheat.multitab, defaultAntiCheat.multitab);
 };
 
 const initPage = async () => {
@@ -510,7 +608,12 @@ const submitForm = async (status: string) => {
     joinExpireTime: isPublic ? form.joinExpireTime : undefined,
     // 加入码：新增时前端生成，编辑时沿用库里的，原样回传避免每次保存都换链接
     joinCode: isPublic ? form.joinCode : undefined,
-    antiCheatConfig: JSON.stringify(antiCheat)
+    // 关掉的开关不带出关联阈值，避免留下「不强制全屏但退出 3 次就交卷」这类脏数据
+    antiCheatConfig: JSON.stringify({
+      ...antiCheat,
+      cameraInterval: antiCheat.camera === 1 ? Math.max(15, antiCheat.cameraInterval) : defaultAntiCheat.cameraInterval,
+      maxExitFullscreen: antiCheat.fullScreen === 1 ? antiCheat.maxExitFullscreen : 0
+    })
   };
 
   savingAction.value = status === 'ongoing' ? 'ongoing' : 'not_start';

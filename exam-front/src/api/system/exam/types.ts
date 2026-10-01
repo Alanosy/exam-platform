@@ -97,6 +97,16 @@ export interface AntiCheatConfig {
   camera: number;
   /** 强制全屏 0否 1是 */
   fullScreen: number;
+  /** 摄像头抓拍间隔（秒），最小 15 秒 */
+  cameraInterval: number;
+  /** 允许粘贴次数，0 表示不限制，超过则强制交卷 */
+  maxPaste: number;
+  /** 允许退出全屏次数，0 表示不限制，超过则强制交卷 */
+  maxExitFullscreen: number;
+  /** 开发者工具检测 0关 1开（只记录告警） */
+  devtool: number;
+  /** 多标签页/多端检测 0关 1开（只记录告警） */
+  multitab: number;
 }
 
 /** 考生通过加入链接看到的考试概要（不含参与密码本身） */

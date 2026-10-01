@@ -153,6 +153,12 @@
             <artifactId>ruoyi-api-exam-mark</artifactId>
         </dependency>
 
+        <!-- 交卷后通知防作弊服务结束监考会话 -->
+        <dependency>
+            <groupId>org.dromara</groupId>
+            <artifactId>ruoyi-api-exam-proctor</artifactId>
+        </dependency>
+
     </dependencies>
 
     <build>

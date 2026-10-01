@@ -159,6 +159,39 @@
           </div>
           <el-button type="danger" class="side-submit" @click="handleSubmit">交卷</el-button>
         </el-card>
+
+        <!-- 监考状态：开了防作弊才显示，摄像头画面与各类计数让考生心里有数 -->
+        <el-card v-if="proctorId" shadow="never" class="side-card">
+          <div class="proctor-title">
+            <span>考试监考中</span>
+            <el-tag size="small" effect="plain" type="info">
+              {{ proctorRule?.switchScreen ? `切屏上限 ${proctorRule.switchScreen} 次` : '切屏不限' }}
+            </el-tag>
+          </div>
+          <video v-show="cameraOpen" ref="proctorVideo" class="proctor-video" muted autoplay playsinline></video>
+          <div v-if="cameraError" class="proctor-camera-error">{{ cameraError }}</div>
+          <div class="proctor-counts">
+            <div class="proctor-count">
+              <span class="proctor-count-value">{{ switchCount }}</span>
+              <span class="proctor-count-label">切屏</span>
+            </div>
+            <div class="proctor-count">
+              <span class="proctor-count-value">{{ pasteCount }}</span>
+              <span class="proctor-count-label">粘贴</span>
+            </div>
+            <div class="proctor-count">
+              <span class="proctor-count-value">{{ exitFullscreenCount }}</span>
+              <span class="proctor-count-label">退出全屏</span>
+            </div>
+            <div class="proctor-count">
+              <span class="proctor-count-value">{{ cameraCount }}</span>
+              <span class="proctor-count-label">抓拍</span>
+            </div>
+          </div>
+          <el-button v-if="proctorRule?.fullScreen === 1" size="small" plain class="proctor-fullscreen" @click="enterFullscreen">
+            进入全屏
+          </el-button>
+        </el-card>
       </div>
     </div>
 
@@ -177,6 +210,7 @@ import '@vueup/vue-quill/dist/vue-quill.snow.css';
 import { getExamPaper, saveAnswer, submitExam, getExamResult } from '@/api/exam/answer';
 import type { ExamPaperVO, ExamQuestionVO, ExamResultVO } from '@/api/exam/answer/types';
 import { useExamDicts } from '@/hooks/useExamDicts';
+import { useProctor } from '@/hooks/useProctor';
 
 const route = useRoute();
 const router = useRouter();
@@ -198,6 +232,33 @@ const currentIndex = ref(0);
 const remaining = ref(-1);
 const paperName = ref('');
 const result = ref<ExamResultVO | null>(null);
+
+/* ------------------------------- 防作弊采集 -------------------------------
+ * 试卷加载成功后才开：考试ID要从试卷接口拿。
+ * 违规达到上限（切屏超次等）由后端判定后回调这里强制交卷，
+ * 前端自己说了不算，改了也没用。
+ */
+const {
+  sessionId: proctorId,
+  rule: proctorRule,
+  switchCount,
+  pasteCount,
+  exitFullscreenCount,
+  cameraCount,
+  cameraOpen,
+  cameraError,
+  videoRef: proctorVideo,
+  start: startProctorWatch,
+  stop: stopProctorWatch,
+  enterFullscreen
+} = useProctor({
+  recordId: recordId.value,
+  onExceed: (reason) => {
+    ElMessage.error(reason);
+    void autoFinish();
+  },
+  onWarn: (msg) => ElMessage.warning(msg)
+});
 
 /** 题目ID → 作答内容（JSON 字符串） */
 const answers = reactive<Record<string, string>>({});
@@ -377,6 +438,8 @@ const loadPaper = async () => {
     }
     fillInput(questions.value[0]);
     startTimer();
+    // 防作弊最后开：它失败也不能影响已经能答题的页面
+    await startProctorWatch(String(data.examId ?? ''));
   } catch (e: any) {
     // 超时自动交卷 / 已交卷都会走到这里，直接看成绩
     const msg = e instanceof Error ? e.message : '';
@@ -413,6 +476,7 @@ const autoFinish = async () => {
   try {
     const res = await submitExam(recordId.value);
     result.value = res.data;
+    await stopProctorWatch('submitted');
   } catch {
     await fetchResult();
   }
@@ -430,6 +494,7 @@ const doSubmit = async () => {
     result.value = res.data;
     submitVisible.value = false;
     stopTimer();
+    await stopProctorWatch('submitted');
   } catch (e: any) {
     errorMsg.value = (e instanceof Error && e.message) || '交卷失败，请重试';
     submitVisible.value = false;
@@ -658,6 +723,67 @@ onBeforeUnmount(stopTimer);
 
 .side-card {
   border-radius: 10px;
+}
+
+.proctor-title {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #303133;
+}
+
+.proctor-video {
+  display: block;
+  width: 100%;
+  height: 140px;
+  object-fit: cover;
+  background: #1f1f1f;
+  border-radius: 8px;
+}
+
+.proctor-camera-error {
+  padding: 8px 10px;
+  margin-bottom: 10px;
+  font-size: 12px;
+  color: #e6a23c;
+  background: #fdf6ec;
+  border-radius: 6px;
+}
+
+.proctor-counts {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.proctor-count {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 8px 0;
+  background: #f5f7fa;
+  border-radius: 6px;
+}
+
+.proctor-count-value {
+  font-size: 16px;
+  font-weight: 600;
+  color: #303133;
+}
+
+.proctor-count-label {
+  margin-top: 2px;
+  font-size: 12px;
+  color: #909399;
+}
+
+.proctor-fullscreen {
+  width: 100%;
+  margin-top: 10px;
 }
 
 .clock {

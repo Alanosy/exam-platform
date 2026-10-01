@@ -142,6 +142,23 @@ export const constantRoutes: RouteRecordRaw[] = [
     ]
   },
   {
+    // 监考中心：发布者查看自己考试里考生的切屏 / 复制粘贴 / 摄像头抓拍等防作弊记录
+    // 后台菜单（path=proctor）会生成 /proctor，这里再注册一份 /system/proctor，
+    // 方便从考试管理列表直接带 examId 跳进来
+    path: '/system/proctor',
+    component: Layout,
+    hidden: true,
+    redirect: 'noRedirect',
+    children: [
+      {
+        path: '',
+        component: () => import('@/views/system/proctor/index.vue'),
+        name: 'SystemProctor',
+        meta: { title: '监考中心', noCache: true }
+      }
+    ]
+  },
+  {
     // 阅卷管理：先按考试看有哪些卷要阅，再点进去看作答用户，最后逐题打分
     path: '/system/mark',
     component: Layout,

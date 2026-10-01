@@ -42,6 +42,7 @@ import org.dromara.exam.paper.api.domain.RemotePaperQuestionVo;
 import org.dromara.exam.paper.api.domain.RemotePaperVo;
 import org.dromara.exam.practice.api.RemoteWrongQuestionService;
 import org.dromara.exam.practice.api.domain.RemoteWrongQuestionBo;
+import org.dromara.exam.proctor.api.RemoteProctorService;
 import org.dromara.exam.question.api.RemoteQuestionService;
 import org.dromara.exam.question.api.domain.RemoteQuestionOptionVo;
 import org.dromara.exam.question.api.domain.RemoteQuestionVo;
@@ -143,6 +144,9 @@ public class ExamRecordServiceImpl implements IExamRecordService {
 
     @DubboReference
     private RemoteMarkService remoteMarkService;
+
+    @DubboReference
+    private RemoteProctorService remoteProctorService;
 
     /* ---------------------------------- 考试中心 ---------------------------------- */
 
@@ -922,6 +926,21 @@ public class ExamRecordServiceImpl implements IExamRecordService {
         // 成绩落库后再同步错题与阅卷任务，下游写失败不能把交卷结果带崩
         syncWrongQuestions(record, wrongList);
         syncMarkQuestions(record, objective, markList);
+        // 顺手通知防作弊服务收掉监考会话：考生交完卷直接关浏览器时也不会一直挂着「作答中」
+        finishProctor(record);
+    }
+
+    /**
+     * 交卷后结束监考会话
+     *
+     * <p>防作弊服务挂了或者没部署都不能影响交卷，所以异常只记 warn。
+     */
+    private void finishProctor(ExamRecord record) {
+        try {
+            remoteProctorService.finishSession(record.getId(), "submitted");
+        } catch (Exception e) {
+            log.warn("结束监考会话失败 recordId={}, {}", record.getId(), e.getMessage());
+        }
     }
 
     /**
