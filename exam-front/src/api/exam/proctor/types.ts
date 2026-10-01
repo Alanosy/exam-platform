@@ -44,7 +44,8 @@ export interface ProctorSessionVO {
   maxExitFullscreen: number;
   maxPaste: number;
   cameraInterval: number;
-  forceSubmit: number;
+  /** 是否已强制交卷：后端 Long 会被序列化成字符串（"0" / "1"） */
+  forceSubmit: string;
   /** online / offline / submitted / force_submit */
   status: string;
   /** normal / suspect / serious */

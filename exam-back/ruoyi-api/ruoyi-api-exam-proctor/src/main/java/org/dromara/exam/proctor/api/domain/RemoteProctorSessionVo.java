@@ -56,8 +56,8 @@ public class RemoteProctorSessionVo implements Serializable {
     /** normal正常 / suspect可疑 / serious严重 */
     private String riskLevel;
 
-    /** 是否已触发强制交卷 */
-    private Boolean forceSubmit;
+    /** 是否已触发强制交卷 0否 1是（与实体保持同类型，转换器才不用写 Long→Boolean 的映射方法） */
+    private Long forceSubmit;
 
     /** 进入时间 */
     private Date startTime;
