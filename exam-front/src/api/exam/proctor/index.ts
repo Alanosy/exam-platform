@@ -4,6 +4,8 @@ import type {
   ProctorEventBO,
   ProctorEventQuery,
   ProctorEventVO,
+  ProctorExamGroupQuery,
+  ProctorExamGroupVO,
   ProctorOverviewVO,
   ProctorReportVO,
   ProctorSessionQuery,
@@ -60,6 +62,15 @@ export function uploadProctorSnapshot(sessionId: string, file: Blob, eventType =
 }
 
 /* ------------------------------ 监考端（发布者） ------------------------------ */
+
+/** 按考试分组的监考汇总：先按考试看，再点进去看考生 */
+export function listProctorExamGroups(params: ProctorExamGroupQuery): AxiosPromise<ProctorExamGroupVO[]> {
+  return request({
+    url: '/proctor/exam/list',
+    method: 'get',
+    params
+  });
+}
 
 /** 监考会话分页 */
 export function listProctorSessions(params: ProctorSessionQuery): AxiosPromise<{ rows: ProctorSessionVO[]; total: number }> {

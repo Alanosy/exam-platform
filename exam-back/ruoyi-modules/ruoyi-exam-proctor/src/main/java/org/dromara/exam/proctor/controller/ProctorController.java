@@ -7,8 +7,10 @@ import org.dromara.common.mybatis.core.page.PageQuery;
 import org.dromara.common.mybatis.core.page.TableDataInfo;
 import org.dromara.common.web.core.BaseController;
 import org.dromara.exam.proctor.domain.bo.ProctorEventQueryBo;
+import org.dromara.exam.proctor.domain.bo.ProctorExamGroupBo;
 import org.dromara.exam.proctor.domain.bo.ProctorSessionBo;
 import org.dromara.exam.proctor.domain.vo.ProctorEventVo;
+import org.dromara.exam.proctor.domain.vo.ProctorExamGroupVo;
 import org.dromara.exam.proctor.domain.vo.ProctorOverviewVo;
 import org.dromara.exam.proctor.domain.vo.ProctorSessionVo;
 import org.dromara.exam.proctor.domain.vo.ProctorSnapshotVo;
@@ -41,7 +43,16 @@ public class ProctorController extends BaseController {
     private final IProctorService proctorService;
 
     /**
-     * 监考会话列表
+     * 按考试分组的监考汇总：监考中心第一层，先挑出有问题的那场考试
+     */
+    @SaCheckPermission("exam:proctor:list")
+    @GetMapping("/exam/list")
+    public R<List<ProctorExamGroupVo>> examGroupList(ProctorExamGroupBo bo) {
+        return R.ok(proctorService.listExamGroups(bo));
+    }
+
+    /**
+     * 监考会话列表：某场考试下的考生明细
      */
     @SaCheckPermission("exam:proctor:list")
     @GetMapping("/session/list")

@@ -23,10 +23,12 @@ import org.dromara.exam.proctor.domain.ProctorSession;
 import org.dromara.exam.proctor.domain.ProctorSnapshot;
 import org.dromara.exam.proctor.domain.bo.ProctorEventBo;
 import org.dromara.exam.proctor.domain.bo.ProctorEventQueryBo;
+import org.dromara.exam.proctor.domain.bo.ProctorExamGroupBo;
 import org.dromara.exam.proctor.domain.bo.ProctorSessionBo;
 import org.dromara.exam.proctor.domain.bo.ProctorStartBo;
 import org.dromara.exam.proctor.domain.enums.ProctorEventType;
 import org.dromara.exam.proctor.domain.vo.ProctorEventVo;
+import org.dromara.exam.proctor.domain.vo.ProctorExamGroupVo;
 import org.dromara.exam.proctor.domain.vo.ProctorOverviewVo;
 import org.dromara.exam.proctor.domain.vo.ProctorReportVo;
 import org.dromara.exam.proctor.domain.vo.ProctorSessionVo;
@@ -44,9 +46,12 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -283,6 +288,101 @@ public class ProctorServiceImpl implements IProctorService {
             }
         }
         return TableDataInfo.build(page);
+    }
+
+    /**
+     * 按考试分组汇总
+     *
+     * <p>在 Java 里分组而不是写聚合 SQL：在线/掉线是「算」出来的（心跳超时），
+     * 两套判定逻辑写在两个地方迟早会不一致，这里直接复用 {@link #overview(Long)} 的口径。
+     * 一个人创建的考试场次有限，会话量撑得起全量捞一次。
+     */
+    @Override
+    public List<ProctorExamGroupVo> listExamGroups(ProctorExamGroupBo bo) {
+        Long userId = LoginHelper.getUserId();
+        List<Long> examIds = remoteExamService.listExamIdsByCreator(userId);
+        if (ObjectUtil.isNull(examIds) || examIds.isEmpty()) {
+            return List.of();
+        }
+        LambdaQueryWrapper<ProctorSession> lqw = Wrappers.lambdaQuery(ProctorSession.class);
+        // 分组只需要这几个字段，没必要把 user_agent 之类的大字段也捞出来
+        lqw.select(ProctorSession::getExamId, ProctorSession::getExamName, ProctorSession::getStatus,
+            ProctorSession::getRiskLevel, ProctorSession::getForceSubmit, ProctorSession::getRiskScore,
+            ProctorSession::getSwitchCount, ProctorSession::getPasteCount, ProctorSession::getCameraCount,
+            ProctorSession::getDevtoolCount, ProctorSession::getMultitabCount, ProctorSession::getExitFullscreenCount,
+            ProctorSession::getLastActiveTime);
+        lqw.in(ProctorSession::getExamId, examIds);
+        lqw.like(StringUtils.isNotBlank(bo.getKeyword()), ProctorSession::getExamName, bo.getKeyword());
+        List<ProctorSession> sessions = sessionMapper.selectList(lqw);
+        if (sessions.isEmpty()) {
+            return List.of();
+        }
+
+        Date deadline = DateUtil.offsetSecond(new Date(), (int) -OFFLINE_SECONDS);
+        // LinkedHashMap 保序：按考试ID第一次出现的顺序，最后再统一排序
+        Map<Long, ProctorExamGroupVo> groups = new LinkedHashMap<>();
+        for (ProctorSession s : sessions) {
+            ProctorExamGroupVo vo = groups.computeIfAbsent(s.getExamId(), id -> {
+                ProctorExamGroupVo item = new ProctorExamGroupVo();
+                item.setExamId(id);
+                item.setExamName(StringUtils.defaultIfBlank(s.getExamName(), examNameOf(id)));
+                item.setTotalCount(0L);
+                item.setOnlineCount(0L);
+                item.setOfflineCount(0L);
+                item.setSubmittedCount(0L);
+                item.setSuspectCount(0L);
+                item.setSeriousCount(0L);
+                item.setForceSubmitCount(0L);
+                item.setSwitchTotal(0L);
+                item.setPasteTotal(0L);
+                item.setCameraTotal(0L);
+                item.setMaxRiskScore(0);
+                item.setRiskLevel(ProctorSession.RISK_NORMAL);
+                return item;
+            });
+            boolean onlineNow = ProctorSession.STATUS_ONLINE.equals(s.getStatus())
+                && ObjectUtil.isNotNull(s.getLastActiveTime())
+                && s.getLastActiveTime().after(deadline);
+            if (onlineNow) {
+                vo.setOnlineCount(vo.getOnlineCount() + 1);
+            } else if (ProctorSession.STATUS_SUBMITTED.equals(s.getStatus())
+                || ProctorSession.STATUS_FORCE_SUBMIT.equals(s.getStatus())) {
+                vo.setSubmittedCount(vo.getSubmittedCount() + 1);
+            } else {
+                vo.setOfflineCount(vo.getOfflineCount() + 1);
+            }
+            if (ProctorSession.RISK_SUSPECT.equals(s.getRiskLevel())) {
+                vo.setSuspectCount(vo.getSuspectCount() + 1);
+            } else if (ProctorSession.RISK_SERIOUS.equals(s.getRiskLevel())) {
+                vo.setSeriousCount(vo.getSeriousCount() + 1);
+            }
+            if (ObjectUtil.equal(1L, s.getForceSubmit())) {
+                vo.setForceSubmitCount(vo.getForceSubmitCount() + 1);
+            }
+            vo.setTotalCount(vo.getTotalCount() + 1);
+            vo.setSwitchTotal(vo.getSwitchTotal() + nz(s.getSwitchCount()));
+            vo.setPasteTotal(vo.getPasteTotal() + nz(s.getPasteCount()));
+            vo.setCameraTotal(vo.getCameraTotal() + nz(s.getCameraCount()));
+            int score = ObjectUtil.isNull(s.getRiskScore()) ? 0 : s.getRiskScore();
+            if (score > vo.getMaxRiskScore()) {
+                vo.setMaxRiskScore(score);
+                vo.setRiskLevel(StringUtils.defaultIfBlank(s.getRiskLevel(), ProctorSession.RISK_NORMAL));
+            }
+            if (ObjectUtil.isNotNull(s.getLastActiveTime())
+                && (ObjectUtil.isNull(vo.getLastActiveTime()) || s.getLastActiveTime().after(vo.getLastActiveTime()))) {
+                vo.setLastActiveTime(s.getLastActiveTime());
+            }
+        }
+
+        List<ProctorExamGroupVo> list = new ArrayList<>(groups.values());
+        // 「只看有异常」：风险分涵盖了切屏 / 粘贴 / 开发者工具 / 多开 / 退出全屏，
+        // 再加一道切屏粘贴总数兜底，防止某场考试的 risk_score 还是旧值被漏掉
+        if (Boolean.TRUE.equals(bo.getOnlyRisk())) {
+            list.removeIf(vo -> vo.getMaxRiskScore() <= 0 && vo.getSwitchTotal() + vo.getPasteTotal() == 0);
+        }
+        list.sort(Comparator.comparingInt(ProctorExamGroupVo::getMaxRiskScore).reversed()
+            .thenComparing(ProctorExamGroupVo::getLastActiveTime, Comparator.nullsLast(Comparator.reverseOrder())));
+        return list;
     }
 
     @Override

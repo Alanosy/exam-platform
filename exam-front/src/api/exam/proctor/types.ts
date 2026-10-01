@@ -132,6 +132,34 @@ export interface ProctorOverviewVO {
   forceSubmitCount: number;
 }
 
+/** 一场考试的监考汇总（监考中心第一层，先挑出有问题的那场考试） */
+export interface ProctorExamGroupVO {
+  examId: string;
+  examName: string;
+  /** 参加人数 */
+  totalCount: number;
+  onlineCount: number;
+  offlineCount: number;
+  submittedCount: number;
+  suspectCount: number;
+  seriousCount: number;
+  forceSubmitCount: number;
+  switchTotal: number;
+  pasteTotal: number;
+  cameraTotal: number;
+  /** 本场最高风险分 */
+  maxRiskScore: number;
+  /** 本场最高风险等级 normal / suspect / serious */
+  riskLevel: string;
+  lastActiveTime: string;
+}
+
+/** 考试分组查询条件 */
+export interface ProctorExamGroupQuery extends Record<string, unknown> {
+  keyword?: string;
+  onlyRisk?: boolean;
+}
+
 /** 监考会话查询条件 */
 export interface ProctorSessionQuery extends Record<string, unknown> {
   examId?: string;

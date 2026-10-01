@@ -4,9 +4,11 @@ import org.dromara.common.mybatis.core.page.PageQuery;
 import org.dromara.common.mybatis.core.page.TableDataInfo;
 import org.dromara.exam.proctor.domain.bo.ProctorEventBo;
 import org.dromara.exam.proctor.domain.bo.ProctorEventQueryBo;
+import org.dromara.exam.proctor.domain.bo.ProctorExamGroupBo;
 import org.dromara.exam.proctor.domain.bo.ProctorSessionBo;
 import org.dromara.exam.proctor.domain.bo.ProctorStartBo;
 import org.dromara.exam.proctor.domain.vo.ProctorEventVo;
+import org.dromara.exam.proctor.domain.vo.ProctorExamGroupVo;
 import org.dromara.exam.proctor.domain.vo.ProctorOverviewVo;
 import org.dromara.exam.proctor.domain.vo.ProctorReportVo;
 import org.dromara.exam.proctor.domain.vo.ProctorSessionVo;
@@ -63,6 +65,17 @@ public interface IProctorService {
      * 监考会话分页列表（发布者视角，只能看自己创建的考试）
      */
     TableDataInfo<ProctorSessionVo> listSessionPage(ProctorSessionBo bo, PageQuery pageQuery);
+
+    /**
+     * 按考试分组的监考汇总（监考中心第一层）
+     *
+     * <p>先一眼看出「哪场考试有问题」，再点进去看这场考试的考生明细。
+     * 只统计自己创建的、且已经有考生进场的考试。
+     *
+     * @param bo 考试名关键字 / 只看有异常
+     * @return 每场考试一行，按风险与最近活跃倒序
+     */
+    List<ProctorExamGroupVo> listExamGroups(ProctorExamGroupBo bo);
 
     /**
      * 会话详情

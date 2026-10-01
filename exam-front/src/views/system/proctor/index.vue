@@ -6,223 +6,301 @@
           <span class="font-medium">监考中心</span>
           <div class="flex items-center gap-2">
             <el-checkbox v-model="realtime" label="实时刷新" />
-            <el-button plain icon="Refresh" @click="() => getList()">刷新</el-button>
+            <el-button plain icon="Refresh" @click="() => getExamGroups()">刷新</el-button>
           </div>
         </div>
       </template>
 
-      <el-form :model="queryParams" :inline="true" label-width="68px">
-        <el-form-item label="考试" prop="examId">
-          <el-select v-model="queryParams.examId" placeholder="我发布的考试" filterable clearable style="width: 260px" @change="handleQuery">
-            <el-option v-for="item in examOptions" :key="String(item.id)" :label="item.examName" :value="String(item.id)" />
-          </el-select>
-        </el-form-item>
-        <el-form-item label="考生" prop="keyword">
-          <el-input v-model="queryParams.keyword" placeholder="账号 / 姓名" clearable style="width: 180px" @keyup.enter="handleQuery" />
-        </el-form-item>
-        <el-form-item label="状态" prop="status">
-          <el-select v-model="queryParams.status" placeholder="全部" clearable style="width: 130px" @change="handleQuery">
-            <el-option label="作答中" value="online" />
-            <el-option label="已掉线" value="offline" />
-            <el-option label="已交卷" value="submitted" />
-            <el-option label="强制交卷" value="force_submit" />
-          </el-select>
-        </el-form-item>
-        <el-form-item label="风险" prop="riskLevel">
-          <el-select v-model="queryParams.riskLevel" placeholder="全部" clearable style="width: 130px" @change="handleQuery">
-            <el-option label="正常" value="normal" />
-            <el-option label="可疑" value="suspect" />
-            <el-option label="严重" value="serious" />
-          </el-select>
+      <!-- 第一层：先按考试看，哪场有问题点哪场 -->
+      <el-form :model="groupQuery" :inline="true" label-width="68px">
+        <el-form-item label="考试" prop="keyword">
+          <el-input
+            v-model="groupQuery.keyword"
+            placeholder="考试名称"
+            clearable
+            style="width: 220px"
+            @keyup.enter="handleGroupQuery"
+          />
         </el-form-item>
         <el-form-item>
-          <el-checkbox v-model="queryParams.onlyRisk" label="只看有异常" />
+          <el-checkbox v-model="groupQuery.onlyRisk" label="只看有异常的考试" />
         </el-form-item>
         <el-form-item>
-          <el-button type="primary" icon="Search" @click="handleQuery">搜索</el-button>
-          <el-button icon="Refresh" @click="resetQuery">重置</el-button>
+          <el-button type="primary" icon="Search" @click="handleGroupQuery">搜索</el-button>
+          <el-button icon="Refresh" @click="resetGroupQuery">重置</el-button>
         </el-form-item>
       </el-form>
 
-      <!-- 概览：先看全局，再决定要细看谁 -->
-      <div v-if="overview" class="stat-row">
+      <!-- 全部考试的合计：一眼看到总体规模 -->
+      <div class="stat-row">
         <div class="stat-card">
-          <div class="stat-value">{{ overview.totalCount }}</div>
-          <div class="stat-label">参加人数</div>
+          <div class="stat-value">{{ sumBy((g) => g.totalCount) }}</div>
+          <div class="stat-label">参加人次</div>
         </div>
         <div class="stat-card">
-          <div class="stat-value is-online">{{ overview.onlineCount }}</div>
+          <div class="stat-value is-online">{{ sumBy((g) => g.onlineCount) }}</div>
           <div class="stat-label">作答中</div>
         </div>
         <div class="stat-card">
-          <div class="stat-value is-offline">{{ overview.offlineCount }}</div>
+          <div class="stat-value is-offline">{{ sumBy((g) => g.offlineCount) }}</div>
           <div class="stat-label">已掉线</div>
         </div>
         <div class="stat-card">
-          <div class="stat-value">{{ overview.submittedCount }}</div>
+          <div class="stat-value">{{ sumBy((g) => g.submittedCount) }}</div>
           <div class="stat-label">已交卷</div>
         </div>
         <div class="stat-card">
-          <div class="stat-value is-warn">{{ overview.suspectCount }}</div>
+          <div class="stat-value is-warn">{{ sumBy((g) => g.suspectCount) }}</div>
           <div class="stat-label">可疑</div>
         </div>
         <div class="stat-card">
-          <div class="stat-value is-danger">{{ overview.seriousCount }}</div>
+          <div class="stat-value is-danger">{{ sumBy((g) => g.seriousCount) }}</div>
           <div class="stat-label">严重</div>
         </div>
         <div class="stat-card">
-          <div class="stat-value">{{ overview.switchTotal }}</div>
-          <div class="stat-label">切屏总数</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-value">{{ overview.pasteTotal }}</div>
-          <div class="stat-label">粘贴总数</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-value">{{ overview.cameraTotal }}</div>
-          <div class="stat-label">抓拍总数</div>
+          <div class="stat-value">{{ examGroups.length }}</div>
+          <div class="stat-label">考试场次</div>
         </div>
       </div>
 
-      <el-table v-loading="loading" :data="list" border stripe>
-        <el-table-column label="考生" min-width="160" show-overflow-tooltip>
-          <template #default="{ row }">
-            <span>{{ row.nickName || row.account }}</span>
-            <span v-if="row.nickName && row.account" class="sub-text">{{ row.account }}</span>
-          </template>
-        </el-table-column>
-        <el-table-column label="状态" align="center" width="100">
-          <template #default="{ row }">
-            <el-tag size="small" effect="plain" :type="statusType(row.status)">{{ statusText(row.status) }}</el-tag>
-          </template>
-        </el-table-column>
-        <el-table-column label="切屏" align="center" width="90">
-          <template #default="{ row }">
-            <span :class="{ 'is-danger': overLimit(row.switchCount, row.maxSwitch) }">{{ row.switchCount }}</span>
-            <span v-if="row.maxSwitch" class="sub-text">/ {{ row.maxSwitch }}</span>
-          </template>
-        </el-table-column>
-        <el-table-column label="复制" align="center" width="80" prop="copyCount" />
-        <el-table-column label="粘贴" align="center" width="90">
-          <template #default="{ row }">
-            <span :class="{ 'is-danger': overLimit(row.pasteCount, row.maxPaste) }">{{ row.pasteCount }}</span>
-            <span v-if="row.maxPaste" class="sub-text">/ {{ row.maxPaste }}</span>
-          </template>
-        </el-table-column>
-        <el-table-column label="退出全屏" align="center" width="100">
-          <template #default="{ row }">
-            <span :class="{ 'is-danger': overLimit(row.exitFullscreenCount, row.maxExitFullscreen) }">{{ row.exitFullscreenCount }}</span>
-            <span v-if="row.maxExitFullscreen" class="sub-text">/ {{ row.maxExitFullscreen }}</span>
-          </template>
-        </el-table-column>
-        <el-table-column label="抓拍" align="center" width="80" prop="cameraCount" />
-        <el-table-column label="开发者工具" align="center" width="110" prop="devtoolCount" />
-        <el-table-column label="多开" align="center" width="80" prop="multitabCount" />
+      <el-table v-loading="loading" :data="examGroups" border stripe>
+        <el-table-column label="考试" min-width="180" show-overflow-tooltip prop="examName" />
         <el-table-column label="风险" align="center" width="90">
           <template #default="{ row }">
             <el-tag size="small" :type="riskType(row.riskLevel)">{{ riskText(row.riskLevel) }}</el-tag>
           </template>
         </el-table-column>
-        <el-table-column label="最近活跃" align="center" width="160" prop="lastActiveTime" />
-        <el-table-column label="操作" align="center" width="90" fixed="right">
+        <el-table-column label="参加" align="center" width="80" prop="totalCount" />
+        <el-table-column label="作答中" align="center" width="90">
           <template #default="{ row }">
-            <el-button link type="primary" icon="View" @click="openDetail(row)">查看</el-button>
+            <span :class="{ 'is-online-text': row.onlineCount > 0 }">{{ row.onlineCount }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="掉线" align="center" width="80" prop="offlineCount" />
+        <el-table-column label="已交卷" align="center" width="90" prop="submittedCount" />
+        <el-table-column label="可疑" align="center" width="80">
+          <template #default="{ row }">
+            <span :class="{ 'is-warn-text': row.suspectCount > 0 }">{{ row.suspectCount }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="严重" align="center" width="80">
+          <template #default="{ row }">
+            <span :class="{ 'is-danger': row.seriousCount > 0 }">{{ row.seriousCount }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="强制交卷" align="center" width="100">
+          <template #default="{ row }">
+            <span :class="{ 'is-danger': row.forceSubmitCount > 0 }">{{ row.forceSubmitCount }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="切屏总数" align="center" width="100" prop="switchTotal" />
+        <el-table-column label="粘贴总数" align="center" width="100" prop="pasteTotal" />
+        <el-table-column label="抓拍总数" align="center" width="100" prop="cameraTotal" />
+        <el-table-column label="最近活跃" align="center" width="160" prop="lastActiveTime" />
+        <el-table-column label="操作" align="center" width="110" fixed="right">
+          <template #default="{ row }">
+            <el-button link type="primary" icon="User" @click="openStudents(row)">查看考生</el-button>
           </template>
         </el-table-column>
       </el-table>
 
-      <pagination
-        v-show="total > 0"
-        v-model:page="queryParams.pageNum"
-        v-model:limit="queryParams.pageSize"
-        :total="total"
-        @pagination="getList"
-      />
-
-      <el-empty v-if="!loading && total === 0" description="还没有监考记录，考生进入答题页后这里会实时出现" />
+      <el-empty v-if="!loading && examGroups.length === 0" description="还没有监考记录，考生进入答题页后这里会实时出现" />
     </el-card>
 
-    <!-- 详情：计数 + 事件流水 + 摄像头抓拍 -->
-    <el-drawer v-model="detailVisible" :title="`监考详情 · ${current.nickName || current.account || ''}`" size="60%" @close="closeDetail">
-      <el-descriptions :column="2" border class="detail-desc">
-        <el-descriptions-item label="考试">{{ current.examName }}</el-descriptions-item>
-        <el-descriptions-item label="账号">{{ current.account }}</el-descriptions-item>
-        <el-descriptions-item label="状态">
-          <el-tag size="small" effect="plain" :type="statusType(current.status)">{{ statusText(current.status) }}</el-tag>
-        </el-descriptions-item>
-        <el-descriptions-item label="风险">
-          <el-tag size="small" :type="riskType(current.riskLevel)">{{ riskText(current.riskLevel) }}</el-tag>
-        </el-descriptions-item>
-        <el-descriptions-item label="切屏">{{ current.switchCount }} 次（上限 {{ current.maxSwitch || '不限' }}）</el-descriptions-item>
-        <el-descriptions-item label="粘贴">{{ current.pasteCount }} 次（上限 {{ current.maxPaste || '不限' }}）</el-descriptions-item>
-        <el-descriptions-item label="退出全屏">{{ current.exitFullscreenCount }} 次</el-descriptions-item>
-        <el-descriptions-item label="抓拍">{{ current.cameraCount }} 张</el-descriptions-item>
-        <el-descriptions-item label="进入时间">{{ current.startTime }}</el-descriptions-item>
-        <el-descriptions-item label="在线时长">{{ durationText(current.durationSeconds) }}</el-descriptions-item>
-        <el-descriptions-item label="IP">{{ current.ip || '-' }}</el-descriptions-item>
-        <el-descriptions-item label="设备">{{ current.device || '-' }}</el-descriptions-item>
-      </el-descriptions>
+    <!-- 第二层：这场考试的考生；第三层：某个考生的详情。同一抽屉内切换，带返回 -->
+    <el-drawer v-model="drawerVisible" :title="drawerTitle" size="72%" @close="closeDrawer">
+      <!-- ---------- 考生列表 ---------- -->
+      <template v-if="drawerView === 'students'">
+        <el-form :model="studentQuery" :inline="true" label-width="52px" class="mb-[8px]">
+          <el-form-item label="考生" prop="keyword">
+            <el-input
+              v-model="studentQuery.keyword"
+              placeholder="账号 / 姓名"
+              clearable
+              style="width: 160px"
+              @keyup.enter="handleStudentQuery"
+            />
+          </el-form-item>
+          <el-form-item label="状态" prop="status">
+            <el-select v-model="studentQuery.status" placeholder="全部" clearable style="width: 120px" @change="handleStudentQuery">
+              <el-option label="作答中" value="online" />
+              <el-option label="已掉线" value="offline" />
+              <el-option label="已交卷" value="submitted" />
+              <el-option label="强制交卷" value="force_submit" />
+            </el-select>
+          </el-form-item>
+          <el-form-item label="风险" prop="riskLevel">
+            <el-select v-model="studentQuery.riskLevel" placeholder="全部" clearable style="width: 110px" @change="handleStudentQuery">
+              <el-option label="正常" value="normal" />
+              <el-option label="可疑" value="suspect" />
+              <el-option label="严重" value="serious" />
+            </el-select>
+          </el-form-item>
+          <el-form-item>
+            <el-checkbox v-model="studentQuery.onlyRisk" label="只看有异常" />
+          </el-form-item>
+          <el-form-item>
+            <el-button type="primary" icon="Search" @click="handleStudentQuery">搜索</el-button>
+            <el-button icon="Refresh" @click="resetStudentQuery">重置</el-button>
+          </el-form-item>
+        </el-form>
 
-      <el-tabs v-model="detailTab" class="detail-tabs">
-        <el-tab-pane label="事件流水" name="event">
-          <el-table v-loading="eventLoading" :data="eventList" border stripe size="small">
-            <el-table-column label="时间" width="160" prop="eventTime" />
-            <el-table-column label="事件" width="140">
-              <template #default="{ row }">
-                <el-tag size="small" effect="plain" :type="levelType(row.level)">{{ row.eventName || row.eventType }}</el-tag>
-              </template>
-            </el-table-column>
-            <el-table-column label="说明" min-width="200" show-overflow-tooltip>
-              <template #default="{ row }">{{ row.content || '-' }}</template>
-            </el-table-column>
-          </el-table>
-          <pagination
-            v-show="eventTotal > 0"
-            v-model:page="eventQuery.pageNum"
-            v-model:limit="eventQuery.pageSize"
-            :total="eventTotal"
-            @pagination="getEventList"
-          />
-          <el-empty v-if="!eventLoading && eventTotal === 0" description="暂无事件记录" />
-        </el-tab-pane>
+        <el-table v-loading="studentLoading" :data="studentList" border stripe>
+          <el-table-column label="考生" min-width="160" show-overflow-tooltip>
+            <template #default="{ row }">
+              <span>{{ row.nickName || row.account }}</span>
+              <span v-if="row.nickName && row.account" class="sub-text">{{ row.account }}</span>
+            </template>
+          </el-table-column>
+          <el-table-column label="状态" align="center" width="100">
+            <template #default="{ row }">
+              <el-tag size="small" effect="plain" :type="statusType(row.status)">{{ statusText(row.status) }}</el-tag>
+            </template>
+          </el-table-column>
+          <el-table-column label="切屏" align="center" width="90">
+            <template #default="{ row }">
+              <span :class="{ 'is-danger': overLimit(row.switchCount, row.maxSwitch) }">{{ row.switchCount }}</span>
+              <span v-if="row.maxSwitch" class="sub-text">/ {{ row.maxSwitch }}</span>
+            </template>
+          </el-table-column>
+          <el-table-column label="复制" align="center" width="80" prop="copyCount" />
+          <el-table-column label="粘贴" align="center" width="90">
+            <template #default="{ row }">
+              <span :class="{ 'is-danger': overLimit(row.pasteCount, row.maxPaste) }">{{ row.pasteCount }}</span>
+              <span v-if="row.maxPaste" class="sub-text">/ {{ row.maxPaste }}</span>
+            </template>
+          </el-table-column>
+          <el-table-column label="退出全屏" align="center" width="100">
+            <template #default="{ row }">
+              <span :class="{ 'is-danger': overLimit(row.exitFullscreenCount, row.maxExitFullscreen) }">
+                {{ row.exitFullscreenCount }}
+              </span>
+              <span v-if="row.maxExitFullscreen" class="sub-text">/ {{ row.maxExitFullscreen }}</span>
+            </template>
+          </el-table-column>
+          <el-table-column label="抓拍" align="center" width="80" prop="cameraCount" />
+          <el-table-column label="开发者工具" align="center" width="110" prop="devtoolCount" />
+          <el-table-column label="多开" align="center" width="80" prop="multitabCount" />
+          <el-table-column label="风险" align="center" width="90">
+            <template #default="{ row }">
+              <el-tag size="small" :type="riskType(row.riskLevel)">{{ riskText(row.riskLevel) }}</el-tag>
+            </template>
+          </el-table-column>
+          <el-table-column label="最近活跃" align="center" width="160" prop="lastActiveTime" />
+          <el-table-column label="操作" align="center" width="90" fixed="right">
+            <template #default="{ row }">
+              <el-button link type="primary" icon="View" @click="openDetail(row)">详情</el-button>
+            </template>
+          </el-table-column>
+        </el-table>
 
-        <el-tab-pane label="摄像头抓拍" name="snapshot">
-          <div v-if="snapshotList.length" class="snapshot-wall">
-            <div v-for="item in snapshotList" :key="item.id" class="snapshot-item">
-              <el-image :src="item.url" :preview-src-list="previewList" fit="cover" class="snapshot-img" />
-              <div class="snapshot-time">{{ item.captureTime }}</div>
+        <pagination
+          v-show="studentTotal > 0"
+          v-model:page="studentQuery.pageNum"
+          v-model:limit="studentQuery.pageSize"
+          :total="studentTotal"
+          @pagination="getStudentList"
+        />
+
+        <el-empty v-if="!studentLoading && studentTotal === 0" description="这场考试还没有考生进场" />
+      </template>
+
+      <!-- ---------- 某个考生的详情 ---------- -->
+      <template v-else>
+        <el-button link type="primary" icon="ArrowLeft" class="mb-[8px]" @click="backToStudents">返回考生列表</el-button>
+
+        <el-descriptions :column="2" border class="detail-desc">
+          <el-descriptions-item label="考试">{{ current.examName }}</el-descriptions-item>
+          <el-descriptions-item label="账号">{{ current.account }}</el-descriptions-item>
+          <el-descriptions-item label="状态">
+            <el-tag size="small" effect="plain" :type="statusType(current.status)">{{ statusText(current.status) }}</el-tag>
+          </el-descriptions-item>
+          <el-descriptions-item label="风险">
+            <el-tag size="small" :type="riskType(current.riskLevel)">{{ riskText(current.riskLevel) }}</el-tag>
+          </el-descriptions-item>
+          <el-descriptions-item label="切屏">{{ current.switchCount }} 次（上限 {{ current.maxSwitch || '不限' }}）</el-descriptions-item>
+          <el-descriptions-item label="粘贴">{{ current.pasteCount }} 次（上限 {{ current.maxPaste || '不限' }}）</el-descriptions-item>
+          <el-descriptions-item label="退出全屏">{{ current.exitFullscreenCount }} 次</el-descriptions-item>
+          <el-descriptions-item label="抓拍">{{ current.cameraCount }} 张</el-descriptions-item>
+          <el-descriptions-item label="进入时间">{{ current.startTime }}</el-descriptions-item>
+          <el-descriptions-item label="在线时长">{{ durationText(current.durationSeconds) }}</el-descriptions-item>
+          <el-descriptions-item label="IP">{{ current.ip || '-' }}</el-descriptions-item>
+          <el-descriptions-item label="设备">{{ current.device || '-' }}</el-descriptions-item>
+        </el-descriptions>
+
+        <el-tabs v-model="detailTab" class="detail-tabs">
+          <el-tab-pane label="事件流水" name="event">
+            <el-table v-loading="eventLoading" :data="eventList" border stripe size="small">
+              <el-table-column label="时间" width="160" prop="eventTime" />
+              <el-table-column label="事件" width="140">
+                <template #default="{ row }">
+                  <el-tag size="small" effect="plain" :type="levelType(row.level)">{{ row.eventName || row.eventType }}</el-tag>
+                </template>
+              </el-table-column>
+              <el-table-column label="说明" min-width="200" show-overflow-tooltip>
+                <template #default="{ row }">{{ row.content || '-' }}</template>
+              </el-table-column>
+            </el-table>
+            <pagination
+              v-show="eventTotal > 0"
+              v-model:page="eventQuery.pageNum"
+              v-model:limit="eventQuery.pageSize"
+              :total="eventTotal"
+              @pagination="getEventList"
+            />
+            <el-empty v-if="!eventLoading && eventTotal === 0" description="暂无事件记录" />
+          </el-tab-pane>
+
+          <el-tab-pane label="摄像头抓拍" name="snapshot">
+            <div v-if="snapshotList.length" class="snapshot-wall">
+              <div v-for="item in snapshotList" :key="item.id" class="snapshot-item">
+                <el-image :src="item.url" :preview-src-list="previewList" fit="cover" class="snapshot-img" />
+                <div class="snapshot-time">{{ item.captureTime }}</div>
+              </div>
             </div>
-          </div>
-          <el-empty v-else description="该考生没有抓拍记录（考试未开启摄像头抓拍，或摄像头不可用）" />
-        </el-tab-pane>
-      </el-tabs>
+            <el-empty v-else description="该考生没有抓拍记录（考试未开启摄像头抓拍，或摄像头不可用）" />
+          </el-tab-pane>
+        </el-tabs>
+      </template>
     </el-drawer>
   </div>
 </template>
 
 <script setup lang="ts" name="SystemProctor">
-import { listExam } from '@/api/system/exam';
-import type { ExamVO } from '@/api/system/exam/types';
 import {
   getProctorOverview,
   listProctorEvents,
+  listProctorExamGroups,
   listProctorSessions,
   listProctorSnapshots
 } from '@/api/exam/proctor';
-import type { ProctorEventVO, ProctorOverviewVO, ProctorSessionVO, ProctorSnapshotVO } from '@/api/exam/proctor/types';
+import type { ProctorEventVO, ProctorExamGroupVO, ProctorSessionVO, ProctorSnapshotVO } from '@/api/exam/proctor/types';
 
 const route = useRoute();
 
+/* --------------------------- 第一层：考试分组 --------------------------- */
+
 const loading = ref(false);
-const total = ref(0);
-const list = ref<ProctorSessionVO[]>([]);
-const examOptions = ref<ExamVO[]>([]);
-const overview = ref<ProctorOverviewVO | null>(null);
+const examGroups = ref<ProctorExamGroupVO[]>([]);
 /** 实时刷新：监考就是要盯着正在考的人，默认打开 */
 const realtime = ref(true);
 
-const queryParams = ref({
-  examId: (route.query.examId as string) || '',
+const groupQuery = ref({ keyword: '', onlyRisk: false });
+
+/** 顶部合计：直接对分组求和，不必再单独请求一个总览接口 */
+const sumBy = (pick: (g: ProctorExamGroupVO) => number): number =>
+  examGroups.value.reduce((sum, g) => sum + (pick(g) ?? 0), 0);
+
+/* --------------------------- 第二层：考生列表 --------------------------- */
+
+const drawerVisible = ref(false);
+/** students 考生列表 / detail 考生详情，同一抽屉内切换 */
+const drawerView = ref<'students' | 'detail'>('students');
+const currentExam = ref<{ examId: string; examName: string }>({ examId: '', examName: '' });
+const studentList = ref<ProctorSessionVO[]>([]);
+const studentTotal = ref(0);
+const studentLoading = ref(false);
+const studentQuery = ref({
   keyword: '',
   status: '',
   riskLevel: '',
@@ -231,9 +309,14 @@ const queryParams = ref({
   pageSize: 10
 });
 
-/* --------------------------------- 详情 --------------------------------- */
+const drawerTitle = computed(() =>
+  drawerView.value === 'students'
+    ? `监考 · ${currentExam.value.examName || '考试'}`
+    : `监考详情 · ${current.value.nickName || current.value.account || ''}`
+);
 
-const detailVisible = ref(false);
+/* --------------------------- 第三层：考生详情 --------------------------- */
+
 const detailTab = ref('event');
 const current = ref<ProctorSessionVO>({} as ProctorSessionVO);
 const eventList = ref<ProctorEventVO[]>([]);
@@ -275,76 +358,94 @@ const durationText = (seconds?: number): string => {
 
 /* --------------------------------- 数据加载 --------------------------------- */
 
-/** 考试下拉：只列自己能看的考试（后端按创建人过滤） */
-const loadExamOptions = async () => {
-  try {
-    // listExam 的声明返回类型是数组，实际是 TableDataInfo，这里按实际结构取 rows
-    const res: any = await listExam({ pageNum: 1, pageSize: 200 });
-    examOptions.value = res?.rows ?? [];
-  } catch {
-    examOptions.value = [];
-  }
-};
-
-const loadOverview = async () => {
-  if (!queryParams.value.examId) {
-    overview.value = null;
-    return;
-  }
-  try {
-    const res: any = await getProctorOverview(queryParams.value.examId);
-    overview.value = res?.data ?? null;
-  } catch {
-    // 概览取不到不影响列表
-  }
-};
-
-const getList = async (silent = false) => {
+const getExamGroups = async (silent = false) => {
   if (!silent) {
     loading.value = true;
   }
   try {
-    const params = {
-      examId: queryParams.value.examId || undefined,
-      keyword: queryParams.value.keyword || undefined,
-      status: queryParams.value.status || undefined,
-      riskLevel: queryParams.value.riskLevel || undefined,
-      onlyRisk: queryParams.value.onlyRisk || undefined,
-      pageNum: queryParams.value.pageNum,
-      pageSize: queryParams.value.pageSize
-    };
-    const res: any = await listProctorSessions(params);
-    list.value = res?.rows ?? [];
-    total.value = res?.total ?? 0;
+    const res: any = await listProctorExamGroups({
+      keyword: groupQuery.value.keyword || undefined,
+      onlyRisk: groupQuery.value.onlyRisk || undefined
+    });
+    examGroups.value = res?.data ?? [];
   } finally {
     loading.value = false;
   }
 };
 
-const handleQuery = () => {
-  queryParams.value.pageNum = 1;
-  void getList();
-  void loadOverview();
+const handleGroupQuery = () => {
+  void getExamGroups();
 };
 
-const resetQuery = () => {
-  queryParams.value.keyword = '';
-  queryParams.value.status = '';
-  queryParams.value.riskLevel = '';
-  queryParams.value.onlyRisk = false;
-  handleQuery();
+const resetGroupQuery = () => {
+  groupQuery.value.keyword = '';
+  groupQuery.value.onlyRisk = false;
+  void getExamGroups();
+};
+
+const openStudents = (row: ProctorExamGroupVO) => {
+  currentExam.value = { examId: String(row.examId ?? ''), examName: row.examName ?? '' };
+  studentQuery.value.pageNum = 1;
+  drawerView.value = 'students';
+  drawerVisible.value = true;
+  void getStudentList();
+};
+
+const getStudentList = async (silent = false) => {
+  if (!currentExam.value.examId) {
+    return;
+  }
+  if (!silent) {
+    studentLoading.value = true;
+  }
+  try {
+    const res: any = await listProctorSessions({
+      examId: currentExam.value.examId,
+      keyword: studentQuery.value.keyword || undefined,
+      status: studentQuery.value.status || undefined,
+      riskLevel: studentQuery.value.riskLevel || undefined,
+      onlyRisk: studentQuery.value.onlyRisk || undefined,
+      pageNum: studentQuery.value.pageNum,
+      pageSize: studentQuery.value.pageSize
+    });
+    studentList.value = res?.rows ?? [];
+    studentTotal.value = res?.total ?? 0;
+  } finally {
+    studentLoading.value = false;
+  }
+};
+
+const handleStudentQuery = () => {
+  studentQuery.value.pageNum = 1;
+  void getStudentList();
+};
+
+const resetStudentQuery = () => {
+  studentQuery.value.keyword = '';
+  studentQuery.value.status = '';
+  studentQuery.value.riskLevel = '';
+  studentQuery.value.onlyRisk = false;
+  handleStudentQuery();
 };
 
 const openDetail = (row: ProctorSessionVO) => {
   current.value = row;
   eventQuery.value.pageNum = 1;
-  detailVisible.value = true;
+  detailTab.value = 'event';
+  drawerView.value = 'detail';
   void getEventList();
   void getSnapshotList();
 };
 
-const closeDetail = () => {
-  detailVisible.value = false;
+const backToStudents = () => {
+  drawerView.value = 'students';
+  void getStudentList(true);
+};
+
+const closeDrawer = () => {
+  drawerVisible.value = false;
+  drawerView.value = 'students';
+  studentList.value = [];
 };
 
 const getEventList = async () => {
@@ -378,17 +479,35 @@ const getSnapshotList = async () => {
 let timer: ReturnType<typeof setInterval> | undefined;
 
 onMounted(async () => {
-  await loadExamOptions();
-  await getList();
-  await loadOverview();
+  await getExamGroups();
+  // 从考试管理点「监考记录」进来：直接展开那场考试的考生
+  const examId = (route.query.examId as string) || '';
+  if (examId) {
+    const found = examGroups.value.find((g) => String(g.examId) === examId);
+    if (found) {
+      openStudents(found);
+    } else {
+      // 还没人进场时分组里没有这场，用概览接口取个考试名再展开
+      try {
+        const res: any = await getProctorOverview(examId);
+        openStudents({ examId, examName: res?.data?.examName ?? '' } as ProctorExamGroupVO);
+      } catch {
+        // 取不到就算了，留在考试列表页
+      }
+    }
+  }
   // 10 秒一次静默刷新：不切 loading，页面不会闪
   timer = setInterval(() => {
     if (!realtime.value) {
       return;
     }
-    void getList(true);
-    void loadOverview();
-    if (detailVisible.value) {
+    void getExamGroups(true);
+    if (!drawerVisible.value) {
+      return;
+    }
+    if (drawerView.value === 'students') {
+      void getStudentList(true);
+    } else {
       void getEventList();
       if (detailTab.value === 'snapshot') {
         void getSnapshotList();
@@ -457,6 +576,16 @@ onBeforeUnmount(() => {
 .is-danger {
   font-weight: 600;
   color: #f56c6c;
+}
+
+.is-warn-text {
+  font-weight: 600;
+  color: #e6a23c;
+}
+
+.is-online-text {
+  font-weight: 600;
+  color: #67c23a;
 }
 
 .detail-desc {
