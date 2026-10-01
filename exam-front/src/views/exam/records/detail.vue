@@ -43,7 +43,7 @@
           <el-descriptions-item label="试卷">{{ result.paperName || '-' }}</el-descriptions-item>
           <el-descriptions-item label="考试次数">第 {{ result.attemptNo ?? 1 }} 次</el-descriptions-item>
           <el-descriptions-item label="状态">
-            <el-tag :type="statusTag(result.status).type" size="small" effect="light">{{ statusTag(result.status).label }}</el-tag>
+            <dict-tag :options="examRecordStatusOptions" :value="result.status" />
           </el-descriptions-item>
           <el-descriptions-item label="开考时间">{{ formatTime(result.startTime) }}</el-descriptions-item>
           <el-descriptions-item label="交卷时间">{{ formatTime(result.submitTime) }}</el-descriptions-item>
@@ -75,7 +75,7 @@
         <div v-for="q in shownQuestions" :key="q.questionId" class="question-item">
           <div class="question-head">
             <span class="question-index">第 {{ q.sort }} 题</span>
-            <el-tag size="small" effect="plain">{{ typeLabel(q.questionType) }}</el-tag>
+            <dict-tag :options="questionTypeOptions" :value="q.questionType" />
             <span class="question-score">{{ q.score }} 分</span>
             <span class="question-gained">得 {{ q.gainedScore ?? 0 }} 分</span>
             <el-tag :type="q.correct === 1 ? 'success' : q.correct === 2 ? 'danger' : 'info'" size="small" effect="light">
@@ -105,11 +105,12 @@
 
           <div class="answer-row">
             <span class="answer-label">我的作答</span>
-            <span class="answer-value" :class="{ 'is-empty': !q.myAnswerText }">{{ q.myAnswerText || '未作答' }}</span>
+            <!-- 主观题作答是富文本，必须按 HTML 渲染，否则会看到一堆标签 -->
+            <span class="answer-value" :class="{ 'is-empty': !q.myAnswerText }" v-html="q.myAnswerText || '未作答'"></span>
           </div>
           <div v-if="result.showAnswer" class="answer-row">
             <span class="answer-label">正确答案</span>
-            <span class="answer-value is-standard">{{ q.standardAnswerText || '-' }}</span>
+            <span class="answer-value is-standard" v-html="q.standardAnswerText || '-'"></span>
           </div>
           <div v-if="result.showAnswer && q.analysis" class="analysis-box">
             <div class="analysis-label">解析</div>
@@ -127,21 +128,13 @@
 import '@vueup/vue-quill/dist/vue-quill.snow.css';
 import { getExamResult } from '@/api/exam/answer';
 import type { ExamResultVO, ExamResultQuestionVO } from '@/api/exam/answer/types';
+import { useExamDicts } from '@/hooks/useExamDicts';
 
 const route = useRoute();
 const router = useRouter();
 
-const TYPE_LABEL: Record<string, string> = {
-  SINGLE: '单选题',
-  MULTIPLE: '多选题',
-  JUDGE: '判断题',
-  BLANK: '填空题',
-  SHORT_ANSWER: '简答题',
-  ESSAY: '论述题',
-  CODE: '代码题',
-  UPLOAD_FILE: '文件上传题',
-  MATCH: '匹配题'
-};
+/** 题型与答卷状态都走字典 */
+const { questionTypeOptions, examRecordStatusOptions } = useExamDicts();
 
 // 首屏先显示骨架屏：首次 render 早于 onMounted，loading 给 false 会直接渲染空 result
 const loading = ref(true);
@@ -155,15 +148,6 @@ const shownQuestions = computed<ExamResultQuestionVO[]>(() => {
   const list = result.value?.questions ?? [];
   return onlyWrong.value ? list.filter((q) => q.correct === 2) : list;
 });
-
-const typeLabel = (type: string) => TYPE_LABEL[type] ?? '问答题';
-
-const STATUS_TAG: Record<string, { label: string; type: 'primary' | 'success' | 'warning' | 'info' | 'danger' }> = {
-  answering: { label: '答题中', type: 'warning' },
-  submitted: { label: '已交卷', type: 'success' },
-  expired: { label: '已过期', type: 'info' }
-};
-const statusTag = (status: string) => STATUS_TAG[status] ?? { label: status || '未知', type: 'info' };
 
 const pad = (n: number) => String(n).padStart(2, '0');
 
@@ -363,6 +347,15 @@ onMounted(loadResult);
 .answer-value {
   flex: 1;
   color: #303133;
+
+  /* 富文本作答：quill 会给段落带默认边距，这里还原成与纯文本一致的排版 */
+  :deep(p) {
+    margin: 0;
+  }
+
+  :deep(img) {
+    max-width: 100%;
+  }
 }
 
 .answer-value.is-empty {
