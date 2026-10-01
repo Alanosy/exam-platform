@@ -46,6 +46,21 @@ public class ExamCenterVo implements Serializable {
     /** 限时（分钟），0不限时 */
     private Long duration;
 
+    /**
+     * 服务端当前时间
+     *
+     * <p>前端的倒计时以它为准：考生电脑时钟不准时，按本地时间算的倒计时会提前或滞后，
+     * 到点按钮不亮 / 亮了点进去被后端拒绝都很难受，这里把准绳一起下发。
+     */
+    private Date serverTime;
+
+    /**
+     * 最晚入场时间（开始时间 + 允许的迟到分钟 + 入场缓冲）
+     *
+     * <p>没有开始时间（练习考试）时为空，表示随时可入场。
+     */
+    private Date latestEntryTime;
+
     /** 考试状态 not_start / ongoing / finished / archived */
 //    private String examStatus;
 

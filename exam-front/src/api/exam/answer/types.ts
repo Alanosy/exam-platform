@@ -21,6 +21,12 @@ export interface ExamCenterVO {
   /** 限时（分钟），0 不限时 */
   duration: number;
 
+  /** 服务端当前时间，前端倒计时以它为准，避免本地时钟不准导致按钮早亮/晚亮 */
+  serverTime?: string;
+
+  /** 最晚入场时间（开始时间 + 允许迟到分钟 + 入场缓冲），没有开始时间时为空 */
+  latestEntryTime?: string;
+
   /** 考试状态 not_start / ongoing / finished / archived */
   examStatus: string;
 

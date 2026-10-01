@@ -35,7 +35,25 @@ RuoYi-Cloud-Plus 2.6.2 微服务（Spring Boot 3 + Dubbo + MyBatis-Plus + 多租
 `computed` 是惰性的可以后置；普通函数体里引用后置变量也没事（运行时才调）。
 本项目在 `views/system/exam/edit/index.vue` 上踩过一次（考试编辑页白屏）。
 
+## 考试时间口径（迟到 / 入场）
+
+判定一律走 `ExamRecordServiceImpl` 的三个方法，别再直接比 `startTime`：
+
+- `isNotStarted(now, exam)`：留 `EARLY_GRACE_SECONDS = 10` 秒提前量（抵消考生机器与服务端时钟差）。
+- `latestEntryTime(exam)`：开始时间 + 迟到分钟（`allowLate=1` 才算）+ `ENTRY_GRACE_SECONDS = 60` 秒缓冲。
+  **「不允许迟到」管的是晚到几分钟的人，不是晚一秒就把守时的人踢出去。**
+- `isLate(now, exam)`：超过最晚入场时间才算迟到。
+- `ExamCenterVo` 带 `serverTime`（前端倒计时的准绳，别信本地时钟）与 `latestEntryTime`。
+- 前端 `views/exam/center/index.vue`：未开始显示倒计时，到点先乐观放开按钮再静默刷列表。
+
 ## 其它已确认的坑
+
+- **`async` 函数带默认参数后不能直接当事件处理器**：`@click="loadList"` 会把 MouseEvent
+  传进第一个形参（如 `loadList(silent = false)`），要写 `@click="() => loadList()"`。
+- **考生端链接必须由 `src/utils/joinLink.ts` 的 `buildJoinLink()` 生成**：
+  `VITE_APP_CONTEXT_PATH` 本地是 `'/'`，和 `/exam/join/` 直接字符串拼接会得到
+  `http://host//exam/join/xxx` 双斜杠链接（contextPath 带尾斜杠同理）。工具内部会
+  把 path 段的连续斜杠压成一个。禁止再手写 `${location.origin}${VITE_APP_CONTEXT_PATH}` 拼接。
 
 - 实体继承 `TenantEntity` 时 `BaseEntity` **不含 delFlag**，需自己声明 `private Long delFlag`。
 - `@TableLogic` 会让 `selectOne` / `updateById` 自动带 `is_deleted=0`，要找已删行必须手写 SQL

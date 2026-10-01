@@ -1,6 +1,7 @@
 package org.dromara.exam.answer.service.impl;
 
 import cn.hutool.core.collection.CollUtil;
+import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
@@ -109,6 +110,22 @@ public class ExamRecordServiceImpl implements IExamRecordService {
     /** 答案展示：即时露出，刷题时做完一题立刻看答案与解析 */
     private static final String SHOW_IMMEDIATE = "immediate";
 
+    /**
+     * 入场缓冲（秒）
+     *
+     * <p>考生要等页面刷新、点按钮、请求还要跑一趟，人不可能卡在整秒入场。
+     * 「迟到不可参加」管的是晚到几分钟的人，不是晚一秒就把守时的人踢出去，
+     * 所以不管是否允许迟到，最晚入场时间都在开始时间上再留这段缓冲。
+     */
+    private static final long ENTRY_GRACE_SECONDS = 60L;
+
+    /**
+     * 提前入场余量（秒）
+     *
+     * <p>考生电脑的时钟和服务端差几秒很常见，差这几秒不该把已经守在页面前的人挡住。
+     */
+    private static final long EARLY_GRACE_SECONDS = 10L;
+
     private final ExamRecordMapper baseMapper;
 
     private final ExamAnswerMapper examAnswerMapper;
@@ -171,6 +188,10 @@ public class ExamRecordServiceImpl implements IExamRecordService {
             vo.setDuration(exam.getDuration());
             vo.setExamStatus(exam.getStatus());
             vo.setAttemptCount(records.size());
+            // 把服务端当前时间带回去：前端倒计时以它为准，避免考生电脑时钟不准导致按钮早亮/晚亮
+            vo.setServerTime(now);
+            // 最晚入场时间：前端据此提示「最晚 xx:xx 前入场」
+            vo.setLatestEntryTime(latestEntryTime(exam));
 
             ExamRecord answering = records.stream().filter(r -> ExamRecord.STATUS_ANSWERING.equals(r.getStatus())).findFirst().orElse(null);
             List<ExamRecord> submittedList = records.stream().filter(r -> ExamRecord.STATUS_SUBMITTED.equals(r.getStatus())).toList();
@@ -196,12 +217,14 @@ public class ExamRecordServiceImpl implements IExamRecordService {
             } else if (isAfter(now, exam.getEndTime()) || EXAM_FINISHED.equals(exam.getStatus())) {
                 myStatus = ObjectUtil.isNull(lastSubmitted) ? "ended" : "submitted";
                 tip = ObjectUtil.isNull(lastSubmitted) ? "考试已结束，你未参加" : null;
-            } else if (isBefore(now, exam.getStartTime())) {
+            } else if (isNotStarted(now, exam)) {
                 myStatus = "not_start";
-                tip = "考试尚未开始";
+                tip = "考试尚未开始，开始时间 " + DateUtil.formatDateTime(exam.getStartTime());
             } else if (isLate(now, exam)) {
                 myStatus = ObjectUtil.isNull(lastSubmitted) ? "late" : "submitted";
-                tip = ObjectUtil.isNull(lastSubmitted) ? "已超过允许入场时间，无法参加本次考试" : null;
+                tip = ObjectUtil.isNull(lastSubmitted)
+                    ? "已超过最晚入场时间（" + DateUtil.formatDateTime(latestEntryTime(exam)) + " 前入场），无法参加本次考试"
+                    : null;
             } else if (!canRetry(exam, submittedList.size())) {
                 myStatus = "blocked";
                 tip = "已达到该考试允许的考试次数";
@@ -348,14 +371,14 @@ public class ExamRecordServiceImpl implements IExamRecordService {
         }
 
         Date now = new Date();
-        if (isBefore(now, exam.getStartTime())) {
+        if (isNotStarted(now, exam)) {
             throw new ServiceException("考试尚未开始");
         }
         if (isAfter(now, exam.getEndTime()) || EXAM_FINISHED.equals(exam.getStatus())) {
             throw new ServiceException("考试已结束");
         }
         if (isLate(now, exam)) {
-            throw new ServiceException("已超过允许入场时间，无法参加本次考试");
+            throw new ServiceException("已超过最晚入场时间（" + DateUtil.formatDateTime(latestEntryTime(exam)) + " 前入场），无法参加本次考试");
         }
 
         List<ExamRecord> records = selectMyRecords(examId, account);
@@ -721,28 +744,50 @@ public class ExamRecordServiceImpl implements IExamRecordService {
         return Math.max(0, total - used);
     }
 
-    private boolean isBefore(Date now, Date target) {
-        return ObjectUtil.isNotNull(target) && now.before(target);
-    }
-
     private boolean isAfter(Date now, Date target) {
         return ObjectUtil.isNotNull(target) && now.after(target);
     }
 
     /**
-     * 迟到判定：不允许迟到时过了开考时间就算迟到；允许迟到时超过允许的分钟才算
+     * 是否还没开考
+     *
+     * <p>留 EARLY_GRACE_SECONDS 秒余量，抵消考生机器与服务端之间的时钟差；
+     * 没配开始时间（练习考试）一律当作早已开始。
      */
-    private boolean isLate(Date now, RemoteExamVo exam) {
-        if (ObjectUtil.isNull(exam.getStartTime()) || isBefore(now, exam.getStartTime())) {
+    private boolean isNotStarted(Date now, RemoteExamVo exam) {
+        Date startTime = exam.getStartTime();
+        if (ObjectUtil.isNull(startTime)) {
             return false;
         }
-        boolean allowLate = ObjectUtil.equal(1L, exam.getAllowLate());
-        if (!allowLate) {
-            return true;
+        return now.getTime() < startTime.getTime() - EARLY_GRACE_SECONDS * 1000L;
+    }
+
+    /**
+     * 最晚入场时间
+     *
+     * <p>允许迟到 = 开始时间 + 允许的迟到分钟；不允许迟到 = 开始时间。
+     * 两种情况都再叠加入场缓冲，见 ENTRY_GRACE_SECONDS 的说明。
+     */
+    private Date latestEntryTime(RemoteExamVo exam) {
+        if (ObjectUtil.isNull(exam.getStartTime())) {
+            return null;
         }
-        long lateMinute = ObjectUtil.defaultIfNull(exam.getLateMinute(), 0L);
-        long latest = exam.getStartTime().getTime() + lateMinute * 60 * 1000;
-        return now.getTime() > latest;
+        long lateMinute = ObjectUtil.equal(1L, exam.getAllowLate()) ? ObjectUtil.defaultIfNull(exam.getLateMinute(), 0L) : 0L;
+        return new Date(exam.getStartTime().getTime() + lateMinute * 60_000L + ENTRY_GRACE_SECONDS * 1000L);
+    }
+
+    /**
+     * 迟到判定：超过最晚入场时间才算迟到
+     *
+     * <p>原来「不允许迟到」是过了开考时间就一票否决，结果整点守在页面前的考生
+     * 因为刷新慢一两秒就被判迟到，实际上没人能卡在整秒入场，这里统一改成看最晚入场时间。
+     */
+    private boolean isLate(Date now, RemoteExamVo exam) {
+        Date latest = latestEntryTime(exam);
+        if (ObjectUtil.isNull(latest) || isNotStarted(now, exam)) {
+            return false;
+        }
+        return now.getTime() > latest.getTime();
     }
 
     /**
