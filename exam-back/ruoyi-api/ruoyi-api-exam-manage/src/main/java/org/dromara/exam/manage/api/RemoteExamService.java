@@ -46,6 +46,25 @@ public interface RemoteExamService {
     List<Long> listExamIdsByCreator(Long creatorId);
 
     /**
+     * 查某个白名单考生被指派的考试ID列表
+     *
+     * <p>与「加入链接」相对：白名单考生不用也不可能拿到链接，靠这张名单把它放进考试中心。
+     *
+     * @param userId 考生用户ID
+     * @return 考试ID列表，没有时返回空List
+     */
+    List<Long> listExamIdsByWhiteUser(Long userId);
+
+    /**
+     * 判断某人是否在某场考试的白名单里
+     *
+     * @param examId 考试ID
+     * @param userId 考生用户ID
+     * @return 在名单里返回 true
+     */
+    Boolean isWhiteUser(Long examId, Long userId);
+
+    /**
      * 按账号查询该账号被邀请 / 已加入的考试
      *
      * @param account 账号（登录名 / 手机号 / 邮箱）

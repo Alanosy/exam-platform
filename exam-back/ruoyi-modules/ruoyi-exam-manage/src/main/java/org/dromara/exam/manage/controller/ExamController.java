@@ -21,9 +21,12 @@ import org.dromara.common.log.enums.BusinessType;
 import org.dromara.common.excel.utils.ExcelUtil;
 import org.dromara.exam.manage.domain.vo.ExamVo;
 import org.dromara.exam.manage.domain.vo.ExamJoinVo;
+import org.dromara.exam.manage.domain.vo.ExamWhiteUserVo;
 import org.dromara.exam.manage.domain.bo.ExamBo;
 import org.dromara.exam.manage.domain.bo.ExamJoinBo;
+import org.dromara.exam.manage.domain.bo.ExamUserBo;
 import org.dromara.exam.manage.service.IExamService;
+import org.dromara.exam.manage.service.IExamUserService;
 import org.dromara.common.mybatis.core.page.TableDataInfo;
 
 /**
@@ -40,6 +43,8 @@ import org.dromara.common.mybatis.core.page.TableDataInfo;
 public class ExamController extends BaseController {
 
     private final IExamService examService;
+
+    private final IExamUserService examUserService;
 
     /**
      * 查询考试主列表
@@ -95,6 +100,40 @@ public class ExamController extends BaseController {
     @PutMapping()
     public R<Void> edit(@Validated(EditGroup.class) @RequestBody ExamBo bo) {
         return toAjax(examService.updateByBo(bo));
+    }
+
+    /**
+     * 查询考试白名单考生
+     *
+     * <p>白名单模式下，只有这些考生能在考试中心看到本场考试。
+     *
+     * @param id 考试主键
+     */
+    @SaCheckPermission("system:exam:query")
+    @GetMapping("/{id}/whiteUsers")
+    public R<List<ExamWhiteUserVo>> listWhiteUsers(@NotNull(message = "主键不能为空") @PathVariable("id") Long id) {
+        return R.ok(examUserService.queryWhiteUsers(id));
+    }
+
+    /**
+     * 保存考试白名单
+     *
+     * <p>整体覆盖：传入的考生ID列表就是最终名单，不在列表里的原有考生会被移出。
+     *
+     * @param id 考试主键
+     * @param bo 考生用户ID列表
+     */
+    @SaCheckPermission("system:exam:edit")
+    @Log(title = "考试白名单", businessType = BusinessType.UPDATE)
+    @PutMapping("/{id}/whiteUsers")
+    public R<Void> saveWhiteUsers(@NotNull(message = "主键不能为空") @PathVariable("id") Long id,
+                                  @RequestBody ExamUserBo bo) {
+        if (ObjectUtil.isNull(bo)) {
+            bo = new ExamUserBo();
+        }
+        bo.setExamId(id);
+        examUserService.saveWhiteUsers(bo);
+        return R.ok();
     }
 
     /**

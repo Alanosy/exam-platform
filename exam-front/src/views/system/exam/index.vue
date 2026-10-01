@@ -80,9 +80,13 @@
             <span>{{ scope.row.duration ? scope.row.duration + ' 分钟' : '不限时' }}</span>
           </template>
         </el-table-column>
-        <el-table-column label="参加方式" align="center" prop="participantType" width="110">
+        <el-table-column label="参加方式" align="center" prop="participantType" width="120">
           <template #default="scope">
             <dict-tag :options="examParticipantTypeOptions" :value="scope.row.participantType" />
+            <!-- 白名单考试直接把人数跟在方式后面，不用再点进去才知道有没有人选 -->
+            <div v-if="scope.row.participantType === 'white'" class="mt-1 text-xs text-gray-400">
+              {{ scope.row.whiteUserCount ?? 0 }} 人
+            </div>
           </template>
         </el-table-column>
         <el-table-column label="状态" align="center" prop="status" width="100">

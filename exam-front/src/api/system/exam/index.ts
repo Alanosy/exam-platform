@@ -1,6 +1,6 @@
 import request from '@/utils/request';
 import { AxiosPromise } from 'axios';
-import { ExamVO, ExamForm, ExamQuery, ExamJoinVO } from '@/api/system/exam/types';
+import { ExamVO, ExamForm, ExamQuery, ExamJoinVO, ExamWhiteUserVO } from '@/api/system/exam/types';
 
 /**
  * 查询考试主列表
@@ -83,6 +83,30 @@ export const joinExam = (code: string, password?: string): AxiosPromise<number> 
     url: `/exam/join/${code}`,
     method: 'post',
     data: { password }
+  });
+};
+
+/**
+ * 查询考试白名单考生
+ * @param examId 考试ID
+ */
+export const listExamWhiteUsers = (examId: string | number): AxiosPromise<ExamWhiteUserVO[]> => {
+  return request({
+    url: `/exam/${examId}/whiteUsers`,
+    method: 'get'
+  });
+};
+
+/**
+ * 保存考试白名单（整体覆盖：不在列表里的原有考生会被移出）
+ * @param examId 考试ID
+ * @param userIds 考生用户ID列表
+ */
+export const saveExamWhiteUsers = (examId: string | number, userIds: Array<string | number>) => {
+  return request({
+    url: `/exam/${examId}/whiteUsers`,
+    method: 'put',
+    data: { examId, userIds }
   });
 };
 

@@ -12,8 +12,10 @@ import org.dromara.exam.manage.api.domain.RemoteExamInviteVo;
 import org.dromara.exam.manage.api.domain.RemoteExamVo;
 import org.dromara.exam.manage.domain.Exam;
 import org.dromara.exam.manage.domain.ExamInvite;
+import org.dromara.exam.manage.domain.ExamUser;
 import org.dromara.exam.manage.mapper.ExamInviteMapper;
 import org.dromara.exam.manage.mapper.ExamMapper;
+import org.dromara.exam.manage.mapper.ExamUserMapper;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -33,6 +35,8 @@ public class RemoteExamServiceImpl implements RemoteExamService {
     private final ExamMapper examMapper;
 
     private final ExamInviteMapper examInviteMapper;
+
+    private final ExamUserMapper examUserMapper;
 
     /**
      * 查询考试信息
@@ -84,6 +88,37 @@ public class RemoteExamServiceImpl implements RemoteExamService {
                 .eq(Exam::getCreatorId, creatorId)
                 .eq(Exam::getDelFlag, 0L));
         return exams.stream().map(Exam::getId).toList();
+    }
+
+    /**
+     * 查某个人作为白名单考生被指派的考试ID列表
+     */
+    @Override
+    public List<Long> listExamIdsByWhiteUser(Long userId) {
+        if (ObjectUtil.isNull(userId)) {
+            return List.of();
+        }
+        List<ExamUser> list = examUserMapper.selectList(
+            Wrappers.lambdaQuery(ExamUser.class)
+                .select(ExamUser::getExamId)
+                .eq(ExamUser::getUserId, userId));
+        return list.stream().map(ExamUser::getExamId).filter(ObjectUtil::isNotNull).distinct().toList();
+    }
+
+    /**
+     * 判断某人是否在某场考试的白名单里
+     */
+    @Override
+    public Boolean isWhiteUser(Long examId, Long userId) {
+        if (ObjectUtil.isNull(examId) || ObjectUtil.isNull(userId)) {
+            return false;
+        }
+        ExamUser exist = examUserMapper.selectOne(
+            Wrappers.lambdaQuery(ExamUser.class)
+                .eq(ExamUser::getExamId, examId)
+                .eq(ExamUser::getUserId, userId)
+                .last("limit 1"));
+        return ObjectUtil.isNotNull(exist);
     }
 
     /**

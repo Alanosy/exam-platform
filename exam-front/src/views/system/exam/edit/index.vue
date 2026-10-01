@@ -137,6 +137,35 @@
               />
             </el-form-item>
           </template>
+
+          <!-- 白名单：按部门挑人，只有挑到的人能在考试中心看到本场考试 -->
+          <template v-else>
+            <el-form-item label="考试考生">
+              <div class="w-full">
+                <div class="mb-[8px] flex items-center gap-2">
+                  <el-button icon="User" @click="openUserSelect">选择考生</el-button>
+                  <el-button v-if="whiteUsers.length" plain icon="Delete" @click="clearWhiteUsers">清空</el-button>
+                  <span class="text-xs text-gray-400">
+                    {{ whiteUsers.length ? `已选择 ${whiteUsers.length} 人，保存后生效` : '按部门筛选出考生后勾选，可跨页累加' }}
+                  </span>
+                </div>
+                <el-table v-if="whiteUsers.length" :data="whiteUsers" border size="small" max-height="260" row-key="userId">
+                  <el-table-column label="姓名" prop="nickName" min-width="120" show-overflow-tooltip />
+                  <el-table-column label="登录账号" prop="userName" min-width="130" show-overflow-tooltip />
+                  <el-table-column label="部门" min-width="140" show-overflow-tooltip>
+                    <template #default="scope">{{ scope.row.deptName || '-' }}</template>
+                  </el-table-column>
+                  <el-table-column label="手机号" prop="phonenumber" width="130" align="center" />
+                  <el-table-column label="操作" width="80" align="center">
+                    <template #default="scope">
+                      <el-button link type="danger" @click="removeWhiteUser(scope.$index)">移除</el-button>
+                    </template>
+                  </el-table-column>
+                </el-table>
+                <div v-else class="text-xs text-gray-400">还没有选择考生：白名单考试没有加入链接，未选中的考生看不到也进不了这场考试</div>
+              </div>
+            </el-form-item>
+          </template>
         </el-form>
       </el-card>
 
@@ -318,16 +347,21 @@
         </div>
       </div>
     </template>
+
+    <!-- 选人弹窗：左侧部门树、右侧用户表，勾选后回填到白名单 -->
+    <UserSelect ref="userSelectRef" :multiple="true" :data="whiteUserIds" @confirm-call-back="onUserSelected"></UserSelect>
   </div>
 </template>
 
 <script setup name="ExamEdit" lang="ts">
 import { useRoute, useRouter } from 'vue-router';
 import type { FormRules } from 'element-plus';
-import { getExam, addExam, updateExam, refreshJoinCode } from '@/api/system/exam';
-import { ExamForm, AntiCheatConfig } from '@/api/system/exam/types';
+import { getExam, addExam, updateExam, refreshJoinCode, listExamWhiteUsers, saveExamWhiteUsers } from '@/api/system/exam';
+import { ExamForm, AntiCheatConfig, ExamWhiteUserVO } from '@/api/system/exam/types';
 import { listPaper } from '@/api/system/paper';
 import { PaperVO } from '@/api/system/paper/types';
+import { UserVO } from '@/api/system/user/types';
+import UserSelect from '@/components/UserSelect/index.vue';
 import { listCertificateOptions } from '@/api/exam/cert';
 import type { CertificateOptionVO } from '@/api/exam/cert/types';
 import { useExamDicts } from '@/hooks/useExamDicts';
@@ -547,6 +581,52 @@ const handleRefreshJoinCode = async () => {
   proxy?.$modal.msgSuccess('已生成新的加入链接');
 };
 
+/* ---------------------------------- 白名单考生 ---------------------------------- */
+
+const userSelectRef = ref<InstanceType<typeof UserSelect>>();
+
+/** 已选考生：只留页面展示用的快照，提交时只把 userId 传给后端 */
+const whiteUsers = ref<UserVO[]>([]);
+
+/** 已选考生ID，给 UserSelect 回显勾选状态 */
+const whiteUserIds = computed<string[]>(() => whiteUsers.value.map((item) => String(item.userId)));
+
+const openUserSelect = () => userSelectRef.value?.open();
+
+/** UserSelect 点确定：按 userId 去重后追加，避免重复勾选同一个人 */
+const onUserSelected = (users: UserVO[]) => {
+  const picked = users ?? [];
+  const exist = new Set(whiteUserIds.value);
+  whiteUsers.value = [...whiteUsers.value, ...picked.filter((item) => item && item.userId !== undefined && !exist.has(String(item.userId)))];
+};
+
+const clearWhiteUsers = () => {
+  whiteUsers.value = [];
+};
+
+const removeWhiteUser = (index: number) => {
+  whiteUsers.value.splice(index, 1);
+};
+
+/** 编辑已有考试时把名单拉回来，拉不到就让管理员重选，不影响考试本体 */
+const loadWhiteUsers = async (id: string) => {
+  try {
+    const res = await listExamWhiteUsers(id);
+    whiteUsers.value = (res.data ?? []).map(
+      (item: ExamWhiteUserVO) =>
+        ({
+          userId: item.userId,
+          userName: item.userName,
+          nickName: item.nickName,
+          deptName: item.deptName,
+          phonenumber: item.phonenumber
+        } as UserVO)
+    );
+  } catch {
+    whiteUsers.value = [];
+  }
+};
+
 /* ---------------------------------- 数据回显 ---------------------------------- */
 
 const parseAntiCheat = (json?: string) => {
@@ -573,6 +653,7 @@ const parseAntiCheat = (json?: string) => {
 const initPage = async () => {
   Object.assign(form, { ...initFormData });
   parseAntiCheat(undefined);
+  whiteUsers.value = [];
   step.value = 0;
   basicFormRef.value?.clearValidate();
 
@@ -603,6 +684,10 @@ const initPage = async () => {
     certId: data.certId ?? undefined
   });
   parseAntiCheat(data.antiCheatConfig);
+  // 白名单考试要先把名单拉回来；公开链接考试用不上名单，留空即可
+  if (form.participantType === 'white') {
+    await loadWhiteUsers(id);
+  }
 };
 
 /* ----------------------------------- 提交 ----------------------------------- */
@@ -649,6 +734,13 @@ const submitForm = async (status: string) => {
   }
 
   const isPublic = form.participantType === 'public';
+  const isWhite = form.participantType === 'white';
+  // 白名单考试发出去却没有考生的话，没有任何人能看到它，所以发布前强制先选人
+  if (isWhite && whiteUsers.value.length === 0 && status === 'ongoing') {
+    proxy?.$modal.msgError('请先选择参加本场考试的考生，再发布');
+    return;
+  }
+
   const payload: ExamForm = {
     ...form,
     status,
@@ -669,10 +761,18 @@ const submitForm = async (status: string) => {
 
   savingAction.value = status === 'ongoing' ? 'ongoing' : 'not_start';
   try {
-    if (form.id) {
+    let id: string | number | undefined = form.id;
+    if (id) {
       await updateExam(payload);
     } else {
-      await addExam(payload);
+      const res = await addExam(payload);
+      // 雪花 ID 19 位超过 Number.MAX_SAFE_INTEGER，一律按字符串透传
+      id = String(res.data);
+      form.id = id;
+    }
+    // 白名单得先有考试ID才挂得上去，所以排在考试保存之后
+    if (isWhite && id) {
+      await saveExamWhiteUsers(id, whiteUserIds.value);
     }
     proxy?.$modal.msgSuccess(status === 'ongoing' ? '已保存并发布' : '保存成功');
     // 保存成功后返回列表页（与试卷组卷页保持一致）

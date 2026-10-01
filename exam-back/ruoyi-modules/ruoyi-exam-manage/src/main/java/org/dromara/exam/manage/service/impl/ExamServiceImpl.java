@@ -5,6 +5,7 @@ import org.dromara.common.core.utils.StringUtils;
 import org.dromara.common.satoken.utils.LoginHelper;
 import org.dromara.common.core.exception.ServiceException;
 import cn.hutool.core.util.ObjectUtil;
+import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.RandomUtil;
 import org.dromara.common.mybatis.core.page.TableDataInfo;
 import org.dromara.common.mybatis.core.page.PageQuery;
@@ -23,6 +24,7 @@ import org.dromara.exam.manage.domain.ExamInvite;
 import org.dromara.exam.manage.mapper.ExamMapper;
 import org.dromara.exam.manage.mapper.ExamInviteMapper;
 import org.dromara.exam.manage.service.IExamService;
+import org.dromara.exam.manage.service.IExamUserService;
 
 import java.util.List;
 import java.util.Map;
@@ -56,6 +58,8 @@ public class ExamServiceImpl implements IExamService {
 
     private final ExamInviteMapper examInviteMapper;
 
+    private final IExamUserService examUserService;
+
     /**
      * 查询考试主
      *
@@ -78,6 +82,7 @@ public class ExamServiceImpl implements IExamService {
     public TableDataInfo<ExamVo> queryPageList(ExamBo bo, PageQuery pageQuery) {
         LambdaQueryWrapper<Exam> lqw = buildQueryWrapper(bo);
         Page<ExamVo> result = baseMapper.selectVoPage(pageQuery.build(), lqw);
+        fillWhiteUserCount(result.getRecords());
         return TableDataInfo.build(result);
     }
 
@@ -90,7 +95,27 @@ public class ExamServiceImpl implements IExamService {
     @Override
     public List<ExamVo> queryList(ExamBo bo) {
         LambdaQueryWrapper<Exam> lqw = buildQueryWrapper(bo);
-        return baseMapper.selectVoList(lqw);
+        List<ExamVo> list = baseMapper.selectVoList(lqw);
+        fillWhiteUserCount(list);
+        return list;
+    }
+
+    /**
+     * 回填白名单人数
+     *
+     * <p>人数不在 exam 表里，一次 group by 统计出来再分发，避免一行一次查询；
+     * 统计失败（远程异常等）不影响主流程，只是人数显示为 0。
+     */
+    private void fillWhiteUserCount(List<ExamVo> vos) {
+        if (CollUtil.isEmpty(vos)) {
+            return;
+        }
+        List<Long> examIds = vos.stream().map(ExamVo::getId).filter(ObjectUtil::isNotNull).distinct().toList();
+        if (CollUtil.isEmpty(examIds)) {
+            return;
+        }
+        Map<Long, Long> countMap = examUserService.countMapByExamIds(examIds);
+        vos.forEach(vo -> vo.setWhiteUserCount(countMap.getOrDefault(vo.getId(), 0L)));
     }
 
     private LambdaQueryWrapper<Exam> buildQueryWrapper(ExamBo bo) {
@@ -391,6 +416,11 @@ public class ExamServiceImpl implements IExamService {
         if(isValid){
             //TODO 做一些业务上的校验,判断是否需要校验
         }
-        return baseMapper.deleteByIds(ids) > 0;
+        boolean flag = baseMapper.deleteByIds(ids) > 0;
+        if (flag) {
+            // 白名单跟着考试一起清，否则会留下查不到考试的孤儿名单
+            examUserService.deleteByExamIds(ids);
+        }
+        return flag;
     }
 }
