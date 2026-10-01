@@ -28,6 +28,9 @@ public class ProctorReportVo implements Serializable {
     /** 当前退出全屏次数 */
     private Integer exitFullscreenCount;
 
+    /** 当前抓拍张数 */
+    private Integer cameraCount;
+
     /** 允许切屏次数（0 不限制） */
     private Integer maxSwitch;
 

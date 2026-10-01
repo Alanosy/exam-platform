@@ -55,13 +55,12 @@ public class ProctorReportController extends BaseController {
     }
 
     /**
-     * 心跳：告诉监考端「人还在」
+     * 心跳：告诉监考端「人还在」，并把服务端最新计数带回给考生端
      */
     @SaCheckLogin
     @PostMapping("/session/heartbeat/{sessionId}")
-    public R<Void> heartbeat(@PathVariable Long sessionId) {
-        proctorService.heartbeat(sessionId);
-        return R.ok();
+    public R<ProctorReportVo> heartbeat(@PathVariable Long sessionId) {
+        return R.ok(proctorService.heartbeat(sessionId));
     }
 
     /**

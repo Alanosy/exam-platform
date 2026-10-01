@@ -41,11 +41,15 @@ public interface IProctorService {
     ProctorReportVo report(Long sessionId, List<ProctorEventBo> events);
 
     /**
-     * 心跳：只刷新最近活跃时间，用来判断考生还在不在
+     * 心跳：刷新最近活跃时间，用来判断考生还在不在
+     *
+     * <p>顺带把服务端的最新计数带回去：考生端刷新页面后本地计数是从 0 开始的，
+     * 靠心跳把它拉回真实值，页面上「切屏 / 粘贴 / 退出全屏 / 抓拍」才不会看着像被清零。
      *
      * @param sessionId 会话ID
+     * @return 服务端当前计数与是否已达到强制交卷条件
      */
-    void heartbeat(Long sessionId);
+    ProctorReportVo heartbeat(Long sessionId);
 
     /**
      * 结束会话（交卷 / 强制交卷）

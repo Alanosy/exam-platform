@@ -84,6 +84,36 @@ export function useProctor(options: UseProctorOptions) {
   /** 同类事件在很短时间内只报一次，避免一次切屏被算成好几次 */
   const throttled = (lastAt: number, gap: number): boolean => Date.now() - lastAt < gap;
 
+  /**
+   * 用服务端计数覆盖本地计数
+   *
+   * <p>页面刷新后本地计数是从 0 重新开始的，而真实次数在服务端会话上。
+   * 开考时用会话里的值初始化，之后每次上报 / 心跳再校准一次，
+   * 否则考生一刷新就看到「切屏 0 次」，像是被清零了。
+   */
+  const syncCounts = (data?: {
+    switchCount?: number;
+    pasteCount?: number;
+    exitFullscreenCount?: number;
+    cameraCount?: number;
+    exceed?: boolean;
+    exceedReason?: string;
+  }): void => {
+    if (!data) {
+      return;
+    }
+    switchCount.value = data.switchCount ?? switchCount.value;
+    pasteCount.value = data.pasteCount ?? pasteCount.value;
+    exitFullscreenCount.value = data.exitFullscreenCount ?? exitFullscreenCount.value;
+    cameraCount.value = data.cameraCount ?? cameraCount.value;
+    if (data.exceed && !exceeded) {
+      exceeded = true;
+      warn(data.exceedReason || '违规达到上限，系统已自动交卷');
+      options.onExceed?.(data.exceedReason || '违规达到上限，系统已自动交卷');
+    }
+  };
+
+  /** 把攒下的事件发出去，并用服务端返回的真实计数校准本地显示 */
   const flush = async (): Promise<void> => {
     if (!sessionId.value || queue.length === 0) {
       return;
@@ -91,17 +121,7 @@ export function useProctor(options: UseProctorOptions) {
     const events = queue.splice(0, queue.length);
     try {
       const res = await reportProctorEvents(sessionId.value, events);
-      const data = res.data;
-      if (data) {
-        switchCount.value = data.switchCount ?? switchCount.value;
-        pasteCount.value = data.pasteCount ?? pasteCount.value;
-        exitFullscreenCount.value = data.exitFullscreenCount ?? exitFullscreenCount.value;
-        if (data.exceed && !exceeded) {
-          exceeded = true;
-          warn(data.exceedReason || '违规达到上限，系统已自动交卷');
-          options.onExceed?.(data.exceedReason || '违规达到上限，系统已自动交卷');
-        }
-      }
+      syncCounts(res.data);
     } catch {
       // 上报失败不能打断答题：事件丢了就丢了，下一次心跳还会带上新的
     }
@@ -416,9 +436,13 @@ export function useProctor(options: UseProctorOptions) {
     wasFullscreen = inFullscreenNow();
     flushTimer = setInterval(() => void flush(), 5_000);
     heartbeatTimer = setInterval(() => {
-      if (sessionId.value && !stopped) {
-        void proctorHeartbeat(sessionId.value).catch(() => undefined);
+      if (!sessionId.value || stopped) {
+        return;
       }
+      // 心跳顺带把服务端计数带回来：本地计数可能因为刷新页面从 0 重新起算
+      void proctorHeartbeat(sessionId.value)
+        .then((res) => syncCounts(res.data))
+        .catch(() => undefined);
     }, 30_000);
     // 开发者工具与全屏状态一起查：两者都是「事件不一定来」的状态类检测
     devtoolTimer = setInterval(() => {
@@ -461,6 +485,9 @@ export function useProctor(options: UseProctorOptions) {
       if (!sessionId.value) {
         return;
       }
+      // 续答 / 刷新页面时会话是复用的，先把服务端已有的计数拿回来，
+      // 否则本地从 0 起算，考生会以为自己之前的记录被清零了
+      syncCounts(res.data);
       started = true;
       bind();
       setupMultitab();

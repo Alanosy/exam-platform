@@ -76,6 +76,7 @@ export interface ProctorReportVO {
   switchCount: number;
   pasteCount: number;
   exitFullscreenCount: number;
+  cameraCount: number;
   maxSwitch: number;
   maxPaste: number;
   maxExitFullscreen: number;

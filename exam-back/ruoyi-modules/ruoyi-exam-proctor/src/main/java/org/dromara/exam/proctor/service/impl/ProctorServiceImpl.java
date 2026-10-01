@@ -198,10 +198,10 @@ public class ProctorServiceImpl implements IProctorService {
     }
 
     @Override
-    public void heartbeat(Long sessionId) {
+    public ProctorReportVo heartbeat(Long sessionId) {
         ProctorSession session = sessionMapper.selectById(sessionId);
         if (ObjectUtil.isNull(session)) {
-            return;
+            return null;
         }
         LambdaUpdateWrapper<ProctorSession> uw = Wrappers.lambdaUpdate(ProctorSession.class)
             .set(ProctorSession::getLastActiveTime, new Date())
@@ -212,6 +212,8 @@ public class ProctorServiceImpl implements IProctorService {
             uw.set(ProctorSession::getStatus, ProctorSession.STATUS_ONLINE);
         }
         sessionMapper.update(null, uw);
+        // 把服务端真实计数带回去，前端刷新页面后靠它把本地计数拉回来
+        return buildReport(sessionMapper.selectById(sessionId), 0);
     }
 
     @Override
@@ -474,6 +476,7 @@ public class ProctorServiceImpl implements IProctorService {
         vo.setSwitchCount(session.getSwitchCount());
         vo.setPasteCount(session.getPasteCount());
         vo.setExitFullscreenCount(session.getExitFullscreenCount());
+        vo.setCameraCount(session.getCameraCount());
         vo.setMaxSwitch(session.getMaxSwitch());
         vo.setMaxPaste(session.getMaxPaste());
         vo.setMaxExitFullscreen(session.getMaxExitFullscreen());

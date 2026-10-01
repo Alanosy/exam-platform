@@ -29,8 +29,8 @@ export function reportProctorEvents(sessionId: string, events: ProctorEventBO[])
   });
 }
 
-/** 心跳 */
-export function proctorHeartbeat(sessionId: string): AxiosPromise<null> {
+/** 心跳：顺带把服务端最新的计数带回来，刷新页面后靠它把本地计数拉回真实值 */
+export function proctorHeartbeat(sessionId: string): AxiosPromise<ProctorReportVO> {
   return request({
     url: `/proctor/session/heartbeat/${sessionId}`,
     method: 'post'
