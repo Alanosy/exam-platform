@@ -147,7 +147,7 @@
               v-for="(q, idx) in questions"
               :key="q.questionId"
               class="card-cell"
-              :class="{ 'is-current': idx === currentIndex, 'is-done': !!answers[q.questionId], 'is-flagged': flagged.has(q.questionId) }"
+              :class="{ 'is-current': idx === currentIndex, 'is-done': !!answers[q.questionId], 'is-flagged': flagged.has(String(q.questionId)) }"
               @click="jump(idx)"
             >
               {{ idx + 1 }}

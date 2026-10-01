@@ -20,11 +20,6 @@
       </template>
 
       <el-form :model="queryParams" :inline="true" label-width="68px">
-        <el-form-item label="题型">
-          <el-select v-model="queryParams.questionType" placeholder="全部题型" clearable style="width: 140px">
-            <el-option v-for="item in questionTypeOptions" :key="item.value" :label="item.label" :value="item.value" />
-          </el-select>
-        </el-form-item>
         <el-form-item label="掌握状态">
           <el-select v-model="queryParams.masterStatus" placeholder="全部状态" clearable style="width: 140px">
             <el-option v-for="item in wrongMasterStatusOptions" :key="item.value" :label="item.label" :value="item.value" />

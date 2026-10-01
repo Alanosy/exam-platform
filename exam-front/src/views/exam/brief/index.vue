@@ -67,6 +67,7 @@ const errorMsg = ref('');
 const info = ref<ExamCenterVO>({
   examId: '',
   examName: '',
+  examType: '',
   examDesc: '',
   startTime: '',
   endTime: '',
