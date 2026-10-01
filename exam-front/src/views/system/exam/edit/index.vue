@@ -12,8 +12,9 @@
       </div>
     </div>
 
-    <el-steps :active="step" finish-status="success" align-center class="mb-[16px]">
-      <el-step title="基本信息" description="名称、试卷、考试时间" />
+    <!-- 步骤条支持点回上一步；往前跳必须经过「下一步」的校验，所以只能往回点 -->
+    <el-steps :active="step" finish-status="success" align-center class="mb-[16px] exam-steps">
+      <el-step title="基本信息" description="名称、试卷、考试时间" :class="{ 'is-back': step > 0 }" @click="goStep(0)" />
       <el-step title="参加方式与规则" description="参加方式、加入链接、防作弊" />
     </el-steps>
 
@@ -88,7 +89,7 @@
           <el-input v-model="form.examDesc" type="textarea" :rows="3" maxlength="500" show-word-limit placeholder="请输入考试描述" />
         </el-form-item>
       </el-form>
-      <div class="text-right">
+      <div class="flex justify-end">
         <el-button type="primary" @click="nextStep">下一步：参加方式与规则</el-button>
       </div>
     </el-card>
@@ -202,6 +203,15 @@
           </el-row>
         </el-form>
       </el-card>
+
+      <!-- 第二步底部操作栏：能退回上一步，也能就地保存，不必再滚回页头 -->
+      <div class="flex items-center justify-between">
+        <el-button plain icon="ArrowLeft" @click="prevStep">上一步：基本信息</el-button>
+        <div class="flex items-center gap-2">
+          <el-button plain :loading="savingAction === 'not_start'" :disabled="saving" @click="submitForm('not_start')">保存</el-button>
+          <el-button type="primary" :loading="savingAction === 'ongoing'" :disabled="saving" @click="submitForm('ongoing')">保存并发布</el-button>
+        </div>
+      </div>
     </template>
   </div>
 </template>
@@ -456,6 +466,23 @@ const nextStep = async () => {
   }
 };
 
+/** 回到上一步：已填的内容都在同一个 form 里，退回不会丢 */
+const prevStep = () => {
+  step.value = 0;
+};
+
+/**
+ * 点步骤条跳转
+ *
+ * <p>只允许往回跳：往前必须经过「下一步」的校验，否则基本信息没填全就能进第二步。
+ */
+const goStep = (target: number) => {
+  if (target >= step.value) {
+    return;
+  }
+  step.value = target;
+};
+
 const submitForm = async (status: string) => {
   // 还在第一步时，先校验并跳到第二步，让考生规则也确认一遍
   if (step.value === 0) {
@@ -529,3 +556,10 @@ onMounted(async () => {
   await initPage();
 });
 </script>
+
+<style scoped lang="scss">
+/* 步骤条上能点回去的那一步给个手型，否则看不出可以点 */
+.exam-steps :deep(.el-step.is-back) {
+  cursor: pointer;
+}
+</style>
