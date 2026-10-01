@@ -113,15 +113,9 @@
           </div>
 
           <!-- 主观题用富文本：可以贴图、加粗、列公式，跟出卷时看到的排版一致 -->
-          <div v-else-if="!isCode" class="text-group">
-            <editor
-              v-model="textAnswer"
-              :simple="true"
-              :height="240"
-              :min-height="180"
-              placeholder="请输入你的作答，支持富文本与图片"
-              @blur="saveText"
-            />
+          <!-- quill 内部元素没有可冒泡的 blur，用外层 div 的 focusout 才能兜住「点别处」时的保存 -->
+          <div v-else-if="!isCode" class="text-group" @focusout="saveText">
+            <editor v-model="textAnswer" :simple="true" :height="240" :min-height="180" placeholder="请输入你的作答，支持富文本与图片" />
             <div class="text-tip">主观题作答会在离开本题或交卷时保存</div>
           </div>
           <!-- 代码题保持纯文本，富文本会破坏缩进与语法字符 -->
@@ -224,12 +218,17 @@ const isCode = computed(() => current.value?.questionType === 'CODE');
 
 const typeLabel = (type: string) => questionTypeLabel(type);
 
-/** 富文本编辑器返回 HTML，要去标签后再判断是否真的写了内容 */
-const plainOf = (html: string): string => {
-  if (!html) return '';
+/**
+ * 富文本是否真的写了内容。
+ * quill 的空值是 `<p><br></p>`，textContent 看起来是空的；
+ * 只贴图不写字时 textContent 也是空的，所以还得单独看媒体标签。
+ */
+const richHasContent = (html: string): boolean => {
+  if (!html) return false;
   const div = document.createElement('div');
   div.innerHTML = html;
-  return (div.textContent ?? '').replace(/\s+/g, '').trim();
+  if (div.querySelector('img, video, audio, iframe')) return true;
+  return (div.textContent ?? '').replace(/[\s\u200b\ufeff]/g, '').length > 0;
 };
 
 const pad = (n: number) => String(n).padStart(2, '0');
@@ -294,7 +293,7 @@ const persistCurrent = async (silent = true) => {
     content = JSON.stringify({ blanks: blankAnswers.value.map((text) => ({ text: text ?? '' })) });
   } else {
     // 富文本空内容会残留 <p><br></p>，要去标签后再判空
-    if (!plainOf(textAnswer.value)) return;
+    if (!richHasContent(textAnswer.value)) return;
     content = JSON.stringify({ text: textAnswer.value });
   }
   if (answers[question.questionId] === content) return;

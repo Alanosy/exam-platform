@@ -216,12 +216,25 @@ const result = ref<WrongReviewResultVO | null>(null);
 const current = computed<WrongQuestionVO | null>(() => questions.value[currentIndex.value] ?? null);
 const isSingleChoice = computed(() => current.value?.questionType === 'SINGLE' || current.value?.questionType === 'JUDGE');
 
-/** 富文本编辑器返回的是 HTML，要去标签后再判断是否真的写了东西 */
+/** 富文本去标签后的纯文本，用于与正确答案做比对 */
 const plainOf = (html: string): string => {
   if (!html) return '';
   const div = document.createElement('div');
   div.innerHTML = html;
-  return (div.textContent ?? '').replace(/\s+/g, '').trim();
+  return (div.textContent ?? '').replace(/[\s\u200b\ufeff]/g, '');
+};
+
+/**
+ * 富文本是否真的写了内容。
+ * quill 的空值是 `<p><br></p>`，只贴图不写字时 textContent 也是空的，
+ * 两种情况都不能当成「未作答」。
+ */
+const richHasContent = (html: string): boolean => {
+  if (!html) return false;
+  const div = document.createElement('div');
+  div.innerHTML = html;
+  if (div.querySelector('img, video, audio, iframe')) return true;
+  return plainOf(html).length > 0;
 };
 
 const canSubmit = computed(() => {
@@ -229,7 +242,7 @@ const canSubmit = computed(() => {
   if (type === 'SINGLE' || type === 'JUDGE') return !!choice.value;
   if (type === 'MULTIPLE') return choices.value.length > 0;
   if (type === 'BLANK') return blanks.value.some((item) => !!item && item.trim() !== '');
-  return plainOf(textAnswer.value).length > 0;
+  return richHasContent(textAnswer.value);
 });
 
 const masteredCount = computed(() => questions.value.filter((item) => item.masterStatus === 'MASTERED').length);
