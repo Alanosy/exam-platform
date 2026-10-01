@@ -16,7 +16,7 @@
           <span class="join-badge">考试邀请</span>
           <h1 class="join-title">{{ info.examName }}</h1>
           <div class="join-meta">
-            <el-tag :type="statusTag.type" size="small" effect="light">{{ statusTag.label }}</el-tag>
+            <dict-tag :options="examStatusOptions" :value="info.status" />
             <span v-if="info.duration" class="join-meta-item">限时 {{ info.duration }} 分钟</span>
             <span v-else class="join-meta-item">限时以试卷为准</span>
           </div>
@@ -74,17 +74,13 @@
 <script setup lang="ts" name="ExamJoin">
 import { getExamJoinInfo, joinExam } from '@/api/system/exam';
 import type { ExamJoinVO } from '@/api/system/exam/types';
+import { useExamDicts } from '@/hooks/useExamDicts';
 
 const route = useRoute();
 const router = useRouter();
 
-/** 考试状态对应的展示文案与标签色 */
-const STATUS_TAG: Record<string, { label: string; type: 'success' | 'warning' | 'info' | 'danger' }> = {
-  not_start: { label: '未开始', type: 'warning' },
-  ongoing: { label: '进行中', type: 'success' },
-  finished: { label: '已结束', type: 'info' },
-  archived: { label: '已归档', type: 'info' }
-};
+/** 考试状态走 exam_status 字典 */
+const { examStatusOptions } = useExamDicts();
 
 // 首屏先显示骨架屏，避免数据回来前闪一下空表单
 const loading = ref(true);
@@ -110,8 +106,6 @@ const info = ref<ExamJoinVO>({
 
 /** 链接上的加入码 */
 const code = computed(() => (route.params.code as string) || '');
-
-const statusTag = computed(() => STATUS_TAG[info.value.status] ?? { label: '未开始', type: 'info' });
 
 /** 只有需要密码、当前可加入、且还没加入过时才显示密码框 */
 const showPassword = computed(() => !!info.value.needPassword && !!info.value.joinable && !joined.value);

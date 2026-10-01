@@ -14,7 +14,7 @@
           <span class="brief-badge">考试须知</span>
           <h1 class="brief-title">{{ info.examName }}</h1>
           <div class="brief-meta">
-            <el-tag :type="statusTag.type" size="small" effect="light">{{ statusTag.label }}</el-tag>
+            <dict-tag :options="examMyStatusOptions" :value="info.myStatus" />
             <span class="brief-meta-item">限时 {{ info.duration ? `${info.duration} 分钟` : '不限时' }}</span>
           </div>
         </div>
@@ -52,19 +52,13 @@
 <script setup lang="ts" name="ExamBrief">
 import { listMyExams, startExam } from '@/api/exam/answer';
 import type { ExamCenterVO } from '@/api/exam/answer/types';
+import { useExamDicts } from '@/hooks/useExamDicts';
 
 const route = useRoute();
 const router = useRouter();
 
-const STATUS_TAG: Record<string, { label: string; type: 'primary' | 'success' | 'warning' | 'info' | 'danger' }> = {
-  not_start: { label: '未开始', type: 'info' },
-  pending: { label: '待考试', type: 'primary' },
-  answering: { label: '答题中', type: 'warning' },
-  submitted: { label: '已交卷', type: 'success' },
-  ended: { label: '已结束', type: 'info' },
-  late: { label: '迟到不可参加', type: 'danger' },
-  blocked: { label: '不可参加', type: 'danger' }
-};
+/** 我的考试状态走 exam_my_status 字典 */
+const { examMyStatusOptions } = useExamDicts();
 
 // 首屏先显示骨架屏，避免数据回来前闪一下空表单
 const loading = ref(true);
@@ -83,8 +77,6 @@ const info = ref<ExamCenterVO>({
   attemptCount: 0,
   canStart: false
 });
-
-const statusTag = computed(() => STATUS_TAG[info.value.myStatus] ?? { label: '待考试', type: 'info' });
 
 const formatTime = (value?: string): string => {
   if (!value) return '-';
