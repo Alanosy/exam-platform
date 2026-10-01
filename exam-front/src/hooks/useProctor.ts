@@ -63,6 +63,15 @@ export function useProctor(options: UseProctorOptions) {
   let wasFullscreen = false;
   /** 考试窗口当前是否有焦点，用来识别「有焦点 → 没焦点」的变化沿 */
   let windowFocused = true;
+  /**
+   * 本次「离屏」是否已经记过一次
+   *
+   * <p>一次点击会引出好几个信号（visibilitychange / blur / 定时兜底，甚至 blur+focus+blur），
+   * 节流挡不住相隔几秒的那些。所以只要还没确认「人回来了」，就绝不再记第二次。
+   */
+  let awayCounted = false;
+  /** blur 后延迟复检的定时器，卸载时统一清掉 */
+  const focusTimers = new Set<ReturnType<typeof setTimeout>>();
 
   const queue: ProctorEventBO[] = [];
   let flushTimer: ReturnType<typeof setInterval> | undefined;
@@ -141,12 +150,19 @@ export function useProctor(options: UseProctorOptions) {
    *
    * <p>「切屏」不止切换标签页：切到别的软件窗口（微信、钉钉、另一个浏览器窗口）
    * 时页面并没有 hidden，只是浏览器窗口失去了焦点，同样属于离开考试画面，必须一起算。
-   * visibilitychange 与 blur 常常同时触发，1.5 秒内只算一次。
+   *
+   * <p>去重靠两层：① awayCounted —— 同一段离屏只记一次，人没回来就不解锁；
+   * ② 1.5 秒节流 —— 兜住「回来后又立刻切走」这种抖动。
+   * 后端只按「类型 + 秒」去重，隔了几秒的两条会各算一次，所以这一层必须在前端堵住。
    */
   const markSwitch = (reason: string): void => {
+    if (awayCounted) {
+      return;
+    }
     if (throttled(lastSwitchAt, 1500)) {
       return;
     }
+    awayCounted = true;
     lastSwitchAt = Date.now();
     switchCount.value += 1;
     const max = rule.value?.switchScreen ?? 0;
@@ -162,12 +178,48 @@ export function useProctor(options: UseProctorOptions) {
     }
   };
 
+  /**
+   * 焦点状态机：所有来源（事件 + 定时兜底）都收敛到这里
+   *
+   * <p>状态一律**现读**（`hasFocus() && !hidden`），事件只负责「什么时候读、以什么理由记」。
+   * 原因：事件会骗人 —— Chrome 在 blur 事件里 `document.hasFocus()` 常常还是 true，
+   * 切到别的窗口也可能只来 blur 不来 visibilitychange，甚至 blur 之后又补一个 focus。
+   * 以前每个事件各自维护一份 windowFocused，于是同一次点击被判成两次「有焦点 → 没焦点」。
+   */
+  const syncFocus = (reason: string, onBack?: () => void): void => {
+    const focused = document.hasFocus() && !document.hidden;
+    if (focused) {
+      const back = !windowFocused;
+      windowFocused = true;
+      // 人回来了，解锁下一次计数
+      awayCounted = false;
+      if (back) {
+        onBack?.();
+      }
+      return;
+    }
+    const wasFocused = windowFocused;
+    windowFocused = false;
+    // 只在「有焦点 → 没焦点」这个变化沿上记一次
+    if (wasFocused) {
+      markSwitch(reason);
+    }
+  };
+
+  /** blur 之后延迟复读几次：等焦点真正切走，读到的状态才可信 */
+  const scheduleFocusCheck = (reason: string): void => {
+    [0, 300, 1200].forEach((delay) => {
+      const timer = setTimeout(() => {
+        focusTimers.delete(timer);
+        syncFocus(reason);
+      }, delay);
+      focusTimers.add(timer);
+    });
+  };
+
   /** 切换标签页 / 最小化：页面进入后台 */
   const onVisibilityChange = (): void => {
-    if (document.hidden) {
-      markSwitch('切换了浏览器标签页或最小化窗口');
-    }
-    windowFocused = document.hasFocus();
+    syncFocus('切换了浏览器标签页或最小化窗口');
   };
 
   /**
@@ -177,36 +229,31 @@ export function useProctor(options: UseProctorOptions) {
    * 结果切到别的应用去查资料完全不计入切屏次数。
    */
   const onBlur = (): void => {
-    if (document.hidden || !document.hasFocus()) {
-      markSwitch('浏览器窗口失去焦点（切换到了其它窗口或应用）');
-    } else {
-      // 极少数情况：事件来了但焦点其实还在（点浏览器地址栏等），只记流水不计数
+    // 事件当下如果焦点其实还在（点浏览器地址栏等），只落一条 info 流水，不计数
+    if (document.hasFocus() && !document.hidden) {
       push('blur', '窗口短暂失去焦点');
     }
-    windowFocused = false;
+    scheduleFocusCheck('浏览器窗口失去焦点（切换到了其它窗口或应用）');
   };
 
   /** 焦点回到考试页面：顺带抓拍一张，监考端能看到「人回来了」 */
   const onFocus = (): void => {
-    windowFocused = true;
-    if (cameraReady.value) {
-      void capture('resume');
-    }
+    syncFocus('', () => {
+      if (cameraReady.value) {
+        void capture('resume');
+      }
+    });
   };
 
   /**
    * 焦点状态兜底检查
    *
    * <p>blur 事件不是每次都来：系统级切换（mac 调度中心 / 切换桌面）、全屏下 alt-tab、
-   * 部分浏览器最小化时都可能丢事件。所以定时看一眼真实焦点状态，
-   * 只在「有焦点 → 没焦点」这个变化沿上记一次，避免持续离屏被反复计数。
+   * 部分浏览器最小化时都可能丢事件。所以定时再看一眼真实状态补记，
+   * 持续离屏由 awayCounted 兜住，不会被反复计数。
    */
   const checkFocus = (): void => {
-    const focused = document.hasFocus() && !document.hidden;
-    if (!focused && windowFocused) {
-      markSwitch('考试窗口失去焦点（可能切换到了其它应用）');
-    }
-    windowFocused = focused;
+    syncFocus('考试窗口失去焦点（可能切换到了其它应用）');
   };
 
   const clipboardText = (e: ClipboardEvent): string => (e.clipboardData?.getData('text') ?? '').slice(0, 200);
@@ -372,8 +419,7 @@ export function useProctor(options: UseProctorOptions) {
   /* --------------------------------- 摄像头 --------------------------------- */
 
   /** 与模板 <video> 约定的 id：万一模板 ref 没绑上，还能按 id 兜底找到元素 */
-  const findVideo = (): HTMLVideoElement | null =>
-    videoRef.value ?? (document.getElementById(VIDEO_ID) as HTMLVideoElement | null);
+  const findVideo = (): HTMLVideoElement | null => videoRef.value ?? (document.getElementById(VIDEO_ID) as HTMLVideoElement | null);
 
   /** 整帧平均亮度极低就是没出画面，这种图传上去没意义 */
   const isBlankFrame = (canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D): boolean => {
@@ -625,6 +671,7 @@ export function useProctor(options: UseProctorOptions) {
     wasFullscreen = inFullscreenNow();
     // 同理：考生可能是在别的窗口里打开试卷、页面自己加载完的，别把这当成一次切屏
     windowFocused = document.hasFocus() && !document.hidden;
+    awayCounted = false;
     flushTimer = setInterval(() => void flush(), 5_000);
     heartbeatTimer = setInterval(() => {
       if (!sessionId.value || stopped) {
@@ -656,6 +703,8 @@ export function useProctor(options: UseProctorOptions) {
     document.removeEventListener('fullscreenchange', onFullscreenChange);
     [flushTimer, heartbeatTimer, cameraTimer, devtoolTimer].forEach((t) => t && clearInterval(t));
     flushTimer = heartbeatTimer = cameraTimer = devtoolTimer = undefined;
+    focusTimers.forEach((t) => clearTimeout(t));
+    focusTimers.clear();
     stream?.getTracks().forEach((track) => track.stop());
     stream = null;
     cameraOpen.value = false;
