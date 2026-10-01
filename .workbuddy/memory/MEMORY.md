@@ -60,6 +60,10 @@ RuoYi-Cloud-Plus 2.6.2 微服务（Spring Boot 3 + Dubbo + MyBatis-Plus + 多租
   表现为「等倒计时时整个页面在闪」；开考前（waiting）根本不用轮询，本地倒计时已够准。
 - `useServerClock.syncServerTime` 有 1 秒阈值：校准差值小于 1 秒不更新 offset，
   避免每次轮询微调让倒计时数字来回跳。
+- **入场规则只管「第一次进场」，不管续答**：`startExam` 里「已有 answering 记录 → 直接
+  返回 recordId」必须排在未开始 / 最晚入场时间 / 已结束**之前**，否则答一半退出就再也进不去。
+  已结束也放行：答题页 `getPaper()` 会立刻自动交卷，前端捕获「自动交卷」跳成绩页。
+- **判断 exam-answer 跑的是不是新产物**：看提示文案新旧（带括号 = 旧版），比查日志快。
 
 ## 其它已确认的坑
 

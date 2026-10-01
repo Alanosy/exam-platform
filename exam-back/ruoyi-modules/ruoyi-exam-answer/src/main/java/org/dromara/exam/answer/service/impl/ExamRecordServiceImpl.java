@@ -368,6 +368,19 @@ public class ExamRecordServiceImpl implements IExamRecordService {
             }
         }
 
+        List<ExamRecord> records = selectMyRecords(examId, account);
+        // 中途退出续答：直接续上原来那份答卷，倒计时接着走。
+        //
+        // 入场规则（未开始 / 最晚入场时间）管的是「第一次进场」，续答的人早就进场了，
+        // 所以这段必须放在下面的时间校验之前返回：否则答到一半退出，回来就被一句
+        // 「已超过最晚入场时间」挡在门外，手里的答卷还交不掉。
+        // 至于「考试已结束」：这里同样放行，进入答题页时 getPaper() 会立刻按结束时间 /
+        // 剩余时长自动交卷并提示，不会让人真的继续答下去，也不会把答卷悬在「答题中」。
+        ExamRecord answering = records.stream().filter(r -> ExamRecord.STATUS_ANSWERING.equals(r.getStatus())).findFirst().orElse(null);
+        if (ObjectUtil.isNotNull(answering)) {
+            return answering.getId();
+        }
+
         Date now = new Date();
         if (isNotStarted(now, exam)) {
             throw new ServiceException("考试尚未开始");
@@ -377,13 +390,6 @@ public class ExamRecordServiceImpl implements IExamRecordService {
         }
         if (isLate(now, exam)) {
             throw new ServiceException("已超过最晚入场时间，无法参加本次考试");
-        }
-
-        List<ExamRecord> records = selectMyRecords(examId, account);
-        // 中途退出：直接续上原来那份答卷，倒计时接着走
-        ExamRecord answering = records.stream().filter(r -> ExamRecord.STATUS_ANSWERING.equals(r.getStatus())).findFirst().orElse(null);
-        if (ObjectUtil.isNotNull(answering)) {
-            return answering.getId();
         }
 
         long submittedCount = records.stream().filter(r -> ExamRecord.STATUS_SUBMITTED.equals(r.getStatus())).count();
