@@ -77,7 +77,7 @@
         </el-table-column>
         <el-table-column label="限时" align="center" prop="duration" width="110">
           <template #default="scope">
-            <span>{{ scope.row.duration ? scope.row.duration + ' 分钟' : '沿用试卷' }}</span>
+            <span>{{ scope.row.duration ? scope.row.duration + ' 分钟' : '不限时' }}</span>
           </template>
         </el-table-column>
         <el-table-column label="参加方式" align="center" prop="participantType" width="110">

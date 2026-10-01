@@ -73,7 +73,7 @@
           <el-col :span="12">
             <el-form-item label="考试限时" prop="duration">
               <el-input-number v-model="form.duration" :min="0" :precision="0" controls-position="right" class="w-full" />
-              <div class="mt-1 text-xs text-gray-400">分钟，0 表示沿用试卷时长</div>
+              <div class="mt-1 text-xs text-gray-400">分钟，0 表示不限时</div>
             </el-form-item>
           </el-col>
           <el-col :span="12">

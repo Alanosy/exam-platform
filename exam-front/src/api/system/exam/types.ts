@@ -20,7 +20,7 @@ export interface ExamVO {
   /** 结束时间 */
   endTime: string;
 
-  /** 考试限时（分钟），0 表示沿用试卷时长 */
+  /** 考试限时（分钟），0 表示不限时 */
   duration: number;
 
   /** 是否允许迟到入场 0否 1是 */
@@ -116,7 +116,7 @@ export interface ExamJoinVO {
   /** 结束时间 */
   endTime: string;
 
-  /** 考试限时（分钟），0 表示沿用试卷时长 */
+  /** 考试限时（分钟），0 表示不限时 */
   duration: number;
 
   /** 状态 not_start未开始 / ongoing进行中 / finished已结束 / archived已归档 */
