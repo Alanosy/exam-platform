@@ -11,16 +11,33 @@
         </div>
       </template>
 
-      <el-empty v-if="!loading && list.length === 0" description="你还没有加入任何考试，可通过邀请链接加入" />
+      <!-- 先按考试类型筛，再按来源（我创建的 / 我加入的）筛 -->
+      <el-tabs v-model="activeType" class="exam-tabs">
+        <el-tab-pane label="全部" name="all" />
+        <!-- 考试类型页签跟着字典 exam_type 走，改字典文案这里就跟着变 -->
+        <el-tab-pane v-for="item in examTypeOptions" :key="item.value" :label="item.label" :name="item.value" />
+      </el-tabs>
+
+      <el-radio-group v-model="activeOwner" class="owner-filter">
+        <el-radio-button value="all">全部</el-radio-button>
+        <el-radio-button value="mine">我创建的</el-radio-button>
+        <el-radio-button value="joined">我加入的</el-radio-button>
+      </el-radio-group>
+
+      <el-empty v-if="!loading && filtered.length === 0" :description="emptyTip" />
 
       <el-skeleton v-else-if="loading" :rows="4" animated />
 
       <div v-else class="exam-grid">
-        <el-card v-for="item in list" :key="item.examId" shadow="hover" class="exam-card">
+        <el-card v-for="item in filtered" :key="item.examId" shadow="hover" class="exam-card">
           <template #header>
             <div class="flex items-start justify-between gap-2">
-              <span class="exam-name" :title="item.examName">{{ item.examName }}</span>
-              <el-tag :type="statusTag(item.myStatus).type" size="small" effect="light">{{ statusTag(item.myStatus).label }}</el-tag>
+              <div class="flex items-center gap-1 min-w-0">
+                <!-- 考试类型单独成列：正式考试和练习考试一眼分得开 -->
+                <dict-tag :options="examTypeOptions" :value="item.examType || '1'" />
+                <span class="exam-name" :title="item.examName">{{ item.examName }}</span>
+              </div>
+              <dict-tag :options="examMyStatusOptions" :value="item.myStatus" />
             </div>
           </template>
 
@@ -63,24 +80,40 @@
 <script setup lang="ts" name="ExamCenter">
 import { listMyExams } from '@/api/exam/answer';
 import type { ExamCenterVO } from '@/api/exam/answer/types';
+import { useExamDicts } from '@/hooks/useExamDicts';
 
 const router = useRouter();
 // 首屏先显示骨架屏，避免数据回来前闪一下空状态
 const loading = ref(true);
 const list = ref<ExamCenterVO[]>([]);
 
-/** 我在考试上的状态 → 展示文案与标签色 */
-const STATUS_TAG: Record<string, { label: string; type: 'primary' | 'success' | 'warning' | 'info' | 'danger' }> = {
-  not_start: { label: '未开始', type: 'info' },
-  pending: { label: '待考试', type: 'primary' },
-  answering: { label: '答题中', type: 'warning' },
-  submitted: { label: '已交卷', type: 'success' },
-  ended: { label: '已结束', type: 'info' },
-  late: { label: '迟到不可参加', type: 'danger' },
-  blocked: { label: '不可参加', type: 'danger' }
-};
+// 考试类型与我的状态都走字典，改字典文案即可，不用改代码
+const { examTypeOptions, examMyStatusOptions } = useExamDicts();
 
-const statusTag = (status: string) => STATUS_TAG[status] ?? { label: '待考试', type: 'info' };
+/** 标签页：全部 / 正式考试 / 练习刷题 */
+const activeType = ref<string>('all');
+/** 来源筛选：全部 / 我创建的 / 我加入的 */
+const activeOwner = ref<string>('all');
+
+const filtered = computed(() => {
+  let result = list.value;
+  if (activeType.value !== 'all') {
+    result = result.filter((item) => item.examType === activeType.value);
+  }
+  if (activeOwner.value === 'mine') {
+    result = result.filter((item) => item.owner === true);
+  } else if (activeOwner.value === 'joined') {
+    result = result.filter((item) => item.owner !== true);
+  }
+  return result;
+});
+
+const emptyTip = computed(() => {
+  if (activeOwner.value === 'mine') return '你还没有创建考试，去「考试管理」新建一场即可直接在这里参加';
+  if (activeOwner.value === 'joined') return '你还没有通过链接加入任何考试';
+  if (activeType.value === 'all') return '你还没有加入任何考试，可通过邀请链接加入';
+  return '暂无该类型的考试';
+});
 
 const formatTime = (value?: string): string => {
   if (!value) return '-';
@@ -115,6 +148,14 @@ onMounted(loadList);
 </script>
 
 <style scoped lang="scss">
+.exam-tabs {
+  margin-bottom: 12px;
+}
+
+.owner-filter {
+  margin-bottom: 12px;
+}
+
 .exam-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));

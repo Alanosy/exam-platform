@@ -6,6 +6,9 @@ export interface ExamCenterVO {
   /** 考试名称 */
   examName: string;
 
+  /** 考试类型 1正式考试 / 2练习考试 */
+  examType: string;
+
   /** 考试描述 */
   examDesc: string;
 
@@ -44,6 +47,9 @@ export interface ExamCenterVO {
 
   /** 是否可以开始 / 继续考试 */
   canStart: boolean;
+
+  /** 是否是我创建的考试（创建人免邀请直接进入考试中心） */
+  owner?: boolean;
 }
 
 /** 答题页的选项 */
