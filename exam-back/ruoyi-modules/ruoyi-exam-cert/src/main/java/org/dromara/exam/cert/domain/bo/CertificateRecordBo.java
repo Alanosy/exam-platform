@@ -2,7 +2,7 @@ package org.dromara.exam.cert.domain.bo;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import org.dromara.common.core.domain.BaseEntity;
+import org.dromara.common.mybatis.core.domain.BaseEntity;
 
 import java.io.Serial;
 
