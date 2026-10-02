@@ -5,6 +5,7 @@ import lombok.Data;
 import java.io.Serial;
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -59,6 +60,9 @@ public class StatAnswerVo implements Serializable {
 
     /** 本场平均用时，用来比较快/慢 */
     private Integer avgUsedSeconds;
+
+    /** 交卷时间 */
+    private Date submitTime;
 
     /** COUNTED / PENDING_MARK / EXCLUDED */
     private String statStatus;

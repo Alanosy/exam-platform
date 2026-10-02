@@ -224,6 +224,8 @@ export interface StatOptionVO {
   selectCount?: number;
   selectRate?: string;
   isCorrect?: string;
+  /** 非正确项但被选中比例高 → 易错项（干扰项） */
+  trap?: boolean;
 }
 
 /** 试题分析行 */
@@ -326,6 +328,8 @@ export interface StatAnswerVO {
   usedSeconds?: number;
   avgUsedSeconds?: number;
   statStatus?: string;
+  /** 交卷时间 */
+  submitTime?: string;
   attempts?: StatAttemptVO[];
   items?: StatAnswerItemVO[];
 }

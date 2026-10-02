@@ -296,7 +296,7 @@ const loadOverview = async () => {
   try {
     const res: any = await getStatOverview(examId.value);
     overview.value = res?.data ?? {};
-    summary.value = res?.data?.summary ?? {};
+    summary.value = (res?.data?.summary ?? {}) as StatExamRowVO;
     overview.value.segments = res?.data?.segments ?? [];
   } finally {
     pageLoading.value = false;

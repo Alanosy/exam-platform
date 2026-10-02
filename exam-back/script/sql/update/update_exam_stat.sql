@@ -138,6 +138,7 @@ CREATE TABLE IF NOT EXISTS `stat_exam_question_option` (
   `select_count` int NOT NULL DEFAULT 0 COMMENT '选中人次',
   `select_rate` decimal(5,2) NOT NULL DEFAULT 0.00 COMMENT '选中率%',
   `is_correct` char(1) NOT NULL DEFAULT '0' COMMENT '是否正确选项 0否 1是',
+  `trap` tinyint NOT NULL DEFAULT 0 COMMENT '易错项 0否 1是(非正确项但选中率超三成)',
   `tenant_id` varchar(20) DEFAULT NULL COMMENT '租户ID',
   `del_flag` tinyint NOT NULL DEFAULT 0 COMMENT '逻辑删除',
   `create_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',

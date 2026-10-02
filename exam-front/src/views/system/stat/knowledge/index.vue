@@ -31,7 +31,7 @@
         <el-button :type="onlyWeak ? 'primary' : 'default'" @click="() => toggleWeak()">只看薄弱</el-button>
       </div>
 
-      <el-table :data="filteredRows" border stripe @row-click="(row: StatKnowledgeVO) => onSelect(row)">
+      <el-table :data="filteredRows" border stripe @row-click="onSelect">
         <el-table-column label="知识点" min-width="220" prop="knowledgePath" show-overflow-tooltip />
         <el-table-column label="题目数" width="80" prop="questionCount" align="center" />
         <el-table-column label="满分" width="80" align="center">
@@ -134,7 +134,10 @@ const toggleWeak = () => {
   onlyWeak.value = !onlyWeak.value;
 };
 
-const onSelect = async (row: StatKnowledgeVO) => {
+const onSelect = async (row: StatKnowledgeVO | null) => {
+  if (!row) {
+    return;
+  }
   selected.value = row;
   // 下钻：拉出这场考试里成绩靠后的考生，作为「谁最该补」的名单
   const res: any = await listStatUser(examId.value, { pageNum: 1, pageSize: 20, statStatus: 'COUNTED' });

@@ -8,9 +8,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.dubbo.config.annotation.DubboReference;
-import org.dromara.common.core.utils.MapstructUtils;
 import org.dromara.common.core.utils.StringUtils;
-import org.dromara.common.mybatis.core.page.PageQuery;
 import org.dromara.common.mybatis.core.page.TableDataInfo;
 import org.dromara.common.satoken.utils.LoginHelper;
 import org.dromara.exam.answer.api.RemoteExamAnswerService;
@@ -821,7 +819,11 @@ public class StatExamServiceImpl implements IStatExamService {
             row.setOptionContent(contentMap.getOrDefault(e.getKey(), ""));
             row.setSelectCount(e.getValue());
             row.setSelectRate(rate(e.getValue(), agg.answerCount));
-            row.setIsCorrect(rightKeys.contains(e.getKey()) ? "1" : "0");
+            boolean correct = rightKeys.contains(e.getKey());
+            row.setIsCorrect(correct ? "1" : "0");
+            // 易错项：不是正确选项，却有超过三成的人选了它 —— 说明这个干扰项编得太像了，
+            // 或者知识点本身就没讲清楚，是要重点讲评的那一档
+            row.setTrap(!correct && row.getSelectRate().compareTo(BigDecimal.valueOf(30)) >= 0);
             optionMapper.insert(row);
         }
     }
@@ -940,29 +942,17 @@ public class StatExamServiceImpl implements IStatExamService {
             rows.add(buildUserRow(examId, r, StatExamUser.STAT_PENDING_MARK, 0,
                 List.of(), questionMap, userNameMap, deptNameMap, passScore));
         }
+        // 作废的答卷单独成行保留，管理员能看到自己排除了哪些人
         for (RemoteRecordVo r : allRecords) {
-            if (excludedRecords.contains(r.getRecordId()) || !latestRecordIds(allRecords, excludedRecords).contains(r.getRecordId())) {
-                if (excludedRecords.contains(r.getRecordId())) {
-                    rows.add(buildUserRow(examId, r, StatExamUser.STAT_EXCLUDED, 0,
-                        List.of(), questionMap, userNameMap, deptNameMap, passScore));
-                }
+            if (excludedRecords.contains(r.getRecordId())) {
+                rows.add(buildUserRow(examId, r, StatExamUser.STAT_EXCLUDED, 0,
+                    List.of(), questionMap, userNameMap, deptNameMap, passScore));
             }
         }
         for (StatExamUser row : rows) {
             userMapper.insert(row);
         }
         return rows;
-    }
-
-    private Set<Long> latestRecordIds(List<RemoteRecordVo> allRecords, Set<Long> excludedRecords) {
-        Map<Long, RemoteRecordVo> latest = new HashMap<>();
-        for (RemoteRecordVo r : allRecords) {
-            RemoteRecordVo cur = latest.get(r.getUserId());
-            if (ObjectUtil.isNull(cur) || ObjectUtil.defaultIfNull(r.getAttemptNo(), 1) > ObjectUtil.defaultIfNull(cur.getAttemptNo(), 1)) {
-                latest.put(r.getUserId(), r);
-            }
-        }
-        return latest.values().stream().map(RemoteRecordVo::getRecordId).collect(java.util.stream.Collectors.toSet());
     }
 
     private StatExamUser buildUserRow(Long examId, RemoteRecordVo r, String statStatus, int rank,

@@ -42,7 +42,7 @@
             border
             stripe
             highlight-current-row
-            @current-change="(row: StatQuestionVO) => onSelect(row)"
+            @current-change="onSelect"
           >
             <el-table-column label="题号" width="60" prop="sort" align="center" />
             <el-table-column label="题型" width="90" prop="questionType" align="center" />
@@ -189,7 +189,11 @@ const resetQuery = () => {
   loadList();
 };
 
-const onSelect = (row: StatQuestionVO) => {
+/** 点击列表行切右侧详情；current-change 在取消选中时会传 null，这里要能接住 */
+const onSelect = (row: StatQuestionVO | null) => {
+  if (!row) {
+    return;
+  }
   current.value = row;
 };
 
