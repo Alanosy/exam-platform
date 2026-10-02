@@ -246,7 +246,8 @@ const examId = ref<string>(String(route.query.examId ?? ''));
 const pageLoading = ref(false);
 const activeTab = ref('segment');
 const overview = ref<StatOverviewVO>({});
-const summary = ref<StatExamRowVO>({});
+// StatExamRowVO 的 examId 是必填，初始值给不了真实值，用断言顶上；数据到位后整体替换
+const summary = ref<StatExamRowVO>({} as StatExamRowVO);
 
 const userRows = ref<StatUserVO[]>([]);
 const userTotal = ref(0);
@@ -343,7 +344,9 @@ const goUserDetail = (row: StatUserVO) => {
 };
 const goQuestion = () => router.push({ path: '/system/stat/question', query: { examId: examId.value } });
 const goKnowledge = () => router.push({ path: '/system/stat/knowledge', query: { examId: examId.value } });
-const goMark = () => router.push({ path: '/system/mark', query: { examId: examId.value } });
+// 跳阅卷的答卷列表页（/system/mark/record）而不是阅卷首页：首页不认 examId，
+// 跳过去等于没定位到这场考试，得再手动筛一次
+const goMark = () => router.push({ path: '/system/mark/record', query: { examId: examId.value } });
 
 watch(activeTab, (tab) => {
   if (tab === 'user' && !userRows.value.length) loadUsers();

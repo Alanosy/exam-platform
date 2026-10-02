@@ -220,6 +220,55 @@ export const constantRoutes: RouteRecordRaw[] = [
     ]
   },
   {
+    // 考试统计：一级入口（/stat/dashboard）由后台菜单 2120 生成，但菜单只能盖到入口那一层。
+    // 「查看详情 / 考生明细 / 试题分析 / 知识点分析」都是下钻详情页，菜单里不该出现，
+    // 可页面里的跳转和面包屑全写的是 /system/stat/* —— 不注册静态路由点进去就是 404。
+    //
+    // activeMenu 必须是后台菜单实际生成的地址 /stat（顶层 C 类型菜单 path=stat 拼出来的），
+    // 写 /system/stat/dashboard 高亮不到侧边栏那一项。
+    path: '/system/stat',
+    component: Layout,
+    hidden: true,
+    redirect: 'noRedirect',
+    children: [
+      {
+        // 面包屑「考试统计」回这里，和菜单 /stat 是同一个页面的两个入口
+        path: 'dashboard',
+        component: () => import('@/views/system/stat/dashboard/index.vue'),
+        name: 'StatDashboard',
+        meta: { title: '考试统计', activeMenu: '/stat', noCache: true }
+      },
+      {
+        // 单场考试详情，必带 examId
+        path: 'exam',
+        component: () => import('@/views/system/stat/exam/index.vue'),
+        name: 'StatExam',
+        meta: { title: '考试详情', activeMenu: '/stat', noCache: true }
+      },
+      {
+        // 某个考生的作答明细，带 examId + userId
+        path: 'user',
+        component: () => import('@/views/system/stat/user/index.vue'),
+        name: 'StatUser',
+        meta: { title: '考生明细', activeMenu: '/stat', noCache: true }
+      },
+      {
+        // 逐题正确率 / 区分度，带 examId
+        path: 'question',
+        component: () => import('@/views/system/stat/question/index.vue'),
+        name: 'StatQuestion',
+        meta: { title: '试题分析', activeMenu: '/stat', noCache: true }
+      },
+      {
+        // 知识点薄弱分析，带 examId（往下钻还会带 knowledgeId）
+        path: 'knowledge',
+        component: () => import('@/views/system/stat/knowledge/index.vue'),
+        name: 'StatKnowledge',
+        meta: { title: '知识点分析', activeMenu: '/stat', noCache: true }
+      }
+    ]
+  },
+  {
     // 考生通过公开链接加入考试：/exam/join/{joinCode}
     // 不带 Layout，独立整页展示；未登录时由 permission.ts 的路由守卫拦到 /login?redirect=...
     path: '/exam/join/:code',
