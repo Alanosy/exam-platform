@@ -2,8 +2,9 @@ package org.dromara.exam.proctor.domain;
 
 import cn.hutool.core.util.ObjectUtil;
 import lombok.Data;
-import org.dromara.common.core.utils.JsonUtils;
+//import org.dromara.common.core.utils.JsonUtils;
 import org.dromara.common.core.utils.StringUtils;
+import org.dromara.common.json.utils.JsonUtils;
 
 import java.io.Serial;
 import java.io.Serializable;
