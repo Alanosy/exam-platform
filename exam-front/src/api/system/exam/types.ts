@@ -38,6 +38,17 @@ export interface ExamVO {
   /** 答案展示时机 none不展示 / after_submit交卷后 / after_exam考试结束后 */
   showAnswerMode: string;
 
+  /**
+   * 客观题部分得分开关 '0'必须全对 / '1'启用部分得分
+   *
+   * 作用于多选题（漏选）与填空题（只答对部分空）。
+   * 多选题选中任何错误选项一律 0 分，防止「全选蒙满分」。
+   */
+  partialScore: string;
+
+  /** 部分正确时的得分比例（%），100按命中比例 / 50一律半数 */
+  partialScoreRate: number;
+
   /** 防作弊配置（JSON） */
   antiCheatConfig: string;
 
@@ -84,6 +95,12 @@ export interface ExamForm extends BaseEntity {
   allowRetry?: number;
   maxRetryCount?: number;
   showAnswerMode?: string;
+
+  /** 客观题部分得分开关 '0'必须全对 / '1'启用部分得分 */
+  partialScore?: string;
+
+  /** 部分正确时的得分比例（%） */
+  partialScoreRate?: number;
   antiCheatConfig?: string;
   participantType?: string;
   joinCode?: string;

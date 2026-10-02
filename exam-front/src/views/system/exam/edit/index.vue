@@ -201,6 +201,27 @@
                 </el-select>
               </el-form-item>
             </el-col>
+            <el-col :span="12">
+              <el-form-item label="部分得分" prop="partialScore">
+                <el-switch
+                  v-model="partialScoreOn"
+                  active-text="部分对也给分"
+                  inactive-text="必须全对"
+                />
+                <div class="form-tip">
+                  作用于多选题（漏选）与填空题（只答对部分空）。
+                  <span v-if="partialScoreOn">多选题选中任何错误选项一律 0 分，防止全选蒙分。</span>
+                </div>
+              </el-form-item>
+            </el-col>
+            <el-col :span="12" v-if="partialScoreOn">
+              <el-form-item label="部分正确得分" prop="partialScoreRate">
+                <el-select v-model="form.partialScoreRate" class="w-full">
+                  <el-option label="按命中比例（答对一半给一半）" :value="100" />
+                  <el-option label="一律给该题一半分" :value="50" />
+                </el-select>
+              </el-form-item>
+            </el-col>
           </el-row>
         </el-form>
       </el-card>
@@ -414,6 +435,9 @@ const initFormData: ExamForm = {
   allowRetry: 0,
   maxRetryCount: 1,
   showAnswerMode: 'none',
+  // 客观题部分得分：0 必须全对（默认，与历史行为一致），1 启用部分得分
+  partialScore: '0',
+  partialScoreRate: 100,
   antiCheatConfig: undefined,
   participantType: 'white',
   joinCode: undefined,
@@ -426,6 +450,17 @@ const initFormData: ExamForm = {
 // form 必须先于下面的 computed / watch 声明：Vue 创建 watch 时会立即执行一次 getter，
 // 放在后面会命中 TDZ（ReferenceError: Cannot access 'form' before initialization）
 const form = reactive<ExamForm & { paperName?: string }>({ ...initFormData });
+
+/**
+ * 部分得分开关：后端存的是 char(1) 的 '0'/'1'，el-switch 要 boolean，这里做一层转换。
+ * 必须写在 form 之后——computed 的 getter 会在创建时同步跑一次，写在前面会命中 TDZ。
+ */
+const partialScoreOn = computed({
+  get: () => form.partialScore === '1',
+  set: (val: boolean) => {
+    form.partialScore = val ? '1' : '0';
+  }
+});
 
 /** 正式考试才强制要求起止时间 */
 const isFormal = computed(() => form.examType === EXAM_TYPE_FORMAL);
@@ -676,6 +711,9 @@ const initPage = async () => {
     allowRetry: data.allowRetry ?? 0,
     maxRetryCount: data.maxRetryCount ?? 1,
     showAnswerMode: data.showAnswerMode ?? 'none',
+    // 老数据没有这两个字段，回退到「必须全对」
+    partialScore: data.partialScore ?? '0',
+    partialScoreRate: data.partialScoreRate ?? 100,
     participantType: data.participantType ?? 'white',
     joinCode: data.joinCode,
     joinPassword: data.joinPassword,
@@ -817,5 +855,13 @@ onMounted(async () => {
 /* 步骤条上能点回去的那一步给个手型，否则看不出可以点 */
 .exam-steps :deep(.el-step.is-back) {
   cursor: pointer;
+}
+
+/* 开关下方的灰字说明：规则不写清楚，老师会以为「部分得分」= 随便给分 */
+.form-tip {
+  width: 100%;
+  font-size: 12px;
+  line-height: 1.5;
+  color: #909399;
 }
 </style>
