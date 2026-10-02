@@ -60,6 +60,12 @@ public class RemoteExamVo implements Serializable {
     /** 答案展示 none / after_submit / after_exam */
     private String showAnswerMode;
 
+    /** 客观题部分得分开关 0必须全对才给分 1启用部分得分 */
+    private String partialScore;
+
+    /** 部分正确时的得分比例(%)，100按命中比例 / 50一律半数 */
+    private Integer partialScoreRate;
+
     /** 防作弊配置JSON */
     private String antiCheatConfig;
 

@@ -107,6 +107,16 @@ public class ExamVo implements Serializable {
     private String showAnswerMode;
 
     /**
+     * 客观题部分得分开关 0必须全对才给分 1启用部分得分
+     */
+    private String partialScore;
+
+    /**
+     * 部分正确时的得分比例（%）
+     */
+    private Integer partialScoreRate;
+
+    /**
      * 防作弊配置：切屏次数、禁止复制粘贴、摄像头抓拍、全屏限制等
      */
     @ExcelProperty(value = "防作弊配置")

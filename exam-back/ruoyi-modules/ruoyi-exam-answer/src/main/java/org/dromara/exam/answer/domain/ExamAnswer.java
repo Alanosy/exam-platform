@@ -32,6 +32,14 @@ public class ExamAnswer extends TenantEntity {
     public static final int CORRECT_NO = 2;
 
     /**
+     * 部分正确：开了部分得分后答对了一部分（多选漏选、填空只对部分空）
+     *
+     * <p>既不是「完全答对」也不是「完全答错」，统计时要单独拎出来，
+     * 否则「正确率」会把半对的算成错的，数字会比实际偏低。
+     */
+    public static final int CORRECT_PARTIAL = 3;
+
+    /**
      * 主键ID
      */
     @TableId(value = "id")

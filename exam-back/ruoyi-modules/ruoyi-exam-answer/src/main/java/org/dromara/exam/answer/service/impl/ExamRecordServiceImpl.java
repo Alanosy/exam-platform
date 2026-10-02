@@ -472,7 +472,8 @@ public class ExamRecordServiceImpl implements IExamRecordService {
 
         boolean objective = isObjective(question.getQuestionType());
         RemotePaperVo paper = remotePaperService.queryPaper(record.getPaperId());
-        boolean partialScore = ObjectUtil.isNotNull(paper) && "1".equals(paper.getPartialScore());
+        // 部分分先看考试自己的配置，考试没开就退回试卷配置，两者都关才要求全对
+        boolean partialScore = partialScoreOf(exam, paper);
         boolean right = objective && judge(question, bo.getAnswerContent(), partialScore);
 
         // 本题的对错标记先写进去，页面上「已经答过哪些题」能立即反映出来；
@@ -890,7 +891,9 @@ public class ExamRecordServiceImpl implements IExamRecordService {
         Map<Long, ExamAnswer> answerMap = selectAnswerMap(record.getId());
 
         boolean autoJudge = ObjectUtil.isNull(paper) || !"0".equals(paper.getAutoJudge());
-        boolean partialScore = ObjectUtil.isNotNull(paper) && "1".equals(paper.getPartialScore());
+        // 部分分以考试配置为准：同一张卷子给不同班级考，可能一个要求全对一个允许部分得分
+        boolean partialScore = partialScoreOf(exam, paper);
+        int partialRate = partialRateOf(exam);
 
         BigDecimal objective = BigDecimal.ZERO;
         // 判完分顺手把答错的题收集起来，交卷收尾时一次性同步到错题本
@@ -906,8 +909,13 @@ public class ExamRecordServiceImpl implements IExamRecordService {
                 .filter(item -> item.getQuestionId().equals(question.getQuestionId())).findFirst().orElse(null), question);
             if (autoJudge && isObjective(question.getQuestionType())) {
                 boolean right = judge(question, answer.getAnswerContent(), partialScore);
-                answer.setCorrect(right ? ExamAnswer.CORRECT_YES : ExamAnswer.CORRECT_NO);
-                answer.setScore(right || partialScore ? gainedScore(question, answer.getAnswerContent(), fullScore, partialScore) : BigDecimal.ZERO);
+                BigDecimal gained = right
+                    ? fullScore
+                    : gainedScore(question, answer.getAnswerContent(), fullScore, partialScore, partialRate);
+                // 半对（得分了但没拿满）要单独标记：统计里它既不能算「答对」也不该算「答错」
+                answer.setCorrect(right ? ExamAnswer.CORRECT_YES
+                    : (gained.compareTo(BigDecimal.ZERO) > 0 ? ExamAnswer.CORRECT_PARTIAL : ExamAnswer.CORRECT_NO));
+                answer.setScore(gained);
                 objective = objective.add(answer.getScore());
                 if (!right) {
                     // 答错与半对（部分得分但没拿满）都进错题本
@@ -1281,9 +1289,41 @@ public class ExamRecordServiceImpl implements IExamRecordService {
     }
 
     /**
-     * 部分得分：多选题按命中比例给分，填空题按答对的空数给分
+     * 部分得分开关：考试配置优先，考试没开就退回试卷配置
+     *
+     * <p>一场考试的判分规则应该由「考试」这一层决定——同一张试卷给两个班考，
+     * 一个要求全对才给分、一个允许部分得分，是很常见的诉求。
      */
-    private BigDecimal gainedScore(RemoteQuestionVo question, String answerContent, BigDecimal fullScore, boolean partialScore) {
+    private boolean partialScoreOf(RemoteExamVo exam, RemotePaperVo paper) {
+        if (ObjectUtil.isNotNull(exam) && ObjectUtil.isNotNull(exam.getPartialScore())) {
+            return "1".equals(exam.getPartialScore());
+        }
+        return ObjectUtil.isNotNull(paper) && "1".equals(paper.getPartialScore());
+    }
+
+    /**
+     * 部分正确时的得分比例（%），默认 100 表示按命中比例给分
+     */
+    private int partialRateOf(RemoteExamVo exam) {
+        if (ObjectUtil.isNull(exam) || ObjectUtil.isNull(exam.getPartialScoreRate()) || exam.getPartialScoreRate() <= 0) {
+            return 100;
+        }
+        return Math.min(exam.getPartialScoreRate(), 100);
+    }
+
+    /**
+     * 部分得分：多选题按命中比例给分，填空题按答对的空数给分
+     *
+     * <p>两条硬规则，防止「部分分」被钻空子：
+     * <ol>
+     *     <li>多选题只要选中了任何一个错误选项，一律 0 分。
+     *         否则四个选项全选必然命中所有正确项，等于蒙题也能拿满分。</li>
+     *     <li>一个都没命中（hit = 0）也是 0 分，不会出现「全错还得分」。</li>
+     * </ol>
+     * rate &lt; 100 时（如配 50）只要不是全对就一律给该题满分的固定比例。
+     */
+    private BigDecimal gainedScore(RemoteQuestionVo question, String answerContent, BigDecimal fullScore,
+                                   boolean partialScore, int rate) {
         if (judge(question, answerContent, partialScore)) {
             return fullScore;
         }
@@ -1306,6 +1346,16 @@ public class ExamRecordServiceImpl implements IExamRecordService {
                     hit++;
                 }
             }
+            if (hit == 0) {
+                return BigDecimal.ZERO;
+            }
+            // 考生填的空比标准答案多，多出来的算错：填空题不允许靠「把所有可能的答案都写进去」拿满分
+            if (mine.getBlanks().size() > standard.getBlanks().size()) {
+                return BigDecimal.ZERO;
+            }
+            if (rate < 100) {
+                return fullScore.multiply(BigDecimal.valueOf(rate)).divide(BigDecimal.valueOf(100), 2, RoundingMode.HALF_UP);
+            }
             return fullScore.multiply(BigDecimal.valueOf(hit)).divide(BigDecimal.valueOf(standard.getBlanks().size()), 2, RoundingMode.HALF_UP);
         }
         OptionAnswer standard = parse(question.getAnswer(), OptionAnswer.class);
@@ -1316,9 +1366,17 @@ public class ExamRecordServiceImpl implements IExamRecordService {
         Set<String> right = standard.getRightKeys().stream().map(this::normalize).collect(Collectors.toSet());
         Set<String> mineKeys = CollUtil.isEmpty(mine.getChoices()) ? Set.of()
             : mine.getChoices().stream().map(this::normalize).collect(Collectors.toSet());
+        // 错选直接清零：选中了正确答案之外的任何选项，本题不得分
+        boolean hasWrong = mineKeys.stream().anyMatch(key -> !right.contains(key));
+        if (hasWrong) {
+            return BigDecimal.ZERO;
+        }
         long hit = mineKeys.stream().filter(right::contains).count();
         if (hit == 0) {
             return BigDecimal.ZERO;
+        }
+        if (rate < 100) {
+            return fullScore.multiply(BigDecimal.valueOf(rate)).divide(BigDecimal.valueOf(100), 2, RoundingMode.HALF_UP);
         }
         return fullScore.multiply(BigDecimal.valueOf(hit)).divide(BigDecimal.valueOf(right.size()), 2, RoundingMode.HALF_UP);
     }

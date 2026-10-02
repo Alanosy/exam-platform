@@ -98,6 +98,23 @@ public class Exam extends TenantEntity {
     private String showAnswerMode;
 
     /**
+     * 客观题部分得分开关 0必须全对才给分 1启用部分得分
+     *
+     * <p>作用于多选题（漏选）与填空题（只答对部分空）。
+     * 规则：多选题只要选中了任何一个错误选项一律 0 分，避免「全选蒙满分」。
+     * 考试级配置优先于试卷的 paper.partial_score，两者都为 0 时才要求全对。
+     */
+    private String partialScore;
+
+    /**
+     * 部分正确时的得分比例（%）
+     *
+     * <p>100 = 按命中比例给分（答对一半给一半）；50 = 只要不是全对一律给该题满分的 50%。
+     * 仅在 partialScore = 1 时生效。
+     */
+    private Integer partialScoreRate;
+
+    /**
      * 防作弊配置：切屏次数、禁止复制粘贴、摄像头抓拍、全屏限制等
      */
     private String antiCheatConfig;
