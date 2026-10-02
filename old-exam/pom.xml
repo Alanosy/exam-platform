@@ -110,7 +110,7 @@
         <dependency>
             <groupId>org.apache.poi</groupId>
             <artifactId>poi-ooxml</artifactId>
-            <version>3.16</version>
+            <version>5.4.0</version>
         </dependency>
         <!-- Spring Boot 测试工具，用于编写和运行单元测试和集成测试 -->
         <dependency>
