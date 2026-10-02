@@ -29,6 +29,7 @@ exam-platform 是一个在线考试系统，采用 monorepo 结构，包含三�
 - 在 `exam-back/`、`exam-front/` 内创建/修改代码文件，遵循项目编码规范
 - 执行编译检查、单元测试命令
 - 梳理模块逻辑，生成接口文档
+- 每次执行完，执行git commit提交到本地
 
 ❌ 禁止：
 - **读取或修改 `old-exam/` 目录下的任何文件**（旧版代码，已归档）
@@ -154,10 +155,13 @@ exam-front/
 ✅ 允许执行：
 - `mvn compile`、`mvn test`、`mvn -pl {模块} compile`
 - `npm run dev`、`npm run build`、`npm run lint`
-- `git status`、`git diff`、`git log`
+- `git status`、`git diff`、`git log`、`git commit`
+- 本地 MySQL 只读查询（见第 10 节）。**注意：本机没有装 `mysql` 客户端，
+  只能用 `/Users/alan/.workbuddy/binaries/python/envs/default/bin/python` + `pymysql` 查询**
 
 ❌ 禁止执行：
-- `git push`、`rm -rf`、`drop table`
+- `git push`、`rm -rf`、`drop table`、`truncate`
+- **未经用户明确确认的 `INSERT` / `UPDATE` / `DELETE` / `DROP` / `ALTER`**
 - `curl` 访问外网、修改系统环境变量
 - 进入或操作 `old-exam/` 目录的任何命令
 
@@ -190,3 +194,66 @@ exam-front/
 - 跨服务调用使用 Dubbo `@DubboReference`，不要直接 HTTP 调用其他微服务
 - 前端请求统一走 `src/utils/request.ts` 封装的 axios 实例
 - 不引入新的第三方依赖，新增依赖必须先询问用户
+
+---
+
+## 10. 本地数据库访问（允许，默认只读）
+
+**允许连接本地 MySQL 辅助开发**：查表结构、核对字段、验证数据、定位线上/本地问题都可以直接查，
+不用再向用户要连接信息。
+
+### 10.1 连接信息
+
+| 项 | 值 |
+| :--- | :--- |
+| host | `127.0.0.1` |
+| port | `3306` |
+| user | `root` |
+| password | `ruoyi123` |
+
+### 10.2 查询方式
+
+**本机没有安装 `mysql` 命令行客户端**，不要尝试 `mysql -u...`。统一用：
+
+```bash
+/Users/alan/.workbuddy/binaries/python/envs/default/bin/python -c "
+import pymysql
+c = pymysql.connect(host='127.0.0.1', port=3306, user='root', password='ruoyi123', database='ry-exam')
+cur = c.cursor()
+cur.execute('select ...')
+for r in cur.fetchall(): print(r)
+"
+```
+
+（`pymysql` 已装在该 venv 里，别用系统 python，也别往全局装包。）
+
+### 10.3 数据库清单与归属
+
+| 数据库 | 用途 | 主要表 |
+| :--- | :--- | :--- |
+| `ry-exam` | **考试业务主库**（考试、题库、试卷、阅卷、防作弊、证书、白名单） | `exam`, `exam_user`, `exam_invite`, `exam_question`, `question`, `question_bank`, `question_option`, `paper`, `paper_question`, `exam_mark_*`, `exam_proctor_*`, `exam_certificate*` |
+| `ry-exam-answer` | **答题库**（考生答卷，独立分库） | `exam_record`, `exam_answer` |
+| `ry-cloud` | 系统/框架库（用户、角色、菜单、部门、字典、租户、OSS） | `sys_user`, `sys_role`, `sys_menu`, `sys_dept`, `sys_dict_type`, `sys_dict_data`, `sys_tenant`, `sys_oss*`, `gen_table*` |
+| `ry-config` | Nacos 配置中心库 | `config_info`, `his_config_info` 等 |
+| `ry-job` | 定时任务调度库（snail-job） | `sj_job`, `sj_job_task`, `sj_retry*` |
+| `ry-seata` | 分布式事务库 | `global_table`, `branch_table`, `lock_table` |
+| `ry-workflow` | 工作流库 | `flow_definition`, `flow_instance`, `flow_task` 等 |
+
+> ⚠️ **`ry-exam` 与 `ry-exam-answer` 是两个库**，跨库一律走 Dubbo 调用，禁止写跨库 JOIN SQL。
+> ⚠️ **`sys_menu` 在 `ry-cloud`**，不在 `ry-exam`。
+
+### 10.4 边界（必须遵守）
+
+- **默认只读**：`SELECT` / `SHOW` / `DESC` / `information_schema` 查询随意用。
+- **写操作必须先说明再执行**：任何 `INSERT` / `UPDATE` / `DELETE` / `ALTER` / `DROP` / `TRUNCATE`
+  都要先告诉用户「要改哪个库哪张表、改什么、为什么」，得到明确确认后再执行。
+  （用户为了调试主动要求造数据/修数据除外，但仍需逐条报出 SQL。）
+- **不改已有表结构**：结构变更一律生成幂等脚本放 `exam-back/script/sql/update/`，
+  由用户自己执行；确需直连执行必须先确认。
+- **注意多租户**：业务表基本都带 `tenant_id`，查询统计时**记得带租户条件**，
+  否则会把所有租户的数据混在一起。
+- **注意逻辑删除**：业务表普遍有 `del_flag`（0 未删 / 2 已删），查询要带 `del_flag = 0`，
+  否则会统计到已删数据。
+- **查不到表先看库**：`exam_*` 开头的表不一定都在 `ry-exam`，
+  `exam_record` / `exam_answer` 在 `ry-exam-answer`；`exam_proctor_*` / `exam_certificate*` 在 `ry-exam`。
+- 排查数据问题时，优先用数据库核实真实值，别只靠代码推测。
