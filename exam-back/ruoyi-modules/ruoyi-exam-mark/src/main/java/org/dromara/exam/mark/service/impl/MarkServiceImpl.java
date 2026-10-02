@@ -704,7 +704,10 @@ public class MarkServiceImpl implements IMarkService {
     }
 
     /**
-     * 作答 / 参考答案的人话版：主观题存的是 {"text":".."}，取不到就按纯文本原样返回
+     * 作答 / 参考答案的人话版
+     *
+     * <p>主观题作答存的是 {"text":".."}，而**参考答案**存的是 {"answer":".."}（出题页写进去的），
+     * 两个键名不一样，只认 text 的话参考答案会被整串 JSON 原样返回。这里两个都认。
      */
     private String toAnswerText(String content) {
         if (StringUtils.isBlank(content)) {
@@ -715,21 +718,20 @@ public class MarkServiceImpl implements IMarkService {
         }
         try {
             TextAnswer answer = JsonUtils.parseObject(content, TextAnswer.class);
-            if (ObjectUtil.isNull(answer) || ObjectUtil.isNull(answer.getText())) {
-                return content;
-            }
-            return answer.getText();
+            String text = ObjectUtil.isNull(answer) ? null : StringUtils.defaultIfBlank(answer.getText(), answer.getAnswer());
+            return StringUtils.isBlank(text) ? content : text;
         } catch (Exception e) {
             return content;
         }
     }
 
     /**
-     * 主观题作答 / 参考答案结构 {"text":".."}
+     * 主观题结构：考生作答 {"text":".."}，参考答案 {"answer":".."}
      */
     @lombok.Data
     public static class TextAnswer {
         private String text;
+        private String answer;
     }
 
     private String plainText(String html) {

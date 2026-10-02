@@ -15,7 +15,7 @@ import {
   getDifficultyLabel,
   getQuestionTypeLabel,
   getStatusLabel
-} from './questionMeta';
+} from '@/utils/questionMeta';
 
 export interface QuestionDictOption {
   label: string;

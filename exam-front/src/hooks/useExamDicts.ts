@@ -13,7 +13,7 @@
 
 import { computed, getCurrentInstance, toRefs } from 'vue';
 // 题型 / 难度的兜底值以 questionMeta.ts 为唯一来源，避免两处各写一份
-import { DIFFICULTY_OPTIONS, QUESTION_TYPES } from '@/views/system/question/questionMeta';
+import { DIFFICULTY_OPTIONS, QUESTION_TYPES } from '@/utils/questionMeta';
 
 export interface ExamDictOption {
   label: string;

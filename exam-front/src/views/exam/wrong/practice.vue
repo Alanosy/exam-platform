@@ -117,11 +117,12 @@
               </div>
               <div class="judge-line">
                 <span class="judge-label">你的作答</span>
-                <span class="judge-value ql-editor" v-html="result.myAnswerText || '未作答'"></span>
+                <!-- 后端给的是文本，但个别题型会退化成整串 JSON，统一再过一遍翻译 -->
+                <span class="judge-value ql-editor" v-html="myAnswerHtml"></span>
               </div>
               <div class="judge-line">
                 <span class="judge-label">正确答案</span>
-                <span class="judge-value judge-right ql-editor" v-html="result.standardAnswerText || '-'"></span>
+                <span class="judge-value judge-right ql-editor" v-html="standardAnswerHtml"></span>
               </div>
               <div v-if="result.analysis" class="judge-analysis">
                 <div class="judge-label">解析</div>
@@ -178,6 +179,7 @@ import '@vueup/vue-quill/dist/vue-quill.snow.css';
 import { getWrongList, reviewWrong, masterWrong } from '@/api/exam/wrong';
 import type { WrongQuestionVO, WrongReviewResultVO } from '@/api/exam/wrong/types';
 import { useExamDicts } from '@/hooks/useExamDicts';
+import { answerKeys, formatAnswer } from '@/utils/answer';
 
 const route = useRoute();
 const router = useRouter();
@@ -327,11 +329,24 @@ const myAnswerKeys = computed<string[]>(() => {
   return [];
 });
 
+/** 我的作答（人话）：后端文本里万一还是 JSON，这里再翻译一次 */
+const myAnswerHtml = computed<string>(() =>
+  formatAnswer(result.value?.myAnswerText, current.value?.questionType, { standard: false, empty: '未作答' })
+);
+
+/** 正确答案（人话）：同上 */
+const standardAnswerHtml = computed<string>(() =>
+  formatAnswer(result.value?.standardAnswerText, current.value?.questionType, { standard: true, empty: '-' })
+);
+
 /** 用判分结果回传的选项顺序推断正确答案：后端 standardAnswerText 是文本，这里用选项内容匹配兜底 */
 const rightAnswerKeys = computed<string[]>(() => {
   if (!result.value) return [];
   const standard = (result.value.standardAnswerText ?? '').trim();
   if (!standard) return [];
+  // 标准答案文本里如果是 JSON，直接取标识更准
+  const keys = answerKeys(standard, current.value?.questionType);
+  if (keys.length > 0) return keys;
   const opts = result.value.options ?? current.value?.options ?? [];
   const matched = opts.filter((item) => plainOf(item.optionContent) === standard).map((item) => item.optionKey);
   if (matched.length > 0) return matched;
@@ -802,6 +817,36 @@ onMounted(() => {
     padding: 0;
     overflow: visible;
     line-height: 1.7;
+  }
+
+  /* 代码题答案由 v-html 插入，拿不到 scoped 属性，只能 :deep 兜 */
+  :deep(.answer-code-lang) {
+    display: inline-block;
+    margin-bottom: 4px;
+    padding: 0 6px;
+    font-size: 12px;
+    line-height: 20px;
+    color: #409eff;
+    background: #ecf5ff;
+    border-radius: 4px;
+  }
+
+  :deep(.answer-code) {
+    margin: 0;
+    padding: 10px 12px;
+    font-family: Menlo, Consolas, 'Courier New', monospace;
+    font-size: 13px;
+    line-height: 1.6;
+    white-space: pre-wrap;
+    word-break: break-all;
+    background: #f5f7fa;
+    border-radius: 6px;
+  }
+
+  :deep(.answer-remark) {
+    margin-top: 6px;
+    font-size: 13px;
+    color: #606266;
   }
 }
 

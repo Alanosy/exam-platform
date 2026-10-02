@@ -59,12 +59,13 @@
 
           <div class="answer-box">
             <div class="answer-label">考生作答</div>
-            <div class="answer-content ql-editor" v-html="item.answerText || '未作答'"></div>
+            <!-- 答案存的是 JSON，统一按题型翻译成人话再展示（后端给的 *Text 只作兜底） -->
+            <div class="answer-content ql-editor" v-html="myAnswerHtml(item)"></div>
           </div>
 
           <div class="answer-box">
             <div class="answer-label">参考答案</div>
-            <div class="answer-content answer-standard ql-editor" v-html="item.standardAnswerText || '-'"></div>
+            <div class="answer-content answer-standard ql-editor" v-html="standardAnswerHtml(item)"></div>
           </div>
 
           <div v-if="item.analysis" class="answer-box">
@@ -141,6 +142,7 @@ import '@vueup/vue-quill/dist/vue-quill.snow.css';
 import { getMarkQuestions, getMarkLogs, saveMarkScore, finishMarkTask, aiPreviewMarkTask } from '@/api/system/mark';
 import type { MarkQuestionVO, MarkLogVO, MarkScoreForm } from '@/api/system/mark/types';
 import { useExamDicts } from '@/hooks/useExamDicts';
+import { formatAnswer } from '@/utils/answer';
 
 const route = useRoute();
 const router = useRouter();
@@ -172,6 +174,28 @@ const markedCount = computed(
 );
 const totalScore = computed(() => Number(questions.value.reduce((sum, item) => sum + Number(scoreForm[item.itemId]?.score ?? 0), 0).toFixed(1)));
 const fullScore = computed(() => Number(questions.value.reduce((sum, item) => sum + Number(item.fullScore ?? 0), 0).toFixed(1)));
+
+/**
+ * 考生作答（人话）
+ *
+ * <p>优先用原始 JSON 自己翻译：后端 answerText 只认 `{"text":..}` 这一种，
+ * 遇到别的题型会把整串 JSON 原样返回，页面上就出现 `{"answer":"..."}`。
+ * 原始字段缺失时再退回后端文本。
+ */
+const myAnswerHtml = (item: MarkQuestionVO): string =>
+  formatAnswer(item.answerContent || item.answerText, item.questionType, {
+    standard: false,
+    options: item.options,
+    empty: '未作答'
+  });
+
+/** 参考答案（人话），同上 */
+const standardAnswerHtml = (item: MarkQuestionVO): string =>
+  formatAnswer(item.standardAnswer || item.standardAnswerText, item.questionType, {
+    standard: true,
+    options: item.options,
+    empty: '-'
+  });
 
 const pad = (n: number) => String(n).padStart(2, '0');
 
@@ -423,6 +447,37 @@ onMounted(() => {
     height: auto;
     padding: 0;
     overflow: visible;
+  }
+
+  /* 代码题参考答案由 v-html 插入，拿不到 scoped 属性，只能 :deep 兜 */
+  :deep(.answer-code-lang) {
+    display: inline-block;
+    margin-bottom: 4px;
+    padding: 0 6px;
+    font-size: 12px;
+    line-height: 20px;
+    color: #409eff;
+    background: #ecf5ff;
+    border-radius: 4px;
+  }
+
+  :deep(.answer-code) {
+    margin: 0;
+    padding: 10px 12px;
+    font-family: Menlo, Consolas, 'Courier New', monospace;
+    font-size: 13px;
+    line-height: 1.6;
+    white-space: pre-wrap;
+    word-break: break-all;
+    color: #303133;
+    background: #f5f7fa;
+    border-radius: 6px;
+  }
+
+  :deep(.answer-remark) {
+    margin-top: 6px;
+    font-size: 13px;
+    color: #606266;
   }
 }
 

@@ -58,12 +58,7 @@
         <span class="mr-2">题干</span>
         <el-text type="danger" size="small">*</el-text>
       </template>
-      <editor
-        v-model="form.title"
-        :height="240"
-        :min-height="200"
-        placeholder="请输入题干内容，支持富文本与图片"
-      />
+      <editor v-model="form.title" :height="240" :min-height="200" placeholder="请输入题干内容，支持富文本与图片" />
     </el-card>
 
     <el-card shadow="never" class="mb-[12px]">
@@ -165,12 +160,7 @@
       <template #header>
         <span>试题解析</span>
       </template>
-      <editor
-        v-model="form.analysis"
-        :height="220"
-        :min-height="180"
-        placeholder="请输入整题解析，支持富文本"
-      />
+      <editor v-model="form.analysis" :height="220" :min-height="180" placeholder="请输入整题解析，支持富文本" />
     </el-card>
   </div>
 </template>
@@ -185,7 +175,7 @@ import { listOption } from '@/api/system/option';
 import { OptionVO } from '@/api/system/option/types';
 import { listBank } from '@/api/system/bank';
 import { BankVO } from '@/api/system/bank/types';
-import { getQuestionTypeMeta, optionKeyOf, parseAnswer, QuestionAnswerPayload, QuestionTypeMeta } from './questionMeta';
+import { getQuestionTypeMeta, optionKeyOf, parseAnswer, QuestionAnswerPayload, QuestionTypeMeta } from '@/utils/questionMeta';
 import { useQuestionDicts } from './useQuestionDict';
 
 /**
@@ -210,9 +200,7 @@ const buttonLoading = ref(false);
  * 字典没配或没有这一项时兜底 1（0草稿 1启用 2废弃）。
  */
 const defaultStatus = computed<QuestionForm['status']>(() => {
-  const enabled = questionStatusOptions.value.find(
-    (item) => /^enabled$/i.test(String(item.value)) || /启用|enabled/i.test(String(item.label))
-  );
+  const enabled = questionStatusOptions.value.find((item) => /^enabled$/i.test(String(item.value)) || /启用|enabled/i.test(String(item.label)));
   return enabled ? enabled.value : 1;
 });
 

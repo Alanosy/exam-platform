@@ -45,9 +45,9 @@
               <span class="ml-2">第 {{ q.sort }} 题（{{ q.score }} 分，得 {{ q.gainedScore }} 分）</span>
             </div>
             <div class="detail-question ql-editor" v-html="q.title"></div>
-            <div class="detail-answer">你的作答：<span class="answer-html ql-editor" v-html="readableAnswer(q.myAnswer)"></span></div>
+            <div class="detail-answer">你的作答：<span class="answer-html ql-editor" v-html="readableAnswer(q.myAnswer, q.questionType)"></span></div>
             <div v-if="q.standardAnswer" class="detail-answer">
-              参考答案：<span class="answer-html ql-editor" v-html="readableAnswer(q.standardAnswer)"></span>
+              参考答案：<span class="answer-html ql-editor" v-html="readableAnswer(q.standardAnswer, q.questionType, true)"></span>
             </div>
             <div v-if="q.analysis" class="detail-analysis ql-editor" v-html="q.analysis"></div>
           </div>
@@ -169,15 +169,7 @@
               {{ proctorRule?.switchScreen ? `切屏上限 ${proctorRule.switchScreen} 次` : '切屏不限' }}
             </el-tag>
           </div>
-          <video
-            id="proctor-video"
-            v-show="cameraOpen"
-            ref="proctorVideo"
-            class="proctor-video"
-            muted
-            autoplay
-            playsinline
-          ></video>
+          <video id="proctor-video" v-show="cameraOpen" ref="proctorVideo" class="proctor-video" muted autoplay playsinline></video>
           <div v-if="proctorRule?.camera === 1 && !cameraReady && !cameraError" class="proctor-camera-tip">
             {{ cameraOpen ? '正在获取摄像头画面…' : '正在申请摄像头权限…' }}
           </div>
@@ -256,6 +248,7 @@ import { getMyCertificateByRecord } from '@/api/exam/cert';
 import type { CertificateRecordVO } from '@/api/exam/cert/types';
 import { useExamDicts } from '@/hooks/useExamDicts';
 import { useProctor } from '@/hooks/useProctor';
+import { formatAnswer } from '@/utils/answer';
 
 const route = useRoute();
 const router = useRouter();
@@ -392,19 +385,14 @@ const clockText = computed(() => {
   return h > 0 ? `${pad(h)}:${pad(m)}:${pad(s)}` : `${pad(m)}:${pad(s)}`;
 });
 
-/** 把存下来的 JSON 作答转成可读文本，用于结果展示 */
-const readableAnswer = (json?: string): string => {
-  if (!json) return '未作答';
-  try {
-    const obj = JSON.parse(json);
-    if (obj.choices?.length) return obj.choices.join('、');
-    if (obj.blanks?.length) return obj.blanks.map((b: any) => b.text ?? '').join(' | ');
-    if (obj.text) return obj.text;
-    return json;
-  } catch {
-    return json;
-  }
-};
+/**
+ * 把存下来的 JSON 作答 / 参考答案转成可读内容，用于结果展示
+ *
+ * <p>只认 `choices / text` 这一族是远远不够的：参考答案用的是
+ * `rightKeys / answers / answer`，老写法遇到就直接把整串 JSON 贴出来了。
+ */
+const readableAnswer = (json?: string, questionType?: string, standard = false): string =>
+  formatAnswer(json, questionType, { standard, empty: '未作答' });
 
 /** 用当前题的已存答案回填输入控件 */
 const fillInput = (question: ExamQuestionVO) => {
@@ -1038,6 +1026,36 @@ onBeforeUnmount(stopTimer);
     overflow: visible;
     vertical-align: top;
     line-height: 1.7;
+  }
+
+  /* 代码题答案由 v-html 插入，拿不到 scoped 属性，只能 :deep 兜 */
+  :deep(.answer-code-lang) {
+    display: inline-block;
+    margin-bottom: 4px;
+    padding: 0 6px;
+    font-size: 12px;
+    line-height: 20px;
+    color: #409eff;
+    background: #ecf5ff;
+    border-radius: 4px;
+  }
+
+  :deep(.answer-code) {
+    margin: 0;
+    padding: 10px 12px;
+    font-family: Menlo, Consolas, 'Courier New', monospace;
+    font-size: 13px;
+    line-height: 1.6;
+    white-space: pre-wrap;
+    word-break: break-all;
+    background: #f5f7fa;
+    border-radius: 6px;
+  }
+
+  :deep(.answer-remark) {
+    margin-top: 6px;
+    font-size: 13px;
+    color: #606266;
   }
 }
 

@@ -105,12 +105,12 @@
 
           <div class="answer-row">
             <span class="answer-label">我的作答</span>
-            <!-- 主观题作答是富文本，必须按 HTML 渲染，否则会看到一堆标签 -->
-            <span class="answer-value" :class="{ 'is-empty': !q.myAnswerText }" v-html="q.myAnswerText || '未作答'"></span>
+            <!-- 答案存的是 JSON，按题型翻译成人话再展示；后端给的 *Text 只作兜底 -->
+            <span class="answer-value" :class="{ 'is-empty': !q.myAnswerText }" v-html="myAnswerHtml(q)"></span>
           </div>
           <div v-if="result.showAnswer" class="answer-row">
             <span class="answer-label">正确答案</span>
-            <span class="answer-value is-standard" v-html="q.standardAnswerText || '-'"></span>
+            <span class="answer-value is-standard" v-html="standardAnswerHtml(q)"></span>
           </div>
           <div v-if="result.showAnswer && q.analysis" class="analysis-box">
             <div class="analysis-label">解析</div>
@@ -161,6 +161,7 @@ import type { ExamResultVO, ExamResultQuestionVO } from '@/api/exam/answer/types
 import { getMyCertificateByRecord } from '@/api/exam/cert';
 import type { CertificateRecordVO } from '@/api/exam/cert/types';
 import { useExamDicts } from '@/hooks/useExamDicts';
+import { answerKeys, formatAnswer } from '@/utils/answer';
 
 const route = useRoute();
 const router = useRouter();
@@ -204,17 +205,22 @@ const usedText = (seconds?: number): string => {
   return m > 0 ? `${m}分${s}秒` : `${s}秒`;
 };
 
-/** 服务端给的是「A、C」这种人话文本，切回数组方便比对 */
-const splitKeys = (text?: string): string[] =>
-  text
-    ? text
-        .split('、')
-        .map((item) => item.trim())
-        .filter(Boolean)
-    : [];
+/** 我的作答（人话）：优先自己解析原始 JSON，后端 *Text 只作兜底 */
+const myAnswerHtml = (q: ExamResultQuestionVO): string =>
+  formatAnswer(q.myAnswer || q.myAnswerText, q.questionType, { standard: false, options: q.options, empty: '未作答' });
 
-const myKeys = (q: ExamResultQuestionVO): string[] => splitKeys(q.myAnswerText);
-const rightKeys = (q: ExamResultQuestionVO): string[] => splitKeys(q.standardAnswerText);
+/** 正确答案（人话）：同上 */
+const standardAnswerHtml = (q: ExamResultQuestionVO): string =>
+  formatAnswer(q.standardAnswer || q.standardAnswerText, q.questionType, { standard: true, options: q.options, empty: '-' });
+
+/**
+ * 客观题的选项标识（A / A、C）
+ *
+ * <p>直接从原始 JSON 里取标识，不再去拆「A、C」这种文本 —— 万一后端没转成人话，
+ * 拆出来的是 `{"rightKeys":["A"]}` 这种没法比的东西。
+ */
+const myKeys = (q: ExamResultQuestionVO): string[] => answerKeys(q.myAnswer || q.myAnswerText, q.questionType);
+const rightKeys = (q: ExamResultQuestionVO): string[] => answerKeys(q.standardAnswer || q.standardAnswerText, q.questionType);
 
 const goRecords = () => router.push('/exam/records');
 
@@ -423,6 +429,36 @@ onMounted(async () => {
 
   :deep(img) {
     max-width: 100%;
+  }
+
+  /* 代码题答案由 v-html 插入，拿不到 scoped 属性，只能 :deep 兜 */
+  :deep(.answer-code-lang) {
+    display: inline-block;
+    margin-bottom: 4px;
+    padding: 0 6px;
+    font-size: 12px;
+    line-height: 20px;
+    color: #409eff;
+    background: #ecf5ff;
+    border-radius: 4px;
+  }
+
+  :deep(.answer-code) {
+    margin: 0;
+    padding: 10px 12px;
+    font-family: Menlo, Consolas, 'Courier New', monospace;
+    font-size: 13px;
+    line-height: 1.6;
+    white-space: pre-wrap;
+    word-break: break-all;
+    background: #f5f7fa;
+    border-radius: 6px;
+  }
+
+  :deep(.answer-remark) {
+    margin-top: 6px;
+    font-size: 13px;
+    color: #606266;
   }
 }
 
