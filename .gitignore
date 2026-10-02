@@ -25,11 +25,13 @@ mvnw.cmd
 /out/
 
 ### IntelliJ IDEA ###
-## .idea
-!.idea/
+# 注意：这里原来有一行 `!.idea/`（取消忽略），会把 .idea 重新拉回版本库，
+# 已删除。整个目录都要忽略，不要再加 `!` 开头的反规则。
+.idea/
 *.iws
 *.iml
 *.ipr
+
 
 ### NetBeans ###
 /nbproject/private/
@@ -56,3 +58,18 @@ mvnw.cmd
 online-exam-agent/.env
 online-exam-agent/.DS_Store
 online-exam-agent/venv/
+
+### 本地工具 / AI 助手工作区 ###
+# WorkBuddy 的记忆与会话数据，只属于本机，不进版本库
+.workbuddy/
+
+### 环境变量 ###
+# 只提交 .env.example 作为模板，真实的 .env 一律忽略（避免把 Key 推上去）
+**/.env
+!**/.env.example
+
+### 本地运行时产物 ###
+node_modules/
+logs/
+*.log
+
