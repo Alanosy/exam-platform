@@ -21,11 +21,15 @@ import org.dromara.common.log.enums.BusinessType;
 import org.dromara.common.excel.utils.ExcelUtil;
 import org.dromara.exam.manage.domain.vo.ExamVo;
 import org.dromara.exam.manage.domain.vo.ExamJoinVo;
+import org.dromara.exam.manage.domain.vo.ExamSituationOverviewVo;
+import org.dromara.exam.manage.domain.vo.ExamSituationVo;
 import org.dromara.exam.manage.domain.vo.ExamWhiteUserVo;
 import org.dromara.exam.manage.domain.bo.ExamBo;
 import org.dromara.exam.manage.domain.bo.ExamJoinBo;
+import org.dromara.exam.manage.domain.bo.ExamSituationBo;
 import org.dromara.exam.manage.domain.bo.ExamUserBo;
 import org.dromara.exam.manage.service.IExamService;
+import org.dromara.exam.manage.service.IExamSituationService;
 import org.dromara.exam.manage.service.IExamUserService;
 import org.dromara.common.mybatis.core.page.TableDataInfo;
 
@@ -45,6 +49,8 @@ public class ExamController extends BaseController {
     private final IExamService examService;
 
     private final IExamUserService examUserService;
+
+    private final IExamSituationService examSituationService;
 
     /**
      * 查询考试主列表
@@ -178,6 +184,48 @@ public class ExamController extends BaseController {
     public R<Long> join(@NotBlank(message = "加入码不能为空") @PathVariable("code") String code, @RequestBody ExamJoinBo bo) {
         String password = ObjectUtil.isNull(bo) ? null : bo.getPassword();
         return R.ok(examService.joinByCode(code, password));
+    }
+
+    /* ---------------------------------- 考试情况 ---------------------------------- */
+
+    /**
+     * 整场考试的概览：应考 / 参考 / 已交卷 / 待阅 / 平均分 / 及格率
+     *
+     * <p>实时从答卷记录算，不等统计任务的预计算结果——管理端点开就得看得见数。
+     */
+    @SaCheckPermission("system:exam:query")
+    @GetMapping("/{id}/situation/overview")
+    public R<ExamSituationOverviewVo> situationOverview(@NotNull(message = "主键不能为空") @PathVariable("id") Long id) {
+        return R.ok(examSituationService.overview(id));
+    }
+
+    /**
+     * 参考名单与成绩
+     *
+     * <p>谁参考了、考了多少分、主观题阅完没有，都在这一页。
+     */
+    @SaCheckPermission("system:exam:query")
+    @GetMapping("/{id}/situation/records")
+    public TableDataInfo<ExamSituationVo> situationRecords(@NotNull(message = "主键不能为空") @PathVariable("id") Long id,
+                                                           ExamSituationBo bo, PageQuery pageQuery) {
+        ExamSituationBo target = ObjectUtil.defaultIfNull(bo, new ExamSituationBo());
+        target.setExamId(id);
+        return examSituationService.listSituation(target, pageQuery);
+    }
+
+    /**
+     * 导出整场考试情况：一张「成绩概览」+ 一张「考生明细」
+     *
+     * <p>筛选条件与页面上保持一致，页面上筛出来的就是导出来的。
+     */
+    @SaCheckPermission("system:exam:export")
+    @Log(title = "考试情况", businessType = BusinessType.EXPORT)
+    @PostMapping("/{id}/situation/export")
+    public void exportSituation(@NotNull(message = "主键不能为空") @PathVariable("id") Long id,
+                                ExamSituationBo bo, HttpServletResponse response) {
+        ExamSituationBo target = ObjectUtil.defaultIfNull(bo, new ExamSituationBo());
+        target.setExamId(id);
+        examSituationService.export(target, response);
     }
 
     /**

@@ -8,6 +8,8 @@ import org.dromara.exam.mark.api.domain.RemoteMarkSyncBo;
 import org.dromara.exam.mark.service.IMarkService;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 /**
  * 阅卷服务对外实现（答题服务交卷后调用）
  *
@@ -30,6 +32,18 @@ public class RemoteMarkServiceImpl implements RemoteMarkService {
             // 建阅卷任务失败不能把交卷整条链路带崩，答题服务那边还会记一条 warn
             log.warn("同步阅卷任务失败 {}", e.getMessage());
             return null;
+        }
+    }
+
+    @Override
+    public List<Long> listPendingRecordIds(Long examId) {
+        try {
+            return markService.listPendingRecordIds(examId);
+        } catch (Exception e) {
+            // 调用方拿这个列表决定要不要显示「去阅卷」入口和「待阅」标记，
+            // 查不到就当没有待阅，不能让考试管理页跟着打不开
+            log.warn("查询待阅答卷失败 {}", e.getMessage());
+            return List.of();
         }
     }
 }

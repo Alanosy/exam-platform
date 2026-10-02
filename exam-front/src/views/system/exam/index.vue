@@ -104,6 +104,9 @@
             <el-tooltip content="配置考试" placement="top">
               <el-button link type="primary" icon="Edit" @click="handleUpdate(scope.row)" v-hasPermi="['system:exam:edit']"></el-button>
             </el-tooltip>
+            <el-tooltip content="考试情况" placement="top">
+              <el-button link type="primary" icon="DataAnalysis" @click="goSituation(scope.row)" v-hasPermi="['system:exam:query']"></el-button>
+            </el-tooltip>
             <el-tooltip content="监考记录" placement="top">
               <el-button link type="primary" icon="View" @click="goProctor(scope.row)" v-hasPermi="['exam:proctor:list']"></el-button>
             </el-tooltip>
@@ -155,6 +158,14 @@ const isPublicExam = (row: ExamVO) => row.participantType === 'public' && !!row.
 
 /** 拼成可直接发出去的完整链接：带上部署时的上下文路径，内部会压掉多余的斜杠 */
 const joinLinkOf = (row: ExamVO) => buildJoinLink(row.joinCode);
+
+/** 这场考试考得怎么样：谁参考了、多少分、有多少主观题没阅 */
+const goSituation = (row: ExamVO) =>
+  router.push({
+    path: '/system/exam/situation',
+    // 雪花 ID 必须字符串透传，拼进 URL 前一律 String()
+    query: { examId: String(row.id ?? ''), examName: row.examName ?? '' }
+  });
 
 /** 直接看这场考试的监考记录：切屏、粘贴、摄像头抓拍都在这儿 */
 const goProctor = (row: ExamVO) => router.push(`/system/proctor?examId=${row.id}`);

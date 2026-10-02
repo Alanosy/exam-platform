@@ -1,6 +1,15 @@
 import request from '@/utils/request';
 import { AxiosPromise } from 'axios';
-import { ExamVO, ExamForm, ExamQuery, ExamJoinVO, ExamWhiteUserVO } from '@/api/system/exam/types';
+import {
+  ExamVO,
+  ExamForm,
+  ExamQuery,
+  ExamJoinVO,
+  ExamWhiteUserVO,
+  ExamSituationVO,
+  ExamSituationOverviewVO,
+  ExamSituationQuery
+} from '@/api/system/exam/types';
 
 /**
  * 查询考试主列表
@@ -107,6 +116,30 @@ export const saveExamWhiteUsers = (examId: string | number, userIds: Array<strin
     url: `/exam/${examId}/whiteUsers`,
     method: 'put',
     data: { examId, userIds }
+  });
+};
+
+/**
+ * 查询某场考试的概览：应考 / 参考 / 已交卷 / 待阅 / 平均分 / 及格率
+ * @param examId 考试ID
+ */
+export const getExamSituationOverview = (examId: string | number): AxiosPromise<ExamSituationOverviewVO> => {
+  return request({
+    url: `/exam/${examId}/situation/overview`,
+    method: 'get'
+  });
+};
+
+/**
+ * 查询某场考试的参考名单与成绩
+ * @param examId 考试ID
+ * @param query 筛选条件（关键词 / 状态 / 是否及格 / 只看待阅）
+ */
+export const listExamSituation = (examId: string | number, query: ExamSituationQuery): AxiosPromise<ExamSituationVO[]> => {
+  return request({
+    url: `/exam/${examId}/situation/records`,
+    method: 'get',
+    params: query
   });
 };
 

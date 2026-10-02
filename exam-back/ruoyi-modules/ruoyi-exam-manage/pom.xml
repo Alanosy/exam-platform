@@ -117,6 +117,18 @@
             <artifactId>ruoyi-api-exam-paper</artifactId>
         </dependency>
 
+        <!-- 考试情况：实时查本场考试的答卷与成绩（exam_record 在答题库，只能跨服务取） -->
+        <dependency>
+            <groupId>org.dromara</groupId>
+            <artifactId>ruoyi-api-exam-answer</artifactId>
+        </dependency>
+
+        <!-- 考试情况：判断这场考试还有多少主观题没阅完 -->
+        <dependency>
+            <groupId>org.dromara</groupId>
+            <artifactId>ruoyi-api-exam-mark</artifactId>
+        </dependency>
+
     </dependencies>
 
     <build>

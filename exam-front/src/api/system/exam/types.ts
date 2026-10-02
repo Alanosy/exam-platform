@@ -194,6 +194,141 @@ export interface ExamWhiteUserVO {
   phonenumber: string;
 }
 
+/**
+ * 考试情况：一行 = 一个考生的一场作答
+ */
+export interface ExamSituationVO {
+  /** 答卷记录ID */
+  recordId: string;
+
+  /** 考生用户ID */
+  userId: string;
+
+  /** 考生账号 */
+  account: string;
+
+  /** 考生姓名 */
+  nickName: string;
+
+  /** 所属部门 */
+  deptName: string;
+
+  /** 第几次参加，从1开始 */
+  attemptNo: number;
+
+  /** answering答题中 / submitted已交卷 / expired超时作废 */
+  status: string;
+
+  /** 开考时间 */
+  startTime: string;
+
+  /** 交卷时间，答题中为空 */
+  submitTime: string;
+
+  /** 用时（秒） */
+  usedSeconds: number;
+
+  /** 用时文案 mm:ss，导出用 */
+  usedTimeLabel: string;
+
+  /** 题目总数 */
+  questionCount: number;
+
+  /** 已作答题目数 */
+  answeredCount: number;
+
+  /** 客观题得分 */
+  objectiveScore: number | string;
+
+  /** 主观题得分 */
+  subjectiveScore: number | string;
+
+  /** 总分 */
+  totalScore: number | string;
+
+  /** 及格分 */
+  passScore: number | string;
+
+  /** 是否及格 1及格 0不及格；待阅时后端不下发 */
+  passed?: number;
+
+  /** 主观题没阅完为 true，此时总分还没定 */
+  pendingMark: boolean;
+}
+
+/**
+ * 考试情况：整场考试的概览
+ */
+export interface ExamSituationOverviewVO {
+  /** 考试ID */
+  examId: string;
+
+  /** 考试名称 */
+  examName: string;
+
+  /** 考试类型 1正式考试 / 2练习考试 */
+  examType: string;
+
+  /** 考试状态 */
+  status: string;
+
+  /** 开始时间 */
+  startTime: string;
+
+  /** 结束时间 */
+  endTime: string;
+
+  /** 考试限时（分钟） */
+  duration: number;
+
+  /** 及格分 */
+  passScore: number | string;
+
+  /** 应考人数 */
+  invitedCount: number;
+
+  /** 参考人数（去重） */
+  joinedCount: number;
+
+  /** 已交卷份数 */
+  submittedCount: number;
+
+  /** 答题中份数 */
+  answeringCount: number;
+
+  /** 待阅份数，大于 0 才显示「去阅卷」 */
+  pendingMarkCount: number;
+
+  /** 平均分 */
+  avgScore: number | string;
+
+  /** 最高分 */
+  maxScore: number | string;
+
+  /** 最低分 */
+  minScore: number | string;
+
+  /** 及格人数 */
+  passedCount: number;
+
+  /** 及格率（%） */
+  passRate: number | string;
+}
+
+export interface ExamSituationQuery extends PageQuery {
+  /** 关键词：姓名 / 账号 / 部门 */
+  keyword?: string;
+
+  /** 答卷状态 answering / submitted / expired */
+  status?: string;
+
+  /** 是否及格 1及格 0不及格 */
+  passed?: number;
+
+  /** 只看待阅：1 */
+  pendingMark?: number;
+}
+
 export interface ExamQuery extends PageQuery {
   /** 考试名称（模糊匹配） */
   examName?: string;

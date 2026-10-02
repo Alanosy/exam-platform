@@ -204,6 +204,22 @@ export const constantRoutes: RouteRecordRaw[] = [
     ]
   },
   {
+    // 考试情况：从考试管理列表的「考试情况」按钮下钻进来，带 examId
+    // 走 static route 而不是后端菜单，因为它是详情页不是一级功能入口
+    path: '/system/exam/situation',
+    component: Layout,
+    hidden: true,
+    redirect: 'noRedirect',
+    children: [
+      {
+        path: '',
+        component: () => import('@/views/system/exam/situation/index.vue'),
+        name: 'SystemExamSituation',
+        meta: { title: '考试情况', activeMenu: '/system/exam', noCache: true }
+      }
+    ]
+  },
+  {
     // 考生通过公开链接加入考试：/exam/join/{joinCode}
     // 不带 Layout，独立整页展示；未登录时由 permission.ts 的路由守卫拦到 /login?redirect=...
     path: '/exam/join/:code',

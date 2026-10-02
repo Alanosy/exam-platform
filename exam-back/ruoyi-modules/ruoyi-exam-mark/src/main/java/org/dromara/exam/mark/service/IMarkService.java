@@ -83,4 +83,12 @@ public interface IMarkService {
      * @return 阅卷任务ID，没有主观题时返回 null
      */
     Long syncSubjective(RemoteMarkSyncBo bo);
+
+    /**
+     * 某场考试还有哪些答卷没阅完
+     *
+     * @param examId 考试ID
+     * @return 未阅完的答卷ID
+     */
+    List<Long> listPendingRecordIds(Long examId);
 }

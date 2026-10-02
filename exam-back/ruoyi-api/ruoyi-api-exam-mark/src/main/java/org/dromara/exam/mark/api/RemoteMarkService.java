@@ -2,6 +2,8 @@ package org.dromara.exam.mark.api;
 
 import org.dromara.exam.mark.api.domain.RemoteMarkSyncBo;
 
+import java.util.List;
+
 /**
  * 阅卷服务（跨服务调用）
  *
@@ -23,4 +25,16 @@ public interface RemoteMarkService {
      * @return 新建的阅卷任务ID，没有主观题时返回 null
      */
     Long syncSubjective(RemoteMarkSyncBo bo);
+
+    /**
+     * 某场考试还有哪些答卷没阅完（pending + marking），拿到的是答卷ID
+     *
+     * <p>考试管理端用它做两件事：列表 size 就是「待阅份数」（决定要不要给「去阅卷」
+     * 的入口），逐个 contains 就是「这个考生的主观题阅完没有」（决定这一行显示
+     * 「待阅」还是显示成绩）。一次调用够用，不要为这两个数各建一个接口。
+     *
+     * @param examId 考试ID
+     * @return 未阅完的答卷ID，考试没有待阅内容时返回空列表；查询失败同样返回空列表
+     */
+    List<Long> listPendingRecordIds(Long examId);
 }

@@ -378,6 +378,27 @@ public class MarkServiceImpl implements IMarkService {
         }
     }
 
+    /**
+     * 某场考试还有哪些答卷没阅完
+     *
+     * <p>只取 record_id 一列，走 (exam_id, status) 索引覆盖条件，不需要回表。「阅卷中」也算没阅完——已经动笔但没点完成，考生就还没拿到最终分。
+     */
+    @Override
+    public List<Long> listPendingRecordIds(Long examId) {
+        if (ObjectUtil.isNull(examId)) {
+            return List.of();
+        }
+        List<MarkTask> list = markTaskMapper.selectList(
+            Wrappers.lambdaQuery(MarkTask.class)
+                .select(MarkTask::getRecordId)
+                .eq(MarkTask::getExamId, examId)
+                .ne(MarkTask::getStatus, MarkTask.STATUS_FINISHED));
+        if (CollUtil.isEmpty(list)) {
+            return List.of();
+        }
+        return list.stream().map(MarkTask::getRecordId).filter(ObjectUtil::isNotNull).distinct().toList();
+    }
+
     /* ---------------------------------- 同步 ---------------------------------- */
 
     /**
