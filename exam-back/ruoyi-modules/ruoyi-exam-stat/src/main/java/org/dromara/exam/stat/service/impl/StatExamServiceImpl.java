@@ -329,7 +329,7 @@ public class StatExamServiceImpl implements IStatExamService {
         Page<StatUserVo> page = userMapper.selectVoPage(bo.build(), lqw);
         int counted = (int) userMapper.selectCount(Wrappers.lambdaQuery(StatExamUser.class)
             .eq(StatExamUser::getExamId, bo.getExamId())
-            .eq(StatExamUser::getStatStatus, StatExamUser.STAT_COUNTED));
+            .eq(StatExamUser::getStatStatus, StatExamUser.STAT_COUNTED)).intValue();
         BigDecimal full = fullScoreOf(bo.getExamId());
         for (StatUserVo vo : page.getRecords()) {
             vo.setFullScore(full);
@@ -383,9 +383,9 @@ public class StatExamServiceImpl implements IStatExamService {
             vo.setCountedCount(summary.getCountedCount());
             vo.setAvgUsedSeconds(summary.getAvgUsedSeconds());
         }
-        int counted = (int) userMapper.selectCount(Wrappers.lambdaQuery(StatExamUser.class)
+        int counted = userMapper.selectCount(Wrappers.lambdaQuery(StatExamUser.class)
             .eq(StatExamUser::getExamId, examId)
-            .eq(StatExamUser::getStatStatus, StatExamUser.STAT_COUNTED));
+            .eq(StatExamUser::getStatStatus, StatExamUser.STAT_COUNTED)).intValue();
         vo.setBeatRate(calcBeatRate(target.getRankNo(), counted));
 
         List<StatAnswerVo.AttemptVo> attempts = new ArrayList<>();
@@ -740,8 +740,9 @@ public class StatExamServiceImpl implements IStatExamService {
         for (int i = 0; i < ratio.length; i++) {
             BigDecimal min = fullScore.multiply(BigDecimal.valueOf(ratio[i][0])).setScale(2, RoundingMode.HALF_UP);
             BigDecimal max = fullScore.multiply(BigDecimal.valueOf(ratio[i][1])).setScale(2, RoundingMode.HALF_UP);
+            int finalI = i;
             long count = scores.stream()
-                .filter(v -> v.compareTo(min) >= 0 && (i == ratio.length - 1 ? v.compareTo(fullScore) <= 0 : v.compareTo(max) < 0))
+                .filter(v -> v.compareTo(min) >= 0 && (finalI == ratio.length - 1 ? v.compareTo(fullScore) <= 0 : v.compareTo(max) < 0))
                 .count();
             StatExamScoreSegment seg = new StatExamScoreSegment();
             seg.setExamId(examId);
@@ -1093,9 +1094,9 @@ public class StatExamServiceImpl implements IStatExamService {
 
     private int countInvited(ExamRef exam, List<RemoteRecordVo> records) {
         if ("white".equals(exam.getParticipantType())) {
-            return (int) examUserRefMapper.selectCount(
+            return examUserRefMapper.selectCount(
                 Wrappers.lambdaQuery(org.dromara.exam.stat.domain.ref.ExamUserRef.class)
-                    .eq(org.dromara.exam.stat.domain.ref.ExamUserRef::getExamId, exam.getId()));
+                    .eq(org.dromara.exam.stat.domain.ref.ExamUserRef::getExamId, exam.getId())).intValue();
         }
         // 公开链接的考试没有固定名单，应考人数只能以实际参加人数为准
         return records.size();

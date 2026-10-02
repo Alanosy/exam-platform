@@ -37,4 +37,9 @@ public class StatExamQuestionOption extends TenantEntity {
     private BigDecimal selectRate;
 
     private String isCorrect;
+
+    /**
+     * 易错项：不是正确选项却有很多人选 —— 干扰项编得太像，或知识点没讲清楚，讲评重点
+     */
+    private Boolean trap;
 }
