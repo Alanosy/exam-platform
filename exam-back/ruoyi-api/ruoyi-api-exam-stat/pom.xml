@@ -29,6 +29,12 @@
             <artifactId>ruoyi-common-excel</artifactId>
         </dependency>
 
+        <!-- RuoYi Api Exam Answer 首页统计要复用答卷侧的统计对象 -->
+        <dependency>
+            <groupId>org.dromara</groupId>
+            <artifactId>ruoyi-api-exam-answer</artifactId>
+        </dependency>
+
     </dependencies>
 
 </project>

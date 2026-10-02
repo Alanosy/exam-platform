@@ -1,7 +1,10 @@
 package org.dromara.exam.answer.dubbo;
 
 import cn.hutool.core.util.ObjectUtil;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
+import cn.hutool.core.collection.CollUtil;
+import cn.hutool.core.date.DateUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.dubbo.config.annotation.DubboReference;
@@ -9,6 +12,9 @@ import org.apache.dubbo.config.annotation.DubboService;
 import org.dromara.common.core.utils.MapstructUtils;
 import org.dromara.common.core.utils.StringUtils;
 import org.dromara.exam.answer.api.RemoteExamAnswerService;
+import org.dromara.exam.answer.api.domain.RecordExamStatVo;
+import org.dromara.exam.answer.api.domain.RecordStatVo;
+import org.dromara.exam.answer.api.domain.RecordTrendVo;
 import org.dromara.exam.answer.api.domain.RemoteAnswerVo;
 import org.dromara.exam.answer.api.domain.RemoteMarkScoreBo;
 import org.dromara.exam.answer.api.domain.RemoteMarkWriteBackBo;
@@ -26,6 +32,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.Date;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -125,6 +132,100 @@ public class RemoteExamAnswerServiceImpl implements RemoteExamAnswerService {
         return list.stream().map(ExamRecord::getExamId).distinct().toList();
     }
 
+    /* --------------------------------- 统计 --------------------------------- */
+
+    @Override
+    public RecordStatVo statRecords() {
+        RecordStatVo vo = new RecordStatVo();
+        Map<String, Object> row = firstRow(examRecordMapper.selectMaps(
+            Wrappers.<ExamRecord>query()
+                .select(true, List.of(
+                    "count(1) as total_cnt",
+                    "sum(case when status = '" + ExamRecord.STATUS_SUBMITTED + "' then 1 else 0 end) as submit_cnt",
+                    "sum(case when status = '" + ExamRecord.STATUS_ANSWERING + "' then 1 else 0 end) as answering_cnt",
+                    "sum(case when status = '" + ExamRecord.STATUS_SUBMITTED + "' and passed = 1 then 1 else 0 end) as pass_cnt",
+                    "count(distinct user_id) as examinee_cnt",
+                    "ifnull(round(avg(case when status = '" + ExamRecord.STATUS_SUBMITTED
+                        + "' then total_score end), 1), 0) as avg_score"))));
+        Long submitted = num(row, "submitCnt", "submit_cnt");
+        Long passed = num(row, "passCnt", "pass_cnt");
+        vo.setTotal(num(row, "totalCnt", "total_cnt"));
+        vo.setSubmitted(submitted);
+        vo.setAnswering(num(row, "answeringCnt", "answering_cnt"));
+        vo.setPassed(passed);
+        vo.setExamineeCount(num(row, "examineeCnt", "examinee_cnt"));
+        vo.setAvgScore(dec(row, "avgScore", "avg_score"));
+        vo.setPassRate(rate(passed, submitted));
+        vo.setTodaySubmit(examRecordMapper.selectCount(
+            Wrappers.lambdaQuery(ExamRecord.class)
+                .eq(ExamRecord::getStatus, ExamRecord.STATUS_SUBMITTED)
+                .between(ExamRecord::getSubmitTime, DateUtil.beginOfDay(new Date()), DateUtil.endOfDay(new Date()))));
+        return vo;
+    }
+
+    @Override
+    public List<RecordTrendVo> trendSubmit(int days) {
+        int dayCount = days < 1 ? 7 : days;
+        Date from = DateUtil.beginOfDay(DateUtil.offsetDay(new Date(), -(dayCount - 1)));
+        Map<String, Map<String, Object>> dayMap = examRecordMapper.selectMaps(
+                Wrappers.<ExamRecord>query()
+                    .select(true, List.of(
+                        "date(submit_time) as day",
+                        "count(1) as submit_cnt",
+                        "sum(case when passed = 1 then 1 else 0 end) as pass_cnt",
+                        "ifnull(round(avg(total_score), 1), 0) as avg_score"))
+                    .eq("status", ExamRecord.STATUS_SUBMITTED)
+                    .ge("submit_time", from)
+                    .groupBy("date(submit_time)"))
+            .stream()
+            .collect(Collectors.toMap(
+                item -> String.valueOf(item.getOrDefault("day", item.get("DAY"))),
+                item -> item,
+                (a, b) -> a));
+        // 没有交卷的那天在库里没有行，这里补 0 —— 不补的话前端折线会把两个有数据的日期直接连起来
+        List<RecordTrendVo> list = new ArrayList<>(dayCount);
+        for (int i = dayCount - 1; i >= 0; i--) {
+            String day = DateUtil.formatDate(DateUtil.offsetDay(new Date(), -i));
+            Map<String, Object> row = dayMap.getOrDefault(day, Map.of());
+            RecordTrendVo vo = new RecordTrendVo();
+            vo.setDate(day);
+            vo.setSubmitCount(num(row, "submitCnt", "submit_cnt"));
+            vo.setPassCount(num(row, "passCnt", "pass_cnt"));
+            vo.setAvgScore(dec(row, "avgScore", "avg_score"));
+            list.add(vo);
+        }
+        return list;
+    }
+
+    @Override
+    public List<RecordExamStatVo> rankByExam(int limit) {
+        int size = limit < 1 ? 5 : limit;
+        return examRecordMapper.selectMaps(
+                Wrappers.<ExamRecord>query()
+                    .select(true, List.of(
+                        "exam_id",
+                        "count(1) as submit_cnt",
+                        "sum(case when passed = 1 then 1 else 0 end) as pass_cnt",
+                        "ifnull(round(avg(total_score), 1), 0) as avg_score"))
+                    .eq("status", ExamRecord.STATUS_SUBMITTED)
+                    .isNotNull("exam_id")
+                    .groupBy("exam_id")
+                    .orderByDesc("submit_cnt"))
+            .stream()
+            .limit(size)
+            .map(item -> {
+                RecordExamStatVo vo = new RecordExamStatVo();
+                Long submitCount = num(item, "submitCnt", "submit_cnt");
+                Long passCount = num(item, "passCnt", "pass_cnt");
+                vo.setExamId(num(item, "examId", "exam_id"));
+                vo.setSubmitCount(submitCount);
+                vo.setPassCount(passCount);
+                vo.setPassRate(rate(passCount, submitCount));
+                vo.setAvgScore(dec(item, "avgScore", "avg_score"));
+                return vo;
+            }).toList();
+    }
+
     /**
      * 回写阅卷结果
      *
@@ -217,6 +318,47 @@ public class RemoteExamAnswerServiceImpl implements RemoteExamAnswerService {
         }
         vo.setRecordId(record.getId());
         return vo;
+    }
+
+    /**
+     * 取聚合查询的唯一结果行
+     *
+     * <p>聚合查询没有 from row 也要返回一个全 0 的行，调用方就不必判空：
+     * 「没有答卷」和「有 0 张答卷」对统计来说是一件事，不该分两条分支去处理。
+     */
+    private Map<String, Object> firstRow(List<Map<String, Object>> rows) {
+        return CollUtil.isEmpty(rows) ? Map.of() : rows.get(0);
+    }
+
+    /**
+     * 取聚合列的值
+     *
+     * <p>selectMaps 返回的 key 受全局 map-underscore-to-camel-case 影响，
+     * 两种写法都兜一下，免得换个 MyBatis 版本统计值悄悄变成 0。
+     */
+    private Long num(Map<String, Object> row, String camelKey, String underKey) {
+        Object value = row.get(camelKey);
+        if (ObjectUtil.isNull(value)) {
+            value = row.get(underKey);
+        }
+        return ObjectUtil.isNull(value) ? 0L : Long.parseLong(String.valueOf(value));
+    }
+
+    private BigDecimal dec(Map<String, Object> row, String camelKey, String underKey) {
+        Object value = row.get(camelKey);
+        if (ObjectUtil.isNull(value)) {
+            value = row.get(underKey);
+        }
+        return ObjectUtil.isNull(value) ? BigDecimal.ZERO : new BigDecimal(String.valueOf(value));
+    }
+
+    /** 占比：分子为 0 或分母为 0 都返回 0，不做除零保护以外的特殊处理 */
+    private BigDecimal rate(Long numerator, Long denominator) {
+        if (ObjectUtil.isNull(numerator) || ObjectUtil.isNull(denominator) || denominator <= 0) {
+            return BigDecimal.ZERO;
+        }
+        return BigDecimal.valueOf(numerator).multiply(BigDecimal.valueOf(100))
+            .divide(BigDecimal.valueOf(denominator), 1, RoundingMode.HALF_UP);
     }
 
     private Map<Long, ExamAnswer> selectAnswerMap(Long recordId) {

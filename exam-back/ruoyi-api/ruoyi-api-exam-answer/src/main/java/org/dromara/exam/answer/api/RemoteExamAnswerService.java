@@ -1,5 +1,8 @@
 package org.dromara.exam.answer.api;
 
+import org.dromara.exam.answer.api.domain.RecordExamStatVo;
+import org.dromara.exam.answer.api.domain.RecordStatVo;
+import org.dromara.exam.answer.api.domain.RecordTrendVo;
 import org.dromara.exam.answer.api.domain.RemoteAnswerVo;
 import org.dromara.exam.answer.api.domain.RemoteMarkWriteBackBo;
 import org.dromara.exam.answer.api.domain.RemoteRecordVo;
@@ -61,4 +64,33 @@ public interface RemoteExamAnswerService {
      * @param bo 阅卷结果
      */
     void writeBackMark(RemoteMarkWriteBackBo bo);
+
+    /**
+     * 答卷总量统计
+     *
+     * <p>统计 query methods 留在答题服务里做聚合，不把 exam_record 的数据吐出来让对方
+     * 在内存里数 —— 数据量一大，网络传输比 SQL 聚合贵得多。
+     *
+     * @return 答卷统计，永远非空
+     */
+    RecordStatVo statRecords();
+
+    /**
+     * 近 N 天交卷趋势，按天补齐缺失日期
+     *
+     * <p>「补齐」这一步在这里做完：没有交卷的那天在库里压根没有行，
+     * 只查 group by 会得到断断续续的点，前端画折线会自己连起错误的中间人。
+     *
+     * @param days 天数，小于 1 按 7 天算
+     * @return 按日期升序的趋势列表，长度为 days
+     */
+    List<RecordTrendVo> trendSubmit(int days);
+
+    /**
+     * 考试热度榜：按交卷量倒序的前 N 场考试
+     *
+     * @param limit 返回条数，小于 1 按 5 条算
+     * @return 按交卷数倒序的统计列表，没有数据时为空 List
+     */
+    List<RecordExamStatVo> rankByExam(int limit);
 }
