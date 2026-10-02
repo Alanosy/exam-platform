@@ -268,8 +268,9 @@ public class StatExamServiceImpl implements IStatExamService {
     public StatOverviewVo overview(Long examId) {
         StatOverviewVo vo = new StatOverviewVo();
         ExamRef exam = examRefMapper.selectById(examId);
-        StatExamRowVo row = summaryMapper.selectVoOne(
+        List<StatExamRowVo> statList = summaryMapper.selectVoList(
             Wrappers.lambdaQuery(StatExamSummary.class).eq(StatExamSummary::getExamId, examId).last("limit 1"));
+        StatExamRowVo row = CollUtil.isNotEmpty(statList) ? statList.get(0) : null;
         if (ObjectUtil.isNull(row)) {
             row = new StatExamRowVo();
             row.setExamId(examId);
