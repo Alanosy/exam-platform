@@ -1,5 +1,15 @@
 <template>
   <div ref="rootRef" class="home" :class="{ 'is-screen': screenMode }">
+    <!-- 悬浮退出按钮：大屏里内容很长，滚到下面就看不到顶部那颗按钮了 -->
+    <el-button
+      v-if="screenMode"
+      class="screen-exit"
+      circle
+      type="primary"
+      icon="Close"
+      title="退出大屏（Esc）"
+      @click="() => toggleScreen(false)"
+    />
     <!-- 顶部欢迎条：一句话说清身份、日期和今天要关心的 -->
     <div class="hero">
       <div class="hero-main">
@@ -18,18 +28,13 @@
         <el-button v-for="item in quickActions" :key="item.label" plain :icon="item.icon" @click="go(item.path)">
           {{ item.label }}
         </el-button>
-        <el-dropdown class="ml-[8px]" @command="go">
-          <el-button type="primary" :icon="screenMode ? 'Aim' : 'FullScreen'">
-            {{ screenMode ? '退出大屏' : '大屏模式' }}
-            <el-icon class="el-icon--right"><arrow-down /></el-icon>
-          </el-button>
-          <template #dropdown>
-            <el-dropdown-menu>
-              <el-dropdown-item command="__screen__">{{ screenMode ? '退出大屏' : '进入大屏' }}</el-dropdown-item>
-              <el-dropdown-item command="__refresh__" divided>刷新数据</el-dropdown-item>
-            </el-dropdown-menu>
-          </template>
-        </el-dropdown>
+        <!-- 大屏切换必须是「点一下就切」的普通按钮：
+             全屏时浏览器只渲染被全屏的那个元素，而 el-dropdown 的弹层是 teleport 到 body 的，
+             全屏后根本看不见 —— 之前把切换放在下拉里，进了大屏就再也点不出来了。 -->
+        <el-button class="ml-[8px]" type="primary" :icon="screenMode ? 'Aim' : 'FullScreen'" @click="() => toggleScreen()">
+          {{ screenMode ? '退出大屏' : '大屏模式' }}
+        </el-button>
+        <el-button plain icon="Refresh" title="刷新数据" @click="() => loadOverview()" />
       </div>
     </div>
 
@@ -410,10 +415,19 @@ const resizeCharts = () => {
 const toggleScreen = async (flag?: boolean) => {
   const next = flag ?? !screenMode.value;
   if (screenfull.isEnabled) {
-    if (next && rootRef.value) {
-      await screenfull.request(rootRef.value);
-    } else if (!next) {
-      await screenfull.exit();
+    try {
+      if (next) {
+        if (rootRef.value) {
+          await screenfull.request(rootRef.value);
+        }
+      } else {
+        await screenfull.exit();
+      }
+    } catch {
+      // 全屏请求被浏览器拒绝时不能卡住：配色照切，给用户一句可操作的提示
+      if (next) {
+        ElMessage.warning('进入全屏被浏览器拒绝，已切换为大屏配色（也可手动按 F11）');
+      }
     }
   } else if (next) {
     ElMessage.warning('当前浏览器不支持全屏，仅切换为大屏配色');
@@ -447,14 +461,6 @@ const loadOverview = async () => {
 
 /* ------------------------------- 交互 ------------------------------- */
 const go = async (target: string) => {
-  if (target === '__screen__') {
-    await toggleScreen();
-    return;
-  }
-  if (target === '__refresh__') {
-    await loadOverview();
-    return;
-  }
   if (!target) return;
   // 从大屏里点进去要看正常的后台页面，顺手退出全屏
   if (screenMode.value) {
@@ -842,6 +848,14 @@ onBeforeUnmount(() => {
 }
 
 /* ---------------- 大屏模式 ---------------- */
+.screen-exit {
+  position: fixed;
+  top: 24px;
+  right: 28px;
+  z-index: 2100;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.35);
+}
+
 .home.is-screen {
   position: fixed;
   inset: 0;
