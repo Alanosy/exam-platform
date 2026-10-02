@@ -1,17 +1,17 @@
 /*
  Navicat Premium Data Transfer
 
- Source Server         : 8.137.151.232
+ Source Server         : dcLocalhost
  Source Server Type    : MySQL
  Source Server Version : 80042 (8.0.42)
- Source Host           : 8.137.151.232:3306
+ Source Host           : localhost:3306
  Source Schema         : ry-exam-answer
 
  Target Server Type    : MySQL
  Target Server Version : 80042 (8.0.42)
  File Encoding         : 65001
 
- Date: 30/09/2026 20:30:13
+ Date: 02/10/2026 17:30:30
 */
 
 SET NAMES utf8mb4;
@@ -40,29 +40,7 @@ CREATE TABLE `exam_answer` (
   PRIMARY KEY (`id`) USING BTREE,
   UNIQUE KEY `uk_record_question` (`record_id`,`question_id`,`del_flag`) USING BTREE,
   KEY `idx_record_id` (`record_id`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=2105193536568872962 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci ROW_FORMAT=DYNAMIC COMMENT='考试逐题作答表';
-
--- ----------------------------
--- Records of exam_answer
--- ----------------------------
-BEGIN;
-INSERT INTO `exam_answer` (`id`, `record_id`, `question_id`, `question_type`, `answer_content`, `score`, `correct`, `sort`, `tenant_id`, `del_flag`, `create_time`, `update_time`, `create_dept`, `create_by`, `update_by`) VALUES (2105177158101188609, 2105174659168419841, 2104846742441881602, NULL, '{\"choices\":[\"A\"]}', 5.00, 1, 1, '000000', 0, '2026-09-30 14:05:21', '2026-09-30 14:16:24', '103', '1', '1');
-INSERT INTO `exam_answer` (`id`, `record_id`, `question_id`, `question_type`, `answer_content`, `score`, `correct`, `sort`, `tenant_id`, `del_flag`, `create_time`, `update_time`, `create_dept`, `create_by`, `update_by`) VALUES (2105177168796663810, 2105174659168419841, 2104846994150453249, NULL, '{\"choices\":[\"B\"]}', 0.00, 2, 2, '000000', 0, '2026-09-30 14:05:24', '2026-09-30 14:16:24', '103', '1', '1');
-INSERT INTO `exam_answer` (`id`, `record_id`, `question_id`, `question_type`, `answer_content`, `score`, `correct`, `sort`, `tenant_id`, `del_flag`, `create_time`, `update_time`, `create_dept`, `create_by`, `update_by`) VALUES (2105177180905619458, 2105174659168419841, 2104612232406966273, NULL, '{\"choices\":[\"B\"]}', 5.00, 1, 3, '000000', 0, '2026-09-30 14:05:27', '2026-09-30 14:16:24', '103', '1', '1');
-INSERT INTO `exam_answer` (`id`, `record_id`, `question_id`, `question_type`, `answer_content`, `score`, `correct`, `sort`, `tenant_id`, `del_flag`, `create_time`, `update_time`, `create_dept`, `create_by`, `update_by`) VALUES (2105177294005026817, 2105174659168419841, 2104847655688663041, NULL, '{\"choices\":[\"A\"]}', 5.00, 1, 4, '000000', 0, '2026-09-30 14:05:54', '2026-09-30 14:16:24', '103', '1', '1');
-INSERT INTO `exam_answer` (`id`, `record_id`, `question_id`, `question_type`, `answer_content`, `score`, `correct`, `sort`, `tenant_id`, `del_flag`, `create_time`, `update_time`, `create_dept`, `create_by`, `update_by`) VALUES (2105182812949913602, 2105180092260098050, 2104846742441881602, NULL, '{\"choices\":[\"B\"]}', 0.00, 2, 1, '000000', 0, '2026-09-30 14:27:50', '2026-09-30 14:28:00', '103', '1', '1');
-INSERT INTO `exam_answer` (`id`, `record_id`, `question_id`, `question_type`, `answer_content`, `score`, `correct`, `sort`, `tenant_id`, `del_flag`, `create_time`, `update_time`, `create_dept`, `create_by`, `update_by`) VALUES (2105182817899192321, 2105180092260098050, 2104846994150453249, NULL, '{\"choices\":[\"C\"]}', 0.00, 2, 2, '000000', 0, '2026-09-30 14:27:51', '2026-09-30 14:28:00', '103', '1', '1');
-INSERT INTO `exam_answer` (`id`, `record_id`, `question_id`, `question_type`, `answer_content`, `score`, `correct`, `sort`, `tenant_id`, `del_flag`, `create_time`, `update_time`, `create_dept`, `create_by`, `update_by`) VALUES (2105182825872564226, 2105180092260098050, 2104612232406966273, NULL, '{\"choices\":[\"C\"]}', 0.00, 2, 3, '000000', 0, '2026-09-30 14:27:53', '2026-09-30 14:28:00', '103', '1', '1');
-INSERT INTO `exam_answer` (`id`, `record_id`, `question_id`, `question_type`, `answer_content`, `score`, `correct`, `sort`, `tenant_id`, `del_flag`, `create_time`, `update_time`, `create_dept`, `create_by`, `update_by`) VALUES (2105182833468448770, 2105180092260098050, 2104847655688663041, NULL, '{\"choices\":[\"A\"]}', 5.00, 1, 4, '000000', 0, '2026-09-30 14:27:55', '2026-09-30 14:28:00', '103', '1', '1');
-INSERT INTO `exam_answer` (`id`, `record_id`, `question_id`, `question_type`, `answer_content`, `score`, `correct`, `sort`, `tenant_id`, `del_flag`, `create_time`, `update_time`, `create_dept`, `create_by`, `update_by`) VALUES (2105192985093394434, 2105192964121874433, 2104846742441881602, NULL, '{\"choices\":[\"A\"]}', 5.00, 1, 1, '000000', 0, '2026-09-30 15:08:15', '2026-09-30 15:08:23', '103', '1', '1');
-INSERT INTO `exam_answer` (`id`, `record_id`, `question_id`, `question_type`, `answer_content`, `score`, `correct`, `sort`, `tenant_id`, `del_flag`, `create_time`, `update_time`, `create_dept`, `create_by`, `update_by`) VALUES (2105192993532334082, 2105192964121874433, 2104846994150453249, NULL, '{\"choices\":[\"A\"]}', 5.00, 1, 2, '000000', 0, '2026-09-30 15:08:17', '2026-09-30 15:08:23', '103', '1', '1');
-INSERT INTO `exam_answer` (`id`, `record_id`, `question_id`, `question_type`, `answer_content`, `score`, `correct`, `sort`, `tenant_id`, `del_flag`, `create_time`, `update_time`, `create_dept`, `create_by`, `update_by`) VALUES (2105193003175038978, 2105192964121874433, 2104612232406966273, NULL, '{\"choices\":[\"A\"]}', 0.00, 2, 3, '000000', 0, '2026-09-30 15:08:19', '2026-09-30 15:08:23', '103', '1', '1');
-INSERT INTO `exam_answer` (`id`, `record_id`, `question_id`, `question_type`, `answer_content`, `score`, `correct`, `sort`, `tenant_id`, `del_flag`, `create_time`, `update_time`, `create_dept`, `create_by`, `update_by`) VALUES (2105193007730053121, 2105192964121874433, 2104847655688663041, NULL, '{\"choices\":[\"A\"]}', 5.00, 1, 4, '000000', 0, '2026-09-30 15:08:20', '2026-09-30 15:08:23', '103', '1', '1');
-INSERT INTO `exam_answer` (`id`, `record_id`, `question_id`, `question_type`, `answer_content`, `score`, `correct`, `sort`, `tenant_id`, `del_flag`, `create_time`, `update_time`, `create_dept`, `create_by`, `update_by`) VALUES (2105193518122323970, 2105193504088182786, 2104846742441881602, NULL, '{\"choices\":[\"A\"]}', 5.00, 1, 1, '000000', 0, '2026-09-30 15:10:22', '2026-09-30 15:10:28', '103', '1', '1');
-INSERT INTO `exam_answer` (`id`, `record_id`, `question_id`, `question_type`, `answer_content`, `score`, `correct`, `sort`, `tenant_id`, `del_flag`, `create_time`, `update_time`, `create_dept`, `create_by`, `update_by`) VALUES (2105193523960795138, 2105193504088182786, 2104846994150453249, NULL, '{\"choices\":[\"A\"]}', 5.00, 1, 2, '000000', 0, '2026-09-30 15:10:23', '2026-09-30 15:10:28', '103', '1', '1');
-INSERT INTO `exam_answer` (`id`, `record_id`, `question_id`, `question_type`, `answer_content`, `score`, `correct`, `sort`, `tenant_id`, `del_flag`, `create_time`, `update_time`, `create_dept`, `create_by`, `update_by`) VALUES (2105193529006542850, 2105193504088182786, 2104612232406966273, NULL, '{\"choices\":[\"A\"]}', 0.00, 2, 3, '000000', 0, '2026-09-30 15:10:25', '2026-09-30 15:10:28', '103', '1', '1');
-INSERT INTO `exam_answer` (`id`, `record_id`, `question_id`, `question_type`, `answer_content`, `score`, `correct`, `sort`, `tenant_id`, `del_flag`, `create_time`, `update_time`, `create_dept`, `create_by`, `update_by`) VALUES (2105193536568872961, 2105193504088182786, 2104847655688663041, NULL, '{\"choices\":[\"A\"]}', 5.00, 1, 4, '000000', 0, '2026-09-30 15:10:26', '2026-09-30 15:10:28', '103', '1', '1');
-COMMIT;
+) ENGINE=InnoDB AUTO_INCREMENT=2105695881810391043 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci ROW_FORMAT=DYNAMIC COMMENT='考试逐题作答表';
 
 -- ----------------------------
 -- Table structure for exam_record
@@ -100,17 +78,6 @@ CREATE TABLE `exam_record` (
   KEY `idx_account` (`account`) USING BTREE,
   KEY `idx_exam_id` (`exam_id`) USING BTREE,
   KEY `idx_status` (`status`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=2105193504088182787 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci ROW_FORMAT=DYNAMIC COMMENT='考试答卷记录表';
-
--- ----------------------------
--- Records of exam_record
--- ----------------------------
-BEGIN;
-INSERT INTO `exam_record` (`id`, `exam_id`, `paper_id`, `user_id`, `account`, `attempt_no`, `status`, `start_time`, `submit_time`, `used_seconds`, `duration_minutes`, `question_count`, `answered_count`, `objective_score`, `subjective_score`, `total_score`, `pass_score`, `passed`, `auto_submit`, `tenant_id`, `del_flag`, `create_time`, `update_time`, `create_dept`, `create_by`, `update_by`) VALUES (2105174659168419841, 2105174045227184129, 2104943974758174722, 1, 'admin', 1, 'submitted', '2026-09-30 13:55:24', '2026-09-30 14:16:25', 1260, 888, 4, 4, 15.00, 0.00, 15.00, 4.00, 1, 0, '000000', 0, '2026-09-30 13:55:26', '2026-09-30 14:16:25', '103', '1', '1');
-INSERT INTO `exam_record` (`id`, `exam_id`, `paper_id`, `user_id`, `account`, `attempt_no`, `status`, `start_time`, `submit_time`, `used_seconds`, `duration_minutes`, `question_count`, `answered_count`, `objective_score`, `subjective_score`, `total_score`, `pass_score`, `passed`, `auto_submit`, `tenant_id`, `del_flag`, `create_time`, `update_time`, `create_dept`, `create_by`, `update_by`) VALUES (2105180092260098050, 2105174045227184129, 2104943974758174722, 1, 'admin', 2, 'submitted', '2026-09-30 14:17:01', '2026-09-30 14:28:00', 659, 888, 4, 4, 5.00, 0.00, 5.00, 4.00, 1, 0, '000000', 0, '2026-09-30 14:17:01', '2026-09-30 14:28:00', '103', '1', '1');
-INSERT INTO `exam_record` (`id`, `exam_id`, `paper_id`, `user_id`, `account`, `attempt_no`, `status`, `start_time`, `submit_time`, `used_seconds`, `duration_minutes`, `question_count`, `answered_count`, `objective_score`, `subjective_score`, `total_score`, `pass_score`, `passed`, `auto_submit`, `tenant_id`, `del_flag`, `create_time`, `update_time`, `create_dept`, `create_by`, `update_by`) VALUES (2105184710427877378, 2105174045227184129, 2104943974758174722, 1, 'admin', 3, 'submitted', '2026-09-30 14:35:22', '2026-09-30 14:35:26', 4, 888, 4, 0, 0.00, 0.00, 0.00, 4.00, 0, 0, '000000', 0, '2026-09-30 14:35:22', '2026-09-30 14:35:26', '103', '1', '1');
-INSERT INTO `exam_record` (`id`, `exam_id`, `paper_id`, `user_id`, `account`, `attempt_no`, `status`, `start_time`, `submit_time`, `used_seconds`, `duration_minutes`, `question_count`, `answered_count`, `objective_score`, `subjective_score`, `total_score`, `pass_score`, `passed`, `auto_submit`, `tenant_id`, `del_flag`, `create_time`, `update_time`, `create_dept`, `create_by`, `update_by`) VALUES (2105192964121874433, 2105174045227184129, 2104943974758174722, 1, 'admin', 4, 'submitted', '2026-09-30 15:08:10', '2026-09-30 15:08:23', 12, 888, 4, 4, 15.00, 0.00, 15.00, 4.00, 1, 0, '000000', 0, '2026-09-30 15:08:10', '2026-09-30 15:08:23', '103', '1', '1');
-INSERT INTO `exam_record` (`id`, `exam_id`, `paper_id`, `user_id`, `account`, `attempt_no`, `status`, `start_time`, `submit_time`, `used_seconds`, `duration_minutes`, `question_count`, `answered_count`, `objective_score`, `subjective_score`, `total_score`, `pass_score`, `passed`, `auto_submit`, `tenant_id`, `del_flag`, `create_time`, `update_time`, `create_dept`, `create_by`, `update_by`) VALUES (2105193504088182786, 2105193340510367745, 2104943974758174722, 1, 'admin', 1, 'submitted', '2026-09-30 15:10:18', '2026-09-30 15:10:28', 9, 1, 4, 4, 15.00, 0.00, 15.00, 4.00, 1, 0, '000000', 0, '2026-09-30 15:10:19', '2026-09-30 15:10:28', '103', '1', '1');
-COMMIT;
+) ENGINE=InnoDB AUTO_INCREMENT=2105693453522284546 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci ROW_FORMAT=DYNAMIC COMMENT='考试答卷记录表';
 
 SET FOREIGN_KEY_CHECKS = 1;

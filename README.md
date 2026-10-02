@@ -3,13 +3,14 @@
 #### 友情提示
 
 > 1. 本项目已升级为微服务版本
-> 2. 旧项目已迁移到old-exam文件夹中，**旧项目体验地址**：[项目体验地址](http://exam.alan.org.cn)
+> 2. 文档地址: [exam-doc](https://doc.alan.org.cn)
+> 3. 如果本项目对你有帮助，欢迎点个 ⭐ Star 支持一下，非常感谢！
+> 4. 旧项目已迁移到old-exam文件夹中，**旧项目体验地址**：[旧项目体验地址](http://exam.alan.org.cn)
 >    1. 管理员账号:admin 密码:123456
 >    2. 教师账号:teacher 密码:123456
 >    3. 学生账号:student 密码:123456
-> 3. 文档地址: [exam-doc](https://doc.alan.org.cn)
 
-#### 介绍
+#### 项目介绍
 
 [![GitHub](https://img.shields.io/github/stars/Alanosy/exam-platform?style=social&label=Github%20Stars)
 ![License](https://img.shields.io/badge/License-MIT-blue.svg)](https://gitee.com/alanosy/exam-platform/LICENSE)
@@ -38,8 +39,6 @@
 ##### 关于 AI
 
 AI 能力正在接入中：Python Agent（`ruoyi-exam-agent`）已完成出题、阅卷、推荐、试卷分析四类能力，Java 侧网关与模型配置表已就绪，**接线工作进行中**，当前 AI 阅卷会返回「未接入」。
-
-**=>如果各位喜欢，麻烦各位大佬点点Star<=**
 
 ****
 
@@ -71,7 +70,13 @@ AI 能力正在接入中：Python Agent（`ruoyi-exam-agent`）已完成出题�
         <td><img src="http://bucket.alan.org.cn/blog/2026/10/02/16-54-13-8c24c3c3b11b2c4beb21e4b752418b61-55bd73.png"/></td>
       	<td><img src="http://bucket.alan.org.cn/blog/2026/10/02/16-56-09-38f4c6ee221536f6a158c42b27c5d99c-347b46.png"/></td>
     </tr>
+  <tr>
+    <td><img src="http://bucket.alan.org.cn/blog/2026/10/02/17-26-29-120c709884c644ecff863fae9109b945-c76290.png"/></td>
+    <td><img src="http://bucket.alan.org.cn/blog/2026/10/02/17-25-22-aef85c1edcdfae86bf9e94103fd9ecaa-06b4cf.png"/></td>
+    <td><img src="http://bucket.alan.org.cn/blog/2026/10/02/17-24-50-42d47142c854b1612a8b4c3545e11aa5-46de92.png"/></td>
+  </tr>
 </table>
+
 
 #### 仓库结构
 

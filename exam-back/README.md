@@ -1,4 +1,5 @@
 <img src="https://foruda.gitee.com/images/1679673780944866919/d908a86f_1766278.png" width="56%" height="56%">
+
 <div style="height: 10px; clear: both;"></div>
 
 - - -
@@ -27,19 +28,6 @@
 > 成员项目地址: 删除多租户与工作流 [RuoYi-Vue-Plus-Single](https://gitee.com/ColorDreams/RuoYi-Vue-Plus-Single)<br>
 
 > 文档地址: [plus-doc](https://plus-doc.dromara.org) 国内加速: [plus-doc.top](https://plus-doc.top)
-
-## 赞助商
-
-MaxKey 业界领先单点登录产品 - https://gitee.com/dromara/MaxKey <br>
-CCFlow 驰聘低代码-流程-表单 - https://gitee.com/opencc/RuoYi-JFlow <br>
-数舵科技 软件定制开发APP小程序等 - https://www.shuduokeji.com/ <br>
-Mall4J 高质量Java商城系统 - https://www.mall4j.com/cn/?statId=11 <br>
-aizuda flowlong 工作流 - https://gitee.com/aizuda/flowlong <br>
-Ruoyi-Plus-Uniapp - https://ruoyi.plus <br>
-Topiam IAM/IDaaS身份管理平台 - https://www.topiam.cn/ <br>
-稳定低价的大模型中转站 - https://aicodelink.top/register?aff=pHeG <br>
-
-[如何成为赞助商 加群联系作者详谈 每日PV2500-3000 IP1700-2500](https://plus-doc.dromara.org/#/common/add_group)
 
 # 本框架与RuoYi的功能差异
 
@@ -185,5 +173,4 @@ Topiam IAM/IDaaS身份管理平台 - https://www.topiam.cn/ <br>
 | ![输入图片说明](https://foruda.gitee.com/images/1735829153637063344/3c21fd4c_1419627.png "屏幕截图") | ![输入图片说明](https://foruda.gitee.com/images/1735829181303499815/4522cefa_1419627.png "屏幕截图") |
 | ![输入图片说明](https://foruda.gitee.com/images/1735829377205259767/76a705d7_1419627.png "屏幕截图") | ![输入图片说明](https://foruda.gitee.com/images/1722959592856812900/e2d0d342_1419627.png "屏幕截图") |
 | ![输入图片说明](https://foruda.gitee.com/images/1680079274333484664/4dfdc7c0_1766278.png "屏幕截图") | ![输入图片说明](https://foruda.gitee.com/images/1680079290467458224/d6715fcf_1766278.png "屏幕截图") |
-
 
