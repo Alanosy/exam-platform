@@ -31,6 +31,12 @@ class ChatIn(BaseModel):
     user_id: str | None = None
     model_code: str | None = None
 
+    @field_validator("message", mode="before")
+    @classmethod
+    def _blank_message(cls, value: Any) -> Any:
+        """回答中断卡时前端只回 answers，message 会传 null"""
+        return value if isinstance(value, str) else ("" if value is None else str(value))
+
     @field_validator("tenant_id", "user_id", "model_code", mode="before")
     @classmethod
     def _to_str(cls, value: Any) -> Any:

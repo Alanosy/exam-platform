@@ -142,12 +142,42 @@ async def test_confirm_then_write(monkeypatch):
     assert any(s.type == "tool" and s.ref == "save_questions" for s in second.trace)
 
 
-async def test_tool_failure_degrades_to_manual_input(monkeypatch):
-    """题库服务挂了不能整轮崩掉，降级成让用户手填题库 ID"""
+async def test_tool_failure_asks_bank_name_not_id(monkeypatch):
+    """题库服务挂了不能整轮崩掉，且只能问名称 —— ID 用户不可能知道"""
     monkeypatch.setattr(flows, "call_tool", _tool({}))
     result = await chat(message="帮我创建2道关于计算机基础的题")
     assert result.ask is not None
-    assert [f.key for f in result.ask.fields] == ["bank_id"]
+    assert [f.key for f in result.ask.fields] == ["bank_name"]
+    assert result.ask.fields[0].label == "题库名称"
+
+
+async def test_manual_bank_name_is_used_as_keyword(monkeypatch):
+    """手填的题库名要当成下一轮查询的关键词，而不是丢掉"""
+    calls: list[dict] = []
+
+    async def _spy(code, payload, tenant_id="000000", title=""):
+        from app.chat.models import TraceStep
+
+        calls.append({"code": code, "payload": payload})
+        if code == "list_question_banks":
+            # 第一次（自动匹配）模拟服务不通，第二次（拿手填名字查）才返回数据
+            if sum(1 for c in calls if c["code"] == "list_question_banks") > 1:
+                return {"items": [FAKE_BANK]}, TraceStep(type="tool", ref=code)
+            return None, TraceStep(type="tool", ref=code, status="error")
+        return {"ids": ["9001"], "count": 1, "bankId": "1001"}, TraceStep(type="tool", ref=code)
+
+    monkeypatch.setattr(flows, "call_tool", _spy)
+    monkeypatch.setattr(flows, "call_skill", _skill([FAKE_QUESTION]))
+
+    first = await chat(message="帮我创建2道关于计算机基础的题")
+    assert first.ask is not None and [f.key for f in first.ask.fields] == ["bank_name"]
+
+    second = await chat(message="", session_id=first.session_id, answers={"bank_name": "我自己的题库"})
+    assert second.ask is not None and second.ask.kind == "confirm"
+    assert any(
+        c["code"] == "list_question_banks" and c["payload"].get("keyword") == "我自己的题库"
+        for c in calls
+    ), f"手填名称没有被当作查询关键词: {calls}"
 
 
 # ---------------------------------------------------------------- 答题分析

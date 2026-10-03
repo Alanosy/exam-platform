@@ -15,11 +15,18 @@ spring:
           password: ${datasource.exam.password}
 
 # Agent 回调工具端点（/api/exam-tool/**）的共享令牌
-# 这些端点不经过网关（Python agent 直连 9220），所以不走 Sa-Token，
-# 用一个共享令牌兜底。留空表示不校验（本地联调用）；
+# 这些端点不经过网关（Python agent 直连 9220），所以 @SaIgnore 掉登录校验，
+# 内网通行证（SA-SAME-TOKEN）由 ExamToolSameTokenConfig 自动补，
+# 真正的把关是这个共享令牌。留空表示不校验（本地联调用）；
 # 上生产要配成与 agent 的 AGENT_JAVA_GATEWAY_TOKEN 一致的值。
 exam-tool:
   token: ""
+
+# 兜底方案：若上述通行证桥接在你的环境里不生效（例如 Redis 里没有 same-token，
+# 启动时日志会报「读取内网 same-token 失败」），可直接关掉本服务的内网调用鉴权。
+# 只影响 exam-ai 这一个服务，其它服务仍必须经网关访问。
+# sa-token:
+#   check-same-token: false
 
 # AI Agent（Python FastAPI）服务发现配置
 ai:

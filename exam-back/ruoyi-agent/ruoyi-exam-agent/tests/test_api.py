@@ -148,3 +148,10 @@ def test_chat_accepts_numeric_ids(client):
     ).json()
     assert body["code"] == 200, f"业务码非 200: {body}"
     assert body["data"]["reply"]
+
+
+def test_chat_accepts_null_message(client):
+    """提交中断卡时前端只回 answers，message 是 null"""
+    body = client.post("/api/ai/chat", json={"message": None, "user_id": "1"}).json()
+    assert body["code"] == 200, f"业务码非 200: {body}"
+    assert body["data"]["reply"]

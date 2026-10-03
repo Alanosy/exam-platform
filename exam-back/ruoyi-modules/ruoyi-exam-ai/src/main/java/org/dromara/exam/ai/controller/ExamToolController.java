@@ -1,5 +1,6 @@
 package org.dromara.exam.ai.controller;
 
+import cn.dev33.satoken.annotation.SaIgnore;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.dubbo.config.annotation.DubboReference;
 import org.dromara.common.core.domain.R;
@@ -40,13 +41,15 @@ import java.util.Map;
  * 都在业务服务里，Agent 自己写一套必然会长歪；而且答题库与主库是分库的，
  * 跨库 JOIN 本来就不该出现在任何一层。
  *
- * <p><b>鉴权</b>：这些端点不经过网关（Agent 直连 9220），所以不走 Sa-Token，
- * 用简单的共享令牌 {@code X-Agent-Token}。没配令牌时放行，方便本地联调。
+ * <p><b>鉴权</b>：这些端点不经过网关（Agent 直连 9220），所以 {@code @SaIgnore} 掉登录校验，
+ * 内网通行证由 {@link org.dromara.exam.ai.config.ExamToolSameTokenConfig} 补，
+ * 真正的把关是简单的共享令牌 {@code X-Agent-Token}。没配令牌时放行，方便本地联调。
  *
  * @author ruoyi
  * @date 2026-10-03
  */
 @Slf4j
+@SaIgnore
 @RestController
 @RequestMapping("/api/exam-tool")
 public class ExamToolController {

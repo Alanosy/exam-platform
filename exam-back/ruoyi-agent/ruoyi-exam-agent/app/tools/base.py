@@ -67,7 +67,9 @@ async def invoke_java(spec: ToolSpec, payload: dict[str, Any], tenant_id: str = 
     url = f"{settings.java_gateway_base_url.rstrip('/')}{spec.path}"
     headers = {"Content-Type": "application/json", "X-Tenant-Id": tenant_id}
     if settings.java_gateway_token:
-        headers["Authorization"] = f"Bearer {settings.java_gateway_token}"
+        # Java 侧读的是 X-Agent-Token（不是 Authorization）：
+        # 这些端点被 Sa-Token 放行，不能用登录态那套头
+        headers["X-Agent-Token"] = settings.java_gateway_token
 
     try:
         async with httpx.AsyncClient(timeout=settings.java_gateway_timeout) as client:

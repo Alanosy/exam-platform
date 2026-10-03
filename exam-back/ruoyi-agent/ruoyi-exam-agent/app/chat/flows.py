@@ -81,27 +81,60 @@ async def flow_question_create(
     bank_name = str(slots.get("bank_name") or "")
 
     if not bank_id:
-        keyword = str(slots.get("bank_keyword") or topic)
-        data, step = await call_tool(
-            "list_question_banks",
-            {"keyword": keyword, "limit": 20},
-            tenant_id=ctx.tenant_id,
-            title=f"查找题库 · 关键词「{keyword}」",
-        )
-        banks: list[dict[str, Any]] = (data or {}).get("items", []) if isinstance(data, dict) else []
-        tool_failed = data is None
-        step.preview = _preview_lines(
-            banks, lambda b: f"{b.get('name')}（{b.get('questionCount', 0)} 题）"
-        ) or (["工具调用失败，未能读取题库列表"] if tool_failed else ["没有匹配到任何题库"])
-        trace.append(step)
+        # 候选关键词按顺序试：手填的库名 > 完整主题 > 派生的短关键词。
+        # 完整主题先试是因为「TCP」这种短主题一旦被截成「TC」就再也匹配不上了；
+        # 而「计算机基础知识」太长，第一轮空了会由短关键词兜住。
+        candidates: list[str] = []
+        for raw in (slots.get("bank_name"), topic, slots.get("bank_keyword")):
+            value = str(raw or "").strip()
+            if value and value not in candidates:
+                candidates.append(value)
+
+        banks: list[dict[str, Any]] = []
+        keyword = candidates[0] if candidates else topic
+        tool_failed = False
+        for candidate in candidates:
+            data, step = await call_tool(
+                "list_question_banks",
+                {"keyword": candidate, "limit": 20},
+                tenant_id=ctx.tenant_id,
+                title=f"查找题库 · 关键词「{candidate}」",
+            )
+            items: list[dict[str, Any]] = (data or {}).get("items", []) if isinstance(data, dict) else []
+            step.preview = _preview_lines(
+                items, lambda b: f"{b.get('name')}（{b.get('questionCount', 0)} 题）"
+            ) or (["工具调用失败，未能读取题库列表"] if data is None else [f"关键词「{candidate}」没有匹配到题库"])
+            trace.append(step)
+            if data is None:
+                tool_failed = True
+                break
+            if items:
+                banks, keyword = items, candidate
+                break
 
         if tool_failed:
+            # 绝不问用户要 ID：那是雪花主键，用户不可能知道，也记不住。
+            # 先问「题库叫什么」，下一轮拿这个名字再查一次；还是不通就如实收尾。
+            manual_name = str(slots.get("bank_name") or "").strip()
+            if manual_name:
+                return (
+                    f"题库服务仍然没有响应，没能定位到「{manual_name}」。\n\n"
+                    "名字我已经记下了，等服务恢复后你再说一次「出题」就能接着往下走。",
+                    None,
+                    {},
+                )
             return None, AskForm(
                 kind="form",
-                title="读不到题库列表",
-                desc="题库服务没返回数据（可能是服务未启动或网络不通）。你可以直接填写题库 ID 继续。",
-                fields=[AskField(key="bank_id", label="题库 ID", type="text", placeholder="填写已有题库的主键 ID")],
-                submit_text="用它出题",
+                title="暂时读不到题库列表",
+                desc="题库服务没有返回数据（可能是服务未启动或网络不通）。"
+                     "告诉我你想放进哪个题库就行，填名称即可，我拿这个名字再查一次；查不到就按这个名字新建一个。",
+                fields=[
+                    AskField(
+                        key="bank_name", label="题库名称", type="text", value=keyword,
+                        placeholder="如：计算机基础题库",
+                    )
+                ],
+                submit_text="继续",
             ), {}
 
         if not banks:
@@ -176,9 +209,17 @@ async def flow_question_create(
         )
         trace.append(step)
         if not data or not data.get("id"):
+            # 清掉 create 模式，否则重跑时又会去建一次同名的库，卡在同一个问题上
+            slots.pop("bank_mode", None)
             return None, AskForm(
-                kind="form", title="题库创建失败", desc="没能新建题库，可以直接填写已有题库 ID 继续。",
-                fields=[AskField(key="bank_id", label="题库 ID", type="text", placeholder="已有题库主键 ID")],
+                kind="form", title="题库创建失败",
+                desc="没能新建题库。换一个已有题库的名字试试，我按名字去查。",
+                fields=[
+                    AskField(
+                        key="bank_name", label="已有题库名称", type="text", value=new_name,
+                        placeholder="如：计算机基础题库",
+                    )
+                ],
                 submit_text="用它出题",
             ), {}
         bank_id = str(data.get("id"))
@@ -385,9 +426,21 @@ async def flow_exam_analysis(
         trace.append(step)
 
         if data is None:
+            # 同样不问 ID：用户只知道考试叫什么名字
+            manual = str(slots.get("exam_keyword") or "").strip()
+            if manual:
+                return (
+                    f"考试服务仍然没有响应，没能定位到「{manual}」。\n\n"
+                    "等服务恢复后再问我一次就行。",
+                    None,
+                    {},
+                )
             return None, AskForm(
-                kind="form", title="读不到考试列表", desc="考试服务没返回数据，可以直接填写考试 ID。",
-                fields=[AskField(key="exam_id", label="考试 ID", type="text", placeholder="考试主键 ID")],
+                kind="form", title="暂时读不到考试列表",
+                desc="考试服务没返回数据。告诉我想看哪场考试（填名称关键词），我拿它再查一次。",
+                fields=[
+                    AskField(key="exam_keyword", label="考试名称关键词", type="text", placeholder="如：期中、Java")
+                ],
                 submit_text="查一下",
             ), {}
         if not exams:

@@ -39,7 +39,9 @@ public class ChatServiceImpl implements IChatService {
         AiChatBo payload = bo == null ? new AiChatBo() : bo;
         Map<String, Object> body = new HashMap<>();
         body.put("session_id", payload.getSessionId());
-        body.put("message", payload.getMessage());
+        // 提交中断卡时前端只回 answers，message 会是 null；
+        // agent 侧字段是 str，传 null 会被 pydantic 打成 422
+        body.put("message", payload.getMessage() == null ? "" : payload.getMessage());
         body.put("answers", payload.getAnswers());
         // 租户与操作者必须由服务端补：Agent 按租户隔离题库与考试，不能信客户端传值
         body.put("tenant_id", TenantHelper.getTenantId());
