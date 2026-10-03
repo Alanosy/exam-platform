@@ -17,9 +17,14 @@
         <div class="head-left">
           <el-icon :size="16" class="head-icon"><ChatDotRound /></el-icon>
           <span class="head-title">AI 助手</span>
-          <span class="head-sub">考试系统智能助理</span>
         </div>
         <div class="head-right">
+          <el-button text size="small" title="历史会话" @click="togglePanel('history')">
+            <el-icon><Clock /></el-icon>
+          </el-button>
+          <el-button text size="small" title="设置" @click="togglePanel('settings')">
+            <el-icon><Setting /></el-icon>
+          </el-button>
           <el-button text size="small" title="新建会话" @click="newSession">
             <el-icon><RefreshLeft /></el-icon>
           </el-button>
@@ -29,10 +34,34 @@
         </div>
       </header>
 
+      <!-- 侧栏：历史会话 / 设置。用内部浮层而不是 el-drawer，理由同悬浮入口 -->
+      <transition name="ai-slide">
+        <div v-if="sidePanel" class="ai-side">
+          <div class="side-head">
+            <span>{{ sidePanel === 'history' ? '历史会话' : '设置' }}</span>
+            <el-button text size="small" @click="sidePanel = ''">
+              <el-icon><Close /></el-icon>
+            </el-button>
+          </div>
+          <div class="side-body">
+            <SessionList
+              v-if="sidePanel === 'history'"
+              :sessions="sessions"
+              :active-id="sessionId"
+              :loading="loadingSessions"
+              empty-text="还没有历史会话，聊一句就有了"
+              @pick="resumeSession"
+              @refresh="loadSessions"
+            />
+            <SettingsPanel v-else v-model="settings" @reset="saveSettings" />
+          </div>
+        </div>
+      </transition>
+
       <div ref="bodyRef" class="ai-body">
         <div v-if="!messages.length" class="ai-empty">
           <div class="empty-title">我能帮你做这些</div>
-          <div class="empty-desc">直接说人话就行，缺信息我会问你，写库前也会先让你确认。</div>
+          <div class="empty-desc">直接说人话就行：缺信息我会问你，写库前会先确认，做不到的会告诉你为什么。</div>
           <div class="chips">
             <div v-for="sample in SAMPLES" :key="sample" class="chip" @click="useSample(sample)">{{ sample }}</div>
           </div>
@@ -53,7 +82,7 @@
           @keydown.enter.exact.prevent="submitDraft"
         />
         <div class="foot-row">
-          <span class="foot-hint">Ctrl/⌘ + K 开关 · 会按当前租户与身份取数</span>
+          <span class="foot-hint">Ctrl/⌘ + K 开关 · 以你的身份取数，越权的查不到</span>
           <el-button type="primary" size="small" :loading="sending" :disabled="!draft.trim()" @click="submitDraft"> 发送 </el-button>
         </div>
       </footer>
@@ -62,12 +91,14 @@
 </template>
 
 <script setup lang="ts">
-import { nextTick, onBeforeUnmount, onMounted, ref } from 'vue';
-import { ChatDotRound, Close, RefreshLeft } from '@element-plus/icons-vue';
+import { nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue';
+import { ChatDotRound, Clock, Close, RefreshLeft, Setting } from '@element-plus/icons-vue';
 import ChatMessage from './ChatMessage.vue';
+import SessionList from './SessionList.vue';
+import SettingsPanel from './SettingsPanel.vue';
 import type { ChatMessageItem } from './types';
-import type { AiChatVO } from '@/api/system/ai/types';
-import { aiChat } from '@/api/system/ai/chat';
+import type { AiChatSessionVO, AiChatSettings, AiChatVO } from '@/api/system/ai/types';
+import { aiChat, aiChatSession, aiChatSessions } from '@/api/system/ai/chat';
 import { getAiEnabled } from '@/api/system/ai';
 
 /**
@@ -75,13 +106,16 @@ import { getAiEnabled } from '@/api/system/ai';
  *
  * 交互参照主流 Agent 对话（Trae / Claude 那套）：
  * - 一句话下指令，缺信息时**中断**并弹出表单，而不是回一段话让用户自己猜；
- * - 每一步工具 / 技能调用都留在运行流程里，可展开回看；
- * - 写库前一定会先给确认卡。
+ * - 每一步工具 / 技能 / 接口调用都留在运行流程里，可展开回看；
+ * - 写库前一定会先给确认卡；
+ * - 历史会话可回看、可接着聊；设置里能改上下文轮数等偏好。
  *
- * 会话状态只在组件里维护：本组件挂在 Layout 上常驻，
- * 切页面不会丢会话，关掉浏览器再进来就是新会话，符合预期。
+ * 会话状态只在组件里维护：本组件挂在 Layout 上常驻，切页面不会丢会话。
  */
-const SAMPLES = ['帮我创建 10 道关于计算机基础知识的题到计算机题库', '期中考试考卷的答题情况怎么样', '找 5 道关于 TCP 的题'];
+const SAMPLES = ['帮我创建 10 道关于计算机基础知识的题到计算机题库', '期中考试考卷的答题情况怎么样', '找 5 道关于 TCP 的题', '我这学期有哪些考试？'];
+
+const SETTINGS_KEY = 'ai-chat-settings';
+const DEFAULT_SETTINGS: AiChatSettings = { contextRounds: 6, confirmWrite: true, planner: true, modelCode: '' };
 
 const visible = ref(false);
 const aiEnabled = ref(false);
@@ -90,7 +124,29 @@ const draft = ref('');
 const sessionId = ref('');
 const messages = ref<ChatMessageItem[]>([]);
 const bodyRef = ref<HTMLElement>();
+const sidePanel = ref<'history' | 'settings' | ''>('');
+const sessions = ref<AiChatSessionVO[]>([]);
+const loadingSessions = ref(false);
+const settings = ref<AiChatSettings>({ ...DEFAULT_SETTINGS });
 let seq = 0;
+
+const loadSettings = () => {
+  try {
+    const raw = localStorage.getItem(SETTINGS_KEY);
+    if (raw) {
+      settings.value = { ...DEFAULT_SETTINGS, ...JSON.parse(raw) };
+    }
+  } catch {
+    settings.value = { ...DEFAULT_SETTINGS };
+  }
+};
+
+const saveSettings = () => {
+  localStorage.setItem(SETTINGS_KEY, JSON.stringify(settings.value));
+};
+
+// 设置变了就落盘，下一轮请求自动带上
+watch(settings, saveSettings, { deep: true });
 
 const scrollToBottom = async () => {
   await nextTick();
@@ -136,6 +192,7 @@ const call = async (payload: { message?: string; answers?: Record<string, any> }
   try {
     const res: any = await aiChat({
       sessionId: sessionId.value || undefined,
+      options: { ...settings.value },
       ...payload
     });
     // 拦截器已解一层壳，这里两种形态都兜一下
@@ -199,6 +256,44 @@ const newSession = () => {
   messages.value = [];
   sessionId.value = '';
   draft.value = '';
+  sidePanel.value = '';
+};
+
+const togglePanel = (name: 'history' | 'settings') => {
+  sidePanel.value = sidePanel.value === name ? '' : name;
+  if (sidePanel.value === 'history') {
+    void loadSessions();
+  }
+};
+
+const loadSessions = async () => {
+  loadingSessions.value = true;
+  try {
+    const res: any = await aiChatSessions();
+    sessions.value = (res?.data ?? res ?? []) as AiChatSessionVO[];
+  } catch {
+    sessions.value = [];
+  } finally {
+    loadingSessions.value = false;
+  }
+};
+
+/** 回到某个历史会话：把消息回放出来，之后接着聊就是继续这个会话 */
+const resumeSession = async (id: string) => {
+  try {
+    const res: any = await aiChatSession(id);
+    const vo: AiChatSessionVO = (res?.data ?? res) as AiChatSessionVO;
+    messages.value = (vo?.messages || []).map((m) => ({
+      id: ++seq,
+      role: (m.role === 'user' ? 'user' : 'assistant') as 'user' | 'assistant',
+      content: m.content || ''
+    }));
+    sessionId.value = id;
+    sidePanel.value = '';
+    await scrollToBottom();
+  } catch (e: any) {
+    pushAssistant({ content: `打开会话失败：${e?.msg || e?.message || '会话可能已过期'}。新建一次会话再试。` });
+  }
 };
 
 const open = () => {
@@ -228,6 +323,7 @@ const onKeydown = (e: KeyboardEvent) => {
 
 onMounted(async () => {
   window.addEventListener('keydown', onKeydown);
+  loadSettings();
   try {
     const res: any = await getAiEnabled();
     const data = res?.data ?? res;
@@ -290,11 +386,11 @@ onBeforeUnmount(() => {
   flex-direction: column;
   width: 440px;
   max-width: calc(100vw - 40px);
+  overflow: hidden;
   background: var(--el-bg-color);
   border: 1px solid var(--el-border-color-lighter);
   border-radius: 12px;
   box-shadow: 0 12px 32px rgb(0 0 0 / 16%);
-  overflow: hidden;
 }
 
 .ai-head {
@@ -320,14 +416,31 @@ onBeforeUnmount(() => {
   font-weight: 600;
 }
 
-.head-sub {
-  font-size: 12px;
-  color: var(--el-text-color-placeholder);
-}
-
 .head-right {
   display: flex;
   gap: 2px;
+}
+
+.ai-side {
+  display: flex;
+  flex-direction: column;
+  max-height: 46%;
+  padding: 10px 12px;
+  background: var(--el-bg-color-page);
+  border-bottom: 1px solid var(--el-border-color-lighter);
+}
+
+.side-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.side-body {
+  overflow-y: auto;
 }
 
 .ai-body {
@@ -385,8 +498,8 @@ onBeforeUnmount(() => {
 
 .ai-foot {
   padding: 10px 12px;
-  border-top: 1px solid var(--el-border-color-lighter);
   background: var(--el-bg-color);
+  border-top: 1px solid var(--el-border-color-lighter);
 }
 
 .foot-row {

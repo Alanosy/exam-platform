@@ -1,6 +1,6 @@
 import request from '@/utils/request';
 import { AxiosPromise } from 'axios';
-import type { AiChatForm, AiChatVO } from '@/api/system/ai/types';
+import type { AiChatForm, AiChatSessionVO, AiChatVO } from '@/api/system/ai/types';
 
 /**
  * 对话式 AI 助手：跑一轮对话
@@ -14,5 +14,25 @@ export const aiChat = (data: AiChatForm): AxiosPromise<AiChatVO> => {
     url: '/ai/chat',
     method: 'post',
     data: data
+  });
+};
+
+/**
+ * 历史会话列表（服务端按当前用户隔离，只看得到自己的）
+ */
+export const aiChatSessions = (): AxiosPromise<AiChatSessionVO[]> => {
+  return request({
+    url: '/ai/chat/sessions',
+    method: 'get'
+  });
+};
+
+/**
+ * 会话详情：点历史会话「接着聊」时用它把上下文拉回来
+ */
+export const aiChatSession = (sessionId: string): AxiosPromise<AiChatSessionVO> => {
+  return request({
+    url: `/ai/chat/session/${sessionId}`,
+    method: 'get'
   });
 };

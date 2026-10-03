@@ -593,8 +593,9 @@ async def flow_general(
     history = str(slots.get("__history") or "")
     _think(trace, "理解需求", question[:60])
 
-    # 确认过写操作后重跑：计划不再重新生成，直接用上一轮存下来的那份
-    plan = _plan_from_slots(slots)
+    # 只有在「用户刚确认过写操作」这一条路径上才复用上一轮计划；
+    # 否则（用户取消了、或者换了个新问题）必须重新规划，不能拿旧计划硬套
+    plan = _plan_from_slots(slots) if slots.get("confirmed") else None
     if plan is None:
         plan = await make_plan(question, ctx, trace, history=history)
         if plan is None:

@@ -297,4 +297,33 @@ export interface AiChatForm {
   /** 中断卡答案 {key: value} */
   answers?: Record<string, any>;
   modelCode?: string;
+  /** 会话设置：contextRounds / confirmWrite / planner / modelCode */
+  options?: Record<string, any>;
+}
+
+/** 历史会话（列表只带摘要，详情才带消息） */
+export interface AiChatSessionVO {
+  id: string;
+  title: string;
+  intent?: string;
+  messageCount?: number;
+  updatedAt?: number;
+  messages?: { role: string; content: string }[];
+}
+
+/**
+ * 聊天窗设置
+ *
+ * 存在 localStorage：这是「个人偏好」而不是业务数据，
+ * 没必要为它单独开一张表，换个浏览器重置一次也能接受。
+ */
+export interface AiChatSettings {
+  /** 带多少轮历史进上下文（1-20） */
+  contextRounds: number;
+  /** 写操作是否必须先确认 */
+  confirmWrite: boolean;
+  /** 开放域问题是否先规划再执行 */
+  planner: boolean;
+  /** 模型编码，空表示默认 */
+  modelCode: string;
 }
