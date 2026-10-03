@@ -21,7 +21,9 @@ import org.springframework.transaction.annotation.Transactional;
 import org.dromara.exam.question.domain.bo.QuestionBo;
 import org.dromara.exam.question.domain.bo.QuestionRandomBo;
 import org.dromara.exam.question.domain.bo.QuestionOptionSaveBo;
+import org.dromara.exam.question.domain.vo.KnowledgePointVo;
 import org.dromara.exam.question.domain.vo.QuestionVo;
+import org.dromara.exam.question.service.IKnowledgePointService;
 import org.dromara.exam.question.domain.Question;
 import org.dromara.exam.question.domain.QuestionBank;
 import org.dromara.exam.question.domain.QuestionOption;
@@ -58,6 +60,8 @@ public class QuestionServiceImpl implements IQuestionService {
 
     private final QuestionBankMapper questionBankMapper;
 
+    private final IKnowledgePointService knowledgePointService;
+
     /**
      * 查询试题主
      *
@@ -75,6 +79,12 @@ public class QuestionServiceImpl implements IQuestionService {
         lqw.eq(QuestionOption::getQuestionId, id);
         lqw.orderByAsc(QuestionOption::getSort);
         vo.setOptions(questionOptionMapper.selectVoList(lqw));
+        // 知识点随详情一起返回，编辑页直接回显，不用再单独查一次
+        List<KnowledgePointVo> points = knowledgePointService.mapByQuestionIds(List.of(id)).get(id);
+        if (CollUtil.isNotEmpty(points)) {
+            vo.setKnowledgeIds(points.stream().map(KnowledgePointVo::getId).toList());
+            vo.setKnowledgeNames(points.stream().map(KnowledgePointVo::getName).toList());
+        }
         return vo;
     }
 
@@ -89,6 +99,7 @@ public class QuestionServiceImpl implements IQuestionService {
     public TableDataInfo<QuestionVo> queryPageList(QuestionBo bo, PageQuery pageQuery) {
         LambdaQueryWrapper<Question> lqw = buildQueryWrapper(bo);
         Page<QuestionVo> result = baseMapper.selectVoPage(pageQuery.build(), lqw);
+        fillKnowledge(result.getRecords());
         return TableDataInfo.build(result);
     }
 
@@ -101,7 +112,36 @@ public class QuestionServiceImpl implements IQuestionService {
     @Override
     public List<QuestionVo> queryList(QuestionBo bo) {
         LambdaQueryWrapper<Question> lqw = buildQueryWrapper(bo);
-        return baseMapper.selectVoList(lqw);
+        List<QuestionVo> rows = baseMapper.selectVoList(lqw);
+        fillKnowledge(rows);
+        return rows;
+    }
+
+    /**
+     * 批量回填知识点
+     *
+     * <p>列表页要显示每题挂了哪些知识点，这里按页内试题ID一次性查回来再拼，
+     * 避免 N+1（一页 10 道题只多一次查询）。
+     *
+     * @param rows 试题VO列表
+     */
+    private void fillKnowledge(List<QuestionVo> rows) {
+        if (CollUtil.isEmpty(rows)) {
+            return;
+        }
+        List<Long> ids = rows.stream().map(QuestionVo::getId).filter(ObjectUtil::isNotNull).toList();
+        if (CollUtil.isEmpty(ids)) {
+            return;
+        }
+        Map<Long, List<KnowledgePointVo>> map = knowledgePointService.mapByQuestionIds(ids);
+        for (QuestionVo row : rows) {
+            List<KnowledgePointVo> points = map.get(row.getId());
+            if (CollUtil.isEmpty(points)) {
+                continue;
+            }
+            row.setKnowledgeIds(points.stream().map(KnowledgePointVo::getId).toList());
+            row.setKnowledgeNames(points.stream().map(KnowledgePointVo::getName).toList());
+        }
     }
 
     private LambdaQueryWrapper<Question> buildQueryWrapper(QuestionBo bo) {
@@ -164,6 +204,10 @@ public class QuestionServiceImpl implements IQuestionService {
         }
         bo.setId(add.getId());
         saveOptions(add.getId(), bo.getOptions());
+        // 知识点传了才写，避免局部接口误清空
+        if (bo.getKnowledgeIds() != null) {
+            knowledgePointService.saveQuestionKnowledge(add.getId(), bo.getKnowledgeIds());
+        }
         // 富文本里的图片已经以 <img src> 的形式存在 title / options / analysis 里，随本行一起入库
         return add.getId();
     }
@@ -278,6 +322,10 @@ public class QuestionServiceImpl implements IQuestionService {
         if (bo.getOptions() != null) {
             replaceOptions(bo.getId(), bo.getOptions());
         }
+        // 知识点同理：编辑页提交的是完整列表，走全量覆盖
+        if (bo.getKnowledgeIds() != null) {
+            knowledgePointService.saveQuestionKnowledge(bo.getId(), bo.getKnowledgeIds());
+        }
         return true;
     }
 
@@ -312,6 +360,8 @@ public class QuestionServiceImpl implements IQuestionService {
         LambdaQueryWrapper<QuestionOption> optionLqw = Wrappers.lambdaQuery();
         optionLqw.in(QuestionOption::getQuestionId, ids);
         questionOptionMapper.delete(optionLqw);
+        // 知识点关联没有逻辑删除字段，直接清掉，避免留下悬空关联
+        knowledgePointService.deleteByQuestionIds(ids);
         return true;
     }
 

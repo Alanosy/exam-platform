@@ -29,9 +29,24 @@
         <el-row :gutter="12">
           <el-col :span="12">
             <el-form-item label="知识点">
-              <el-select v-model="form.knowledgePoints" multiple filterable allow-create default-first-option placeholder="输入后回车，可填多个" class="w-full">
-                <el-option v-for="item in knowledgeOptions" :key="item" :label="item" :value="item" />
-              </el-select>
+              <!--
+                值取知识点「名称」：AI 出题入参 knowledge_points 是名称数组；
+                保存试题时再按名称反查成 ID 写关联表。章节只作分组（disabled）
+              -->
+              <el-tree-select
+                v-model="form.knowledgePoints"
+                :data="knowledgeTree"
+                :props="{ value: 'name', label: 'name', children: 'children', disabled: 'disabled' } as any"
+                value-key="name"
+                multiple
+                show-checkbox
+                check-strictly
+                filterable
+                collapse-tags
+                collapse-tags-tooltip
+                placeholder="从知识点树选择，没有的请先到「知识点管理」建"
+                class="w-full"
+              />
             </el-form-item>
           </el-col>
           <el-col :span="4">
@@ -62,7 +77,7 @@
         </el-form-item>
         <el-form-item>
           <el-button type="primary" icon="MagicStick" :loading="generating" @click="handleGenerate">生成</el-button>
-          <span class="tip-text">AI 生成的题需人工核对后再启用，尤其是选择题的正确项</span>
+          <span class="tip-text">AI 生成的题需人工核对后再启用，尤其是选择题的正确项；知识点库里没有的名称不会写入关联</span>
         </el-form-item>
       </el-form>
 
@@ -89,6 +104,8 @@
             <el-tag size="small" effect="light" :type="questionDifficultyTagType(item.difficulty)">
               {{ questionDifficultyLabel(item.difficulty || 'medium') }}
             </el-tag>
+            <!-- AI 自己标的知识点，保存到题库时会按名称匹配到知识点库的 ID -->
+            <el-tag v-for="name in item.knowledgePoints ?? []" :key="name" size="small" effect="plain">{{ name }}</el-tag>
             <!-- 质检结论：fatal 直接红标，教师一眼看到哪道题不能用 -->
             <el-tag v-if="item.audit" size="small" effect="dark" :type="item.audit.passed ? 'success' : 'danger'">
               质检 {{ item.audit.qualityScore ?? '-' }} 分
@@ -143,6 +160,8 @@ import type { AiQuestionGenVO, AiQuestionAuditVO } from '@/api/system/ai/types';
 // 不写选项、不填 create_user、也不兜底 status
 import { createQuestion } from '@/api/system/question';
 import type { QuestionForm } from '@/api/system/question/types';
+import { treeKnowledge } from '@/api/system/knowledge';
+import type { KnowledgePointVO } from '@/api/system/knowledge/types';
 import { BankVO } from '@/api/system/bank/types';
 import { useQuestionDicts } from './useQuestionDict';
 
@@ -175,8 +194,35 @@ const visible = computed({
 const generating = ref(false);
 const saving = ref(false);
 const list = ref<GenItem[]>([]);
-const knowledgeOptions = ref<string[]>([]);
 const aiEnabled = ref(false);
+
+/** 知识点树：章节只作分组（disabled），勾选的是其下的知识点 */
+const knowledgeTree = ref<KnowledgePointVO[]>([]);
+/** 知识点名称 → ID，保存试题时用它把 AI 给的名称翻译成关联表要的 ID */
+const knowledgeNameToId = ref<Record<string, string | number>>({});
+
+const loadKnowledgeTree = async () => {
+  try {
+    const res = await treeKnowledge();
+    const tree = res.data ?? [];
+    const map: Record<string, string | number> = {};
+    knowledgeTree.value = tree.map((chapter) => ({
+      ...chapter,
+      disabled: true,
+      children: (chapter.children ?? []).map((point) => {
+        map[point.name] = point.id;
+        return { ...point };
+      })
+    }));
+    knowledgeNameToId.value = map;
+  } catch {
+    knowledgeTree.value = [];
+  }
+};
+
+/** 知识点名称数组 → ID 数组，认不出的名称直接丢掉（AI 可能自造知识点） */
+const toKnowledgeIds = (names?: string[]): Array<string | number> =>
+  (names ?? []).map((name) => knowledgeNameToId.value[name]).filter((id) => id !== undefined);
 
 const form = reactive({
   bankId: undefined as string | number | undefined,
@@ -275,6 +321,8 @@ const handleSave = async () => {
       answer: item.answer,
       // 后端必填，不传会报「0草稿 1启用 2废弃不能为空」
       status: form.status,
+      // AI 自己给的知识点优先，没有就用在生成条件里选的那批；名称翻译成 ID
+      knowledgeIds: toKnowledgeIds(item.knowledgePoints?.length ? item.knowledgePoints : form.knowledgePoints),
       // 选项字段与题库实体一致（optionKey / optionContent），AI 给的 key/content 在这里对齐
       options: (item.options ?? []).map((opt, idx) => ({ optionKey: opt.key, optionContent: opt.content, sort: idx + 1 }))
     };
@@ -309,6 +357,7 @@ watch(
       if (props.defaultBankId !== undefined && !form.bankId) {
         form.bankId = props.defaultBankId;
       }
+      loadKnowledgeTree();
       checkEnabled();
     }
   }

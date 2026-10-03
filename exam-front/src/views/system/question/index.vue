@@ -92,6 +92,14 @@
           </template>
         </el-table-column>
         <el-table-column label="分值" align="center" prop="score" width="80" />
+        <el-table-column label="知识点" align="center" min-width="160">
+          <template #default="{ row }">
+            <template v-if="row.knowledgeNames && row.knowledgeNames.length > 0">
+              <el-tag v-for="name in row.knowledgeNames" :key="name" size="small" effect="plain" class="mr-1 mb-1">{{ name }}</el-tag>
+            </template>
+            <span v-else class="text-[#c0c4cc]">未标注</span>
+          </template>
+        </el-table-column>
         <el-table-column label="状态" align="center" prop="status" width="90">
           <template #default="{ row }">
             <el-tag size="small" :type="questionStatusTagType(row.status)" effect="light">{{ questionStatusLabel(row.status) }}</el-tag>

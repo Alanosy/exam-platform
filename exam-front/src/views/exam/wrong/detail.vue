@@ -51,6 +51,16 @@
             <span class="question-title" :title="plainText(row.title)">{{ plainText(row.title) }}</span>
           </template>
         </el-table-column>
+        <el-table-column label="知识点" min-width="150">
+          <template #default="{ row }">
+            <template v-if="(knowledgeMap[String(row.questionId ?? '')] ?? []).length > 0">
+              <el-tag v-for="name in knowledgeMap[String(row.questionId ?? '')]" :key="name" size="small" effect="plain" class="mr-1 mb-1">
+                {{ name }}
+              </el-tag>
+            </template>
+            <span v-else class="text-[#c0c4cc]">未标注</span>
+          </template>
+        </el-table-column>
         <el-table-column label="来源" min-width="160" show-overflow-tooltip>
           <template #default="{ row }">{{ row.sourceName || '-' }}</template>
         </el-table-column>
@@ -92,6 +102,7 @@
 <script setup lang="ts" name="ExamWrongDetail">
 import { getWrongList, masterWrong, ignoreWrong, restoreWrong } from '@/api/exam/wrong';
 import type { WrongQuestionVO, WrongQuestionQuery } from '@/api/exam/wrong/types';
+import { listQuestionKnowledge } from '@/api/system/knowledge';
 import { useExamDicts } from '@/hooks/useExamDicts';
 import type { AiWrongItem } from '@/api/system/ai/types';
 import AiDiagnoseDrawer from './AiDiagnoseDrawer.vue';
@@ -115,13 +126,17 @@ const queryParams = ref<WrongQuestionQuery>({ pageNum: 1, pageSize: 10, includeI
 
 /** AI 诊断抽屉 */
 const aiVisible = ref(false);
-/** 错题转诊断入参：题干脱标签，知识点暂缺（题库还没打标），AI 从题干推断 */
+
+/** 试题ID → 知识点名称列表：错题归因按知识点聚合，没有它 AI 只能从题干猜 */
+const knowledgeMap = ref<Record<string, string[]>>({});
+
+/** 错题转诊断入参：题干脱标签，知识点取试题上标注的那些 */
 const aiWrongItems = computed<AiWrongItem[]>(() =>
   list.value.map((row) => ({
     questionId: String(row.questionId ?? ''),
     questionType: row.questionType,
     stem: plainText(row.title),
-    knowledgePoints: [],
+    knowledgePoints: knowledgeMap.value[String(row.questionId ?? '')] ?? [],
     answerText: '',
     standardAnswer: row.standardAnswerText || row.standardAnswer,
     wrongCount: row.wrongCount
@@ -178,11 +193,38 @@ const getList = async () => {
     });
     list.value = res.rows ?? [];
     total.value = res.total ?? 0;
+    await loadKnowledge(list.value);
   } catch {
     list.value = [];
     total.value = 0;
+    knowledgeMap.value = {};
   } finally {
     loading.value = false;
+  }
+};
+
+/**
+ * 批量取当前页错题的知识点
+ *
+ * 知识点查询失败不影响错题本本身，只是诊断会退化成「从题干推断」。
+ */
+const loadKnowledge = async (rows: WrongQuestionVO[]) => {
+  const ids = [...new Set(rows.map((row) => String(row.questionId ?? '')).filter((id) => /^\d+$/.test(id)))];
+  if (ids.length === 0) {
+    knowledgeMap.value = {};
+    return;
+  }
+  try {
+    const res = await listQuestionKnowledge(ids.join(','));
+    const map: Record<string, string[]> = {};
+    for (const ref of res.data ?? []) {
+      if (!ref.knowledgeName) continue;
+      const key = String(ref.questionId);
+      (map[key] ??= []).push(ref.knowledgeName);
+    }
+    knowledgeMap.value = map;
+  } catch {
+    knowledgeMap.value = {};
   }
 };
 

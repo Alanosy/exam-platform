@@ -96,6 +96,16 @@ export interface QuestionVO {
   status: string | number;
 
   /**
+   * 知识点ID列表（两级：章节 → 知识点），由后端按试题回填
+   */
+  knowledgeIds?: Array<string | number>;
+
+  /**
+   * 知识点名称列表，列表页直接展示用
+   */
+  knowledgeNames?: string[];
+
+  /**
    * 选项列表，详情接口返回时携带
    */
   options?: QuestionOption[];
@@ -151,6 +161,11 @@ export interface QuestionForm extends BaseEntity {
    * 0草稿 1启用 2废弃（字典值可能是数字也可能是字符串，统一按 string | number 处理）
    */
   status?: string | number;
+
+  /**
+   * 知识点ID列表：全量覆盖，传空数组表示清空；不传表示不动关联
+   */
+  knowledgeIds?: Array<string | number>;
 
   /**
    * 选项列表，新增/修改时随试题一并提交

@@ -50,6 +50,22 @@
             <el-radio v-for="item in questionStatusOptions" :key="item.value" :value="item.value">{{ item.label }}</el-radio>
           </el-radio-group>
         </el-form-item>
+        <el-form-item label="知识点" prop="knowledgeIds">
+          <el-tree-select
+            v-model="form.knowledgeIds"
+            :data="knowledgeTree"
+            :props="{ value: 'id', label: 'name', children: 'children', disabled: 'disabled' } as any"
+            value-key="id"
+            multiple
+            show-checkbox
+            check-strictly
+            filterable
+            collapse-tags
+            collapse-tags-tooltip
+            placeholder="可多选：章节只作分组，请勾选其下的知识点"
+            class="w-full"
+          />
+        </el-form-item>
       </el-form>
     </el-card>
 
@@ -171,6 +187,8 @@ import type { FormRules } from 'element-plus';
 import Editor from '@/components/Editor/index.vue';
 import { createQuestion, getQuestion, updateQuestion } from '@/api/system/question';
 import { QuestionForm, QuestionOption, QuestionVO } from '@/api/system/question/types';
+import { treeKnowledge } from '@/api/system/knowledge';
+import { KnowledgePointVO } from '@/api/system/knowledge/types';
 import { listOption } from '@/api/system/option';
 import { OptionVO } from '@/api/system/option/types';
 import { listBank } from '@/api/system/bank';
@@ -212,6 +230,25 @@ const isStatusValid = (value?: QuestionForm['status']): boolean => {
 
 const formRef = ref<ElFormInstance>();
 const bankList = ref<BankVO[]>([]);
+
+/**
+ * 知识点树（两级：章节 → 知识点）
+ *
+ * 章节只作分组，这里把章节节点标成 disabled，避免把「章」当知识点挂到题上
+ */
+const knowledgeTree = ref<KnowledgePointVO[]>([]);
+const loadKnowledgeTree = async () => {
+  try {
+    const res = await treeKnowledge();
+    knowledgeTree.value = (res.data ?? []).map((chapter) => ({
+      ...chapter,
+      disabled: true,
+      children: (chapter.children ?? []).map((point) => ({ ...point }))
+    }));
+  } catch {
+    knowledgeTree.value = [];
+  }
+};
 
 const form = reactive<QuestionForm>({
   id: undefined,
@@ -488,6 +525,7 @@ const resetPage = () => {
     analysis: '',
     answer: undefined,
     status: defaultStatus.value,
+    knowledgeIds: [],
     options: []
   });
   formRef.value?.clearValidate();
@@ -496,6 +534,7 @@ const resetPage = () => {
 /** 按当前路由初始化页面：修改走详情回显，新增走空白默认 */
 const initPage = async () => {
   resetPage();
+  await loadKnowledgeTree();
   const id = questionId.value;
   if (id) {
     await loadDetail(id);
@@ -522,7 +561,8 @@ const loadDetail = async (id: string | number) => {
     difficulty: data.difficulty ?? 'easy',
     score: data.score ?? 0,
     analysis: data.analysis ?? '',
-    status: data.status ?? 0
+    status: data.status ?? 0,
+    knowledgeIds: data.knowledgeIds ?? []
   });
   let options: QuestionOption[] = data.options ?? [];
   // 详情接口没有嵌套返回选项时，兜底单独查一次选项列表

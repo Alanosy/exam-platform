@@ -92,4 +92,12 @@ public class QuestionBo extends BaseEntity {
     @Valid
     private List<QuestionOptionSaveBo> options;
 
+    /**
+     * 知识点ID列表（两级：章节 → 知识点）
+     *
+     * <p>新增 / 编辑时随试题一并提交，全量覆盖 exam_question_knowledge。
+     * 传 null 表示不动关联（局部更新接口用），传空数组表示清空。
+     */
+    private List<Long> knowledgeIds;
+
 }

@@ -102,4 +102,16 @@ public class QuestionVo implements Serializable {
     @ExcelIgnore
     private List<QuestionOptionVo> options;
 
+    /**
+     * 知识点ID列表（由 exam_question_knowledge 回填，供编辑页回显）
+     */
+    @ExcelIgnore
+    private List<Long> knowledgeIds;
+
+    /**
+     * 知识点名称列表（列表页直接展示，不用再查一次知识点表）
+     */
+    @ExcelIgnore
+    private List<String> knowledgeNames;
+
 }
