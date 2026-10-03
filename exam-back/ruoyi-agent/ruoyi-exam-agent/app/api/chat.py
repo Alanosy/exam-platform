@@ -11,7 +11,7 @@ import logging
 from typing import Any
 
 from fastapi import APIRouter
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, field_validator
 
 from app.chat.engine import chat
 from app.chat.session import store
@@ -30,6 +30,17 @@ class ChatIn(BaseModel):
     tenant_id: str = "000000"
     user_id: str | None = None
     model_code: str | None = None
+
+    @field_validator("tenant_id", "user_id", "model_code", mode="before")
+    @classmethod
+    def _to_str(cls, value: Any) -> Any:
+        """ID 一律收成字符串
+
+        Java 侧的 userId 是 Long、租户号也可能是数字，直接按 str 校验会 422，
+        而 422 在 Java 那边只会显示成一句「AI 服务暂时不可用」，很难排查。
+        雪花 ID 本来也该全程当字符串传，这里统一兜一层。
+        """
+        return None if value is None else str(value)
 
 
 class ResetIn(BaseModel):

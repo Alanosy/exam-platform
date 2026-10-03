@@ -134,3 +134,17 @@ def test_openapi_schema_buildable(client):
     """所有路由的返回类型必须能被 FastAPI 解析（防止 -> dict 与返回类型不一致）"""
     schema = client.get("/openapi.json").json()
     assert schema["paths"], "OpenAPI 为空说明路由注册失败"
+
+
+def test_chat_accepts_numeric_ids(client):
+    """Java 侧的 userId 是 Long、租户号也可能是数字
+
+    不兜这一层 pydantic 直接 422，而 Java 那边只会显示成一句
+    「AI 服务暂时不可用」，排查成本很高。
+    """
+    body = client.post(
+        "/api/ai/chat",
+        json={"message": "你好", "user_id": 1, "tenant_id": 0, "session_id": None},
+    ).json()
+    assert body["code"] == 200, f"业务码非 200: {body}"
+    assert body["data"]["reply"]
