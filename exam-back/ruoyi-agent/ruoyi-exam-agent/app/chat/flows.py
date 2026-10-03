@@ -218,23 +218,24 @@ async def flow_question_create(
                 {"label": f"{b.get('name')}（{b.get('questionCount', 0)} 题）", "value": str(b.get("id"))}
                 for b in banks
             ]
-            options.append({"label": f"新建题库「{keyword or topic}」", "value": NEW_BANK})
+            # 「新建题库」放最后当兜底：有已有题库就默认选第一个，别让人一回车就建新库
+            options.append({"label": "新建题库…", "value": NEW_BANK})
+            default_value = str(banks[0].get("id")) if banks else NEW_BANK
             missing.append(
                 AskField(
                     key="bank_id",
-                    label="写到哪个题库？" + ("没有完全匹配的，可以从已有题库里挑" if banks else "当前没有可用题库"),
+                    label="写到哪个题库？" + ("已有题库都在下面，没有合适的再选「新建题库」" if banks else "当前没有可用题库"),
                     type="select",
                     options=options,
-                    # 关键词确实命中了才默认选第一个；只是「全量兜底」出来的库
-                    # 跟主题没关系，默认停在「新建」，别让人一回车就写错库
-                    value=str(banks[0].get("id")) if (banks and by_keyword) else NEW_BANK,
+                    # 有已有题库默认选第一个；只有全空时才停在「新建」
+                    value=default_value,
                 )
             )
             missing.append(
                 AskField(
                     key="new_bank_name", label="新建题库名称", type="text",
                     value=str(slots.get("new_bank_name") or keyword or topic),
-                    required=False, tip="选了「新建题库」时才生效",
+                    required=False, tip="选了「新建题库」时才生效，留空我用主题名自动建库",
                 )
             )
 
