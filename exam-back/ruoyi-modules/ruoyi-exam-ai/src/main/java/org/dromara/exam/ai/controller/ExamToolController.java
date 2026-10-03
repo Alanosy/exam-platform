@@ -1,7 +1,7 @@
 package org.dromara.exam.ai.controller;
 
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.dubbo.config.annotation.DubboReference;
 import org.dromara.common.core.domain.R;
 import org.dromara.exam.ai.client.AiAgentClient;
 import org.dromara.exam.answer.api.RemoteExamAnswerService;
@@ -47,16 +47,25 @@ import java.util.Map;
  * @date 2026-10-03
  */
 @Slf4j
-@RequiredArgsConstructor
 @RestController
 @RequestMapping("/api/exam-tool")
 public class ExamToolController {
 
-    private final RemoteQuestionService remoteQuestionService;
+    /**
+     * 跨服务一律走 Dubbo 引用，不能用构造器注入：
+     * {@code Remote*Service} 是接口，Spring 容器里根本没有实现类，
+     * 用 final 字段 + &#64;RequiredArgsConstructor 会直接「找不到 bean」起不来。
+     */
+    // check = false：AI 服务不该因为题库 / 考试 / 答题某个提供者没起就整体起不来，
+    // 缺哪个能力就在对应工具上报错，其余对话照常可用
+    @DubboReference(check = false)
+    private RemoteQuestionService remoteQuestionService;
 
-    private final RemoteExamService remoteExamService;
+    @DubboReference(check = false)
+    private RemoteExamService remoteExamService;
 
-    private final RemoteExamAnswerService remoteExamAnswerService;
+    @DubboReference(check = false)
+    private RemoteExamAnswerService remoteExamAnswerService;
 
     @Value("${exam-tool.token:}")
     private String toolToken;
