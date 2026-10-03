@@ -1,8 +1,9 @@
 <template>
   <div class="session-list">
-    <div class="list-head">
-      <span class="list-title">历史会话</span>
-      <el-button text size="small" :loading="loading" @click="emit('refresh')">
+    <!-- 标题交给外层（整框视图的头部已经有了），这里只留刷新 -->
+    <div class="list-head" :class="{ 'is-end': !title }">
+      <span v-if="title" class="list-title">{{ title }}</span>
+      <el-button text size="small" title="刷新" :loading="loading" @click="emit('refresh')">
         <el-icon><Refresh /></el-icon>
       </el-button>
     </div>
@@ -40,8 +41,10 @@ withDefaults(
     activeId?: string;
     loading?: boolean;
     emptyText?: string;
+    /** 置空则不渲染标题行文字（外层头部已有标题时使用） */
+    title?: string;
   }>(),
-  { activeId: '', loading: false, emptyText: '还没有历史会话' }
+  { activeId: '', loading: false, emptyText: '还没有历史会话', title: '历史会话' }
 );
 
 const emit = defineEmits<{ pick: [id: string]; refresh: [] }>();
@@ -78,6 +81,11 @@ const formatTime = (ts?: number) => {
   display: flex;
   align-items: center;
   justify-content: space-between;
+
+  // 没有标题时刷新按钮靠右，避免孤零零一个图标顶在左边
+  &.is-end {
+    justify-content: flex-end;
+  }
 }
 
 .list-title {

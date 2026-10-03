@@ -11,88 +11,97 @@
     <span v-if="!aiEnabled" class="fab-dot"></span>
   </div>
 
-  <transition name="ai-slide">
+  <transition name="ai-pop">
     <div v-show="visible" class="ai-panel">
       <header class="ai-head">
         <div class="head-left">
-          <el-icon :size="16" class="head-icon"><ChatDotRound /></el-icon>
-          <span class="head-title">AI 助手</span>
+          <!-- 二级视图才出现返回键：聊天时头部不放无关入口 -->
+          <el-button v-if="view !== 'chat'" text size="small" title="返回对话" @click="backToChat">
+            <el-icon><ArrowLeft /></el-icon>
+          </el-button>
+          <el-icon v-else :size="16" class="head-icon"><ChatDotRound /></el-icon>
+          <span class="head-title">{{ view === 'chat' ? 'AI 助手' : viewTitle }}</span>
         </div>
         <div class="head-right">
-          <el-button text size="small" title="历史会话" @click="togglePanel('history')">
-            <el-icon><Clock /></el-icon>
-          </el-button>
-          <el-button text size="small" title="设置" @click="togglePanel('settings')">
-            <el-icon><Setting /></el-icon>
-          </el-button>
-          <el-button text size="small" title="新建会话" @click="newSession">
-            <el-icon><RefreshLeft /></el-icon>
-          </el-button>
+          <template v-if="view === 'chat'">
+            <el-button text size="small" title="历史会话" @click="openView('history')">
+              <el-icon><Clock /></el-icon>
+            </el-button>
+            <el-button text size="small" title="设置" @click="openView('settings')">
+              <el-icon><Setting /></el-icon>
+            </el-button>
+            <el-button text size="small" title="新建会话" @click="newSession">
+              <el-icon><RefreshLeft /></el-icon>
+            </el-button>
+          </template>
           <el-button text size="small" title="关闭" @click="close">
             <el-icon><Close /></el-icon>
           </el-button>
         </div>
       </header>
 
-      <!-- 侧栏：历史会话 / 设置。用内部浮层而不是 el-drawer，理由同悬浮入口 -->
-      <transition name="ai-slide">
-        <div v-if="sidePanel" class="ai-side">
-          <div class="side-head">
-            <span>{{ sidePanel === 'history' ? '历史会话' : '设置' }}</span>
-            <el-button text size="small" @click="sidePanel = ''">
-              <el-icon><Close /></el-icon>
-            </el-button>
-          </div>
-          <div class="side-body">
-            <SessionList
-              v-if="sidePanel === 'history'"
-              :sessions="sessions"
-              :active-id="sessionId"
-              :loading="loadingSessions"
-              empty-text="还没有历史会话，聊一句就有了"
-              @pick="resumeSession"
-              @refresh="loadSessions"
-            />
-            <SettingsPanel v-else v-model="settings" @reset="saveSettings" />
-          </div>
+      <!--
+        二级视图整框接管，而不是挤在聊天区上方占一半：
+        一个窗口只做一件事——要么聊天，要么翻历史，要么改设置。
+        没有用 el-dialog / el-drawer：它们 teleport 到 body，全屏场景下会看不到。
+      -->
+      <div v-if="view !== 'chat'" class="ai-view">
+        <div class="view-body">
+          <SessionList
+            v-if="view === 'history'"
+            :sessions="sessions"
+            :active-id="sessionId"
+            :loading="loadingSessions"
+            :title="''"
+            empty-text="还没有历史会话，聊一句就有了"
+            @pick="resumeSession"
+            @refresh="loadSessions"
+          />
+          <SettingsPanel v-else v-model="settings" @reset="saveSettings" @applied="backToChat" />
         </div>
-      </transition>
-
-      <div ref="bodyRef" class="ai-body">
-        <div v-if="!messages.length" class="ai-empty">
-          <div class="empty-title">我能帮你做这些</div>
-          <div class="empty-desc">直接说人话就行：缺信息我会问你，写库前会先确认，做不到的会告诉你为什么。</div>
-          <div class="chips">
-            <div v-for="sample in SAMPLES" :key="sample" class="chip" @click="useSample(sample)">{{ sample }}</div>
-          </div>
+        <div class="view-foot">
+          <span class="view-hint">{{ view === 'history' ? '点一条就能接着聊' : '改动即时生效并会被记住' }}</span>
+          <el-button size="small" type="primary" plain @click="backToChat">返回对话</el-button>
         </div>
-
-        <ChatMessage v-for="msg in messages" :key="msg.id" :msg="msg" @submit="onAskSubmit" @cancel="onAskCancel" />
-
-        <div v-if="!aiEnabled" class="ai-offline">AI 服务未连接，回复会是降级文案。请启动 ruoyi-exam-agent 后重试。</div>
       </div>
 
-      <footer class="ai-foot">
-        <el-input
-          v-model="draft"
-          type="textarea"
-          resize="none"
-          :autosize="{ minRows: 2, maxRows: 5 }"
-          :placeholder="inputPlaceholder"
-          @keydown.enter.exact.prevent="submitDraft"
-        />
-        <div class="foot-row">
-          <span class="foot-hint">Ctrl/⌘ + K 开关 · 以你的身份取数，越权的查不到</span>
-          <el-button type="primary" size="small" :loading="sending" :disabled="!draft.trim()" @click="submitDraft"> 发送 </el-button>
+      <template v-else>
+        <div ref="bodyRef" class="ai-body">
+          <div v-if="!messages.length" class="ai-empty">
+            <div class="empty-title">我能帮你做这些</div>
+            <div class="empty-desc">直接说人话就行：缺信息我会问你，写库前会先确认，做不到的会告诉你为什么。</div>
+            <div class="chips">
+              <div v-for="sample in SAMPLES" :key="sample" class="chip" @click="useSample(sample)">{{ sample }}</div>
+            </div>
+          </div>
+
+          <ChatMessage v-for="msg in messages" :key="msg.id" :msg="msg" @submit="onAskSubmit" @cancel="onAskCancel" />
+
+          <div v-if="!aiEnabled" class="ai-offline">AI 服务未连接，回复会是降级文案。请启动 ruoyi-exam-agent 后重试。</div>
         </div>
-      </footer>
+
+        <footer class="ai-foot">
+          <el-input
+            v-model="draft"
+            type="textarea"
+            resize="none"
+            :autosize="{ minRows: 2, maxRows: 5 }"
+            :placeholder="inputPlaceholder"
+            @keydown.enter.exact.prevent="submitDraft"
+          />
+          <div class="foot-row">
+            <span class="foot-hint">Ctrl/⌘ + K 开关 · 以你的身份取数，越权的查不到</span>
+            <el-button type="primary" size="small" :loading="sending" :disabled="!draft.trim()" @click="submitDraft"> 发送 </el-button>
+          </div>
+        </footer>
+      </template>
     </div>
   </transition>
 </template>
 
 <script setup lang="ts">
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue';
-import { ChatDotRound, Clock, Close, RefreshLeft, Setting } from '@element-plus/icons-vue';
+import { ArrowLeft, ChatDotRound, Clock, Close, RefreshLeft, Setting } from '@element-plus/icons-vue';
 import ChatMessage from './ChatMessage.vue';
 import SessionList from './SessionList.vue';
 import SettingsPanel from './SettingsPanel.vue';
@@ -110,6 +119,9 @@ import { getAiEnabled } from '@/api/system/ai';
  * - 写库前一定会先给确认卡；
  * - 历史会话可回看、可接着聊；设置里能改上下文轮数等偏好。
  *
+ * 视图是互斥的（chat / history / settings）：点历史或设置会**整框切换**过去，
+ * 而不是在聊天区上方压一层半屏浮层——一个窗口只做一件事，同时避免聊天记录被挤成窄条。
+ *
  * 会话状态只在组件里维护：本组件挂在 Layout 上常驻，切页面不会丢会话。
  */
 const SAMPLES = ['帮我创建 10 道关于计算机基础知识的题到计算机题库', '期中考试考卷的答题情况怎么样', '找 5 道关于 TCP 的题', '我这学期有哪些考试？'];
@@ -124,7 +136,9 @@ const draft = ref('');
 const sessionId = ref('');
 const messages = ref<ChatMessageItem[]>([]);
 const bodyRef = ref<HTMLElement>();
-const sidePanel = ref<'history' | 'settings' | ''>('');
+// 互斥视图：聊天 / 历史 / 设置，同一时刻只显示一个，整框接管
+const view = ref<'chat' | 'history' | 'settings'>('chat');
+const viewTitle = computed(() => (view.value === 'history' ? '历史会话' : '设置'));
 const sessions = ref<AiChatSessionVO[]>([]);
 const loadingSessions = ref(false);
 const settings = ref<AiChatSettings>({ ...DEFAULT_SETTINGS });
@@ -278,14 +292,20 @@ const newSession = () => {
   messages.value = [];
   sessionId.value = '';
   draft.value = '';
-  sidePanel.value = '';
+  view.value = 'chat';
 };
 
-const togglePanel = (name: 'history' | 'settings') => {
-  sidePanel.value = sidePanel.value === name ? '' : name;
-  if (sidePanel.value === 'history') {
+/** 打开二级视图：整框切过去，聊天区直接让位 */
+const openView = (name: 'history' | 'settings') => {
+  view.value = name;
+  if (name === 'history') {
     void loadSessions();
   }
+};
+
+const backToChat = async () => {
+  view.value = 'chat';
+  await scrollToBottom();
 };
 
 const loadSessions = async () => {
@@ -311,7 +331,7 @@ const resumeSession = async (id: string) => {
       content: m.content || ''
     }));
     sessionId.value = id;
-    sidePanel.value = '';
+    view.value = 'chat';
     await scrollToBottom();
   } catch (e: any) {
     pushAssistant({ content: `打开会话失败：${e?.msg || e?.message || '会话可能已过期'}。新建一次会话再试。` });
@@ -320,6 +340,8 @@ const resumeSession = async (id: string) => {
 
 const open = () => {
   visible.value = true;
+  // 每次唤起都从聊天视图开始：上一次停在设置里不该被带出来
+  view.value = 'chat';
   void scrollToBottom();
 };
 
@@ -339,6 +361,11 @@ const onKeydown = (e: KeyboardEvent) => {
     return;
   }
   if (e.key === 'Escape' && visible.value) {
+    // 先退回聊天，再按一次才关窗：避免在看历史时一把 Esc 把整个窗关掉
+    if (view.value !== 'chat') {
+      view.value = 'chat';
+      return;
+    }
     close();
   }
 };
@@ -443,26 +470,34 @@ onBeforeUnmount(() => {
   gap: 2px;
 }
 
-.ai-side {
+/* 二级视图：整框接管，聊天区与输入区整体让位 */
+.ai-view {
   display: flex;
+  flex: 1;
   flex-direction: column;
-  max-height: 46%;
-  padding: 10px 12px;
-  background: var(--el-bg-color-page);
-  border-bottom: 1px solid var(--el-border-color-lighter);
+  min-height: 0;
 }
 
-.side-head {
+.view-body {
+  flex: 1;
+  padding: 12px;
+  overflow-y: auto;
+  background: var(--el-bg-color-page);
+}
+
+.view-foot {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 8px;
-  font-size: 13px;
-  font-weight: 600;
+  gap: 8px;
+  padding: 10px 12px;
+  background: var(--el-bg-color);
+  border-top: 1px solid var(--el-border-color-lighter);
 }
 
-.side-body {
-  overflow-y: auto;
+.view-hint {
+  font-size: 11px;
+  color: var(--el-text-color-placeholder);
 }
 
 .ai-body {
@@ -536,13 +571,13 @@ onBeforeUnmount(() => {
   color: var(--el-text-color-placeholder);
 }
 
-.ai-slide-enter-active,
-.ai-slide-leave-active {
+.ai-pop-enter-active,
+.ai-pop-leave-active {
   transition: all 0.22s ease;
 }
 
-.ai-slide-enter-from,
-.ai-slide-leave-to {
+.ai-pop-enter-from,
+.ai-pop-leave-to {
   opacity: 0;
   transform: translateX(16px);
 }

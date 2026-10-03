@@ -48,7 +48,7 @@
 
     <div class="set-foot">
       <el-button size="small" @click="reset">恢复默认</el-button>
-      <el-button type="primary" size="small" @click="apply">保存</el-button>
+      <el-button type="primary" size="small" @click="apply">完成</el-button>
     </div>
   </div>
 </template>
@@ -73,13 +73,14 @@ const SCOPE_TAG: Record<string, ElTagType> = {
 };
 
 /**
- * 聊天窗设置
+ * 聊天窗设置（整框二级视图里展示）
  *
- * 改动当场写回父组件并落到 localStorage；下一次请求就会带上新的 options，
+ * 改动实时写回父组件并落到 localStorage，下一次请求就带上新的 options；
  * 服务端按会话记住（同一会话不用每轮都传）。
  */
 const props = defineProps<{ modelValue: AiChatSettings }>();
-const emit = defineEmits<{ 'update:modelValue': [value: AiChatSettings]; reset: [] }>();
+// applied：点「保存」后通知外层回到对话，改完就走，不用再手动点返回
+const emit = defineEmits<{ 'update:modelValue': [value: AiChatSettings]; reset: []; applied: [] }>();
 
 const DEFAULTS: AiChatSettings = { contextRounds: 6, confirmWrite: true, planner: true, modelCode: '' };
 
@@ -111,8 +112,14 @@ watch(
   { deep: true }
 );
 
+// 改动实时回写：开关一拨就生效并落到 localStorage，不存在「忘了点保存」
+// （回写会触发父组件同步回 draft，值相同不会互相触发，无循环风险）
+watch(draft, () => emit('update:modelValue', { ...draft }), { deep: true });
+
+/** 「完成」只是回到对话，保存已经在上面实时做掉了 */
 const apply = () => {
   emit('update:modelValue', { ...draft });
+  emit('applied');
 };
 
 const reset = () => {
