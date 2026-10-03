@@ -8,7 +8,12 @@
  * 用 Number() 转换会丢精度）
  */
 
-/** AI 是否可用 */
+/**
+ * AI 是否可用
+ *
+ * 后端 /ai/enabled 必须返回 { enabled: boolean } 而不是裸布尔，
+ * 页面读的是 data.enabled，返回 true/false 时这里恒为 undefined（表现为「AI 服务不可用」）
+ */
 export interface AiEnabledVO {
   enabled: boolean;
 }

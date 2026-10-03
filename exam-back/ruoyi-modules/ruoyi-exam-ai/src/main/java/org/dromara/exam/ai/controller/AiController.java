@@ -31,6 +31,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * AI 能力接口
@@ -55,11 +56,16 @@ public class AiController extends BaseController {
 
     /**
      * AI 能力是否可用：前端按这个值决定要不要渲染 AI 入口
+     *
+     * <p><b>必须包成对象返回，不能返回裸布尔。</b>前端 {@code AiEnabledVO} 是
+     * {@code {enabled: boolean}}，读到的是 {@code data.enabled}；直接返回
+     * {@code R<Boolean>} 时 {@code data} 是 true/false，取 {@code .enabled}
+     * 恒为 undefined，页面就会一直显示「AI 服务不可用」。
      */
     @SaCheckLogin
     @GetMapping("/enabled")
-    public R<Boolean> enabled() {
-        return R.ok(aiService.enabled());
+    public R<Map<String, Object>> enabled() {
+        return R.ok(Map.of("enabled", aiService.enabled()));
     }
 
     /**
