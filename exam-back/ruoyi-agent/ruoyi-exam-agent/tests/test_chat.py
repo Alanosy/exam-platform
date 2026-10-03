@@ -16,7 +16,7 @@ from typing import Any
 
 import pytest
 
-from app.chat import flows
+from app.chat import flows, planner
 from app.chat.engine import chat
 from app.chat.models import TraceStep
 from app.chat.slots import detect_intent, extract_slots
@@ -222,3 +222,71 @@ async def test_exam_analysis_falls_back_when_llm_empty(monkeypatch):
     result = await chat(message="期中考试的答题情况")
     assert result.ask is None
     assert "交卷率" in result.reply
+
+
+# ---------------------------------------------------------------- 规划执行
+
+def _fake_plan(monkeypatch, plan):
+    async def _make(question, ctx, trace, history=""):
+        return plan
+
+    monkeypatch.setattr(flows, "make_plan", _make)
+
+
+async def test_planner_explains_when_infeasible(monkeypatch):
+    """做不了必须说清楚为什么，而不是回一句听不懂"""
+    from app.chat.planner import Plan
+
+    _fake_plan(monkeypatch, Plan(goal="导出全部用户", feasible=False, reason="缺少 system:user:export 权限"))
+    result = await chat(message="把系统里所有用户导出来给我")
+    assert result.ask is None
+    assert "做不了" in result.reply
+    assert "权限" in result.reply
+
+
+async def test_planner_runs_api_step_with_user_token(monkeypatch):
+    """规划出的接口步骤要真跑，并且带上用户身份"""
+    from app.chat.models import TraceStep
+    from app.chat.planner import Plan, PlanStep
+
+    seen: list[tuple[str, dict]] = []
+
+    async def _tool(code, payload, tenant_id="000000", title=""):
+        seen.append((code, payload))
+        if code == "api_manifest":
+            return {"items": []}, TraceStep(type="tool", ref=code)
+        return {"ok": True, "status": 200, "data": {"rows": []}}, TraceStep(type="tool", ref=code)
+
+    async def _llm(prompt_code, variables, ctx, title="", step_type="skill"):
+        return "汇总：查到 0 场考试", TraceStep(type="skill", ref=prompt_code)
+
+    # 步骤执行发生在 planner 里，汇总发生在 flows 里，两边各打一份桩
+    monkeypatch.setattr(planner, "call_tool", _tool)
+    monkeypatch.setattr(flows, "call_llm", _llm)
+    _fake_plan(monkeypatch, Plan(
+        goal="查有哪些考试",
+        steps=[PlanStep(kind="api", ref="GET /exam/list", title="查考试列表", params={"query": {"examName": "期中"}})],
+    ))
+
+    result = await chat(message="有哪些考试")
+    assert "汇总" in result.reply
+    api_calls = [c for c in seen if c[0] == "api_call"]
+    assert api_calls, f"没有触发接口调用: {seen}"
+    assert api_calls[0][1]["path"] == "/exam/list"
+    assert api_calls[0][1]["query"] == {"examName": "期中"}
+    # 身份必须随调用一起发出去，否则网关认不出是谁
+    assert "token" in api_calls[0][1] and "clientId" in api_calls[0][1]
+
+
+async def test_write_plan_needs_confirmation(monkeypatch):
+    """含写操作的计划必须先弹确认卡"""
+    from app.chat.planner import Plan, PlanStep
+
+    _fake_plan(monkeypatch, Plan(
+        goal="给考试改分",
+        steps=[PlanStep(kind="api", ref="POST /mark/score", title="提交评分", risk="write")],
+    ))
+    result = await chat(message="把张三的分数改成 90")
+    assert result.ask is not None
+    assert result.ask.kind == "confirm"
+    assert "写操作" in result.ask.title

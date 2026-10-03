@@ -21,6 +21,18 @@ spring:
 # 上生产要配成与 agent 的 AGENT_JAVA_GATEWAY_TOKEN 一致的值。
 exam-tool:
   token: ""
+  # AI 代调业务接口时打到哪个网关（走网关才能带上用户的登录态与权限）
+  gateway-url: http://127.0.0.1:8080
+  api:
+    # 总开关：关掉后 Agent 只能用内置工具，不能代调任意接口
+    enabled: true
+    timeout-ms: 8000
+    # 允许代调的路径前缀（只列考试域业务接口；用户/租户/菜单/监控/代码生成一律不在内）
+    allow: /exam/,/invite/,/question/,/paper/,/answer/,/mark/,/stat/,/practice/,/proctor/,/cert/,/system/dict/
+    # 显式拒绝，优先级高于 allow
+    deny: /exam/user/,/system/dict/type/
+    # 非 GET 请求还必须命中这些前缀（写操作二次收口）
+    write-allow: /question/create,/mark/score,/cert/record/issue,/practice/wrong/,/exam/
 
 # 兜底方案：若上述通行证桥接在你的环境里不生效（例如 Redis 里没有 same-token，
 # 启动时日志会报「读取内网 same-token 失败」），可直接关掉本服务的内网调用鉴权。

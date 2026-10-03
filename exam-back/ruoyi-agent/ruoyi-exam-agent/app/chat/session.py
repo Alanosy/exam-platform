@@ -24,6 +24,18 @@ SESSION_TTL = 1800  # 30 分钟无活动即回收
 MAX_SESSIONS = 500  # 内存上限，超出后淘汰最久未使用的
 MAX_HISTORY = 40    # 每个会话保留的消息条数
 
+# 会话级可选项的默认值（前端设置面板可以改）
+DEFAULT_OPTIONS: dict[str, Any] = {
+    # 每轮带多少条历史消息进模型上下文
+    "context_rounds": 6,
+    # 写操作（入库 / 发布 / 改分）是否必须先弹确认卡
+    "confirm_write": True,
+    # 模型编码，留空表示走默认模型
+    "model_code": "",
+    # 开放域问题是否先规划再执行（关掉就退化成「模型直接回答」）
+    "planner": True,
+}
+
 
 @dataclass
 class ChatSession:
@@ -37,6 +49,15 @@ class ChatSession:
     messages: list[dict[str, str]] = field(default_factory=list)
     intent: str = ""
     slots: dict[str, Any] = field(default_factory=dict)
+    # 会话标题：取第一条用户消息，历史会话列表靠它辨认
+    title: str = ""
+    # 当前登录用户的令牌与 clientid：代调业务接口时以他的身份发出去
+    token: str = ""
+    client_id: str = ""
+    # 身份快照（角色 + 考试域权限），规划阶段用来判断「这个动作他有没有权限」
+    identity: dict[str, Any] = field(default_factory=dict)
+    # 会话级配置（上下文轮数 / 写操作确认 / 模型），由前端设置面板下发
+    options: dict[str, Any] = field(default_factory=lambda: dict(DEFAULT_OPTIONS))
 
     def touch(self) -> None:
         self.updated_at = time.time()
@@ -46,12 +67,40 @@ class ChatSession:
         if len(self.messages) > MAX_HISTORY:
             # 保留最近的消息，但第一条 system 不丢
             self.messages = self.messages[-MAX_HISTORY:]
+        if not self.title and role == "user" and content.strip():
+            self.title = content.strip()[:40]
         self.touch()
 
-    def history_text(self, limit: int = 6) -> str:
-        """最近 N 条消息转文本，供 LLM 做上下文"""
+    def option(self, key: str, default: Any = None) -> Any:
+        return self.options.get(key, default)
+
+    def apply_options(self, incoming: dict[str, Any] | None) -> None:
+        """合并前端下发的设置：只认已知键，避免把乱七八糟的东西塞进会话"""
+        for key, value in (incoming or {}).items():
+            if key in DEFAULT_OPTIONS and value is not None:
+                self.options[key] = value
+        self.touch()
+
+    def history_text(self, limit: int | None = None) -> str:
+        """最近 N 条消息转文本，供 LLM 做上下文
+
+        limit 为空时取会话设置里的 context_rounds（一轮 = 一问一答）。
+        """
+        if limit is None:
+            limit = int(self.option("context_rounds", 6) or 6) * 2
         recent = self.messages[-limit:]
         return "\n".join(f"{m['role']}: {m['content']}" for m in recent)
+
+    def summary(self) -> dict[str, Any]:
+        """历史会话列表用的一条记录"""
+        return {
+            "id": self.id,
+            "title": self.title or "（新会话）",
+            "intent": self.intent,
+            "messageCount": len(self.messages),
+            "createdAt": int(self.created_at),
+            "updatedAt": int(self.updated_at),
+        }
 
 
 class SessionStore:
@@ -88,6 +137,20 @@ class SessionStore:
 
     def drop(self, session_id: str) -> bool:
         return self._sessions.pop(session_id, None) is not None
+
+    def list_sessions(
+        self, tenant_id: str = "000000", user_id: str | None = None, limit: int = 30
+    ) -> list[dict[str, Any]]:
+        """历史会话列表（按用户隔离：只能看到自己的会话）"""
+        items = [
+            s.summary()
+            for s in self._sessions.values()
+            if s.tenant_id == tenant_id
+            and (user_id is None or s.user_id == user_id)
+            and s.messages
+        ]
+        items.sort(key=lambda i: i["updatedAt"], reverse=True)
+        return items[:limit]
 
     def _evict_if_needed(self) -> None:
         if len(self._sessions) < MAX_SESSIONS:

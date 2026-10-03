@@ -32,9 +32,22 @@ async def chat(
     tenant_id: str = "000000",
     user_id: str | None = None,
     model_code: str | None = None,
+    token: str | None = None,
+    options: dict[str, Any] | None = None,
+    client_id: str | None = None,
+    identity: dict[str, Any] | None = None,
 ) -> ChatResult:
     """处理一轮对话"""
     session = store.get_or_create(session_id, tenant_id=tenant_id, user_id=user_id)
+    session.apply_options(options)
+    if token:
+        # 用户令牌每轮刷新：Agent 之后调业务接口都以这个身份去调，
+        # 权限由网关和业务服务的注解判定，Agent 不自己判断「这个人能不能干」
+        session.token = token
+    if client_id:
+        session.client_id = client_id
+    if identity:
+        session.identity = identity
     trace: list[TraceStep] = []
 
     if answers:
@@ -51,11 +64,28 @@ async def chat(
         slots = merge_slots(session.slots, extract_slots(message, intent))
 
     slots["__question"] = message
-    slots["__history"] = session.history_text(limit=6)
+    slots["__history"] = session.history_text()
+    # 会话设置里的模型优先于请求参数：设置面板改了就一直生效
+    if not model_code:
+        model_code = session.option("model_code") or None
 
-    ctx = SkillContext(tenant_id=tenant_id, user_id=user_id, model_code=model_code)
+    ctx = SkillContext(
+        tenant_id=tenant_id,
+        user_id=user_id,
+        model_code=model_code,
+        extra={
+            "token": session.token,
+            "client_id": session.client_id,
+            "identity": session.identity,
+            "session_id": session.id,
+            "confirm_write": bool(session.option("confirm_write", True)),
+        },
+    )
 
-    flow = flows.FLOWS.get(intent, flows.flow_chat)
+    flow = flows.FLOWS.get(intent, flows.flow_general)
+    if intent in ("chat", "question_search") and session.option("planner", True):
+        # 开放域问题 / 检索一律先规划：预设流程覆盖不到的需求才不会直接回一句「做不到」
+        flow = flows.flow_general
     try:
         reply, ask, data = await flow(slots, ctx, trace)
     except Exception as e:  # noqa: BLE001

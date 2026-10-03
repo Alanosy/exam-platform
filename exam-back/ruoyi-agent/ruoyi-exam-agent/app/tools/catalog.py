@@ -176,6 +176,39 @@ TOOLS: dict[str, ToolSpec] = {
         risk_level=READ,
         params={"exam_id": "str", "user_id": "str?"},
     ),
+    # ---------------- 通用：系统接口（MCP 化的那部分能力） ----------------
+    # 下面三个是「通用出口」：预置工具覆盖不到的问题，用它们去查系统里真实的数据，
+    # 而不必为每个需求都新写一个工具。
+    "api_manifest": ToolSpec(
+        code="api_manifest",
+        name="系统能力清单",
+        description="列出考试域所有可代调的接口（路径/入参/语义/所需权限），规划前先看它",
+        path="/api/exam-tool/api/manifest",
+        risk_level=READ,
+        params={},
+    ),
+    "api_call": ToolSpec(
+        code="api_call",
+        name="调用系统接口",
+        description="以当前登录用户的身份调用一个系统接口（带用户令牌，权限由网关判定，"
+                    "越权会返回 403）。用于查数据、做统计；写操作必须先拿到用户确认。",
+        path="/api/exam-tool/api/call",
+        risk_level=READ,
+        params={
+            "method": "str（GET/POST/PUT/DELETE）",
+            "path": "str（如 /exam/list）",
+            "query": "object?（GET 参数）",
+            "body": "object?（非 GET 的请求体）",
+        },
+    ),
+    "whoami": ToolSpec(
+        code="whoami",
+        name="查询用户身份",
+        description="查询当前用户的角色与考试域权限，用于判断「这件事他有没有权限做」",
+        path="/api/exam-tool/whoami",
+        risk_level=READ,
+        params={"userId": "str"},
+    ),
 }
 
 

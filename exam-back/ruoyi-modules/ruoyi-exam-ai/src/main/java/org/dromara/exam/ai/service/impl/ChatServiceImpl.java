@@ -1,5 +1,7 @@
 package org.dromara.exam.ai.service.impl;
 
+import cn.dev33.satoken.stp.StpUtil;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -8,19 +10,29 @@ import org.dromara.common.satoken.utils.LoginHelper;
 import org.dromara.common.tenant.helper.TenantHelper;
 import org.dromara.exam.ai.client.AiAgentClient;
 import org.dromara.exam.ai.domain.bo.AiChatBo;
+import org.dromara.exam.ai.domain.vo.AiChatSessionVo;
 import org.dromara.exam.ai.domain.vo.AiChatVo;
 import org.dromara.exam.ai.service.IChatService;
+import org.dromara.system.api.model.LoginUser;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
 
 /**
  * 对话式 Agent 实现
  *
- * <p>Java 侧只做三件事：补租户与操作者、转发、把 agent 的响应翻成前端 VO。
+ * <p>Java 侧只做四件事：补**身份**、补租户、转发、把 agent 的响应翻成前端 VO。
  * 编排逻辑全在 Python 侧，Java 不复制一份。
+ *
+ * <p><b>身份为什么要由这里补</b>：Agent 之后要用「当前用户」的身份去调业务接口，
+ * 令牌与 clientid 都不能由前端自己上报（那是可伪造的），必须从登录态里取出来再下发。
+ * 权限判定依旧发生在网关与业务服务，Agent 只是代劳的那一双手。
  *
  * @author ruoyi
  * @date 2026-10-03
@@ -47,6 +59,13 @@ public class ChatServiceImpl implements IChatService {
         body.put("tenant_id", TenantHelper.getTenantId());
         body.put("user_id", LoginHelper.getUserId());
         body.put("model_code", payload.getModelCode());
+        // 用户身份：Agent 代调业务接口时原样带上，权限交给网关判
+        body.put("token", StpUtil.getTokenValue());
+        body.put("client_id", LoginHelper.getLoginUser() == null ? "" : LoginHelper.getLoginUser().getClientKey());
+        body.put("identity", buildIdentity());
+        if (payload.getOptions() != null && !payload.getOptions().isEmpty()) {
+            body.put("options", payload.getOptions());
+        }
 
         AiAgentClient.AgentResp resp = agentClient.post("/chat", body);
         if (resp.getCode() != 200 || resp.getData() == null || resp.getData().isNull()) {
@@ -60,6 +79,90 @@ public class ChatServiceImpl implements IChatService {
             log.warn("对话结果解析失败: {}", e.getMessage());
             throw new ServiceException("AI 服务返回结构异常");
         }
+    }
+
+    @Override
+    public List<AiChatSessionVo> listSessions() {
+        String tenantId = TenantHelper.getTenantId();
+        String userId = String.valueOf(LoginHelper.getUserId());
+        AiAgentClient.AgentResp resp = agentClient.get(
+            "/chat/sessions?tenant_id=" + tenantId + "&user_id=" + userId + "&limit=30");
+        if (resp.getCode() != 200 || resp.getData() == null) {
+            log.warn("拉取历史会话失败 code={} msg={}", resp.getCode(), resp.getMsg());
+            return List.of();
+        }
+        List<AiChatSessionVo> list = new ArrayList<>();
+        JsonNode items = resp.getData().path("items");
+        if (items.isArray()) {
+            for (JsonNode item : items) {
+                AiChatSessionVo vo = new AiChatSessionVo();
+                vo.setId(item.path("id").asText(""));
+                vo.setTitle(item.path("title").asText("（新会话）"));
+                vo.setIntent(item.path("intent").asText(""));
+                vo.setMessageCount(item.path("messageCount").asInt(0));
+                vo.setUpdatedAt(item.path("updatedAt").asLong(0));
+                list.add(vo);
+            }
+        }
+        return list;
+    }
+
+    @Override
+    public AiChatSessionVo getSession(String sessionId) {
+        if (sessionId == null || sessionId.isBlank()) {
+            throw new ServiceException("会话ID不能为空");
+        }
+        AiAgentClient.AgentResp resp = agentClient.get("/chat/session/" + sessionId.trim());
+        if (resp.getCode() != 200 || resp.getData() == null || !resp.getData().path("exists").asBoolean(false)) {
+            return null;
+        }
+        JsonNode data = resp.getData();
+        AiChatSessionVo vo = new AiChatSessionVo();
+        vo.setId(data.path("id").asText(sessionId));
+        vo.setTitle(data.path("title").asText(""));
+        vo.setIntent(data.path("intent").asText(""));
+        vo.setMessageCount(data.path("messages").size());
+        vo.setUpdatedAt(data.path("updatedAt").asLong(0));
+        List<Map<String, Object>> messages = new ArrayList<>();
+        for (JsonNode msg : data.path("messages")) {
+            Map<String, Object> row = new LinkedHashMap<>();
+            row.put("role", msg.path("role").asText(""));
+            row.put("content", msg.path("content").asText(""));
+            messages.add(row);
+        }
+        vo.setMessages(messages);
+        return vo;
+    }
+
+    /**
+     * 当前用户的身份快照：角色 + 考试域权限
+     *
+     * <p>只给「考试域」权限码，系统里上百个权限全塞进模型上下文既浪费又容易被误读；
+     * 角色是给人看的，权限码是给规划器判断可行性的。
+     */
+    private Map<String, Object> buildIdentity() {
+        Map<String, Object> identity = new LinkedHashMap<>();
+        LoginUser user = LoginHelper.getLoginUser();
+        if (user == null) {
+            return identity;
+        }
+        identity.put("userId", String.valueOf(user.getUserId()));
+        identity.put("userName", user.getUsername());
+        identity.put("nickName", user.getNickname());
+        identity.put("isSuperAdmin", LoginHelper.isSuperAdmin());
+        Set<String> roles = user.getRolePermission();
+        identity.put("roles", roles == null ? List.of() : new ArrayList<>(roles));
+        Set<String> examPerms = new TreeSet<>();
+        if (user.getMenuPermission() != null) {
+            for (String p : user.getMenuPermission()) {
+                if (p != null && (p.startsWith("exam:") || p.startsWith("system:exam:"))) {
+                    examPerms.add(p);
+                }
+            }
+        }
+        identity.put("examPermissions", new ArrayList<>(examPerms));
+        identity.put("note", "没有对应权限码的动作不要规划：即使发出去，网关也会返回 403。");
+        return identity;
     }
 
     /**

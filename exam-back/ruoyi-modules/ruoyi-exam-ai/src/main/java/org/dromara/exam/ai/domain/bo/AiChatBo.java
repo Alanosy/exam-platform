@@ -32,4 +32,13 @@ public class AiChatBo implements Serializable {
 
     /** 指定模型编码，不传走默认主备链 */
     private String modelCode;
+
+    /**
+     * 会话设置（前端设置面板）
+     *
+     * <p>contextRounds：带多少轮历史进上下文；
+     * confirmWrite：写操作是否必须先确认；
+     * planner：是否先规划再执行（关掉就退化成「直接回答」）。
+     */
+    private Map<String, Object> options;
 }

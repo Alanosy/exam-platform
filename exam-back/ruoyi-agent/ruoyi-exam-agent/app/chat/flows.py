@@ -21,6 +21,7 @@ import logging
 from typing import Any
 
 from app.chat.models import AskField, AskForm, TraceStep
+from app.chat.planner import Plan, PlanStep, fallback_summary_md, make_plan, plan_md, run_plan
 from app.chat.runtime import call_llm, call_skill, call_tool
 from app.config import settings
 from app.skills.base import SkillContext
@@ -578,6 +579,100 @@ async def flow_question_search(
     return "\n".join(lines), None, {"items": items}
 
 
+# ---------------------------------------------------------------- 通用：规划 -> 执行 -> 汇总
+
+async def flow_general(
+    slots: dict[str, Any], ctx: SkillContext, trace: list[TraceStep]
+) -> tuple[str | None, AskForm | None, dict[str, Any]]:
+    """没预设流程（或预设流程覆盖不到）时的通用路径
+
+    先让模型规划：能做就拆步骤一步步跑，做完汇总成 Markdown；
+    做不到就把「为什么做不到」讲清楚 —— 这比回一句「我听不懂」有用得多。
+    """
+    question = str(slots.get("__question") or "")
+    history = str(slots.get("__history") or "")
+    _think(trace, "理解需求", question[:60])
+
+    # 确认过写操作后重跑：计划不再重新生成，直接用上一轮存下来的那份
+    plan = _plan_from_slots(slots)
+    if plan is None:
+        plan = await make_plan(question, ctx, trace, history=history)
+        if plan is None:
+            # 模型没给出可用计划（MOCK 模式 / 输出不规范）就退回自由问答
+            _think(trace, "规划失败，退回直接回答", "模型没有返回可解析的计划")
+            return await flow_chat(slots, ctx, trace)
+        slots["__plan"] = plan.model_dump()
+        _think(trace, f"规划完成：{plan.goal}", plan_md(plan))
+
+    if not plan.feasible:
+        return _infeasible_md(plan), None, {"plan": plan.model_dump()}
+
+    # 写操作：先给确认卡，把计划摆出来让人点头
+    if plan.has_write() and ctx.extra.get("confirm_write", True) and not slots.get("confirmed"):
+        return None, AskForm(
+            kind="confirm",
+            title=f"要执行 {len(plan.steps)} 步，其中含写操作",
+            desc=plan_md(plan) + "\n\n> 写操作会真实改动系统数据，确认后才执行。",
+            submit_text="确认执行",
+            cancel_text="算了",
+        ), {"plan": plan.model_dump()}
+
+    results = await run_plan(plan, ctx, trace)
+    slots.pop("__plan", None)
+    slots.pop("confirmed", None)
+
+    steps_text = "\n".join(
+        f"{r['index']}. {r['title']}（{r['ref']}）{'成功' if r['ok'] else '失败'}" for r in results
+    ) or "（无步骤）"
+    content, step = await call_llm(
+        "chat_summarize",
+        {
+            "question": question,
+            "steps": steps_text,
+            "results": json.dumps(results, ensure_ascii=False, indent=1),
+        },
+        ctx,
+        title="汇总执行结果",
+    )
+    trace.append(step)
+    if not content or content.strip() in ("{}", "[]"):
+        content = fallback_summary_md(question, plan, results)
+    trace.append(TraceStep(type="done", title="执行完成", detail=f"共 {len(results)} 步", status="ok"))
+    return content, None, {"plan": plan.model_dump(), "results": results}
+
+
+def _plan_from_slots(slots: dict[str, Any]) -> Plan | None:
+    """从槽位里还原上一轮规划好的计划"""
+    raw = slots.get("__plan")
+    if not isinstance(raw, dict):
+        return None
+    try:
+        return Plan(
+            goal=str(raw.get("goal") or ""),
+            feasible=bool(raw.get("feasible", True)),
+            reason=str(raw.get("reason") or ""),
+            steps=[PlanStep(**s) for s in (raw.get("steps") or []) if isinstance(s, dict)],
+            direct_answer=str(raw.get("direct_answer") or ""),
+        )
+    except Exception:  # noqa: BLE001
+        logger.warning("还原计划失败，重新规划")
+        return None
+
+
+def _infeasible_md(plan: Plan) -> str:
+    """做不了也要说清楚：原因 + 差什么 + 建议"""
+    lines = [f"这件事我现在做不了：{plan.goal or '你的需求'}", ""]
+    if plan.reason:
+        lines += [f"**原因**：{plan.reason}", ""]
+    lines += [
+        "常见原因与出路：",
+        "- 需要某个权限：让管理员给你的角色加上对应权限后，我就能做了",
+        "- 需要具体对象（考试 / 题库 / 试卷）：告诉我名字，我帮你查出来再继续",
+        "- 系统里确实没有这个能力：这就是纯人工环节，我帮不了",
+    ]
+    return "\n".join(lines)
+
+
 # ---------------------------------------------------------------- 自由问答
 
 async def flow_chat(
@@ -610,5 +705,7 @@ FLOWS = {
     "question_create": flow_question_create,
     "exam_analysis": flow_exam_analysis,
     "question_search": flow_question_search,
-    "chat": flow_chat,
+    # 开放域问题走规划器：能拆步骤就执行，拆不出来它会自己说清楚为什么做不到
+    "chat": flow_general,
+    "general": flow_general,
 }

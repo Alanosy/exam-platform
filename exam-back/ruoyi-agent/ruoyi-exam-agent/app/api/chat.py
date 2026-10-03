@@ -30,6 +30,15 @@ class ChatIn(BaseModel):
     tenant_id: str = "000000"
     user_id: str | None = None
     model_code: str | None = None
+    # 当前登录用户的令牌：Agent 调业务接口时**以这个用户的身份**去调，
+    # 权限判定交给网关与业务服务的 @SaCheckPermission，Agent 不做自己的一套判断
+    token: str | None = None
+    # 网关校验「客户端ID与Token匹配」要用，和令牌一起带上
+    client_id: str | None = None
+    # 身份快照（角色 + 考试域权限），由 Java 侧从登录态里取，不信客户端上报
+    identity: dict[str, Any] | None = None
+    # 会话设置：上下文轮数 / 写操作确认 / 模型，见 session.DEFAULT_OPTIONS
+    options: dict[str, Any] | None = None
 
     @field_validator("message", mode="before")
     @classmethod
@@ -63,6 +72,10 @@ async def chat_turn(req: ChatIn) -> dict:
         tenant_id=req.tenant_id,
         user_id=req.user_id,
         model_code=req.model_code,
+        token=req.token,
+        options=req.options,
+        client_id=req.client_id,
+        identity=req.identity,
     )
     return ok(result.model_dump())
 
@@ -74,17 +87,26 @@ async def chat_reset(req: ResetIn) -> dict:
     return ok({"removed": removed, "size": store.size})
 
 
+@router.get("/chat/sessions")
+async def chat_sessions(tenant_id: str = "000000", user_id: str | None = None, limit: int = 30) -> dict:
+    """历史会话列表（前端「历史会话」面板）"""
+    return ok({"items": store.list_sessions(tenant_id=tenant_id, user_id=user_id, limit=limit)})
+
+
 @router.get("/chat/session/{session_id}")
 async def chat_session(session_id: str) -> dict:
-    """查看会话状态，排查「为什么它又问了一遍」这类问题时很有用"""
+    """会话详情：排查「为什么它又问了一遍」的调试视图 + 前端「继续这个会话」的数据源"""
     session = store.get(session_id)
     if session is None:
         return ok({"exists": False})
     return ok(
         {
             "exists": True,
+            "id": session.id,
+            "title": session.title,
             "intent": session.intent,
             "slots": session.slots,
-            "messages": session.messages[-10:],
+            "options": session.options,
+            "messages": session.messages,
         }
     )
