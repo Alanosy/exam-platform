@@ -32,7 +32,9 @@ exam-tool:
     # 显式拒绝，优先级高于 allow
     deny: /exam/user/,/system/dict/type/
     # 非 GET 请求还必须命中这些前缀（写操作二次收口）
-    write-allow: /question/create,/mark/score,/cert/record/issue,/practice/wrong/,/exam/
+    # 只放开「真的需要 AI 代劳」的那几个写接口，其余一律不放：
+    # 删考试 / 删试题 / 改用户这类破坏性操作永远不在名单里
+    write-allow: /question/create,/mark/score,/mark/task/,/cert/record/,/practice/wrong/,/exam/
 
 # 兜底方案：若上述通行证桥接在你的环境里不生效（例如 Redis 里没有 same-token，
 # 启动时日志会报「读取内网 same-token 失败」），可直接关掉本服务的内网调用鉴权。

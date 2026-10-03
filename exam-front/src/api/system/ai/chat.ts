@@ -1,6 +1,6 @@
 import request from '@/utils/request';
 import { AxiosPromise } from 'axios';
-import type { AiChatForm, AiChatSessionVO, AiChatVO } from '@/api/system/ai/types';
+import type { AiChatForm, AiChatIdentityVO, AiChatSessionVO, AiChatVO } from '@/api/system/ai/types';
 
 /**
  * 对话式 AI 助手：跑一轮对话
@@ -33,6 +33,16 @@ export const aiChatSessions = (): AxiosPromise<AiChatSessionVO[]> => {
 export const aiChatSession = (sessionId: string): AxiosPromise<AiChatSessionVO> => {
   return request({
     url: `/ai/chat/session/${sessionId}`,
+    method: 'get'
+  });
+};
+
+/**
+ * 我在 AI 眼里是谁：角色归类 + 可见能力数（设置面板展示用）
+ */
+export const aiChatWhoami = (): AxiosPromise<AiChatIdentityVO> => {
+  return request({
+    url: '/ai/chat/whoami',
     method: 'get'
   });
 };

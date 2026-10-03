@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * 对话式 AI 助手
@@ -71,5 +72,17 @@ public class ChatController {
     @GetMapping("/session/{sessionId}")
     public R<AiChatSessionVo> session(@PathVariable("sessionId") String sessionId) {
         return R.ok(chatService.getSession(sessionId));
+    }
+
+    /**
+     * 我在 AI 眼里是谁：角色、角色归类、可见能力数
+     *
+     * <p>给聊天窗的设置面板用。把「我能让 AI 干什么」摆到明面上，
+     * 省得用户问一句撞一次 403 才发现自己没这个权限。
+     */
+    @SaCheckLogin
+    @GetMapping("/whoami")
+    public R<Map<String, Object>> whoami() {
+        return R.ok(chatService.whoami());
     }
 }

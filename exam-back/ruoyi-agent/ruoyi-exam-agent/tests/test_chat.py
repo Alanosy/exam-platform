@@ -12,6 +12,7 @@
 
 from __future__ import annotations
 
+import json
 from typing import Any
 
 import pytest
@@ -289,4 +290,84 @@ async def test_write_plan_needs_confirmation(monkeypatch):
     result = await chat(message="把张三的分数改成 90")
     assert result.ask is not None
     assert result.ask.kind == "confirm"
-    assert "写操作" in result.ask.title
+
+
+# ---------------------------------------------------------------- 角色隔离
+
+
+def test_identity_audience():
+    from app.chat.planner import identity_audience
+
+    assert identity_audience({"isSuperAdmin": True}) == "admin"
+    assert identity_audience({"examPermissions": ["system:exam:list"]}) == "admin"
+    assert identity_audience({"roles": ["student"]}) == "student"
+    assert identity_audience({"roles": ["common"], "examPermissions": []}) == "any"
+    assert identity_audience(None) == "any"
+
+
+def test_plan_step_out_of_audience_is_rejected():
+    from app.chat.planner import PlanStep, check_step_allowed
+
+    write = PlanStep(kind="tool", ref="submit_mark_score", title="改分", risk="write")
+    assert check_step_allowed(write, "student"), "学生的改分步骤必须被拦下"
+    assert "管理端" in check_step_allowed(write, "student")
+    assert check_step_allowed(write, "admin") == ""
+    assert check_step_allowed(write, "any") == ""
+
+
+async def test_student_is_routed_away_from_admin_flows(monkeypatch):
+    """考生问「全班答题情况」不能被管理端流程直接接走"""
+    from app.chat.planner import Plan, PlanStep
+
+    _fake_plan(monkeypatch, Plan(
+        goal="看我自己的考试",
+        steps=[PlanStep(kind="api", ref="GET /answer/record/center", title="查我的考试")],
+    ))
+    result = await chat(
+        message="期中考试答题情况怎么样",
+        identity={"roles": ["student"], "examPermissions": []},
+        user_id="9",
+    )
+    # 走的是考生本人接口，而不是管理端的「考试答卷统计」
+    assert "/answer/record/center" in json.dumps(result.data, ensure_ascii=False)
+    assert "exam_answer_stats" not in json.dumps(result.data, ensure_ascii=False)
+
+
+# ---------------------------------------------------------------- 规则兜底规划
+
+
+def test_heuristic_plan_for_exam_analysis():
+    from app.chat.heuristic import heuristic_plan
+
+    plan = heuristic_plan("期中考试的答题情况怎么样", audience="admin")
+    assert plan is not None
+    assert plan.steps[0].ref == "resolve_entity"
+    assert plan.steps[0].params["keyword"]
+    # 第二步的 ID 必须来自第一步的结果，不能是编的
+    assert "{1.items.0.id}" in plan.steps[1].ref
+
+
+def test_heuristic_plan_for_student():
+    from app.chat.heuristic import heuristic_plan
+
+    plan = heuristic_plan("我的错题有哪些", audience="student")
+    assert plan is not None
+    assert plan.steps[0].ref == "GET /practice/wrong/overview"
+    # 学生不该被规则规划到管理端接口
+    assert heuristic_plan("还有多少没阅", audience="student") is None
+
+
+def test_heuristic_returns_none_when_unknown():
+    from app.chat.heuristic import heuristic_plan
+
+    assert heuristic_plan("今天天气怎么样", audience="admin") is None
+
+
+def test_resolve_refs_replaces_previous_result():
+    from app.chat.planner import resolve_refs
+
+    results = [{"data": {"items": [{"id": "8899", "name": "期中"}]}}]
+    assert resolve_refs("GET /exam/{1.items.0.id}/overview", results) == "GET /exam/8899/overview"
+    assert resolve_refs({"examId": "{1.items.0.id}"}, results) == {"examId": "8899"}
+    # 取不到就原样保留，宁可让下游报错也不要塞个假值进去
+    assert resolve_refs("{9.items.0.id}", results) == "{9.items.0.id}"

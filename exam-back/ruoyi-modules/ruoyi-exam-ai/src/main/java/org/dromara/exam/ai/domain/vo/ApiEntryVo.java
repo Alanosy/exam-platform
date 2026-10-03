@@ -44,6 +44,15 @@ public class ApiEntryVo {
     /** 需要的权限码，空表示登录即可 */
     private String permission = "";
 
+    /**
+     * 适用人群：any / admin / student
+     *
+     * <p>角色隔离用：学生只能看到并调用 student 与 any 的条目，
+     * 管理端的条目连清单都不下发给他的会话 —— 看不见就不会去规划。
+     * 这只是「少吃一次 403」的优化，真正的拦截依旧在网关。
+     */
+    private String audience = "any";
+
     public ApiEntryVo() {
     }
 
@@ -67,6 +76,18 @@ public class ApiEntryVo {
 
     public ApiEntryVo write() {
         this.risk = "write";
+        return this;
+    }
+
+    /** 标记为管理端能力（需要后台权限的人才能用） */
+    public ApiEntryVo admin() {
+        this.audience = "admin";
+        return this;
+    }
+
+    /** 标记为考生本人视角能力 */
+    public ApiEntryVo student() {
+        this.audience = "student";
         return this;
     }
 }

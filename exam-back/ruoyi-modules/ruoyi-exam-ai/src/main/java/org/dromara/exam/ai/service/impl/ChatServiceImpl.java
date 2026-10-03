@@ -9,6 +9,7 @@ import org.dromara.common.core.exception.ServiceException;
 import org.dromara.common.satoken.utils.LoginHelper;
 import org.dromara.common.tenant.helper.TenantHelper;
 import org.dromara.exam.ai.client.AiAgentClient;
+import org.dromara.exam.ai.config.ExamApiCatalog;
 import org.dromara.exam.ai.domain.bo.AiChatBo;
 import org.dromara.exam.ai.domain.vo.AiChatSessionVo;
 import org.dromara.exam.ai.domain.vo.AiChatVo;
@@ -134,6 +135,29 @@ public class ChatServiceImpl implements IChatService {
         return vo;
     }
 
+    @Override
+    public Map<String, Object> whoami() {
+        Map<String, Object> data = new LinkedHashMap<>(buildIdentity());
+        LoginUser user = LoginHelper.getLoginUser();
+        Set<String> permissions = user == null || user.getMenuPermission() == null
+            ? Set.of() : user.getMenuPermission();
+        final boolean staff = isStaff(permissions);
+        // 可见能力数：AI 规划时实际能看到多少条接口，比权限码列表直观得多
+        long visible = ExamApiCatalog.ENTRIES.stream()
+            .filter(e -> {
+                String perm = e.getPermission() == null ? "" : e.getPermission().trim();
+                if (!perm.isEmpty() && !permissions.contains(perm) && !permissions.contains("*:*:*")) {
+                    return false;
+                }
+                return !"admin".equals(e.getAudience()) || staff;
+            })
+            .count();
+        data.put("visibleApiCount", visible);
+        data.put("totalApiCount", ExamApiCatalog.ENTRIES.size());
+        data.put("staff", staff);
+        return data;
+    }
+
     /**
      * 当前用户的身份快照：角色 + 考试域权限
      *
@@ -161,8 +185,39 @@ public class ChatServiceImpl implements IChatService {
             }
         }
         identity.put("examPermissions", new ArrayList<>(examPerms));
+        identity.put("roleScope", roleScope(roles, examPerms));
+        identity.put("staff", !examPerms.isEmpty() || LoginHelper.isSuperAdmin());
         identity.put("note", "没有对应权限码的动作不要规划：即使发出去，网关也会返回 403。");
         return identity;
+    }
+
+    /** 是否属于管理 / 教师侧：有任一考试域权限即视为工作人员 */
+    private boolean isStaff(Set<String> permissions) {
+        for (String p : permissions) {
+            if (p != null && (p.startsWith("exam:") || p.startsWith("system:exam:") || "*:*:*".equals(p))) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /** 角色归类：把各种角色标识收敛成 admin / teacher / student 三类，给规划器和设置面板用 */
+    private String roleScope(Set<String> roles, Set<String> examPerms) {
+        if (LoginHelper.isSuperAdmin()) {
+            return "admin";
+        }
+        if (examPerms != null && !examPerms.isEmpty()) {
+            return "teacher";
+        }
+        if (roles != null) {
+            for (String role : roles) {
+                String r = role == null ? "" : role.toLowerCase();
+                if (r.contains("student") || r.contains("考生") || r.contains("学员")) {
+                    return "student";
+                }
+            }
+        }
+        return "unknown";
     }
 
     /**

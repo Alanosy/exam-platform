@@ -17,11 +17,29 @@ from app.agent.guardrail import (
 )
 from app.core.errors import GuardrailBlockedError
 from app.tools.base import READ, WRITE
-from app.tools.catalog import TOOLS, get_tool, list_tools
+from app.tools.catalog import TOOLS, get_tool, list_tools, visible_tools
 
 
 def test_tool_catalog_size():
-    assert len(TOOLS) == 23, "工具数量变了，请同步更新本断言与文档"
+    # 新增工具时同步改这里：逼着改代码的人回头看一眼清单是否还自洽
+    assert len(TOOLS) == 24, "工具数量变了，请同步更新本断言与文档"
+
+
+def test_student_never_sees_admin_tools():
+    """角色隔离：学生的会话里不能出现管理端工具"""
+    codes = {t.code for t in visible_tools("student")}
+    assert "save_questions" not in codes, "学生不该看到批量入库"
+    assert "submit_mark_score" not in codes, "学生不该看到改分"
+    assert "publish_exam" not in codes, "学生不该看到发布考试"
+    # 通用出口与考生视角工具必须还在
+    assert {"api_call", "api_manifest", "whoami", "resolve_entity"} <= codes
+    assert "list_wrong_questions" in codes
+
+
+def test_admin_sees_write_tools():
+    codes = {t.code for t in visible_tools("admin")}
+    assert "save_questions" in codes
+    assert "submit_mark_score" in codes
 
 
 def test_every_tool_has_path_and_risk():

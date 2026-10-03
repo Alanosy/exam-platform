@@ -39,6 +39,8 @@ class ToolSpec(BaseModel):
     method: str = "POST"
     risk_level: str = READ
     params: dict[str, Any] = Field(default_factory=dict, description="JSON Schema 风格的参数说明")
+    # 适用人群：any / admin / student。角色隔离用：学生的会话里不该出现管理端工具
+    audience: str = "any"
 
     def info(self) -> dict[str, Any]:
         return {
@@ -48,6 +50,7 @@ class ToolSpec(BaseModel):
             "risk_level": self.risk_level,
             "endpoint": f"{self.method} {self.path}",
             "params": self.params,
+            "audience": self.audience,
         }
 
 

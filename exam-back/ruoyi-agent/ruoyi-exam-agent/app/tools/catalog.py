@@ -2,6 +2,15 @@
 
 每个工具对应 Java 侧的一项业务能力（最终落到 Remote*Service）。
 Agent 在 ReAct / Plan-and-Execute 循环里调用它们。
+
+audience 字段是角色隔离的第一道闸：
+    admin    —— 只有管理 / 教师侧的人能用（出题、改分、看全班数据）
+    student  —— 考生本人视角（我的考试、我的错题）
+    any      —— 谁都能用（查清单、代调接口、查身份）
+
+学生的会话里压根看不到 admin 工具，模型也就不会去规划「给全班打分」这种事。
+注意这只是「避让」，真正的拦截在 Java 侧：工具端点有共享令牌，
+api_call 带着用户令牌走网关，网关不给他就是不给。
 """
 
 from __future__ import annotations
@@ -9,6 +18,17 @@ from __future__ import annotations
 from app.tools.base import READ, WRITE, ToolSpec
 
 TOOLS: dict[str, ToolSpec] = {
+    # ---------------- 通用：先定位对象（强烈建议规划第一步就用它） ----------------
+    "resolve_entity": ToolSpec(
+        code="resolve_entity",
+        name="按名称定位对象",
+        description="按名称关键词查考试 / 题库，拿到 ID 再操作。**用户只给名字时永远先调它**，"
+                    "不要凭空猜 ID；返回多个就让用户选",
+        path="/api/exam-tool/resolve",
+        risk_level=READ,
+        params={"kind": "str（exam / bank）", "keyword": "str", "limit": "int=10"},
+        audience="any",
+    ),
     # ---------------- 题库 ----------------
     "list_question_banks": ToolSpec(
         code="list_question_banks",
@@ -17,6 +37,7 @@ TOOLS: dict[str, ToolSpec] = {
         path="/api/exam-tool/bank/list",
         risk_level=READ,
         params={"keyword": "str?", "limit": "int=20"},
+        audience="admin",
     ),
     "create_question_bank": ToolSpec(
         code="create_question_bank",
@@ -25,6 +46,7 @@ TOOLS: dict[str, ToolSpec] = {
         path="/api/exam-tool/bank/create",
         risk_level=WRITE,
         params={"bankName": "str", "categoryId": "str?"},
+        audience="admin",
     ),
     "search_questions": ToolSpec(
         code="search_questions",
@@ -33,6 +55,7 @@ TOOLS: dict[str, ToolSpec] = {
         path="/api/exam-tool/question/search",
         risk_level=READ,
         params={"bank_id": "str?", "question_type": "str?", "difficulty": "str?", "keyword": "str?", "limit": "int=20"},
+        audience="admin",
     ),
     "get_question": ToolSpec(
         code="get_question",
@@ -41,6 +64,7 @@ TOOLS: dict[str, ToolSpec] = {
         path="/api/exam-tool/question/get",
         risk_level=READ,
         params={"question_id": "str"},
+        audience="admin",
     ),
     "save_question": ToolSpec(
         code="save_question",
@@ -49,6 +73,7 @@ TOOLS: dict[str, ToolSpec] = {
         path="/api/exam-tool/question/save",
         risk_level=WRITE,
         params={"question": "object"},
+        audience="admin",
     ),
     # ---------------- 试卷 ----------------
     "get_paper": ToolSpec(
@@ -58,6 +83,7 @@ TOOLS: dict[str, ToolSpec] = {
         path="/api/exam-tool/paper/get",
         risk_level=READ,
         params={"paper_id": "str"},
+        audience="admin",
     ),
     "save_questions": ToolSpec(
         code="save_questions",
@@ -66,6 +92,7 @@ TOOLS: dict[str, ToolSpec] = {
         path="/api/exam-tool/question/save-batch",
         risk_level=WRITE,
         params={"bankId": "str", "status": "str=0", "questions": "list[object]"},
+        audience="admin",
     ),
     "add_paper_questions": ToolSpec(
         code="add_paper_questions",
@@ -74,6 +101,7 @@ TOOLS: dict[str, ToolSpec] = {
         path="/api/exam-tool/paper/add-questions",
         risk_level=WRITE,
         params={"paper_id": "str", "question_ids": "list[str]"},
+        audience="admin",
     ),
     # ---------------- 考试 ----------------
     "get_exam": ToolSpec(
@@ -83,6 +111,7 @@ TOOLS: dict[str, ToolSpec] = {
         path="/api/exam-tool/exam/get",
         risk_level=READ,
         params={"exam_id": "str"},
+        audience="admin",
     ),
     "find_exam": ToolSpec(
         code="find_exam",
@@ -91,6 +120,7 @@ TOOLS: dict[str, ToolSpec] = {
         path="/api/exam-tool/exam/find",
         risk_level=READ,
         params={"keyword": "str", "limit": "int=10"},
+        audience="admin",
     ),
     "publish_exam": ToolSpec(
         code="publish_exam",
@@ -99,6 +129,7 @@ TOOLS: dict[str, ToolSpec] = {
         path="/api/exam-tool/exam/publish",
         risk_level=WRITE,
         params={"exam_id": "str"},
+        audience="admin",
     ),
     # ---------------- 阅卷 ----------------
     "list_pending_mark": ToolSpec(
@@ -108,6 +139,7 @@ TOOLS: dict[str, ToolSpec] = {
         path="/api/exam-tool/mark/list-pending",
         risk_level=READ,
         params={"exam_id": "str", "limit": "int=50"},
+        audience="admin",
     ),
     "get_mark_item": ToolSpec(
         code="get_mark_item",
@@ -116,6 +148,7 @@ TOOLS: dict[str, ToolSpec] = {
         path="/api/exam-tool/mark/get-item",
         risk_level=READ,
         params={"item_id": "str"},
+        audience="admin",
     ),
     "submit_mark_score": ToolSpec(
         code="submit_mark_score",
@@ -124,6 +157,7 @@ TOOLS: dict[str, ToolSpec] = {
         path="/api/exam-tool/mark/submit-score",
         risk_level=WRITE,
         params={"item_id": "str", "score": "number", "comment": "str?"},
+        audience="admin",
     ),
     "save_ai_score": ToolSpec(
         code="save_ai_score",
@@ -132,6 +166,7 @@ TOOLS: dict[str, ToolSpec] = {
         path="/api/exam-tool/mark/save-ai-score",
         risk_level=WRITE,
         params={"item_id": "str", "ai_score": "number", "ai_reason": "str", "ai_model": "str"},
+        audience="admin",
     ),
     # ---------------- 统计 ----------------
     "exam_stats": ToolSpec(
@@ -141,6 +176,7 @@ TOOLS: dict[str, ToolSpec] = {
         path="/api/exam-tool/stat/exam",
         risk_level=READ,
         params={"exam_id": "str"},
+        audience="admin",
     ),
     "exam_answer_stats": ToolSpec(
         code="exam_answer_stats",
@@ -149,6 +185,7 @@ TOOLS: dict[str, ToolSpec] = {
         path="/api/exam-tool/stat/exam-answers",
         risk_level=READ,
         params={"examId": "str"},
+        audience="admin",
     ),
     "question_stats": ToolSpec(
         code="question_stats",
@@ -157,8 +194,9 @@ TOOLS: dict[str, ToolSpec] = {
         path="/api/exam-tool/stat/question",
         risk_level=READ,
         params={"question_id": "str", "exam_id": "str?"},
+        audience="admin",
     ),
-    # ---------------- 练习 ----------------
+    # ---------------- 练习（考生本人视角） ----------------
     "list_wrong_questions": ToolSpec(
         code="list_wrong_questions",
         name="错题列表",
@@ -166,6 +204,7 @@ TOOLS: dict[str, ToolSpec] = {
         path="/api/exam-tool/practice/wrong-list",
         risk_level=READ,
         params={"user_id": "str", "limit": "int=50"},
+        audience="student",
     ),
     # ---------------- 监考 ----------------
     "list_proctor_events": ToolSpec(
@@ -175,6 +214,7 @@ TOOLS: dict[str, ToolSpec] = {
         path="/api/exam-tool/proctor/events",
         risk_level=READ,
         params={"exam_id": "str", "user_id": "str?"},
+        audience="admin",
     ),
     # ---------------- 通用：系统接口（MCP 化的那部分能力） ----------------
     # 下面三个是「通用出口」：预置工具覆盖不到的问题，用它们去查系统里真实的数据，
@@ -182,10 +222,12 @@ TOOLS: dict[str, ToolSpec] = {
     "api_manifest": ToolSpec(
         code="api_manifest",
         name="系统能力清单",
-        description="列出考试域所有可代调的接口（路径/入参/语义/所需权限），规划前先看它",
+        description="列出当前用户**有权使用**的考试域接口（路径/入参/语义/所需权限）"
+                    "并附一份系统说明书，规划前先看它",
         path="/api/exam-tool/api/manifest",
         risk_level=READ,
-        params={},
+        params={"userId": "str"},
+        audience="any",
     ),
     "api_call": ToolSpec(
         code="api_call",
@@ -200,6 +242,7 @@ TOOLS: dict[str, ToolSpec] = {
             "query": "object?（GET 参数）",
             "body": "object?（非 GET 的请求体）",
         },
+        audience="any",
     ),
     "whoami": ToolSpec(
         code="whoami",
@@ -208,16 +251,28 @@ TOOLS: dict[str, ToolSpec] = {
         path="/api/exam-tool/whoami",
         risk_level=READ,
         params={"userId": "str"},
+        audience="any",
     ),
 }
-
 
 def get_tool(code: str) -> ToolSpec | None:
     return TOOLS.get(code)
 
 
-def list_tools() -> list[dict[str, object]]:
-    return [t.info() for t in TOOLS.values()]
+def list_tools(audience: str = "any") -> list[dict[str, object]]:
+    """工具清单
+
+    audience=any 返回全部；admin / student 只返回该人群可见的工具。
+    """
+    return [t.info() for t in visible_tools(audience)]
 
 
-__all__ = ["TOOLS", "get_tool", "list_tools", "READ", "WRITE"]
+def visible_tools(audience: str = "any") -> list[ToolSpec]:
+    if audience == "admin":
+        return [t for t in TOOLS.values() if t.audience in ("any", "admin")]
+    if audience == "student":
+        return [t for t in TOOLS.values() if t.audience in ("any", "student")]
+    return list(TOOLS.values())
+
+
+__all__ = ["TOOLS", "get_tool", "list_tools", "visible_tools", "READ", "WRITE"]

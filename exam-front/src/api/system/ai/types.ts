@@ -290,6 +290,26 @@ export interface AiChatVO {
   data?: Record<string, any>;
 }
 
+/**
+ * 「我在 AI 眼里是谁」
+ *
+ * 设置面板用它把权限摆到明面上：用户一眼看到自己属于哪类角色、
+ * 能让 AI 用到多少条能力，省得问一句撞一次 403 才发现没权限。
+ */
+export interface AiChatIdentityVO {
+  userId?: string;
+  nickName?: string;
+  /** admin / teacher / student / unknown */
+  roleScope?: string;
+  roles?: string[];
+  /** 考试域权限码，规划器据此判断可行性 */
+  examPermissions?: string[];
+  /** 当前身份能让 AI 看到多少条接口 */
+  visibleApiCount?: number;
+  totalApiCount?: number;
+  staff?: boolean;
+}
+
 /** 一轮对话入参 */
 export interface AiChatForm {
   sessionId?: string;

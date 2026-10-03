@@ -212,6 +212,62 @@ public class ExamToolController {
     }
 
     /**
+     * 按名称定位业务对象（考试 / 题库）
+     *
+     * <p>为什么要单独开一个端点：模型最大的翻车点是「凭空造 ID」。
+     * 用户说「期中考试」，它没有 ID，只能按名字查一次拿到 ID 再往下走。
+     * 把这件事收成一个统一入口，规划时就只需要记住一个工具名。
+     *
+     * <p>试卷与试题没有对应的 Dubbo 查询方法，返回 kind 不支持，
+     * 让模型改用 api_call 走 `GET /paper/list?paperName=xx`、`GET /question/list?keyword=xx`。
+     */
+    @PostMapping("/resolve")
+    public R<Map<String, Object>> resolve(
+        @RequestHeader(value = "X-Agent-Token", required = false) String token,
+        @RequestBody(required = false) Map<String, Object> body
+    ) {
+        if (!checkToken(token)) {
+            return R.fail(403, "令牌无效");
+        }
+        Map<String, Object> params = body == null ? new HashMap<>() : body;
+        String kind = str(params.get("kind")).toLowerCase();
+        String keyword = str(params.get("keyword"));
+        int limit = intValue(params.get("limit"), 10);
+        List<Map<String, Object>> items = new ArrayList<>();
+        switch (kind) {
+            case "exam" -> {
+                for (RemoteExamVo exam : remoteExamService.searchExams(keyword, limit)) {
+                    Map<String, Object> item = new LinkedHashMap<>();
+                    item.put("id", String.valueOf(exam.getExamId()));
+                    item.put("name", exam.getExamName());
+                    item.put("status", exam.getStatus());
+                    item.put("kind", "exam");
+                    items.add(item);
+                }
+            }
+            case "bank" -> {
+                for (RemoteQuestionBankVo bank : remoteQuestionService.listBanks(keyword, limit)) {
+                    Map<String, Object> item = new LinkedHashMap<>();
+                    item.put("id", String.valueOf(bank.getId()));
+                    item.put("name", bank.getName());
+                    item.put("questionCount", bank.getQuestionCount());
+                    item.put("kind", "bank");
+                    items.add(item);
+                }
+            }
+            default -> {
+                Map<String, Object> data = new LinkedHashMap<>();
+                data.put("items", List.of());
+                data.put("supported", List.of("exam", "bank"));
+                data.put("hint", "该类型请改用 api_call：试卷用 GET /paper/list?paperName=名称，"
+                    + "试题用 GET /question/list?keyword=关键词");
+                return R.ok(data);
+            }
+        }
+        return R.ok(Map.of("items", items, "kind", kind, "keyword", keyword));
+    }
+
+    /**
      * 考试答卷统计
      *
      * <p>聚合在 Java 侧做完再回给 Agent：答卷记录在独立的答题库，

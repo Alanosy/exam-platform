@@ -18,11 +18,15 @@ from typing import Any
 
 from app.chat import flows
 from app.chat.models import ChatResult, TraceStep
+from app.chat.planner import identity_audience
 from app.chat.session import store
 from app.chat.slots import detect_intent, extract_slots, merge_slots
 from app.skills.base import SkillContext
 
 logger = logging.getLogger(__name__)
+
+# 只有管理 / 教师侧能跑的预设流程，考生问了就交给规划器按他的权限重新判断
+ADMIN_ONLY_INTENTS = {"question_create", "exam_analysis"}
 
 
 async def chat(
@@ -83,6 +87,11 @@ async def chat(
     )
 
     flow = flows.FLOWS.get(intent, flows.flow_general)
+    audience = identity_audience(session.identity)
+    if audience == "student" and intent in ADMIN_ONLY_INTENTS:
+        # 考生问「出题」「全班答题情况」：预置流程是管理端视角，
+        # 交给规划器按他的身份重新判断，它会给出「考生只能看自己的数据」这类解释
+        flow = flows.flow_general
     if intent in ("chat", "question_search") and session.option("planner", True):
         # 开放域问题 / 检索一律先规划：预设流程覆盖不到的需求才不会直接回一句「做不到」
         flow = flows.flow_general

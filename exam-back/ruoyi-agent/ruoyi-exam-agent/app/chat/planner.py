@@ -16,6 +16,7 @@ from __future__ import annotations
 
 import json
 import logging
+import re
 from typing import Any
 
 from pydantic import BaseModel, Field
@@ -23,7 +24,7 @@ from pydantic import BaseModel, Field
 from app.chat.models import TraceStep
 from app.chat.runtime import call_llm, call_skill, call_tool
 from app.skills.base import SkillContext
-from app.tools.catalog import TOOLS
+from app.tools.catalog import TOOLS, visible_tools
 
 logger = logging.getLogger(__name__)
 
@@ -55,13 +56,61 @@ class Plan(BaseModel):
         return any(s.risk == "write" for s in self.steps)
 
 
-def tool_catalog_text() -> str:
-    """内置工具清单 -> 给模型看的文本"""
+def identity_audience(identity: Any) -> str:
+    """从身份快照判断人群：admin / student / any
+
+    依据：有任一考试域权限码 → 管理或教师侧；角色里带学生/考生/学员 → 考生；
+    都判不出来就给 any（拿全量清单，由网关兜底拦越权）。
+    """
+    if not isinstance(identity, dict) or not identity:
+        return "any"
+    if identity.get("isSuperAdmin"):
+        return "admin"
+    perms = identity.get("examPermissions") or []
+    if isinstance(perms, (list, tuple)) and len(perms) > 0:
+        return "admin"
+    roles = identity.get("roles") or []
+    if isinstance(roles, (list, tuple)):
+        for role in roles:
+            text = str(role).lower()
+            if any(k in text for k in ("student", "考生", "学员")):
+                return "student"
+    # 明确标了 roleScope 的以它为准
+    scope = str(identity.get("roleScope") or "")
+    if scope in ("admin", "teacher"):
+        return "admin"
+    if scope == "student":
+        return "student"
+    return "any"
+
+
+def tool_catalog_text(audience: str = "any") -> str:
+    """内置工具清单 -> 给模型看的文本
+
+    按人群过滤：学生的会话里不出现「批量入库 / 改分 / 发布考试」，
+    看不见就不会规划，这是角色隔离在提示词层面的那一半。
+    """
     lines = []
-    for spec in TOOLS.values():
+    for spec in visible_tools(audience):
         params = ", ".join(f"{k}: {v}" for k, v in spec.params.items()) or "无"
-        lines.append(f"- {spec.code}｜{spec.name}｜{spec.description}｜入参 {params}")
+        risk = "（写操作）" if spec.risk_level == "WRITE" else ""
+        lines.append(f"- {spec.code}｜{spec.name}{risk}｜{spec.description}｜入参 {params}")
     return "\n".join(lines)
+
+
+def check_step_allowed(step: "PlanStep", audience: str) -> str:
+    """计划步骤是否超出该人群的能力范围，返回原因（空表示允许）"""
+    if audience == "any":
+        return ""
+    if step.kind == "tool":
+        spec = TOOLS.get(step.ref)
+        if spec is None:
+            return f"工具 {step.ref} 不存在"
+        if spec.audience not in ("any", audience):
+            return f"工具 {step.ref} 属于{'管理端' if spec.audience == 'admin' else '考生'}能力，当前身份不可用"
+    if step.risk == "write" and audience == "student":
+        return "考生身份不允许改动系统数据（出题、改分、发布考试等）"
+    return ""
 
 
 def parse_plan(raw: str) -> Plan | None:
@@ -117,31 +166,63 @@ async def make_plan(
     trace: list[TraceStep],
     history: str = "",
 ) -> Plan | None:
-    """让模型产出计划；顺带把系统接口清单喂给它"""
+    """让模型产出计划；顺带把系统说明书 + 系统接口清单喂给它"""
+    identity = ctx.extra.get("identity") or {}
+    audience = identity_audience(identity)
+
     manifest, step = await call_tool(
-        "api_manifest", {}, tenant_id=ctx.tenant_id, title="读取系统能力清单"
+        "api_manifest",
+        {"userId": str(ctx.user_id or "")},
+        tenant_id=ctx.tenant_id,
+        title="读取系统能力清单",
     )
     trace.append(step)
-    manifest_text = _manifest_text(manifest)
+    manifest_text = manifest_text_of(manifest)
+    system_brief = ""
+    if isinstance(manifest, dict):
+        # manifest 里的 identity 是 Java 侧按权限算出来的，比 ctx 里那份更权威
+        system_brief = str(manifest.get("systemBrief") or "")
+        if manifest.get("identity"):
+            try:
+                identity = {**identity, **dict(manifest["identity"])}
+                ctx.extra["identity"] = identity
+            except (TypeError, ValueError):
+                pass
+        audience = identity_audience(identity)
+        step.detail = f"{step.detail} · 可见接口 {manifest.get('count', '?')}/{manifest.get('total', '?')}"
 
     content, step = await call_llm(
         "chat_plan",
         {
             "question": question,
             "history": history or "（无）",
-            "identity": json.dumps(ctx.extra.get("identity") or {}, ensure_ascii=False),
-            "tools": tool_catalog_text(),
+            "identity": json.dumps(identity, ensure_ascii=False),
+            "audience": audience,
+            "tools": tool_catalog_text(audience),
             "manifest": manifest_text,
+            "system_brief": system_brief or "（系统说明书未下发，按接口清单与常识判断）",
         },
         ctx,
         title="规划：判断可行性并拆解步骤",
         step_type="think",
     )
     trace.append(step)
-    return parse_plan(content)
+
+    plan = parse_plan(content)
+    if plan is None:
+        return None
+    # 模型偶尔会规划出超出身份的动作，这里再兜一道：标成不可行并说清原因，
+    # 而不是执行到一半吃个 403 才告诉用户
+    for step_item in plan.steps:
+        reason = check_step_allowed(step_item, audience)
+        if reason:
+            plan.feasible = False
+            plan.reason = f"{step_item.title or step_item.ref}：{reason}"
+            break
+    return plan
 
 
-def _manifest_text(manifest: Any) -> str:
+def manifest_text_of(manifest: Any) -> str:
     if not isinstance(manifest, dict):
         return "（系统能力清单读取失败，只能使用内置工具）"
     items = manifest.get("items") or []
@@ -170,26 +251,78 @@ def plan_md(plan: Plan) -> str:
     return "\n".join(lines)
 
 
+def resolve_refs(value: Any, results: list[dict[str, Any]]) -> Any:
+    """把计划里的 `{1.items.0.id}` 换成前面某一步的真实结果
+
+    没有这层，多步计划就只能写死 ID——而 ID 恰恰是模型不该编的东西。
+    有了它，「按名字查考试 → 拿 ID 查它的统计」才是可规划的。
+    """
+    if isinstance(value, str):
+        return _replace_one(value, results)
+    if isinstance(value, list):
+        return [resolve_refs(v, results) for v in value]
+    if isinstance(value, dict):
+        return {k: resolve_refs(v, results) for k, v in value.items()}
+    return value
+
+
+_REF_PATTERN = re.compile(r"\{(\d+)\.([A-Za-z0-9_.\[\]]+)\}")
+
+
+def _replace_one(text: str, results: list[dict[str, Any]]) -> str:
+    def repl(match: "re.Match[str]") -> str:
+        index = int(match.group(1))
+        path = match.group(2)
+        if index < 1 or index > len(results):
+            return match.group(0)
+        current: Any = results[index - 1].get("data")
+        for seg in path.split("."):
+            if not seg:
+                continue
+            if isinstance(current, list):
+                try:
+                    current = current[int(seg)]
+                except (ValueError, IndexError):
+                    return match.group(0)
+            elif isinstance(current, dict):
+                if seg not in current:
+                    return match.group(0)
+                current = current[seg]
+            else:
+                return match.group(0)
+        return "" if current is None else str(current)
+
+    return _REF_PATTERN.sub(repl, text)
+
+
 async def run_step(
-    step: PlanStep, ctx: SkillContext, trace: list[TraceStep]
+    step: PlanStep, ctx: SkillContext, trace: list[TraceStep], results: list[dict[str, Any]] | None = None
 ) -> tuple[Any, bool]:
-    """执行一步，返回 (结果, 是否成功)"""
+    """执行一步，返回 (结果, 是否成功)
+
+    执行前先把参数里的 `{N.xxx}` 占位符换成前面步骤的结果，
+    这样「先查 ID 再查它的详情」这类联动才跑得通。
+    """
+    done = results or []
     if step.kind == "answer":
         trace.append(TraceStep(type="think", title=step.title or "直接回答", detail="无需调用任何能力", status="ok"))
         return None, True
 
     if step.kind == "tool":
         data, step_trace = await call_tool(
-            step.ref, step.params, tenant_id=ctx.tenant_id, title=step.title or step.ref
+            step.ref, resolve_refs(step.params, done), tenant_id=ctx.tenant_id, title=step.title or step.ref
         )
     elif step.kind == "skill":
-        data, step_trace = await call_skill(step.ref, step.params, ctx, title=step.title or step.ref)
+        data, step_trace = await call_skill(
+            step.ref, resolve_refs(step.params, done), ctx, title=step.title or step.ref
+        )
     elif step.kind == "api":
-        payload = _api_payload(step, ctx)
+        ref = resolve_refs(step.ref, done)
+        payload = _api_payload(step, ctx, ref_override=ref)
         if payload is None:
             trace.append(
                 TraceStep(type="tool", ref="api_call", status="error", title=step.title or step.ref,
-                          detail=f"无法解析接口：{step.ref}")
+                          detail=f"无法解析接口：{ref}")
             )
             return None, False
         data, step_trace = await call_tool(
@@ -205,9 +338,11 @@ async def run_step(
     return data, step_trace.status != "error"
 
 
-def _api_payload(step: PlanStep, ctx: SkillContext) -> dict[str, Any] | None:
+def _api_payload(
+    step: PlanStep, ctx: SkillContext, ref_override: str | None = None
+) -> dict[str, Any] | None:
     """把「GET /exam/list」这种 ref 翻译成 api_call 的入参"""
-    ref = (step.ref or "").strip()
+    ref = (ref_override or step.ref or "").strip()
     parts = ref.split(None, 1)
     if len(parts) != 2:
         return None
@@ -241,7 +376,7 @@ async def run_plan(
     """按序执行计划，收集每步结果"""
     results: list[dict[str, Any]] = []
     for index, step in enumerate(plan.steps, 1):
-        data, ok = await run_step(step, ctx, trace)
+        data, ok = await run_step(step, ctx, trace, results)
         results.append(
             {
                 "index": index,

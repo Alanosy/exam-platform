@@ -20,8 +20,18 @@ import json
 import logging
 from typing import Any
 
+from app.chat.heuristic import heuristic_plan
 from app.chat.models import AskField, AskForm, TraceStep
-from app.chat.planner import Plan, PlanStep, fallback_summary_md, make_plan, plan_md, run_plan
+from app.chat.planner import (
+    Plan,
+    PlanStep,
+    fallback_summary_md,
+    identity_audience,
+    make_plan,
+    manifest_text_of,
+    plan_md,
+    run_plan,
+)
 from app.chat.runtime import call_llm, call_skill, call_tool
 from app.config import settings
 from app.skills.base import SkillContext
@@ -597,10 +607,14 @@ async def flow_general(
     # 否则（用户取消了、或者换了个新问题）必须重新规划，不能拿旧计划硬套
     plan = _plan_from_slots(slots) if slots.get("confirmed") else None
     if plan is None:
+        audience = identity_audience(ctx.extra.get("identity"))
         plan = await make_plan(question, ctx, trace, history=history)
         if plan is None:
-            # 模型没给出可用计划（MOCK 模式 / 输出不规范）就退回自由问答
-            _think(trace, "规划失败，退回直接回答", "模型没有返回可解析的计划")
+            # 模型拿不到计划（MOCK / 输出不规范）时不能就这么装傻：
+            # 退到规则规划器，覆盖住高频问法，保证「先规划再执行」仍然成立
+            plan = heuristic_plan(question, audience=audience)
+        if plan is None:
+            _think(trace, "规划失败，退回直接回答", "模型与规则都没有给出可用计划")
             return await flow_chat(slots, ctx, trace)
         slots["__plan"] = plan.model_dump()
         _think(trace, f"规划完成：{plan.goal}", plan_md(plan))
@@ -642,6 +656,25 @@ async def flow_general(
     return content, None, {"plan": plan.model_dump(), "results": results}
 
 
+async def _load_brief(
+    slots: dict[str, Any], ctx: SkillContext, trace: list[TraceStep]
+) -> tuple[str, str]:
+    """取一次系统说明书 + 接口清单，结果缓存在槽位里（一轮里可能用好几次）"""
+    if "__system_brief" in slots and "__manifest" in slots:
+        return str(slots["__system_brief"]), str(slots["__manifest"])
+    data, step = await call_tool(
+        "api_manifest",
+        {"userId": str(ctx.user_id or "")},
+        tenant_id=ctx.tenant_id,
+        title="读取系统说明书",
+    )
+    trace.append(step)
+    brief = str((data or {}).get("systemBrief") or "") if isinstance(data, dict) else ""
+    slots["__system_brief"] = brief
+    slots["__manifest"] = manifest_text_of(data)
+    return brief, str(slots["__manifest"])
+
+
 def _plan_from_slots(slots: dict[str, Any]) -> Plan | None:
     """从槽位里还原上一轮规划好的计划"""
     raw = slots.get("__plan")
@@ -680,9 +713,15 @@ async def flow_chat(
     slots: dict[str, Any], ctx: SkillContext, trace: list[TraceStep]
 ) -> tuple[str | None, AskForm | None, dict[str, Any]]:
     _think(trace, "理解问题", "未命中预置流程，交给模型直接回答")
+    brief, manifest = await _load_brief(slots, ctx, trace)
     content, step = await call_llm(
         "chat_free",
-        {"question": slots.get("__question", ""), "history": slots.get("__history", "")},
+        {
+            "question": slots.get("__question", ""),
+            "history": slots.get("__history", ""),
+            "system_brief": brief,
+            "manifest": manifest,
+        },
         ctx,
         title="模型作答",
     )

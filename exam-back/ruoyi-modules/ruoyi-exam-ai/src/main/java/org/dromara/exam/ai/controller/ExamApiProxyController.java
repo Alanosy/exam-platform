@@ -4,6 +4,7 @@ import cn.dev33.satoken.annotation.SaIgnore;
 import lombok.extern.slf4j.Slf4j;
 import org.dromara.common.core.domain.R;
 import org.dromara.exam.ai.config.ExamApiCatalog;
+import org.dromara.exam.ai.config.ExamSystemBrief;
 import org.dromara.exam.ai.domain.vo.ApiEntryVo;
 import org.dromara.system.api.RemotePermissionService;
 import org.dromara.system.api.RemoteUserService;
@@ -92,6 +93,11 @@ public class ExamApiProxyController {
 
     /**
      * 系统能力清单：模型靠它判断「这件事系统里到底能不能做」
+     *
+     * <p><b>按人下发的清单</b>：带了 userId 就先取他的权限集合，把用不了的接口
+     * 从清单里剔除。学生拿到的清单里根本没有「考生成绩名单」「待阅任务」，
+     * 于是模型压根不会去规划这些动作 —— 这是角色隔离的第一道闸，
+     * 网关那道 @SaCheckPermission 是第二道，两道都在，缺一不可。
      */
     @PostMapping("/manifest")
     public R<Map<String, Object>> manifest(
@@ -101,14 +107,119 @@ public class ExamApiProxyController {
         if (!checkToken(token)) {
             return R.fail(403, "令牌无效");
         }
+        Map<String, Object> params = body == null ? new LinkedHashMap<>() : body;
+        Long userId = toLong(params.get("userId"));
+
+        List<ApiEntryVo> items = new ArrayList<>(ExamApiCatalog.ENTRIES);
+        boolean permissionUnknown = true;
+        boolean staff = false;
+        Map<String, Object> identity = new LinkedHashMap<>();
+        if (userId != null) {
+            Set<String> permissions = safeCall(() -> remotePermissionService.getMenuPermission(userId));
+            if (permissions != null) {
+                permissionUnknown = false;
+                staff = isStaff(permissions);
+                identity = buildIdentity(userId, permissions);
+                items = filterByPermission(items, permissions, staff);
+            }
+        }
+
         Map<String, Object> data = new LinkedHashMap<>();
-        data.put("items", ExamApiCatalog.ENTRIES);
-        data.put("count", ExamApiCatalog.ENTRIES.size());
+        data.put("items", items);
+        data.put("count", items.size());
+        data.put("total", ExamApiCatalog.ENTRIES.size());
+        data.put("systemBrief", ExamSystemBrief.TEXT);
         data.put("allowedPrefixes", allowPrefixes);
         data.put("writeAllowedPrefixes", writeAllowPrefixes);
+        data.put("identity", identity);
+        data.put("staff", staff);
+        // 权限查不到时退回全量：宁可让模型多规划一步再吃 403，也不要整份清单变空
+        data.put("permissionUnknown", permissionUnknown);
         data.put("note", "调用这些接口时必须使用 /api/exam-tool/api/call，并带上用户令牌；"
             + "权限由网关按当前用户角色判定，越权会返回 401/403。");
         return R.ok(data);
+    }
+
+    /**
+     * 按权限裁剪清单
+     *
+     * <p>裁掉两类：① 权限码不在用户权限集合里的；② 适用人群对不上的
+     * （管理端接口不给纯考生，考生视角接口不给管理员也无所谓，但这里一并收窄，
+     * 让「我是谁」这件事在清单层面就清晰）。
+     */
+    private List<ApiEntryVo> filterByPermission(List<ApiEntryVo> entries, Set<String> permissions, boolean staff) {
+        List<ApiEntryVo> kept = new ArrayList<>(entries.size());
+        for (ApiEntryVo entry : entries) {
+            String perm = entry.getPermission() == null ? "" : entry.getPermission().trim();
+            if (!perm.isEmpty() && !permissions.contains(perm) && !permissions.contains("*:*:*")) {
+                continue;
+            }
+            String audience = entry.getAudience() == null ? "any" : entry.getAudience();
+            if ("admin".equals(audience) && !staff) {
+                continue;
+            }
+            kept.add(entry);
+        }
+        return kept;
+    }
+
+    /** 是否属于「管理 / 教师」侧：有任一考试域权限即视为工作人员 */
+    private boolean isStaff(Set<String> permissions) {
+        for (String p : permissions) {
+            if (p == null) {
+                continue;
+            }
+            if ("*:*:*".equals(p)) {
+                return true;
+            }
+            if (p.startsWith("exam:") || p.startsWith("system:exam:")) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /** 清单里附带的身份摘要，省得模型为了判断权限再调一次 whoami */
+    private Map<String, Object> buildIdentity(Long userId, Set<String> permissions) {
+        Map<String, Object> data = new LinkedHashMap<>();
+        data.put("userId", String.valueOf(userId));
+        Set<String> roles = safeCall(() -> remotePermissionService.getRolePermission(userId));
+        List<String> roleList = roles == null ? List.of() : new ArrayList<>(roles);
+        data.put("roles", roleList);
+        data.put("roleScope", roleScope(roleList, permissions));
+        data.put("staff", isStaff(permissions));
+        data.put("permissionCount", permissions.size());
+        Set<String> examPerms = new TreeSet<>();
+        for (String p : permissions) {
+            if (p != null && (p.startsWith("exam:") || p.startsWith("system:exam:"))) {
+                examPerms.add(p);
+            }
+        }
+        data.put("examPermissions", new ArrayList<>(examPerms));
+        return data;
+    }
+
+    /**
+     * 角色归类：把上百种角色标识收敛成模型能理解的三类
+     *
+     * <p>判断顺序很重要 —— 有考试域权限的一律算 admin/teacher，
+     * 否则只要有「学生 / 考生」字样的角色就算 student。
+     */
+    private String roleScope(List<String> roles, Set<String> permissions) {
+        if (permissions.contains("*:*:*")) {
+            return "admin";
+        }
+        boolean staff = isStaff(permissions);
+        if (staff) {
+            return "teacher";
+        }
+        for (String role : roles) {
+            String r = role == null ? "" : role.toLowerCase();
+            if (r.contains("student") || r.contains("考生") || r.contains("学员")) {
+                return "student";
+            }
+        }
+        return staff ? "teacher" : "unknown";
     }
 
     /**
@@ -142,15 +253,21 @@ public class ExamApiProxyController {
         // 角色与权限：模型据此判断「这个用户大概能做什么」，真正的拦截在网关
         Set<String> roles = safeCall(() -> remotePermissionService.getRolePermission(userId));
         Set<String> permissions = safeCall(() -> remotePermissionService.getMenuPermission(userId));
-        data.put("roles", roles == null ? List.of() : new ArrayList<>(roles));
-        data.put("permissionCount", permissions == null ? 0 : permissions.size());
+        List<String> roleList = roles == null ? List.of() : new ArrayList<>(roles);
+        Set<String> perms = permissions == null ? Set.of() : permissions;
+        data.put("roles", roleList);
+        data.put("permissionCount", perms.size());
+        data.put("roleScope", roleScope(roleList, perms));
+        data.put("staff", isStaff(perms));
+        data.put("isStudent", "student".equals(roleScope(roleList, perms)));
+        // 他实际能看见多少条能力：这个数直接决定模型敢规划多大的事
+        data.put("visibleApiCount", filterByPermission(ExamApiCatalog.ENTRIES, perms, isStaff(perms)).size());
+        data.put("totalApiCount", ExamApiCatalog.ENTRIES.size());
         // 只回传考试域权限，避免把上百个系统权限码塞进模型上下文
         Set<String> examPerms = new TreeSet<>();
-        if (permissions != null) {
-            for (String p : permissions) {
-                if (p != null && (p.startsWith("exam:") || p.startsWith("system:exam:"))) {
-                    examPerms.add(p);
-                }
+        for (String p : perms) {
+            if (p != null && (p.startsWith("exam:") || p.startsWith("system:exam:"))) {
+                examPerms.add(p);
             }
         }
         data.put("examPermissions", new ArrayList<>(examPerms));
