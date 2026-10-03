@@ -1,7 +1,6 @@
 package org.dromara.exam.ai.domain.vo;
 
-import com.fasterxml.jackson.databind.PropertyNamingStrategies;
-import com.fasterxml.jackson.databind.annotation.JsonNaming;
+import com.fasterxml.jackson.annotation.JsonAlias;
 import lombok.Data;
 
 import java.io.Serial;
@@ -18,7 +17,6 @@ import java.util.List;
  * @date 2026-10-03
  */
 @Data
-@JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class AiChatAskVo implements Serializable {
 
     @Serial
@@ -37,8 +35,10 @@ public class AiChatAskVo implements Serializable {
     private List<AiChatFieldVo> fields;
 
     /** 提交按钮文案 */
+    @JsonAlias("submit_text")
     private String submitText;
 
     /** 取消按钮文案 */
+    @JsonAlias("cancel_text")
     private String cancelText;
 }

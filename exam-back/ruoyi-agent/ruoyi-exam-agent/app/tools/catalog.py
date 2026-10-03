@@ -54,7 +54,7 @@ TOOLS: dict[str, ToolSpec] = {
         description="按知识点/题型/难度/关键词检索题库中的试题",
         path="/api/exam-tool/question/search",
         risk_level=READ,
-        params={"bank_id": "str?", "question_type": "str?", "difficulty": "str?", "keyword": "str?", "limit": "int=20"},
+        params={"bankId": "str?", "questionType": "str?", "difficulty": "str?", "keyword": "str?", "limit": "int=20"},
         audience="admin",
     ),
     "get_question": ToolSpec(

@@ -103,7 +103,7 @@ def extract_slots(text: str, intent: str) -> dict[str, Any]:
 
     # 提取 topic 前先剥掉「创建/出/帮我 + 数量 + 道」这类前缀，
     # 否则「创建1道数据结构的单选题」会把 topic 抽成「创建1道数据结构」
-    topic_text = re.sub(r"^(?:帮我|请|麻烦)?\s*(?:创建|生成|出|写|命)?\s*(?:\d+|[一二两三四五六七八九十]+)?\s*(?:道|个|条)?\s*", "", text)
+    topic_text = re.sub(r"^(?:帮我|我|请|麻烦)?\s*(?:创建|生成|出|写|命)?\s*(?:\d+|[一二两三四五六七八九十]+)?\s*(?:道|个|条)?\s*", "", text)
     m = _TOPIC_PAT.search(topic_text)
     if m:
         topic = m.group(1).strip()
