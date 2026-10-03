@@ -62,7 +62,7 @@
         </el-form-item>
         <el-form-item>
           <el-button type="primary" icon="MagicStick" :loading="generating" @click="handleGenerate">生成</el-button>
-          <span class="tip-text">AI 生成的是草稿，保存前请逐题核对答案，尤其是选择题的正确项</span>
+          <span class="tip-text">AI 生成的题需人工核对后再启用，尤其是选择题的正确项</span>
         </el-form-item>
       </el-form>
 
@@ -71,6 +71,11 @@
         <div class="result-head">
           <span>共生成 {{ list.length }} 道题，已选 {{ selectedIds.length }} 道</span>
           <div class="flex items-center gap-2">
+            <!-- 入库状态：后端 QuestionBo.status 是必填项（@NotNull），不传直接报「0草稿 1启用 2废弃不能为空」 -->
+            <span class="text-[12px] text-[#909399]">保存状态</span>
+            <el-select v-model="form.status" size="small" class="w-[110px]">
+              <el-option v-for="item in questionStatusOptions" :key="item.value" :label="item.label" :value="item.value" />
+            </el-select>
             <el-button link type="primary" @click="selectAll(true)">全选</el-button>
             <el-button link @click="selectAll(false)">清空</el-button>
           </div>
@@ -134,7 +139,9 @@
 <script setup lang="ts" name="QuestionAiGenerateDrawer">
 import { aiGenerateQuestions, getAiEnabled } from '@/api/system/ai';
 import type { AiQuestionGenVO, AiQuestionAuditVO } from '@/api/system/ai/types';
-import { addQuestion } from '@/api/system/question';
+// 必须走 createQuestion（/question/create）：addQuestion（/question）走 insertByBo，
+// 不写选项、不填 create_user、也不兜底 status
+import { createQuestion } from '@/api/system/question';
 import type { QuestionForm } from '@/api/system/question/types';
 import { BankVO } from '@/api/system/bank/types';
 import { useQuestionDicts } from './useQuestionDict';
@@ -157,7 +164,8 @@ const emit = defineEmits<{
 }>();
 
 const { proxy } = getCurrentInstance() as ComponentInternalInstance;
-const { questionTypeOptions, questionDifficultyOptions, questionTypeLabel, questionDifficultyLabel, questionDifficultyTagType } = useQuestionDicts();
+const { questionTypeOptions, questionDifficultyOptions, questionStatusOptions, questionTypeLabel, questionDifficultyLabel, questionDifficultyTagType } =
+  useQuestionDicts();
 
 const visible = computed({
   get: () => props.modelValue,
@@ -178,7 +186,13 @@ const form = reactive({
   count: 5,
   score: 5,
   withAudit: true,
-  extra: ''
+  extra: '',
+  /**
+   * 入库状态，后端 QuestionBo.status 必填（@NotNull）
+   *
+   * 默认草稿：AI 出题必须人工核对答案后才启用，直接启用等于把未核对的题放进题库
+   */
+  status: 'draft' as string | number
 });
 
 const selectedIds = computed(() => list.value.filter((item) => item.checked).map((_, index) => index));
@@ -244,23 +258,33 @@ const handleSave = async () => {
 
   saving.value = true;
   let ok = 0;
-  for (const item of targets) {
+  const errors: string[] = [];
+  for (const [i, item] of targets.entries()) {
+    if (!item.stem || !item.stem.trim()) {
+      errors.push(`第 ${i + 1} 题题干为空`);
+      continue;
+    }
     const payload: QuestionForm = {
       bankId: form.bankId,
       title: item.stem,
-      questionType: item.questionType,
-      difficulty: item.difficulty,
+      // AI 没给题型 / 难度时回落到生成条件里选的值，后端这两个字段必填
+      questionType: item.questionType || form.questionType,
+      difficulty: item.difficulty || form.difficulty,
       score: item.score ?? form.score,
       analysis: item.analysis,
       answer: item.answer,
+      // 后端必填，不传会报「0草稿 1启用 2废弃不能为空」
+      status: form.status,
       // 选项字段与题库实体一致（optionKey / optionContent），AI 给的 key/content 在这里对齐
-      options: (item.options ?? []).map((opt) => ({ optionKey: opt.key, optionContent: opt.content }))
+      options: (item.options ?? []).map((opt, idx) => ({ optionKey: opt.key, optionContent: opt.content, sort: idx + 1 }))
     };
     try {
-      await addQuestion(payload);
+      await createQuestion(payload);
       ok++;
-    } catch {
+    } catch (e) {
       // 单题失败不中断，最后按成功数提示，教师能看到「保存了几道」
+      const err = e as { msg?: string; message?: string };
+      errors.push(err?.msg || err?.message || `第 ${i + 1} 题保存失败`);
     }
   }
   saving.value = false;
@@ -273,7 +297,8 @@ const handleSave = async () => {
       visible.value = false;
     }
   } else {
-    proxy?.$modal.msgError('保存失败，请检查题目内容是否完整');
+    // 后端校验失败的第一条原因带上，避免只看到「保存失败」不知道缺什么
+    proxy?.$modal.msgError(`保存失败：${errors[0] ?? '请检查题目内容是否完整'}`);
   }
 };
 
@@ -288,6 +313,14 @@ watch(
     }
   }
 );
+
+// 状态字典是异步返回的，加载完成后要确认默认值命中可选项，否则下拉会「选了个空值」
+watch(questionStatusOptions, () => {
+  const hit = questionStatusOptions.value.some((item) => String(item.value) === String(form.status));
+  if (!hit && questionStatusOptions.value.length > 0) {
+    form.status = questionStatusOptions.value[0].value;
+  }
+});
 </script>
 
 <style scoped lang="scss">

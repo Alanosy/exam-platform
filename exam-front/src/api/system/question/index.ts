@@ -43,6 +43,10 @@ export const getQuestion = (id: string | number): AxiosPromise<QuestionVO> => {
 
 /**
  * 新增试题主
+ *
+ * ⚠️ 走的是 POST /question → insertByBo：**不写选项、不填 create_user、不兜底 status**。
+ * 页面新增试题请用 {@link createQuestion}（POST /question/create），
+ * 否则会报「0草稿 1启用 2废弃不能为空」，且选项不会入库。
  * @param data
  */
 export const addQuestion = (data: QuestionForm) => {
