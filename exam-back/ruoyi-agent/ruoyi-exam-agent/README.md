@@ -45,7 +45,34 @@ uvicorn app.main:app --host 0.0.0.0 --port 9221 --reload
 启动后：
 - 接口文档：http://127.0.0.1:9221/docs
 - 健康检查：http://127.0.0.1:9221/health
-- 自动注册到 Nacos（服务名 `ruoyi-exam-agent`）
+- 自动注册到 Nacos（服务名 `ruoyi-exam-agent`，namespace `dev`）
+
+### Nacos 注册：为什么不用 nacos-sdk-python
+
+`nacos-sdk-python 0.1.14` 在**开启鉴权**的 Nacos 上 `add_naming_instance`
+一律返回 `Insufficient privilege.` —— 实测 `dev` / `public` / 空 namespace 全失败，
+而**同样的参数走 REST + accessToken 一次就成功**。报错很有误导性，看起来像账号权限不够，
+实际是 SDK 没把凭据送上去。所以 `app/core/nacos.py` 直接用 httpx 调 OpenAPI：
+
+```
+登录  POST /nacos/v1/auth/users/login   -> accessToken（TTL 18000s，提前 10min 刷新）
+注册  POST /nacos/v1/ns/instance
+心跳  PUT  /nacos/v1/ns/instance/beat   （后台线程，5s 一次）
+注销  DELETE /nacos/v1/ns/instance      （停机时）
+```
+
+排查手段：
+
+```bash
+curl http://127.0.0.1:9221/health | jq .nacos     # registered / ip / error 一眼可见
+TOKEN=$(curl -s -X POST "http://127.0.0.1:8848/nacos/v1/auth/users/login" \
+        -d "username=nacos&password=nacos" | jq -r .accessToken)
+curl -s "http://127.0.0.1:8848/nacos/v1/ns/instance/list?serviceName=ruoyi-exam-agent&namespaceId=dev&accessToken=$TOKEN"
+```
+
+> ⚠️ 注册的 IP 默认取本机出口网卡地址（如 `172.20.10.2`），
+> **多网卡 / Docker / 端口映射场景必须用 `AGENT_NACOS_IP` 显式指定**，
+> 否则 Java 网关会拿到一个连不通的地址。服务也要绑 `0.0.0.0` 而不是 `127.0.0.1`。
 
 ### 没有真实 API Key 也能跑
 

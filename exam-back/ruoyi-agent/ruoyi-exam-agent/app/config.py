@@ -33,6 +33,9 @@ class Settings(BaseSettings):
     nacos_password: str = "nacos"
     nacos_cluster: str = "DEFAULT"
     nacos_heartbeat_interval: int = 5
+    # 注册用的 IP。留空则自动探测出口网卡地址；
+    # 多网卡 / 容器 / 端口映射场景必须显式指定，否则别的服务会拿到不可达的地址
+    nacos_ip: str = ""
 
     # ---------------- L2 模型网关 ----------------
     # 配置源优先级：mysql > env。任一源为空或失败都会自动降级到下一个。
