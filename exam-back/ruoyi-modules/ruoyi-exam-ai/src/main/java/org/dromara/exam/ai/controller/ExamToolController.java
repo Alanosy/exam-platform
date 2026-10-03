@@ -175,6 +175,9 @@ public class ExamToolController {
         RemoteQuestionSaveBo bo = new RemoteQuestionSaveBo();
         bo.setBankId(longValue(body.get("bankId")));
         bo.setStatus(str(body.get("status")));
+        // 创建人跟随当前对话用户：question.create_user 是 NOT NULL，
+        // 不传就只能由服务端兜底成管理员，试题会挂到别人名下
+        bo.setCreateUser(longValue(body.get("createUser")));
         bo.setQuestions(toSaveItems(body.get("questions")));
         List<Long> ids = remoteQuestionService.saveQuestions(bo);
         Map<String, Object> data = new LinkedHashMap<>();

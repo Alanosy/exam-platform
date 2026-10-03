@@ -59,70 +59,134 @@ def _preview_lines(items: list[dict[str, Any]], fmt) -> list[str]:
     return [fmt(i) for i in items[:8]]
 
 
+# 题库下拉里「新建题库」这一项的值。用不可能与雪花 ID 撞车的常量，
+# 解析时据此走建库分支。
+NEW_BANK = "__new__"
+
+
+async def _lookup_banks(
+    slots: dict[str, Any], ctx: SkillContext, trace: list[TraceStep], topic: str
+) -> tuple[list[dict[str, Any]], str, bool, bool]:
+    """按候选关键词找题库
+
+    返回 (候选题库, 命中关键词, 工具是否失败, 是否由关键词命中)。
+
+    候选顺序：手填的库名 > 完整主题 > 派生的短关键词。
+    完整主题先试是因为「TCP」这种短主题一旦被截短就再也匹配不上了。
+
+    全都落空时再拉一次全量：让用户能直接从已有题库里挑一个，
+    省掉「先选『从全部题库挑一个』再选一次」这多余的一轮。
+    """
+    candidates: list[str] = []
+    for raw in (slots.get("bank_name"), topic, slots.get("bank_keyword")):
+        value = str(raw or "").strip()
+        if value and value not in candidates:
+            candidates.append(value)
+
+    keyword = candidates[0] if candidates else topic
+    for candidate in candidates:
+        data, step = await call_tool(
+            "list_question_banks",
+            {"keyword": candidate, "limit": 20},
+            tenant_id=ctx.tenant_id,
+            title=f"查找题库 · 关键词「{candidate}」",
+        )
+        items: list[dict[str, Any]] = (data or {}).get("items", []) if isinstance(data, dict) else []
+        step.preview = _preview_lines(
+            items, lambda b: f"{b.get('name')}（{b.get('questionCount', 0)} 题）"
+        ) or (["工具调用失败，未能读取题库列表"] if data is None else [f"关键词「{candidate}」没有匹配到题库"])
+        trace.append(step)
+        if data is None:
+            return [], candidate, True, False
+        if items:
+            return items, candidate, False, True
+
+    data, step = await call_tool(
+        "list_question_banks", {"keyword": "", "limit": 50}, tenant_id=ctx.tenant_id, title="拉取全部题库兜底"
+    )
+    if data is None:
+        # 连主题都没有时关键词循环一次都不会进，兜底这次是唯一的探针，
+        # 它失败就必须如实报「读不到题库」，不能当成「库里没有」
+        return [], keyword, True, False
+    items = (data or {}).get("items", []) if isinstance(data, dict) else []
+    step.preview = _preview_lines(items, lambda b: f"{b.get('name')}（{b.get('questionCount', 0)} 题）")
+    trace.append(step)
+    # 全量命中的不算「关键词命中」：库里只有一个「测试题库」时不能拿它当自动匹配结果
+    return items, keyword, False, False
+
+
+def _missing_desc(slots: dict[str, Any], topic: str, count: int) -> str:
+    """缺参数卡片上的说明：先告诉用户已经认出了什么，再让他补剩下的"""
+    known: list[str] = []
+    if topic:
+        known.append(f"主题「{topic}」")
+    if count:
+        known.append(f"{count} 道")
+    if str(slots.get("bank_name") or "").strip():
+        known.append(f"题库「{slots['bank_name']}」")
+    head = f"已识别到 {'、'.join(known)}。" if known else ""
+    return head + "补齐下面几项后立刻开始生成，确认入库前还会给你看一遍题目。"
+
+
 # ---------------------------------------------------------------- 出题入库
 
 async def flow_question_create(
     slots: dict[str, Any], ctx: SkillContext, trace: list[TraceStep]
 ) -> tuple[str | None, AskForm | None, dict[str, Any]]:
-    """出题 -> 选库 -> 生成 -> 确认 -> 入库"""
-    _think(trace, "解析出题需求", f"主题：{slots.get('topic') or '待补充'}，数量：{slots.get('count') or '待补充'}")
+    """出题 -> 选库 -> 生成 -> 确认 -> 入库
 
-    # ---------- 1. 补齐基础信息 ----------
-    # 只卡「数量」和「主题」两个真正缺了就没法干的字段；
+    两条铁律：
+    1. **缺什么一次问完**。分多轮追问时，用户第二次填完很容易被弹回同一张卡
+       （旧实现里「新建题库」分支在 return 之后，根本走不到），看起来就是「做不了」。
+    2. 题库定位结果必须写回 slots。中断续跑会重跑整个 flow，
+       不记住就得再查一遍，甚至再建一次同名库。
+    """
+    topic = str(slots.get("topic") or "").strip()
+    try:
+        count = int(slots.get("count") or 0)
+    except (TypeError, ValueError):
+        count = 0
+
+    _think(trace, "解析出题需求", f"主题：{topic or '待补充'}，数量：{count or '待补充'}")
+
+    # ---------- 1. 收集还差什么（只卡真正缺了就没法干的字段） ----------
     # 题型 / 难度给默认值先往下走，用户可以在入库前的确认卡上改（改了会重新生成）。
     missing: list[AskField] = []
-    if not slots.get("count"):
+    if not count:
         missing.append(AskField(key="count", label="题目数量", type="number", value=5, placeholder="1-30"))
-    if not slots.get("topic"):
+    if not topic:
         missing.append(AskField(key="topic", label="出题主题 / 知识点", type="text", placeholder="如：计算机基础、网络协议"))
-    if missing:
-        return None, AskForm(
-            kind="form",
-            title="还差一点信息就能出题",
-            desc=f"主题「{slots.get('topic') or '未识别'}」已记录，补充下面几项后立刻开始生成。",
-            fields=missing,
-            submit_text="开始生成",
-        ), {}
-
-    topic = str(slots["topic"])
-    count = int(slots["count"])
 
     # ---------- 2. 定位题库 ----------
     bank_id = str(slots.get("bank_id") or "")
     bank_name = str(slots.get("bank_name") or "")
 
-    if not bank_id:
-        # 候选关键词按顺序试：手填的库名 > 完整主题 > 派生的短关键词。
-        # 完整主题先试是因为「TCP」这种短主题一旦被截成「TC」就再也匹配不上了；
-        # 而「计算机基础知识」太长，第一轮空了会由短关键词兜住。
-        candidates: list[str] = []
-        for raw in (slots.get("bank_name"), topic, slots.get("bank_keyword")):
-            value = str(raw or "").strip()
-            if value and value not in candidates:
-                candidates.append(value)
-
-        banks: list[dict[str, Any]] = []
-        keyword = candidates[0] if candidates else topic
-        tool_failed = False
-        for candidate in candidates:
-            data, step = await call_tool(
-                "list_question_banks",
-                {"keyword": candidate, "limit": 20},
-                tenant_id=ctx.tenant_id,
-                title=f"查找题库 · 关键词「{candidate}」",
+    if bank_id == NEW_BANK:
+        # 上一轮用户在表单里选了「新建题库」：这一轮直接建。
+        # 千万别再查一遍题库——查不到就又弹同一张卡，等于死循环。
+        new_name = str(slots.get("new_bank_name") or slots.get("bank_keyword") or topic or "新建题库").strip()
+        data, step = await call_tool(
+            "create_question_bank", {"bankName": new_name}, tenant_id=ctx.tenant_id, title=f"新建题库「{new_name}」"
+        )
+        trace.append(step)
+        if data and data.get("id"):
+            bank_id = str(data.get("id"))
+            bank_name = str(data.get("name") or new_name)
+            slots["bank_id"] = bank_id
+            slots["bank_name"] = bank_name
+            _think(trace, f"已新建题库「{bank_name}」", f"题库 ID {bank_id}")
+        else:
+            # 建库失败：清掉选择，退回让用户填已有题库的名字，避免卡死在同一张卡
+            slots.pop("bank_id", None)
+            bank_id = ""
+            missing.append(
+                AskField(
+                    key="bank_name", label="题库名称", type="text", value=new_name,
+                    placeholder="新建没成功，填一个已有题库的名字，我按名字再查一次",
+                )
             )
-            items: list[dict[str, Any]] = (data or {}).get("items", []) if isinstance(data, dict) else []
-            step.preview = _preview_lines(
-                items, lambda b: f"{b.get('name')}（{b.get('questionCount', 0)} 题）"
-            ) or (["工具调用失败，未能读取题库列表"] if data is None else [f"关键词「{candidate}」没有匹配到题库"])
-            trace.append(step)
-            if data is None:
-                tool_failed = True
-                break
-            if items:
-                banks, keyword = items, candidate
-                break
-
+    elif not bank_id:
+        banks, keyword, tool_failed, by_keyword = await _lookup_banks(slots, ctx, trace, topic)
         if tool_failed:
             # 绝不问用户要 ID：那是雪花主键，用户不可能知道，也记不住。
             # 先问「题库叫什么」，下一轮拿这个名字再查一次；还是不通就如实收尾。
@@ -134,108 +198,55 @@ async def flow_question_create(
                     None,
                     {},
                 )
-            return None, AskForm(
-                kind="form",
-                title="暂时读不到题库列表",
-                desc="题库服务没有返回数据（可能是服务未启动或网络不通）。"
-                     "告诉我你想放进哪个题库就行，填名称即可，我拿这个名字再查一次；查不到就按这个名字新建一个。",
-                fields=[
-                    AskField(
-                        key="bank_name", label="题库名称", type="text", value=keyword,
-                        placeholder="如：计算机基础题库",
-                    )
-                ],
-                submit_text="继续",
-            ), {}
-
-        if not banks:
-            return None, AskForm(
-                kind="form",
-                title=f"没有找到与「{keyword}」匹配的题库",
-                desc="可以现在新建一个题库，也可以改用已有题库。",
-                fields=[
-                    AskField(
-                        key="bank_mode", label="怎么处理？", type="select", value="create",
-                        options=[
-                            {"label": f"新建题库「{keyword}」", "value": "create"},
-                            {"label": "从全部题库里挑一个", "value": "pick"},
-                        ],
-                    ),
-                    AskField(key="new_bank_name", label="新题库名称", type="text", value=keyword, required=False),
-                ],
-                submit_text="继续",
-            ), {}
-
-        if len(banks) == 1:
+            missing.append(
+                AskField(
+                    key="bank_name", label="题库名称", type="text", value=keyword,
+                    placeholder="如：计算机基础题库",
+                    tip="暂时读不到题库列表，填名称我按名字再查一次",
+                )
+            )
+        elif banks and by_keyword and len(banks) == 1:
             bank_id = str(banks[0].get("id"))
             bank_name = str(banks[0].get("name"))
-            # 写回 slots：中断续跑时会重跑整个 flow，不记住就得再查一次题库
             slots["bank_id"] = bank_id
             slots["bank_name"] = bank_name
             _think(trace, f"自动匹配到唯一题库「{bank_name}」", f"题库 ID {bank_id}，命中规则：关键词「{keyword}」唯一匹配")
         else:
-            return None, AskForm(
-                kind="form",
-                title=f"找到 {len(banks)} 个相关题库，用哪个？",
-                desc=f"关键词「{keyword}」命中多个题库，选一个写入：",
-                fields=[
-                    AskField(
-                        key="bank_id", label="目标题库", type="select",
-                        options=[
-                            {"label": f"{b.get('name')}（{b.get('questionCount', 0)} 题）", "value": str(b.get("id"))}
-                            for b in banks
-                        ],
-                        value=str(banks[0].get("id")),
-                    )
-                ],
-                submit_text="用它出题",
-            ), {}
-
-    # 用户选择了「从全部题库里挑一个」：拉全量让他选
-    if not bank_id and slots.get("bank_mode") == "pick":
-        data, step = await call_tool(
-            "list_question_banks", {"keyword": "", "limit": 50}, tenant_id=ctx.tenant_id, title="拉取全部题库"
-        )
-        banks = (data or {}).get("items", []) if isinstance(data, dict) else []
-        step.preview = _preview_lines(banks, lambda b: f"{b.get('name')}（{b.get('questionCount', 0)} 题）")
-        trace.append(step)
-        if not banks:
-            return "当前租户下还没有任何题库，请先到「题库管理」创建一个，再来找我出题。", None, {}
-        return None, AskForm(
-            kind="form", title="选择要写入的题库",
-            fields=[
+            # 命中多个 / 一个都没命中：把候选（含全量兜底）连同「新建」一起摆出来，
+            # 一张卡解决，用户不必先选「挑一个」再选一次
+            options = [
+                {"label": f"{b.get('name')}（{b.get('questionCount', 0)} 题）", "value": str(b.get("id"))}
+                for b in banks
+            ]
+            options.append({"label": f"新建题库「{keyword or topic}」", "value": NEW_BANK})
+            missing.append(
                 AskField(
-                    key="bank_id", label="目标题库", type="select",
-                    options=[{"label": f"{b.get('name')}（{b.get('questionCount', 0)} 题）", "value": str(b.get("id"))} for b in banks],
+                    key="bank_id",
+                    label="写到哪个题库？" + ("没有完全匹配的，可以从已有题库里挑" if banks else "当前没有可用题库"),
+                    type="select",
+                    options=options,
+                    # 关键词确实命中了才默认选第一个；只是「全量兜底」出来的库
+                    # 跟主题没关系，默认停在「新建」，别让人一回车就写错库
+                    value=str(banks[0].get("id")) if (banks and by_keyword) else NEW_BANK,
                 )
-            ],
-            submit_text="用它出题",
-        ), {}
+            )
+            missing.append(
+                AskField(
+                    key="new_bank_name", label="新建题库名称", type="text",
+                    value=str(slots.get("new_bank_name") or keyword or topic),
+                    required=False, tip="选了「新建题库」时才生效",
+                )
+            )
 
-    # 用户选择了「新建题库」
-    if not bank_id and slots.get("bank_mode") == "create":
-        new_name = str(slots.get("new_bank_name") or topic).strip()
-        data, step = await call_tool(
-            "create_question_bank", {"bankName": new_name}, tenant_id=ctx.tenant_id, title=f"新建题库「{new_name}」"
-        )
-        trace.append(step)
-        if not data or not data.get("id"):
-            # 清掉 create 模式，否则重跑时又会去建一次同名的库，卡在同一个问题上
-            slots.pop("bank_mode", None)
-            return None, AskForm(
-                kind="form", title="题库创建失败",
-                desc="没能新建题库。换一个已有题库的名字试试，我按名字去查。",
-                fields=[
-                    AskField(
-                        key="bank_name", label="已有题库名称", type="text", value=new_name,
-                        placeholder="如：计算机基础题库",
-                    )
-                ],
-                submit_text="用它出题",
-            ), {}
-        bank_id = str(data.get("id"))
-        bank_name = str(data.get("name") or new_name)
-        _think(trace, f"已新建题库「{bank_name}」", f"题库 ID {bank_id}")
+    if missing:
+        # 一次把缺的都问完，别让用户一轮一轮猜
+        return None, AskForm(
+            kind="form",
+            title="补齐这些信息就开始出题",
+            desc=_missing_desc(slots, topic, count),
+            fields=missing,
+            submit_text="开始生成",
+        ), {}
 
     if not bank_name:
         data, _ = await call_tool("list_question_banks", {"keyword": "", "limit": 50}, tenant_id=ctx.tenant_id)
@@ -303,6 +314,9 @@ async def flow_question_create(
     save_payload = {
         "bankId": bank_id,
         "status": str(slots.get("status") or "0"),
+        # 试题挂在出题人名下：question.create_user 是 NOT NULL，
+        # 服务端只在拿不到时才兜底成管理员
+        "createUser": _as_int(ctx.user_id),
         "questions": [_to_save_item(q) for q in questions],
     }
     data, step = await call_tool(
@@ -310,16 +324,25 @@ async def flow_question_create(
     )
     trace.append(step)
 
-    if not data:
+    saved_ids = (data.get("ids") or []) if isinstance(data, dict) else []
+
+    if not saved_ids:
+        # 一条都没写进去时绝不能报「已完成」：服务端返回 200 但 ids 为空，
+        # 通常是试题表必填字段（如 create_user）缺失，逐题入库被服务端吞掉了异常。
+        step.status = "error"
+        step.detail = f"{step.detail}\n服务端返回 0 条：请查看题库服务日志（常见原因：必填字段为空）"
         return (
-            "题目已生成，但**入库失败**（题库服务没有返回结果）。生成结果没有丢，"
-            "可以先让题库服务恢复，再让我重跑一次。\n\n" + _questions_preview_md(questions, limit=10),
+            f"题目已生成，但**一条都没写进题库「{bank_name}」**（服务端返回 0 条）。\n\n"
+            "生成结果没有丢，确认题库服务日志里的入库报错后再让我重跑一次。\n\n"
+            + _questions_preview_md(questions, limit=10),
             None,
             {"questions": questions, "bankId": bank_id},
         )
 
-    saved_ids = data.get("ids") or []
     step.preview = [f"新增试题 ID：{', '.join(str(i) for i in saved_ids[:10])}"] if saved_ids else []
+    if len(saved_ids) < len(questions):
+        step.status = "error"
+        step.detail = f"{step.detail}\n{len(questions) - len(saved_ids)} 道入库失败，见题库服务日志"
     trace.append(TraceStep(type="done", title="入库完成", detail=f"共写入 {len(saved_ids)} 道题", status="ok"))
 
     return (
@@ -327,6 +350,14 @@ async def flow_question_create(
         None,
         {"questions": questions, "bankId": bank_id, "ids": saved_ids},
     )
+
+
+def _as_int(value: Any) -> int | None:
+    """用户 ID 转整数；拿不到就返回 None，让服务端兜底"""
+    try:
+        return int(str(value).strip())
+    except (TypeError, ValueError):
+        return None
 
 
 def _to_save_item(q: dict[str, Any]) -> dict[str, Any]:

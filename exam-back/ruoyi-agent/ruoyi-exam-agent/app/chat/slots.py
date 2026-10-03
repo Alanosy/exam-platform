@@ -59,6 +59,10 @@ _SEARCH_PAT = re.compile(r"(搜\s*\d*\s*[道个条]*题|找\s*\d+\s*道|查\s*\d
 # 只认「数字 + 量词」：「加3道简单题」里数字和题之间还隔着难度词，
 # 要求后面紧跟「题」会漏抽
 _COUNT_PAT = re.compile(r"(\d+)\s*(?:道|个|条)")
+# 中文数字同样要认：「帮我创建一道题」里的「一道」是数量，
+# 只认阿拉伯数字会把它当成没写数量，转头去问用户（非常招人烦）
+_CN_COUNT_PAT = re.compile(r"([一二两三四五六七八九十]+)\s*(?:道|个|条)")
+_CN_NUM = {"一": 1, "二": 2, "两": 2, "三": 3, "四": 4, "五": 5, "六": 6, "七": 7, "八": 8, "九": 9}
 _BANK_PAT = re.compile(r"([一-龥A-Za-z0-9]+?)\s*题库")
 _TOPIC_PAT = re.compile(r"关于(.+?)(?:的题|的题目|的试题|的知识点|方面|的)")
 _EXAM_PAT = re.compile(r"([一-龥A-Za-z0-9]+?)\s*(?:考卷|试卷|考试)")
@@ -85,6 +89,11 @@ def extract_slots(text: str, intent: str) -> dict[str, Any]:
     m = _COUNT_PAT.search(text)
     if m:
         slots["count"] = int(m.group(1))
+    else:
+        m = _CN_COUNT_PAT.search(text)
+        count = _cn_to_int(m.group(1)) if m else None
+        if count:
+            slots["count"] = count
 
     m = _BANK_PAT.search(text)
     if m:
@@ -143,15 +152,29 @@ def _clean_bank_keyword(raw: str) -> str:
 
 
 def _topic_to_bank_keyword(topic: str) -> str:
-    """「计算机基础知识」-> 「计算机」，题库名通常比主题短
+    """「计算机基础知识」-> 「计算机」：题库名通常比主题短
 
-    取前 2~4 个字做关键词：太短（「数学」）匹配面还行，
-    太长（「计算机基础知识」）在模糊匹配里几乎必空。
+    只是**兜底用**的派生关键词，主关键词仍是完整主题。
+    别对短词动刀：「计算机」截成「计算」在模糊匹配里反而更差。
     """
     topic = re.sub(r"(基础|知识|相关|方面|相关知识点|题库)$", "", topic).strip()
     if not topic:
         return ""
-    return topic[:4] if len(topic) > 4 else topic[:2]
+    return topic if len(topic) <= 6 else topic[:4]
+
+
+def _cn_to_int(text: str) -> int | None:
+    """「一」-> 1，「十二」-> 12，「二十」-> 20；解析不了返回 None"""
+    if not text:
+        return None
+    if text.isdigit():
+        return int(text)
+    if "十" in text:
+        left, _, right = text.partition("十")
+        tens = _CN_NUM.get(left, 1) if left else 1
+        ones = _CN_NUM.get(right, 0) if right else 0
+        return tens * 10 + ones
+    return _CN_NUM.get(text)
 
 
 def merge_slots(base: dict[str, Any], incoming: dict[str, Any]) -> dict[str, Any]:

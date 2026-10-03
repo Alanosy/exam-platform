@@ -9,6 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.dubbo.config.annotation.DubboService;
 import org.dromara.common.core.utils.MapstructUtils;
 import org.dromara.common.core.utils.StringUtils;
+import org.dromara.common.satoken.utils.LoginHelper;
 import org.dromara.exam.question.api.RemoteQuestionService;
 import org.dromara.exam.question.api.domain.RemoteQuestionBankVo;
 import org.dromara.exam.question.api.domain.RemoteQuestionOptionVo;
@@ -58,6 +59,9 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 @DubboService
 public class RemoteQuestionServiceImpl implements RemoteQuestionService {
+
+    /** Dubbo 调用没有登录上下文时的兜底创建人（admin） */
+    private static final Long DEFAULT_CREATOR_ID = 1L;
 
     private final QuestionMapper questionMapper;
 
@@ -170,10 +174,30 @@ public class RemoteQuestionServiceImpl implements RemoteQuestionService {
         bank.setStatus("1");
         bank.setVisibility("private");
         bank.setDelFlag(0L);
-        if (questionBankMapper.insert(bank) > 0) {
-            return bank.getId();
+        // creator_id 在表里是 NOT NULL 且没有默认值，Dubbo 调用又拿不到登录上下文，
+        // 不显式赋值会直接踩「Column 'creator_id' cannot be null」，
+        // 表现到 Agent 侧就是一句没头没脑的「RPC异常」。
+        bank.setCreatorId(currentUserId());
+        try {
+            if (questionBankMapper.insert(bank) > 0) {
+                return bank.getId();
+            }
+        } catch (Exception e) {
+            // 兜住并留栈：Dubbo 侧的统一异常处理只会回一句「RPC异常」，
+            // 没有这行日志就只能靠猜
+            log.error("AI 新建题库失败，bankName={}", bankName, e);
         }
         return null;
+    }
+
+    /** 当前用户 ID；Dubbo 调用没有登录上下文，取不到就落到默认管理员 */
+    private Long currentUserId() {
+        try {
+            Long userId = LoginHelper.getUserId();
+            return ObjectUtil.isNotNull(userId) ? userId : DEFAULT_CREATOR_ID;
+        } catch (Exception e) {
+            return DEFAULT_CREATOR_ID;
+        }
     }
 
     /**
@@ -212,22 +236,32 @@ public class RemoteQuestionServiceImpl implements RemoteQuestionService {
             return List.of();
         }
         String status = StringUtils.defaultIfBlank(bo.getStatus(), "0");
+        // question.create_user 同样是 NOT NULL：调用方没传就落到当前用户 / 管理员，
+        // 否则整批试题都会因为一个空字段写不进去
+        Long creator = ObjectUtil.isNotNull(bo.getCreateUser()) ? bo.getCreateUser() : currentUserId();
         List<Long> ids = new ArrayList<>(bo.getQuestions().size());
+        Throwable last = null;
         for (RemoteQuestionSaveItem item : bo.getQuestions()) {
             if (item == null || StringUtils.isBlank(item.getStem())) {
                 continue;
             }
             try {
-                Long questionId = saveOne(bo.getBankId(), status, bo.getCreateUser(), item);
+                Long questionId = saveOne(bo.getBankId(), status, creator, item);
                 if (questionId != null) {
                     ids.add(questionId);
                     bindKnowledge(questionId, item.getKnowledgePoints());
                 }
             } catch (Exception e) {
                 // 生成 10 道里有 1 道字段不合法时，不该让另外 9 道一起丢
+                last = e;
                 log.warn("AI 试题入库失败 bankId={} stem={} err={}", bo.getBankId(),
                     StringUtils.substring(item.getStem(), 0, 30), e.getMessage());
             }
+        }
+        if (ids.isEmpty() && last != null) {
+            // 整批失败时必须留一条带堆栈的日志：Dubbo 侧只会回一句「RPC异常」，
+            // 而 Agent 拿到的 ids 是空的，没有这行就只能靠猜
+            log.error("AI 试题入库全部失败 bankId={} 共 {} 道", bo.getBankId(), bo.getQuestions().size(), last);
         }
         return ids;
     }

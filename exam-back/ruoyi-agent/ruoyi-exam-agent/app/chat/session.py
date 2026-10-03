@@ -56,6 +56,12 @@ class ChatSession:
     client_id: str = ""
     # 身份快照（角色 + 考试域权限），规划阶段用来判断「这个动作他有没有权限」
     identity: dict[str, Any] = field(default_factory=dict)
+    # 中断卡问了哪些字段：[{"key": "count", "type": "number", "options": [...]}, ...]
+    # 用途：用户不点表单、直接在输入框里敲「1」时，引擎知道这句话是在回答哪个字段。
+    # 没有它，手打的答案会被当成一句新的提问，上下文就此断裂。
+    pending_fields: list[dict[str, Any]] = field(default_factory=list)
+    # 中断卡类型（form / confirm），决定手打的话该往哪个字段上落
+    pending_kind: str = ""
     # 会话级配置（上下文轮数 / 写操作确认 / 模型），由前端设置面板下发
     options: dict[str, Any] = field(default_factory=lambda: dict(DEFAULT_OPTIONS))
 
@@ -97,6 +103,7 @@ class ChatSession:
             "id": self.id,
             "title": self.title or "（新会话）",
             "intent": self.intent,
+            "waiting": bool(self.pending_fields),
             "messageCount": len(self.messages),
             "createdAt": int(self.created_at),
             "updatedAt": int(self.updated_at),

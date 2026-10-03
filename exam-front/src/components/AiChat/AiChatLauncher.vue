@@ -78,7 +78,7 @@
           type="textarea"
           resize="none"
           :autosize="{ minRows: 2, maxRows: 5 }"
-          :placeholder="aiEnabled ? '描述你要做的事，Enter 发送 / Shift+Enter 换行' : 'AI 服务未连接，仍可发送'"
+          :placeholder="inputPlaceholder"
           @keydown.enter.exact.prevent="submitDraft"
         />
         <div class="foot-row">
@@ -91,7 +91,7 @@
 </template>
 
 <script setup lang="ts">
-import { nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue';
+import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue';
 import { ChatDotRound, Clock, Close, RefreshLeft, Setting } from '@element-plus/icons-vue';
 import ChatMessage from './ChatMessage.vue';
 import SessionList from './SessionList.vue';
@@ -147,6 +147,28 @@ const saveSettings = () => {
 
 // 设置变了就落盘，下一轮请求自动带上
 watch(settings, saveSettings, { deep: true });
+
+/**
+ * 输入框提示语
+ *
+ * 上一轮在等补充信息时，用户完全可以手打答案（比如直接敲「1」），
+ * 但界面上不说的话没人知道——所以这里明确提示一句。
+ */
+const inputPlaceholder = computed(() => {
+  if (!aiEnabled.value) return 'AI 服务未连接，仍可发送';
+  const pending = [...messages.value].reverse().find((m) => m.ask && !m.answered);
+  if (pending?.ask?.kind === 'confirm') return '回「确认」执行，或「算了」取消';
+  if (pending) return `补充信息：可直接输入答案，如 ${pendingHint(pending.ask)}`;
+  return '描述你要做的事，Enter 发送 / Shift+Enter 换行';
+});
+
+const pendingHint = (ask?: AiChatVO['ask'] | null): string => {
+  const first = ask?.fields?.[0];
+  if (!first) return '1';
+  if (first.type === 'number') return '1';
+  if (first.type === 'select') return `${first.options?.[0]?.label ?? '选项名'}`;
+  return first.label ?? '答案';
+};
 
 const scrollToBottom = async () => {
   await nextTick();

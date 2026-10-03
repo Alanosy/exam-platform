@@ -76,17 +76,32 @@ def test_basic_words_are_not_difficulty():
     assert "difficulty" not in slots
 
 
+def test_chinese_number_is_count():
+    """「一道」也得认成数量：只认阿拉伯数字会转头去问用户，非常招人烦"""
+    slots = extract_slots("帮我创建一道关于计算机的题", "question_create")
+    assert slots["count"] == 1
+    assert slots["topic"] == "计算机"
+
+
+def test_short_topic_is_not_truncated():
+    """「计算机」不能被截成「计算」，短主题在模糊匹配里反而更容易命中"""
+    slots = extract_slots("帮我创建2道关于计算机的题", "question_create")
+    assert slots["bank_keyword"] == "计算机"
+
+
 # ---------------------------------------------------------------- 出题流程
 
 
 async def test_ask_when_slots_missing(monkeypatch):
-    """缺数量/主题/题型/难度 -> 一次性问完，不是问一句等一句"""
+    """缺什么一次问完：数量 / 主题 / 题库必须在同一张卡上，不能问一句等一句"""
     monkeypatch.setattr(flows, "call_tool", _tool({}))
     # 只卡数量与主题：题型 / 难度有默认值，放到入库前的确认卡上让人改
     result = await chat(message="帮我出几道题")
     assert result.ask is not None
     keys = {f.key for f in result.ask.fields}
-    assert keys == {"count", "topic"}
+    assert {"count", "topic"} <= keys
+    # 题库读不到时，顺手把库名也问了——否则用户要连填两张卡
+    assert "bank_name" in keys
 
 
 async def test_unique_bank_is_auto_selected(monkeypatch):
@@ -101,7 +116,7 @@ async def test_unique_bank_is_auto_selected(monkeypatch):
 
 
 async def test_multiple_banks_require_choice(monkeypatch):
-    """多个匹配 -> 让人选"""
+    """多个匹配 -> 让人选，并且一并给出「新建」这条路"""
     monkeypatch.setattr(
         flows,
         "call_tool",
@@ -110,15 +125,110 @@ async def test_multiple_banks_require_choice(monkeypatch):
     result = await chat(message="帮我创建2道关于计算机的题到计算机题库")
     assert result.ask is not None
     assert result.ask.kind == "form"
-    assert [f.key for f in result.ask.fields] == ["bank_id"]
+    keys = [f.key for f in result.ask.fields]
+    assert keys[0] == "bank_id"
+    bank_field = result.ask.fields[0]
+    values = [o["value"] for o in (bank_field.options or [])]
+    assert values == ["1001", "1002", flows.NEW_BANK]
 
 
 async def test_no_bank_offers_create_or_pick(monkeypatch):
-    """没有匹配 -> 给「新建 / 挑一个」两条路"""
+    """没有匹配 -> 卡上必须给出「新建题库」这条路"""
     monkeypatch.setattr(flows, "call_tool", _tool({"list_question_banks": {"items": []}}))
     result = await chat(message="帮我创建2道关于量子力学的题")
     assert result.ask is not None
-    assert {f.key for f in result.ask.fields} == {"bank_mode", "new_bank_name"}
+    keys = {f.key for f in result.ask.fields}
+    assert {"bank_id", "new_bank_name"} <= keys
+    bank_field = next(f for f in result.ask.fields if f.key == "bank_id")
+    assert flows.NEW_BANK in [o["value"] for o in (bank_field.options or [])]
+
+
+async def test_new_bank_choice_creates_bank(monkeypatch):
+    """选了「新建题库」就必须真的去建，不能弹回同一张卡（曾经因此死循环）"""
+    created: dict[str, Any] = {}
+
+    async def fake_tool(code, payload, tenant_id="000000", title=""):
+        if code == "list_question_banks":
+            return {"items": []}, TraceStep(type="tool", ref=code, status="ok", title=title)
+        if code == "create_question_bank":
+            created.update(payload)
+            return {"id": "2001", "name": payload.get("bankName")}, TraceStep(type="tool", ref=code, status="ok", title=title)
+        return None, TraceStep(type="tool", ref=code, status="error", title=title)
+
+    monkeypatch.setattr(flows, "call_tool", fake_tool)
+    monkeypatch.setattr(flows, "call_skill", _skill([FAKE_QUESTION]))
+
+    first = await chat(message="帮我创建2道关于量子力学的题")
+    assert first.ask is not None
+    second = await chat(
+        message="",
+        answers={"bank_id": flows.NEW_BANK, "new_bank_name": "量子力学题库"},
+        session_id=first.session_id,
+    )
+    assert created.get("bankName") == "量子力学题库", "选了新建却没有真的建库"
+    assert second.ask is None or second.ask.kind != "form", "不能又弹回缺参数卡"
+    assert second.ask is not None and second.ask.kind == "confirm", "生成完应进入入库确认"
+
+
+async def test_zero_saved_is_reported_as_failure(monkeypatch):
+    """服务端返回 0 条时绝不能报「已完成」——曾把它当成成功，实际一道都没写进去"""
+    monkeypatch.setattr(
+        flows,
+        "call_tool",
+        _tool({
+            "list_question_banks": {"items": [FAKE_BANK]},
+            "save_questions": {"ids": [], "count": 0, "bankId": "1001"},
+        }),
+    )
+    monkeypatch.setattr(flows, "call_skill", _skill([FAKE_QUESTION]))
+    first = await chat(message="帮我创建2道关于计算机基础的题到计算机题库")
+    second = await chat(message="", answers={"confirmed": True}, session_id=first.session_id)
+
+    assert "已完成" not in (second.reply or ""), "一条都没写进去却报了成功"
+    assert "0" in (second.reply or "")
+
+
+async def test_typed_number_continues_pending_flow(monkeypatch):
+    """用户不点表单、直接在输入框敲「1」时，要接着上一轮走，不能开成新话题"""
+    monkeypatch.setattr(flows, "call_tool", _tool({}))
+    first = await chat(message="帮我出几道题")
+    assert first.ask is not None
+    assert "count" in {f.key for f in first.ask.fields}
+
+    second = await chat(message="1", session_id=first.session_id)
+    assert second.ask is not None
+    keys = {f.key for f in second.ask.fields}
+    assert "count" not in keys, "手打的「1」没有落到数量上，上下文断了"
+    assert "topic" in keys
+
+
+async def test_typed_cancel_ends_pending(monkeypatch):
+    """手打「算了」等同于点取消"""
+    monkeypatch.setattr(flows, "call_tool", _tool({}))
+    first = await chat(message="帮我出几道题")
+    second = await chat(message="算了", session_id=first.session_id)
+    assert second.ask is None
+    assert "取消" in (second.reply or "")
+
+
+async def test_typed_confirm_accepts_write(monkeypatch):
+    """确认卡上手打「确认」等同于点确认按钮"""
+    monkeypatch.setattr(
+        flows,
+        "call_tool",
+        _tool({
+            "list_question_banks": {"items": [FAKE_BANK]},
+            "save_questions": {"ids": ["9001"], "count": 1, "bankId": "1001"},
+        }),
+    )
+    monkeypatch.setattr(flows, "call_skill", _skill([FAKE_QUESTION]))
+    first = await chat(message="帮我创建2道关于计算机基础的题到计算机题库")
+    assert first.ask is not None and first.ask.kind == "confirm"
+
+    second = await chat(message="确认", session_id=first.session_id)
+    assert second.ask is None
+    assert "已完成" in (second.reply or ""), "手打确认后没有真正入库"
+    assert second.data and second.data.get("ids") == ["9001"]
 
 
 async def test_confirm_then_write(monkeypatch):
