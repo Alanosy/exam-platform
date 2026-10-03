@@ -75,6 +75,45 @@ public class RemoteExamServiceImpl implements RemoteExamService {
     }
 
     /**
+     * 按名称关键词模糊查询考试（AI 对话定位「某某考卷」用）
+     */
+    @Override
+    public List<RemoteExamVo> searchExams(String keyword, Integer limit) {
+        int size = (limit == null || limit < 1) ? 10 : Math.min(limit, 50);
+        List<Exam> exams = examMapper.selectList(
+            Wrappers.lambdaQuery(Exam.class)
+                .like(StringUtils.isNotBlank(keyword), Exam::getExamName, StringUtils.trimToEmpty(keyword))
+                .eq(Exam::getDelFlag, 0L)
+                .orderByDesc(Exam::getId)
+                .last("limit " + size));
+        if (ObjectUtil.isNull(exams) || exams.isEmpty()) {
+            return List.of();
+        }
+        return exams.stream()
+            .map(this::toVo)
+            .filter(ObjectUtil::isNotNull)
+            .toList();
+    }
+
+    /**
+     * 实体 -> 对外 VO
+     *
+     * <p>单独抽出来是为了让 queryExam 与 searchExams 共用同一套转换，
+     * 否则两处各写一遍，改字段时必漏一处。
+     */
+    private RemoteExamVo toVo(Exam exam) {
+        if (ObjectUtil.isNull(exam)) {
+            return null;
+        }
+        RemoteExamVo vo = MapstructUtils.convert(exam, RemoteExamVo.class);
+        if (ObjectUtil.isNull(vo)) {
+            return null;
+        }
+        vo.setExamId(exam.getId());
+        return vo;
+    }
+
+    /**
      * 查某个人创建的考试ID列表
      */
     @Override

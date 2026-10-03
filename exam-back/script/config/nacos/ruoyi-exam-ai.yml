@@ -14,6 +14,13 @@ spring:
           username: ${datasource.exam.username}
           password: ${datasource.exam.password}
 
+# Agent 回调工具端点（/api/exam-tool/**）的共享令牌
+# 这些端点不经过网关（Python agent 直连 9220），所以不走 Sa-Token，
+# 用一个共享令牌兜底。留空表示不校验（本地联调用）；
+# 上生产要配成与 agent 的 AGENT_JAVA_GATEWAY_TOKEN 一致的值。
+exam-tool:
+  token: ""
+
 # AI Agent（Python FastAPI）服务发现配置
 ai:
   agent:

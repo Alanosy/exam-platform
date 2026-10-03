@@ -17,6 +17,8 @@
       </div>
       <app-main />
       <settings ref="settingRef" />
+      <!-- 全局 AI 助手：挂在布局上，切页面不丢会话 -->
+      <ai-chat-launcher />
     </div>
   </div>
 </template>
@@ -29,6 +31,7 @@ import { useSettingsStore } from '@/store/modules/settings';
 import { NavTypeEnum } from '@/enums/NavTypeEnum';
 import { initWebSocket } from '@/utils/websocket';
 import { initSSE } from '@/utils/sse';
+import AiChatLauncher from '@/components/AiChat/AiChatLauncher.vue';
 
 const settingsStore = useSettingsStore();
 const theme = computed(() => settingsStore.theme);
@@ -127,7 +130,7 @@ const setLayout = () => {
   width: calc(100% - #{$base-sidebar-width});
   transition: width 0.28s;
   background: $fixed-header-bg;
-  box-shadow: 0 2px 8px rgba(0, 21, 41, 0.10);
+  box-shadow: 0 2px 8px rgba(0, 21, 41, 0.1);
 }
 
 .hideSidebar .fixed-header {

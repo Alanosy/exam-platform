@@ -21,7 +21,7 @@ from app.tools.catalog import TOOLS, get_tool, list_tools
 
 
 def test_tool_catalog_size():
-    assert len(TOOLS) == 15, "工具数量变了，请同步更新本断言与文档"
+    assert len(TOOLS) == 20, "工具数量变了，请同步更新本断言与文档"
 
 
 def test_every_tool_has_path_and_risk():

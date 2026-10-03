@@ -22,6 +22,7 @@
   "dependencies": {
     "@element-plus/icons-vue": "2.3.2",
     "@highlightjs/vue-plugin": "2.1.2",
+    "@types/markdown-it": "^14.2.0",
     "@vueup/vue-quill": "1.2.0",
     "@vueuse/core": "14.2.1",
     "animate.css": "4.1.1",
@@ -35,6 +36,7 @@
     "image-conversion": "2.1.1",
     "js-cookie": "3.0.5",
     "jsencrypt": "3.5.4",
+    "markdown-it": "^14.3.2",
     "nprogress": "0.2.0",
     "pinia": "3.0.4",
     "screenfull": "6.0.2",

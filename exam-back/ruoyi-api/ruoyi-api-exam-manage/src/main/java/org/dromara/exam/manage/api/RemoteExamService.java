@@ -65,6 +65,18 @@ public interface RemoteExamService {
     Boolean isWhiteUser(Long examId, Long userId);
 
     /**
+     * 按名称关键词模糊查询考试
+     *
+     * <p>AI 对话场景用：用户说「某某考卷的答题情况」时，Agent 拿关键词把考试找出来，
+     * 唯一命中直接用，多个命中才让人选。
+     *
+     * @param keyword 考试名称关键词，为空查全部
+     * @param limit   返回条数上限，小于 1 按 10 算
+     * @return 考试列表，永远非空（无数据时为空 List）
+     */
+    List<RemoteExamVo> searchExams(String keyword, Integer limit);
+
+    /**
      * 按账号查询该账号被邀请 / 已加入的考试
      *
      * @param account 账号（登录名 / 手机号 / 邮箱）

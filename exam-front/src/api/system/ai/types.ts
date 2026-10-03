@@ -220,3 +220,81 @@ export interface AiSkillRunVO {
   latencyMs?: number;
   message?: string;
 }
+
+/* ------------------------------------------------------------------ *
+ * 对话式 Agent（/ai/chat）
+ * ------------------------------------------------------------------ */
+
+/**
+ * 运行流程的一个步骤
+ *
+ * 前端按 type 渲染不同图标：think 思考 / tool 工具 / skill 技能 /
+ * ask 等待补充 / write 写入 / done 完成 / error 出错
+ */
+export interface AiChatTraceVO {
+  id: string;
+  type: string;
+  title: string;
+  detail?: string;
+  /** ok / error / waiting */
+  status?: string;
+  /** 工具 code 或技能 code */
+  ref?: string;
+  latencyMs?: number;
+  /** 关键结果摘要 */
+  preview?: string[];
+}
+
+/** 中断卡候选项，value 一律字符串（雪花 ID 走数字会丢精度） */
+export interface AiChatOptionVO {
+  label: string;
+  value: string;
+}
+
+/** 中断卡字段 */
+export interface AiChatFieldVO {
+  key: string;
+  label: string;
+  /** text / number / select / multi / switch */
+  type: string;
+  options?: AiChatOptionVO[];
+  value?: any;
+  required?: boolean;
+  placeholder?: string;
+  tip?: string;
+}
+
+/**
+ * 中断卡：Agent 缺信息时让人补
+ *
+ * kind=form 渲染表单 / kind=choice 渲染选项 / kind=confirm 渲染确认按钮
+ */
+export interface AiChatAskVO {
+  kind: string;
+  title: string;
+  desc?: string;
+  fields?: AiChatFieldVO[];
+  submitText?: string;
+  cancelText?: string;
+}
+
+/** 一轮对话结果 */
+export interface AiChatVO {
+  sessionId: string;
+  /** Markdown 正文 */
+  reply: string;
+  trace?: AiChatTraceVO[];
+  /** 不为空表示「我在等你补充信息」 */
+  ask?: AiChatAskVO | null;
+  intent?: string;
+  data?: Record<string, any>;
+}
+
+/** 一轮对话入参 */
+export interface AiChatForm {
+  sessionId?: string;
+  message?: string;
+  /** 中断卡答案 {key: value} */
+  answers?: Record<string, any>;
+  modelCode?: string;
+}

@@ -10,6 +10,22 @@ from app.tools.base import READ, WRITE, ToolSpec
 
 TOOLS: dict[str, ToolSpec] = {
     # ---------------- 题库 ----------------
+    "list_question_banks": ToolSpec(
+        code="list_question_banks",
+        name="题库列表",
+        description="按名称关键词模糊查询题库（带题目数量），用于定位「往哪个题库写」",
+        path="/api/exam-tool/bank/list",
+        risk_level=READ,
+        params={"keyword": "str?", "limit": "int=20"},
+    ),
+    "create_question_bank": ToolSpec(
+        code="create_question_bank",
+        name="新建题库",
+        description="创建一个新的题库（写操作，对话场景由用户确认后才会调用）",
+        path="/api/exam-tool/bank/create",
+        risk_level=WRITE,
+        params={"bankName": "str", "categoryId": "str?"},
+    ),
     "search_questions": ToolSpec(
         code="search_questions",
         name="检索试题",
@@ -43,6 +59,14 @@ TOOLS: dict[str, ToolSpec] = {
         risk_level=READ,
         params={"paper_id": "str"},
     ),
+    "save_questions": ToolSpec(
+        code="save_questions",
+        name="批量保存试题",
+        description="把 AI 生成的试题批量写入指定题库（含选项与答案）",
+        path="/api/exam-tool/question/save-batch",
+        risk_level=WRITE,
+        params={"bankId": "str", "status": "str=0", "questions": "list[object]"},
+    ),
     "add_paper_questions": ToolSpec(
         code="add_paper_questions",
         name="试卷加题",
@@ -59,6 +83,14 @@ TOOLS: dict[str, ToolSpec] = {
         path="/api/exam-tool/exam/get",
         risk_level=READ,
         params={"exam_id": "str"},
+    ),
+    "find_exam": ToolSpec(
+        code="find_exam",
+        name="查找考试",
+        description="按名称关键词模糊查询考试（对话场景用于定位用户口中的「某某考卷」）",
+        path="/api/exam-tool/exam/find",
+        risk_level=READ,
+        params={"keyword": "str", "limit": "int=10"},
     ),
     "publish_exam": ToolSpec(
         code="publish_exam",
@@ -109,6 +141,14 @@ TOOLS: dict[str, ToolSpec] = {
         path="/api/exam-tool/stat/exam",
         risk_level=READ,
         params={"exam_id": "str"},
+    ),
+    "exam_answer_stats": ToolSpec(
+        code="exam_answer_stats",
+        name="考试答卷统计",
+        description="统计某场考试的参考人数、交卷数、平均分、及格率与分数段分布",
+        path="/api/exam-tool/stat/exam-answers",
+        risk_level=READ,
+        params={"examId": "str"},
     ),
     "question_stats": ToolSpec(
         code="question_stats",

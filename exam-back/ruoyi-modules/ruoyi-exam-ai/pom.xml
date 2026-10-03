@@ -129,6 +129,12 @@
             <artifactId>ruoyi-api-exam-answer</artifactId>
         </dependency>
 
+        <!-- AI 对话：按名称定位考试（「某某考卷的答题情况」） -->
+        <dependency>
+            <groupId>org.dromara</groupId>
+            <artifactId>ruoyi-api-exam-manage</artifactId>
+        </dependency>
+
         <!-- 自身对外接口 -->
         <dependency>
             <groupId>org.dromara</groupId>

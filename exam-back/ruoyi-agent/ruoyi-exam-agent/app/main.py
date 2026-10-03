@@ -25,6 +25,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from app.api import (
     agent,
+    chat,
     grade,
     health,
     model,
@@ -116,6 +117,7 @@ app.include_router(proctor.router, prefix=f"{API}/proctor", tags=["AI 监考"])
 app.include_router(skill.router, prefix=API, tags=["Skill"])
 app.include_router(tool.router, prefix=API, tags=["Tool"])
 app.include_router(agent.router, prefix=API, tags=["Agent 编排"])
+app.include_router(chat.router, prefix=API, tags=["对话式 Agent"])
 app.include_router(model.router, prefix=API, tags=["模型网关"])
 app.include_router(rag.router, prefix=API, tags=["RAG"])
 

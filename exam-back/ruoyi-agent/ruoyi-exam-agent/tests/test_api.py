@@ -7,6 +7,9 @@
 from __future__ import annotations
 
 
+from app.tools.catalog import TOOLS
+
+
 def _data(resp) -> dict:
     """业务接口统一返回 R<T>"""
     body = resp.json()
@@ -88,7 +91,7 @@ def test_skill_batch(client):
 
 def test_tool_list(client):
     d = _data(client.get("/api/ai/tool/list"))
-    assert d["count"] == 15
+    assert d["count"] == len(TOOLS)
     assert "submit_mark_score" in d["guardrail"]["high_risk_tools"]
 
 
