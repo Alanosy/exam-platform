@@ -64,7 +64,7 @@ _COUNT_PAT = re.compile(r"(\d+)\s*(?:道|个|条)")
 _CN_COUNT_PAT = re.compile(r"([一二两三四五六七八九十]+)\s*(?:道|个|条)")
 _CN_NUM = {"一": 1, "二": 2, "两": 2, "三": 3, "四": 4, "五": 5, "六": 6, "七": 7, "八": 8, "九": 9}
 _BANK_PAT = re.compile(r"([一-龥A-Za-z0-9]+?)\s*题库")
-_TOPIC_PAT = re.compile(r"关于(.+?)(?:的题|的题目|的试题|的知识点|方面|的)")
+_TOPIC_PAT = re.compile(r"(?:关于)?(.+?)(?:的|相关的)(?:题|题目|试题|单选题|多选题|判断题|填空题|简答题|知识点)")
 _EXAM_PAT = re.compile(r"([一-龥A-Za-z0-9]+?)\s*(?:考卷|试卷|考试)")
 _TYPE_PAT = re.compile(r"(" + "|".join(sorted(TYPE_MAP, key=len, reverse=True)) + r")")
 _DIFF_PAT = re.compile(r"(" + "|".join(sorted(DIFFICULTY_MAP, key=len, reverse=True)) + r")")
@@ -101,9 +101,16 @@ def extract_slots(text: str, intent: str) -> dict[str, Any]:
         if cleaned:
             slots["bank_keyword"] = cleaned
 
-    m = _TOPIC_PAT.search(text)
+    # 提取 topic 前先剥掉「创建/出/帮我 + 数量 + 道」这类前缀，
+    # 否则「创建1道数据结构的单选题」会把 topic 抽成「创建1道数据结构」
+    topic_text = re.sub(r"^(?:帮我|请|麻烦)?\s*(?:创建|生成|出|写|命)?\s*(?:\d+|[一二两三四五六七八九十]+)?\s*(?:道|个|条)?\s*", "", text)
+    m = _TOPIC_PAT.search(topic_text)
     if m:
-        slots["topic"] = m.group(1).strip()
+        topic = m.group(1).strip()
+        # 再剥一次残留的数量词，兜底
+        topic = re.sub(r"^(?:\d+|[一二两三四五六七八九十]+)?\s*(?:道|个|条)?\s*", "", topic)
+        if topic:
+            slots["topic"] = topic
 
     m = _EXAM_PAT.search(text)
     if m:

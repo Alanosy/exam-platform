@@ -324,7 +324,14 @@ async def flow_question_create(
     )
     trace.append(step)
 
-    saved_ids = (data.get("ids") or []) if isinstance(data, dict) else []
+    # Java 侧 saveQuestions 直接返回 List<Long>（JSON 数组），
+    # 兼容两种返回：{"ids":[...]} 或 [...]
+    if isinstance(data, dict):
+        saved_ids = data.get("ids") or []
+    elif isinstance(data, list):
+        saved_ids = data
+    else:
+        saved_ids = []
 
     if not saved_ids:
         # 一条都没写进去时绝不能报「已完成」：服务端返回 200 但 ids 为空，

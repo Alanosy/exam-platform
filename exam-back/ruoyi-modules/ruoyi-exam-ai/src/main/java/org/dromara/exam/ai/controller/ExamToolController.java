@@ -16,6 +16,8 @@ import org.dromara.exam.question.api.domain.RemoteQuestionSaveItem;
 import org.dromara.exam.question.api.domain.RemoteQuestionSaveOption;
 import org.dromara.exam.question.api.domain.RemoteQuestionSearchBo;
 import org.dromara.exam.question.api.domain.RemoteQuestionVo;
+import org.dromara.exam.stat.api.RemoteStatService;
+import org.dromara.exam.stat.api.domain.HomeStatVo;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -69,6 +71,9 @@ public class ExamToolController {
 
     @DubboReference(check = false)
     private RemoteExamAnswerService remoteExamAnswerService;
+
+    @DubboReference(check = false)
+    private RemoteStatService remoteStatService;
 
     @Value("${exam-tool.token:}")
     private String toolToken;
@@ -344,6 +349,123 @@ public class ExamToolController {
         item.put("band", name);
         item.put("count", count);
         return item;
+    }
+
+    // ---------------------------------------------------------------- 题目详情
+
+    /**
+     * 按 ID 查询单题（含选项与答案）
+     */
+    @PostMapping("/question/get")
+    public R<Map<String, Object>> questionGet(
+        @RequestHeader(value = "X-Agent-Token", required = false) String token,
+        @RequestBody(required = false) Map<String, Object> body
+    ) {
+        if (!checkToken(token)) {
+            return R.fail(403, "令牌无效");
+        }
+        Map<String, Object> params = body == null ? new HashMap<>() : body;
+        Long questionId = longValue(params.get("question_id"));
+        if (questionId == null) {
+            return R.fail("question_id 不能为空");
+        }
+        List<RemoteQuestionVo> questions = remoteQuestionService.listByIds(List.of(questionId));
+        if (questions.isEmpty()) {
+            return R.fail("试题不存在");
+        }
+        RemoteQuestionVo q = questions.get(0);
+        Map<String, Object> data = new LinkedHashMap<>();
+        data.put("id", String.valueOf(q.getQuestionId()));
+        data.put("title", q.getTitle());
+        data.put("questionType", q.getQuestionType());
+        data.put("difficulty", q.getDifficulty());
+        data.put("score", q.getScore());
+        data.put("answer", q.getAnswer());
+        data.put("analysis", q.getAnalysis());
+        data.put("options", q.getOptions() == null ? List.of() : q.getOptions());
+        return R.ok(data);
+    }
+
+    // ---------------------------------------------------------------- 考试详情
+
+    /**
+     * 按 ID 查询考试配置
+     */
+    @PostMapping("/exam/get")
+    public R<Map<String, Object>> examGet(
+        @RequestHeader(value = "X-Agent-Token", required = false) String token,
+        @RequestBody(required = false) Map<String, Object> body
+    ) {
+        if (!checkToken(token)) {
+            return R.fail(403, "令牌无效");
+        }
+        Map<String, Object> params = body == null ? new HashMap<>() : body;
+        Long examId = longValue(params.get("exam_id"));
+        if (examId == null) {
+            return R.fail("exam_id 不能为空");
+        }
+        RemoteExamVo exam = remoteExamService.queryExam(examId);
+        if (exam == null) {
+            return R.fail("考试不存在");
+        }
+        Map<String, Object> data = new LinkedHashMap<>();
+        data.put("id", String.valueOf(exam.getExamId()));
+        data.put("name", exam.getExamName());
+        data.put("status", exam.getStatus());
+        data.put("examType", exam.getExamType());
+        data.put("startTime", exam.getStartTime());
+        data.put("endTime", exam.getEndTime());
+        data.put("duration", exam.getDuration());
+        data.put("paperId", exam.getPaperId());
+        data.put("creatorId", exam.getCreatorId());
+        return R.ok(data);
+    }
+
+    // ---------------------------------------------------------------- 统计总览
+
+    /**
+     * 首页总览：考试数、答卷数、及格率、平均分、近7天趋势、热度榜
+     */
+    @PostMapping("/stat/overview")
+    public R<Map<String, Object>> statOverview(
+        @RequestHeader(value = "X-Agent-Token", required = false) String token,
+        @RequestBody(required = false) Map<String, Object> body
+    ) {
+        if (!checkToken(token)) {
+            return R.fail(403, "令牌无效");
+        }
+        HomeStatVo vo = remoteStatService.homeOverview();
+        Map<String, Object> data = new LinkedHashMap<>();
+        data.put("examTotal", vo.getExamTotal());
+        data.put("examOngoing", vo.getExamOngoing());
+        data.put("examToday", vo.getExamToday());
+        data.put("examFinished", vo.getExamFinished());
+        data.put("recordTotal", vo.getRecordTotal());
+        data.put("answering", vo.getAnswering());
+        data.put("todaySubmit", vo.getTodaySubmit());
+        data.put("examineeCount", vo.getExamineeCount());
+        data.put("passRate", vo.getPassRate().doubleValue());
+        data.put("avgScore", vo.getAvgScore().doubleValue());
+        data.put("trend", vo.getTrend() == null ? List.of() : vo.getTrend());
+        data.put("todayExams", vo.getTodayExams() == null ? List.of() : vo.getTodayExams());
+        data.put("examRank", vo.getExamRank() == null ? List.of() : vo.getExamRank());
+        return R.ok(data);
+    }
+
+    /**
+     * 近 N 天交卷趋势
+     */
+    @PostMapping("/stat/record-trend")
+    public R<Map<String, Object>> statRecordTrend(
+        @RequestHeader(value = "X-Agent-Token", required = false) String token,
+        @RequestBody(required = false) Map<String, Object> body
+    ) {
+        if (!checkToken(token)) {
+            return R.fail(403, "令牌无效");
+        }
+        Map<String, Object> params = body == null ? new HashMap<>() : body;
+        int days = intValue(params.get("days"), 7);
+        return R.ok(Map.of("trend", remoteExamAnswerService.trendSubmit(days)));
     }
 
     // ---------------------------------------------------------------- 内部

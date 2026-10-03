@@ -76,7 +76,11 @@ async def chat(
         # 这时必须接着上一轮的意图往下跑，否则「上下文没连上」——
         # 手打的答案会被当成新话题，走一遍通用规划然后答非所问。
         intent = session.intent or "chat"
-        slots = merge_slots(session.slots, extract_slots(message, intent))
+        # 续跑时用户打的是「答案」不是「新指令」：extract_slots 从"测试题库"里
+        # 会误抽出 topic="测试"，必须让 session.slots 里上一轮已确定的出题参数
+        # （topic / count / 题型 / 难度）压过它，否则题目主题会被答案带偏。
+        # guessed（从选项里解析出的 bank_id 等）优先级最高，最后覆盖。
+        slots = merge_slots(extract_slots(message, intent), session.slots)
         slots = merge_slots(slots, guessed)
         session.add_message("user", message)
         question = str(session.slots.get("__question") or message)
@@ -219,10 +223,23 @@ def _guess_answers(
     if len(numbers) == 1 and re.fullmatch(r"\d+\s*(?:道|个|条)?", text):
         return {numbers[0]["key"]: int(re.search(r"\d+", text).group())}
 
-    # 整句像「计算机基础题库」：以「题库」收尾就是库名，否则只认唯一一个文本框
+    # select 优先：选项是有限集合，用户说「测试题库」时命中率最高，
+    # 必须排在 text 字段之前——否则会被 new_bank_name 这种文本框吞掉，
+    # 导致 bank_id 没赋值、流程又弹同一张卡，看起来就是「输入了没反应」
+    selects = [f for f in plain if f.get("type") == "select"]
+    for sel in selects:
+        value = _coerce(sel, text)
+        if value is not None:
+            return {sel["key"]: value}
+
+    # select 没命中时：如果用户说的话带「题库」且存在新建题库字段，
+    # 就当作要新建题库——否则「测试题库」不在已有列表里时会被当成新话题
     texts = [f for f in plain if f.get("type") == "text"]
-    if text.endswith("题库") and any(f.get("key") == "bank_name" for f in texts):
-        return {"bank_name": text}
+    bank_field = next((f for f in texts if f.get("key") in ("new_bank_name", "bank_name")), None)
+    if bank_field and "题库" in text:
+        value = _coerce(bank_field, text)
+        if value is not None:
+            return {bank_field["key"]: value}
     if len(texts) == 1:
         value = _coerce(texts[0], text)
         if value is not None:

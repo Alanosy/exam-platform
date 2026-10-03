@@ -135,6 +135,12 @@
             <artifactId>ruoyi-api-exam-manage</artifactId>
         </dependency>
 
+        <!-- AI 对话：首页总览 / 考试统计 -->
+        <dependency>
+            <groupId>org.dromara</groupId>
+            <artifactId>ruoyi-api-exam-stat</artifactId>
+        </dependency>
+
         <!-- 自身对外接口 -->
         <dependency>
             <groupId>org.dromara</groupId>
