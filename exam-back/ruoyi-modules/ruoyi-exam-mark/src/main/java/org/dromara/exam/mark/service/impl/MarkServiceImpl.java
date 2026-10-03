@@ -330,12 +330,18 @@ public class MarkServiceImpl implements IMarkService {
     @Transactional(rollbackFor = Exception.class)
     public void aiPreview(Long taskId) {
         if (!markAiService.enabled()) {
-            throw new ServiceException("AI 阅卷能力未接入");
+            throw new ServiceException("AI 阅卷服务不可用，请检查 AI 服务是否已启动并注册到 Nacos");
         }
         MarkTask task = selectTask(taskId);
         List<MarkItem> items = listItems(task.getId());
+        if (CollUtil.isEmpty(items)) {
+            return;
+        }
         Map<Long, RemoteQuestionVo> questionMap = selectQuestionMap(items.stream().map(MarkItem::getQuestionId).toList());
         Date now = new Date();
+
+        // 先备齐材料再一次性提交：逐题串行在整场考试批量预评时会等太久
+        List<MarkAiBo> aiBos = new ArrayList<>(items.size());
         for (MarkItem item : items) {
             RemoteQuestionVo question = questionMap.get(item.getQuestionId());
             MarkAiBo aiBo = new MarkAiBo();
@@ -346,14 +352,20 @@ public class MarkServiceImpl implements IMarkService {
             aiBo.setAnalysis(ObjectUtil.isNull(question) ? null : plainText(question.getAnalysis()));
             aiBo.setAnswerText(toAnswerText(item.getAnswerContent()));
             aiBo.setFullScore(ObjectUtil.defaultIfNull(item.getFullScore(), BigDecimal.ZERO));
+            aiBos.add(aiBo);
+        }
 
-            MarkAiResult result;
-            try {
-                result = markAiService.judge(aiBo);
-            } catch (Exception e) {
-                log.warn("AI 预评异常 itemId={}, {}", item.getId(), e.getMessage());
-                result = MarkAiResult.fail(e.getMessage());
-            }
+        List<MarkAiResult> results;
+        try {
+            results = markAiService.judgeBatch(aiBos);
+        } catch (Exception e) {
+            log.warn("AI 批量预评失败 taskId={}, {}", taskId, e.getMessage());
+            results = List.of();
+        }
+
+        for (int i = 0; i < items.size(); i++) {
+            MarkItem item = items.get(i);
+            MarkAiResult result = i < results.size() ? results.get(i) : MarkAiResult.fail("AI 未返回该条结果");
             item.setAiTime(now);
             if (ObjectUtil.isNotNull(result) && Boolean.TRUE.equals(result.getSuccess()) && ObjectUtil.isNotNull(result.getScore())) {
                 BigDecimal full = ObjectUtil.defaultIfNull(item.getFullScore(), BigDecimal.ZERO);

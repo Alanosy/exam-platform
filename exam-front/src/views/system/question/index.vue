@@ -58,6 +58,10 @@
           <el-col :span="1.5">
             <el-button type="warning" plain icon="Download" @click="handleExport" v-hasPermi="['system:question:export']">导出</el-button>
           </el-col>
+          <el-col :span="1.5">
+            <!-- AI 出题：服务不可用时按钮保留，点了会明确提示未启动，而不是静默失败 -->
+            <el-button type="primary" plain icon="MagicStick" @click="aiGenVisible = true" v-hasPermi="['system:question:add']">AI 出题</el-button>
+          </el-col>
           <right-toolbar v-model:showSearch="showSearch" @queryTable="getList"></right-toolbar>
         </el-row>
       </template>
@@ -161,6 +165,9 @@
         </div>
       </template>
     </el-dialog>
+
+    <!-- AI 出题：生成结果可逐题编辑后再入库，AI 不直接写题库 -->
+    <ai-generate-drawer v-model="aiGenVisible" :bank-list="bankList" :default-bank-id="queryParams.bankId" @saved="getList" />
   </div>
 </template>
 
@@ -172,6 +179,7 @@ import { listBank } from '@/api/system/bank';
 import { BankVO } from '@/api/system/bank/types';
 import { globalHeaders } from '@/utils/request';
 import { useQuestionDicts } from './useQuestionDict';
+import AiGenerateDrawer from './AiGenerateDrawer.vue';
 
 const { proxy } = getCurrentInstance() as ComponentInternalInstance;
 const router = useRouter();
@@ -198,6 +206,8 @@ const multiple = ref(true);
 const total = ref(0);
 
 const queryFormRef = ref<ElFormInstance>();
+/** AI 出题抽屉 */
+const aiGenVisible = ref(false);
 const uploadRef = ref<ElUploadInstance>();
 
 /** 试题导入参数 */

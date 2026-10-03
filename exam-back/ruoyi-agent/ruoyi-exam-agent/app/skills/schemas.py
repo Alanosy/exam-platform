@@ -123,6 +123,7 @@ class QuestionAuditInput(BaseModel):
     answer: str | None = None
     analysis: str | None = None
     rag_context: str = ""
+    focus: str = "全面审查"
 
 
 class AuditIssue(BaseModel):

@@ -141,6 +141,12 @@
             <artifactId>ruoyi-api-exam-practice</artifactId>
         </dependency>
 
+        <!-- AI 主观题预评（Dubbo 调 ruoyi-exam-ai，底层是 Python agent） -->
+        <dependency>
+            <groupId>org.dromara</groupId>
+            <artifactId>ruoyi-api-exam-ai</artifactId>
+        </dependency>
+
     </dependencies>
 
     <build>

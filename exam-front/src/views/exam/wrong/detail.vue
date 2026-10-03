@@ -13,6 +13,7 @@
           <div class="flex items-center gap-2">
             <!-- 有来源筛选时给个出口，否则「是真没有」还是「被条件筛没了」分不清 -->
             <el-button v-if="sourceId" plain @click="viewAllSources">查看全部来源</el-button>
+            <el-button plain icon="MagicStick" :disabled="total === 0" @click="aiVisible = true">AI 诊断</el-button>
             <el-button plain icon="RefreshRight" :disabled="total === 0" @click="practiceAll">一键重刷</el-button>
             <el-button plain icon="Refresh" @click="getList">刷新</el-button>
           </div>
@@ -82,6 +83,9 @@
 
       <el-empty v-if="!loading && total === 0" description="这个来源下没有错题" />
     </el-card>
+
+    <!-- AI 错题诊断：只读结论，不动错题数据 -->
+    <ai-diagnose-drawer v-model="aiVisible" :wrong-items="aiWrongItems" :mastered="aiMastered" />
   </div>
 </template>
 
@@ -89,6 +93,8 @@
 import { getWrongList, masterWrong, ignoreWrong, restoreWrong } from '@/api/exam/wrong';
 import type { WrongQuestionVO, WrongQuestionQuery } from '@/api/exam/wrong/types';
 import { useExamDicts } from '@/hooks/useExamDicts';
+import type { AiWrongItem } from '@/api/system/ai/types';
+import AiDiagnoseDrawer from './AiDiagnoseDrawer.vue';
 
 const route = useRoute();
 const router = useRouter();
@@ -106,6 +112,23 @@ const examType = ref('');
 const sourceName = ref('');
 
 const queryParams = ref<WrongQuestionQuery>({ pageNum: 1, pageSize: 10, includeIgnored: false });
+
+/** AI 诊断抽屉 */
+const aiVisible = ref(false);
+/** 错题转诊断入参：题干脱标签，知识点暂缺（题库还没打标），AI 从题干推断 */
+const aiWrongItems = computed<AiWrongItem[]>(() =>
+  list.value.map((row) => ({
+    questionId: String(row.questionId ?? ''),
+    questionType: row.questionType,
+    stem: plainText(row.title),
+    knowledgePoints: [],
+    answerText: '',
+    standardAnswer: row.standardAnswerText || row.standardAnswer,
+    wrongCount: row.wrongCount
+  }))
+);
+/** 已掌握的题不参与归因，避免把「会的」算成薄弱点 */
+const aiMastered = computed<string[]>(() => []);
 
 /**
  * 来源ID 只有合法正整数才作为过滤条件。

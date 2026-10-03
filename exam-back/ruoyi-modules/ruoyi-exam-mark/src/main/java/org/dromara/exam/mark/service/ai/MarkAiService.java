@@ -13,6 +13,9 @@ package org.dromara.exam.mark.service.ai;
  * @author ruoyi
  * @date 2026-10-01
  */
+import java.util.ArrayList;
+import java.util.List;
+
 public interface MarkAiService {
 
     /**
@@ -29,4 +32,25 @@ public interface MarkAiService {
      * @return 建议分与理由，失败时 success 为 false
      */
     MarkAiResult judge(MarkAiBo bo);
+
+    /**
+     * 批量评估主观题
+     *
+     * <p>默认实现是逐题调 {@link #judge}，串行等待。接了真实模型的实现
+     * （RemoteMarkAiServiceImpl）会覆写成一次批量提交——一场考试 200 份卷
+     * × 5 道主观题就是 1000 次调用，串行会把教师等到超时。
+     *
+     * @param bos 判分材料，按此顺序返回结果
+     * @return 与入参等长同序的结果，绝不返回 null
+     */
+    default List<MarkAiResult> judgeBatch(List<MarkAiBo> bos) {
+        List<MarkAiResult> out = new ArrayList<>();
+        if (bos == null) {
+            return out;
+        }
+        for (MarkAiBo bo : bos) {
+            out.add(judge(bo));
+        }
+        return out;
+    }
 }

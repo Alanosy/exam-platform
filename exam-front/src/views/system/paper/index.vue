@@ -48,6 +48,9 @@
           <el-col :span="1.5">
             <el-button type="warning" plain icon="Download" @click="handleExport" v-hasPermi="['system:paper:export']">导出</el-button>
           </el-col>
+          <el-col :span="1.5">
+            <el-button type="primary" plain icon="MagicStick" :disabled="single" @click="handleAiReview" v-hasPermi="['system:paper:edit']">AI 审查</el-button>
+          </el-col>
           <right-toolbar v-model:showSearch="showSearch" @queryTable="getList"></right-toolbar>
         </el-row>
       </template>
@@ -103,6 +106,9 @@
 
       <pagination v-show="total > 0" :total="total" v-model:page="queryParams.pageNum" v-model:limit="queryParams.pageSize" @pagination="getList" />
     </el-card>
+
+    <!-- AI 试卷审查：只读结论，不改动试卷 -->
+    <ai-review-drawer v-model="aiReviewVisible" :paper-id="reviewPaperId" :paper-name="reviewPaperName" />
   </div>
 </template>
 
@@ -110,6 +116,7 @@
 import { useRouter } from 'vue-router';
 import { listPaper, delPaper } from '@/api/system/paper';
 import { PaperVO, PaperQuery } from '@/api/system/paper/types';
+import AiReviewDrawer from './AiReviewDrawer.vue';
 
 type Option = { label: string; value: string };
 
@@ -150,6 +157,11 @@ const multiple = ref(true);
 const total = ref(0);
 
 const queryFormRef = ref<ElFormInstance>();
+
+/** AI 审查抽屉 */
+const aiReviewVisible = ref(false);
+const reviewPaperId = ref<string | number>();
+const reviewPaperName = ref('');
 
 const queryParams = ref<PaperQuery>({
   pageNum: 1,
@@ -207,6 +219,14 @@ const handleDelete = async (row?: PaperVO) => {
   await delPaper(_ids);
   proxy?.$modal.msgSuccess('删除成功');
   await getList();
+};
+
+/** AI 审查按钮操作：取当前选中行，审查在抽屉里按需触发 */
+const handleAiReview = () => {
+  const row = paperList.value.find((item) => item.id === ids.value[0]);
+  reviewPaperId.value = row?.id;
+  reviewPaperName.value = row?.paperName ?? '';
+  aiReviewVisible.value = true;
 };
 
 /** 导出按钮操作 */

@@ -12,7 +12,9 @@
           </div>
           <div class="flex items-center gap-2">
             <el-button plain icon="View" @click="logVisible = true">阅卷日志</el-button>
-            <el-button plain icon="MagicStick" :loading="aiLoading" @click="handleAiPreview">AI 预评</el-button>
+            <el-tooltip :disabled="aiEnabled" content="AI 服务不可用，请检查 ruoyi-exam-agent 是否已启动" placement="top">
+              <el-button plain icon="MagicStick" :loading="aiLoading" :disabled="!aiEnabled" @click="handleAiPreview">AI 预评</el-button>
+            </el-tooltip>
             <el-button type="primary" :loading="finishing" :disabled="questions.length === 0" @click="handleFinish"> 完成阅卷 </el-button>
           </div>
         </div>
@@ -141,6 +143,7 @@
 import '@vueup/vue-quill/dist/vue-quill.snow.css';
 import { getMarkQuestions, getMarkLogs, saveMarkScore, finishMarkTask, aiPreviewMarkTask } from '@/api/system/mark';
 import type { MarkQuestionVO, MarkLogVO, MarkScoreForm } from '@/api/system/mark/types';
+import { getAiEnabled } from '@/api/system/ai';
 import { useExamDicts } from '@/hooks/useExamDicts';
 import { formatAnswer } from '@/utils/answer';
 
@@ -154,6 +157,8 @@ const { proxy } = getCurrentInstance() as ComponentInternalInstance;
 const loading = ref(true);
 const finishing = ref(false);
 const aiLoading = ref(false);
+/** AI 服务可用性：不可用时直接置灰按钮，别让教师点了才知道不通 */
+const aiEnabled = ref(false);
 const logVisible = ref(false);
 const logLoading = ref(false);
 
@@ -320,12 +325,22 @@ watch(logVisible, (visible) => {
   if (visible) loadLogs();
 });
 
+const loadAiEnabled = async () => {
+  try {
+    const res = await getAiEnabled();
+    aiEnabled.value = res.data?.enabled === true;
+  } catch {
+    aiEnabled.value = false;
+  }
+};
+
 onMounted(() => {
   const q = route.query;
   taskId.value = String(q.taskId ?? '');
   examName.value = String(q.examName ?? '');
   userName.value = String(q.userName ?? '');
   loadQuestions();
+  loadAiEnabled();
 });
 </script>
 
