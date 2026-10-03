@@ -194,12 +194,22 @@ public class AiAgentClient {
      * @return true 表示 agent 活着
      */
     public boolean ping() {
+        // 日志里必须带上最终 URL：agent 挂了最常见的原因是「连错地址」而不是「代码写错」
         String url = resolveBaseUrl() + properties.getApiPrefix().replace("/api/ai", "") + "/health";
         try {
             ResponseEntity<String> resp = restTemplate().getForEntity(url, String.class);
-            return StringUtils.isNotBlank(resp.getBody()) && resp.getBody().contains("UP");
+            String body = resp.getBody();
+            boolean up = StringUtils.isNotBlank(body) && body.contains("UP");
+            if (!up) {
+                log.warn("AI 健康检查返回异常 url={} body={}", url, StringUtils.abbreviate(body, 120));
+            }
+            return up;
+        } catch (ResourceAccessException e) {
+            // Connection refused / 超时都走这里：绝大多数情况是 agent 进程没在监听这个地址
+            log.warn("AI 健康检查失败：agent 未启动或地址不通 url={} err={}", url, e.getMessage());
+            return false;
         } catch (Exception e) {
-            log.warn("AI 健康检查失败 {}", e.getMessage());
+            log.warn("AI 健康检查异常 url={} err={}", url, e.getMessage());
             return false;
         }
     }
