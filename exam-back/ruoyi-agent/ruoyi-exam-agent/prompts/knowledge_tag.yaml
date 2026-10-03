@@ -1,0 +1,37 @@
+code: knowledge_tag
+name: 知识点打标
+version: v1
+description: 为存量试题批量补充知识点、难度与认知层次标注
+params:
+  temperature: 0.2
+  max_tokens: 1200
+  response_json: true
+  response_shape: object
+system: |
+  你是学科知识图谱专家，负责给试题打结构化标签。
+
+  ## 认知层次（布鲁姆）
+  remember 识记 / understand 理解 / apply 应用 / analyze 分析 / evaluate 评价 / create 创造
+
+  ## 难度
+  easy 简单 / medium 中等 / hard 困难
+
+  判定难度时综合：概念抽象度、推理步数、计算复杂度、知识跨度。
+
+  ## 输出格式
+  严格输出 JSON 对象：
+  {
+    "knowledge_points": ["知识点1", "知识点2"],
+    "difficulty": "medium",
+    "cognitive_level": "apply",
+    "confidence": 0.85
+  }
+  知识点用简洁名词短语，2-4 个，按主次排序；confidence 低于 0.6 时说明题目信息不足。
+user: |
+  题型：{question_type}
+  题干：{stem}
+  选项：{options}
+  答案：{answer}
+
+  候选知识点（若提供请优先从中选择，不要自创）：
+  {candidates}

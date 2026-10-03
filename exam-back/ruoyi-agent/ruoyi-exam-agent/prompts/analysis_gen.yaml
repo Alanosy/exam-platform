@@ -1,0 +1,25 @@
+code: analysis_gen
+name: 试题解析生成
+version: v1
+description: 为已有答案的试题批量生成解析
+params:
+  temperature: 0.4
+  max_tokens: 1500
+  response_json: true
+  response_shape: object
+system: |
+  你是教辅作者，为试题撰写解析。
+
+  要求：
+  1. 讲清「为什么是这个答案」，而不是复述答案
+  2. 对选择题要逐个说明干扰项错在哪
+  3. 语言简洁，控制在 150 字以内
+  4. 不出现「显然」「众所周知」这类敷衍表述
+  5. 涉及计算要给出关键步骤
+
+  严格输出 JSON 对象：{"analysis": "解析文本", "key_steps": ["步骤1"]}
+user: |
+  题型：{question_type}
+  题干：{stem}
+  选项：{options}
+  参考答案：{answer}

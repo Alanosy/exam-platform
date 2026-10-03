@@ -1,0 +1,150 @@
+"""工具清单
+
+每个工具对应 Java 侧的一项业务能力（最终落到 Remote*Service）。
+Agent 在 ReAct / Plan-and-Execute 循环里调用它们。
+"""
+
+from __future__ import annotations
+
+from app.tools.base import READ, WRITE, ToolSpec
+
+TOOLS: dict[str, ToolSpec] = {
+    # ---------------- 题库 ----------------
+    "search_questions": ToolSpec(
+        code="search_questions",
+        name="检索试题",
+        description="按知识点/题型/难度/关键词检索题库中的试题",
+        path="/api/exam-tool/question/search",
+        risk_level=READ,
+        params={"bank_id": "str?", "question_type": "str?", "difficulty": "str?", "keyword": "str?", "limit": "int=20"},
+    ),
+    "get_question": ToolSpec(
+        code="get_question",
+        name="查询单题",
+        description="按 ID 查询试题详情（含选项与答案）",
+        path="/api/exam-tool/question/get",
+        risk_level=READ,
+        params={"question_id": "str"},
+    ),
+    "save_question": ToolSpec(
+        code="save_question",
+        name="保存试题",
+        description="把 AI 生成的试题写入题库（草稿态，需人工审核）",
+        path="/api/exam-tool/question/save",
+        risk_level=WRITE,
+        params={"question": "object"},
+    ),
+    # ---------------- 试卷 ----------------
+    "get_paper": ToolSpec(
+        code="get_paper",
+        name="查询试卷",
+        description="按 ID 查询试卷与题目清单",
+        path="/api/exam-tool/paper/get",
+        risk_level=READ,
+        params={"paper_id": "str"},
+    ),
+    "add_paper_questions": ToolSpec(
+        code="add_paper_questions",
+        name="试卷加题",
+        description="向试卷加入题目",
+        path="/api/exam-tool/paper/add-questions",
+        risk_level=WRITE,
+        params={"paper_id": "str", "question_ids": "list[str]"},
+    ),
+    # ---------------- 考试 ----------------
+    "get_exam": ToolSpec(
+        code="get_exam",
+        name="查询考试",
+        description="按 ID 查询考试配置（含防作弊配置）",
+        path="/api/exam-tool/exam/get",
+        risk_level=READ,
+        params={"exam_id": "str"},
+    ),
+    "publish_exam": ToolSpec(
+        code="publish_exam",
+        name="发布考试",
+        description="发布考试（高危：考生可见，必须人工确认）",
+        path="/api/exam-tool/exam/publish",
+        risk_level=WRITE,
+        params={"exam_id": "str"},
+    ),
+    # ---------------- 阅卷 ----------------
+    "list_pending_mark": ToolSpec(
+        code="list_pending_mark",
+        name="待阅清单",
+        description="列出某场考试待阅的主观题明细",
+        path="/api/exam-tool/mark/list-pending",
+        risk_level=READ,
+        params={"exam_id": "str", "limit": "int=50"},
+    ),
+    "get_mark_item": ToolSpec(
+        code="get_mark_item",
+        name="阅卷明细",
+        description="查询单条阅卷明细（题干、参考答案、考生作答）",
+        path="/api/exam-tool/mark/get-item",
+        risk_level=READ,
+        params={"item_id": "str"},
+    ),
+    "submit_mark_score": ToolSpec(
+        code="submit_mark_score",
+        name="提交分数",
+        description="写入最终分数（高危：直接影响考生成绩，必须人工确认）",
+        path="/api/exam-tool/mark/submit-score",
+        risk_level=WRITE,
+        params={"item_id": "str", "score": "number", "comment": "str?"},
+    ),
+    "save_ai_score": ToolSpec(
+        code="save_ai_score",
+        name="保存 AI 建议分",
+        description="写入 AI 建议分（不覆盖人工分，落 ai_score 字段）",
+        path="/api/exam-tool/mark/save-ai-score",
+        risk_level=WRITE,
+        params={"item_id": "str", "ai_score": "number", "ai_reason": "str", "ai_model": "str"},
+    ),
+    # ---------------- 统计 ----------------
+    "exam_stats": ToolSpec(
+        code="exam_stats",
+        name="考试统计",
+        description="查询某场考试的参考人数、平均分、及格率等",
+        path="/api/exam-tool/stat/exam",
+        risk_level=READ,
+        params={"exam_id": "str"},
+    ),
+    "question_stats": ToolSpec(
+        code="question_stats",
+        name="题目统计",
+        description="查询某道题的正确率与作答分布",
+        path="/api/exam-tool/stat/question",
+        risk_level=READ,
+        params={"question_id": "str", "exam_id": "str?"},
+    ),
+    # ---------------- 练习 ----------------
+    "list_wrong_questions": ToolSpec(
+        code="list_wrong_questions",
+        name="错题列表",
+        description="查询某考生的错题本",
+        path="/api/exam-tool/practice/wrong-list",
+        risk_level=READ,
+        params={"user_id": "str", "limit": "int=50"},
+    ),
+    # ---------------- 监考 ----------------
+    "list_proctor_events": ToolSpec(
+        code="list_proctor_events",
+        name="监考事件",
+        description="查询某场考试/某考生的监考事件时序",
+        path="/api/exam-tool/proctor/events",
+        risk_level=READ,
+        params={"exam_id": "str", "user_id": "str?"},
+    ),
+}
+
+
+def get_tool(code: str) -> ToolSpec | None:
+    return TOOLS.get(code)
+
+
+def list_tools() -> list[dict[str, object]]:
+    return [t.info() for t in TOOLS.values()]
+
+
+__all__ = ["TOOLS", "get_tool", "list_tools", "READ", "WRITE"]

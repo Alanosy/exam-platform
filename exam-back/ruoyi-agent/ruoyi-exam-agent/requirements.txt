@@ -1,28 +1,23 @@
-# Web 框架
+# ---- Web 框架 ----
 fastapi==0.115.0
 uvicorn[standard]==0.30.6
 
-# 配置
+# ---- 配置 / 校验 ----
 pydantic==2.9.2
 pydantic-settings==2.5.2
+PyYAML==6.0.2
 
-# LLM 编排
-langchain==0.3.1
-langchain-core==0.3.1
-langchain-openai==0.2.1
-langchain-community==0.3.1
-
-# RAG 向量库（按需启用）
-chromadb==0.5.5
-
-# Nacos 注册
-nacos-sdk-python==0.1.14
-
-# Redis 缓存
-redis==5.0.8
-
-# HTTP 客户端（回调 Java 网关）
+# ---- HTTP 客户端（LLM 调用 + Java 网关回调）----
 httpx==0.27.2
 
-# Embedding（按需）
-sentence-transformers==3.0.1
+# ---- Nacos 服务注册 ----
+nacos-sdk-python==0.1.14
+
+# ---- 模型配置源：MySQL 只读 ai_model_config（可选，失败自动降级）----
+pymysql==1.1.0
+
+# ---- 记忆层：Redis（可选，未安装/连不上自动降级为内存）----
+redis==5.0.8
+
+# 说明：LLM 调用直接用 OpenAI 兼容协议（httpx），不依赖 langchain，
+# 避免版本地狱与体积膨胀。RAG 向量库为可选依赖，见 requirements-rag.txt。

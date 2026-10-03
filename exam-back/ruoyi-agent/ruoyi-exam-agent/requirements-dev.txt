@@ -1,0 +1,4 @@
+# ---- 测试（仅开发用，生产镜像不装）----
+pytest==8.3.3
+pytest-asyncio==0.24.0
+# FastAPI TestClient 基于 httpx，主依赖里已有
