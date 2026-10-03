@@ -94,12 +94,16 @@ def _normalize(data: Any, expect: type | None) -> Any:
         if isinstance(data, list):
             return data
         if isinstance(data, dict):
-            # 模型常返回 {"questions": [...]} 这种包一层的形式
+            # 1. 模型常返回 {"questions": [...]} 这种包一层的形式
             for key in ("data", "items", "list", "questions", "results", "answer"):
                 v = data.get(key)
                 if isinstance(v, list):
                     return v
-            # 只有 value 是 list 就取它
+            # 2. 单题场景：模型直接返回一个题目对象 {stem, options, answer, ...}
+            #    用题目特征字段判断，避免误取到 options 这种子列表
+            if any(k in data for k in ("stem", "answer", "question_type")):
+                return [data]
+            # 3. 兜底：取第一个 list 类型的 value
             for v in data.values():
                 if isinstance(v, list):
                     return v
