@@ -35,19 +35,21 @@ public interface RemoteQuestionService {
      * <p>关键词为空时返回全部（受 limit 限制）。返回里带题目数量，
      * 便于调用方在「多个命中」时给出更有信息量的选择列表。
      *
-     * @param keyword 题库名称关键词，为空查全部
-     * @param limit   返回条数上限，小于 1 按 20 算
+     * @param keyword  题库名称关键词，为空查全部
+     * @param limit    返回条数上限，小于 1 按 20 算
+     * @param tenantId 租户ID，Dubbo 调用没有登录上下文，必须显式传入
      * @return 题库列表，永远非空（无数据时为空 List）
      */
-    List<RemoteQuestionBankVo> listBanks(String keyword, Integer limit);
+    List<RemoteQuestionBankVo> listBanks(String keyword, Integer limit, String tenantId);
 
     /**
      * 新建题库
      *
      * @param bankName 题库名称
+     * @param tenantId 租户ID，Dubbo 调用没有登录上下文，必须显式传入
      * @return 新建题库ID，失败返回 null
      */
-    Long createBank(String bankName);
+    Long createBank(String bankName, String tenantId);
 
     /**
      * 按条件检索试题

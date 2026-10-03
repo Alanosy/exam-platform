@@ -7,6 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.dubbo.config.annotation.DubboService;
 import org.dromara.common.core.utils.MapstructUtils;
 import org.dromara.common.core.utils.StringUtils;
+import org.dromara.common.tenant.helper.TenantHelper;
 import org.dromara.exam.manage.api.RemoteExamService;
 import org.dromara.exam.manage.api.domain.RemoteExamInviteVo;
 import org.dromara.exam.manage.api.domain.RemoteExamVo;
@@ -78,7 +79,15 @@ public class RemoteExamServiceImpl implements RemoteExamService {
      * 按名称关键词模糊查询考试（AI 对话定位「某某考卷」用）
      */
     @Override
-    public List<RemoteExamVo> searchExams(String keyword, Integer limit) {
+    public List<RemoteExamVo> searchExams(String keyword, Integer limit, String tenantId) {
+        // Dubbo 调用没有登录上下文，租户隔离靠调用方传入的 tenantId 临时切租户
+        if (StringUtils.isBlank(tenantId)) {
+            return List.of();
+        }
+        return TenantHelper.dynamic(tenantId, () -> doSearchExams(keyword, limit));
+    }
+
+    private List<RemoteExamVo> doSearchExams(String keyword, Integer limit) {
         int size = (limit == null || limit < 1) ? 10 : Math.min(limit, 50);
         List<Exam> exams = examMapper.selectList(
             Wrappers.lambdaQuery(Exam.class)

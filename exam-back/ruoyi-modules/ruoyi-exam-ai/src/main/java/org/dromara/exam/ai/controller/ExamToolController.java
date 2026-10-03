@@ -86,6 +86,7 @@ public class ExamToolController {
     @PostMapping("/bank/list")
     public R<Map<String, Object>> bankList(
         @RequestHeader(value = "X-Agent-Token", required = false) String token,
+        @RequestHeader(value = "X-Tenant-Id", required = false) String tenantId,
         @RequestBody(required = false) Map<String, Object> body
     ) {
         if (!checkToken(token)) {
@@ -94,7 +95,7 @@ public class ExamToolController {
         Map<String, Object> params = body == null ? new HashMap<>() : body;
         String keyword = str(params.get("keyword"));
         Integer limit = intValue(params.get("limit"), 20);
-        List<RemoteQuestionBankVo> banks = remoteQuestionService.listBanks(keyword, limit);
+        List<RemoteQuestionBankVo> banks = remoteQuestionService.listBanks(keyword, limit, tenantId);
         List<Map<String, Object>> items = new ArrayList<>(banks.size());
         for (RemoteQuestionBankVo bank : banks) {
             Map<String, Object> item = new LinkedHashMap<>();
@@ -113,6 +114,7 @@ public class ExamToolController {
     @PostMapping("/bank/create")
     public R<Map<String, Object>> bankCreate(
         @RequestHeader(value = "X-Agent-Token", required = false) String token,
+        @RequestHeader(value = "X-Tenant-Id", required = false) String tenantId,
         @RequestBody(required = false) Map<String, Object> body
     ) {
         if (!checkToken(token)) {
@@ -120,7 +122,7 @@ public class ExamToolController {
         }
         Map<String, Object> params = body == null ? new HashMap<>() : body;
         String bankName = str(params.get("bankName"));
-        Long id = remoteQuestionService.createBank(bankName);
+        Long id = remoteQuestionService.createBank(bankName, tenantId);
         if (id == null) {
             return R.fail("题库创建失败");
         }
@@ -138,6 +140,7 @@ public class ExamToolController {
     @PostMapping("/question/search")
     public R<Map<String, Object>> questionSearch(
         @RequestHeader(value = "X-Agent-Token", required = false) String token,
+        @RequestHeader(value = "X-Tenant-Id", required = false) String tenantId,
         @RequestBody(required = false) Map<String, Object> body
     ) {
         if (!checkToken(token)) {
@@ -150,6 +153,7 @@ public class ExamToolController {
         bo.setQuestionType(str(params.get("questionType")));
         bo.setDifficulty(str(params.get("difficulty")));
         bo.setLimit(intValue(params.get("limit"), 20));
+        bo.setTenantId(tenantId);
         List<RemoteQuestionVo> questions = remoteQuestionService.searchQuestions(bo);
         List<Map<String, Object>> items = new ArrayList<>(questions.size());
         for (RemoteQuestionVo q : questions) {
@@ -169,6 +173,7 @@ public class ExamToolController {
     @PostMapping("/question/save-batch")
     public R<Map<String, Object>> questionSaveBatch(
         @RequestHeader(value = "X-Agent-Token", required = false) String token,
+        @RequestHeader(value = "X-Tenant-Id", required = false) String tenantId,
         @RequestBody(required = false) Map<String, Object> body
     ) {
         if (!checkToken(token)) {
@@ -183,6 +188,9 @@ public class ExamToolController {
         // 创建人跟随当前对话用户：question.create_user 是 NOT NULL，
         // 不传就只能由服务端兜底成管理员，试题会挂到别人名下
         bo.setCreateUser(longValue(body.get("createUser")));
+        // 租户隔离：Dubbo 调用没有登录上下文，tenant_id 必须由调用方显式传入，
+        // 否则写进去的题用户在自己的库里看不到
+        bo.setTenantId(tenantId);
         bo.setQuestions(toSaveItems(body.get("questions")));
         List<Long> ids = remoteQuestionService.saveQuestions(bo);
         Map<String, Object> data = new LinkedHashMap<>();
@@ -201,13 +209,14 @@ public class ExamToolController {
     @PostMapping("/exam/find")
     public R<Map<String, Object>> examFind(
         @RequestHeader(value = "X-Agent-Token", required = false) String token,
+        @RequestHeader(value = "X-Tenant-Id", required = false) String tenantId,
         @RequestBody(required = false) Map<String, Object> body
     ) {
         if (!checkToken(token)) {
             return R.fail(403, "令牌无效");
         }
         Map<String, Object> params = body == null ? new HashMap<>() : body;
-        List<RemoteExamVo> exams = remoteExamService.searchExams(str(params.get("keyword")), intValue(params.get("limit"), 10));
+        List<RemoteExamVo> exams = remoteExamService.searchExams(str(params.get("keyword")), intValue(params.get("limit"), 10), tenantId);
         List<Map<String, Object>> items = new ArrayList<>(exams.size());
         for (RemoteExamVo exam : exams) {
             Map<String, Object> item = new LinkedHashMap<>();
@@ -232,6 +241,7 @@ public class ExamToolController {
     @PostMapping("/resolve")
     public R<Map<String, Object>> resolve(
         @RequestHeader(value = "X-Agent-Token", required = false) String token,
+        @RequestHeader(value = "X-Tenant-Id", required = false) String tenantId,
         @RequestBody(required = false) Map<String, Object> body
     ) {
         if (!checkToken(token)) {
@@ -244,7 +254,7 @@ public class ExamToolController {
         List<Map<String, Object>> items = new ArrayList<>();
         switch (kind) {
             case "exam" -> {
-                for (RemoteExamVo exam : remoteExamService.searchExams(keyword, limit)) {
+                for (RemoteExamVo exam : remoteExamService.searchExams(keyword, limit, tenantId)) {
                     Map<String, Object> item = new LinkedHashMap<>();
                     item.put("id", String.valueOf(exam.getExamId()));
                     item.put("name", exam.getExamName());
@@ -254,7 +264,7 @@ public class ExamToolController {
                 }
             }
             case "bank" -> {
-                for (RemoteQuestionBankVo bank : remoteQuestionService.listBanks(keyword, limit)) {
+                for (RemoteQuestionBankVo bank : remoteQuestionService.listBanks(keyword, limit, tenantId)) {
                     Map<String, Object> item = new LinkedHashMap<>();
                     item.put("id", String.valueOf(bank.getId()));
                     item.put("name", bank.getName());

@@ -27,6 +27,9 @@ public class RemoteQuestionSaveBo implements Serializable {
     /** 创建人用户ID，为空时取调用方上下文 */
     private Long createUser;
 
+    /** 租户ID，Dubbo 调用没有登录上下文，必须由调用方显式传入 */
+    private String tenantId;
+
     /** 待保存的试题 */
     private List<RemoteQuestionSaveItem> questions;
 }

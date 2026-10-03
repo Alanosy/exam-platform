@@ -10,6 +10,7 @@ import org.apache.dubbo.config.annotation.DubboService;
 import org.dromara.common.core.utils.MapstructUtils;
 import org.dromara.common.core.utils.StringUtils;
 import org.dromara.common.satoken.utils.LoginHelper;
+import org.dromara.common.tenant.helper.TenantHelper;
 import org.dromara.exam.question.api.RemoteQuestionService;
 import org.dromara.exam.question.api.domain.RemoteQuestionBankVo;
 import org.dromara.exam.question.api.domain.RemoteQuestionOptionVo;
@@ -135,7 +136,16 @@ public class RemoteQuestionServiceImpl implements RemoteQuestionService {
      * 按名称关键词模糊查询题库（带题目数量）
      */
     @Override
-    public List<RemoteQuestionBankVo> listBanks(String keyword, Integer limit) {
+    public List<RemoteQuestionBankVo> listBanks(String keyword, Integer limit, String tenantId) {
+        // Dubbo 调用没有登录上下文，租户隔离靠调用方传入的 tenantId 临时切租户；
+        // 不传就会查出所有租户的题库，用户在自己的库里看不到题就是这么来的。
+        if (StringUtils.isBlank(tenantId)) {
+            return List.of();
+        }
+        return TenantHelper.dynamic(tenantId, () -> doListBanks(keyword, limit));
+    }
+
+    private List<RemoteQuestionBankVo> doListBanks(String keyword, Integer limit) {
         int size = (limit == null || limit < 1) ? 20 : Math.min(limit, 100);
         List<QuestionBank> banks = questionBankMapper.selectList(
             Wrappers.lambdaQuery(QuestionBank.class)
@@ -164,10 +174,14 @@ public class RemoteQuestionServiceImpl implements RemoteQuestionService {
      * 而 Dubbo 调用没有登录上下文；这里直接落库并允许调用方指定创建人。
      */
     @Override
-    public Long createBank(String bankName) {
-        if (StringUtils.isBlank(bankName)) {
+    public Long createBank(String bankName, String tenantId) {
+        if (StringUtils.isBlank(bankName) || StringUtils.isBlank(tenantId)) {
             return null;
         }
+        return TenantHelper.dynamic(tenantId, () -> doCreateBank(bankName));
+    }
+
+    private Long doCreateBank(String bankName) {
         QuestionBank bank = new QuestionBank();
         bank.setBankName(bankName.trim());
         bank.setBankDesc("AI 助手自动创建");
@@ -205,9 +219,13 @@ public class RemoteQuestionServiceImpl implements RemoteQuestionService {
      */
     @Override
     public List<RemoteQuestionVo> searchQuestions(RemoteQuestionSearchBo bo) {
-        if (bo == null) {
+        if (bo == null || StringUtils.isBlank(bo.getTenantId())) {
             return List.of();
         }
+        return TenantHelper.dynamic(bo.getTenantId(), () -> doSearchQuestions(bo));
+    }
+
+    private List<RemoteQuestionVo> doSearchQuestions(RemoteQuestionSearchBo bo) {
         int size = (bo.getLimit() == null || bo.getLimit() < 1) ? 20 : Math.min(bo.getLimit(), 100);
         List<Question> questions = questionMapper.selectList(
             Wrappers.lambdaQuery(Question.class)
@@ -235,6 +253,16 @@ public class RemoteQuestionServiceImpl implements RemoteQuestionService {
         if (bo == null || ObjectUtil.isNull(bo.getBankId()) || CollUtil.isEmpty(bo.getQuestions())) {
             return List.of();
         }
+        // 租户隔离靠调用方传入的 tenantId 临时切租户；不传 tenantId 的话
+        // 写进去的题 tenant_id 为空，用户在自己的库里根本看不到。
+        if (StringUtils.isBlank(bo.getTenantId())) {
+            log.warn("AI 试题入库被拒绝：tenantId 为空，bankId={}", bo.getBankId());
+            return List.of();
+        }
+        return TenantHelper.dynamic(bo.getTenantId(), () -> doSaveQuestions(bo));
+    }
+
+    private List<Long> doSaveQuestions(RemoteQuestionSaveBo bo) {
         String status = StringUtils.defaultIfBlank(bo.getStatus(), "0");
         // question.create_user 同样是 NOT NULL：调用方没传就落到当前用户 / 管理员，
         // 否则整批试题都会因为一个空字段写不进去

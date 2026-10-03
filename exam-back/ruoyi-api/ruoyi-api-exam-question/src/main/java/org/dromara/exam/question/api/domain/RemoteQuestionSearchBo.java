@@ -31,4 +31,7 @@ public class RemoteQuestionSearchBo implements Serializable {
 
     /** 返回条数上限，默认 20 */
     private Integer limit = 20;
+
+    /** 租户ID，Dubbo 调用没有登录上下文，必须由调用方显式传入 */
+    private String tenantId;
 }
