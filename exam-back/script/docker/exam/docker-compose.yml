@@ -20,6 +20,9 @@
 #   docker compose up -d exam-manage exam-paper  # 只起某几个
 #   docker compose logs -f exam-question
 #   EXAM_TAG=v1.0.0 docker compose up -d
+#
+# 说明：这里只编排考试域的服务。网关 / 认证 / system 等框架自带服务的镜像
+#       同样由 build-images.sh 打（./build-images.sh core），按需加到这里即可。
 
 x-common: &exam-common
   restart: unless-stopped
