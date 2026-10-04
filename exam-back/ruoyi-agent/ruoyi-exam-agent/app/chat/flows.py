@@ -257,6 +257,13 @@ async def flow_question_create(
     # ---------- 3. 生成题目 ----------
     question_type = str(slots.get("question_type") or "SINGLE")
     difficulty = str(slots.get("difficulty") or "medium")
+    # extra 里放语言 / 阅读理解等「非标准题型」的出题风格指令，
+    # prompt 会据此决定输出语言和题目形式
+    extra: dict[str, Any] = {"topic": topic}
+    if slots.get("language"):
+        extra["language"] = slots["language"]
+    if slots.get("reading_comprehension"):
+        extra["reading_comprehension"] = True
     gen_payload = {
         "question_type": question_type,
         "difficulty": difficulty,
@@ -264,11 +271,12 @@ async def flow_question_create(
         "count": count,
         "score": float(slots.get("score") or 5),
         "rag_context": "",
-        "extra": {"topic": topic},
+        "extra": extra,
     }
     # 用户在确认卡上改了题型 / 难度才重新生成，否则复用上一轮结果，
-    # 避免「点个确认还要再等一次模型」这种毫无意义的等待
-    gen_key = f"{question_type}|{difficulty}|{count}|{topic}"
+    # 避免「点个确认还要再等一次模型」这种毫无意义的等待。
+    # 语言 / 阅读理解风格变了也要重新生成。
+    gen_key = f"{question_type}|{difficulty}|{count}|{topic}|{slots.get('language','')}|{slots.get('reading_comprehension','')}"
     questions = slots.get("__questions") if slots.get("__gen_key") == gen_key else None
     if questions:
         # 复用时也要给 step 赋值：下面统一往 step 上写预览，不赋值会踩 UnboundLocalError

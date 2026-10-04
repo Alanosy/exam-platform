@@ -64,11 +64,25 @@ _COUNT_PAT = re.compile(r"(\d+)\s*(?:道|个|条)")
 _CN_COUNT_PAT = re.compile(r"([一二两三四五六七八九十]+)\s*(?:道|个|条)")
 _CN_NUM = {"一": 1, "二": 2, "两": 2, "三": 3, "四": 4, "五": 5, "六": 6, "七": 7, "八": 8, "九": 9}
 _BANK_PAT = re.compile(r"([一-龥A-Za-z0-9]+?)\s*题库")
-_TOPIC_PAT = re.compile(r"(?:关于)?(.+?)(?:的|相关的)(?:题|题目|试题|单选题|多选题|判断题|填空题|简答题|知识点)")
+# 允许「关于X的Y题」中 Y 是修饰词（如「英语阅读理解」），
+# 用 [^的]+ 锁定 X 到第一个「的」为止，避免把修饰词吃进主题
+_TOPIC_PAT = re.compile(r"(?:关于)?([^的]+?)(?:的|相关的).*?(?:题|题目|试题|单选题|多选题|判断题|填空题|简答题|知识点)")
 _EXAM_PAT = re.compile(r"([一-龥A-Za-z0-9]+?)\s*(?:考卷|试卷|考试)")
 _TYPE_PAT = re.compile(r"(" + "|".join(sorted(TYPE_MAP, key=len, reverse=True)) + r")")
 _DIFF_PAT = re.compile(r"(" + "|".join(sorted(DIFFICULTY_MAP, key=len, reverse=True)) + r")")
 _STATUS_PAT = re.compile(r"(草稿|启用|发布|废弃)")
+
+# 语言：出题时按用户指定的语言生成题干和选项
+_LANG_MAP = {
+    "英语": "en", "英文": "en", "English": "en", "english": "en",
+    "中文": "zh", "汉语": "zh", "语文": "zh", "chinese": "zh",
+    "数学": "math",
+}
+_LANG_PAT = re.compile(r"(" + "|".join(sorted(_LANG_MAP, key=len, reverse=True)) + r")")
+
+# 「阅读理解」不是系统支持的独立题型（系统只有单选/多选/判断…），
+# 但用户提了就要认：把它作为出题风格指令放进 extra，让模型按「篇章+题目」的形式出
+_READING_PAT = re.compile(r"(阅读理解|阅读题|完形填空)")
 
 
 def detect_intent(text: str) -> str:
@@ -127,6 +141,15 @@ def extract_slots(text: str, intent: str) -> dict[str, Any]:
     m = _STATUS_PAT.search(text)
     if m:
         slots["status"] = STATUS_MAP.get(m.group(1), "0")
+
+    # 语言：用户说「英语题」「中文题」时，按指定语言生成
+    m = _LANG_PAT.search(text)
+    if m:
+        slots["language"] = _LANG_MAP.get(m.group(1), "")
+
+    # 阅读理解：系统没有独立的阅读理解题型，作为出题风格标记
+    if _READING_PAT.search(text):
+        slots["reading_comprehension"] = True
 
     # 出题场景：没写出题库名时，用主题当题库关键词去模糊匹配
     if intent == INTENT_QUESTION_CREATE:
