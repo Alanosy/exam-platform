@@ -2,18 +2,9 @@
 
 #### 友情提示
 
-> 1. 本项目已升级为微服务版本
-> 2. 文档地址: [exam-doc](https://doc.alan.org.cn)
-> 3. 如果本项目对你有帮助，欢迎点个 ⭐ Star 支持一下，非常感谢！
-> 4. **旧版（单体应用）已归档**：默认分支不再包含旧代码，需要请切换到 `archive/old-exam` 分支或 `old-exam-archive` 标签
->    ```bash
->    git checkout archive/old-exam        # 分支（可继续演进）
->    git checkout old-exam-archive        # 标签（归档时的不可变快照）
->    ```
->    **旧项目体验地址**：[旧项目体验地址](http://exam.alan.org.cn)
->    1. 管理员账号:admin 密码:123456
->    2. 教师账号:teacher 密码:123456
->    3. 学生账号:student 密码:123456
+> 1. 文档地址: [exam-doc](https://doc.alan.org.cn)
+> 2. 如果本项目对你有帮助，欢迎点个 ⭐ Star 支持一下，非常感谢！
+> 3. 项目处于持续开发中，部分功能仍在完善，遇到问题欢迎提 Issue
 
 #### 项目介绍
 
@@ -25,12 +16,12 @@
 
 「砚考」是一款开箱即用的在线考试系统，覆盖 **出题 → 组卷 → 考试 → 监考 → 阅卷 → 统计 → 发证 → 错题巩固** 的完整闭环，支持学生、教师、管理员三种角色。
 
-本仓库采用**单仓多模块（monorepo）**结构，`master` 分支**只维护新版微服务代码**：
+本仓库采用**单仓多模块（monorepo）**结构：
 
-- `exam-back/` + `exam-front/` —— 新版微服务，当前主力开发方向，**下文的「功能介绍」均指新版**
-- `old-exam/` —— 旧版单体应用（Spring Boot 2.x），**已归档**，不再出现在 `master` 分支，请到 `archive/old-exam` 分支 / `old-exam-archive` 标签查看（体验地址见顶部）
+- `exam-back/` —— 微服务后端，基于 [RuoYi-Cloud-Plus](https://gitee.com/dromara/RuoYi-Cloud-Plus) `2.6.2`
+- `exam-front/` —— 前端，基于 Vue3 + TypeScript + Element Plus + Vite
 
-新版基于 [RuoYi-Cloud-Plus](https://gitee.com/dromara/RuoYi-Cloud-Plus) `2.6.2` 重构，把考试业务拆成 10 个可独立部署的微服务（考试、题库、试卷、答题、阅卷、统计、证书、练习、监考、AI），服务间经 Nacos 注册发现、Dubbo 调用，网关统一鉴权限流。
+后端把考试业务拆成 10 个可独立部署的微服务（考试、题库、试卷、答题、阅卷、统计、证书、练习、监考、AI），服务间经 Nacos 注册发现、Dubbo 调用，网关统一鉴权限流。
 
 ##### 它把考试里几件麻烦事做实了
 
@@ -87,59 +78,47 @@ AI 能力正在接入中：Python Agent（`ruoyi-exam-agent`）已完成出题�
 
 ```
 exam-platform/
-├── exam-back/       # 新版：微服务后端（RuoYi-Cloud-Plus，开发中）
-├── exam-front/      # 新版：前端（Vue3 + TS + Element Plus，开发中）
+├── exam-back/       # 微服务后端（RuoYi-Cloud-Plus，开发中）
+├── exam-front/      # 前端（Vue3 + TS + Element Plus，开发中）
 ├── .gitignore
 ├── AGENTS.md
 ├── LICENSE
 └── README.md
 ```
 
-> 旧版 `old-exam/` 已从 `master` 移除并归档到 `archive/old-exam` 分支（标签 `old-exam-archive`），
-> 需要旧代码时切过去即可，两条线互不干扰。
-
 #### 开发环境
 
-| 工具  | 旧版 | 新版 | 下载                                                         |
-| ----- | ---- | ---- | ------------------------------------------------------------ |
-| JDK   | 17   | 17 / 21 | https://www.oracle.com/cn/java/technologies/downloads/ |
-| MySQL | 8    | 8    | https://dev.mysql.com/downloads/mysql/                       |
-| Redis | 7    | 7    | https://redis.io/download                                    |
-| Nacos | -    | 2.x  | https://nacos.io/                                            |
-| Node  | -    | 18+  | https://nodejs.org/                                          |
+| 工具  | 版本    | 下载                                                         |
+| ----- | ------- | ------------------------------------------------------------ |
+| JDK   | 17 / 21 | https://www.oracle.com/cn/java/technologies/downloads/        |
+| MySQL | 8       | https://dev.mysql.com/downloads/mysql/                       |
+| Redis | 7       | https://redis.io/download                                    |
+| Nacos | 2.x     | https://nacos.io/                                            |
+| Node  | 18+     | https://nodejs.org/                                          |
 
 #### 软件架构图
 
 ![Plus部署架构图](http://bucket.alan.org.cn/blog/2026/10/02/16-37-21-1a99c97a84b9df30782568688df1d715-3c95d5.png "Plus部署架构图.png")
 
-#### 版本说明 / 项目升级情况
+#### 技术架构
 
-本项目经历了一次架构升级：旧版单体应用**已归档**，主线只保留新版微服务。
+| 层级 | 位置           | 架构                       | 技术栈                                                       |
+| :--- | :------------- | :------------------------- | :----------------------------------------------------------- |
+| 后端 | `exam-back/`   | 微服务（RuoYi-Cloud-Plus） | Spring Boot 3.x + Spring Cloud + Nacos + Dubbo + Sa-Token + MyBatis-Plus + MySQL + Redis |
+| 前端 | `exam-front/`  | 单页应用（SPA）            | Vue3 + TypeScript + Element Plus + Vite + Pinia               |
 
-| 版本     | 位置                                                    | 状态             | 架构                       | 技术栈                                                       |
-| :------- | :------------------------------------------------------ | :--------------- | :------------------------- | :----------------------------------------------------------- |
-| **旧版** | `archive/old-exam` 分支 / `old-exam-archive` 标签       | 已上线，功能完整（归档维护） | 单体应用（Spring Boot）    | Spring Boot 2.x + MyBatis-Plus + Druid + Fastjson + EasyExcel |
-| **新版** | `exam-back/` + `exam-front/`（master）                  | 🚧 开发中         | 微服务（RuoYi-Cloud-Plus） | 后端：Spring Boot 3.x + Spring Cloud + Nacos + Dubbo + Sa-Token + MyBatis-Plus<br/>前端：Vue3 + TypeScript + Element Plus + Vite + Pinia |
+##### 后端（exam-back）
 
-> **升级背景**：旧版基于 Spring Boot 单体架构开发，随着业务增长，在扩展性、可维护性方面遇到瓶颈。新版基于开源框架 [RuoYi-Cloud-Plus](https://gitee.com/dromara/RuoYi-Cloud-Plus) 进行重构，采用微服务架构，将考试、试卷、题库、阅卷、统计等业务拆分为独立服务，便于独立部署与水平扩展。
->
-> **归档说明**：为了让新旧两条线互不干扰，`master` 分支已移除 `old-exam/` 目录。旧代码完整保存在
-> `archive/old-exam` 分支与 `old-exam-archive` 标签中（`git checkout archive/old-exam` 即可取回）。
-
-##### 旧版（old-exam，已归档）
-
-- 位置：`archive/old-exam` 分支（标签 `old-exam-archive`）
-- 单体 Spring Boot 应用，功能完整，已上线运行
-- 包含：用户/班级/试卷/题库/考试/阅卷/证书/统计/公告/讨论/AI 阅卷等模块
-- ⚠️ `master` 分支下已无此目录，请勿在 `master` 上寻找旧代码
-
-##### 新版（exam-back + exam-front）
-
-- 后端：`exam-back/` —— 基于 [RuoYi-Cloud-Plus](https://gitee.com/dromara/RuoYi-Cloud-Plus) `2.6.2` 的微服务后端
-- 前端：`exam-front/` —— 基于 Vue3 + TypeScript + Element Plus + Vite 的前端
-- 微服务模块划分：考试管理（exam-manage）、试卷服务（exam-paper）、答题服务（exam-answer）、阅卷服务（exam-mark）、统计服务（exam-stat）、证书服务（exam-cert）、AI 服务（exam-ai）等
+- 基于 [RuoYi-Cloud-Plus](https://gitee.com/dromara/RuoYi-Cloud-Plus) `2.6.2` 的微服务后端
+- 微服务模块划分：考试管理（exam-manage）、题库服务（exam-question）、试卷服务（exam-paper）、答题服务（exam-answer）、阅卷服务（exam-mark）、统计服务（exam-stat）、证书服务（exam-cert）、练习服务（exam-practice）、防作弊服务（exam-proctor）、AI 服务（exam-ai）
 - 基础设施：Nacos（注册/配置中心）、Spring Cloud Gateway（网关）、Dubbo（RPC）、Sentinel（限流熔断）、Seata（分布式事务）、Redis、MySQL
-- ⚠️ **注意**：新版仍在开发中，部分功能尚未完善
+- AI 能力：`ruoyi-agent/ruoyi-exam-agent`（Python Agent）提供出题、阅卷、推荐、试卷分析等能力，经 Java 侧 AI 网关对接
+
+##### 前端（exam-front）
+
+- 基于 Vue3 + TypeScript + Element Plus + Vite，状态管理用 Pinia
+- 按模块组织 `api` / `views` / `store`，菜单与按钮权限由后端驱动
+- ⚠️ **注意**：项目仍在开发中，部分功能尚未完善
 
 #### 联系方式
 
@@ -152,8 +131,6 @@ QQ群：群1:1034380536、群2:1098802068
 #### 最后
 
 本项目还在开发当中，存在着 bug 还请谅解，也希望你加入到我们一起开发该项目
-
-新版正在基于 RuoYi-Cloud-Plus 微服务框架进行重构升级
 
 #### 参与贡献
 
