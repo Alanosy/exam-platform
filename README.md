@@ -5,7 +5,12 @@
 > 1. 本项目已升级为微服务版本
 > 2. 文档地址: [exam-doc](https://doc.alan.org.cn)
 > 3. 如果本项目对你有帮助，欢迎点个 ⭐ Star 支持一下，非常感谢！
-> 4. 旧项目已迁移到old-exam文件夹中，**旧项目体验地址**：[旧项目体验地址](http://exam.alan.org.cn)
+> 4. **旧版（单体应用）已归档**：默认分支不再包含旧代码，需要请切换到 `archive/old-exam` 分支或 `old-exam-archive` 标签
+>    ```bash
+>    git checkout archive/old-exam        # 分支（可继续演进）
+>    git checkout old-exam-archive        # 标签（归档时的不可变快照）
+>    ```
+>    **旧项目体验地址**：[旧项目体验地址](http://exam.alan.org.cn)
 >    1. 管理员账号:admin 密码:123456
 >    2. 教师账号:teacher 密码:123456
 >    3. 学生账号:student 密码:123456
@@ -20,10 +25,10 @@
 
 「砚考」是一款开箱即用的在线考试系统，覆盖 **出题 → 组卷 → 考试 → 监考 → 阅卷 → 统计 → 发证 → 错题巩固** 的完整闭环，支持学生、教师、管理员三种角色。
 
-本仓库采用**单仓多模块（monorepo）**结构，同时保留两套代码：
+本仓库采用**单仓多模块（monorepo）**结构，`master` 分支**只维护新版微服务代码**：
 
-- `old-exam/` —— 旧版单体应用（Spring Boot 2.x），**功能完整、已上线**，体验地址见顶部
 - `exam-back/` + `exam-front/` —— 新版微服务，当前主力开发方向，**下文的「功能介绍」均指新版**
+- `old-exam/` —— 旧版单体应用（Spring Boot 2.x），**已归档**，不再出现在 `master` 分支，请到 `archive/old-exam` 分支 / `old-exam-archive` 标签查看（体验地址见顶部）
 
 新版基于 [RuoYi-Cloud-Plus](https://gitee.com/dromara/RuoYi-Cloud-Plus) `2.6.2` 重构，把考试业务拆成 10 个可独立部署的微服务（考试、题库、试卷、答题、阅卷、统计、证书、练习、监考、AI），服务间经 Nacos 注册发现、Dubbo 调用，网关统一鉴权限流。
 
@@ -82,13 +87,16 @@ AI 能力正在接入中：Python Agent（`ruoyi-exam-agent`）已完成出题�
 
 ```
 exam-platform/
-├── old-exam/        # 旧版：单体 Spring Boot 考试系统后端（已上线）
 ├── exam-back/       # 新版：微服务后端（RuoYi-Cloud-Plus，开发中）
 ├── exam-front/      # 新版：前端（Vue3 + TS + Element Plus，开发中）
 ├── .gitignore
+├── AGENTS.md
 ├── LICENSE
 └── README.md
 ```
+
+> 旧版 `old-exam/` 已从 `master` 移除并归档到 `archive/old-exam` 分支（标签 `old-exam-archive`），
+> 需要旧代码时切过去即可，两条线互不干扰。
 
 #### 开发环境
 
@@ -106,20 +114,24 @@ exam-platform/
 
 #### 版本说明 / 项目升级情况
 
-本项目经历了一次架构升级，目前仓库中同时保留了新旧两个版本：
+本项目经历了一次架构升级：旧版单体应用**已归档**，主线只保留新版微服务。
 
-| 版本     | 目录                         | 状态             | 架构                       | 技术栈                                                       |
-| :------- | :--------------------------- | :--------------- | :------------------------- | :----------------------------------------------------------- |
-| **旧版** | `old-exam/`                  | 已上线，功能完整 | 单体应用（Spring Boot）    | Spring Boot 2.x + MyBatis-Plus + Druid + Fastjson + EasyExcel |
-| **新版** | `exam-back/` + `exam-front/` | 🚧 开发中         | 微服务（RuoYi-Cloud-Plus） | 后端：Spring Boot 3.x + Spring Cloud + Nacos + Dubbo + Sa-Token + MyBatis-Plus<br/>前端：Vue3 + TypeScript + Element Plus + Vite + Pinia |
+| 版本     | 位置                                                    | 状态             | 架构                       | 技术栈                                                       |
+| :------- | :------------------------------------------------------ | :--------------- | :------------------------- | :----------------------------------------------------------- |
+| **旧版** | `archive/old-exam` 分支 / `old-exam-archive` 标签       | 已上线，功能完整（归档维护） | 单体应用（Spring Boot）    | Spring Boot 2.x + MyBatis-Plus + Druid + Fastjson + EasyExcel |
+| **新版** | `exam-back/` + `exam-front/`（master）                  | 🚧 开发中         | 微服务（RuoYi-Cloud-Plus） | 后端：Spring Boot 3.x + Spring Cloud + Nacos + Dubbo + Sa-Token + MyBatis-Plus<br/>前端：Vue3 + TypeScript + Element Plus + Vite + Pinia |
 
 > **升级背景**：旧版基于 Spring Boot 单体架构开发，随着业务增长，在扩展性、可维护性方面遇到瓶颈。新版基于开源框架 [RuoYi-Cloud-Plus](https://gitee.com/dromara/RuoYi-Cloud-Plus) 进行重构，采用微服务架构，将考试、试卷、题库、阅卷、统计等业务拆分为独立服务，便于独立部署与水平扩展。
+>
+> **归档说明**：为了让新旧两条线互不干扰，`master` 分支已移除 `old-exam/` 目录。旧代码完整保存在
+> `archive/old-exam` 分支与 `old-exam-archive` 标签中（`git checkout archive/old-exam` 即可取回）。
 
-##### 旧版（old-exam）
+##### 旧版（old-exam，已归档）
 
-- 路径：`old-exam/`
+- 位置：`archive/old-exam` 分支（标签 `old-exam-archive`）
 - 单体 Spring Boot 应用，功能完整，已上线运行
 - 包含：用户/班级/试卷/题库/考试/阅卷/证书/统计/公告/讨论/AI 阅卷等模块
+- ⚠️ `master` 分支下已无此目录，请勿在 `master` 上寻找旧代码
 
 ##### 新版（exam-back + exam-front）
 
