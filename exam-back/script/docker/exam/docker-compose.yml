@@ -1,0 +1,161 @@
+# 考试微服务编排（10 个考试服务 + Python 侧 AI Agent）
+#
+# 镜像来源：先用同级目录下的 build-images.sh 打出来
+#   TAG=v1.0.0 ./build-images.sh
+#
+# 前提：**基础设施（MySQL / Redis / Nacos）已经在宿主机上跑着**，
+# 启动它们的 compose 在上级目录：../docker-compose.yml
+#
+# 容器怎么访问宿主机上的基础设施：
+#   这里给每个服务加了 host.docker.internal -> host-gateway，
+#   Docker Desktop（macOS / Windows）原生支持，Linux 需要 Docker 20.10+。
+#   所以 Nacos 配置里的地址要写成能在容器里解析的形式，例如：
+#     nacos   -> host.docker.internal:8848
+#     redis   -> host.docker.internal:6379
+#     mysql   -> host.docker.internal:3306
+#   如果基础设施也在容器里并且跟本文件同一个 compose 网络，直接写服务名即可。
+#
+# 常用命令：
+#   docker compose up -d                       # 全部起来
+#   docker compose up -d exam-manage exam-paper  # 只起某几个
+#   docker compose logs -f exam-question
+#   EXAM_TAG=v1.0.0 docker compose up -d
+
+x-common: &exam-common
+  restart: unless-stopped
+  networks:
+    - exam-net
+  extra_hosts:
+    - "host.docker.internal:host-gateway"
+  environment:
+    TZ: Asia/Shanghai
+    LANG: C.UTF-8
+    LC_ALL: C.UTF-8
+    JAVA_OPTS: "-Xms256m -Xmx512m"
+
+services:
+  # ---------- 题库 9211 ----------
+  exam-question:
+    <<: *exam-common
+    image: ${EXAM_PREFIX:-ruoyi}/ruoyi-exam-question:${EXAM_TAG:-latest}
+    container_name: exam-question
+    volumes:
+      - /docker/exam/logs/question:/ruoyi/ruoyi-exam-question/logs
+
+  # ---------- 试卷 9212 ----------
+  exam-paper:
+    <<: *exam-common
+    image: ${EXAM_PREFIX:-ruoyi}/ruoyi-exam-paper:${EXAM_TAG:-latest}
+    container_name: exam-paper
+    volumes:
+      - /docker/exam/logs/paper:/ruoyi/ruoyi-exam-paper/logs
+
+  # ---------- 考试管理 9213 ----------
+  exam-manage:
+    <<: *exam-common
+    image: ${EXAM_PREFIX:-ruoyi}/ruoyi-exam-manage:${EXAM_TAG:-latest}
+    container_name: exam-manage
+    volumes:
+      - /docker/exam/logs/manage:/ruoyi/ruoyi-exam-manage/logs
+
+  # ---------- 答题 9214（写多、IO 多，内存给足一点）----------
+  exam-answer:
+    <<: *exam-common
+    image: ${EXAM_PREFIX:-ruoyi}/ruoyi-exam-answer:${EXAM_TAG:-latest}
+    container_name: exam-answer
+    environment:
+      TZ: Asia/Shanghai
+      LANG: C.UTF-8
+      LC_ALL: C.UTF-8
+      JAVA_OPTS: "-Xms512m -Xmx1g"
+    volumes:
+      - /docker/exam/logs/answer:/ruoyi/ruoyi-exam-answer/logs
+
+  # ---------- 阅卷 9215 ----------
+  exam-mark:
+    <<: *exam-common
+    image: ${EXAM_PREFIX:-ruoyi}/ruoyi-exam-mark:${EXAM_TAG:-latest}
+    container_name: exam-mark
+    volumes:
+      - /docker/exam/logs/mark:/ruoyi/ruoyi-exam-mark/logs
+
+  # ---------- 统计 9216 ----------
+  exam-stat:
+    <<: *exam-common
+    image: ${EXAM_PREFIX:-ruoyi}/ruoyi-exam-stat:${EXAM_TAG:-latest}
+    container_name: exam-stat
+    volumes:
+      - /docker/exam/logs/stat:/ruoyi/ruoyi-exam-stat/logs
+
+  # ---------- 练习 9217 ----------
+  exam-practice:
+    <<: *exam-common
+    image: ${EXAM_PREFIX:-ruoyi}/ruoyi-exam-practice:${EXAM_TAG:-latest}
+    container_name: exam-practice
+    volumes:
+      - /docker/exam/logs/practice:/ruoyi/ruoyi-exam-practice/logs
+
+  # ---------- 证书 9218 ----------
+  exam-cert:
+    <<: *exam-common
+    image: ${EXAM_PREFIX:-ruoyi}/ruoyi-exam-cert:${EXAM_TAG:-latest}
+    container_name: exam-cert
+    volumes:
+      - /docker/exam/logs/cert:/ruoyi/ruoyi-exam-cert/logs
+
+  # ---------- 防作弊 9219（抓拍图片 IO 较多）----------
+  exam-proctor:
+    <<: *exam-common
+    image: ${EXAM_PREFIX:-ruoyi}/ruoyi-exam-proctor:${EXAM_TAG:-latest}
+    container_name: exam-proctor
+    environment:
+      TZ: Asia/Shanghai
+      LANG: C.UTF-8
+      LC_ALL: C.UTF-8
+      JAVA_OPTS: "-Xms512m -Xmx1g"
+    volumes:
+      - /docker/exam/logs/proctor:/ruoyi/ruoyi-exam-proctor/logs
+
+  # ---------- AI 9220（模型调用耗内存，且会回调下面的 Python Agent）----------
+  exam-ai:
+    <<: *exam-common
+    image: ${EXAM_PREFIX:-ruoyi}/ruoyi-exam-ai:${EXAM_TAG:-latest}
+    container_name: exam-ai
+    environment:
+      TZ: Asia/Shanghai
+      LANG: C.UTF-8
+      LC_ALL: C.UTF-8
+      JAVA_OPTS: "-Xms512m -Xmx1g"
+    depends_on:
+      - exam-agent
+    volumes:
+      - /docker/exam/logs/ai:/ruoyi/ruoyi-exam-ai/logs
+
+  # ---------- Python 侧 AI Agent 9221（不是 Spring Boot，单独 Dockerfile）----------
+  exam-agent:
+    image: ${EXAM_PREFIX:-ruoyi}/ruoyi-exam-agent:${EXAM_TAG:-latest}
+    container_name: exam-agent
+    restart: unless-stopped
+    networks:
+      - exam-net
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    environment:
+      TZ: Asia/Shanghai
+      # Agent 的配置全部走 AGENT_ 前缀环境变量（见 app/config.py）
+      # Java 侧工具接口：容器里必须写宿主机可达地址，不能再用 127.0.0.1
+      AGENT_JAVA_GATEWAY_BASE_URL: ${AGENT_JAVA_BASE_URL:-http://host.docker.internal:9220}
+      AGENT_JAVA_GATEWAY_TOKEN: ${AGENT_JAVA_GATEWAY_TOKEN:-}
+      AGENT_NACOS_SERVER: ${AGENT_NACOS_SERVER:-host.docker.internal:8848}
+      # 容器自动探测的出口 IP 别的容器未必连得上，注册前尽量显式指定
+      AGENT_NACOS_IP: ${AGENT_NACOS_IP:-}
+      # 读 ry-cloud.ai_model_config（只读）
+      AGENT_MYSQL_HOST: ${AGENT_MYSQL_HOST:-host.docker.internal}
+      AGENT_MYSQL_PORT: ${AGENT_MYSQL_PORT:-3306}
+      AGENT_MYSQL_USER: ${AGENT_MYSQL_USER:-root}
+      AGENT_MYSQL_PASSWORD: ${AGENT_MYSQL_PASSWORD:-}
+      AGENT_MYSQL_DATABASE: ${AGENT_MYSQL_DATABASE:-ry-cloud}
+
+networks:
+  exam-net:
+    driver: bridge

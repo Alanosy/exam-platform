@@ -1,0 +1,26 @@
+# 不要把本机虚拟环境打进镜像：macOS 装的 wheel 在 Linux 容器里用不了，纯占几十 MB
+.venv
+venv
+__pycache__
+*.pyc
+.pytest_cache
+.ruff_cache
+.mypy_cache
+
+# ⚠️ 本机 .env 里有大模型 API Key 等密钥，**绝不能进镜像**
+# 运行时请用 docker -e / compose environment 注入（见 ../../script/docker/exam/docker-compose.yml）
+.env
+.env.local
+
+# 日志与自检产物
+*.log
+selftest-report.txt
+
+# 部署用不到的东西
+tests
+.git
+.gitignore
+.idea
+.vscode
+EOF
+# 注意：不要把 Dockerfile 本身也 ignore 掉，BuildKit 会报找不到构建文件

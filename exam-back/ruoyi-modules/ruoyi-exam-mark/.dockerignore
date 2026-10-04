@@ -1,0 +1,11 @@
+# 镜像上下文只留 Dockerfile 和 fat jar，源码与中间产物不要送进 docker daemon
+src
+pom.xml
+target/classes
+target/test-classes
+target/generated-sources
+target/generated-test-sources
+target/maven-status
+target/maven-archiver
+target/surefire-reports
+target/*.jar.original
