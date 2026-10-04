@@ -41,17 +41,15 @@ public class AiModelConfigVo implements Serializable {
     private String configName;
 
     /**
-     * 模型类型：OPENAI/DEEPSEEK/QWEN/DOUBAO/CUSTOM
+     * 模型类型：OPENAI/DEEPSEEK/QWEN/DOUBAO/CUSTOM（自由输入，不走字典翻译）
      */
-    @ExcelProperty(value = "模型类型：OPENAI/DEEPSEEK/QWEN/DOUBAO/CUSTOM", converter = ExcelDictConvert.class)
-    @ExcelDictFormat(dictType = "model_type")
+    @ExcelProperty(value = "模型类型")
     private String modelType;
 
     /**
-     * 模型名称，如deepseek-chat
+     * 模型名称，如deepseek-chat（自由输入，不走字典翻译）
      */
-    @ExcelProperty(value = "模型名称，如deepseek-chat", converter = ExcelDictConvert.class)
-    @ExcelDictFormat(dictType = "model_name")
+    @ExcelProperty(value = "模型名称")
     private String modelName;
 
     /**

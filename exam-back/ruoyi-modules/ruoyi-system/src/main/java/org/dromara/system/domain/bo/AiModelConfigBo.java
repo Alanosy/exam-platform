@@ -33,15 +33,15 @@ public class AiModelConfigBo extends BaseEntity {
     private String configName;
 
     /**
-     * 模型类型：OPENAI/DEEPSEEK/QWEN/DOUBAO/CUSTOM
+     * 模型类型：自由输入，如 OPENAI / DEEPSEEK / QWEN / DOUBAO / CUSTOM
      */
-    @NotBlank(message = "模型类型：OPENAI/DEEPSEEK/QWEN/DOUBAO/CUSTOM不能为空", groups = { AddGroup.class, EditGroup.class })
+    @NotBlank(message = "模型类型不能为空", groups = { AddGroup.class, EditGroup.class })
     private String modelType;
 
     /**
-     * 模型名称，如deepseek-chat
+     * 模型名称：自由输入，如 deepseek-chat
      */
-    @NotBlank(message = "模型名称，如deepseek-chat不能为空", groups = { AddGroup.class, EditGroup.class })
+    @NotBlank(message = "模型名称不能为空", groups = { AddGroup.class, EditGroup.class })
     private String modelName;
 
     /**

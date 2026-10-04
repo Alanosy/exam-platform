@@ -74,10 +74,11 @@ public class AiModelConfigServiceImpl implements IAiModelConfigService {
         Map<String, Object> params = bo.getParams();
         LambdaQueryWrapper<AiModelConfig> lqw = Wrappers.lambdaQuery();
         lqw.orderByAsc(AiModelConfig::getId);
+        // 以下字段在页面上均为自由输入框（非字典下拉），统一按模糊匹配处理
         lqw.like(StringUtils.isNotBlank(bo.getConfigName()), AiModelConfig::getConfigName, bo.getConfigName());
-        lqw.eq(StringUtils.isNotBlank(bo.getModelType()), AiModelConfig::getModelType, bo.getModelType());
+        lqw.like(StringUtils.isNotBlank(bo.getModelType()), AiModelConfig::getModelType, bo.getModelType());
         lqw.like(StringUtils.isNotBlank(bo.getModelName()), AiModelConfig::getModelName, bo.getModelName());
-        lqw.eq(StringUtils.isNotBlank(bo.getApiBase()), AiModelConfig::getApiBase, bo.getApiBase());
+        lqw.like(StringUtils.isNotBlank(bo.getApiBase()), AiModelConfig::getApiBase, bo.getApiBase());
         return lqw;
     }
 

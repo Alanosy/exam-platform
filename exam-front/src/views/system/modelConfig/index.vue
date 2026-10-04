@@ -8,14 +8,10 @@
               <el-input v-model="queryParams.configName" placeholder="请输入名称" clearable @keyup.enter="handleQuery" />
             </el-form-item>
             <el-form-item label="模型类型" prop="modelType">
-              <el-select v-model="queryParams.modelType" placeholder="请选择模型类型" clearable >
-                <el-option v-for="dict in model_type" :key="dict.value" :label="dict.label" :value="dict.value"/>
-              </el-select>
+              <el-input v-model="queryParams.modelType" placeholder="请输入模型类型" clearable @keyup.enter="handleQuery" />
             </el-form-item>
             <el-form-item label="模型名称" prop="modelName">
-              <el-select v-model="queryParams.modelName" placeholder="请选择模型名称" clearable >
-                <el-option v-for="dict in model_name" :key="dict.value" :label="dict.label" :value="dict.value"/>
-              </el-select>
+              <el-input v-model="queryParams.modelName" placeholder="请输入模型名称" clearable @keyup.enter="handleQuery" />
             </el-form-item>
             <el-form-item label="接口地址" prop="apiBase">
               <el-input v-model="queryParams.apiBase" placeholder="请输入接口地址" clearable @keyup.enter="handleQuery" />
@@ -52,16 +48,8 @@
         <el-table-column type="selection" width="55" align="center" />
         <el-table-column label="主键" align="center" prop="id" v-if="true" />
         <el-table-column label="名称" align="center" prop="configName" />
-        <el-table-column label="模型类型" align="center" prop="modelType">
-          <template #default="scope">
-            <dict-tag :options="model_type" :value="scope.row.modelType"/>
-          </template>
-        </el-table-column>
-        <el-table-column label="模型名称" align="center" prop="modelName">
-          <template #default="scope">
-            <dict-tag :options="model_name" :value="scope.row.modelName"/>
-          </template>
-        </el-table-column>
+        <el-table-column label="模型类型" align="center" prop="modelType" />
+        <el-table-column label="模型名称" align="center" prop="modelName" />
         <el-table-column label="接口地址" align="center" prop="apiBase" />
         <el-table-column label="API密钥" align="center" prop="apiKey" />
         <el-table-column label="温度" align="center" prop="temperature" />
@@ -93,24 +81,10 @@
           <el-input v-model="form.configName" placeholder="请输入名称" />
         </el-form-item>
         <el-form-item label="模型类型" prop="modelType">
-          <el-select v-model="form.modelType" placeholder="请选择模型类型">
-            <el-option
-                v-for="dict in model_type"
-                :key="dict.value"
-                :label="dict.label"
-                :value="dict.value"
-            ></el-option>
-          </el-select>
+          <el-input v-model="form.modelType" maxlength="50" placeholder="请输入模型类型，如 OPENAI / DEEPSEEK / QWEN / CUSTOM" />
         </el-form-item>
         <el-form-item label="模型名称" prop="modelName">
-          <el-select v-model="form.modelName" placeholder="请选择模型名称">
-            <el-option
-                v-for="dict in model_name"
-                :key="dict.value"
-                :label="dict.label"
-                :value="dict.value"
-            ></el-option>
-          </el-select>
+          <el-input v-model="form.modelName" maxlength="100" placeholder="请输入模型名称，如 deepseek-chat" />
         </el-form-item>
         <el-form-item label="接口地址" prop="apiBase">
           <el-input v-model="form.apiBase" placeholder="请输入接口地址" />
@@ -155,7 +129,6 @@ import { listModelConfig, getModelConfig, delModelConfig, addModelConfig, update
 import { ModelConfigVO, ModelConfigQuery, ModelConfigForm } from '@/api/system/modelConfig/types';
 
 const { proxy } = getCurrentInstance() as ComponentInternalInstance;
-const { model_type, model_name } = toRefs<any>(proxy?.useDict('model_type', 'model_name'));
 
 const modelConfigList = ref<ModelConfigVO[]>([]);
 const buttonLoading = ref(false);
@@ -210,10 +183,10 @@ const data = reactive<PageData<ModelConfigForm, ModelConfigQuery>>({
       { required: true, message: "名称不能为空", trigger: "blur" }
     ],
     modelType: [
-      { required: true, message: "模型类型不能为空", trigger: "change" }
+      { required: true, message: "模型类型不能为空", trigger: "blur" }
     ],
     modelName: [
-      { required: true, message: "模型名称不能为空", trigger: "change" }
+      { required: true, message: "模型名称不能为空", trigger: "blur" }
     ],
   }
 });
