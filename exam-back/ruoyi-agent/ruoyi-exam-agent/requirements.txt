@@ -14,7 +14,7 @@ httpx==0.27.2
 nacos-sdk-python==0.1.14
 
 # ---- 模型配置源：MySQL 只读 ai_model_config（可选，失败自动降级）----
-pymysql==1.1.0
+pymysql==1.1.1
 
 # ---- 记忆层：Redis（可选，未安装/连不上自动降级为内存）----
 redis==5.0.8
