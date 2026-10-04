@@ -11,7 +11,7 @@
  Target Server Version : 80042 (8.0.42)
  File Encoding         : 65001
 
- Date: 02/10/2026 17:30:38
+ Date: 04/10/2026 15:25:46
 */
 
 SET NAMES utf8mb4;
@@ -167,6 +167,27 @@ CREATE TABLE `exam_invite` (
 ) ENGINE=InnoDB AUTO_INCREMENT=2105640241431781378 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci ROW_FORMAT=DYNAMIC COMMENT='考试邀请记录表';
 
 -- ----------------------------
+-- Table structure for exam_knowledge_point
+-- ----------------------------
+DROP TABLE IF EXISTS `exam_knowledge_point`;
+CREATE TABLE `exam_knowledge_point` (
+  `id` bigint NOT NULL COMMENT '主键ID',
+  `parent_id` bigint NOT NULL DEFAULT '0' COMMENT '父级ID，0 表示章节（根节点）',
+  `name` varchar(100) NOT NULL COMMENT '知识点名称',
+  `sort` int NOT NULL DEFAULT '0' COMMENT '排序',
+  `del_flag` tinyint NOT NULL DEFAULT '0' COMMENT '逻辑删除 0未删 1已删',
+  `tenant_id` bigint DEFAULT NULL COMMENT '租户ID',
+  `create_by` varchar(64) DEFAULT '' COMMENT '创建者',
+  `create_dept` varchar(64) DEFAULT NULL COMMENT '创建部门',
+  `create_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+  `update_by` varchar(64) DEFAULT '' COMMENT '更新者',
+  `update_time` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+  PRIMARY KEY (`id`),
+  KEY `idx_knowledge_parent` (`parent_id`),
+  KEY `idx_knowledge_tenant` (`tenant_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='知识点（两级：章节 / 知识点）';
+
+-- ----------------------------
 -- Table structure for exam_mark_item
 -- ----------------------------
 DROP TABLE IF EXISTS `exam_mark_item`;
@@ -222,7 +243,7 @@ CREATE TABLE `exam_mark_log` (
   `old_score` decimal(10,2) DEFAULT NULL COMMENT '改动前得分',
   `new_score` decimal(10,2) DEFAULT NULL COMMENT '改动后得分',
   `mark_type` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT '' COMMENT '打标方式 manual / ai / auto',
-  `remark` varchar(500) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT '' COMMENT '备注',
+  `remark` text CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci COMMENT '备注',
   `operator` bigint DEFAULT NULL COMMENT '操作人ID',
   `operator_name` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT '' COMMENT '操作人姓名',
   `tenant_id` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL COMMENT '租户ID',
@@ -235,7 +256,7 @@ CREATE TABLE `exam_mark_log` (
   PRIMARY KEY (`id`) USING BTREE,
   KEY `idx_task` (`task_id`) USING BTREE,
   KEY `idx_record` (`record_id`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=2105705356873158659 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci ROW_FORMAT=DYNAMIC COMMENT='阅卷操作日志';
+) ENGINE=InnoDB AUTO_INCREMENT=2106316405053784066 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci ROW_FORMAT=DYNAMIC COMMENT='阅卷操作日志';
 
 -- ----------------------------
 -- Table structure for exam_mark_task
@@ -405,6 +426,26 @@ CREATE TABLE `exam_question` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='试卷试题关联表';
 
 -- ----------------------------
+-- Table structure for exam_question_knowledge
+-- ----------------------------
+DROP TABLE IF EXISTS `exam_question_knowledge`;
+CREATE TABLE `exam_question_knowledge` (
+  `id` bigint NOT NULL COMMENT '主键ID',
+  `question_id` bigint NOT NULL COMMENT '试题ID',
+  `knowledge_id` bigint NOT NULL COMMENT '知识点ID',
+  `tenant_id` bigint DEFAULT NULL COMMENT '租户ID',
+  `create_by` varchar(64) DEFAULT '' COMMENT '创建者',
+  `create_dept` varchar(64) DEFAULT NULL COMMENT '创建部门',
+  `create_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+  `update_by` varchar(64) DEFAULT '' COMMENT '更新者',
+  `update_time` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `uk_question_knowledge` (`question_id`,`knowledge_id`),
+  KEY `idx_qk_knowledge` (`knowledge_id`),
+  KEY `idx_qk_tenant` (`tenant_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='试题-知识点关联';
+
+-- ----------------------------
 -- Table structure for exam_user
 -- ----------------------------
 DROP TABLE IF EXISTS `exam_user`;
@@ -516,7 +557,7 @@ CREATE TABLE `question` (
   KEY `idx_question_type` (`question_type`) USING BTREE,
   KEY `idx_create_user` (`create_user`) USING BTREE,
   KEY `idx_del_flag` (`del_flag`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=2105487460829892611 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci ROW_FORMAT=DYNAMIC COMMENT='试题主表';
+) ENGINE=InnoDB AUTO_INCREMENT=2106633095260086275 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci ROW_FORMAT=DYNAMIC COMMENT='试题主表';
 
 -- ----------------------------
 -- Table structure for question_bank
@@ -582,7 +623,7 @@ CREATE TABLE `question_option` (
   PRIMARY KEY (`id`) USING BTREE,
   KEY `idx_question_id` (`question_id`) USING BTREE,
   KEY `idx_del_flag` (`del_flag`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=2105487462939627522 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci ROW_FORMAT=DYNAMIC COMMENT='试题选项表';
+) ENGINE=InnoDB AUTO_INCREMENT=2106633097092997122 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci ROW_FORMAT=DYNAMIC COMMENT='试题选项表';
 
 -- ----------------------------
 -- Table structure for stat_calc_task

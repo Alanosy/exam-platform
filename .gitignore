@@ -73,3 +73,9 @@ node_modules/
 logs/
 *.log
 
+### 本地临时文件（不入库） ###
+# Navicat 随手导出的表结构快照，正式脚本请放 script/sql/*.sql 的正式命名
+exam-back/script/sql/leave4.sql
+# 图标/资源的备份副本
+*.bak*.ico
+
