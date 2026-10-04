@@ -5,4 +5,4 @@
 chromadb==0.5.5
 
 # Embedding（会拉取 torch，体积较大，按需安装）
-sentence-transformers==3.0.1
+sentence-transformers==5.6.0
