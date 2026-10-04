@@ -46,6 +46,24 @@ class GeneratedQuestion(BaseModel):
     score: float | None = None
 
 
+# ---------------- 槽位抽取（LLM 语义理解输出） ----------------
+
+class SlotExtractOutput(BaseModel):
+    """LLM 从用户原话里语义抽取的槽位"""
+
+    intent: str = ""
+    topic: str = ""
+    count: int | None = None
+    question_type: str = ""
+    difficulty: str = ""
+    bank_keyword: str = ""
+    exam_keyword: str = ""
+    keyword: str = ""
+    language: str = ""
+    reading_comprehension: bool = False
+    status: str = ""
+
+
 # ---------------- 出题 ----------------
 
 class QuestionGenInput(BaseModel):

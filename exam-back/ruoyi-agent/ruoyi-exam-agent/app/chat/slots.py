@@ -1,13 +1,16 @@
 """意图识别与槽位抽取
 
-两段式：
-1. **规则优先**。出题、查答题情况这类高频指令有极强的措辞特征，
-   正则一抓一个准，还不花 token、不受模型波动影响。
-2. **LLM 兜底**。规则没命中时才问模型，拿到 intent + slots 的 JSON。
+设计原则：**语义理解优先，正则只做兜底**。
+- 意图：正则快判（出题/查分/搜题特征极强），LLM 不参与
+- 槽位：交给 LLM 语义理解，不维护一堆脆弱的正则映射表
+- 数量：正则兜底抽数字（纯数字 LLM 偶发丢字，正则更稳）
+- LLM 失败时：退化到极简正则，保证流程不崩
 
-为什么不直接全交给 LLM：模型在「10 道」这种数字上偶发丢字、
-在题库名上会自由发挥（「计算机基础题库」被改写成「计算机题库」），
-而规则抽出来的槽位是**原样字符串**，后面做模糊匹配时这一点很关键。
+为什么不全靠 LLM：
+- 「10 道」这种纯数字，正则比 LLM 更准更快
+- 意图判断关键词特征极强，没必要花 token
+- 但 topic / 题型 / 难度 / 语言 / 阅读理解这些**语义参数**，
+  正则维护成本高、容易漏，交给 LLM 语义理解更灵活
 """
 
 from __future__ import annotations
@@ -16,6 +19,13 @@ import logging
 import re
 from typing import Any
 
+from app.gateway.models import ChatMessage, ChatRequest
+from app.gateway.router import router
+from app.llm.structured import parse_model
+from app.prompts.registry import registry as prompt_registry
+from app.skills.base import SkillContext
+from app.skills.schemas import SlotExtractOutput
+
 logger = logging.getLogger(__name__)
 
 INTENT_QUESTION_CREATE = "question_create"
@@ -23,28 +33,7 @@ INTENT_EXAM_ANALYSIS = "exam_analysis"
 INTENT_QUESTION_SEARCH = "question_search"
 INTENT_CHAT = "chat"
 
-# 题型中文 -> code
-TYPE_MAP = {
-    "单选": "SINGLE", "单选题": "SINGLE", "选择": "SINGLE", "选择题": "SINGLE",
-    "多选": "MULTIPLE", "多选题": "MULTIPLE",
-    "判断": "JUDGE", "判断题": "JUDGE", "判断题": "JUDGE",
-    "填空": "BLANK", "填空题": "BLANK",
-    "简答": "SHORT_ANSWER", "简答题": "SHORT_ANSWER",
-    "论述": "ESSAY", "论述题": "ESSAY",
-    "编程": "CODE", "代码": "CODE",
-}
-
-# 注意：这里**刻意不放**「基础」「难」这类词。
-# 「计算机基础知识」是主题不是难度，「难题」也不是难度，放进来会误判。
-DIFFICULTY_MAP = {
-    "简单": "easy", "容易": "easy", "入门": "easy", "低难度": "easy",
-    "中等": "medium", "一般": "medium", "适中": "medium", "中难度": "medium",
-    "困难": "hard", "较难": "hard", "高难": "hard", "高难度": "hard",
-}
-
-STATUS_MAP = {"草稿": "0", "启用": "1", "发布": "1", "废弃": "2"}
-
-# 意图关键词
+# 意图关键词（只做意图快判，不做槽位抽取）
 _CREATE_PAT = re.compile(
     r"(出\s*\d*\s*[道个条]*题|生成.*?题|创建.*?题|新建.*?题|编\s*\d*\s*[道个条]*题|"
     r"加\s*\d+\s*道|来\s*\d+\s*道|写\s*\d+\s*道|帮我出|造\s*\d+\s*道|"
@@ -56,33 +45,13 @@ _ANALYSIS_PAT = re.compile(
 )
 _SEARCH_PAT = re.compile(r"(搜\s*\d*\s*[道个条]*题|找\s*\d+\s*道|查\s*\d+\s*道|有没有.*?题|检索.*?题)")
 
-# 只认「数字 + 量词」：「加3道简单题」里数字和题之间还隔着难度词，
-# 要求后面紧跟「题」会漏抽
+# 数量：纯数字用正则兜底，比 LLM 稳
 _COUNT_PAT = re.compile(r"(\d+)\s*(?:道|个|条)")
-# 中文数字同样要认：「帮我创建一道题」里的「一道」是数量，
-# 只认阿拉伯数字会把它当成没写数量，转头去问用户（非常招人烦）
 _CN_COUNT_PAT = re.compile(r"([一二两三四五六七八九十]+)\s*(?:道|个|条)")
 _CN_NUM = {"一": 1, "二": 2, "两": 2, "三": 3, "四": 4, "五": 5, "六": 6, "七": 7, "八": 8, "九": 9}
+
+# 题库关键词兜底正则（LLM 失败时用）
 _BANK_PAT = re.compile(r"([一-龥A-Za-z0-9]+?)\s*题库")
-# 允许「关于X的Y题」中 Y 是修饰词（如「英语阅读理解」），
-# 用 [^的]+ 锁定 X 到第一个「的」为止，避免把修饰词吃进主题
-_TOPIC_PAT = re.compile(r"(?:关于)?([^的]+?)(?:的|相关的).*?(?:题|题目|试题|单选题|多选题|判断题|填空题|简答题|知识点)")
-_EXAM_PAT = re.compile(r"([一-龥A-Za-z0-9]+?)\s*(?:考卷|试卷|考试)")
-_TYPE_PAT = re.compile(r"(" + "|".join(sorted(TYPE_MAP, key=len, reverse=True)) + r")")
-_DIFF_PAT = re.compile(r"(" + "|".join(sorted(DIFFICULTY_MAP, key=len, reverse=True)) + r")")
-_STATUS_PAT = re.compile(r"(草稿|启用|发布|废弃)")
-
-# 语言：出题时按用户指定的语言生成题干和选项
-_LANG_MAP = {
-    "英语": "en", "英文": "en", "English": "en", "english": "en",
-    "中文": "zh", "汉语": "zh", "语文": "zh", "chinese": "zh",
-    "数学": "math",
-}
-_LANG_PAT = re.compile(r"(" + "|".join(sorted(_LANG_MAP, key=len, reverse=True)) + r")")
-
-# 「阅读理解」不是系统支持的独立题型（系统只有单选/多选/判断…），
-# 但用户提了就要认：把它作为出题风格指令放进 extra，让模型按「篇章+题目」的形式出
-_READING_PAT = re.compile(r"(阅读理解|阅读题|完形填空)")
 
 
 def detect_intent(text: str) -> str:
@@ -96,10 +65,21 @@ def detect_intent(text: str) -> str:
     return INTENT_CHAT
 
 
-def extract_slots(text: str, intent: str) -> dict[str, Any]:
-    """从一句话里抽槽位，抽不到的一律不填（让流程去问，不要瞎猜）"""
+async def extract_slots(
+    text: str, intent: str, ctx: SkillContext | None = None
+) -> dict[str, Any]:
+    """从一句话里抽槽位，LLM 语义理解为主，正则兜底
+
+    返回的 slots 里只填有把握的字段，没把握的不填，让流程去问用户。
+    如果 LLM 判断出的意图和正则不一致（正则说 chat 但 LLM 说出题），
+    会把 LLM 的意图写进 slots["__intent__"]，调用方据此覆盖。
+    """
     slots: dict[str, Any] = {}
 
+    # 口语量词归一化：俩=两个(2)、仨=三个(3)，补出量词让正则也能命中
+    text = text.replace("俩", "两个").replace("仨", "三个")
+
+    # 1. 数量：正则先抽，纯数字 LLM 偶发丢字
     m = _COUNT_PAT.search(text)
     if m:
         slots["count"] = int(m.group(1))
@@ -109,47 +89,31 @@ def extract_slots(text: str, intent: str) -> dict[str, Any]:
         if count:
             slots["count"] = count
 
-    m = _BANK_PAT.search(text)
-    if m:
-        cleaned = _clean_bank_keyword(m.group(1))
-        if cleaned:
-            slots["bank_keyword"] = cleaned
+    # 2. 语义参数：交给 LLM 理解
+    llm_slots, llm_intent = await _llm_extract(text, ctx)
+    if llm_slots:
+        # LLM 抽到的覆盖（count：正则没抽到才用 LLM 的——纯数字正则更准，但
+        # 「整俩」「来几道」这种没量词的口语只能靠 LLM 理解）
+        for k, v in llm_slots.items():
+            if k == "count" and slots.get("count"):
+                continue
+            if v not in (None, "", [], False):
+                slots[k] = v
 
-    # 提取 topic 前先剥掉「创建/出/帮我 + 数量 + 道」这类前缀，
-    # 否则「创建1道数据结构的单选题」会把 topic 抽成「创建1道数据结构」
-    topic_text = re.sub(r"^(?:帮我|我|请|麻烦)?\s*(?:创建|生成|出|写|命)?\s*(?:\d+|[一二两三四五六七八九十]+)?\s*(?:道|个|条)?\s*", "", text)
-    m = _TOPIC_PAT.search(topic_text)
-    if m:
-        topic = m.group(1).strip()
-        # 再剥一次残留的数量词，兜底
-        topic = re.sub(r"^(?:\d+|[一二两三四五六七八九十]+)?\s*(?:道|个|条)?\s*", "", topic)
-        if topic:
-            slots["topic"] = topic
+    # 3. 兜底：LLM 没抽到题库名时，正则试一下
+    if not slots.get("bank_keyword"):
+        m = _BANK_PAT.search(text)
+        if m:
+            cleaned = _clean_bank_keyword(m.group(1))
+            if cleaned:
+                slots["bank_keyword"] = cleaned
 
-    m = _EXAM_PAT.search(text)
-    if m:
-        slots["exam_keyword"] = m.group(1).strip()
-
-    m = _TYPE_PAT.search(text)
-    if m:
-        slots["question_type"] = TYPE_MAP.get(m.group(1), "")
-
-    m = _DIFF_PAT.search(text)
-    if m:
-        slots["difficulty"] = DIFFICULTY_MAP.get(m.group(1), "")
-
-    m = _STATUS_PAT.search(text)
-    if m:
-        slots["status"] = STATUS_MAP.get(m.group(1), "0")
-
-    # 语言：用户说「英语题」「中文题」时，按指定语言生成
-    m = _LANG_PAT.search(text)
-    if m:
-        slots["language"] = _LANG_MAP.get(m.group(1), "")
-
-    # 阅读理解：系统没有独立的阅读理解题型，作为出题风格标记
-    if _READING_PAT.search(text):
-        slots["reading_comprehension"] = True
+    # 4. 意图覆盖：正则判成 chat 但 LLM 认出是业务意图时，听 LLM 的
+    if intent == INTENT_CHAT and llm_intent in (
+        INTENT_QUESTION_CREATE, INTENT_EXAM_ANALYSIS, INTENT_QUESTION_SEARCH
+    ):
+        slots["__intent__"] = llm_intent
+        intent = llm_intent
 
     # 出题场景：没写出题库名时，用主题当题库关键词去模糊匹配
     if intent == INTENT_QUESTION_CREATE:
@@ -161,7 +125,55 @@ def extract_slots(text: str, intent: str) -> dict[str, Any]:
     # 检索场景：用户说「关于 X 的题」时 X 落在 topic 上，这里转成检索关键词
     if intent == INTENT_QUESTION_SEARCH and not slots.get("keyword"):
         slots["keyword"] = slots.get("topic") or slots.get("bank_keyword") or ""
+
     return slots
+
+
+async def _llm_extract(
+    text: str, ctx: SkillContext | None
+) -> tuple[dict[str, Any], str]:
+    """用 LLM 语义理解抽取槽位，失败返回 (空dict, "")"""
+    try:
+        tpl = prompt_registry.get("slot_extract")
+        if tpl is None:
+            logger.warning("slot_extract 提示词未注册，跳过 LLM 抽取")
+            return {}, ""
+
+        system, user = tpl.render(message=text)
+        params = tpl.params or {}
+        messages = []
+        if system:
+            messages.append(ChatMessage(role="system", content=system))
+        messages.append(ChatMessage(role="user", content=user))
+
+        req = ChatRequest(
+            messages=messages,
+            temperature=params.get("temperature", 0.01),
+            max_tokens=params.get("max_tokens", 600),
+            response_json=True,
+            response_shape="object",
+            model_code=ctx.model_code if ctx else None,
+        )
+        tenant_id = ctx.tenant_id if ctx else "000000"
+        resp = await router.chat(req, tenant_id=tenant_id, biz_type="slot_extract")
+
+        out = parse_model(resp.content or "{}", SlotExtractOutput)
+        result: dict[str, Any] = {}
+        for field in (
+            "topic", "question_type", "difficulty", "bank_keyword",
+            "exam_keyword", "keyword", "language", "status",
+        ):
+            val = getattr(out, field, None)
+            if val:
+                result[field] = val
+        if getattr(out, "count", None):
+            result["count"] = out.count
+        if getattr(out, "reading_comprehension", False):
+            result["reading_comprehension"] = True
+        return result, out.intent or ""
+    except Exception as e:  # noqa: BLE001
+        logger.warning("LLM 槽位抽取失败，退化到正则: %s", e)
+        return {}, ""
 
 
 # 「XX题库」前面那一串往往是「帮我创建10道关于……的题到」，
@@ -177,7 +189,6 @@ def _clean_bank_keyword(raw: str) -> str:
     parts = _BANK_SPLIT.split(raw)
     name = next((p for p in reversed(parts) if p.strip()), raw)
     name = _BANK_PREFIX.sub("", name.strip())
-    # 再砍一道：清洗后仍然过长说明抽得不对，交给调用方用主题派生
     return name if 0 < len(name) <= 8 else ""
 
 

@@ -63,6 +63,25 @@ async def chat(
     trace: list[TraceStep] = []
 
     waiting = bool(session.pending_fields)
+
+    # 会话设置里的模型优先于请求参数：设置面板改了就一直生效
+    if not model_code:
+        model_code = session.option("model_code") or None
+
+    # ctx 提前创建：extract_slots 现在要调 LLM 做语义抽取，需要 ctx 拿 tenant_id / model_code
+    ctx = SkillContext(
+        tenant_id=tenant_id,
+        user_id=user_id,
+        model_code=model_code,
+        extra={
+            "token": session.token,
+            "client_id": session.client_id,
+            "identity": session.identity,
+            "session_id": session.id,
+            "confirm_write": bool(session.option("confirm_write", True)),
+        },
+    )
+
     if answers:
         # 中断续跑：答案并入槽位，沿用原来的意图
         intent = session.intent or "chat"
@@ -80,7 +99,11 @@ async def chat(
         # 会误抽出 topic="测试"，必须让 session.slots 里上一轮已确定的出题参数
         # （topic / count / 题型 / 难度）压过它，否则题目主题会被答案带偏。
         # guessed（从选项里解析出的 bank_id 等）优先级最高，最后覆盖。
-        slots = merge_slots(extract_slots(message, intent), session.slots)
+        new_slots = await extract_slots(message, intent, ctx)
+        # LLM 语义理解可能修正意图（正则判 chat 但 LLM 认出是出题/查题/分析）
+        if new_slots.get("__intent__"):
+            intent = new_slots.pop("__intent__")
+        slots = merge_slots(new_slots, session.slots)
         slots = merge_slots(slots, guessed)
         session.add_message("user", message)
         question = str(session.slots.get("__question") or message)
@@ -99,27 +122,15 @@ async def chat(
             # 正在等补充信息时，任何没有独立意图的话都算作答/追问，
             # 不能开成新话题，否则上一轮攒下的槽位全白费
             intent = session.intent
-        slots = merge_slots(session.slots, extract_slots(message, intent))
+        new_slots = await extract_slots(message, intent, ctx)
+        # LLM 语义理解可能修正意图（正则判 chat 但 LLM 认出是出题/查题/分析）
+        if new_slots.get("__intent__"):
+            intent = new_slots.pop("__intent__")
+        slots = merge_slots(session.slots, new_slots)
         question = message
 
     slots["__question"] = question
     slots["__history"] = session.history_text()
-    # 会话设置里的模型优先于请求参数：设置面板改了就一直生效
-    if not model_code:
-        model_code = session.option("model_code") or None
-
-    ctx = SkillContext(
-        tenant_id=tenant_id,
-        user_id=user_id,
-        model_code=model_code,
-        extra={
-            "token": session.token,
-            "client_id": session.client_id,
-            "identity": session.identity,
-            "session_id": session.id,
-            "confirm_write": bool(session.option("confirm_write", True)),
-        },
-    )
 
     flow = flows.FLOWS.get(intent, flows.flow_general)
     audience = identity_audience(session.identity)
