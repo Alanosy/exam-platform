@@ -78,7 +78,7 @@
     "vite": "7.3.2",
     "vite-plugin-svg-icons-ng": "^1.5.2",
     "vite-plugin-vue-devtools": "8.0.7",
-    "vitest": "4.0.18",
+    "vitest": "4.1.11",
     "vue-tsc": "^3.2.5"
   },
   "overrides": {
